@@ -2,12 +2,13 @@ import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import {
   LayoutDashboard, Building2, FileText, ClipboardCheck, AlertTriangle,
-  Package, Factory, Search, Bug, GraduationCap, BarChart3, Menu, X, Shield, LogOut,
+  Package, Factory, Search, Bug, GraduationCap, BarChart3, Menu, X, LogOut,
   PlayCircle, FileDown, Scale, Users, ChevronDown, Wrench, Settings, BookOpen
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
+import logoImg from "@/assets/logo.png";
 
 interface NavItem {
   path: string;
@@ -179,12 +180,10 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       {/* Desktop sidebar */}
       <aside className="hidden lg:flex flex-col w-64 bg-sidebar text-sidebar-foreground border-r border-sidebar-border">
         <div className="flex items-center gap-3 px-6 py-5 border-b border-sidebar-border">
-          <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-sidebar-primary">
-            <Shield className="w-6 h-6 text-sidebar-primary-foreground" />
-          </div>
+          <img src={logoImg} alt="Feed_BPF Logo" className="w-10 h-10 rounded-lg object-contain" />
           <div>
-            <h1 className="font-display text-lg font-bold text-sidebar-foreground">FeedBPF</h1>
-            <p className="text-xs text-sidebar-foreground/60">Gestão de BPF</p>
+            <h1 className="font-display text-lg font-bold text-sidebar-foreground">Feed_BPF</h1>
+            <p className="text-xs text-sidebar-foreground/60">by CLXN</p>
           </div>
         </div>
         <SidebarNav currentPath={location.pathname} />
@@ -205,8 +204,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       {/* Mobile header */}
       <div className="lg:hidden fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-4 py-3 bg-sidebar text-sidebar-foreground border-b border-sidebar-border">
         <div className="flex items-center gap-2">
-          <Shield className="w-6 h-6 text-sidebar-primary" />
-          <span className="font-display font-bold">FeedBPF</span>
+          <img src={logoImg} alt="Feed_BPF Logo" className="w-8 h-8 rounded object-contain" />
+          <span className="font-display font-bold">Feed_BPF</span>
         </div>
         <Button variant="ghost" size="icon" onClick={() => setMobileOpen(!mobileOpen)} className="text-sidebar-foreground">
           {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
