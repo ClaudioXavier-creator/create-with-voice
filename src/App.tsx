@@ -4,6 +4,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider, useAuth } from "@/hooks/useAuth";
+import { useLicense } from "@/hooks/useLicense";
 import AppLayout from "@/components/layout/AppLayout";
 import Index from "./pages/Index";
 import Cadastro from "./pages/Cadastro";
@@ -22,6 +23,7 @@ import Relatorios from "./pages/Relatorios";
 import Legislacao from "./pages/Legislacao";
 import Fornecedores from "./pages/Fornecedores";
 import Auth from "./pages/Auth";
+import AtivarLicenca from "./pages/AtivarLicenca";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -38,6 +40,24 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   }
 
   if (!session) return <Navigate to="/auth" replace />;
+  return <>{children}</>;
+}
+
+function LicenseGate({ children }: { children: React.ReactNode }) {
+  const { loading, isActive } = useLicense();
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+      </div>
+    );
+  }
+
+  if (!isActive) {
+    return <AtivarLicenca />;
+  }
+
   return <>{children}</>;
 }
 
@@ -59,27 +79,29 @@ const AppRoutes = () => {
         path="/*"
         element={
           <ProtectedRoute>
-            <AppLayout>
-              <Routes>
-                <Route path="/" element={<Index />} />
-                <Route path="/cadastro" element={<Cadastro />} />
-                <Route path="/documentos" element={<Documentos />} />
-                <Route path="/auditoria" element={<Auditoria />} />
-                <Route path="/nao-conformidades" element={<NaoConformidades />} />
-                <Route path="/recebimento" element={<Recebimento />} />
-                <Route path="/fornecedores" element={<Fornecedores />} />
-                <Route path="/producao" element={<Producao />} />
-                <Route path="/pcp" element={<PCP />} />
-                <Route path="/rastreabilidade" element={<Rastreabilidade />} />
-                <Route path="/pragas" element={<Pragas />} />
-                <Route path="/treinamentos" element={<Treinamentos />} />
-                <Route path="/indicadores" element={<Indicadores />} />
-                <Route path="/execucao-pops" element={<ExecucaoPops />} />
-                <Route path="/relatorios" element={<Relatorios />} />
-                <Route path="/legislacao" element={<Legislacao />} />
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </AppLayout>
+            <LicenseGate>
+              <AppLayout>
+                <Routes>
+                  <Route path="/" element={<Index />} />
+                  <Route path="/cadastro" element={<Cadastro />} />
+                  <Route path="/documentos" element={<Documentos />} />
+                  <Route path="/auditoria" element={<Auditoria />} />
+                  <Route path="/nao-conformidades" element={<NaoConformidades />} />
+                  <Route path="/recebimento" element={<Recebimento />} />
+                  <Route path="/fornecedores" element={<Fornecedores />} />
+                  <Route path="/producao" element={<Producao />} />
+                  <Route path="/pcp" element={<PCP />} />
+                  <Route path="/rastreabilidade" element={<Rastreabilidade />} />
+                  <Route path="/pragas" element={<Pragas />} />
+                  <Route path="/treinamentos" element={<Treinamentos />} />
+                  <Route path="/indicadores" element={<Indicadores />} />
+                  <Route path="/execucao-pops" element={<ExecucaoPops />} />
+                  <Route path="/relatorios" element={<Relatorios />} />
+                  <Route path="/legislacao" element={<Legislacao />} />
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </AppLayout>
+            </LicenseGate>
           </ProtectedRoute>
         }
       />
