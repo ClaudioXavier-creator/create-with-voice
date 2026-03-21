@@ -338,12 +338,13 @@ export default function Rastreabilidade() {
             <Tabs defaultValue="todos">
               <TabsList className="mb-4">
                 <TabsTrigger value="todos">Todos ({filtered.length})</TabsTrigger>
+                <TabsTrigger value="sem_venda">Sem destino ({semVenda.length})</TabsTrigger>
                 <TabsTrigger value="vendidos">Vendidos ({comVenda.length})</TabsTrigger>
                 <TabsTrigger value="recall">Recall ({comRecall.length})</TabsTrigger>
               </TabsList>
 
-              {["todos", "vendidos", "recall"].map(tab => {
-                const data = tab === "todos" ? filtered : tab === "vendidos" ? comVenda : comRecall;
+              {["todos", "sem_venda", "vendidos", "recall"].map(tab => {
+                const data = tab === "todos" ? filtered : tab === "sem_venda" ? semVenda : tab === "vendidos" ? comVenda : comRecall;
                 return (
                   <TabsContent key={tab} value={tab} className="overflow-x-auto">
                     {data.length === 0 ? (
@@ -379,7 +380,11 @@ export default function Rastreabilidade() {
                                     <p className="text-sm font-medium">{r.cliente_destino}</p>
                                     <span className="text-xs text-muted-foreground">{r.local_entrega || ""}</span>
                                   </>
-                                ) : <span className="text-xs text-muted-foreground">—</span>}
+                                ) : (
+                                  <Button variant="outline" size="sm" className="text-xs" onClick={() => openVenda(r.id)}>
+                                    <Truck className="w-3 h-3 mr-1" /> Registrar Venda
+                                  </Button>
+                                )}
                               </TableCell>
                               <TableCell>
                                 {r.nota_fiscal ? (
@@ -397,16 +402,23 @@ export default function Rastreabilidade() {
                                 ) : <span className="text-xs text-muted-foreground">—</span>}
                               </TableCell>
                               <TableCell>
-                                {!r.recall_ativo && r.cliente_destino && (
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    className="text-destructive text-xs"
-                                    onClick={() => { setSelectedId(r.id); setRecallOpen(true); }}
-                                  >
-                                    <AlertTriangle className="w-3 h-3 mr-1" /> Recall
-                                  </Button>
-                                )}
+                                <div className="flex gap-1">
+                                  {!r.recall_ativo && r.cliente_destino && (
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      className="text-destructive text-xs"
+                                      onClick={() => { setSelectedId(r.id); setRecallOpen(true); }}
+                                    >
+                                      <AlertTriangle className="w-3 h-3 mr-1" /> Recall
+                                    </Button>
+                                  )}
+                                  {r.cliente_destino && (
+                                    <Button variant="ghost" size="sm" className="text-xs" onClick={() => openVenda(r.id)}>
+                                      Editar venda
+                                    </Button>
+                                  )}
+                                </div>
                               </TableCell>
                             </TableRow>
                           ))}
