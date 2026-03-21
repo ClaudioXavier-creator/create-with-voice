@@ -61,6 +61,59 @@ export type Database = {
           },
         ]
       }
+      batidas_producao: {
+        Row: {
+          created_at: string
+          hora_fim: string | null
+          hora_inicio: string | null
+          id: string
+          numero_batida: number
+          observacoes: string | null
+          operador: string | null
+          ordem_id: string
+          status: string | null
+          temperatura: string | null
+          tempo_mistura_minutos: number | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          hora_fim?: string | null
+          hora_inicio?: string | null
+          id?: string
+          numero_batida?: number
+          observacoes?: string | null
+          operador?: string | null
+          ordem_id: string
+          status?: string | null
+          temperatura?: string | null
+          tempo_mistura_minutos?: number | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          hora_fim?: string | null
+          hora_inicio?: string | null
+          id?: string
+          numero_batida?: number
+          observacoes?: string | null
+          operador?: string | null
+          ordem_id?: string
+          status?: string | null
+          temperatura?: string | null
+          tempo_mistura_minutos?: number | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "batidas_producao_ordem_id_fkey"
+            columns: ["ordem_id"]
+            isOneToOne: false
+            referencedRelation: "ordens_producao"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       checklist_items: {
         Row: {
           area: string
@@ -261,6 +314,53 @@ export type Database = {
           },
         ]
       }
+      formula_itens: {
+        Row: {
+          created_at: string
+          fornecedor: string | null
+          id: string
+          lote_mp: string | null
+          materia_prima: string
+          ordem_id: string
+          percentual: string | null
+          quantidade_formula: string | null
+          unidade: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          fornecedor?: string | null
+          id?: string
+          lote_mp?: string | null
+          materia_prima: string
+          ordem_id: string
+          percentual?: string | null
+          quantidade_formula?: string | null
+          unidade?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          fornecedor?: string | null
+          id?: string
+          lote_mp?: string | null
+          materia_prima?: string
+          ordem_id?: string
+          percentual?: string | null
+          quantidade_formula?: string | null
+          unidade?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "formula_itens_ordem_id_fkey"
+            columns: ["ordem_id"]
+            isOneToOne: false
+            referencedRelation: "ordens_producao"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       nao_conformidades: {
         Row: {
           acao_corretiva: string | null
@@ -301,6 +401,63 @@ export type Database = {
           responsavel?: string | null
           setor?: string
           status?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      ordens_producao: {
+        Row: {
+          created_at: string
+          data_programada: string
+          formula_nome: string
+          id: string
+          lote_produto: string | null
+          numero_batidas: number | null
+          numero_ordem: string
+          observacoes: string | null
+          peso_por_batida: string | null
+          prioridade: string | null
+          produto: string
+          quantidade_programada: string | null
+          status: string | null
+          unidade: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          data_programada?: string
+          formula_nome?: string
+          id?: string
+          lote_produto?: string | null
+          numero_batidas?: number | null
+          numero_ordem: string
+          observacoes?: string | null
+          peso_por_batida?: string | null
+          prioridade?: string | null
+          produto: string
+          quantidade_programada?: string | null
+          status?: string | null
+          unidade?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          data_programada?: string
+          formula_nome?: string
+          id?: string
+          lote_produto?: string | null
+          numero_batidas?: number | null
+          numero_ordem?: string
+          observacoes?: string | null
+          peso_por_batida?: string | null
+          prioridade?: string | null
+          produto?: string
+          quantidade_programada?: string | null
+          status?: string | null
+          unidade?: string | null
           updated_at?: string
           user_id?: string
         }

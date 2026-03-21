@@ -12,6 +12,7 @@ import Auditoria from "./pages/Auditoria";
 import NaoConformidades from "./pages/NaoConformidades";
 import Recebimento from "./pages/Recebimento";
 import Producao from "./pages/Producao";
+import PCP from "./pages/PCP";
 import Rastreabilidade from "./pages/Rastreabilidade";
 import Pragas from "./pages/Pragas";
 import Treinamentos from "./pages/Treinamentos";
@@ -65,6 +66,7 @@ const AppRoutes = () => {
                 <Route path="/nao-conformidades" element={<NaoConformidades />} />
                 <Route path="/recebimento" element={<Recebimento />} />
                 <Route path="/producao" element={<Producao />} />
+                <Route path="/pcp" element={<PCP />} />
                 <Route path="/rastreabilidade" element={<Rastreabilidade />} />
                 <Route path="/pragas" element={<Pragas />} />
                 <Route path="/treinamentos" element={<Treinamentos />} />

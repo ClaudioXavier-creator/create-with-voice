@@ -18,6 +18,7 @@ const NAV_ITEMS = [
   { path: "/nao-conformidades", label: "Não Conformidades", icon: AlertTriangle },
   { path: "/recebimento", label: "Recebimento MP", icon: Package },
   { path: "/producao", label: "Produção", icon: Factory },
+  { path: "/pcp", label: "PCP / Ordens", icon: ClipboardCheck },
   { path: "/rastreabilidade", label: "Rastreabilidade", icon: Search },
   { path: "/pragas", label: "Controle de Pragas", icon: Bug },
   { path: "/treinamentos", label: "Treinamentos", icon: GraduationCap },
