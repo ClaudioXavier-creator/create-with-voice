@@ -7,6 +7,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import PageHeader from "@/components/PageHeader";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts";
 
 const statusColors: Record<string, string> = {
   aberta: "bg-destructive text-destructive-foreground",
@@ -20,6 +21,17 @@ const statusLabels: Record<string, string> = {
   fechada: "Fechada",
 };
 
+interface NCPorMes {
+  mes: string;
+  abertas: number;
+  fechadas: number;
+}
+
+interface ConformidadePorMes {
+  mes: string;
+  percentual: number;
+}
+
 interface DashboardData {
   ncAbertas: number;
   auditoriasRealizadas: number;
@@ -27,6 +39,8 @@ interface DashboardData {
   conformidadeBPF: number;
   recentNCs: { setor: string; descricao: string; status: string }[];
   conformidadePorArea: { area: string; pct: number }[];
+  ncPorMes: NCPorMes[];
+  conformidadePorMes: ConformidadePorMes[];
   loading: boolean;
 }
 
