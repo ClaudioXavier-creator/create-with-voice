@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Shield, Mail, Lock, User, Loader2, Building2, Briefcase } from "lucide-react";
+import { Mail, Lock, User, Loader2, Building2, Briefcase } from "lucide-react";
+import logoImg from "@/assets/logo.png";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
