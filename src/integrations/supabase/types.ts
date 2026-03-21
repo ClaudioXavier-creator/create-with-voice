@@ -333,33 +333,60 @@ export type Database = {
       }
       rastreabilidade: {
         Row: {
+          cliente_destino: string | null
           created_at: string
+          data_venda: string | null
           fornecedor: string | null
           id: string
+          local_entrega: string | null
           lote_mp: string | null
           lote_produto: string | null
           materia_prima: string
+          nota_fiscal: string | null
           produto: string
+          quantidade_vendida: string | null
+          recall_ativo: boolean | null
+          recall_data: string | null
+          recall_motivo: string | null
+          recall_status: string | null
           user_id: string
         }
         Insert: {
+          cliente_destino?: string | null
           created_at?: string
+          data_venda?: string | null
           fornecedor?: string | null
           id?: string
+          local_entrega?: string | null
           lote_mp?: string | null
           lote_produto?: string | null
           materia_prima: string
+          nota_fiscal?: string | null
           produto: string
+          quantidade_vendida?: string | null
+          recall_ativo?: boolean | null
+          recall_data?: string | null
+          recall_motivo?: string | null
+          recall_status?: string | null
           user_id: string
         }
         Update: {
+          cliente_destino?: string | null
           created_at?: string
+          data_venda?: string | null
           fornecedor?: string | null
           id?: string
+          local_entrega?: string | null
           lote_mp?: string | null
           lote_produto?: string | null
           materia_prima?: string
+          nota_fiscal?: string | null
           produto?: string
+          quantidade_vendida?: string | null
+          recall_ativo?: boolean | null
+          recall_data?: string | null
+          recall_motivo?: string | null
+          recall_status?: string | null
           user_id?: string
         }
         Relationships: []
