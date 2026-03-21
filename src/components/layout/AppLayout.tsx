@@ -69,6 +69,7 @@ const NAV_ENTRIES: NavEntry[] = [
       { path: "/legislacao", label: "Legislação & IA", icon: Scale },
     ],
   },
+  { path: "/manual", label: "Manual", icon: BookOpen },
 ];
 
 function SidebarNav({ currentPath, onNavigate }: { currentPath: string; onNavigate?: () => void }) {
