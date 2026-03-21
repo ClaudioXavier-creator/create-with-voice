@@ -361,6 +361,45 @@ export type Database = {
           },
         ]
       }
+      legislacao_alertas: {
+        Row: {
+          created_at: string
+          data_publicacao: string | null
+          fonte: string | null
+          id: string
+          lido: boolean | null
+          relevancia: string | null
+          resumo: string
+          tipo: string | null
+          titulo: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          data_publicacao?: string | null
+          fonte?: string | null
+          id?: string
+          lido?: boolean | null
+          relevancia?: string | null
+          resumo: string
+          tipo?: string | null
+          titulo: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          data_publicacao?: string | null
+          fonte?: string | null
+          id?: string
+          lido?: boolean | null
+          relevancia?: string | null
+          resumo?: string
+          tipo?: string | null
+          titulo?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       nao_conformidades: {
         Row: {
           acao_corretiva: string | null
