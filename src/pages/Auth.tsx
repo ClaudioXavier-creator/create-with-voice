@@ -52,12 +52,10 @@ export default function Auth() {
       <Card className="w-full max-w-md">
         <CardHeader className="text-center space-y-4 pb-2">
           <div className="flex justify-center">
-            <div className="flex items-center justify-center w-16 h-16 rounded-2xl bg-primary">
-              <Shield className="w-9 h-9 text-primary-foreground" />
-            </div>
+            <img src={logoImg} alt="Feed_BPF Logo" className="w-20 h-20 object-contain" />
           </div>
           <div>
-            <h1 className="font-display text-2xl font-bold">FeedBPF</h1>
+            <h1 className="font-display text-2xl font-bold">Feed_BPF</h1>
             <p className="text-sm text-muted-foreground">
               Sistema de Gestão de Boas Práticas de Fabricação
             </p>
