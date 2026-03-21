@@ -201,6 +201,38 @@ export default function Rastreabilidade() {
   const semVenda = registros.filter(r => !r.cliente_destino);
   const comRecall = registros.filter(r => r.recall_ativo);
 
+  const RECALL_SIM_STEPS = [
+    "1. Identificar lote afetado",
+    "2. Localizar destino/cliente",
+    "3. Verificar quantidade distribuída",
+    "4. Contatar clientes/distribuidores",
+    "5. Registrar recall no sistema",
+  ];
+
+  const startSimulation = () => {
+    setSimRunning(true); setSimTime(0); setSimStep(0); setSimResults([]);
+    simInterval.current = setInterval(() => setSimTime(t => t + 1), 1000);
+  };
+
+  const advanceStep = () => {
+    const currentStep = simStep;
+    setSimResults(prev => [...prev, { step: RECALL_SIM_STEPS[currentStep], time: simTime, ok: true }]);
+    if (currentStep + 1 >= RECALL_SIM_STEPS.length) {
+      setSimRunning(false);
+      if (simInterval.current) clearInterval(simInterval.current);
+      toast.success(`Simulação concluída em ${formatTime(simTime)}!`);
+    } else {
+      setSimStep(currentStep + 1);
+    }
+  };
+
+  const stopSimulation = () => {
+    setSimRunning(false);
+    if (simInterval.current) clearInterval(simInterval.current);
+  };
+
+  const formatTime = (s: number) => `${Math.floor(s / 60).toString().padStart(2, "0")}:${(s % 60).toString().padStart(2, "0")}`;
+
   return (
     <>
       <PageHeader icon={Search} title="Rastreabilidade" description="Cadeia completa: MP → PA → Venda/Entrega → Recall" />
