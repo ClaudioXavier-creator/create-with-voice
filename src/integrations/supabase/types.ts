@@ -517,7 +517,7 @@ export type Database = {
           stripe_checkout_id: string | null
           stripe_customer_id: string | null
           updated_at: string
-          user_id: string
+          user_id: string | null
         }
         Insert: {
           chave_licenca: string
@@ -530,7 +530,7 @@ export type Database = {
           stripe_checkout_id?: string | null
           stripe_customer_id?: string | null
           updated_at?: string
-          user_id: string
+          user_id?: string | null
         }
         Update: {
           chave_licenca?: string
@@ -543,7 +543,7 @@ export type Database = {
           stripe_checkout_id?: string | null
           stripe_customer_id?: string | null
           updated_at?: string
-          user_id?: string
+          user_id?: string | null
         }
         Relationships: []
       }
