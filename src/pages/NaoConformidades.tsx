@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { AlertTriangle, Plus, Loader2, Bell, Clock, ChevronDown, ChevronUp, ClipboardList } from "lucide-react";
+import { AlertTriangle, Plus, Loader2, Bell, Clock, ChevronDown, ChevronUp, ClipboardList, Sparkles } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
