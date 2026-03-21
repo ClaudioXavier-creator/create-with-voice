@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { AlertTriangle, Plus, Loader2, Bell, Clock, ChevronDown, ChevronUp, ClipboardList } from "lucide-react";
+import { AlertTriangle, Plus, Loader2, Bell, Clock, ChevronDown, ChevronUp, ClipboardList, Sparkles } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
@@ -55,12 +55,23 @@ export default function NaoConformidades() {
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [editId, setEditId] = useState<string | null>(null);
   const [editOpen, setEditOpen] = useState(false);
+  const [generatingAI, setGeneratingAI] = useState(false);
+  const [generatingEditAI, setGeneratingEditAI] = useState(false);
 
   // Edit form
   const [editCausa, setEditCausa] = useState("");
   const [editAcao, setEditAcao] = useState("");
   const [editResponsavel, setEditResponsavel] = useState("");
   const [editPrazo, setEditPrazo] = useState("");
+
+  // New NC form (controlled)
+  const [formData, setFormData] = useState(new Date().toISOString().split("T")[0]);
+  const [formSetor, setFormSetor] = useState("");
+  const [formDescricao, setFormDescricao] = useState("");
+  const [formCausa, setFormCausa] = useState("");
+  const [formAcao, setFormAcao] = useState("");
+  const [formResponsavel, setFormResponsavel] = useState("");
+  const [formPrazo, setFormPrazo] = useState("");
 
   const fetchData = async () => {
     if (!user) return;
@@ -74,24 +85,81 @@ export default function NaoConformidades() {
 
   useEffect(() => { fetchData(); }, [user]);
 
+  const resetForm = () => {
+    setFormData(new Date().toISOString().split("T")[0]);
+    setFormSetor(""); setFormDescricao(""); setFormCausa("");
+    setFormAcao(""); setFormResponsavel(""); setFormPrazo("");
+  };
+
   const handleAdd = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!user) return;
+    if (!user || !formSetor || !formDescricao) return;
     setSaving(true);
-    const fd = new FormData(e.currentTarget);
     const { error } = await supabase.from("nao_conformidades").insert({
       user_id: user.id,
-      data: fd.get("data") as string,
-      setor: fd.get("setor") as string,
-      descricao: fd.get("descricao") as string,
-      causa: fd.get("causa") as string,
-      acao_corretiva: fd.get("acao") as string,
-      responsavel: fd.get("responsavel") as string,
-      prazo: fd.get("prazo") as string || null,
+      data: formData,
+      setor: formSetor,
+      descricao: formDescricao,
+      causa: formCausa,
+      acao_corretiva: formAcao,
+      responsavel: formResponsavel,
+      prazo: formPrazo || null,
     });
     if (error) toast.error("Erro ao salvar");
-    else { toast.success("NC registrada!"); setOpen(false); fetchData(); }
+    else { toast.success("NC registrada com plano de ação!"); setOpen(false); resetForm(); fetchData(); }
     setSaving(false);
+  };
+
+  const gerarPlanoIA = async () => {
+    if (!formDescricao || !formSetor) {
+      toast.error("Preencha o setor e a descrição da NC antes de gerar o plano.");
+      return;
+    }
+    setGeneratingAI(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("nc-plano-acao", {
+        body: { descricao: formDescricao, setor: formSetor },
+      });
+      if (error) { toast.error("Erro ao gerar plano: " + error.message); setGeneratingAI(false); return; }
+      if (data?.error) { toast.error(data.error); setGeneratingAI(false); return; }
+      const result = data?.data;
+      if (result) {
+        setFormCausa(result.causa || "");
+        setFormAcao(result.acao_corretiva || "");
+        setFormResponsavel(result.responsavel_sugerido || "");
+        if (result.prazo_dias) {
+          const prazoDate = new Date();
+          prazoDate.setDate(prazoDate.getDate() + result.prazo_dias);
+          setFormPrazo(prazoDate.toISOString().split("T")[0]);
+        }
+        toast.success("Plano de ação gerado pela IA! Revise e ajuste se necessário.");
+      }
+    } catch { toast.error("Erro ao conectar com IA"); }
+    setGeneratingAI(false);
+  };
+
+  const gerarPlanoEditIA = async (ncDescricao: string, ncSetor: string) => {
+    setGeneratingEditAI(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("nc-plano-acao", {
+        body: { descricao: ncDescricao, setor: ncSetor },
+      });
+      if (error) { toast.error("Erro ao gerar plano: " + error.message); setGeneratingEditAI(false); return; }
+      if (data?.error) { toast.error(data.error); setGeneratingEditAI(false); return; }
+      const result = data?.data;
+      if (result) {
+        setEditCausa(result.causa || "");
+        setEditAcao(result.acao_corretiva || "");
+        setEditResponsavel(result.responsavel_sugerido || "");
+        if (result.prazo_dias) {
+          const prazoDate = new Date();
+          prazoDate.setDate(prazoDate.getDate() + result.prazo_dias);
+          setEditPrazo(prazoDate.toISOString().split("T")[0]);
+        }
+        toast.success("Plano de ação gerado pela IA!");
+      }
+    } catch { toast.error("Erro ao conectar com IA"); }
+    setGeneratingEditAI(false);
   };
 
   const handleUpdateStatus = async (id: string, newStatus: string) => {
@@ -223,24 +291,30 @@ export default function NaoConformidades() {
                 <div className="p-3 rounded-lg bg-destructive/5 border border-destructive/20">
                   <p className="text-xs font-semibold text-destructive mb-2">① Identificação da NC</p>
                   <div className="grid grid-cols-2 gap-3">
-                    <div className="space-y-1"><Label>Data</Label><Input name="data" type="date" required defaultValue={today} /></div>
+                    <div className="space-y-1"><Label>Data</Label><Input type="date" required value={formData} onChange={e => setFormData(e.target.value)} /></div>
                     <div className="space-y-1">
                       <Label>Setor</Label>
-                      <Select name="setor" required>
+                      <Select value={formSetor} onValueChange={setFormSetor} required>
                         <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
                         <SelectContent>{SETORES.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
                       </Select>
                     </div>
                   </div>
-                  <div className="space-y-1 mt-3"><Label>Descrição da Não Conformidade *</Label><Textarea name="descricao" required placeholder="Descreva detalhadamente o problema encontrado..." /></div>
+                  <div className="space-y-1 mt-3"><Label>Descrição da Não Conformidade *</Label><Textarea value={formDescricao} onChange={e => setFormDescricao(e.target.value)} required placeholder="Descreva detalhadamente o problema encontrado..." /></div>
                 </div>
+
+                {/* Gerar Plano com IA */}
+                <Button type="button" variant="outline" className="w-full border-primary/50 text-primary hover:bg-primary/10" onClick={gerarPlanoIA} disabled={generatingAI || !formDescricao || !formSetor}>
+                  {generatingAI ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Sparkles className="w-4 h-4 mr-2" />}
+                  {generatingAI ? "Gerando plano de ação com IA..." : "⚡ Gerar Plano de Ação Automaticamente com IA"}
+                </Button>
 
                 {/* Plano de Ação Corretiva */}
                 <div className="p-3 rounded-lg bg-primary/5 border border-primary/20">
                   <p className="text-xs font-semibold text-primary mb-2">② Plano de Ação Corretiva</p>
                   <div className="space-y-3">
-                    <div className="space-y-1"><Label>Causa Raiz / Causa Provável *</Label><Textarea name="causa" required placeholder="Identifique a causa raiz do problema (5 Porquês, Ishikawa...)" /></div>
-                    <div className="space-y-1"><Label>Ação Corretiva *</Label><Textarea name="acao" required placeholder="Descreva a ação corretiva a ser implementada..." /></div>
+                    <div className="space-y-1"><Label>Causa Raiz / Causa Provável *</Label><Textarea value={formCausa} onChange={e => setFormCausa(e.target.value)} required placeholder="Identifique a causa raiz do problema (5 Porquês, Ishikawa...)" /></div>
+                    <div className="space-y-1"><Label>Ação Corretiva *</Label><Textarea value={formAcao} onChange={e => setFormAcao(e.target.value)} required placeholder="Descreva a ação corretiva a ser implementada..." /></div>
                   </div>
                 </div>
 
@@ -248,8 +322,8 @@ export default function NaoConformidades() {
                 <div className="p-3 rounded-lg bg-muted/50 border">
                   <p className="text-xs font-semibold mb-2">③ Responsabilidade e Prazo</p>
                   <div className="grid grid-cols-2 gap-3">
-                    <div className="space-y-1"><Label>Responsável *</Label><Input name="responsavel" required placeholder="Nome do responsável" /></div>
-                    <div className="space-y-1"><Label>Prazo para Conclusão *</Label><Input name="prazo" type="date" required /></div>
+                    <div className="space-y-1"><Label>Responsável *</Label><Input value={formResponsavel} onChange={e => setFormResponsavel(e.target.value)} required placeholder="Nome do responsável" /></div>
+                    <div className="space-y-1"><Label>Prazo para Conclusão *</Label><Input type="date" value={formPrazo} onChange={e => setFormPrazo(e.target.value)} required /></div>
                   </div>
                 </div>
 
@@ -402,6 +476,15 @@ export default function NaoConformidades() {
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
+            {editId && (() => {
+              const nc = ncs.find(n => n.id === editId);
+              return nc ? (
+                <Button type="button" variant="outline" className="w-full border-primary/50 text-primary hover:bg-primary/10" onClick={() => gerarPlanoEditIA(nc.descricao, nc.setor)} disabled={generatingEditAI}>
+                  {generatingEditAI ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Sparkles className="w-4 h-4 mr-2" />}
+                  {generatingEditAI ? "Gerando..." : "⚡ Gerar Plano com IA"}
+                </Button>
+              ) : null;
+            })()}
             <div className="space-y-1">
               <Label>Causa Raiz / Causa Provável</Label>
               <Textarea value={editCausa} onChange={e => setEditCausa(e.target.value)} placeholder="Identifique a causa raiz (5 Porquês, Ishikawa...)" />
