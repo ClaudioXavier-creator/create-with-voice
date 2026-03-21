@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { PlayCircle, Plus, CheckCircle2, Clock, XCircle, AlertTriangle, Link2 } from "lucide-react";
+import { useState, useEffect } from "react";
+import { PlayCircle, Plus, CheckCircle2, Clock, AlertTriangle, Link2, Loader2, ExternalLink } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
@@ -10,24 +10,37 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import PageHeader from "@/components/PageHeader";
-import type { ExecucaoPOP } from "@/types/feedbpf";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
+import { toast } from "sonner";
 
-const POPS_DISPONIVEIS = [
-  { codigo: "POP-001", nome: "Limpeza da área de produção" },
-  { codigo: "POP-002", nome: "Controle de pragas" },
-  { codigo: "POP-003", nome: "Recebimento de matérias-primas" },
-  { codigo: "POP-004", nome: "Operação do misturador" },
-  { codigo: "POP-005", nome: "Controle de flushing" },
-  { codigo: "POP-006", nome: "Rastreabilidade de lotes" },
-  { codigo: "POP-007", nome: "Coleta de amostras" },
-];
+interface DocRow {
+  id: string;
+  codigo: string;
+  nome: string;
+  versao: string | null;
+  status: string | null;
+}
 
-const DEMO_EXECUCOES: ExecucaoPOP[] = [
-  { id: "1", codigoPop: "POP-001", nomePop: "Limpeza da área de produção", dataExecucao: "2026-03-21", executor: "João Silva", setor: "Moagem", status: "concluido", observacoes: "Limpeza completa realizada", checklistRef: "2. Higiene – BPF e PPHO" },
-  { id: "2", codigoPop: "POP-003", nomePop: "Recebimento de matérias-primas", dataExecucao: "2026-03-21", executor: "Maria Santos", setor: "Recebimento", status: "concluido", observacoes: "Milho recebido - OK", checklistRef: "6. Recebimento e Armazenamento" },
-  { id: "3", codigoPop: "POP-002", nomePop: "Controle de pragas", dataExecucao: "2026-03-20", executor: "Pedro Oliveira", setor: "Área externa", status: "nao_conforme", observacoes: "Armadilha 5 danificada - NC aberta", checklistRef: "8. Controle de Pragas" },
-  { id: "4", codigoPop: "POP-005", nomePop: "Controle de flushing", dataExecucao: "2026-03-21", executor: "Carlos Ferreira", setor: "Mistura", status: "em_execucao", observacoes: "Flushing após ração medicamentosa", checklistRef: "5. Contaminação Cruzada" },
-];
+interface ExecRow {
+  id: string;
+  codigo_pop: string;
+  nome_pop: string;
+  data_execucao: string;
+  executor: string;
+  setor: string | null;
+  status: string | null;
+  observacoes: string | null;
+  checklist_auditoria_ref: string | null;
+  documento_id: string | null;
+}
+
+interface ArquivoRow {
+  id: string;
+  arquivo_url: string | null;
+  arquivo_nome: string | null;
+  documento_ref_id: string | null;
+}
 
 const statusConfig: Record<string, { label: string; className: string; icon: React.ElementType }> = {
   pendente: { label: "Pendente", className: "bg-muted text-muted-foreground", icon: Clock },
@@ -37,31 +50,68 @@ const statusConfig: Record<string, { label: string; className: string; icon: Rea
 };
 
 export default function ExecucaoPops() {
-  const [execucoes, setExecucoes] = useState<ExecucaoPOP[]>(DEMO_EXECUCOES);
+  const { user } = useAuth();
+  const [execucoes, setExecucoes] = useState<ExecRow[]>([]);
+  const [docs, setDocs] = useState<DocRow[]>([]);
+  const [arquivos, setArquivos] = useState<ArquivoRow[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
   const [open, setOpen] = useState(false);
-  const [popSelecionado, setPopSelecionado] = useState("");
+
+  const [docSelecionado, setDocSelecionado] = useState("");
   const [executor, setExecutor] = useState("");
   const [setor, setSetor] = useState("");
+  const [statusExec, setStatusExec] = useState("concluido");
   const [obs, setObs] = useState("");
 
-  const handleAdd = () => {
-    const pop = POPS_DISPONIVEIS.find(p => p.codigo === popSelecionado);
-    if (!pop || !executor) return;
-    setExecucoes(prev => [...prev, {
-      id: String(Date.now()),
-      codigoPop: pop.codigo,
-      nomePop: pop.nome,
-      dataExecucao: new Date().toISOString().split("T")[0],
+  const fetchData = async () => {
+    if (!user) return;
+    const [execRes, docsRes, arqRes] = await Promise.all([
+      supabase.from("execucao_pops").select("*").order("data_execucao", { ascending: false }),
+      supabase.from("documentos").select("*").order("codigo"),
+      supabase.from("arquivos_bpf").select("id, arquivo_url, arquivo_nome, documento_ref_id"),
+    ]);
+    if (execRes.data) setExecucoes(execRes.data as unknown as ExecRow[]);
+    if (docsRes.data) setDocs(docsRes.data);
+    if (arqRes.data) setArquivos(arqRes.data as unknown as ArquivoRow[]);
+    setLoading(false);
+  };
+
+  useEffect(() => { fetchData(); }, [user]);
+
+  const selectedDoc = docs.find(d => d.id === docSelecionado);
+
+  const handleAdd = async () => {
+    if (!selectedDoc || !executor || !user) return;
+    setSaving(true);
+    const { error } = await supabase.from("execucao_pops").insert({
+      user_id: user.id,
+      codigo_pop: selectedDoc.codigo,
+      nome_pop: selectedDoc.nome,
       executor,
       setor,
-      status: "pendente",
+      status: statusExec,
       observacoes: obs,
-    }]);
-    setOpen(false);
-    setPopSelecionado("");
-    setExecutor("");
-    setSetor("");
-    setObs("");
+      documento_id: selectedDoc.id,
+    });
+    if (error) toast.error("Erro ao salvar execução");
+    else {
+      toast.success("Execução registrada!");
+      setOpen(false);
+      setDocSelecionado(""); setExecutor(""); setSetor(""); setObs(""); setStatusExec("concluido");
+      fetchData();
+    }
+    setSaving(false);
+  };
+
+  const getArquivoForDoc = (docId: string | null) => {
+    if (!docId) return null;
+    return arquivos.find(a => a.documento_ref_id === docId);
+  };
+
+  const getDocForExec = (docId: string | null) => {
+    if (!docId) return null;
+    return docs.find(d => d.id === docId);
   };
 
   const concluidos = execucoes.filter(e => e.status === "concluido").length;
@@ -69,7 +119,7 @@ export default function ExecucaoPops() {
 
   return (
     <>
-      <PageHeader icon={PlayCircle} title="Execução de ITs e POPs" description="Registro de execução de procedimentos vinculados à auditoria BPF" />
+      <PageHeader icon={PlayCircle} title="Execução de ITs e POPs" description="Registro de execução vinculado aos documentos cadastrados" />
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         <Card><CardContent className="pt-4 text-center">
@@ -85,8 +135,8 @@ export default function ExecucaoPops() {
           <p className="text-xs text-muted-foreground">Não conformes</p>
         </CardContent></Card>
         <Card><CardContent className="pt-4 text-center">
-          <p className="text-2xl font-bold font-display text-muted-foreground">{execucoes.filter(e => e.status === "pendente" || e.status === "em_execucao").length}</p>
-          <p className="text-xs text-muted-foreground">Em andamento</p>
+          <p className="text-2xl font-bold font-display text-muted-foreground">{docs.length}</p>
+          <p className="text-xs text-muted-foreground">POPs cadastrados</p>
         </CardContent></Card>
       </div>
 
@@ -101,16 +151,39 @@ export default function ExecucaoPops() {
               <DialogHeader><DialogTitle>Registrar Execução de POP/IT</DialogTitle></DialogHeader>
               <div className="space-y-4">
                 <div>
-                  <Label>POP / IT</Label>
-                  <Select value={popSelecionado} onValueChange={setPopSelecionado}>
-                    <SelectTrigger><SelectValue placeholder="Selecione o POP" /></SelectTrigger>
+                  <Label>POP / IT (documento cadastrado)</Label>
+                  <Select value={docSelecionado} onValueChange={setDocSelecionado}>
+                    <SelectTrigger><SelectValue placeholder="Selecione o documento" /></SelectTrigger>
                     <SelectContent>
-                      {POPS_DISPONIVEIS.map(p => (
-                        <SelectItem key={p.codigo} value={p.codigo}>{p.codigo} – {p.nome}</SelectItem>
+                      {docs.map(d => (
+                        <SelectItem key={d.id} value={d.id}>
+                          {d.codigo} — {d.nome.length > 45 ? d.nome.slice(0, 45) + "…" : d.nome}
+                        </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
+                  {docs.length === 0 && (
+                    <p className="text-xs text-destructive mt-1">Nenhum documento cadastrado. Registre POPs no módulo Documentos primeiro.</p>
+                  )}
                 </div>
+
+                {selectedDoc && (
+                  <div className="p-3 rounded-lg bg-muted/50 text-xs space-y-1">
+                    <p><strong>Documento vinculado:</strong> {selectedDoc.codigo} — {selectedDoc.nome}</p>
+                    <p>Versão: {selectedDoc.versao} | Status: {selectedDoc.status}</p>
+                    {(() => {
+                      const arq = getArquivoForDoc(selectedDoc.id);
+                      return arq?.arquivo_url ? (
+                        <a href={arq.arquivo_url} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-primary hover:underline">
+                          <ExternalLink className="w-3 h-3" /> Ver arquivo: {arq.arquivo_nome}
+                        </a>
+                      ) : (
+                        <p className="text-muted-foreground">Nenhum arquivo vinculado a este documento</p>
+                      );
+                    })()}
+                  </div>
+                )}
+
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <Label>Executor</Label>
@@ -122,55 +195,86 @@ export default function ExecucaoPops() {
                   </div>
                 </div>
                 <div>
+                  <Label>Status</Label>
+                  <Select value={statusExec} onValueChange={setStatusExec}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="concluido">Concluído</SelectItem>
+                      <SelectItem value="pendente">Pendente</SelectItem>
+                      <SelectItem value="em_execucao">Em execução</SelectItem>
+                      <SelectItem value="nao_conforme">Não conforme</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
                   <Label>Observações</Label>
                   <Textarea value={obs} onChange={e => setObs(e.target.value)} placeholder="Observações da execução..." />
                 </div>
-                <Button onClick={handleAdd} className="w-full">Registrar Execução</Button>
+                <Button onClick={handleAdd} className="w-full" disabled={saving || !docSelecionado || !executor}>
+                  {saving && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+                  Registrar Execução
+                </Button>
               </div>
             </DialogContent>
           </Dialog>
         </CardHeader>
         <CardContent className="overflow-x-auto">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Data</TableHead>
-                <TableHead>POP/IT</TableHead>
-                <TableHead>Executor</TableHead>
-                <TableHead>Setor</TableHead>
-                <TableHead>Vínculo Auditoria</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Observações</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {execucoes.map((e) => {
-                const cfg = statusConfig[e.status];
-                return (
-                  <TableRow key={e.id}>
-                    <TableCell className="whitespace-nowrap">{e.dataExecucao}</TableCell>
-                    <TableCell>
-                      <span className="font-mono text-xs">{e.codigoPop}</span>
-                      <br />
-                      <span className="text-xs text-muted-foreground">{e.nomePop}</span>
-                    </TableCell>
-                    <TableCell>{e.executor}</TableCell>
-                    <TableCell>{e.setor}</TableCell>
-                    <TableCell>
-                      {e.checklistRef && (
-                        <span className="inline-flex items-center gap-1 text-xs text-primary">
-                          <Link2 className="w-3 h-3" />
-                          {e.checklistRef}
-                        </span>
-                      )}
-                    </TableCell>
-                    <TableCell><Badge className={cfg.className}>{cfg.label}</Badge></TableCell>
-                    <TableCell className="max-w-[200px] truncate text-xs">{e.observacoes}</TableCell>
-                  </TableRow>
-                );
-              })}
-            </TableBody>
-          </Table>
+          {loading ? (
+            <div className="flex justify-center py-8"><Loader2 className="w-6 h-6 animate-spin text-muted-foreground" /></div>
+          ) : execucoes.length === 0 ? (
+            <p className="text-center text-muted-foreground py-8">Nenhuma execução registrada</p>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Data</TableHead>
+                  <TableHead>POP/IT</TableHead>
+                  <TableHead>Executor</TableHead>
+                  <TableHead>Setor</TableHead>
+                  <TableHead>Documento</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Observações</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {execucoes.map((e) => {
+                  const cfg = statusConfig[e.status || "concluido"];
+                  const doc = getDocForExec(e.documento_id);
+                  const arq = getArquivoForDoc(e.documento_id);
+                  return (
+                    <TableRow key={e.id}>
+                      <TableCell className="whitespace-nowrap">{e.data_execucao}</TableCell>
+                      <TableCell>
+                        <span className="font-mono text-xs">{e.codigo_pop}</span>
+                        <br />
+                        <span className="text-xs text-muted-foreground">{e.nome_pop}</span>
+                      </TableCell>
+                      <TableCell>{e.executor}</TableCell>
+                      <TableCell>{e.setor}</TableCell>
+                      <TableCell>
+                        {doc ? (
+                          <div className="space-y-1">
+                            <span className="inline-flex items-center gap-1 text-xs text-primary">
+                              <Link2 className="w-3 h-3" /> v{doc.versao}
+                            </span>
+                            {arq?.arquivo_url && (
+                              <a href={arq.arquivo_url} target="_blank" rel="noreferrer" className="block text-xs text-primary hover:underline truncate max-w-[120px]">
+                                <ExternalLink className="w-3 h-3 inline mr-1" />{arq.arquivo_nome}
+                              </a>
+                            )}
+                          </div>
+                        ) : (
+                          <span className="text-xs text-muted-foreground">—</span>
+                        )}
+                      </TableCell>
+                      <TableCell><Badge className={cfg.className}>{cfg.label}</Badge></TableCell>
+                      <TableCell className="max-w-[200px] truncate text-xs">{e.observacoes}</TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          )}
         </CardContent>
       </Card>
     </>
