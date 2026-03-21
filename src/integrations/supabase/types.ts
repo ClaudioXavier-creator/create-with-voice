@@ -14,6 +14,53 @@ export type Database = {
   }
   public: {
     Tables: {
+      arquivos_bpf: {
+        Row: {
+          arquivo_nome: string | null
+          arquivo_url: string | null
+          categoria: string
+          created_at: string
+          descricao: string | null
+          documento_ref_id: string | null
+          id: string
+          titulo: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          arquivo_nome?: string | null
+          arquivo_url?: string | null
+          categoria: string
+          created_at?: string
+          descricao?: string | null
+          documento_ref_id?: string | null
+          id?: string
+          titulo: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          arquivo_nome?: string | null
+          arquivo_url?: string | null
+          categoria?: string
+          created_at?: string
+          descricao?: string | null
+          documento_ref_id?: string | null
+          id?: string
+          titulo?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "arquivos_bpf_documento_ref_id_fkey"
+            columns: ["documento_ref_id"]
+            isOneToOne: false
+            referencedRelation: "documentos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       checklist_items: {
         Row: {
           area: string
