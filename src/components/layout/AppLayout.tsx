@@ -24,6 +24,7 @@ const NAV_ITEMS = [
   { path: "/treinamentos", label: "Treinamentos", icon: GraduationCap },
   { path: "/indicadores", label: "Indicadores", icon: BarChart3 },
   { path: "/relatorios", label: "Relatórios", icon: FileDown },
+  { path: "/legislacao", label: "Legislação & IA", icon: Scale },
 ];
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
