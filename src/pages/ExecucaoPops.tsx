@@ -1,5 +1,8 @@
-import { useState, useEffect } from "react";
-import { PlayCircle, Plus, CheckCircle2, Clock, AlertTriangle, Link2, Loader2, ExternalLink } from "lucide-react";
+import { useState, useEffect, useMemo } from "react";
+import { PlayCircle, Plus, CheckCircle2, Clock, AlertTriangle, Link2, Loader2, ExternalLink, Filter, CalendarIcon, Bell } from "lucide-react";
+import { format, subDays, isAfter, isBefore, parseISO, differenceInDays } from "date-fns";
+import { ptBR } from "date-fns/locale";
+import { cn } from "@/lib/utils";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
@@ -9,6 +12,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
 import PageHeader from "@/components/PageHeader";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -49,6 +54,27 @@ const statusConfig: Record<string, { label: string; className: string; icon: Rea
   nao_conforme: { label: "Não conforme", className: "bg-destructive/20 text-destructive", icon: AlertTriangle },
 };
 
+// POPs obrigatórios com periodicidade em dias
+const POPS_PERIODICIDADE: Record<string, number> = {
+  "POP-001": 30,
+  "POP-002": 7,
+  "POP-003": 30,
+  "POP-004": 30,
+  "POP-005": 7,
+  "POP-006": 7,
+  "POP-007": 30,
+  "POP-008": 90,
+  "POP-009": 30,
+};
+
+interface Alerta {
+  codigo: string;
+  nome: string;
+  ultimaExecucao: string | null;
+  diasAtraso: number;
+  periodicidade: number;
+}
+
 export default function ExecucaoPops() {
   const { user } = useAuth();
   const [execucoes, setExecucoes] = useState<ExecRow[]>([]);
@@ -58,6 +84,13 @@ export default function ExecucaoPops() {
   const [saving, setSaving] = useState(false);
   const [open, setOpen] = useState(false);
 
+  // Filters
+  const [filtroStatus, setFiltroStatus] = useState("todos");
+  const [dataInicio, setDataInicio] = useState<Date | undefined>(undefined);
+  const [dataFim, setDataFim] = useState<Date | undefined>(undefined);
+  const [filtroPop, setFiltroPop] = useState("todos");
+
+  // Form
   const [docSelecionado, setDocSelecionado] = useState("");
   const [executor, setExecutor] = useState("");
   const [setor, setSetor] = useState("");
@@ -114,12 +147,121 @@ export default function ExecucaoPops() {
     return docs.find(d => d.id === docId);
   };
 
+  // Filtered executions
+  const filteredExecucoes = useMemo(() => {
+    return execucoes.filter(e => {
+      if (filtroStatus !== "todos" && e.status !== filtroStatus) return false;
+      if (filtroPop !== "todos" && e.codigo_pop !== filtroPop) return false;
+      if (dataInicio) {
+        const execDate = parseISO(e.data_execucao);
+        if (isBefore(execDate, dataInicio)) return false;
+      }
+      if (dataFim) {
+        const execDate = parseISO(e.data_execucao);
+        const endOfDay = new Date(dataFim);
+        endOfDay.setHours(23, 59, 59);
+        if (isAfter(execDate, endOfDay)) return false;
+      }
+      return true;
+    });
+  }, [execucoes, filtroStatus, dataInicio, dataFim, filtroPop]);
+
+  // Alertas de não realização
+  const alertas = useMemo<Alerta[]>(() => {
+    const hoje = new Date();
+    const result: Alerta[] = [];
+
+    // Check each registered POP that has periodicity
+    const popsRegistrados = docs.filter(d => POPS_PERIODICIDADE[d.codigo]);
+
+    for (const doc of popsRegistrados) {
+      const periodicidade = POPS_PERIODICIDADE[doc.codigo];
+      const execsDoDoc = execucoes
+        .filter(e => e.codigo_pop === doc.codigo && (e.status === "concluido" || e.status === "em_execucao"))
+        .sort((a, b) => b.data_execucao.localeCompare(a.data_execucao));
+
+      const ultimaExec = execsDoDoc[0];
+      const ultimaData = ultimaExec ? parseISO(ultimaExec.data_execucao) : null;
+
+      if (!ultimaData) {
+        // Nunca executado
+        result.push({
+          codigo: doc.codigo,
+          nome: doc.nome,
+          ultimaExecucao: null,
+          diasAtraso: periodicidade,
+          periodicidade,
+        });
+      } else {
+        const diasDesdeUltima = differenceInDays(hoje, ultimaData);
+        if (diasDesdeUltima >= periodicidade) {
+          result.push({
+            codigo: doc.codigo,
+            nome: doc.nome,
+            ultimaExecucao: ultimaExec.data_execucao,
+            diasAtraso: diasDesdeUltima - periodicidade,
+            periodicidade,
+          });
+        }
+      }
+    }
+
+    return result.sort((a, b) => b.diasAtraso - a.diasAtraso);
+  }, [docs, execucoes]);
+
   const concluidos = execucoes.filter(e => e.status === "concluido").length;
   const naoConformes = execucoes.filter(e => e.status === "nao_conforme").length;
+  const uniquePops = [...new Set(execucoes.map(e => e.codigo_pop))];
+
+  const clearFilters = () => {
+    setFiltroStatus("todos");
+    setDataInicio(undefined);
+    setDataFim(undefined);
+    setFiltroPop("todos");
+  };
+
+  const hasFilters = filtroStatus !== "todos" || dataInicio || dataFim || filtroPop !== "todos";
 
   return (
     <>
       <PageHeader icon={PlayCircle} title="Execução de ITs e POPs" description="Registro de execução vinculado aos documentos cadastrados" />
+
+      {/* Alertas de não realização */}
+      {alertas.length > 0 && (
+        <Card className="mb-6 border-destructive/30 bg-destructive/5">
+          <CardHeader className="pb-2">
+            <CardTitle className="font-display text-sm flex items-center gap-2 text-destructive">
+              <Bell className="w-4 h-4" />
+              Alertas — POPs com execução atrasada ({alertas.length})
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              {alertas.map(a => (
+                <div key={a.codigo} className="flex items-center justify-between p-2 rounded-lg bg-background border border-destructive/20">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <AlertTriangle className="w-4 h-4 text-destructive shrink-0" />
+                    <div className="min-w-0">
+                      <p className="text-sm font-medium truncate">
+                        <span className="font-mono">{a.codigo}</span> — {a.nome.length > 50 ? a.nome.slice(0, 50) + "…" : a.nome}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        Periodicidade: {a.periodicidade} dias •
+                        {a.ultimaExecucao
+                          ? ` Última execução: ${a.ultimaExecucao}`
+                          : " Nunca executado"}
+                      </p>
+                    </div>
+                  </div>
+                  <Badge className="bg-destructive/20 text-destructive shrink-0 ml-2">
+                    {a.diasAtraso > 0 ? `${a.diasAtraso}d atraso` : "Vencido hoje"}
+                  </Badge>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         <Card><CardContent className="pt-4 text-center">
@@ -135,13 +277,13 @@ export default function ExecucaoPops() {
           <p className="text-xs text-muted-foreground">Não conformes</p>
         </CardContent></Card>
         <Card><CardContent className="pt-4 text-center">
-          <p className="text-2xl font-bold font-display text-muted-foreground">{docs.length}</p>
-          <p className="text-xs text-muted-foreground">POPs cadastrados</p>
+          <p className="text-2xl font-bold font-display text-destructive">{alertas.length}</p>
+          <p className="text-xs text-muted-foreground">Alertas ativos</p>
         </CardContent></Card>
       </div>
 
       <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
+        <CardHeader className="flex flex-row items-center justify-between flex-wrap gap-2">
           <CardTitle className="font-display">Execuções Registradas</CardTitle>
           <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
@@ -218,11 +360,84 @@ export default function ExecucaoPops() {
             </DialogContent>
           </Dialog>
         </CardHeader>
+
+        {/* Filtros */}
+        <div className="px-6 pb-4">
+          <div className="flex flex-wrap items-end gap-3 p-3 rounded-lg bg-muted/30 border">
+            <div className="flex items-center gap-1 text-xs text-muted-foreground shrink-0">
+              <Filter className="w-3 h-3" /> Filtros:
+            </div>
+            <div className="min-w-[130px]">
+              <Label className="text-xs">Status</Label>
+              <Select value={filtroStatus} onValueChange={setFiltroStatus}>
+                <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="todos">Todos</SelectItem>
+                  <SelectItem value="pendente">Pendente</SelectItem>
+                  <SelectItem value="em_execucao">Em execução</SelectItem>
+                  <SelectItem value="concluido">Concluído</SelectItem>
+                  <SelectItem value="nao_conforme">Não conforme</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="min-w-[130px]">
+              <Label className="text-xs">POP/IT</Label>
+              <Select value={filtroPop} onValueChange={setFiltroPop}>
+                <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="todos">Todos</SelectItem>
+                  {uniquePops.map(p => (
+                    <SelectItem key={p} value={p}>{p}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label className="text-xs">Data início</Label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" className={cn("h-8 text-xs w-[130px] justify-start", !dataInicio && "text-muted-foreground")}>
+                    <CalendarIcon className="w-3 h-3 mr-1" />
+                    {dataInicio ? format(dataInicio, "dd/MM/yyyy") : "Início"}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar mode="single" selected={dataInicio} onSelect={setDataInicio} initialFocus className={cn("p-3 pointer-events-auto")} />
+                </PopoverContent>
+              </Popover>
+            </div>
+            <div>
+              <Label className="text-xs">Data fim</Label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" className={cn("h-8 text-xs w-[130px] justify-start", !dataFim && "text-muted-foreground")}>
+                    <CalendarIcon className="w-3 h-3 mr-1" />
+                    {dataFim ? format(dataFim, "dd/MM/yyyy") : "Fim"}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar mode="single" selected={dataFim} onSelect={setDataFim} initialFocus className={cn("p-3 pointer-events-auto")} />
+                </PopoverContent>
+              </Popover>
+            </div>
+            {hasFilters && (
+              <Button variant="ghost" size="sm" onClick={clearFilters} className="h-8 text-xs text-destructive">
+                Limpar filtros
+              </Button>
+            )}
+            <span className="text-xs text-muted-foreground ml-auto">
+              {filteredExecucoes.length} de {execucoes.length} registros
+            </span>
+          </div>
+        </div>
+
         <CardContent className="overflow-x-auto">
           {loading ? (
             <div className="flex justify-center py-8"><Loader2 className="w-6 h-6 animate-spin text-muted-foreground" /></div>
-          ) : execucoes.length === 0 ? (
-            <p className="text-center text-muted-foreground py-8">Nenhuma execução registrada</p>
+          ) : filteredExecucoes.length === 0 ? (
+            <p className="text-center text-muted-foreground py-8">
+              {execucoes.length === 0 ? "Nenhuma execução registrada" : "Nenhum registro encontrado com os filtros aplicados"}
+            </p>
           ) : (
             <Table>
               <TableHeader>
@@ -237,7 +452,7 @@ export default function ExecucaoPops() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {execucoes.map((e) => {
+                {filteredExecucoes.map((e) => {
                   const cfg = statusConfig[e.status || "concluido"];
                   const doc = getDocForExec(e.documento_id);
                   const arq = getArquivoForDoc(e.documento_id);
