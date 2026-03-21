@@ -53,16 +53,13 @@ Deno.serve(async (req) => {
       const expDate = new Date();
       expDate.setDate(expDate.getDate() + days);
 
-      // user_id placeholder — will be null to indicate "not yet redeemed"
-      // We need a valid UUID for user_id since it's NOT NULL, so we use a placeholder approach:
-      // Actually, we need to allow null user_id for unredeemed keys
       const { error } = await adminClient.from("licencas").insert({
         chave_licenca: key,
         plano,
         data_expiracao: expDate.toISOString().split("T")[0],
         status: "disponivel",
-        user_id: "00000000-0000-0000-0000-000000000000", // placeholder for unclaimed
-      });
+        user_id: null,
+      } as any);
 
       if (!error) keys.push(key);
     }

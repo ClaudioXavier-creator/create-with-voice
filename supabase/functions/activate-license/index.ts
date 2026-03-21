@@ -45,7 +45,8 @@ Deno.serve(async (req) => {
     const adminClient = createClient(supabaseUrl, serviceKey);
 
     // Find unused license key
-    const { data: licenseRow, error: findErr } = await adminClient
+    // Find available license: user_id is null AND status is "disponivel"
+    const { data: licenseRow } = await adminClient
       .from("licencas")
       .select("*")
       .eq("chave_licenca", chave)
