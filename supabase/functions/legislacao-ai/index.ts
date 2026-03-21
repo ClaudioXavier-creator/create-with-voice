@@ -18,63 +18,103 @@ serve(async (req) => {
     let userPrompt = "";
 
     if (action === "buscar_atualizacoes") {
-      systemPrompt = `Você é um especialista em legislação brasileira de nutrição animal, BPF (Boas Práticas de Fabricação) e regulamentação do MAPA (Ministério da Agricultura e Pecuária).
-Seu papel é informar sobre atualizações legislativas relevantes para fábricas de ração animal.
+      systemPrompt = `Você é um especialista em legislação brasileira EXCLUSIVAMENTE da área de ALIMENTAÇÃO ANIMAL (nutrição animal, fabricação de rações, suplementos, premix, núcleos e ingredientes para alimentação animal).
+
+Seu foco é SOMENTE nas normas do MAPA (Ministério da Agricultura e Pecuária) que regulamentam:
+- Fabricação de rações e alimentos para animais
+- Boas Práticas de Fabricação (BPF) em fábricas de ração
+- Registro e controle de produtos destinados à alimentação animal
+- Fiscalização de estabelecimentos fabricantes de ração
+- Ingredientes, aditivos e matérias-primas para alimentação animal
+- Rotulagem de produtos para alimentação animal
+- Programas de controle de qualidade em fábricas de ração
+
+NÃO inclua legislação sobre: alimentação humana, ANVISA, vigilância sanitária de alimentos para consumo humano, agricultura, agrotóxicos ou temas fora de alimentação animal.
 
 IMPORTANTE: Responda SEMPRE em formato JSON válido com a seguinte estrutura:
 {
   "alertas": [
     {
       "titulo": "Título da atualização ou normativa",
-      "resumo": "Resumo claro e objetivo da mudança ou novidade",
-      "fonte": "Referência legal (ex: IN 04/2007, Decreto 12.031/2024)",
+      "resumo": "Resumo claro e objetivo da mudança, impacto prático para fábricas de ração e o que deve ser feito",
+      "fonte": "Referência legal completa (ex: IN 04/2007, Decreto 12.031/2024, IN 15/2009)",
       "tipo": "atualizacao | nova_norma | revogacao | alerta",
       "relevancia": "alta | media | baixa",
       "data_aproximada": "YYYY-MM-DD"
     }
   ],
-  "resumo_geral": "Um parágrafo resumindo o panorama regulatório atual"
+  "resumo_geral": "Um parágrafo resumindo o panorama regulatório atual da alimentação animal no Brasil, focando em mudanças recentes e tendências"
 }`;
 
-      userPrompt = `Gere informações atualizadas sobre a legislação brasileira de nutrição animal e BPF para fábricas de ração. Considere:
+      userPrompt = `Gere um relatório atualizado sobre a legislação brasileira de ALIMENTAÇÃO ANIMAL do MAPA. Foque EXCLUSIVAMENTE em normas que impactam fábricas de ração animal.
 
-1. Decreto 12.031/2024 e suas implicações
-2. IN 04/2007 (POPs obrigatórios)
-3. IN 15/2009 (Regulamento técnico)
-4. IN 17/2017 (Estabelecimentos fabricantes)
-5. Quaisquer outras normas relevantes do MAPA para nutrição animal
+Considere estas normas principais e suas atualizações:
 
-Liste de 3 a 6 alertas relevantes com atualizações, mudanças ou pontos de atenção que fábricas de ração devem observar. Inclua tanto normas vigentes importantes quanto tendências regulatórias.
+1. **Decreto 12.031/2024** — Novo regulamento de fiscalização de produtos destinados à alimentação animal, substituindo o Decreto 6.296/2007. Impactos no registro, rotulagem e BPF.
+2. **IN 04/2007** — Define os 9 POPs obrigatórios para BPF em fábricas de ração:
+   - POP 01: Qualificação de fornecedores e controle de matérias-primas
+   - POP 02: Limpeza e higienização das instalações e equipamentos  
+   - POP 03: Higiene e saúde do pessoal
+   - POP 04: Potabilidade da água
+   - POP 05: Prevenção de contaminação cruzada
+   - POP 06: Manutenção e calibração de equipamentos
+   - POP 07: Controle integrado de pragas
+   - POP 08: Programa de rastreabilidade e recolhimento (Recall)
+   - POP 09: Programa de treinamento
+3. **IN 15/2009** — Regulamento técnico sobre as condições higiênico-sanitárias e de BPF para estabelecimentos fabricantes de ração
+4. **IN 17/2017** — Estabelece o regulamento técnico para estabelecimentos fabricantes de produtos destinados à alimentação animal
+5. **IN 13/2004** — Regulamento técnico sobre aditivos para alimentação animal
+6. **Decreto 6.296/2007** (revogado pelo 12.031/2024) — Regulamento anterior de inspeção e fiscalização
+7. **Lei 6.198/1974** — Lei base de inspeção e fiscalização de alimentação animal
+8. Quaisquer Instruções Normativas recentes do MAPA sobre alimentação animal
 
-Responda APENAS com o JSON, sem markdown ou texto adicional.`;
+Para cada norma, explique:
+- O que mudou ou está vigente
+- Impacto prático para fábricas de ração
+- Prazos de adequação se houver
+- Pontos de atenção para auditorias
+
+Liste de 4 a 8 alertas. Responda APENAS com o JSON, sem markdown ou texto adicional.`;
 
     } else if (action === "resumo_sistema") {
-      systemPrompt = `Você é um consultor de BPF para fábricas de ração animal. Analise o que foi implementado em um sistema de gestão de BPF e gere um resumo executivo.
+      systemPrompt = `Você é um consultor especialista em BPF para fábricas de ração animal, com profundo conhecimento da legislação do MAPA sobre alimentação animal.
+
+Analise o sistema de gestão de BPF implementado e avalie a conformidade com:
+- IN 04/2007 (9 POPs obrigatórios)
+- IN 15/2009 (Condições higiênico-sanitárias)
+- Decreto 12.031/2024 (Fiscalização)
+- IN 17/2017 (Estabelecimentos fabricantes)
+
 Responda SEMPRE em formato JSON:
 {
   "modulos_implementados": [
-    { "modulo": "Nome", "descricao": "O que faz", "status": "completo | parcial" }
+    { "modulo": "Nome do módulo", "descricao": "O que faz e qual POP/norma atende", "status": "completo | parcial" }
   ],
-  "resumo_executivo": "Parágrafo resumindo o estado do sistema",
-  "recomendacoes": ["Recomendação 1", "Recomendação 2"]
+  "resumo_executivo": "Parágrafo resumindo o estado do sistema em relação às exigências do MAPA para alimentação animal",
+  "recomendacoes": ["Recomendação 1 com referência à norma específica", "Recomendação 2"]
 }`;
 
       userPrompt = `O sistema FeedBPF implementa os seguintes módulos para gestão de BPF em fábricas de ração animal:
 
-1. **Cadastro de Empresa** - Dados da fábrica, CNPJ, RT, CRMV, capacidade
-2. **Documentos/POPs** - Controle de documentos com versionamento (9 POPs obrigatórios da IN 04/2007)
-3. **Execução de ITs/POPs** - Registro de execuções com alertas de periodicidade
-4. **Auditoria BPF** - Checklist baseado no Decreto 12.031/2024 com 8 áreas
-5. **Não Conformidades** - Registro, causa raiz, ação corretiva, prazos
-6. **Recebimento de MP** - Controle de qualidade (odor, umidade, insetos), aprovação
-7. **PCP / Ordens de Produção** - Ordens com fórmulas, ingredientes com lotes de MP, batidas com tempo de mistura
-8. **Rastreabilidade** - Vínculo automático MP→PA→Cliente, sistema de Recall
-9. **Controle de Pragas** - Registro de ocorrências e ações
-10. **Treinamentos** - Registro com validade
-11. **Indicadores** - Dashboard com gráficos
-12. **Relatórios** - Geração de relatórios por módulo
+1. **Cadastro de Empresa** — Dados da fábrica, CNPJ, RT, CRMV, capacidade produtiva, tipos de produção
+2. **Qualificação de Fornecedores** — Cadastro, avaliação com nota 1-5, taxa de aprovação de MP, status de qualificação (atende POP 01 da IN 04/2007)
+3. **Documentos/POPs** — Controle de documentos com versionamento, referência aos 9 POPs obrigatórios da IN 04/2007
+4. **Execução de ITs/POPs** — Registro de execuções vinculadas aos documentos, com alertas de periodicidade
+5. **Auditoria BPF** — Checklist baseado no Decreto 12.031/2024 com 8 áreas de avaliação
+6. **Não Conformidades** — Registro com causa raiz (5 porquês), ação corretiva, plano de ação, responsável e prazos
+7. **Recebimento de MP** — Controle de qualidade (odor, umidade, insetos), aprovação/rejeição, integrado com qualificação de fornecedores
+8. **PCP / Ordens de Produção** — Ordens com fórmulas, ingredientes vinculados a lotes de MP, batidas com tempo de mistura e temperatura
+9. **Rastreabilidade** — Vínculo MP→PA→Cliente com NF, sistema de Recall simulado com cronômetro (atende POP 08)
+10. **Controle de Pragas** — Registro de ocorrências, tipo de praga, ações e responsáveis (atende POP 07)
+11. **Treinamentos** — Registro com validade e controle de vencimentos (atende POP 09)
+12. **Calibração de Equipamentos** — Gestão de balanças, termômetros e outros instrumentos com certificados (atende POP 06)
+13. **Indicadores** — Dashboard com gráficos de desempenho
+14. **Relatórios** — Exportação de dados por módulo em CSV, relatórios digitais e digitalizados
+15. **Legislação & IA** — Monitoramento de atualizações legislativas do MAPA com inteligência artificial
 
-Gere o resumo executivo. Responda APENAS com JSON.`;
+Avalie cada módulo em relação às exigências da IN 04/2007, IN 15/2009, Decreto 12.031/2024 e IN 17/2017.
+Identifique gaps e gere recomendações práticas para melhorar a conformidade.
+Responda APENAS com JSON.`;
     } else {
       throw new Error("Ação inválida");
     }
@@ -115,10 +155,8 @@ Gere o resumo executivo. Responda APENAS com JSON.`;
     const data = await response.json();
     const content = data.choices?.[0]?.message?.content || "";
 
-    // Try to parse JSON from the response
     let parsed;
     try {
-      // Remove markdown code fences if present
       const cleaned = content.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
       parsed = JSON.parse(cleaned);
     } catch {
