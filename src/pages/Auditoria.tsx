@@ -1,8 +1,10 @@
-import { ClipboardCheck, CheckCircle2, XCircle, MinusCircle } from "lucide-react";
+import { ClipboardCheck, CheckCircle2, XCircle, Link2, FileText } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
+import { Badge } from "@/components/ui/badge";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import PageHeader from "@/components/PageHeader";
 import { useChecklistItems } from "@/store/feedbpf-store";
 import { cn } from "@/lib/utils";
@@ -30,7 +32,14 @@ export default function Auditoria() {
 
   return (
     <>
-      <PageHeader icon={ClipboardCheck} title="Auditoria BPF" description="Checklist de inspeção conforme normas do MAPA" />
+      <PageHeader icon={ClipboardCheck} title="Auditoria BPF" description="Checklist conforme Decreto 12.031/2024 — MAPA" />
+
+      <div className="mb-4">
+        <Badge variant="outline" className="text-xs border-primary/40 text-primary">
+          <FileText className="w-3 h-3 mr-1" />
+          Decreto nº 12.031/2024 — {total} itens de verificação
+        </Badge>
+      </div>
 
       {/* Resumo */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
@@ -54,24 +63,43 @@ export default function Auditoria() {
 
       <Progress value={pct} className="h-3 mb-6" />
 
-      {/* Checklist por área */}
+      {/* Checklist por área/tema do decreto */}
       {areas.map((area) => (
         <Card key={area} className="mb-4">
-          <CardHeader><CardTitle className="font-display text-base">{area}</CardTitle></CardHeader>
+          <CardHeader>
+            <CardTitle className="font-display text-sm md:text-base">{area}</CardTitle>
+          </CardHeader>
           <CardContent className="space-y-3">
             {items.filter((i) => i.area === area).map((item) => (
-              <div key={item.id} className={cn("flex flex-col sm:flex-row sm:items-center gap-2 p-3 rounded-lg border", item.conforme === false ? "border-destructive/30 bg-destructive/5" : item.conforme === true ? "border-primary/30 bg-primary/5" : "border-border")}>
-                <div className="flex-1">
+              <div key={item.id} className={cn(
+                "flex flex-col sm:flex-row sm:items-center gap-2 p-3 rounded-lg border",
+                item.conforme === false ? "border-destructive/30 bg-destructive/5" :
+                item.conforme === true ? "border-primary/30 bg-primary/5" : "border-border"
+              )}>
+                <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium">{item.item}</p>
+                  {item.popVinculado && (
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <span className="inline-flex items-center gap-1 text-xs text-primary mt-1 cursor-help">
+                          <Link2 className="w-3 h-3" />
+                          {item.popVinculado}
+                        </span>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>POP vinculado: {item.popVinculado} — Ver em Execução ITs/POPs</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  )}
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 flex-shrink-0">
                   <Button size="sm" variant={item.conforme === true ? "default" : "outline"} onClick={() => toggleItem(item.id, true)} className="gap-1">
                     <CheckCircle2 className="w-4 h-4" /> C
                   </Button>
                   <Button size="sm" variant={item.conforme === false ? "destructive" : "outline"} onClick={() => toggleItem(item.id, false)} className="gap-1">
                     <XCircle className="w-4 h-4" /> NC
                   </Button>
-                  <Input placeholder="Observação" value={item.observacao} onChange={(e) => updateObs(item.id, e.target.value)} className="w-40 text-xs" />
+                  <Input placeholder="Observação" value={item.observacao} onChange={(e) => updateObs(item.id, e.target.value)} className="w-32 md:w-40 text-xs" />
                 </div>
               </div>
             ))}
