@@ -17,6 +17,7 @@ const NAV_ITEMS = [
   { path: "/execucao-pops", label: "Execução ITs/POPs", icon: PlayCircle },
   { path: "/nao-conformidades", label: "Não Conformidades", icon: AlertTriangle },
   { path: "/recebimento", label: "Recebimento MP", icon: Package },
+  { path: "/fornecedores", label: "Fornecedores", icon: Users },
   { path: "/producao", label: "Produção", icon: Factory },
   { path: "/pcp", label: "PCP / Ordens", icon: ClipboardCheck },
   { path: "/rastreabilidade", label: "Rastreabilidade", icon: Search },
