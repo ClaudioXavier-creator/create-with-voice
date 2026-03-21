@@ -258,8 +258,90 @@ export default function Rastreabilidade() {
           <p className="text-xs text-muted-foreground">Em recall</p>
         </CardContent></Card>
       </div>
+      {/* Recall Simulado */}
+      <Card className="mb-6 border-accent/30">
+        <CardHeader className="flex flex-row items-center justify-between">
+          <div>
+            <CardTitle className="font-display text-sm flex items-center gap-2">
+              <Timer className="w-5 h-5 text-accent" /> Recall Simulado — Teste de Tempo de Resposta
+            </CardTitle>
+            <p className="text-xs text-muted-foreground mt-1">Simule um recall para validar o tempo de resposta da equipe (POP-008)</p>
+          </div>
+          <Dialog open={simOpen} onOpenChange={setSimOpen}>
+            <DialogTrigger asChild>
+              <Button size="sm" variant="outline" className="border-accent text-accent hover:bg-accent hover:text-accent-foreground">
+                <Play className="w-4 h-4 mr-1" /> Iniciar Simulação
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-md">
+              <DialogHeader><DialogTitle className="flex items-center gap-2"><Timer className="w-5 h-5 text-accent" /> Simulação de Recall</DialogTitle></DialogHeader>
+              <div className="space-y-4">
+                <div className="text-center p-4 rounded-lg bg-muted/50">
+                  <p className="text-4xl font-mono font-bold text-foreground">{formatTime(simTime)}</p>
+                  <p className="text-xs text-muted-foreground mt-1">Tempo decorrido</p>
+                </div>
 
-      {comRecall.length > 0 && (
+                {!simRunning && simResults.length === 0 && (
+                  <div className="space-y-2">
+                    <p className="text-sm text-muted-foreground">Etapas da simulação:</p>
+                    {RECALL_SIM_STEPS.map((s, i) => (
+                      <div key={i} className="text-xs p-2 rounded bg-muted/30 border">{s}</div>
+                    ))}
+                    <Button onClick={startSimulation} className="w-full bg-accent text-accent-foreground hover:bg-accent/90">
+                      <Play className="w-4 h-4 mr-1" /> Iniciar Cronômetro
+                    </Button>
+                  </div>
+                )}
+
+                {simRunning && (
+                  <div className="space-y-3">
+                    <Progress value={(simStep / RECALL_SIM_STEPS.length) * 100} className="h-2" />
+                    <div className="p-3 rounded-lg bg-accent/10 border border-accent/30 text-center">
+                      <p className="text-sm font-semibold">{RECALL_SIM_STEPS[simStep]}</p>
+                      <p className="text-xs text-muted-foreground mt-1">Etapa {simStep + 1} de {RECALL_SIM_STEPS.length}</p>
+                    </div>
+                    <div className="flex gap-2">
+                      <Button onClick={advanceStep} className="flex-1 bg-primary text-primary-foreground">
+                        ✓ Concluir Etapa
+                      </Button>
+                      <Button onClick={stopSimulation} variant="destructive" size="icon"><Square className="w-4 h-4" /></Button>
+                    </div>
+                  </div>
+                )}
+
+                {!simRunning && simResults.length > 0 && (
+                  <div className="space-y-3">
+                    <div className={`p-3 rounded-lg text-center ${simResults.length === RECALL_SIM_STEPS.length ? "bg-primary/10 border border-primary/30" : "bg-destructive/10 border border-destructive/30"}`}>
+                      <p className="font-display font-bold text-lg">
+                        {simResults.length === RECALL_SIM_STEPS.length ? "✅ Simulação Concluída" : "⚠️ Simulação Interrompida"}
+                      </p>
+                      <p className="text-2xl font-mono font-bold mt-1">{formatTime(simTime)}</p>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        {simTime <= 120 ? "Excelente! Dentro do tempo ideal (≤ 2 min)" :
+                         simTime <= 300 ? "Bom resultado (≤ 5 min)" :
+                         "Atenção: tempo acima do recomendado"}
+                      </p>
+                    </div>
+                    <div className="space-y-1">
+                      {simResults.map((r, i) => (
+                        <div key={i} className="text-xs flex items-center justify-between p-1.5 rounded bg-muted/30">
+                          <span>{r.step}</span>
+                          <span className="font-mono text-muted-foreground">{formatTime(r.time)}</span>
+                        </div>
+                      ))}
+                    </div>
+                    <Button onClick={() => { setSimResults([]); setSimTime(0); setSimStep(0); }} variant="outline" className="w-full">
+                      <RotateCcw className="w-4 h-4 mr-1" /> Nova Simulação
+                    </Button>
+                  </div>
+                )}
+              </div>
+            </DialogContent>
+          </Dialog>
+        </CardHeader>
+      </Card>
+
+
         <Card className="border-destructive/30 bg-destructive/5 mb-6">
           <CardContent className="pt-4">
             <div className="flex items-center gap-2 mb-3">
