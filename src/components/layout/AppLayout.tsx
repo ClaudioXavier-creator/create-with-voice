@@ -3,7 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import {
   LayoutDashboard, Building2, FileText, ClipboardCheck, AlertTriangle,
   Package, Factory, Search, Bug, GraduationCap, BarChart3, Menu, X, Shield, LogOut,
-  PlayCircle, FileDown
+  PlayCircle, FileDown, Scale
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -24,6 +24,7 @@ const NAV_ITEMS = [
   { path: "/treinamentos", label: "Treinamentos", icon: GraduationCap },
   { path: "/indicadores", label: "Indicadores", icon: BarChart3 },
   { path: "/relatorios", label: "Relatórios", icon: FileDown },
+  { path: "/legislacao", label: "Legislação & IA", icon: Scale },
 ];
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
