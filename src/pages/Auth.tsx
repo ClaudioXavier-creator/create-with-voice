@@ -13,6 +13,7 @@ export default function Auth() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [nome, setNome] = useState("");
+  const [tipoUsuario, setTipoUsuario] = useState<"cliente" | "consultoria">("cliente");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
