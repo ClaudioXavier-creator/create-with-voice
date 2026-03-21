@@ -505,6 +505,48 @@ export type Database = {
         }
         Relationships: []
       }
+      licencas: {
+        Row: {
+          chave_licenca: string
+          created_at: string
+          data_expiracao: string
+          data_inicio: string
+          id: string
+          plano: string
+          status: string
+          stripe_checkout_id: string | null
+          stripe_customer_id: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          chave_licenca: string
+          created_at?: string
+          data_expiracao: string
+          data_inicio?: string
+          id?: string
+          plano?: string
+          status?: string
+          stripe_checkout_id?: string | null
+          stripe_customer_id?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          chave_licenca?: string
+          created_at?: string
+          data_expiracao?: string
+          data_inicio?: string
+          id?: string
+          plano?: string
+          status?: string
+          stripe_checkout_id?: string | null
+          stripe_customer_id?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       nao_conformidades: {
         Row: {
           acao_corretiva: string | null
