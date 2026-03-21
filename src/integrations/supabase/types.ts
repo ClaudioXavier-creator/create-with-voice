@@ -114,6 +114,57 @@ export type Database = {
           },
         ]
       }
+      calibracoes: {
+        Row: {
+          certificado_numero: string | null
+          codigo: string | null
+          created_at: string
+          data_calibracao: string | null
+          equipamento: string
+          id: string
+          localizacao: string | null
+          observacoes: string | null
+          proxima_calibracao: string | null
+          responsavel: string | null
+          status: string | null
+          tipo: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          certificado_numero?: string | null
+          codigo?: string | null
+          created_at?: string
+          data_calibracao?: string | null
+          equipamento: string
+          id?: string
+          localizacao?: string | null
+          observacoes?: string | null
+          proxima_calibracao?: string | null
+          responsavel?: string | null
+          status?: string | null
+          tipo?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          certificado_numero?: string | null
+          codigo?: string | null
+          created_at?: string
+          data_calibracao?: string | null
+          equipamento?: string
+          id?: string
+          localizacao?: string | null
+          observacoes?: string | null
+          proxima_calibracao?: string | null
+          responsavel?: string | null
+          status?: string | null
+          tipo?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       checklist_items: {
         Row: {
           area: string
@@ -360,6 +411,60 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      fornecedores: {
+        Row: {
+          cnpj: string | null
+          contato: string | null
+          created_at: string
+          email: string | null
+          endereco: string | null
+          id: string
+          nome: string
+          nota_avaliacao: number | null
+          observacoes: string | null
+          proxima_avaliacao: string | null
+          status_qualificacao: string | null
+          tipo_produto: string | null
+          ultima_avaliacao: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          cnpj?: string | null
+          contato?: string | null
+          created_at?: string
+          email?: string | null
+          endereco?: string | null
+          id?: string
+          nome: string
+          nota_avaliacao?: number | null
+          observacoes?: string | null
+          proxima_avaliacao?: string | null
+          status_qualificacao?: string | null
+          tipo_produto?: string | null
+          ultima_avaliacao?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          cnpj?: string | null
+          contato?: string | null
+          created_at?: string
+          email?: string | null
+          endereco?: string | null
+          id?: string
+          nome?: string
+          nota_avaliacao?: number | null
+          observacoes?: string | null
+          proxima_avaliacao?: string | null
+          status_qualificacao?: string | null
+          tipo_produto?: string | null
+          ultima_avaliacao?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       legislacao_alertas: {
         Row: {

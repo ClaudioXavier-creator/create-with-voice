@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { Search, Plus, Loader2, Package, AlertTriangle, Truck, ShieldAlert } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { Search, Plus, Loader2, Package, AlertTriangle, Truck, ShieldAlert, Timer, Play, Square, RotateCcw } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
@@ -11,6 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Progress } from "@/components/ui/progress";
 import PageHeader from "@/components/PageHeader";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -61,6 +62,14 @@ export default function Rastreabilidade() {
   const [recallMotivo, setRecallMotivo] = useState("");
   const [recallData, setRecallData] = useState("");
   const [recallStatus, setRecallStatus] = useState("iniciado");
+
+  // Recall Simulado
+  const [simOpen, setSimOpen] = useState(false);
+  const [simRunning, setSimRunning] = useState(false);
+  const [simTime, setSimTime] = useState(0);
+  const [simStep, setSimStep] = useState(0);
+  const [simResults, setSimResults] = useState<{ step: string; time: number; ok: boolean }[]>([]);
+  const simInterval = useRef<NodeJS.Timeout | null>(null);
 
   // Venda fields (for updating existing records)
   const [vendaCliente, setVendaCliente] = useState("");
@@ -192,6 +201,38 @@ export default function Rastreabilidade() {
   const semVenda = registros.filter(r => !r.cliente_destino);
   const comRecall = registros.filter(r => r.recall_ativo);
 
+  const RECALL_SIM_STEPS = [
+    "1. Identificar lote afetado",
+    "2. Localizar destino/cliente",
+    "3. Verificar quantidade distribuída",
+    "4. Contatar clientes/distribuidores",
+    "5. Registrar recall no sistema",
+  ];
+
+  const startSimulation = () => {
+    setSimRunning(true); setSimTime(0); setSimStep(0); setSimResults([]);
+    simInterval.current = setInterval(() => setSimTime(t => t + 1), 1000);
+  };
+
+  const advanceStep = () => {
+    const currentStep = simStep;
+    setSimResults(prev => [...prev, { step: RECALL_SIM_STEPS[currentStep], time: simTime, ok: true }]);
+    if (currentStep + 1 >= RECALL_SIM_STEPS.length) {
+      setSimRunning(false);
+      if (simInterval.current) clearInterval(simInterval.current);
+      toast.success(`Simulação concluída em ${formatTime(simTime)}!`);
+    } else {
+      setSimStep(currentStep + 1);
+    }
+  };
+
+  const stopSimulation = () => {
+    setSimRunning(false);
+    if (simInterval.current) clearInterval(simInterval.current);
+  };
+
+  const formatTime = (s: number) => `${Math.floor(s / 60).toString().padStart(2, "0")}:${(s % 60).toString().padStart(2, "0")}`;
+
   return (
     <>
       <PageHeader icon={Search} title="Rastreabilidade" description="Cadeia completa: MP → PA → Venda/Entrega → Recall" />
@@ -217,6 +258,89 @@ export default function Rastreabilidade() {
           <p className="text-xs text-muted-foreground">Em recall</p>
         </CardContent></Card>
       </div>
+      {/* Recall Simulado */}
+      <Card className="mb-6 border-accent/30">
+        <CardHeader className="flex flex-row items-center justify-between">
+          <div>
+            <CardTitle className="font-display text-sm flex items-center gap-2">
+              <Timer className="w-5 h-5 text-accent" /> Recall Simulado — Teste de Tempo de Resposta
+            </CardTitle>
+            <p className="text-xs text-muted-foreground mt-1">Simule um recall para validar o tempo de resposta da equipe (POP-008)</p>
+          </div>
+          <Dialog open={simOpen} onOpenChange={setSimOpen}>
+            <DialogTrigger asChild>
+              <Button size="sm" variant="outline" className="border-accent text-accent hover:bg-accent hover:text-accent-foreground">
+                <Play className="w-4 h-4 mr-1" /> Iniciar Simulação
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-md">
+              <DialogHeader><DialogTitle className="flex items-center gap-2"><Timer className="w-5 h-5 text-accent" /> Simulação de Recall</DialogTitle></DialogHeader>
+              <div className="space-y-4">
+                <div className="text-center p-4 rounded-lg bg-muted/50">
+                  <p className="text-4xl font-mono font-bold text-foreground">{formatTime(simTime)}</p>
+                  <p className="text-xs text-muted-foreground mt-1">Tempo decorrido</p>
+                </div>
+
+                {!simRunning && simResults.length === 0 && (
+                  <div className="space-y-2">
+                    <p className="text-sm text-muted-foreground">Etapas da simulação:</p>
+                    {RECALL_SIM_STEPS.map((s, i) => (
+                      <div key={i} className="text-xs p-2 rounded bg-muted/30 border">{s}</div>
+                    ))}
+                    <Button onClick={startSimulation} className="w-full bg-accent text-accent-foreground hover:bg-accent/90">
+                      <Play className="w-4 h-4 mr-1" /> Iniciar Cronômetro
+                    </Button>
+                  </div>
+                )}
+
+                {simRunning && (
+                  <div className="space-y-3">
+                    <Progress value={(simStep / RECALL_SIM_STEPS.length) * 100} className="h-2" />
+                    <div className="p-3 rounded-lg bg-accent/10 border border-accent/30 text-center">
+                      <p className="text-sm font-semibold">{RECALL_SIM_STEPS[simStep]}</p>
+                      <p className="text-xs text-muted-foreground mt-1">Etapa {simStep + 1} de {RECALL_SIM_STEPS.length}</p>
+                    </div>
+                    <div className="flex gap-2">
+                      <Button onClick={advanceStep} className="flex-1 bg-primary text-primary-foreground">
+                        ✓ Concluir Etapa
+                      </Button>
+                      <Button onClick={stopSimulation} variant="destructive" size="icon"><Square className="w-4 h-4" /></Button>
+                    </div>
+                  </div>
+                )}
+
+                {!simRunning && simResults.length > 0 && (
+                  <div className="space-y-3">
+                    <div className={`p-3 rounded-lg text-center ${simResults.length === RECALL_SIM_STEPS.length ? "bg-primary/10 border border-primary/30" : "bg-destructive/10 border border-destructive/30"}`}>
+                      <p className="font-display font-bold text-lg">
+                        {simResults.length === RECALL_SIM_STEPS.length ? "✅ Simulação Concluída" : "⚠️ Simulação Interrompida"}
+                      </p>
+                      <p className="text-2xl font-mono font-bold mt-1">{formatTime(simTime)}</p>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        {simTime <= 120 ? "Excelente! Dentro do tempo ideal (≤ 2 min)" :
+                         simTime <= 300 ? "Bom resultado (≤ 5 min)" :
+                         "Atenção: tempo acima do recomendado"}
+                      </p>
+                    </div>
+                    <div className="space-y-1">
+                      {simResults.map((r, i) => (
+                        <div key={i} className="text-xs flex items-center justify-between p-1.5 rounded bg-muted/30">
+                          <span>{r.step}</span>
+                          <span className="font-mono text-muted-foreground">{formatTime(r.time)}</span>
+                        </div>
+                      ))}
+                    </div>
+                    <Button onClick={() => { setSimResults([]); setSimTime(0); setSimStep(0); }} variant="outline" className="w-full">
+                      <RotateCcw className="w-4 h-4 mr-1" /> Nova Simulação
+                    </Button>
+                  </div>
+                )}
+              </div>
+            </DialogContent>
+          </Dialog>
+        </CardHeader>
+      </Card>
+
 
       {comRecall.length > 0 && (
         <Card className="border-destructive/30 bg-destructive/5 mb-6">

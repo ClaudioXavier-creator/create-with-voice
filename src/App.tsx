@@ -20,6 +20,7 @@ import Indicadores from "./pages/Indicadores";
 import ExecucaoPops from "./pages/ExecucaoPops";
 import Relatorios from "./pages/Relatorios";
 import Legislacao from "./pages/Legislacao";
+import Fornecedores from "./pages/Fornecedores";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 
@@ -66,6 +67,7 @@ const AppRoutes = () => {
                 <Route path="/auditoria" element={<Auditoria />} />
                 <Route path="/nao-conformidades" element={<NaoConformidades />} />
                 <Route path="/recebimento" element={<Recebimento />} />
+                <Route path="/fornecedores" element={<Fornecedores />} />
                 <Route path="/producao" element={<Producao />} />
                 <Route path="/pcp" element={<PCP />} />
                 <Route path="/rastreabilidade" element={<Rastreabilidade />} />

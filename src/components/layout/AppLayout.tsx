@@ -3,7 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import {
   LayoutDashboard, Building2, FileText, ClipboardCheck, AlertTriangle,
   Package, Factory, Search, Bug, GraduationCap, BarChart3, Menu, X, Shield, LogOut,
-  PlayCircle, FileDown, Scale
+  PlayCircle, FileDown, Scale, Users
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -17,6 +17,7 @@ const NAV_ITEMS = [
   { path: "/execucao-pops", label: "Execução ITs/POPs", icon: PlayCircle },
   { path: "/nao-conformidades", label: "Não Conformidades", icon: AlertTriangle },
   { path: "/recebimento", label: "Recebimento MP", icon: Package },
+  { path: "/fornecedores", label: "Fornecedores", icon: Users },
   { path: "/producao", label: "Produção", icon: Factory },
   { path: "/pcp", label: "PCP / Ordens", icon: ClipboardCheck },
   { path: "/rastreabilidade", label: "Rastreabilidade", icon: Search },
