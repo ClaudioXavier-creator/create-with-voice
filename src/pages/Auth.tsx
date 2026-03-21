@@ -32,7 +32,7 @@ export default function Auth() {
           email,
           password,
           options: {
-            data: { nome },
+            data: { nome, tipo_usuario: tipoUsuario },
             emailRedirectTo: window.location.origin,
           },
         });
