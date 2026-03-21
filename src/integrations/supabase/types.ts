@@ -303,6 +303,7 @@ export type Database = {
           id: string
           nome: string
           telefone: string | null
+          tipo_usuario: string
           updated_at: string
           user_id: string
         }
@@ -313,6 +314,7 @@ export type Database = {
           id?: string
           nome?: string
           telefone?: string | null
+          tipo_usuario?: string
           updated_at?: string
           user_id: string
         }
@@ -323,6 +325,7 @@ export type Database = {
           id?: string
           nome?: string
           telefone?: string | null
+          tipo_usuario?: string
           updated_at?: string
           user_id?: string
         }
