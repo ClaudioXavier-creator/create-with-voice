@@ -63,6 +63,14 @@ export default function Rastreabilidade() {
   const [recallData, setRecallData] = useState("");
   const [recallStatus, setRecallStatus] = useState("iniciado");
 
+  // Recall Simulado
+  const [simOpen, setSimOpen] = useState(false);
+  const [simRunning, setSimRunning] = useState(false);
+  const [simTime, setSimTime] = useState(0);
+  const [simStep, setSimStep] = useState(0);
+  const [simResults, setSimResults] = useState<{ step: string; time: number; ok: boolean }[]>([]);
+  const simInterval = useRef<NodeJS.Timeout | null>(null);
+
   // Venda fields (for updating existing records)
   const [vendaCliente, setVendaCliente] = useState("");
   const [vendaLocal, setVendaLocal] = useState("");
