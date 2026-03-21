@@ -42,6 +42,7 @@ export default function Rastreabilidade() {
   const [busca, setBusca] = useState("");
   const [open, setOpen] = useState(false);
   const [recallOpen, setRecallOpen] = useState(false);
+  const [vendaOpen, setVendaOpen] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
   // Form fields
@@ -60,6 +61,13 @@ export default function Rastreabilidade() {
   const [recallMotivo, setRecallMotivo] = useState("");
   const [recallData, setRecallData] = useState("");
   const [recallStatus, setRecallStatus] = useState("iniciado");
+
+  // Venda fields (for updating existing records)
+  const [vendaCliente, setVendaCliente] = useState("");
+  const [vendaLocal, setVendaLocal] = useState("");
+  const [vendaData, setVendaData] = useState("");
+  const [vendaNF, setVendaNF] = useState("");
+  const [vendaQtd, setVendaQtd] = useState("");
 
   const fetchData = async () => {
     if (!user) return;
