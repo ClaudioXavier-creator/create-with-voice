@@ -342,6 +342,7 @@ export default function Rastreabilidade() {
       </Card>
 
 
+      {comRecall.length > 0 && (
         <Card className="border-destructive/30 bg-destructive/5 mb-6">
           <CardContent className="pt-4">
             <div className="flex items-center gap-2 mb-3">
