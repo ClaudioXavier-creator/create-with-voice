@@ -291,24 +291,30 @@ export default function NaoConformidades() {
                 <div className="p-3 rounded-lg bg-destructive/5 border border-destructive/20">
                   <p className="text-xs font-semibold text-destructive mb-2">① Identificação da NC</p>
                   <div className="grid grid-cols-2 gap-3">
-                    <div className="space-y-1"><Label>Data</Label><Input name="data" type="date" required defaultValue={today} /></div>
+                    <div className="space-y-1"><Label>Data</Label><Input type="date" required value={formData} onChange={e => setFormData(e.target.value)} /></div>
                     <div className="space-y-1">
                       <Label>Setor</Label>
-                      <Select name="setor" required>
+                      <Select value={formSetor} onValueChange={setFormSetor} required>
                         <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
                         <SelectContent>{SETORES.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
                       </Select>
                     </div>
                   </div>
-                  <div className="space-y-1 mt-3"><Label>Descrição da Não Conformidade *</Label><Textarea name="descricao" required placeholder="Descreva detalhadamente o problema encontrado..." /></div>
+                  <div className="space-y-1 mt-3"><Label>Descrição da Não Conformidade *</Label><Textarea value={formDescricao} onChange={e => setFormDescricao(e.target.value)} required placeholder="Descreva detalhadamente o problema encontrado..." /></div>
                 </div>
+
+                {/* Gerar Plano com IA */}
+                <Button type="button" variant="outline" className="w-full border-primary/50 text-primary hover:bg-primary/10" onClick={gerarPlanoIA} disabled={generatingAI || !formDescricao || !formSetor}>
+                  {generatingAI ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Sparkles className="w-4 h-4 mr-2" />}
+                  {generatingAI ? "Gerando plano de ação com IA..." : "⚡ Gerar Plano de Ação Automaticamente com IA"}
+                </Button>
 
                 {/* Plano de Ação Corretiva */}
                 <div className="p-3 rounded-lg bg-primary/5 border border-primary/20">
                   <p className="text-xs font-semibold text-primary mb-2">② Plano de Ação Corretiva</p>
                   <div className="space-y-3">
-                    <div className="space-y-1"><Label>Causa Raiz / Causa Provável *</Label><Textarea name="causa" required placeholder="Identifique a causa raiz do problema (5 Porquês, Ishikawa...)" /></div>
-                    <div className="space-y-1"><Label>Ação Corretiva *</Label><Textarea name="acao" required placeholder="Descreva a ação corretiva a ser implementada..." /></div>
+                    <div className="space-y-1"><Label>Causa Raiz / Causa Provável *</Label><Textarea value={formCausa} onChange={e => setFormCausa(e.target.value)} required placeholder="Identifique a causa raiz do problema (5 Porquês, Ishikawa...)" /></div>
+                    <div className="space-y-1"><Label>Ação Corretiva *</Label><Textarea value={formAcao} onChange={e => setFormAcao(e.target.value)} required placeholder="Descreva a ação corretiva a ser implementada..." /></div>
                   </div>
                 </div>
 
@@ -316,8 +322,8 @@ export default function NaoConformidades() {
                 <div className="p-3 rounded-lg bg-muted/50 border">
                   <p className="text-xs font-semibold mb-2">③ Responsabilidade e Prazo</p>
                   <div className="grid grid-cols-2 gap-3">
-                    <div className="space-y-1"><Label>Responsável *</Label><Input name="responsavel" required placeholder="Nome do responsável" /></div>
-                    <div className="space-y-1"><Label>Prazo para Conclusão *</Label><Input name="prazo" type="date" required /></div>
+                    <div className="space-y-1"><Label>Responsável *</Label><Input value={formResponsavel} onChange={e => setFormResponsavel(e.target.value)} required placeholder="Nome do responsável" /></div>
+                    <div className="space-y-1"><Label>Prazo para Conclusão *</Label><Input type="date" value={formPrazo} onChange={e => setFormPrazo(e.target.value)} required /></div>
                   </div>
                 </div>
 
