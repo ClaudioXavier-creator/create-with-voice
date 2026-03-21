@@ -180,12 +180,10 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       {/* Desktop sidebar */}
       <aside className="hidden lg:flex flex-col w-64 bg-sidebar text-sidebar-foreground border-r border-sidebar-border">
         <div className="flex items-center gap-3 px-6 py-5 border-b border-sidebar-border">
-          <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-sidebar-primary">
-            <Shield className="w-6 h-6 text-sidebar-primary-foreground" />
-          </div>
+          <img src={logoImg} alt="Feed_BPF Logo" className="w-10 h-10 rounded-lg object-contain" />
           <div>
-            <h1 className="font-display text-lg font-bold text-sidebar-foreground">FeedBPF</h1>
-            <p className="text-xs text-sidebar-foreground/60">Gestão de BPF</p>
+            <h1 className="font-display text-lg font-bold text-sidebar-foreground">Feed_BPF</h1>
+            <p className="text-xs text-sidebar-foreground/60">by CLXN</p>
           </div>
         </div>
         <SidebarNav currentPath={location.pathname} />
