@@ -55,12 +55,16 @@ export default function NaoConformidades() {
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [editId, setEditId] = useState<string | null>(null);
   const [editOpen, setEditOpen] = useState(false);
+  const [generatingAI, setGeneratingAI] = useState(false);
 
-  // Edit form
-  const [editCausa, setEditCausa] = useState("");
-  const [editAcao, setEditAcao] = useState("");
-  const [editResponsavel, setEditResponsavel] = useState("");
-  const [editPrazo, setEditPrazo] = useState("");
+  // New NC form (controlled)
+  const [formData, setFormData] = useState("");
+  const [formSetor, setFormSetor] = useState("");
+  const [formDescricao, setFormDescricao] = useState("");
+  const [formCausa, setFormCausa] = useState("");
+  const [formAcao, setFormAcao] = useState("");
+  const [formResponsavel, setFormResponsavel] = useState("");
+  const [formPrazo, setFormPrazo] = useState("");
 
   const fetchData = async () => {
     if (!user) return;
