@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Shield, Mail, Lock, User, Loader2 } from "lucide-react";
+import { Shield, Mail, Lock, User, Loader2, Building2, Briefcase } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -13,6 +13,7 @@ export default function Auth() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [nome, setNome] = useState("");
+  const [tipoUsuario, setTipoUsuario] = useState<"cliente" | "consultoria">("cliente");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -31,7 +32,7 @@ export default function Auth() {
           email,
           password,
           options: {
-            data: { nome },
+            data: { nome, tipo_usuario: tipoUsuario },
             emailRedirectTo: window.location.origin,
           },
         });
@@ -64,20 +65,53 @@ export default function Auth() {
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             {!isLogin && (
-              <div className="space-y-2">
-                <Label htmlFor="nome">Nome completo</Label>
-                <div className="relative">
-                  <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    id="nome"
-                    placeholder="Seu nome"
-                    value={nome}
-                    onChange={(e) => setNome(e.target.value)}
-                    className="pl-9"
-                    required
-                  />
+              <>
+                <div className="space-y-2">
+                  <Label>Tipo de acesso</Label>
+                  <div className="grid grid-cols-2 gap-3">
+                    <button
+                      type="button"
+                      onClick={() => setTipoUsuario("cliente")}
+                      className={`flex flex-col items-center gap-2 p-4 rounded-lg border-2 transition-all ${
+                        tipoUsuario === "cliente"
+                          ? "border-primary bg-primary/10 text-primary"
+                          : "border-border hover:border-muted-foreground"
+                      }`}
+                    >
+                      <Building2 className="w-6 h-6" />
+                      <span className="text-sm font-medium">Cliente</span>
+                      <span className="text-xs text-muted-foreground text-center">Fábrica / Unidade</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setTipoUsuario("consultoria")}
+                      className={`flex flex-col items-center gap-2 p-4 rounded-lg border-2 transition-all ${
+                        tipoUsuario === "consultoria"
+                          ? "border-primary bg-primary/10 text-primary"
+                          : "border-border hover:border-muted-foreground"
+                      }`}
+                    >
+                      <Briefcase className="w-6 h-6" />
+                      <span className="text-sm font-medium">Consultoria</span>
+                      <span className="text-xs text-muted-foreground text-center">Assessoria técnica</span>
+                    </button>
+                  </div>
                 </div>
-              </div>
+                <div className="space-y-2">
+                  <Label htmlFor="nome">Nome completo</Label>
+                  <div className="relative">
+                    <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      id="nome"
+                      placeholder="Seu nome"
+                      value={nome}
+                      onChange={(e) => setNome(e.target.value)}
+                      className="pl-9"
+                      required
+                    />
+                  </div>
+                </div>
+              </>
             )}
             <div className="space-y-2">
               <Label htmlFor="email">E-mail</Label>

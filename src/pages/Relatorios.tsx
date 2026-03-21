@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { FileDown, Plus, Upload, FileText, Monitor, ScanLine, Eye } from "lucide-react";
+import { useState, useEffect } from "react";
+import { FileDown, Plus, Upload, Monitor, ScanLine, Eye, Loader2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
@@ -11,7 +11,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import PageHeader from "@/components/PageHeader";
-import type { Relatorio } from "@/types/feedbpf";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
+import { toast } from "sonner";
 
 const MODULOS = [
   "Auditoria BPF",
@@ -25,15 +27,23 @@ const MODULOS = [
   "Checklist Decreto 12.031",
 ];
 
-const DEMO_RELATORIOS: Relatorio[] = [
-  { id: "1", titulo: "Relatório Auditoria BPF - Março/2026", tipo: "digital", modulo: "Auditoria BPF", descricao: "Auditoria completa conforme Decreto 12.031/2024", dataGeracao: "2026-03-21", status: "ativo" },
-  { id: "2", titulo: "Checklist Limpeza - Setor Moagem", tipo: "digitalizado", modulo: "Execução ITs/POPs", descricao: "Planilha preenchida em campo e digitalizada", arquivoNome: "checklist_limpeza_moagem.pdf", dataGeracao: "2026-03-20", status: "ativo" },
-  { id: "3", titulo: "Relatório Controle de Pragas - Fev/2026", tipo: "digital", modulo: "Controle de Pragas", descricao: "Monitoramento mensal de pragas", dataGeracao: "2026-02-28", status: "arquivado" },
-  { id: "4", titulo: "Registro Recebimento MP - Semanal", tipo: "digitalizado", modulo: "Recebimento MP", descricao: "Planilha semanal assinada pelo RT", arquivoNome: "recebimento_semana12.pdf", dataGeracao: "2026-03-15", status: "ativo" },
-];
+interface RelatorioRow {
+  id: string;
+  titulo: string;
+  tipo: string;
+  modulo: string;
+  descricao: string | null;
+  arquivo_url: string | null;
+  arquivo_nome: string | null;
+  data_geracao: string | null;
+  status: string | null;
+}
 
 export default function Relatorios() {
-  const [relatorios, setRelatorios] = useState<Relatorio[]>(DEMO_RELATORIOS);
+  const { user } = useAuth();
+  const [relatorios, setRelatorios] = useState<RelatorioRow[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
   const [open, setOpen] = useState(false);
   const [titulo, setTitulo] = useState("");
   const [tipo, setTipo] = useState<"digital" | "digitalizado">("digital");
@@ -41,24 +51,69 @@ export default function Relatorios() {
   const [descricao, setDescricao] = useState("");
   const [arquivo, setArquivo] = useState<File | null>(null);
 
-  const handleAdd = () => {
-    if (!titulo || !modulo) return;
-    setRelatorios(prev => [...prev, {
-      id: String(Date.now()),
+  const fetchRelatorios = async () => {
+    if (!user) return;
+    const { data, error } = await supabase
+      .from("relatorios")
+      .select("*")
+      .order("created_at", { ascending: false });
+    if (error) {
+      toast.error("Erro ao carregar relatórios");
+    } else {
+      setRelatorios(data || []);
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    fetchRelatorios();
+  }, [user]);
+
+  const handleAdd = async () => {
+    if (!titulo || !modulo || !user) return;
+    setSaving(true);
+
+    let arquivoUrl = "";
+    let arquivoNome = "";
+
+    if (tipo === "digitalizado" && arquivo) {
+      const filePath = `${user.id}/${Date.now()}_${arquivo.name}`;
+      const { error: uploadError } = await supabase.storage
+        .from("relatorios")
+        .upload(filePath, arquivo);
+      if (uploadError) {
+        toast.error("Erro ao enviar arquivo: " + uploadError.message);
+        setSaving(false);
+        return;
+      }
+      const { data: urlData } = supabase.storage.from("relatorios").getPublicUrl(filePath);
+      arquivoUrl = urlData.publicUrl;
+      arquivoNome = arquivo.name;
+    }
+
+    const { error } = await supabase.from("relatorios").insert({
+      user_id: user.id,
       titulo,
       tipo,
       modulo,
       descricao,
-      arquivoNome: arquivo?.name || "",
-      dataGeracao: new Date().toISOString().split("T")[0],
-      status: "ativo",
-    }]);
-    setOpen(false);
-    setTitulo("");
-    setTipo("digital");
-    setModulo("");
-    setDescricao("");
-    setArquivo(null);
+      arquivo_url: arquivoUrl,
+      arquivo_nome: arquivoNome,
+    });
+
+    if (error) {
+      toast.error("Erro ao salvar relatório");
+    } else {
+      toast.success("Relatório salvo!");
+      setOpen(false);
+      setTitulo("");
+      setTipo("digital");
+      setModulo("");
+      setDescricao("");
+      setArquivo(null);
+      fetchRelatorios();
+    }
+    setSaving(false);
   };
 
   const digitais = relatorios.filter(r => r.tipo === "digital");
@@ -89,7 +144,6 @@ export default function Relatorios() {
         </CardContent></Card>
       </div>
 
-      {/* Info sobre tipos */}
       <div className="grid md:grid-cols-2 gap-4 mb-6">
         <Card className="border-primary/20 bg-primary/5">
           <CardContent className="pt-4">
@@ -97,7 +151,7 @@ export default function Relatorios() {
               <Monitor className="w-8 h-8 text-primary mt-1 shrink-0" />
               <div>
                 <h3 className="font-display font-semibold text-sm">Relatórios Digitais</h3>
-                <p className="text-xs text-muted-foreground mt-1">Para empresas médias e maiores com dispositivo eletrônico de registro. Dados gerados diretamente no sistema.</p>
+                <p className="text-xs text-muted-foreground mt-1">Para empresas médias e maiores com dispositivo eletrônico de registro.</p>
               </div>
             </div>
           </CardContent>
@@ -108,7 +162,7 @@ export default function Relatorios() {
               <ScanLine className="w-8 h-8 text-accent mt-1 shrink-0" />
               <div>
                 <h3 className="font-display font-semibold text-sm">Documentos Digitalizados</h3>
-                <p className="text-xs text-muted-foreground mt-1">Para empresas menores com planilha em papel. Documentos preenchidos, assinados e escaneados/fotografados.</p>
+                <p className="text-xs text-muted-foreground mt-1">Para empresas menores com planilha em papel assinada e escaneada.</p>
               </div>
             </div>
           </CardContent>
@@ -166,66 +220,83 @@ export default function Relatorios() {
                     <p className="text-xs text-muted-foreground mt-1">Planilha preenchida em papel, assinada e escaneada/fotografada</p>
                   </div>
                 )}
-                <Button onClick={handleAdd} className="w-full">Salvar Relatório</Button>
+                <Button onClick={handleAdd} className="w-full" disabled={saving}>
+                  {saving && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+                  Salvar Relatório
+                </Button>
               </div>
             </DialogContent>
           </Dialog>
         </CardHeader>
         <CardContent>
-          <Tabs defaultValue="todos">
-            <TabsList className="mb-4">
-              <TabsTrigger value="todos">Todos ({relatorios.length})</TabsTrigger>
-              <TabsTrigger value="digitais">Digitais ({digitais.length})</TabsTrigger>
-              <TabsTrigger value="digitalizados">Digitalizados ({digitalizados.length})</TabsTrigger>
-            </TabsList>
-            {["todos", "digitais", "digitalizados"].map(tab => (
-              <TabsContent key={tab} value={tab} className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Data</TableHead>
-                      <TableHead>Título</TableHead>
-                      <TableHead>Tipo</TableHead>
-                      <TableHead>Módulo</TableHead>
-                      <TableHead>Arquivo</TableHead>
-                      <TableHead>Status</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {(tab === "todos" ? relatorios : tab === "digitais" ? digitais : digitalizados).map((r) => (
-                      <TableRow key={r.id}>
-                        <TableCell className="whitespace-nowrap">{r.dataGeracao}</TableCell>
-                        <TableCell>
-                          <p className="font-medium text-sm">{r.titulo}</p>
-                          <p className="text-xs text-muted-foreground">{r.descricao}</p>
-                        </TableCell>
-                        <TableCell>
-                          <Badge className={r.tipo === "digital" ? "bg-primary/20 text-primary" : "bg-accent/20 text-accent"}>
-                            {r.tipo === "digital" ? "Digital" : "Digitalizado"}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="text-sm">{r.modulo}</TableCell>
-                        <TableCell>
-                          {r.arquivoNome ? (
-                            <Button variant="ghost" size="sm" className="gap-1 text-xs">
-                              <Eye className="w-3 h-3" /> {r.arquivoNome}
-                            </Button>
-                          ) : (
-                            <span className="text-xs text-muted-foreground">—</span>
-                          )}
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant={r.status === "ativo" ? "default" : "secondary"}>
-                            {r.status === "ativo" ? "Ativo" : "Arquivado"}
-                          </Badge>
-                        </TableCell>
+          {loading ? (
+            <div className="flex justify-center py-8"><Loader2 className="w-6 h-6 animate-spin text-muted-foreground" /></div>
+          ) : (
+            <Tabs defaultValue="todos">
+              <TabsList className="mb-4">
+                <TabsTrigger value="todos">Todos ({relatorios.length})</TabsTrigger>
+                <TabsTrigger value="digitais">Digitais ({digitais.length})</TabsTrigger>
+                <TabsTrigger value="digitalizados">Digitalizados ({digitalizados.length})</TabsTrigger>
+              </TabsList>
+              {["todos", "digitais", "digitalizados"].map(tab => (
+                <TabsContent key={tab} value={tab} className="overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Data</TableHead>
+                        <TableHead>Título</TableHead>
+                        <TableHead>Tipo</TableHead>
+                        <TableHead>Módulo</TableHead>
+                        <TableHead>Arquivo</TableHead>
+                        <TableHead>Status</TableHead>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </TabsContent>
-            ))}
-          </Tabs>
+                    </TableHeader>
+                    <TableBody>
+                      {(tab === "todos" ? relatorios : tab === "digitais" ? digitais : digitalizados).length === 0 ? (
+                        <TableRow>
+                          <TableCell colSpan={6} className="text-center text-muted-foreground py-8">
+                            Nenhum relatório cadastrado
+                          </TableCell>
+                        </TableRow>
+                      ) : (
+                        (tab === "todos" ? relatorios : tab === "digitais" ? digitais : digitalizados).map((r) => (
+                          <TableRow key={r.id}>
+                            <TableCell className="whitespace-nowrap">{r.data_geracao}</TableCell>
+                            <TableCell>
+                              <p className="font-medium text-sm">{r.titulo}</p>
+                              <p className="text-xs text-muted-foreground">{r.descricao}</p>
+                            </TableCell>
+                            <TableCell>
+                              <Badge className={r.tipo === "digital" ? "bg-primary/20 text-primary" : "bg-accent/20 text-accent"}>
+                                {r.tipo === "digital" ? "Digital" : "Digitalizado"}
+                              </Badge>
+                            </TableCell>
+                            <TableCell className="text-sm">{r.modulo}</TableCell>
+                            <TableCell>
+                              {r.arquivo_nome ? (
+                                <Button variant="ghost" size="sm" className="gap-1 text-xs" asChild>
+                                  <a href={r.arquivo_url || "#"} target="_blank" rel="noopener noreferrer">
+                                    <Eye className="w-3 h-3" /> {r.arquivo_nome}
+                                  </a>
+                                </Button>
+                              ) : (
+                                <span className="text-xs text-muted-foreground">—</span>
+                              )}
+                            </TableCell>
+                            <TableCell>
+                              <Badge variant={r.status === "ativo" ? "default" : "secondary"}>
+                                {r.status === "ativo" ? "Ativo" : "Arquivado"}
+                              </Badge>
+                            </TableCell>
+                          </TableRow>
+                        ))
+                      )}
+                    </TableBody>
+                  </Table>
+                </TabsContent>
+              ))}
+            </Tabs>
+          )}
         </CardContent>
       </Card>
     </>
