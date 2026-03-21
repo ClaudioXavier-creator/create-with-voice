@@ -1,8 +1,9 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { AuthProvider, useAuth } from "@/hooks/useAuth";
 import AppLayout from "@/components/layout/AppLayout";
 import Index from "./pages/Index";
 import Cadastro from "./pages/Cadastro";
@@ -15,9 +16,66 @@ import Rastreabilidade from "./pages/Rastreabilidade";
 import Pragas from "./pages/Pragas";
 import Treinamentos from "./pages/Treinamentos";
 import Indicadores from "./pages/Indicadores";
+import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
+
+function ProtectedRoute({ children }: { children: React.ReactNode }) {
+  const { session, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+      </div>
+    );
+  }
+
+  if (!session) return <Navigate to="/auth" replace />;
+  return <>{children}</>;
+}
+
+const AppRoutes = () => {
+  const { session, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+      </div>
+    );
+  }
+
+  return (
+    <Routes>
+      <Route path="/auth" element={session ? <Navigate to="/" replace /> : <Auth />} />
+      <Route
+        path="/*"
+        element={
+          <ProtectedRoute>
+            <AppLayout>
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/cadastro" element={<Cadastro />} />
+                <Route path="/documentos" element={<Documentos />} />
+                <Route path="/auditoria" element={<Auditoria />} />
+                <Route path="/nao-conformidades" element={<NaoConformidades />} />
+                <Route path="/recebimento" element={<Recebimento />} />
+                <Route path="/producao" element={<Producao />} />
+                <Route path="/rastreabilidade" element={<Rastreabilidade />} />
+                <Route path="/pragas" element={<Pragas />} />
+                <Route path="/treinamentos" element={<Treinamentos />} />
+                <Route path="/indicadores" element={<Indicadores />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </AppLayout>
+          </ProtectedRoute>
+        }
+      />
+    </Routes>
+  );
+};
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -25,22 +83,9 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <AppLayout>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/cadastro" element={<Cadastro />} />
-            <Route path="/documentos" element={<Documentos />} />
-            <Route path="/auditoria" element={<Auditoria />} />
-            <Route path="/nao-conformidades" element={<NaoConformidades />} />
-            <Route path="/recebimento" element={<Recebimento />} />
-            <Route path="/producao" element={<Producao />} />
-            <Route path="/rastreabilidade" element={<Rastreabilidade />} />
-            <Route path="/pragas" element={<Pragas />} />
-            <Route path="/treinamentos" element={<Treinamentos />} />
-            <Route path="/indicadores" element={<Indicadores />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </AppLayout>
+        <AuthProvider>
+          <AppRoutes />
+        </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>

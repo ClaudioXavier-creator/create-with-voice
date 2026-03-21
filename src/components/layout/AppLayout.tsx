@@ -2,10 +2,11 @@ import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import {
   LayoutDashboard, Building2, FileText, ClipboardCheck, AlertTriangle,
-  Package, Factory, Search, Bug, GraduationCap, BarChart3, Menu, X, Shield
+  Package, Factory, Search, Bug, GraduationCap, BarChart3, Menu, X, Shield, LogOut
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/hooks/useAuth";
 
 const NAV_ITEMS = [
   { path: "/", label: "Dashboard", icon: LayoutDashboard },
@@ -24,6 +25,7 @@ const NAV_ITEMS = [
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { user, signOut } = useAuth();
 
   return (
     <div className="flex min-h-screen">
@@ -58,9 +60,17 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             );
           })}
         </nav>
-        <div className="px-6 py-4 border-t border-sidebar-border">
-          <p className="text-xs text-sidebar-foreground/50">FeedBPF v1.0</p>
-          <p className="text-xs text-sidebar-foreground/50">© 2026 FeedBPF</p>
+        <div className="px-4 py-3 border-t border-sidebar-border space-y-2">
+          <p className="text-xs text-sidebar-foreground/60 truncate">{user?.email}</p>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={signOut}
+            className="w-full justify-start text-sidebar-foreground/70 hover:text-destructive hover:bg-sidebar-accent"
+          >
+            <LogOut className="w-4 h-4 mr-2" />
+            Sair
+          </Button>
         </div>
       </aside>
 
@@ -78,26 +88,40 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       {/* Mobile nav overlay */}
       {mobileOpen && (
         <div className="lg:hidden fixed inset-0 z-40 bg-black/50" onClick={() => setMobileOpen(false)}>
-          <aside className="w-64 h-full bg-sidebar text-sidebar-foreground pt-16 px-3 py-4 space-y-1 overflow-y-auto" onClick={(e) => e.stopPropagation()}>
-            {NAV_ITEMS.map((item) => {
-              const isActive = location.pathname === item.path;
-              return (
-                <Link
-                  key={item.path}
-                  to={item.path}
-                  onClick={() => setMobileOpen(false)}
-                  className={cn(
-                    "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
-                    isActive
-                      ? "bg-sidebar-primary text-sidebar-primary-foreground"
-                      : "text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-                  )}
-                >
-                  <item.icon className="w-5 h-5 shrink-0" />
-                  {item.label}
-                </Link>
-              );
-            })}
+          <aside className="w-64 h-full bg-sidebar text-sidebar-foreground pt-16 px-3 py-4 space-y-1 overflow-y-auto flex flex-col" onClick={(e) => e.stopPropagation()}>
+            <div className="flex-1 space-y-1">
+              {NAV_ITEMS.map((item) => {
+                const isActive = location.pathname === item.path;
+                return (
+                  <Link
+                    key={item.path}
+                    to={item.path}
+                    onClick={() => setMobileOpen(false)}
+                    className={cn(
+                      "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
+                      isActive
+                        ? "bg-sidebar-primary text-sidebar-primary-foreground"
+                        : "text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                    )}
+                  >
+                    <item.icon className="w-5 h-5 shrink-0" />
+                    {item.label}
+                  </Link>
+                );
+              })}
+            </div>
+            <div className="pt-3 border-t border-sidebar-border">
+              <p className="text-xs text-sidebar-foreground/60 truncate px-3 mb-2">{user?.email}</p>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={signOut}
+                className="w-full justify-start text-sidebar-foreground/70 hover:text-destructive"
+              >
+                <LogOut className="w-4 h-4 mr-2" />
+                Sair
+              </Button>
+            </div>
           </aside>
         </div>
       )}

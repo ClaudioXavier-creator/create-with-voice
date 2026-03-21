@@ -1,0 +1,523 @@
+export type Json =
+  | string
+  | number
+  | boolean
+  | null
+  | { [key: string]: Json | undefined }
+  | Json[]
+
+export type Database = {
+  // Allows to automatically instantiate createClient with right options
+  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
+  __InternalSupabase: {
+    PostgrestVersion: "14.4"
+  }
+  public: {
+    Tables: {
+      checklist_items: {
+        Row: {
+          area: string
+          auditoria_data: string | null
+          conforme: boolean | null
+          created_at: string
+          id: string
+          item: string
+          observacao: string | null
+          user_id: string
+        }
+        Insert: {
+          area: string
+          auditoria_data?: string | null
+          conforme?: boolean | null
+          created_at?: string
+          id?: string
+          item: string
+          observacao?: string | null
+          user_id: string
+        }
+        Update: {
+          area?: string
+          auditoria_data?: string | null
+          conforme?: boolean | null
+          created_at?: string
+          id?: string
+          item?: string
+          observacao?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      controle_pragas: {
+        Row: {
+          acao: string | null
+          created_at: string
+          data: string
+          id: string
+          local: string
+          responsavel: string | null
+          tipo_praga: string
+          user_id: string
+        }
+        Insert: {
+          acao?: string | null
+          created_at?: string
+          data?: string
+          id?: string
+          local: string
+          responsavel?: string | null
+          tipo_praga: string
+          user_id: string
+        }
+        Update: {
+          acao?: string | null
+          created_at?: string
+          data?: string
+          id?: string
+          local?: string
+          responsavel?: string | null
+          tipo_praga?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      documentos: {
+        Row: {
+          codigo: string
+          created_at: string
+          data_revisao: string | null
+          id: string
+          nome: string
+          responsavel: string | null
+          status: string | null
+          updated_at: string
+          user_id: string
+          versao: string | null
+        }
+        Insert: {
+          codigo: string
+          created_at?: string
+          data_revisao?: string | null
+          id?: string
+          nome: string
+          responsavel?: string | null
+          status?: string | null
+          updated_at?: string
+          user_id: string
+          versao?: string | null
+        }
+        Update: {
+          codigo?: string
+          created_at?: string
+          data_revisao?: string | null
+          id?: string
+          nome?: string
+          responsavel?: string | null
+          status?: string | null
+          updated_at?: string
+          user_id?: string
+          versao?: string | null
+        }
+        Relationships: []
+      }
+      empresas: {
+        Row: {
+          capacidade: string | null
+          cnpj: string | null
+          created_at: string
+          crmv: string | null
+          endereco: string | null
+          id: string
+          nome: string
+          responsavel_tecnico: string | null
+          tipo_producao: string[] | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          capacidade?: string | null
+          cnpj?: string | null
+          created_at?: string
+          crmv?: string | null
+          endereco?: string | null
+          id?: string
+          nome: string
+          responsavel_tecnico?: string | null
+          tipo_producao?: string[] | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          capacidade?: string | null
+          cnpj?: string | null
+          created_at?: string
+          crmv?: string | null
+          endereco?: string | null
+          id?: string
+          nome?: string
+          responsavel_tecnico?: string | null
+          tipo_producao?: string[] | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      nao_conformidades: {
+        Row: {
+          acao_corretiva: string | null
+          causa: string | null
+          created_at: string
+          data: string
+          descricao: string
+          id: string
+          prazo: string | null
+          responsavel: string | null
+          setor: string
+          status: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          acao_corretiva?: string | null
+          causa?: string | null
+          created_at?: string
+          data?: string
+          descricao: string
+          id?: string
+          prazo?: string | null
+          responsavel?: string | null
+          setor: string
+          status?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          acao_corretiva?: string | null
+          causa?: string | null
+          created_at?: string
+          data?: string
+          descricao?: string
+          id?: string
+          prazo?: string | null
+          responsavel?: string | null
+          setor?: string
+          status?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      producao: {
+        Row: {
+          created_at: string
+          data: string
+          id: string
+          lote: string | null
+          operador: string | null
+          produto: string
+          quantidade: string | null
+          tempo_mistura: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          data?: string
+          id?: string
+          lote?: string | null
+          operador?: string | null
+          produto: string
+          quantidade?: string | null
+          tempo_mistura?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          data?: string
+          id?: string
+          lote?: string | null
+          operador?: string | null
+          produto?: string
+          quantidade?: string | null
+          tempo_mistura?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          cargo: string | null
+          created_at: string
+          id: string
+          nome: string
+          telefone: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          cargo?: string | null
+          created_at?: string
+          id?: string
+          nome?: string
+          telefone?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          cargo?: string | null
+          created_at?: string
+          id?: string
+          nome?: string
+          telefone?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      rastreabilidade: {
+        Row: {
+          created_at: string
+          fornecedor: string | null
+          id: string
+          lote_mp: string | null
+          lote_produto: string | null
+          materia_prima: string
+          produto: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          fornecedor?: string | null
+          id?: string
+          lote_mp?: string | null
+          lote_produto?: string | null
+          materia_prima: string
+          produto: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          fornecedor?: string | null
+          id?: string
+          lote_mp?: string | null
+          lote_produto?: string | null
+          materia_prima?: string
+          produto?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      recebimento_mp: {
+        Row: {
+          aprovado: boolean | null
+          created_at: string
+          data: string
+          fornecedor: string
+          id: string
+          insetos: string | null
+          lote: string | null
+          materia_prima: string
+          odor: string | null
+          umidade: string | null
+          user_id: string
+        }
+        Insert: {
+          aprovado?: boolean | null
+          created_at?: string
+          data?: string
+          fornecedor: string
+          id?: string
+          insetos?: string | null
+          lote?: string | null
+          materia_prima: string
+          odor?: string | null
+          umidade?: string | null
+          user_id: string
+        }
+        Update: {
+          aprovado?: boolean | null
+          created_at?: string
+          data?: string
+          fornecedor?: string
+          id?: string
+          insetos?: string | null
+          lote?: string | null
+          materia_prima?: string
+          odor?: string | null
+          umidade?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      treinamentos: {
+        Row: {
+          created_at: string
+          data: string
+          funcionario: string
+          id: string
+          instrutor: string | null
+          treinamento: string
+          user_id: string
+          validade: string | null
+        }
+        Insert: {
+          created_at?: string
+          data?: string
+          funcionario: string
+          id?: string
+          instrutor?: string | null
+          treinamento: string
+          user_id: string
+          validade?: string | null
+        }
+        Update: {
+          created_at?: string
+          data?: string
+          funcionario?: string
+          id?: string
+          instrutor?: string | null
+          treinamento?: string
+          user_id?: string
+          validade?: string | null
+        }
+        Relationships: []
+      }
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      [_ in never]: never
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
+  }
+}
+
+type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
+
+type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
+
+export type Tables<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
+    : never = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+      Row: infer R
+    }
+    ? R
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])
+    ? (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
+        Row: infer R
+      }
+      ? R
+      : never
+    : never
+
+export type TablesInsert<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    : never = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Insert: infer I
+    }
+    ? I
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+        Insert: infer I
+      }
+      ? I
+      : never
+    : never
+
+export type TablesUpdate<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    : never = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Update: infer U
+    }
+    ? U
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+        Update: infer U
+      }
+      ? U
+      : never
+    : never
+
+export type Enums<
+  DefaultSchemaEnumNameOrOptions extends
+    | keyof DefaultSchema["Enums"]
+    | { schema: keyof DatabaseWithoutInternals },
+  EnumName extends DefaultSchemaEnumNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
+    : never = never,
+> = DefaultSchemaEnumNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
+  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
+    ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
+    : never
+
+export type CompositeTypes<
+  PublicCompositeTypeNameOrOptions extends
+    | keyof DefaultSchema["CompositeTypes"]
+    | { schema: keyof DatabaseWithoutInternals },
+  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
+    : never = never,
+> = PublicCompositeTypeNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
+  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
+    ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
+    : never
+
+export const Constants = {
+  public: {
+    Enums: {},
+  },
+} as const
