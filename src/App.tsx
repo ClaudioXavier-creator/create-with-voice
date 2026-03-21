@@ -66,6 +66,7 @@ const AppRoutes = () => {
                 <Route path="/nao-conformidades" element={<NaoConformidades />} />
                 <Route path="/recebimento" element={<Recebimento />} />
                 <Route path="/producao" element={<Producao />} />
+                <Route path="/pcp" element={<PCP />} />
                 <Route path="/rastreabilidade" element={<Rastreabilidade />} />
                 <Route path="/pragas" element={<Pragas />} />
                 <Route path="/treinamentos" element={<Treinamentos />} />
