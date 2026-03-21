@@ -85,24 +85,81 @@ export default function NaoConformidades() {
 
   useEffect(() => { fetchData(); }, [user]);
 
+  const resetForm = () => {
+    setFormData(new Date().toISOString().split("T")[0]);
+    setFormSetor(""); setFormDescricao(""); setFormCausa("");
+    setFormAcao(""); setFormResponsavel(""); setFormPrazo("");
+  };
+
   const handleAdd = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!user) return;
+    if (!user || !formSetor || !formDescricao) return;
     setSaving(true);
-    const fd = new FormData(e.currentTarget);
     const { error } = await supabase.from("nao_conformidades").insert({
       user_id: user.id,
-      data: fd.get("data") as string,
-      setor: fd.get("setor") as string,
-      descricao: fd.get("descricao") as string,
-      causa: fd.get("causa") as string,
-      acao_corretiva: fd.get("acao") as string,
-      responsavel: fd.get("responsavel") as string,
-      prazo: fd.get("prazo") as string || null,
+      data: formData,
+      setor: formSetor,
+      descricao: formDescricao,
+      causa: formCausa,
+      acao_corretiva: formAcao,
+      responsavel: formResponsavel,
+      prazo: formPrazo || null,
     });
     if (error) toast.error("Erro ao salvar");
-    else { toast.success("NC registrada!"); setOpen(false); fetchData(); }
+    else { toast.success("NC registrada com plano de ação!"); setOpen(false); resetForm(); fetchData(); }
     setSaving(false);
+  };
+
+  const gerarPlanoIA = async () => {
+    if (!formDescricao || !formSetor) {
+      toast.error("Preencha o setor e a descrição da NC antes de gerar o plano.");
+      return;
+    }
+    setGeneratingAI(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("nc-plano-acao", {
+        body: { descricao: formDescricao, setor: formSetor },
+      });
+      if (error) { toast.error("Erro ao gerar plano: " + error.message); setGeneratingAI(false); return; }
+      if (data?.error) { toast.error(data.error); setGeneratingAI(false); return; }
+      const result = data?.data;
+      if (result) {
+        setFormCausa(result.causa || "");
+        setFormAcao(result.acao_corretiva || "");
+        setFormResponsavel(result.responsavel_sugerido || "");
+        if (result.prazo_dias) {
+          const prazoDate = new Date();
+          prazoDate.setDate(prazoDate.getDate() + result.prazo_dias);
+          setFormPrazo(prazoDate.toISOString().split("T")[0]);
+        }
+        toast.success("Plano de ação gerado pela IA! Revise e ajuste se necessário.");
+      }
+    } catch { toast.error("Erro ao conectar com IA"); }
+    setGeneratingAI(false);
+  };
+
+  const gerarPlanoEditIA = async (ncDescricao: string, ncSetor: string) => {
+    setGeneratingEditAI(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("nc-plano-acao", {
+        body: { descricao: ncDescricao, setor: ncSetor },
+      });
+      if (error) { toast.error("Erro ao gerar plano: " + error.message); setGeneratingEditAI(false); return; }
+      if (data?.error) { toast.error(data.error); setGeneratingEditAI(false); return; }
+      const result = data?.data;
+      if (result) {
+        setEditCausa(result.causa || "");
+        setEditAcao(result.acao_corretiva || "");
+        setEditResponsavel(result.responsavel_sugerido || "");
+        if (result.prazo_dias) {
+          const prazoDate = new Date();
+          prazoDate.setDate(prazoDate.getDate() + result.prazo_dias);
+          setEditPrazo(prazoDate.toISOString().split("T")[0]);
+        }
+        toast.success("Plano de ação gerado pela IA!");
+      }
+    } catch { toast.error("Erro ao conectar com IA"); }
+    setGeneratingEditAI(false);
   };
 
   const handleUpdateStatus = async (id: string, newStatus: string) => {
