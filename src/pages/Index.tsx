@@ -62,9 +62,11 @@ export default function Index() {
     if (!user) return;
 
     async function fetchDashboard() {
-      const [ncsRes, checklistRes, treinamentosRes, recentNcsRes] = await Promise.all([
+      const [ncsRes, ncsFullRes, checklistRes, checklistDatesRes, treinamentosRes, recentNcsRes] = await Promise.all([
         supabase.from("nao_conformidades").select("status").eq("user_id", user!.id),
+        supabase.from("nao_conformidades").select("data, status").eq("user_id", user!.id),
         supabase.from("checklist_items").select("area, conforme").eq("user_id", user!.id),
+        supabase.from("checklist_items").select("auditoria_data, conforme").eq("user_id", user!.id),
         supabase.from("treinamentos").select("validade").eq("user_id", user!.id),
         supabase
           .from("nao_conformidades")
@@ -75,7 +77,9 @@ export default function Index() {
       ]);
 
       const ncs = ncsRes.data || [];
+      const ncsFull = ncsFullRes.data || [];
       const checklist = checklistRes.data || [];
+      const checklistDates = checklistDatesRes.data || [];
       const treinamentos = treinamentosRes.data || [];
       const recentNCs = (recentNcsRes.data || []).map((nc) => ({
         setor: nc.setor,
@@ -87,14 +91,11 @@ export default function Index() {
       const ncAbertas = ncs.filter((nc) => nc.status === "aberta" || nc.status === "em_andamento").length;
 
       // Auditorias = datas únicas de checklist
-      const uniqueDates = new Set(checklist.map(() => "audit"));
-      const auditoriasRealizadas = checklist.length > 0 ? new Set(
-        (await supabase.from("checklist_items").select("auditoria_data").eq("user_id", user!.id)).data?.map(
-          (c) => c.auditoria_data
-        ).filter(Boolean) || []
-      ).size : 0;
+      const auditoriasRealizadas = new Set(
+        checklistDates.map((c) => c.auditoria_data).filter(Boolean)
+      ).size;
 
-      // Treinamentos pendentes (vencidos ou a vencer em 30 dias)
+      // Treinamentos pendentes
       const hoje = new Date();
       const em30dias = new Date();
       em30dias.setDate(hoje.getDate() + 30);
@@ -104,7 +105,7 @@ export default function Index() {
         return validade <= em30dias;
       }).length;
 
-      // Conformidade por área (checklist)
+      // Conformidade por área
       const areaMap = new Map<string, { total: number; conformes: number }>();
       checklist.forEach((c) => {
         const entry = areaMap.get(c.area) || { total: 0, conformes: 0 };
@@ -112,7 +113,6 @@ export default function Index() {
         if (c.conforme === true) entry.conformes++;
         areaMap.set(c.area, entry);
       });
-
       const conformidadePorArea = Array.from(areaMap.entries()).map(([area, { total, conformes }]) => ({
         area: area.replace(/^\d+\.\s*/, "").split("(")[0].trim(),
         pct: total > 0 ? Math.round((conformes / total) * 100) : 0,
@@ -123,6 +123,52 @@ export default function Index() {
       const totalConformes = checklist.filter((c) => c.conforme === true).length;
       const conformidadeBPF = totalChecklist > 0 ? Math.round((totalConformes / totalChecklist) * 100) : 0;
 
+      // --- Gráfico: NCs por mês (últimos 6 meses) ---
+      const mesesNomes = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
+      const ncMesMap = new Map<string, { abertas: number; fechadas: number }>();
+      for (let i = 5; i >= 0; i--) {
+        const d = new Date();
+        d.setMonth(d.getMonth() - i);
+        const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+        ncMesMap.set(key, { abertas: 0, fechadas: 0 });
+      }
+      ncsFull.forEach((nc) => {
+        if (!nc.data) return;
+        const key = nc.data.substring(0, 7);
+        const entry = ncMesMap.get(key);
+        if (!entry) return;
+        if (nc.status === "fechada") entry.fechadas++;
+        else entry.abertas++;
+      });
+      const ncPorMes: NCPorMes[] = Array.from(ncMesMap.entries()).map(([key, val]) => {
+        const [, m] = key.split("-");
+        return { mes: mesesNomes[parseInt(m) - 1], abertas: val.abertas, fechadas: val.fechadas };
+      });
+
+      // --- Gráfico: Conformidade por mês (baseado em auditoria_data) ---
+      const confMesMap = new Map<string, { total: number; conformes: number }>();
+      for (let i = 5; i >= 0; i--) {
+        const d = new Date();
+        d.setMonth(d.getMonth() - i);
+        const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+        confMesMap.set(key, { total: 0, conformes: 0 });
+      }
+      checklistDates.forEach((c) => {
+        if (!c.auditoria_data) return;
+        const key = c.auditoria_data.substring(0, 7);
+        const entry = confMesMap.get(key);
+        if (!entry) return;
+        entry.total++;
+        if (c.conforme === true) entry.conformes++;
+      });
+      const conformidadePorMes: ConformidadePorMes[] = Array.from(confMesMap.entries()).map(([key, val]) => {
+        const [, m] = key.split("-");
+        return {
+          mes: mesesNomes[parseInt(m) - 1],
+          percentual: val.total > 0 ? Math.round((val.conformes / val.total) * 100) : 0,
+        };
+      });
+
       setData({
         ncAbertas,
         auditoriasRealizadas,
@@ -130,6 +176,8 @@ export default function Index() {
         conformidadeBPF,
         recentNCs,
         conformidadePorArea,
+        ncPorMes,
+        conformidadePorMes,
         loading: false,
       });
     }
