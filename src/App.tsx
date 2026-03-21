@@ -22,6 +22,7 @@ import ExecucaoPops from "./pages/ExecucaoPops";
 import Relatorios from "./pages/Relatorios";
 import Legislacao from "./pages/Legislacao";
 import Fornecedores from "./pages/Fornecedores";
+import Manual from "./pages/Manual";
 import Auth from "./pages/Auth";
 import AtivarLicenca from "./pages/AtivarLicenca";
 import NotFound from "./pages/NotFound";
@@ -98,6 +99,7 @@ const AppRoutes = () => {
                   <Route path="/execucao-pops" element={<ExecucaoPops />} />
                   <Route path="/relatorios" element={<Relatorios />} />
                   <Route path="/legislacao" element={<Legislacao />} />
+                  <Route path="/manual" element={<Manual />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </AppLayout>
