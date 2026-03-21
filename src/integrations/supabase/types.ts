@@ -161,6 +161,59 @@ export type Database = {
         }
         Relationships: []
       }
+      execucao_pops: {
+        Row: {
+          checklist_auditoria_ref: string | null
+          codigo_pop: string
+          created_at: string
+          data_execucao: string
+          documento_id: string | null
+          executor: string
+          id: string
+          nome_pop: string
+          observacoes: string | null
+          setor: string | null
+          status: string | null
+          user_id: string
+        }
+        Insert: {
+          checklist_auditoria_ref?: string | null
+          codigo_pop: string
+          created_at?: string
+          data_execucao?: string
+          documento_id?: string | null
+          executor: string
+          id?: string
+          nome_pop: string
+          observacoes?: string | null
+          setor?: string | null
+          status?: string | null
+          user_id: string
+        }
+        Update: {
+          checklist_auditoria_ref?: string | null
+          codigo_pop?: string
+          created_at?: string
+          data_execucao?: string
+          documento_id?: string | null
+          executor?: string
+          id?: string
+          nome_pop?: string
+          observacoes?: string | null
+          setor?: string | null
+          status?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "execucao_pops_documento_id_fkey"
+            columns: ["documento_id"]
+            isOneToOne: false
+            referencedRelation: "documentos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       nao_conformidades: {
         Row: {
           acao_corretiva: string | null
@@ -346,6 +399,51 @@ export type Database = {
           materia_prima?: string
           odor?: string | null
           umidade?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      relatorios: {
+        Row: {
+          arquivo_nome: string | null
+          arquivo_url: string | null
+          created_at: string
+          data_geracao: string | null
+          descricao: string | null
+          id: string
+          modulo: string
+          status: string | null
+          tipo: string
+          titulo: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          arquivo_nome?: string | null
+          arquivo_url?: string | null
+          created_at?: string
+          data_geracao?: string | null
+          descricao?: string | null
+          id?: string
+          modulo: string
+          status?: string | null
+          tipo: string
+          titulo: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          arquivo_nome?: string | null
+          arquivo_url?: string | null
+          created_at?: string
+          data_geracao?: string | null
+          descricao?: string | null
+          id?: string
+          modulo?: string
+          status?: string | null
+          tipo?: string
+          titulo?: string
+          updated_at?: string
           user_id?: string
         }
         Relationships: []

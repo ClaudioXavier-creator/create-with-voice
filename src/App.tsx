@@ -16,6 +16,8 @@ import Rastreabilidade from "./pages/Rastreabilidade";
 import Pragas from "./pages/Pragas";
 import Treinamentos from "./pages/Treinamentos";
 import Indicadores from "./pages/Indicadores";
+import ExecucaoPops from "./pages/ExecucaoPops";
+import Relatorios from "./pages/Relatorios";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 
@@ -67,6 +69,8 @@ const AppRoutes = () => {
                 <Route path="/pragas" element={<Pragas />} />
                 <Route path="/treinamentos" element={<Treinamentos />} />
                 <Route path="/indicadores" element={<Indicadores />} />
+                <Route path="/execucao-pops" element={<ExecucaoPops />} />
+                <Route path="/relatorios" element={<Relatorios />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </AppLayout>

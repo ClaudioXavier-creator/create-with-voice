@@ -2,7 +2,8 @@ import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import {
   LayoutDashboard, Building2, FileText, ClipboardCheck, AlertTriangle,
-  Package, Factory, Search, Bug, GraduationCap, BarChart3, Menu, X, Shield, LogOut
+  Package, Factory, Search, Bug, GraduationCap, BarChart3, Menu, X, Shield, LogOut,
+  PlayCircle, FileDown
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -13,6 +14,7 @@ const NAV_ITEMS = [
   { path: "/cadastro", label: "Cadastro", icon: Building2 },
   { path: "/documentos", label: "Documentos / POPs", icon: FileText },
   { path: "/auditoria", label: "Auditoria BPF", icon: ClipboardCheck },
+  { path: "/execucao-pops", label: "Execução ITs/POPs", icon: PlayCircle },
   { path: "/nao-conformidades", label: "Não Conformidades", icon: AlertTriangle },
   { path: "/recebimento", label: "Recebimento MP", icon: Package },
   { path: "/producao", label: "Produção", icon: Factory },
@@ -20,6 +22,7 @@ const NAV_ITEMS = [
   { path: "/pragas", label: "Controle de Pragas", icon: Bug },
   { path: "/treinamentos", label: "Treinamentos", icon: GraduationCap },
   { path: "/indicadores", label: "Indicadores", icon: BarChart3 },
+  { path: "/relatorios", label: "Relatórios", icon: FileDown },
 ];
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {

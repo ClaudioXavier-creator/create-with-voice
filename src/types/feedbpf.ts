@@ -25,6 +25,7 @@ export interface ChecklistItem {
   item: string;
   conforme: boolean | null;
   observacao: string;
+  popVinculado?: string;
 }
 
 export interface NaoConformidade {
@@ -86,4 +87,28 @@ export interface ControlePraga {
   tipoPraga: string;
   acao: string;
   responsavel: string;
+}
+
+export interface ExecucaoPOP {
+  id: string;
+  codigoPop: string;
+  nomePop: string;
+  dataExecucao: string;
+  executor: string;
+  setor: string;
+  status: "pendente" | "em_execucao" | "concluido" | "nao_conforme";
+  observacoes: string;
+  checklistRef?: string;
+}
+
+export interface Relatorio {
+  id: string;
+  titulo: string;
+  tipo: "digital" | "digitalizado";
+  modulo: string;
+  descricao: string;
+  arquivoUrl?: string;
+  arquivoNome?: string;
+  dataGeracao: string;
+  status: "ativo" | "arquivado";
 }

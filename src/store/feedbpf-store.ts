@@ -10,34 +10,100 @@ const SETORES = [
   "Área externa", "Manutenção"
 ];
 
-const CHECKLIST_PADRAO: ChecklistItem[] = [
-  { id: "1", area: "Estrutura", item: "Piso íntegro e lavável", conforme: null, observacao: "" },
-  { id: "2", area: "Estrutura", item: "Paredes sem rachaduras", conforme: null, observacao: "" },
-  { id: "3", area: "Estrutura", item: "Iluminação adequada", conforme: null, observacao: "" },
-  { id: "4", area: "Estrutura", item: "Ventilação suficiente", conforme: null, observacao: "" },
-  { id: "5", area: "Estrutura", item: "Telas em aberturas", conforme: null, observacao: "" },
-  { id: "6", area: "Higiene", item: "Equipamentos limpos", conforme: null, observacao: "" },
-  { id: "7", area: "Higiene", item: "Ausência de resíduos no chão", conforme: null, observacao: "" },
-  { id: "8", area: "Higiene", item: "Uso de EPIs pelos colaboradores", conforme: null, observacao: "" },
-  { id: "9", area: "Higiene", item: "Lixeiras identificadas e tampadas", conforme: null, observacao: "" },
-  { id: "10", area: "Higiene", item: "Sanitários limpos e abastecidos", conforme: null, observacao: "" },
-  { id: "11", area: "Controle de Pragas", item: "Armadilhas instaladas e identificadas", conforme: null, observacao: "" },
-  { id: "12", area: "Controle de Pragas", item: "Monitoramento registrado", conforme: null, observacao: "" },
-  { id: "13", area: "Controle de Pragas", item: "Ausência de sinais de roedores", conforme: null, observacao: "" },
-  { id: "14", area: "Controle de Pragas", item: "Ausência de aves na fábrica", conforme: null, observacao: "" },
-  { id: "15", area: "Armazenamento", item: "Matérias-primas identificadas", conforme: null, observacao: "" },
-  { id: "16", area: "Armazenamento", item: "Sistema FIFO implementado", conforme: null, observacao: "" },
-  { id: "17", area: "Armazenamento", item: "Estrados em bom estado", conforme: null, observacao: "" },
-  { id: "18", area: "Armazenamento", item: "Produtos afastados das paredes", conforme: null, observacao: "" },
-  { id: "19", area: "Produção", item: "Sequência de produção correta", conforme: null, observacao: "" },
-  { id: "20", area: "Produção", item: "Controle de tempo de mistura", conforme: null, observacao: "" },
-  { id: "21", area: "Produção", item: "Flushing realizado quando necessário", conforme: null, observacao: "" },
-  { id: "22", area: "Produção", item: "Registros de produção preenchidos", conforme: null, observacao: "" },
-  { id: "23", area: "Rastreabilidade", item: "Lotes identificados corretamente", conforme: null, observacao: "" },
-  { id: "24", area: "Rastreabilidade", item: "Registro de origem de MP", conforme: null, observacao: "" },
-  { id: "25", area: "Documentação", item: "POPs atualizados e acessíveis", conforme: null, observacao: "" },
-  { id: "26", area: "Documentação", item: "Manual BPF disponível", conforme: null, observacao: "" },
-  { id: "27", area: "Documentação", item: "Treinamentos registrados", conforme: null, observacao: "" },
+// ─── Checklist baseado no Decreto 12.031/2024 ───
+// Temas de auditoria conforme Títulos II, III, IV e V do Decreto
+const CHECKLIST_DECRETO_12031: ChecklistItem[] = [
+  // ── 1. INSTALAÇÕES E EQUIPAMENTOS (Art. 34-36) ──
+  { id: "d1", area: "1. Instalações e Equipamentos (Art. 34-36)", item: "Instalações atendem normas complementares do MAPA", conforme: null, observacao: "", popVinculado: "" },
+  { id: "d2", area: "1. Instalações e Equipamentos (Art. 34-36)", item: "Pisos íntegros, laváveis e em bom estado de conservação", conforme: null, observacao: "", popVinculado: "" },
+  { id: "d3", area: "1. Instalações e Equipamentos (Art. 34-36)", item: "Paredes e tetos sem rachaduras ou infiltrações", conforme: null, observacao: "", popVinculado: "" },
+  { id: "d4", area: "1. Instalações e Equipamentos (Art. 34-36)", item: "Iluminação adequada em todas as áreas de produção", conforme: null, observacao: "", popVinculado: "" },
+  { id: "d5", area: "1. Instalações e Equipamentos (Art. 34-36)", item: "Ventilação suficiente para evitar acúmulo de poeira", conforme: null, observacao: "", popVinculado: "" },
+  { id: "d6", area: "1. Instalações e Equipamentos (Art. 34-36)", item: "Telas em aberturas para impedir entrada de pragas", conforme: null, observacao: "", popVinculado: "" },
+  { id: "d7", area: "1. Instalações e Equipamentos (Art. 34-36)", item: "Equipamentos em boas condições de manutenção (Art. 39-IX)", conforme: null, observacao: "", popVinculado: "" },
+  { id: "d8", area: "1. Instalações e Equipamentos (Art. 34-36)", item: "Fluxo de produção adequado, sem cruzamento de fluxos", conforme: null, observacao: "", popVinculado: "" },
+
+  // ── 2. CONDIÇÕES DE HIGIENE – BPF e PPHO (Art. 37-38) ──
+  { id: "d9", area: "2. Higiene – BPF e PPHO (Art. 37-38)", item: "Operações realizadas de forma higiênica (Art. 37)", conforme: null, observacao: "", popVinculado: "POP-001" },
+  { id: "d10", area: "2. Higiene – BPF e PPHO (Art. 37-38)", item: "Sem acúmulo de materiais ou produtos nas áreas", conforme: null, observacao: "", popVinculado: "POP-001" },
+  { id: "d11", area: "2. Higiene – BPF e PPHO (Art. 37-38)", item: "Equipamentos limpos antes e após operações", conforme: null, observacao: "", popVinculado: "POP-001" },
+  { id: "d12", area: "2. Higiene – BPF e PPHO (Art. 37-38)", item: "Uso de EPIs pelos colaboradores", conforme: null, observacao: "", popVinculado: "" },
+  { id: "d13", area: "2. Higiene – BPF e PPHO (Art. 37-38)", item: "Sanitários e vestiários limpos e abastecidos", conforme: null, observacao: "", popVinculado: "POP-001" },
+  { id: "d14", area: "2. Higiene – BPF e PPHO (Art. 37-38)", item: "Lixeiras identificadas e tampadas", conforme: null, observacao: "", popVinculado: "" },
+  { id: "d15", area: "2. Higiene – BPF e PPHO (Art. 37-38)", item: "PPHO implementado e monitorado (Art. 10-XXIX)", conforme: null, observacao: "", popVinculado: "" },
+
+  // ── 3. PROGRAMAS DE AUTOCONTROLE (Art. 40) ──
+  { id: "d16", area: "3. Programas de Autocontrole (Art. 40)", item: "Programas de autocontrole implementados e mantidos", conforme: null, observacao: "", popVinculado: "" },
+  { id: "d17", area: "3. Programas de Autocontrole (Art. 40)", item: "Registros sistematizados e auditáveis (Art. 40-I)", conforme: null, observacao: "", popVinculado: "" },
+  { id: "d18", area: "3. Programas de Autocontrole (Art. 40)", item: "Previsão de recolhimento de lotes (Art. 40-II)", conforme: null, observacao: "", popVinculado: "" },
+  { id: "d19", area: "3. Programas de Autocontrole (Art. 40)", item: "Procedimentos de autocorreção descritos (Art. 40-III)", conforme: null, observacao: "", popVinculado: "" },
+  { id: "d20", area: "3. Programas de Autocontrole (Art. 40)", item: "BPF estruturadas como pré-requisito (Art. 40 §2)", conforme: null, observacao: "", popVinculado: "" },
+  { id: "d21", area: "3. Programas de Autocontrole (Art. 40)", item: "APPCC implementado quando aplicável (Art. 40 §2)", conforme: null, observacao: "", popVinculado: "" },
+  { id: "d22", area: "3. Programas de Autocontrole (Art. 40)", item: "Sistema informatizado com segurança e integridade (Art. 40 §3)", conforme: null, observacao: "", popVinculado: "" },
+
+  // ── 4. RASTREABILIDADE (Art. 41, 10-XXXIII) ──
+  { id: "d23", area: "4. Rastreabilidade (Art. 41)", item: "Mecanismos de rastreabilidade implementados", conforme: null, observacao: "", popVinculado: "POP-006" },
+  { id: "d24", area: "4. Rastreabilidade (Art. 41)", item: "Identificação de origem e movimentação do produto (Art. 10-XXXIII)", conforme: null, observacao: "", popVinculado: "POP-006" },
+  { id: "d25", area: "4. Rastreabilidade (Art. 41)", item: "Lotes identificados corretamente em todas as etapas", conforme: null, observacao: "", popVinculado: "POP-006" },
+  { id: "d26", area: "4. Rastreabilidade (Art. 41)", item: "Rastreabilidade desde MP até produto final expedido", conforme: null, observacao: "", popVinculado: "POP-006" },
+
+  // ── 5. CONTROLE DE CONTAMINAÇÃO CRUZADA (Art. 10-XII) ──
+  { id: "d27", area: "5. Contaminação Cruzada (Art. 10-XII)", item: "Medidas para evitar contaminação cruzada implementadas", conforme: null, observacao: "", popVinculado: "POP-005" },
+  { id: "d28", area: "5. Contaminação Cruzada (Art. 10-XII)", item: "Flushing realizado conforme sequência de produção", conforme: null, observacao: "", popVinculado: "POP-005" },
+  { id: "d29", area: "5. Contaminação Cruzada (Art. 10-XII)", item: "Rações medicamentosas segregadas adequadamente", conforme: null, observacao: "", popVinculado: "POP-005" },
+
+  // ── 6. RECEBIMENTO E ARMAZENAMENTO (Art. 38-39) ──
+  { id: "d30", area: "6. Recebimento e Armazenamento (Art. 38-39)", item: "Controle de recepção com indicação de procedência (Art. 39-XIII)", conforme: null, observacao: "", popVinculado: "POP-003" },
+  { id: "d31", area: "6. Recebimento e Armazenamento (Art. 38-39)", item: "MP armazenadas em condições adequadas (Art. 38)", conforme: null, observacao: "", popVinculado: "" },
+  { id: "d32", area: "6. Recebimento e Armazenamento (Art. 38-39)", item: "Sistema FIFO implementado", conforme: null, observacao: "", popVinculado: "" },
+  { id: "d33", area: "6. Recebimento e Armazenamento (Art. 38-39)", item: "Produtos identificados e afastados das paredes", conforme: null, observacao: "", popVinculado: "" },
+  { id: "d34", area: "6. Recebimento e Armazenamento (Art. 38-39)", item: "Produtos vencidos segregados e identificados (Art. 55)", conforme: null, observacao: "", popVinculado: "" },
+
+  // ── 7. PRODUÇÃO E PROCESSO (Art. 39, 57) ──
+  { id: "d35", area: "7. Produção e Processo (Art. 39, 57)", item: "Registros de fabricação preenchidos (Art. 39-XIII)", conforme: null, observacao: "", popVinculado: "POP-004" },
+  { id: "d36", area: "7. Produção e Processo (Art. 39, 57)", item: "Controle de tempo de mistura registrado", conforme: null, observacao: "", popVinculado: "POP-004" },
+  { id: "d37", area: "7. Produção e Processo (Art. 39, 57)", item: "Sequência de produção documentada", conforme: null, observacao: "", popVinculado: "" },
+  { id: "d38", area: "7. Produção e Processo (Art. 39, 57)", item: "Rastreabilidade mantida entre fabricantes (Art. 57 §2)", conforme: null, observacao: "", popVinculado: "" },
+
+  // ── 8. CONTROLE DE PRAGAS ──
+  { id: "d39", area: "8. Controle de Pragas", item: "Programa de controle de pragas implementado", conforme: null, observacao: "", popVinculado: "POP-002" },
+  { id: "d40", area: "8. Controle de Pragas", item: "Armadilhas instaladas, identificadas e monitoradas", conforme: null, observacao: "", popVinculado: "POP-002" },
+  { id: "d41", area: "8. Controle de Pragas", item: "Ausência de sinais de roedores/aves/insetos", conforme: null, observacao: "", popVinculado: "POP-002" },
+  { id: "d42", area: "8. Controle de Pragas", item: "Registros de monitoramento atualizados", conforme: null, observacao: "", popVinculado: "POP-002" },
+
+  // ── 9. ROTULAGEM (Art. 61-66) ──
+  { id: "d43", area: "9. Rotulagem (Art. 61-66)", item: "Produtos rotulados conforme Art. 64", conforme: null, observacao: "", popVinculado: "" },
+  { id: "d44", area: "9. Rotulagem (Art. 61-66)", item: "Identificação do lote no rótulo (Art. 64-XIII)", conforme: null, observacao: "", popVinculado: "" },
+  { id: "d45", area: "9. Rotulagem (Art. 61-66)", item: "Data de validade presente (Art. 64-XIV)", conforme: null, observacao: "", popVinculado: "" },
+  { id: "d46", area: "9. Rotulagem (Art. 61-66)", item: "Sem informações falsas ou enganosas (Art. 65)", conforme: null, observacao: "", popVinculado: "" },
+
+  // ── 10. ANÁLISE LABORATORIAL (Art. 68, 76) ──
+  { id: "d47", area: "10. Análise Laboratorial (Art. 68, 76)", item: "Controle do processo por análises (Art. 76)", conforme: null, observacao: "", popVinculado: "POP-007" },
+  { id: "d48", area: "10. Análise Laboratorial (Art. 68, 76)", item: "Documentação auditável das análises (Art. 76)", conforme: null, observacao: "", popVinculado: "POP-007" },
+  { id: "d49", area: "10. Análise Laboratorial (Art. 68, 76)", item: "Medidas corretivas em caso de desvios (Art. 76)", conforme: null, observacao: "", popVinculado: "" },
+
+  // ── 11. TRÂNSITO E TRANSPORTE (Art. 77) ──
+  { id: "d50", area: "11. Trânsito e Transporte (Art. 77)", item: "Transporte apropriado garantindo integridade (Art. 77)", conforme: null, observacao: "", popVinculado: "" },
+  { id: "d51", area: "11. Trânsito e Transporte (Art. 77)", item: "Veículos limpos/higienizados (Art. 77 §1)", conforme: null, observacao: "", popVinculado: "" },
+
+  // ── 12. RESPONSÁVEL TÉCNICO E TREINAMENTO (Art. 43, 39-XIV) ──
+  { id: "d52", area: "12. Responsável Técnico e Treinamento (Art. 43)", item: "Responsável técnico designado (Art. 43)", conforme: null, observacao: "", popVinculado: "" },
+  { id: "d53", area: "12. Responsável Técnico e Treinamento (Art. 43)", item: "Equipe treinada e habilitada (Art. 39-XIV)", conforme: null, observacao: "", popVinculado: "" },
+  { id: "d54", area: "12. Responsável Técnico e Treinamento (Art. 43)", item: "Registros de treinamento mantidos e atualizados", conforme: null, observacao: "", popVinculado: "" },
+
+  // ── 13. DOCUMENTAÇÃO (Art. 39-IV, 42) ──
+  { id: "d55", area: "13. Documentação (Art. 39-IV, 42)", item: "Documentação exigida disponível no estabelecimento (Art. 39-IV)", conforme: null, observacao: "", popVinculado: "" },
+  { id: "d56", area: "13. Documentação (Art. 39-IV, 42)", item: "POPs atualizados e acessíveis", conforme: null, observacao: "", popVinculado: "" },
+  { id: "d57", area: "13. Documentação (Art. 39-IV, 42)", item: "Manual BPF disponível e atualizado", conforme: null, observacao: "", popVinculado: "" },
+  { id: "d58", area: "13. Documentação (Art. 39-IV, 42)", item: "Documentos apresentados quando solicitados (Art. 42)", conforme: null, observacao: "", popVinculado: "" },
+
+  // ── 14. EMBALAGEM (Art. 58-60) ──
+  { id: "d59", area: "14. Embalagem (Art. 58-60)", item: "Embalagens de primeiro uso e íntegras (Art. 59)", conforme: null, observacao: "", popVinculado: "" },
+  { id: "d60", area: "14. Embalagem (Art. 58-60)", item: "Reutilização controlada com procedimento em autocontrole (Art. 59 §único)", conforme: null, observacao: "", popVinculado: "" },
+
+  // ── 15. ÁGUA (Controle de qualidade) ──
+  { id: "d61", area: "15. Qualidade da Água", item: "Controle de qualidade da água utilizada", conforme: null, observacao: "", popVinculado: "" },
+  { id: "d62", area: "15. Qualidade da Água", item: "Análises periódicas realizadas e registradas", conforme: null, observacao: "", popVinculado: "" },
 ];
 
 const DEMO_NCS: NaoConformidade[] = [
@@ -47,7 +113,7 @@ const DEMO_NCS: NaoConformidade[] = [
 ];
 
 export function useChecklistItems() {
-  return useState<ChecklistItem[]>(CHECKLIST_PADRAO);
+  return useState<ChecklistItem[]>(CHECKLIST_DECRETO_12031);
 }
 
 export function useNaoConformidades() {
@@ -76,4 +142,4 @@ export function useTreinamentos() {
   ]);
 }
 
-export { SETORES, CHECKLIST_PADRAO };
+export { SETORES, CHECKLIST_DECRETO_12031 as CHECKLIST_PADRAO };
