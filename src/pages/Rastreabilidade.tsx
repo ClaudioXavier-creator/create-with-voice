@@ -42,6 +42,7 @@ export default function Rastreabilidade() {
   const [busca, setBusca] = useState("");
   const [open, setOpen] = useState(false);
   const [recallOpen, setRecallOpen] = useState(false);
+  const [vendaOpen, setVendaOpen] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
   // Form fields
@@ -60,6 +61,13 @@ export default function Rastreabilidade() {
   const [recallMotivo, setRecallMotivo] = useState("");
   const [recallData, setRecallData] = useState("");
   const [recallStatus, setRecallStatus] = useState("iniciado");
+
+  // Venda fields (for updating existing records)
+  const [vendaCliente, setVendaCliente] = useState("");
+  const [vendaLocal, setVendaLocal] = useState("");
+  const [vendaData, setVendaData] = useState("");
+  const [vendaNF, setVendaNF] = useState("");
+  const [vendaQtd, setVendaQtd] = useState("");
 
   const fetchData = async () => {
     if (!user) return;
@@ -128,6 +136,52 @@ export default function Rastreabilidade() {
     setSaving(false);
   };
 
+  const handleVenda = async () => {
+    if (!selectedId || !vendaCliente) return;
+    setSaving(true);
+
+    // Get the selected record's lote_produto to update all records with same lot
+    const selectedRec = registros.find(r => r.id === selectedId);
+    const lotePA = selectedRec?.lote_produto;
+
+    // Update all records with same lote_produto (batch update for full traceability)
+    let query = supabase.from("rastreabilidade").update({
+      cliente_destino: vendaCliente,
+      local_entrega: vendaLocal,
+      data_venda: vendaData || null,
+      nota_fiscal: vendaNF,
+      quantidade_vendida: vendaQtd,
+    } as any);
+
+    if (lotePA) {
+      query = query.eq("lote_produto", lotePA);
+    } else {
+      query = query.eq("id", selectedId);
+    }
+
+    const { error } = await query;
+    if (error) toast.error("Erro ao registrar venda");
+    else {
+      toast.success(lotePA ? `Venda registrada para todo o lote ${lotePA}!` : "Venda registrada!");
+      setVendaOpen(false);
+      setVendaCliente(""); setVendaLocal(""); setVendaData(""); setVendaNF(""); setVendaQtd("");
+      setSelectedId(null);
+      fetchData();
+    }
+    setSaving(false);
+  };
+
+  const openVenda = (id: string) => {
+    const rec = registros.find(r => r.id === id);
+    setSelectedId(id);
+    setVendaCliente(rec?.cliente_destino || "");
+    setVendaLocal(rec?.local_entrega || "");
+    setVendaData(rec?.data_venda || "");
+    setVendaNF(rec?.nota_fiscal || "");
+    setVendaQtd(rec?.quantidade_vendida || "");
+    setVendaOpen(true);
+  };
+
   const filtered = registros.filter((d) =>
     [d.produto, d.lote_produto, d.materia_prima, d.lote_mp, d.fornecedor, d.cliente_destino, d.nota_fiscal]
       .some((v) => v?.toLowerCase().includes(busca.toLowerCase()))
@@ -135,6 +189,7 @@ export default function Rastreabilidade() {
 
   const uniquePA = new Set(registros.map(r => r.lote_produto).filter(Boolean));
   const comVenda = registros.filter(r => r.cliente_destino);
+  const semVenda = registros.filter(r => !r.cliente_destino);
   const comRecall = registros.filter(r => r.recall_ativo);
 
   return (
@@ -283,12 +338,13 @@ export default function Rastreabilidade() {
             <Tabs defaultValue="todos">
               <TabsList className="mb-4">
                 <TabsTrigger value="todos">Todos ({filtered.length})</TabsTrigger>
+                <TabsTrigger value="sem_venda">Sem destino ({semVenda.length})</TabsTrigger>
                 <TabsTrigger value="vendidos">Vendidos ({comVenda.length})</TabsTrigger>
                 <TabsTrigger value="recall">Recall ({comRecall.length})</TabsTrigger>
               </TabsList>
 
-              {["todos", "vendidos", "recall"].map(tab => {
-                const data = tab === "todos" ? filtered : tab === "vendidos" ? comVenda : comRecall;
+              {["todos", "sem_venda", "vendidos", "recall"].map(tab => {
+                const data = tab === "todos" ? filtered : tab === "sem_venda" ? semVenda : tab === "vendidos" ? comVenda : comRecall;
                 return (
                   <TabsContent key={tab} value={tab} className="overflow-x-auto">
                     {data.length === 0 ? (
@@ -324,7 +380,11 @@ export default function Rastreabilidade() {
                                     <p className="text-sm font-medium">{r.cliente_destino}</p>
                                     <span className="text-xs text-muted-foreground">{r.local_entrega || ""}</span>
                                   </>
-                                ) : <span className="text-xs text-muted-foreground">—</span>}
+                                ) : (
+                                  <Button variant="outline" size="sm" className="text-xs" onClick={() => openVenda(r.id)}>
+                                    <Truck className="w-3 h-3 mr-1" /> Registrar Venda
+                                  </Button>
+                                )}
                               </TableCell>
                               <TableCell>
                                 {r.nota_fiscal ? (
@@ -342,16 +402,23 @@ export default function Rastreabilidade() {
                                 ) : <span className="text-xs text-muted-foreground">—</span>}
                               </TableCell>
                               <TableCell>
-                                {!r.recall_ativo && r.cliente_destino && (
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    className="text-destructive text-xs"
-                                    onClick={() => { setSelectedId(r.id); setRecallOpen(true); }}
-                                  >
-                                    <AlertTriangle className="w-3 h-3 mr-1" /> Recall
-                                  </Button>
-                                )}
+                                <div className="flex gap-1">
+                                  {!r.recall_ativo && r.cliente_destino && (
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      className="text-destructive text-xs"
+                                      onClick={() => { setSelectedId(r.id); setRecallOpen(true); }}
+                                    >
+                                      <AlertTriangle className="w-3 h-3 mr-1" /> Recall
+                                    </Button>
+                                  )}
+                                  {r.cliente_destino && (
+                                    <Button variant="ghost" size="sm" className="text-xs" onClick={() => openVenda(r.id)}>
+                                      Editar venda
+                                    </Button>
+                                  )}
+                                </div>
                               </TableCell>
                             </TableRow>
                           ))}
@@ -395,6 +462,61 @@ export default function Rastreabilidade() {
             <Button onClick={handleRecall} className="w-full" variant="destructive" disabled={saving}>
               {saving && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
               Confirmar Recall
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Venda Dialog */}
+      <Dialog open={vendaOpen} onOpenChange={setVendaOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Truck className="w-5 h-5" /> Registrar Venda / Destino do PA
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            {selectedId && (() => {
+              const rec = registros.find(r => r.id === selectedId);
+              return rec ? (
+                <div className="p-3 rounded-lg bg-primary/5 border border-primary/20 text-xs">
+                  <p><strong>Produto:</strong> {rec.produto}</p>
+                  <p><strong>Lote PA:</strong> {rec.lote_produto || "—"}</p>
+                  {rec.lote_produto && (
+                    <p className="text-muted-foreground mt-1">
+                      A venda será aplicada a todos os registros deste lote ({registros.filter(r => r.lote_produto === rec.lote_produto).length} vínculos MP)
+                    </p>
+                  )}
+                </div>
+              ) : null;
+            })()}
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label>Cliente / Comprador *</Label>
+                <Input value={vendaCliente} onChange={e => setVendaCliente(e.target.value)} placeholder="Ex: Fazenda Boa Vista" />
+              </div>
+              <div>
+                <Label>Local de Entrega</Label>
+                <Input value={vendaLocal} onChange={e => setVendaLocal(e.target.value)} placeholder="Ex: Uberaba-MG" />
+              </div>
+            </div>
+            <div className="grid grid-cols-3 gap-3">
+              <div>
+                <Label>Data da Venda</Label>
+                <Input type="date" value={vendaData} onChange={e => setVendaData(e.target.value)} />
+              </div>
+              <div>
+                <Label>Nota Fiscal</Label>
+                <Input value={vendaNF} onChange={e => setVendaNF(e.target.value)} placeholder="NF-e nº" />
+              </div>
+              <div>
+                <Label>Quantidade</Label>
+                <Input value={vendaQtd} onChange={e => setVendaQtd(e.target.value)} placeholder="Ex: 5 ton" />
+              </div>
+            </div>
+            <Button onClick={handleVenda} className="w-full" disabled={saving || !vendaCliente}>
+              {saving && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+              Salvar Venda
             </Button>
           </div>
         </DialogContent>

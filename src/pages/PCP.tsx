@@ -200,9 +200,35 @@ export default function PCP() {
   };
 
   const handleUpdateStatus = async (id: string, newStatus: string) => {
+    if (!user) return;
     const { error } = await supabase.from("ordens_producao").update({ status: newStatus } as any).eq("id", id);
-    if (error) toast.error("Erro ao atualizar");
-    else { toast.success("Status atualizado!"); fetchData(); }
+    if (error) { toast.error("Erro ao atualizar"); return; }
+
+    // Auto-create rastreabilidade records when order is concluded
+    if (newStatus === "concluida") {
+      const ordem = ordens.find(o => o.id === id);
+      const itens = formulaItens.filter(i => i.ordem_id === id);
+      if (ordem && itens.length > 0) {
+        const records = itens.map(item => ({
+          user_id: user.id,
+          produto: ordem.produto,
+          lote_produto: ordem.lote_produto || "",
+          materia_prima: item.materia_prima,
+          lote_mp: item.lote_mp || "",
+          fornecedor: item.fornecedor || "",
+        }));
+        const { error: rastError } = await supabase.from("rastreabilidade").insert(records as any);
+        if (rastError) {
+          toast.warning("Ordem concluída, mas erro ao vincular rastreabilidade: " + rastError.message);
+        } else {
+          toast.success(`Ordem concluída! ${records.length} vínculo(s) de rastreabilidade criados automaticamente.`);
+          fetchData();
+          return;
+        }
+      }
+    }
+    toast.success("Status atualizado!");
+    fetchData();
   };
 
   const openAddItem = (ordemId: string) => { setItemOrdemId(ordemId); setItemOpen(true); };
