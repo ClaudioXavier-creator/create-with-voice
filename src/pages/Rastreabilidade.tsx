@@ -136,6 +136,52 @@ export default function Rastreabilidade() {
     setSaving(false);
   };
 
+  const handleVenda = async () => {
+    if (!selectedId || !vendaCliente) return;
+    setSaving(true);
+
+    // Get the selected record's lote_produto to update all records with same lot
+    const selectedRec = registros.find(r => r.id === selectedId);
+    const lotePA = selectedRec?.lote_produto;
+
+    // Update all records with same lote_produto (batch update for full traceability)
+    let query = supabase.from("rastreabilidade").update({
+      cliente_destino: vendaCliente,
+      local_entrega: vendaLocal,
+      data_venda: vendaData || null,
+      nota_fiscal: vendaNF,
+      quantidade_vendida: vendaQtd,
+    } as any);
+
+    if (lotePA) {
+      query = query.eq("lote_produto", lotePA);
+    } else {
+      query = query.eq("id", selectedId);
+    }
+
+    const { error } = await query;
+    if (error) toast.error("Erro ao registrar venda");
+    else {
+      toast.success(lotePA ? `Venda registrada para todo o lote ${lotePA}!` : "Venda registrada!");
+      setVendaOpen(false);
+      setVendaCliente(""); setVendaLocal(""); setVendaData(""); setVendaNF(""); setVendaQtd("");
+      setSelectedId(null);
+      fetchData();
+    }
+    setSaving(false);
+  };
+
+  const openVenda = (id: string) => {
+    const rec = registros.find(r => r.id === id);
+    setSelectedId(id);
+    setVendaCliente(rec?.cliente_destino || "");
+    setVendaLocal(rec?.local_entrega || "");
+    setVendaData(rec?.data_venda || "");
+    setVendaNF(rec?.nota_fiscal || "");
+    setVendaQtd(rec?.quantidade_vendida || "");
+    setVendaOpen(true);
+  };
+
   const filtered = registros.filter((d) =>
     [d.produto, d.lote_produto, d.materia_prima, d.lote_mp, d.fornecedor, d.cliente_destino, d.nota_fiscal]
       .some((v) => v?.toLowerCase().includes(busca.toLowerCase()))
@@ -143,6 +189,7 @@ export default function Rastreabilidade() {
 
   const uniquePA = new Set(registros.map(r => r.lote_produto).filter(Boolean));
   const comVenda = registros.filter(r => r.cliente_destino);
+  const semVenda = registros.filter(r => !r.cliente_destino);
   const comRecall = registros.filter(r => r.recall_ativo);
 
   return (
