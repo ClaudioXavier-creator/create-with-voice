@@ -476,6 +476,15 @@ export default function NaoConformidades() {
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
+            {editId && (() => {
+              const nc = ncs.find(n => n.id === editId);
+              return nc ? (
+                <Button type="button" variant="outline" className="w-full border-primary/50 text-primary hover:bg-primary/10" onClick={() => gerarPlanoEditIA(nc.descricao, nc.setor)} disabled={generatingEditAI}>
+                  {generatingEditAI ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Sparkles className="w-4 h-4 mr-2" />}
+                  {generatingEditAI ? "Gerando..." : "⚡ Gerar Plano com IA"}
+                </Button>
+              ) : null;
+            })()}
             <div className="space-y-1">
               <Label>Causa Raiz / Causa Provável</Label>
               <Textarea value={editCausa} onChange={e => setEditCausa(e.target.value)} placeholder="Identifique a causa raiz (5 Porquês, Ishikawa...)" />
