@@ -19,6 +19,7 @@ import Treinamentos from "./pages/Treinamentos";
 import Indicadores from "./pages/Indicadores";
 import ExecucaoPops from "./pages/ExecucaoPops";
 import Relatorios from "./pages/Relatorios";
+import Legislacao from "./pages/Legislacao";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 
