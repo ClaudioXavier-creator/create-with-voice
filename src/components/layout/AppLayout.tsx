@@ -3,7 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import {
   LayoutDashboard, Building2, FileText, ClipboardCheck, AlertTriangle,
   Package, Factory, Search, Bug, GraduationCap, BarChart3, Menu, X, Shield, LogOut,
-  PlayCircle, FileDown
+  PlayCircle, FileDown, Scale
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
