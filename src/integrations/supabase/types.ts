@@ -649,6 +649,104 @@ export type Database = {
         }
         Relationships: []
       }
+      pop_planilha_itens: {
+        Row: {
+          area: string
+          conforme: boolean | null
+          created_at: string
+          data_registro: string | null
+          funcao: string | null
+          id: string
+          observacoes: string | null
+          periodo_label: string
+          planilha_id: string
+          responsavel: string | null
+          user_id: string
+        }
+        Insert: {
+          area: string
+          conforme?: boolean | null
+          created_at?: string
+          data_registro?: string | null
+          funcao?: string | null
+          id?: string
+          observacoes?: string | null
+          periodo_label: string
+          planilha_id: string
+          responsavel?: string | null
+          user_id: string
+        }
+        Update: {
+          area?: string
+          conforme?: boolean | null
+          created_at?: string
+          data_registro?: string | null
+          funcao?: string | null
+          id?: string
+          observacoes?: string | null
+          periodo_label?: string
+          planilha_id?: string
+          responsavel?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pop_planilha_itens_planilha_id_fkey"
+            columns: ["planilha_id"]
+            isOneToOne: false
+            referencedRelation: "pop_planilhas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pop_planilhas: {
+        Row: {
+          ano: number
+          created_at: string
+          data_verificacao: string | null
+          id: string
+          mes: number
+          observacoes: string | null
+          periodicidade: string
+          pop_codigo: string
+          pop_nome: string
+          status: string | null
+          updated_at: string
+          user_id: string
+          verificado_por: string | null
+        }
+        Insert: {
+          ano: number
+          created_at?: string
+          data_verificacao?: string | null
+          id?: string
+          mes: number
+          observacoes?: string | null
+          periodicidade?: string
+          pop_codigo: string
+          pop_nome: string
+          status?: string | null
+          updated_at?: string
+          user_id: string
+          verificado_por?: string | null
+        }
+        Update: {
+          ano?: number
+          created_at?: string
+          data_verificacao?: string | null
+          id?: string
+          mes?: number
+          observacoes?: string | null
+          periodicidade?: string
+          pop_codigo?: string
+          pop_nome?: string
+          status?: string | null
+          updated_at?: string
+          user_id?: string
+          verificado_por?: string | null
+        }
+        Relationships: []
+      }
       producao: {
         Row: {
           created_at: string
