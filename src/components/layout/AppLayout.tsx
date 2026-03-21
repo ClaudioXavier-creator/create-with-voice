@@ -204,8 +204,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       {/* Mobile header */}
       <div className="lg:hidden fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-4 py-3 bg-sidebar text-sidebar-foreground border-b border-sidebar-border">
         <div className="flex items-center gap-2">
-          <Shield className="w-6 h-6 text-sidebar-primary" />
-          <span className="font-display font-bold">FeedBPF</span>
+          <img src={logoImg} alt="Feed_BPF Logo" className="w-8 h-8 rounded object-contain" />
+          <span className="font-display font-bold">Feed_BPF</span>
         </div>
         <Button variant="ghost" size="icon" onClick={() => setMobileOpen(!mobileOpen)} className="text-sidebar-foreground">
           {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
