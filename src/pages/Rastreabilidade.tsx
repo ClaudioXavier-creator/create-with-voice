@@ -466,6 +466,61 @@ export default function Rastreabilidade() {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Venda Dialog */}
+      <Dialog open={vendaOpen} onOpenChange={setVendaOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Truck className="w-5 h-5" /> Registrar Venda / Destino do PA
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            {selectedId && (() => {
+              const rec = registros.find(r => r.id === selectedId);
+              return rec ? (
+                <div className="p-3 rounded-lg bg-primary/5 border border-primary/20 text-xs">
+                  <p><strong>Produto:</strong> {rec.produto}</p>
+                  <p><strong>Lote PA:</strong> {rec.lote_produto || "—"}</p>
+                  {rec.lote_produto && (
+                    <p className="text-muted-foreground mt-1">
+                      A venda será aplicada a todos os registros deste lote ({registros.filter(r => r.lote_produto === rec.lote_produto).length} vínculos MP)
+                    </p>
+                  )}
+                </div>
+              ) : null;
+            })()}
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label>Cliente / Comprador *</Label>
+                <Input value={vendaCliente} onChange={e => setVendaCliente(e.target.value)} placeholder="Ex: Fazenda Boa Vista" />
+              </div>
+              <div>
+                <Label>Local de Entrega</Label>
+                <Input value={vendaLocal} onChange={e => setVendaLocal(e.target.value)} placeholder="Ex: Uberaba-MG" />
+              </div>
+            </div>
+            <div className="grid grid-cols-3 gap-3">
+              <div>
+                <Label>Data da Venda</Label>
+                <Input type="date" value={vendaData} onChange={e => setVendaData(e.target.value)} />
+              </div>
+              <div>
+                <Label>Nota Fiscal</Label>
+                <Input value={vendaNF} onChange={e => setVendaNF(e.target.value)} placeholder="NF-e nº" />
+              </div>
+              <div>
+                <Label>Quantidade</Label>
+                <Input value={vendaQtd} onChange={e => setVendaQtd(e.target.value)} placeholder="Ex: 5 ton" />
+              </div>
+            </div>
+            <Button onClick={handleVenda} className="w-full" disabled={saving || !vendaCliente}>
+              {saving && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+              Salvar Venda
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }
