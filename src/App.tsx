@@ -12,6 +12,7 @@ import Auditoria from "./pages/Auditoria";
 import NaoConformidades from "./pages/NaoConformidades";
 import Recebimento from "./pages/Recebimento";
 import Producao from "./pages/Producao";
+import PCP from "./pages/PCP";
 import Rastreabilidade from "./pages/Rastreabilidade";
 import Pragas from "./pages/Pragas";
 import Treinamentos from "./pages/Treinamentos";
