@@ -2,12 +2,13 @@ import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import {
   LayoutDashboard, Building2, FileText, ClipboardCheck, AlertTriangle,
-  Package, Factory, Search, Bug, GraduationCap, BarChart3, Menu, X, Shield, LogOut,
+  Package, Factory, Search, Bug, GraduationCap, BarChart3, Menu, X, LogOut,
   PlayCircle, FileDown, Scale, Users, ChevronDown, Wrench, Settings, BookOpen
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
+import logoImg from "@/assets/logo.png";
 
 interface NavItem {
   path: string;
