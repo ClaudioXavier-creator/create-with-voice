@@ -14,7 +14,375 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      checklist_items: {
+        Row: {
+          area: string
+          auditoria_data: string | null
+          conforme: boolean | null
+          created_at: string
+          id: string
+          item: string
+          observacao: string | null
+          user_id: string
+        }
+        Insert: {
+          area: string
+          auditoria_data?: string | null
+          conforme?: boolean | null
+          created_at?: string
+          id?: string
+          item: string
+          observacao?: string | null
+          user_id: string
+        }
+        Update: {
+          area?: string
+          auditoria_data?: string | null
+          conforme?: boolean | null
+          created_at?: string
+          id?: string
+          item?: string
+          observacao?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      controle_pragas: {
+        Row: {
+          acao: string | null
+          created_at: string
+          data: string
+          id: string
+          local: string
+          responsavel: string | null
+          tipo_praga: string
+          user_id: string
+        }
+        Insert: {
+          acao?: string | null
+          created_at?: string
+          data?: string
+          id?: string
+          local: string
+          responsavel?: string | null
+          tipo_praga: string
+          user_id: string
+        }
+        Update: {
+          acao?: string | null
+          created_at?: string
+          data?: string
+          id?: string
+          local?: string
+          responsavel?: string | null
+          tipo_praga?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      documentos: {
+        Row: {
+          codigo: string
+          created_at: string
+          data_revisao: string | null
+          id: string
+          nome: string
+          responsavel: string | null
+          status: string | null
+          updated_at: string
+          user_id: string
+          versao: string | null
+        }
+        Insert: {
+          codigo: string
+          created_at?: string
+          data_revisao?: string | null
+          id?: string
+          nome: string
+          responsavel?: string | null
+          status?: string | null
+          updated_at?: string
+          user_id: string
+          versao?: string | null
+        }
+        Update: {
+          codigo?: string
+          created_at?: string
+          data_revisao?: string | null
+          id?: string
+          nome?: string
+          responsavel?: string | null
+          status?: string | null
+          updated_at?: string
+          user_id?: string
+          versao?: string | null
+        }
+        Relationships: []
+      }
+      empresas: {
+        Row: {
+          capacidade: string | null
+          cnpj: string | null
+          created_at: string
+          crmv: string | null
+          endereco: string | null
+          id: string
+          nome: string
+          responsavel_tecnico: string | null
+          tipo_producao: string[] | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          capacidade?: string | null
+          cnpj?: string | null
+          created_at?: string
+          crmv?: string | null
+          endereco?: string | null
+          id?: string
+          nome: string
+          responsavel_tecnico?: string | null
+          tipo_producao?: string[] | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          capacidade?: string | null
+          cnpj?: string | null
+          created_at?: string
+          crmv?: string | null
+          endereco?: string | null
+          id?: string
+          nome?: string
+          responsavel_tecnico?: string | null
+          tipo_producao?: string[] | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      nao_conformidades: {
+        Row: {
+          acao_corretiva: string | null
+          causa: string | null
+          created_at: string
+          data: string
+          descricao: string
+          id: string
+          prazo: string | null
+          responsavel: string | null
+          setor: string
+          status: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          acao_corretiva?: string | null
+          causa?: string | null
+          created_at?: string
+          data?: string
+          descricao: string
+          id?: string
+          prazo?: string | null
+          responsavel?: string | null
+          setor: string
+          status?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          acao_corretiva?: string | null
+          causa?: string | null
+          created_at?: string
+          data?: string
+          descricao?: string
+          id?: string
+          prazo?: string | null
+          responsavel?: string | null
+          setor?: string
+          status?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      producao: {
+        Row: {
+          created_at: string
+          data: string
+          id: string
+          lote: string | null
+          operador: string | null
+          produto: string
+          quantidade: string | null
+          tempo_mistura: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          data?: string
+          id?: string
+          lote?: string | null
+          operador?: string | null
+          produto: string
+          quantidade?: string | null
+          tempo_mistura?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          data?: string
+          id?: string
+          lote?: string | null
+          operador?: string | null
+          produto?: string
+          quantidade?: string | null
+          tempo_mistura?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          cargo: string | null
+          created_at: string
+          id: string
+          nome: string
+          telefone: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          cargo?: string | null
+          created_at?: string
+          id?: string
+          nome?: string
+          telefone?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          cargo?: string | null
+          created_at?: string
+          id?: string
+          nome?: string
+          telefone?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      rastreabilidade: {
+        Row: {
+          created_at: string
+          fornecedor: string | null
+          id: string
+          lote_mp: string | null
+          lote_produto: string | null
+          materia_prima: string
+          produto: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          fornecedor?: string | null
+          id?: string
+          lote_mp?: string | null
+          lote_produto?: string | null
+          materia_prima: string
+          produto: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          fornecedor?: string | null
+          id?: string
+          lote_mp?: string | null
+          lote_produto?: string | null
+          materia_prima?: string
+          produto?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      recebimento_mp: {
+        Row: {
+          aprovado: boolean | null
+          created_at: string
+          data: string
+          fornecedor: string
+          id: string
+          insetos: string | null
+          lote: string | null
+          materia_prima: string
+          odor: string | null
+          umidade: string | null
+          user_id: string
+        }
+        Insert: {
+          aprovado?: boolean | null
+          created_at?: string
+          data?: string
+          fornecedor: string
+          id?: string
+          insetos?: string | null
+          lote?: string | null
+          materia_prima: string
+          odor?: string | null
+          umidade?: string | null
+          user_id: string
+        }
+        Update: {
+          aprovado?: boolean | null
+          created_at?: string
+          data?: string
+          fornecedor?: string
+          id?: string
+          insetos?: string | null
+          lote?: string | null
+          materia_prima?: string
+          odor?: string | null
+          umidade?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      treinamentos: {
+        Row: {
+          created_at: string
+          data: string
+          funcionario: string
+          id: string
+          instrutor: string | null
+          treinamento: string
+          user_id: string
+          validade: string | null
+        }
+        Insert: {
+          created_at?: string
+          data?: string
+          funcionario: string
+          id?: string
+          instrutor?: string | null
+          treinamento: string
+          user_id: string
+          validade?: string | null
+        }
+        Update: {
+          created_at?: string
+          data?: string
+          funcionario?: string
+          id?: string
+          instrutor?: string | null
+          treinamento?: string
+          user_id?: string
+          validade?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
