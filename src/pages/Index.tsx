@@ -53,6 +53,8 @@ export default function Index() {
     conformidadeBPF: 0,
     recentNCs: [],
     conformidadePorArea: [],
+    ncPorMes: [],
+    conformidadePorMes: [],
     loading: true,
   });
 
