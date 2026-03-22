@@ -93,6 +93,23 @@ export default function ManutencaoPreventiva() {
     },
   });
 
+  const today = new Date().toISOString().split("T")[0];
+  const calibracoesComAlerta = calibracoes.filter((c: any) => {
+    if (!c.proxima_verificacao_intermediaria) {
+      // If no intermediate verification set, check if midpoint between calibrations has passed
+      if (c.data_calibracao && c.proxima_calibracao) {
+        const start = new Date(c.data_calibracao).getTime();
+        const end = new Date(c.proxima_calibracao).getTime();
+        const mid = new Date((start + end) / 2).toISOString().split("T")[0];
+        return mid <= today;
+      }
+      return false;
+    }
+    return c.proxima_verificacao_intermediaria <= today;
+  });
+
+  const calibracoesVencidas = calibracoes.filter((c: any) => c.proxima_calibracao && c.proxima_calibracao <= today);
+
   return (
     <div className="space-y-6">
       <PageHeader title="POP 05 — Manutenção Preventiva" description="Histórico de manutenções vinculado a equipamentos — IN 04/2007" />
