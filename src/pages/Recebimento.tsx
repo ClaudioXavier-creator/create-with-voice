@@ -60,6 +60,11 @@ export default function Recebimento() {
   const [certValido, setCertValido] = useState<boolean | null>(null);
   const [observacoes, setObservacoes] = useState("");
 
+  // Segregação de Origem Animal — IN 15/2009
+  const [contemOrigemAnimal, setContemOrigemAnimal] = useState(false);
+  const [tipoOrigemAnimal, setTipoOrigemAnimal] = useState("");
+  const [destinoEspecie, setDestinoEspecie] = useState("");
+
   // POP-05 Vehicle inspection
   const VISTORIA_ITENS = [
     "Carroceria limpa e seca",
