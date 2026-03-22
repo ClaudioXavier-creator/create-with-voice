@@ -212,7 +212,7 @@ export default function ExecucaoPops() {
       toast.success("Execução registrada!");
       setOpen(false);
       setDocSelecionado(""); setExecutor(""); setSetor(""); setObs(""); setStatusExec("concluido");
-      setChecklistTriagem({});
+      setChecklistTriagem({}); setLaudoNumero(""); setLaudoLaboratorio(""); setLaudoData("");
       fetchData();
     }
     setSaving(false);
