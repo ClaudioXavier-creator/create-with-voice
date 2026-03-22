@@ -1,44 +1,71 @@
 import { useState, useEffect, useMemo } from "react";
-import { BarChart3, Download, Loader2, Calendar } from "lucide-react";
+import { BarChart3, Download, Loader2, Calendar, Building2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
+import { Input } from "@/components/ui/input";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import PageHeader from "@/components/PageHeader";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 
-interface ProducaoRow {
-  id: string;
-  data: string;
-  produto: string;
-  lote: string | null;
-  quantidade: string | null;
-}
+// Fixed MAPA item list for the monthly report
+const ITENS_MAPA = [
+  "Alimento para animais de companhia",
+  "Aditivos nutricionais",
+  "Aditivos sensoriais",
+  "Aditivos tecnológicos",
+  "Aditivos zootécnicos - melhorador de desempenho beta-agonista",
+  "Aditivos zootécnicos – outros (acidificantes, enzimáticos, prebióticos e probióticos)",
+  "Concentrado para aves (Corte e Postura)",
+  "Concentrado para suínos",
+  "Concentrado para outros monogástricos",
+  "Concentrado para ruminantes (Todas as espécies)",
+  "Coproduto",
+  "Ingrediente - Milho ou derivados",
+  "Ingrediente - Soja ou derivados",
+  "Ingrediente - Trigo ou derivados",
+  "Ingrediente de origem vegetal - Outros",
+  "Ingrediente de origem animal - Derivados lácteos",
+  "Ingrediente de origem animal - Farinhas de monogástricos",
+  "Ingrediente de origem animal - Farinhas de ruminantes",
+  "Ingrediente de origem animal - Farinhas mistas (Rum. e Monog.)",
+  "Ingrediente de origem animal - Óleos e gorduras (todas as espécies)",
+  "Ingrediente macromineral",
+  "Núcleo para aves (Corte e Postura)",
+  "Núcleo para suínos",
+  "Núcleo para outros monogástricos",
+  "Núcleo para ruminantes (Todas as espécies)",
+  "Premix para aves (Corte e Postura)",
+  "Premix para suínos",
+  "Premix para outros monogástricos",
+  "Premix para ruminantes (Todas as espécies)",
+  "Produto mastigável",
+  "Ração para aves (Corte e Postura)",
+  "Ração para suínos",
+  "Ração para outros monogástricos",
+  "Ração para ruminantes (Todas as espécies)",
+  "Suplemento para animais de companhia",
+  "Suplemento para outros monogástricos",
+  "Suplemento para ruminantes (Todas as espécies)",
+  "Outros",
+  "Produção de cozinhas industriais e caseiras",
+];
 
-interface ProdutoInfo {
-  nome: string;
-  classificacao: string;
-  especie_alvo: string | null;
-  categoria_animal: string | null;
-}
+type AtividadeTab = "producao" | "importacao" | "exportacao" | "fracionamento";
+
+const TAB_LABELS: Record<AtividadeTab, string> = {
+  producao: "Produção",
+  importacao: "Importação",
+  exportacao: "Exportação",
+  fracionamento: "Fracionamento",
+};
 
 const MESES = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
 
-const COLORS = [
-  "hsl(var(--primary))",
-  "hsl(var(--accent))",
-  "#22c55e", "#f59e0b", "#ef4444", "#8b5cf6", "#06b6d4", "#ec4899", "#14b8a6", "#f97316",
-];
-
-function parseQty(val: string | null): number {
-  if (!val) return 0;
-  const n = parseFloat(val.replace(/[^\d.,]/g, "").replace(",", "."));
-  return isNaN(n) ? 0 : n;
-}
+type ValoresMap = Record<AtividadeTab, Record<string, string>>;
 
 function escapeCsv(val: unknown): string {
   if (val === null || val === undefined) return "";
@@ -53,13 +80,34 @@ export default function RelatorioProducao() {
   const currentMonth = new Date().getMonth() + 1;
   const [ano, setAno] = useState(String(currentYear));
   const [mes, setMes] = useState(String(currentMonth));
-  const [producao, setProducao] = useState<ProducaoRow[]>([]);
-  const [produtos, setProdutos] = useState<ProdutoInfo[]>([]);
+  const [activeTab, setActiveTab] = useState<AtividadeTab>("producao");
   const [loading, setLoading] = useState(true);
+  const [empresaNome, setEmpresaNome] = useState("");
+  const [empresaCnpj, setEmpresaCnpj] = useState("");
 
+  // Values per tab per item
+  const [valores, setValores] = useState<ValoresMap>({
+    producao: {},
+    importacao: {},
+    exportacao: {},
+    fracionamento: {},
+  });
+
+  // Load empresa info
   useEffect(() => {
     if (!user) return;
-    const fetch = async () => {
+    supabase.from("empresas").select("nome, cnpj").limit(1).then(({ data }) => {
+      if (data && data.length > 0) {
+        setEmpresaNome(data[0].nome || "");
+        setEmpresaCnpj(data[0].cnpj || "");
+      }
+    });
+  }, [user]);
+
+  // Load production data and auto-fill the "producao" tab
+  useEffect(() => {
+    if (!user) return;
+    const fetchData = async () => {
       setLoading(true);
       const startDate = `${ano}-${mes.padStart(2, "0")}-01`;
       const endMonth = Number(mes) === 12 ? 1 : Number(mes) + 1;
@@ -67,108 +115,192 @@ export default function RelatorioProducao() {
       const endDate = `${endYear}-${String(endMonth).padStart(2, "0")}-01`;
 
       const [prodRes, produtosRes] = await Promise.all([
-        supabase.from("producao").select("*").gte("data", startDate).lt("data", endDate).order("data"),
-        supabase.from("produtos").select("nome, classificacao, especie_alvo, categoria_animal"),
+        supabase.from("producao").select("produto, quantidade").gte("data", startDate).lt("data", endDate),
+        supabase.from("produtos").select("nome, classificacao, especie_alvo"),
       ]);
 
-      setProducao(prodRes.data || []);
-      setProdutos(produtosRes.data || []);
+      // Build mapping from produto name to MAPA item
+      const produtoToMapaItem: Record<string, string> = {};
+      for (const p of (produtosRes.data || [])) {
+        const key = p.nome.toLowerCase();
+        const cls = (p.classificacao || "").toLowerCase();
+        const esp = (p.especie_alvo || "").toLowerCase();
+
+        // Map based on classificacao + especie
+        if (cls.includes("racao") || cls.includes("ração")) {
+          if (esp.includes("ave")) produtoToMapaItem[key] = "Ração para aves (Corte e Postura)";
+          else if (esp.includes("suíno") || esp.includes("suino")) produtoToMapaItem[key] = "Ração para suínos";
+          else if (esp.includes("ruminante") || esp.includes("bovino") || esp.includes("gado")) produtoToMapaItem[key] = "Ração para ruminantes (Todas as espécies)";
+          else produtoToMapaItem[key] = "Ração para outros monogástricos";
+        } else if (cls.includes("concentrado")) {
+          if (esp.includes("ave")) produtoToMapaItem[key] = "Concentrado para aves (Corte e Postura)";
+          else if (esp.includes("suíno") || esp.includes("suino")) produtoToMapaItem[key] = "Concentrado para suínos";
+          else if (esp.includes("ruminante") || esp.includes("bovino")) produtoToMapaItem[key] = "Concentrado para ruminantes (Todas as espécies)";
+          else produtoToMapaItem[key] = "Concentrado para outros monogástricos";
+        } else if (cls.includes("suplemento")) {
+          if (esp.includes("companhia") || esp.includes("pet")) produtoToMapaItem[key] = "Suplemento para animais de companhia";
+          else if (esp.includes("ruminante") || esp.includes("bovino")) produtoToMapaItem[key] = "Suplemento para ruminantes (Todas as espécies)";
+          else produtoToMapaItem[key] = "Suplemento para outros monogástricos";
+        } else if (cls.includes("premix")) {
+          if (esp.includes("ave")) produtoToMapaItem[key] = "Premix para aves (Corte e Postura)";
+          else if (esp.includes("suíno") || esp.includes("suino")) produtoToMapaItem[key] = "Premix para suínos";
+          else if (esp.includes("ruminante") || esp.includes("bovino")) produtoToMapaItem[key] = "Premix para ruminantes (Todas as espécies)";
+          else produtoToMapaItem[key] = "Premix para outros monogástricos";
+        } else if (cls.includes("nucleo") || cls.includes("núcleo")) {
+          if (esp.includes("ave")) produtoToMapaItem[key] = "Núcleo para aves (Corte e Postura)";
+          else if (esp.includes("suíno") || esp.includes("suino")) produtoToMapaItem[key] = "Núcleo para suínos";
+          else if (esp.includes("ruminante") || esp.includes("bovino")) produtoToMapaItem[key] = "Núcleo para ruminantes (Todas as espécies)";
+          else produtoToMapaItem[key] = "Núcleo para outros monogástricos";
+        } else if (cls.includes("pet") || cls.includes("companhia")) {
+          produtoToMapaItem[key] = "Alimento para animais de companhia";
+        } else {
+          produtoToMapaItem[key] = "Outros";
+        }
+      }
+
+      // Aggregate production by MAPA item (in tonnes)
+      const agg: Record<string, number> = {};
+      for (const row of (prodRes.data || [])) {
+        const mapaItem = produtoToMapaItem[row.produto.toLowerCase()] || "Outros";
+        const qty = parseFloat((row.quantidade || "0").replace(/[^\d.,]/g, "").replace(",", ".")) || 0;
+        agg[mapaItem] = (agg[mapaItem] || 0) + qty;
+      }
+
+      // Convert kg to tonnes and set values
+      const autoValues: Record<string, string> = {};
+      for (const [item, kgTotal] of Object.entries(agg)) {
+        const tonnes = kgTotal / 1000;
+        if (tonnes > 0) {
+          autoValues[item] = tonnes.toFixed(2).replace(".", ",");
+        }
+      }
+
+      setValores(prev => ({
+        ...prev,
+        producao: autoValues,
+      }));
       setLoading(false);
     };
-    fetch();
+    fetchData();
   }, [user, ano, mes]);
 
-  const produtoMap = useMemo(() => {
-    const map: Record<string, ProdutoInfo> = {};
-    for (const p of produtos) {
-      map[p.nome.toLowerCase()] = p;
-    }
-    return map;
-  }, [produtos]);
+  const handleValueChange = (tab: AtividadeTab, item: string, value: string) => {
+    setValores(prev => ({
+      ...prev,
+      [tab]: { ...prev[tab], [item]: value },
+    }));
+  };
 
-  const enriched = useMemo(() => {
-    return producao.map(p => {
-      const info = produtoMap[p.produto.toLowerCase()];
-      return {
-        ...p,
-        classificacao: info?.classificacao || "Outros",
-        especie: info?.especie_alvo || "Não especificada",
-        categoria: info?.categoria_animal || "",
-        qty: parseQty(p.quantidade),
-      };
-    });
-  }, [producao, produtoMap]);
-
-  // Group by classification (segment)
-  const bySegmento = useMemo(() => {
-    const map: Record<string, { qty: number; count: number }> = {};
-    for (const e of enriched) {
-      const key = e.classificacao;
-      if (!map[key]) map[key] = { qty: 0, count: 0 };
-      map[key].qty += e.qty;
-      map[key].count += 1;
-    }
-    return Object.entries(map).map(([name, v]) => ({ name, ...v })).sort((a, b) => b.qty - a.qty);
-  }, [enriched]);
-
-  // Group by species
-  const byEspecie = useMemo(() => {
-    const map: Record<string, { qty: number; count: number }> = {};
-    for (const e of enriched) {
-      const key = e.especie;
-      if (!map[key]) map[key] = { qty: 0, count: 0 };
-      map[key].qty += e.qty;
-      map[key].count += 1;
-    }
-    return Object.entries(map).map(([name, v]) => ({ name, ...v })).sort((a, b) => b.qty - a.qty);
-  }, [enriched]);
-
-  // Group by product
-  const byProduto = useMemo(() => {
-    const map: Record<string, { qty: number; count: number; classificacao: string; especie: string }> = {};
-    for (const e of enriched) {
-      if (!map[e.produto]) map[e.produto] = { qty: 0, count: 0, classificacao: e.classificacao, especie: e.especie };
-      map[e.produto].qty += e.qty;
-      map[e.produto].count += 1;
-    }
-    return Object.entries(map).map(([produto, v]) => ({ produto, ...v })).sort((a, b) => b.qty - a.qty);
-  }, [enriched]);
-
-  const totalQty = enriched.reduce((s, e) => s + e.qty, 0);
-  const totalBatches = enriched.length;
+  const getTotal = (tab: AtividadeTab): number => {
+    return Object.values(valores[tab]).reduce((sum, v) => {
+      const n = parseFloat((v || "0").replace(",", "."));
+      return sum + (isNaN(n) ? 0 : n);
+    }, 0);
+  };
 
   const exportCsv = () => {
-    const now = new Date().toISOString().slice(0, 10);
-    let csv = `Relatório Mensal de Produção — ${MESES[Number(mes) - 1]}/${ano}\n\n`;
-    csv += "RESUMO POR SEGMENTO\nSegmento,Quantidade (kg),Batidas\n";
-    for (const s of bySegmento) csv += `${escapeCsv(s.name)},${s.qty.toFixed(0)},${s.count}\n`;
-    csv += `\nRESUMO POR ESPÉCIE\nEspécie,Quantidade (kg),Batidas\n`;
-    for (const e of byEspecie) csv += `${escapeCsv(e.name)},${e.qty.toFixed(0)},${e.count}\n`;
-    csv += `\nDETALHE POR PRODUTO\nProduto,Segmento,Espécie,Quantidade (kg),Batidas\n`;
-    for (const p of byProduto) csv += `${escapeCsv(p.produto)},${escapeCsv(p.classificacao)},${escapeCsv(p.especie)},${p.qty.toFixed(0)},${p.count}\n`;
-    csv += `\nTOTAL,${totalQty.toFixed(0)},${totalBatches}\n`;
+    const mesLabel = MESES[Number(mes) - 1];
+    let csv = `Lançamento de Alimentação Animal - ${mesLabel}/${ano}\n`;
+    csv += `${empresaNome} - ${empresaCnpj}\n\n`;
+
+    for (const tab of Object.keys(TAB_LABELS) as AtividadeTab[]) {
+      const total = getTotal(tab);
+      csv += `\n${TAB_LABELS[tab].toUpperCase()}\n`;
+      csv += `Item,Peso (Toneladas)\n`;
+      for (const item of ITENS_MAPA) {
+        const val = valores[tab][item];
+        csv += `${escapeCsv(item)},${val ? val : "X"}\n`;
+      }
+      csv += `Total,${total > 0 ? total.toFixed(2).replace(".", ",") : "0,00"}\n`;
+    }
 
     const BOM = "\uFEFF";
     const blob = new Blob([BOM + csv], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `relatorio_producao_${ano}_${mes.padStart(2, "0")}_${now}.csv`;
+    a.download = `relatorio_${activeTab}_${ano}_${mes.padStart(2, "0")}.csv`;
     a.click();
     URL.revokeObjectURL(url);
-    toast.success("Relatório exportado!");
+    toast.success("Relatório exportado com sucesso!");
+  };
+
+  const renderTable = (tab: AtividadeTab) => {
+    const tabValues = valores[tab];
+    const total = getTotal(tab);
+
+    return (
+      <Card>
+        <CardHeader className="pb-3">
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-sm font-display flex items-center gap-2">
+              <Building2 className="w-4 h-4" />
+              Lançamento de {TAB_LABELS[tab]} — {MESES[Number(mes) - 1]}/{ano}
+            </CardTitle>
+          </div>
+          {empresaNome && (
+            <p className="text-xs text-muted-foreground mt-1">
+              {empresaNome} {empresaCnpj && `— ${empresaCnpj}`}
+            </p>
+          )}
+        </CardHeader>
+        <CardContent>
+          <div className="border rounded-md overflow-hidden">
+            <Table>
+              <TableHeader>
+                <TableRow className="bg-muted/50">
+                  <TableHead className="w-[70%]">Item</TableHead>
+                  <TableHead className="text-center">Peso (Toneladas)</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {ITENS_MAPA.map((item) => {
+                  const val = tabValues[item] || "";
+                  const hasValue = val.trim() !== "" && val.trim() !== "0";
+                  return (
+                    <TableRow key={item} className={hasValue ? "bg-primary/5" : ""}>
+                      <TableCell className="text-sm py-1.5">{item}</TableCell>
+                      <TableCell className="text-center py-1.5">
+                        <Input
+                          className="w-24 mx-auto text-center h-7 text-sm"
+                          placeholder="X"
+                          value={val}
+                          onChange={(e) => handleValueChange(tab, item, e.target.value)}
+                        />
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+                <TableRow className="font-bold bg-muted/60 border-t-2">
+                  <TableCell className="text-sm">Total</TableCell>
+                  <TableCell className="text-center text-sm text-primary">
+                    {total > 0 ? total.toFixed(2).replace(".", ",") : "0,00"}
+                  </TableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
+          </div>
+        </CardContent>
+      </Card>
+    );
   };
 
   return (
     <>
-      <PageHeader icon={BarChart3} title="Relatório Mensal de Produção" description="Produção por segmento de produto e espécie" />
+      <PageHeader
+        icon={BarChart3}
+        title="Relatório Mensal de Produção"
+        description="Lançamento mensal conforme formulário MAPA — Produção, Importação, Exportação e Fracionamento"
+      />
 
       {/* Filters */}
       <div className="flex flex-wrap gap-3 mb-6 items-end">
         <div>
           <label className="text-xs text-muted-foreground block mb-1">Mês</label>
           <Select value={mes} onValueChange={setMes}>
-            <SelectTrigger className="w-40"><Calendar className="w-4 h-4 mr-1" /><SelectValue /></SelectTrigger>
+            <SelectTrigger className="w-40">
+              <Calendar className="w-4 h-4 mr-1" /><SelectValue />
+            </SelectTrigger>
             <SelectContent>
               {MESES.map((m, i) => <SelectItem key={i} value={String(i + 1)}>{m}</SelectItem>)}
             </SelectContent>
@@ -179,7 +311,9 @@ export default function RelatorioProducao() {
           <Select value={ano} onValueChange={setAno}>
             <SelectTrigger className="w-28"><SelectValue /></SelectTrigger>
             <SelectContent>
-              {[currentYear - 1, currentYear, currentYear + 1].map(y => <SelectItem key={y} value={String(y)}>{y}</SelectItem>)}
+              {[currentYear - 1, currentYear, currentYear + 1].map(y => (
+                <SelectItem key={y} value={String(y)}>{y}</SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>
@@ -189,150 +323,45 @@ export default function RelatorioProducao() {
       </div>
 
       {loading ? (
-        <div className="flex items-center justify-center py-12"><Loader2 className="w-6 h-6 animate-spin text-primary" /></div>
-      ) : enriched.length === 0 ? (
-        <Card><CardContent className="py-12 text-center text-muted-foreground">Nenhum registro de produção para {MESES[Number(mes) - 1]}/{ano}.</CardContent></Card>
+        <div className="flex items-center justify-center py-12">
+          <Loader2 className="w-6 h-6 animate-spin text-primary" />
+        </div>
       ) : (
         <>
-          {/* Summary Cards */}
+          {/* Summary cards */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-            <Card><CardContent className="pt-4 text-center">
-              <p className="text-2xl font-bold font-display">{totalBatches}</p>
-              <p className="text-xs text-muted-foreground">Batidas/Lotes</p>
-            </CardContent></Card>
-            <Card><CardContent className="pt-4 text-center">
-              <p className="text-2xl font-bold font-display text-primary">{(totalQty / 1000).toFixed(1)} t</p>
-              <p className="text-xs text-muted-foreground">Produção Total</p>
-            </CardContent></Card>
-            <Card><CardContent className="pt-4 text-center">
-              <p className="text-2xl font-bold font-display">{bySegmento.length}</p>
-              <p className="text-xs text-muted-foreground">Segmentos</p>
-            </CardContent></Card>
-            <Card><CardContent className="pt-4 text-center">
-              <p className="text-2xl font-bold font-display">{byEspecie.length}</p>
-              <p className="text-xs text-muted-foreground">Espécies</p>
-            </CardContent></Card>
+            {(Object.keys(TAB_LABELS) as AtividadeTab[]).map(tab => {
+              const total = getTotal(tab);
+              const filledCount = Object.values(valores[tab]).filter(v => v.trim() !== "").length;
+              return (
+                <Card key={tab} className={`cursor-pointer transition-all ${activeTab === tab ? "ring-2 ring-primary" : "hover:bg-muted/30"}`} onClick={() => setActiveTab(tab)}>
+                  <CardContent className="pt-4 text-center">
+                    <p className="text-xl font-bold font-display text-primary">
+                      {total > 0 ? `${total.toFixed(2).replace(".", ",")} t` : "—"}
+                    </p>
+                    <p className="text-xs text-muted-foreground">{TAB_LABELS[tab]}</p>
+                    {filledCount > 0 && (
+                      <p className="text-[10px] text-muted-foreground mt-1">{filledCount} itens preenchidos</p>
+                    )}
+                  </CardContent>
+                </Card>
+              );
+            })}
           </div>
 
-          {/* Charts */}
-          <div className="grid md:grid-cols-2 gap-4 mb-6">
-            <Card>
-              <CardHeader><CardTitle className="font-display text-sm">Produção por Segmento (kg)</CardTitle></CardHeader>
-              <CardContent>
-                <ResponsiveContainer width="100%" height={280}>
-                  <BarChart data={bySegmento}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" tick={{ fontSize: 11 }} angle={-30} textAnchor="end" height={60} />
-                    <YAxis tick={{ fontSize: 11 }} />
-                    <Tooltip formatter={(v: number) => `${v.toLocaleString()} kg`} />
-                    <Bar dataKey="qty" name="Quantidade (kg)" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
-                  </BarChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader><CardTitle className="font-display text-sm">Distribuição por Espécie</CardTitle></CardHeader>
-              <CardContent>
-                <ResponsiveContainer width="100%" height={280}>
-                  <PieChart>
-                    <Pie data={byEspecie} dataKey="qty" nameKey="name" cx="50%" cy="50%" outerRadius={100} label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}>
-                      {byEspecie.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
-                    </Pie>
-                    <Tooltip formatter={(v: number) => `${v.toLocaleString()} kg`} />
-                  </PieChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Table: By Segment */}
-          <Card className="mb-4">
-            <CardHeader><CardTitle className="font-display text-sm">Resumo por Segmento</CardTitle></CardHeader>
-            <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Segmento</TableHead>
-                    <TableHead className="text-right">Quantidade (kg)</TableHead>
-                    <TableHead className="text-right">Batidas</TableHead>
-                    <TableHead className="text-right">% Total</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {bySegmento.map(s => (
-                    <TableRow key={s.name}>
-                      <TableCell className="font-medium">{s.name}</TableCell>
-                      <TableCell className="text-right">{s.qty.toLocaleString()}</TableCell>
-                      <TableCell className="text-right">{s.count}</TableCell>
-                      <TableCell className="text-right">{totalQty > 0 ? ((s.qty / totalQty) * 100).toFixed(1) : 0}%</TableCell>
-                    </TableRow>
-                  ))}
-                  <TableRow className="font-bold border-t-2">
-                    <TableCell>TOTAL</TableCell>
-                    <TableCell className="text-right">{totalQty.toLocaleString()}</TableCell>
-                    <TableCell className="text-right">{totalBatches}</TableCell>
-                    <TableCell className="text-right">100%</TableCell>
-                  </TableRow>
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
-
-          {/* Table: By Species */}
-          <Card className="mb-4">
-            <CardHeader><CardTitle className="font-display text-sm">Resumo por Espécie</CardTitle></CardHeader>
-            <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Espécie</TableHead>
-                    <TableHead className="text-right">Quantidade (kg)</TableHead>
-                    <TableHead className="text-right">Batidas</TableHead>
-                    <TableHead className="text-right">% Total</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {byEspecie.map(e => (
-                    <TableRow key={e.name}>
-                      <TableCell className="font-medium">{e.name}</TableCell>
-                      <TableCell className="text-right">{e.qty.toLocaleString()}</TableCell>
-                      <TableCell className="text-right">{e.count}</TableCell>
-                      <TableCell className="text-right">{totalQty > 0 ? ((e.qty / totalQty) * 100).toFixed(1) : 0}%</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
-
-          {/* Table: Detail by Product */}
-          <Card>
-            <CardHeader><CardTitle className="font-display text-sm">Detalhe por Produto</CardTitle></CardHeader>
-            <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Produto</TableHead>
-                    <TableHead>Segmento</TableHead>
-                    <TableHead>Espécie</TableHead>
-                    <TableHead className="text-right">Quantidade (kg)</TableHead>
-                    <TableHead className="text-right">Batidas</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {byProduto.map(p => (
-                    <TableRow key={p.produto}>
-                      <TableCell className="font-medium">{p.produto}</TableCell>
-                      <TableCell><Badge variant="outline" className="text-xs">{p.classificacao}</Badge></TableCell>
-                      <TableCell>{p.especie}</TableCell>
-                      <TableCell className="text-right">{p.qty.toLocaleString()}</TableCell>
-                      <TableCell className="text-right">{p.count}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
+          {/* Tabs */}
+          <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as AtividadeTab)}>
+            <TabsList className="mb-4">
+              <TabsTrigger value="producao">Produção</TabsTrigger>
+              <TabsTrigger value="importacao">Importação</TabsTrigger>
+              <TabsTrigger value="exportacao">Exportação</TabsTrigger>
+              <TabsTrigger value="fracionamento">Fracionamento</TabsTrigger>
+            </TabsList>
+            <TabsContent value="producao">{renderTable("producao")}</TabsContent>
+            <TabsContent value="importacao">{renderTable("importacao")}</TabsContent>
+            <TabsContent value="exportacao">{renderTable("exportacao")}</TabsContent>
+            <TabsContent value="fracionamento">{renderTable("fracionamento")}</TabsContent>
+          </Tabs>
         </>
       )}
     </>
