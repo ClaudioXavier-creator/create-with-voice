@@ -438,6 +438,10 @@ export default function Legislacao() {
             Alertas
             {naoLidos > 0 && <Badge className="ml-2 bg-destructive text-destructive-foreground text-xs">{naoLidos}</Badge>}
           </TabsTrigger>
+          <TabsTrigger value="pesquisa">
+            <Globe className="w-4 h-4 mr-1" />
+            Pesquisa SISLEGIS
+          </TabsTrigger>
           <TabsTrigger value="resumo">
             <Sparkles className="w-4 h-4 mr-1" />
             Resumo IA
