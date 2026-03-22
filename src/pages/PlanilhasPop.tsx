@@ -32,8 +32,9 @@ export default function PlanilhasPop() {
     }
   }, [selectedPop]);
 
-  const loadOrCreatePlanilha = useCallback(async () => {
-    if (!user || !selectedPeriodicidade) return;
+  const loadOrCreatePlanilha = useCallback(async (per?: PopPeriodicidade) => {
+    const target = per || selectedPeriodicidade;
+    if (!user || !target) return;
     setLoading(true);
 
     const { data: existing } = await supabase
@@ -41,7 +42,7 @@ export default function PlanilhasPop() {
       .select("id")
       .eq("user_id", user.id)
       .eq("pop_codigo", selectedPop.codigo)
-      .eq("periodicidade", selectedPeriodicidade.key)
+      .eq("periodicidade", target.key)
       .eq("mes", mes)
       .eq("ano", ano)
       .maybeSingle();
@@ -55,7 +56,7 @@ export default function PlanilhasPop() {
           user_id: user.id,
           pop_codigo: selectedPop.codigo,
           pop_nome: selectedPop.nome,
-          periodicidade: selectedPeriodicidade.key,
+          periodicidade: target.key,
           mes,
           ano,
         })
