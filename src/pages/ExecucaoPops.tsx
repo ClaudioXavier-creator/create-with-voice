@@ -230,6 +230,8 @@ export default function ExecucaoPops() {
       setOpen(false);
       setDocSelecionado(""); setExecutor(""); setSetor(""); setObs(""); setStatusExec("concluido");
       setChecklistTriagem({}); setLaudoNumero(""); setLaudoLaboratorio(""); setLaudoData("");
+      setAsoNumero(""); setAsoValidade(""); setAsoTipo("periodico");
+      setProdutoQuimico(""); setConcentracaoQuimico(""); setTempoContato("");
       fetchData();
     }
     setSaving(false);
