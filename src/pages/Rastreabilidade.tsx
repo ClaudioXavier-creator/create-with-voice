@@ -358,9 +358,10 @@ export default function Rastreabilidade() {
   const formatTime = (s: number) => `${Math.floor(s / 60).toString().padStart(2, "0")}:${(s % 60).toString().padStart(2, "0")}`;
 
   const exportHistoricoCSV = () => {
-    const headers = ["Produto", "Lote PA", "Matéria-Prima", "Lote MP", "Fornecedor", "Cliente/Destino", "Local Entrega", "Data Venda", "Nota Fiscal", "Qtd Vendida", "Recall Ativo", "Recall Motivo", "Recall Status"];
+    const headers = ["Produto", "Lote PA", "Espécie Destino", "Origem Animal", "Matéria-Prima", "Lote MP", "Fornecedor", "Cliente/Destino", "Local Entrega", "Data Venda", "Nota Fiscal", "Qtd Vendida", "Recall Ativo", "Recall Motivo", "Recall Status"];
     const rows = registros.map(r => [
-      r.produto, r.lote_produto || "", r.materia_prima, r.lote_mp || "", r.fornecedor || "",
+      r.produto, r.lote_produto || "", (r as any).especie_destino || "", (r as any).contem_origem_animal ? "Sim" : "Não",
+      r.materia_prima, r.lote_mp || "", r.fornecedor || "",
       r.cliente_destino || "", r.local_entrega || "", r.data_venda || "", r.nota_fiscal || "",
       r.quantidade_vendida || "", r.recall_ativo ? "Sim" : "Não", r.recall_motivo || "", r.recall_status || "",
     ]);
@@ -371,6 +372,64 @@ export default function Rastreabilidade() {
     link.download = `rastreabilidade_historico_${new Date().toISOString().split("T")[0]}.csv`;
     link.click();
     toast.success("Histórico exportado para CSV!");
+  };
+
+  const exportBalancoMassa = () => {
+    // Group by lote_produto for mass balance
+    const lotes = new Map<string, { produto: string; materias: { mp: string; lote: string; fornecedor: string; qtd: string }[]; vendas: { cliente: string; qtd: string; nf: string; data: string }[] }>();
+    
+    registros.forEach(r => {
+      const lote = r.lote_produto || "SEM_LOTE";
+      if (!lotes.has(lote)) {
+        lotes.set(lote, { produto: r.produto, materias: [], vendas: [] });
+      }
+      const entry = lotes.get(lote)!;
+      // Avoid duplicates
+      if (!entry.materias.some(m => m.mp === r.materia_prima && m.lote === (r.lote_mp || ""))) {
+        entry.materias.push({ mp: r.materia_prima, lote: r.lote_mp || "", fornecedor: r.fornecedor || "", qtd: "" });
+      }
+      if (r.cliente_destino && !entry.vendas.some(v => v.cliente === r.cliente_destino && v.nf === (r.nota_fiscal || ""))) {
+        entry.vendas.push({ cliente: r.cliente_destino || "", qtd: r.quantidade_vendida || "", nf: r.nota_fiscal || "", data: r.data_venda || "" });
+      }
+    });
+
+    const lines: string[] = [
+      "BALANÇO DE MASSA — RASTREABILIDADE",
+      `Data de Geração: ${new Date().toLocaleDateString("pt-BR")}`,
+      `Decreto 12.031/2024 — Fiscalização baseada em risco`,
+      "",
+      "LOTE PA;PRODUTO;MATÉRIA-PRIMA;LOTE MP;FORNECEDOR;CLIENTE DESTINO;QTD VENDIDA;NOTA FISCAL;DATA VENDA",
+    ];
+
+    lotes.forEach((data, lote) => {
+      const maxRows = Math.max(data.materias.length, data.vendas.length, 1);
+      for (let i = 0; i < maxRows; i++) {
+        const mp = data.materias[i];
+        const venda = data.vendas[i];
+        lines.push([
+          i === 0 ? lote : "",
+          i === 0 ? data.produto : "",
+          mp?.mp || "",
+          mp?.lote || "",
+          mp?.fornecedor || "",
+          venda?.cliente || "",
+          venda?.qtd || "",
+          venda?.nf || "",
+          venda?.data || "",
+        ].join(";"));
+      }
+      lines.push(""); // separator
+    });
+
+    lines.push("", `Total de lotes: ${lotes.size}`, `Total de vínculos MP: ${registros.length}`, `Total de destinos: ${registros.filter(r => r.cliente_destino).length}`);
+
+    const csv = lines.join("\n");
+    const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = `balanco_massa_${new Date().toISOString().split("T")[0]}.csv`;
+    link.click();
+    toast.success("Balanço de massa exportado para fiscalização!");
   };
 
   return (
@@ -665,7 +724,10 @@ export default function Rastreabilidade() {
             <CardTitle className="font-display">Rastreabilidade Completa</CardTitle>
             <Input placeholder="Buscar por produto, lote, MP, fornecedor, cliente, NF..." value={busca} onChange={(e) => setBusca(e.target.value)} className="mt-2" />
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-2 flex-wrap">
+            <Button size="sm" variant="outline" onClick={exportBalancoMassa} disabled={registros.length === 0}>
+              <Download className="w-4 h-4 mr-1" /> Balanço de Massa
+            </Button>
             <Button size="sm" variant="outline" onClick={exportHistoricoCSV} disabled={registros.length === 0}>
               <Download className="w-4 h-4 mr-1" /> Exportar Histórico
             </Button>

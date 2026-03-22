@@ -54,6 +54,31 @@ const statusConfig: Record<string, { label: string; className: string; icon: Rea
   nao_conforme: { label: "Não conforme", className: "bg-destructive/20 text-destructive", icon: AlertTriangle },
 };
 
+// Checklist items for POP-02 daily health screening
+const POP02_TRIAGEM_ITENS = [
+  "Colaborador sem sintomas (febre, diarreia, vômito, lesões de pele)",
+  "Uniforme limpo e em bom estado",
+  "Uso adequado de EPIs (luvas, touca, botas)",
+  "Mãos lavadas e higienizadas",
+  "Ausência de adornos (anéis, relógio, brincos, pulseiras)",
+  "Unhas curtas, limpas e sem esmalte",
+  "Barba aparada ou protegida (rede)",
+  "Ausência de ferimentos expostos / curativos impermeáveis",
+  "Sem uso de perfume ou maquiagem",
+  "ASO (Atestado de Saúde Ocupacional) válido",
+];
+
+// Checklist items for POP-04 water potability
+const POP04_AGUA_ITENS = [
+  "Cloro residual dentro do padrão (0,2 a 2,0 mg/L)",
+  "pH dentro do padrão (6,0 a 9,5)",
+  "Turbidez dentro do padrão (≤ 5 NTU)",
+  "Ausência de odor ou sabor anormal",
+  "Reservatório com tampa e vedação adequada",
+  "Laudo laboratorial mensal em dia",
+  "Certificado de limpeza do reservatório válido",
+];
+
 // POPs obrigatórios com periodicidade em dias
 const POPS_PERIODICIDADE: Record<string, number> = {
   "POP-001": 30,
@@ -96,6 +121,7 @@ export default function ExecucaoPops() {
   const [setor, setSetor] = useState("");
   const [statusExec, setStatusExec] = useState("concluido");
   const [obs, setObs] = useState("");
+  const [checklistTriagem, setChecklistTriagem] = useState<Record<number, boolean | null>>({});
 
   const fetchData = async () => {
     if (!user) return;
@@ -114,9 +140,26 @@ export default function ExecucaoPops() {
 
   const selectedDoc = docs.find(d => d.id === docSelecionado);
 
+  const isPOP02 = selectedDoc?.codigo?.toUpperCase().includes("POP-002") || selectedDoc?.codigo?.toUpperCase().includes("POP-02") || selectedDoc?.nome?.toLowerCase().includes("higiene") && selectedDoc?.nome?.toLowerCase().includes("saúde");
+  const isPOP04 = selectedDoc?.codigo?.toUpperCase().includes("POP-004") || selectedDoc?.codigo?.toUpperCase().includes("POP-04") || selectedDoc?.nome?.toLowerCase().includes("potabilidade");
+  const activeChecklist = isPOP02 ? POP02_TRIAGEM_ITENS : isPOP04 ? POP04_AGUA_ITENS : null;
+
   const handleAdd = async () => {
     if (!selectedDoc || !executor || !user) return;
     setSaving(true);
+
+    // Build checklist observation
+    let obsCompleta = obs;
+    if (activeChecklist) {
+      const checkItems = activeChecklist.map((item, i) => {
+        const val = checklistTriagem[i];
+        return `${val === true ? "✅" : val === false ? "❌" : "⬜"} ${item}`;
+      }).join("\n");
+      const naoConformes = activeChecklist.filter((_, i) => checklistTriagem[i] === false).length;
+      const header = isPOP02 ? "[TRIAGEM DIÁRIA — POP-02 / IN 15/2009]" : "[CONTROLE POTABILIDADE — POP-04 / IN 04/2007]";
+      obsCompleta = `${header}\n${checkItems}${naoConformes > 0 ? `\n⚠️ ${naoConformes} item(ns) não conforme(s)` : "\n✅ Todos os itens conformes"}${obs ? `\nObs: ${obs}` : ""}`;
+    }
+
     const { error } = await supabase.from("execucao_pops").insert({
       user_id: user.id,
       codigo_pop: selectedDoc.codigo,
@@ -124,7 +167,7 @@ export default function ExecucaoPops() {
       executor,
       setor,
       status: statusExec,
-      observacoes: obs,
+      observacoes: obsCompleta,
       documento_id: selectedDoc.id,
     });
     if (error) toast.error("Erro ao salvar execução");
@@ -132,6 +175,7 @@ export default function ExecucaoPops() {
       toast.success("Execução registrada!");
       setOpen(false);
       setDocSelecionado(""); setExecutor(""); setSetor(""); setObs(""); setStatusExec("concluido");
+      setChecklistTriagem({});
       fetchData();
     }
     setSaving(false);
@@ -289,7 +333,7 @@ export default function ExecucaoPops() {
             <DialogTrigger asChild>
               <Button size="sm"><Plus className="w-4 h-4 mr-1" /> Nova Execução</Button>
             </DialogTrigger>
-            <DialogContent>
+            <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
               <DialogHeader><DialogTitle>Registrar Execução de POP/IT</DialogTitle></DialogHeader>
               <div className="space-y-4">
                 <div>
@@ -348,6 +392,39 @@ export default function ExecucaoPops() {
                     </SelectContent>
                   </Select>
                 </div>
+
+                {/* Checklist POP-02 / POP-04 */}
+                {activeChecklist && (
+                  <div className="p-3 rounded-lg border-2 border-primary/30 bg-primary/5 space-y-2">
+                    <p className="text-xs font-semibold text-primary">
+                      {isPOP02 ? "📋 Triagem Diária — Higiene e Saúde do Pessoal (POP-02 / IN 15/2009)" : "💧 Controle de Potabilidade da Água (POP-04 / IN 04/2007)"}
+                    </p>
+                    <p className="text-xs text-muted-foreground mb-2">Marque cada item como Conforme (✅) ou Não Conforme (❌):</p>
+                    <div className="space-y-1.5">
+                      {activeChecklist.map((item, idx) => (
+                        <div key={idx} className="flex items-center gap-2 p-1.5 rounded bg-background border text-xs">
+                          <div className="flex gap-1 shrink-0">
+                            <button
+                              type="button"
+                              className={`w-6 h-6 rounded text-xs font-bold ${checklistTriagem[idx] === true ? "bg-green-500 text-white" : "bg-muted text-muted-foreground"}`}
+                              onClick={() => setChecklistTriagem(prev => ({ ...prev, [idx]: prev[idx] === true ? null : true }))}
+                            >✓</button>
+                            <button
+                              type="button"
+                              className={`w-6 h-6 rounded text-xs font-bold ${checklistTriagem[idx] === false ? "bg-destructive text-white" : "bg-muted text-muted-foreground"}`}
+                              onClick={() => setChecklistTriagem(prev => ({ ...prev, [idx]: prev[idx] === false ? null : false }))}
+                            >✗</button>
+                          </div>
+                          <span className="flex-1">{item}</span>
+                        </div>
+                      ))}
+                    </div>
+                    {Object.values(checklistTriagem).some(v => v === false) && (
+                      <p className="text-xs text-destructive font-semibold mt-2">⚠️ Itens não conformes detectados — registrar como "Não conforme" se necessário.</p>
+                    )}
+                  </div>
+                )}
+
                 <div>
                   <Label>Observações</Label>
                   <Textarea value={obs} onChange={e => setObs(e.target.value)} placeholder="Observações da execução..." />

@@ -120,6 +120,12 @@ export default function PCP() {
   const [batidaTemp, setBatidaTemp] = useState("");
   const [batidaObs, setBatidaObs] = useState("");
 
+  // Limpeza entre lotes
+  const [limpezaConfirmada, setLimpezaConfirmada] = useState(false);
+  const [limpezaTipo, setLimpezaTipo] = useState("vassouragem");
+  const [limpezaResponsavel, setLimpezaResponsavel] = useState("");
+  const [limpezaHora, setLimpezaHora] = useState("");
+
   const fetchData = async () => {
     if (!user) return;
     const [ordensRes, itensRes, batidasRes] = await Promise.all([
@@ -191,7 +197,13 @@ export default function PCP() {
 
   const handleAddBatida = async () => {
     if (!batidaOrdemId || !user) return;
+    if (!limpezaConfirmada) {
+      toast.error("⚠️ É obrigatório confirmar a limpeza entre lotes antes de registrar a batida (IN 15/2009).");
+      return;
+    }
     setSaving(true);
+    const limpezaInfo = `[LIMPEZA ENTRE LOTES] Tipo: ${limpezaTipo === "vassouragem" ? "Vassouragem" : limpezaTipo === "flushing" ? "Flushing" : "Lavagem completa"} | Resp: ${limpezaResponsavel} | Hora: ${limpezaHora}`;
+    const obsCompleta = batidaObs ? `${limpezaInfo}\n${batidaObs}` : limpezaInfo;
     const { error } = await supabase.from("batidas_producao").insert({
       user_id: user.id,
       ordem_id: batidaOrdemId,
@@ -202,14 +214,15 @@ export default function PCP() {
       tempo_mistura_minutos: batidaTempoMin ? parseInt(batidaTempoMin) : null,
       temperatura: batidaTemp,
       status: "concluida",
-      observacoes: batidaObs,
+      observacoes: obsCompleta,
     } as any);
     if (error) toast.error("Erro ao salvar batida");
     else {
-      toast.success("Batida registrada!");
+      toast.success("Batida registrada com verificação de limpeza!");
       setBatidaOpen(false);
       setBatidaNum("1"); setBatidaOperador(""); setBatidaInicio(""); setBatidaFim("");
       setBatidaTempoMin(""); setBatidaTemp(""); setBatidaObs("");
+      setLimpezaConfirmada(false); setLimpezaTipo("vassouragem"); setLimpezaResponsavel(""); setLimpezaHora("");
       fetchData();
     }
     setSaving(false);
@@ -588,9 +601,44 @@ export default function PCP() {
 
       {/* Dialog: Registrar Batida */}
       <Dialog open={batidaOpen} onOpenChange={setBatidaOpen}>
-        <DialogContent>
+        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader><DialogTitle>Registrar Batida de Produção</DialogTitle></DialogHeader>
           <div className="space-y-3">
+            {/* Limpeza entre lotes - OBRIGATÓRIO */}
+            <div className={`p-3 rounded-lg border-2 ${limpezaConfirmada ? "border-green-500 bg-green-50 dark:bg-green-900/10" : "border-yellow-500 bg-yellow-50 dark:bg-yellow-900/10"}`}>
+              <p className="text-xs font-semibold mb-2 flex items-center gap-1">
+                <AlertTriangle className="w-4 h-4 text-yellow-600" />
+                Verificação de Limpeza entre Lotes — IN 15/2009 / Decreto 12.031/2024
+              </p>
+              <p className="text-xs text-muted-foreground mb-3">Obrigatório confirmar a limpeza da linha antes de iniciar nova batida para prevenir contaminação cruzada.</p>
+              <div className="grid grid-cols-3 gap-2 mb-2">
+                <div>
+                  <Label className="text-xs">Tipo de Limpeza</Label>
+                  <Select value={limpezaTipo} onValueChange={setLimpezaTipo}>
+                    <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="vassouragem">Vassouragem</SelectItem>
+                      <SelectItem value="flushing">Flushing</SelectItem>
+                      <SelectItem value="lavagem_completa">Lavagem Completa</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label className="text-xs">Responsável</Label>
+                  <Input className="h-8 text-xs" value={limpezaResponsavel} onChange={e => setLimpezaResponsavel(e.target.value)} placeholder="Nome" />
+                </div>
+                <div>
+                  <Label className="text-xs">Hora</Label>
+                  <Input className="h-8 text-xs" type="time" value={limpezaHora} onChange={e => setLimpezaHora(e.target.value)} />
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <input type="checkbox" checked={limpezaConfirmada} onChange={e => setLimpezaConfirmada(e.target.checked)} className="h-4 w-4" />
+                <Label className="text-xs font-semibold">Confirmo que a limpeza entre lotes foi realizada</Label>
+                {limpezaConfirmada && <CheckCircle2 className="w-4 h-4 text-green-600" />}
+              </div>
+            </div>
+
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <Label>Nº da Batida</Label>
@@ -625,9 +673,9 @@ export default function PCP() {
               <Label>Observações</Label>
               <Textarea value={batidaObs} onChange={e => setBatidaObs(e.target.value)} placeholder="Anotações da batida..." />
             </div>
-            <Button onClick={handleAddBatida} className="w-full" disabled={saving}>
+            <Button onClick={handleAddBatida} className="w-full" disabled={saving || !limpezaConfirmada}>
               {saving && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-              Registrar Batida
+              {!limpezaConfirmada ? "⚠️ Confirme a limpeza para prosseguir" : "Registrar Batida"}
             </Button>
           </div>
         </DialogContent>
