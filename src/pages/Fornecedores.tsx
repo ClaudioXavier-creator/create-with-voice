@@ -615,6 +615,7 @@ export default function Fornecedores() {
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="aprovado">Aprovado</SelectItem>
+                  <SelectItem value="aprovado_com_restricoes">Aprovado c/ Restrições</SelectItem>
                   <SelectItem value="em_avaliacao">Em Avaliação</SelectItem>
                   <SelectItem value="pendente">Pendente</SelectItem>
                   <SelectItem value="reprovado">Reprovado</SelectItem>
