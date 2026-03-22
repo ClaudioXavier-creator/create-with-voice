@@ -29,6 +29,11 @@ interface OrdemProd {
   prioridade: string | null;
   status: string | null;
   observacoes: string | null;
+  tipo_ordem: string;
+  ordem_origem_id: string | null;
+  motivo_retrabalho: string | null;
+  quantidade_sobra: string | null;
+  destino_sobra: string | null;
 }
 
 interface FormulaItem {
