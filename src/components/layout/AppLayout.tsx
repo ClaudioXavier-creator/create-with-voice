@@ -48,6 +48,7 @@ const NAV_ENTRIES: NavEntry[] = [
       { path: "/substancias", label: "Substâncias Proibidas", icon: ShieldAlert },
       { path: "/validacao-limpeza", label: "Validação Limpeza", icon: ShieldCheck },
       { path: "/matriz-risco", label: "Matriz de Risco", icon: AlertTriangle },
+      { path: "/planejamento-anual", label: "Planejamento Anual", icon: CalendarDays },
     ],
   },
   {
