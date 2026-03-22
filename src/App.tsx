@@ -34,6 +34,8 @@ import ValidacaoLimpezaLinha from "./pages/ValidacaoLimpezaLinha";
 import MatrizRisco from "./pages/MatrizRisco";
 import PlanejamentoAnual from "./pages/PlanejamentoAnual";
 import QualidadeTotal from "./pages/QualidadeTotal";
+import SalaAuditor from "./pages/SalaAuditor";
+import RelatorioProducao from "./pages/RelatorioProducao";
 import Auth from "./pages/Auth";
 import AtivarLicenca from "./pages/AtivarLicenca";
 import NotFound from "./pages/NotFound";
