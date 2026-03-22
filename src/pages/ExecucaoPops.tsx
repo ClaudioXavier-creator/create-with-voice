@@ -166,9 +166,11 @@ export default function ExecucaoPops() {
 
   const selectedDoc = docs.find(d => d.id === docSelecionado);
 
-  const isPOP02 = selectedDoc?.codigo?.toUpperCase().includes("POP-002") || selectedDoc?.codigo?.toUpperCase().includes("POP-02") || selectedDoc?.nome?.toLowerCase().includes("higiene") && selectedDoc?.nome?.toLowerCase().includes("saúde");
+  const isPOP02 = selectedDoc?.codigo?.toUpperCase().includes("POP-002") || selectedDoc?.codigo?.toUpperCase().includes("POP-02") || (selectedDoc?.nome?.toLowerCase().includes("higiene") && selectedDoc?.nome?.toLowerCase().includes("saúde"));
+  const isPOP03 = selectedDoc?.codigo?.toUpperCase().includes("POP-003") || selectedDoc?.codigo?.toUpperCase().includes("POP-03") || (selectedDoc?.nome?.toLowerCase().includes("higienização") && selectedDoc?.nome?.toLowerCase().includes("instalações"));
   const isPOP04 = selectedDoc?.codigo?.toUpperCase().includes("POP-004") || selectedDoc?.codigo?.toUpperCase().includes("POP-04") || selectedDoc?.nome?.toLowerCase().includes("potabilidade");
-  const activeChecklist = isPOP02 ? POP02_TRIAGEM_ITENS : isPOP04 ? POP04_AGUA_ITENS : null;
+  const isPOP05 = selectedDoc?.codigo?.toUpperCase().includes("POP-005") || selectedDoc?.codigo?.toUpperCase().includes("POP-05") || (selectedDoc?.nome?.toLowerCase().includes("transporte") || selectedDoc?.nome?.toLowerCase().includes("veículo"));
+  const activeChecklist = isPOP02 ? POP02_TRIAGEM_ITENS : isPOP03 ? POP03_LIMPEZA_ITENS : isPOP04 ? POP04_AGUA_ITENS : isPOP05 ? POP05_VEICULO_ITENS : null;
 
   const handleAdd = async () => {
     if (!selectedDoc || !executor || !user) return;
