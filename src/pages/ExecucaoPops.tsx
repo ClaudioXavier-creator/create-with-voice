@@ -392,6 +392,39 @@ export default function ExecucaoPops() {
                     </SelectContent>
                   </Select>
                 </div>
+
+                {/* Checklist POP-02 / POP-04 */}
+                {activeChecklist && (
+                  <div className="p-3 rounded-lg border-2 border-primary/30 bg-primary/5 space-y-2">
+                    <p className="text-xs font-semibold text-primary">
+                      {isPOP02 ? "📋 Triagem Diária — Higiene e Saúde do Pessoal (POP-02 / IN 15/2009)" : "💧 Controle de Potabilidade da Água (POP-04 / IN 04/2007)"}
+                    </p>
+                    <p className="text-xs text-muted-foreground mb-2">Marque cada item como Conforme (✅) ou Não Conforme (❌):</p>
+                    <div className="space-y-1.5">
+                      {activeChecklist.map((item, idx) => (
+                        <div key={idx} className="flex items-center gap-2 p-1.5 rounded bg-background border text-xs">
+                          <div className="flex gap-1 shrink-0">
+                            <button
+                              type="button"
+                              className={`w-6 h-6 rounded text-xs font-bold ${checklistTriagem[idx] === true ? "bg-green-500 text-white" : "bg-muted text-muted-foreground"}`}
+                              onClick={() => setChecklistTriagem(prev => ({ ...prev, [idx]: prev[idx] === true ? null : true }))}
+                            >✓</button>
+                            <button
+                              type="button"
+                              className={`w-6 h-6 rounded text-xs font-bold ${checklistTriagem[idx] === false ? "bg-destructive text-white" : "bg-muted text-muted-foreground"}`}
+                              onClick={() => setChecklistTriagem(prev => ({ ...prev, [idx]: prev[idx] === false ? null : false }))}
+                            >✗</button>
+                          </div>
+                          <span className="flex-1">{item}</span>
+                        </div>
+                      ))}
+                    </div>
+                    {Object.values(checklistTriagem).some(v => v === false) && (
+                      <p className="text-xs text-destructive font-semibold mt-2">⚠️ Itens não conformes detectados — registrar como "Não conforme" se necessário.</p>
+                    )}
+                  </div>
+                )}
+
                 <div>
                   <Label>Observações</Label>
                   <Textarea value={obs} onChange={e => setObs(e.target.value)} placeholder="Observações da execução..." />
