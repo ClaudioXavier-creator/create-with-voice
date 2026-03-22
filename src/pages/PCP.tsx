@@ -149,6 +149,11 @@ export default function PCP() {
       peso_por_batida: pesoBatida,
       prioridade,
       observacoes: obsOrdem,
+      tipo_ordem: tipoOrdem,
+      ordem_origem_id: ordemOrigemId || null,
+      motivo_retrabalho: motivoRetrabalho || null,
+      quantidade_sobra: qtdSobra || null,
+      destino_sobra: destinoSobra || null,
     } as any);
     if (error) toast.error("Erro ao salvar");
     else {
@@ -156,6 +161,7 @@ export default function PCP() {
       setOrdemOpen(false);
       setNumOrdem(""); setProduto(""); setFormulaNome(""); setLotePA(""); setQtdProgramada("");
       setNumBatidas("1"); setPesoBatida(""); setPrioridade("normal"); setObsOrdem("");
+      setTipoOrdem("normal"); setOrdemOrigemId(""); setMotivoRetrabalho(""); setQtdSobra(""); setDestinoSobra("");
       fetchData();
     }
     setSaving(false);
