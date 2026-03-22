@@ -70,7 +70,7 @@ const POP02_TRIAGEM_ITENS = [
   "Certificado de capacitação em manipulação de alimentos / BPF válido",
 ];
 
-// Checklist items for POP-03 pre-operational cleaning (IN 04/2007)
+// Checklist items for POP-03 pre-operational cleaning (IN 04/2007 + IN 15/2009)
 const POP03_LIMPEZA_ITENS = [
   "Pisos limpos e secos, sem acúmulo de resíduos",
   "Paredes e teto sem sujidade, mofo ou descascamento",
@@ -81,7 +81,12 @@ const POP03_LIMPEZA_ITENS = [
   "Ralos e canaletas limpos e com telas de proteção",
   "Lixeiras identificadas, com tampa e saco plástico",
   "Luminárias com proteção contra quebra",
-  "Registro de produto químico utilizado na limpeza",
+  "Registro de produto químico utilizado na limpeza (nome, concentração, validade)",
+  "Ficha técnica e FISPQ do produto de limpeza disponível no local",
+  "Concentração do produto sanitizante verificada antes da aplicação",
+  "Tempo de contato do sanitizante respeitado conforme rótulo/POP",
+  "Cronograma de limpeza semanal/mensal afixado e atualizado",
+  "Silos e depósitos de MP inspecionados e sem incrustações",
 ];
 
 // Checklist items for POP-04 water potability (IN 04/2007 — Art. 2º)
