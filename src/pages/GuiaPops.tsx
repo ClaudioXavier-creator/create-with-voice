@@ -157,6 +157,11 @@ const sections: GuiaSection[] = [
           { campo: "Temperatura/Umidade", orientacao: "Registrar valores medidos; marcar C se dentro dos limites" },
         ]} />
         <Tip>Vincule o registro ao fornecedor e lote no módulo de Recebimento para rastreabilidade completa.</Tip>
+        <div className="bg-muted/50 rounded-lg p-3 space-y-2">
+          <p className="text-sm font-medium">📋 PL POP 1.1 — Lista de Fornecedores Aprovados</p>
+          <p className="text-sm text-muted-foreground">A lista consolidada de fornecedores aprovados é gerada automaticamente no módulo de Fornecedores. Ela exibe todos os fornecedores com resultado <strong>Aprovado</strong> ou <strong>Aprovado c/ Restrições</strong>.</p>
+          <p className="text-sm text-muted-foreground">Use os botões <strong>Modelo Excel</strong> e <strong>Modelo PDF</strong> para baixar o questionário de qualificação em branco para uso offline, ou exporte a lista completa de aprovados diretamente em Excel ou PDF.</p>
+        </div>
       </div>
     ),
   },
