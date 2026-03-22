@@ -23,6 +23,7 @@ import Relatorios from "./pages/Relatorios";
 import Legislacao from "./pages/Legislacao";
 import Fornecedores from "./pages/Fornecedores";
 import Manual from "./pages/Manual";
+import PlanilhasPop from "./pages/PlanilhasPop";
 import Auth from "./pages/Auth";
 import AtivarLicenca from "./pages/AtivarLicenca";
 import NotFound from "./pages/NotFound";
