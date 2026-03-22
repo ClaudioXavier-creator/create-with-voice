@@ -182,7 +182,9 @@ export default function ManutencaoPreventiva() {
             <DialogHeader><DialogTitle>Registrar Manutenção</DialogTitle></DialogHeader>
             <div className="grid gap-3">
               <div className="grid grid-cols-2 gap-3">
-                <div><Label>Equipamento *</Label><Input value={form.equipamento} onChange={e => setForm(p => ({ ...p, equipamento: e.target.value }))} placeholder="Ex: Misturador 01" /></div>
+                <div><Label>Equipamento *</Label><Input value={form.equipamento} onChange={e => setForm(p => ({ ...p, equipamento: e.target.value }))} placeholder="Ex: Misturador 01" />
+                  <p className="text-[10px] text-muted-foreground mt-1">Inclua moinhos, misturadores, peletizadoras, silos, balanças, etc.</p>
+                </div>
                 <div><Label>Código</Label><Input value={form.codigo_equipamento} onChange={e => setForm(p => ({ ...p, codigo_equipamento: e.target.value }))} placeholder="MX-001" /></div>
               </div>
               <div className="grid grid-cols-2 gap-3">

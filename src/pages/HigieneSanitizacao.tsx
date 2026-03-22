@@ -304,7 +304,8 @@ export default function HigieneSanitizacao() {
                   ))}
                 </TableBody>
               </Table>
-            </Card>
+          </Card>
+            </>
           )}
         </TabsContent>
 
