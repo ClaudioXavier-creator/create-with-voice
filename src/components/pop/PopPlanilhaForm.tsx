@@ -337,13 +337,25 @@ export default function PopPlanilhaForm({ planilhaId, periodicidade, userId }: P
         </table>
       </div>
 
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between flex-wrap gap-2">
         <p className="text-xs text-muted-foreground">
           *C = Conforme | NC = Não Conforme | Clique para alternar. Em caso de NC, emitir RNC.
         </p>
-        <Button onClick={saveAll} disabled={saving}>
-          {saving ? "Salvando..." : "Salvar Registros"}
-        </Button>
+        <div className="flex gap-2">
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".xlsx,.xls"
+            className="hidden"
+            onChange={handleImportExcel}
+          />
+          <Button variant="outline" onClick={() => fileInputRef.current?.click()}>
+            <Upload className="w-4 h-4 mr-1" /> Importar Excel
+          </Button>
+          <Button onClick={saveAll} disabled={saving}>
+            {saving ? "Salvando..." : "Salvar Registros"}
+          </Button>
+        </div>
       </div>
     </div>
   );
