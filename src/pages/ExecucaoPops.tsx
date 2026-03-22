@@ -68,6 +68,20 @@ const POP02_TRIAGEM_ITENS = [
   "ASO (Atestado de Saúde Ocupacional) válido",
 ];
 
+// Checklist items for POP-03 pre-operational cleaning (IN 04/2007)
+const POP03_LIMPEZA_ITENS = [
+  "Pisos limpos e secos, sem acúmulo de resíduos",
+  "Paredes e teto sem sujidade, mofo ou descascamento",
+  "Equipamentos de produção limpos e sanitizados",
+  "Misturador e dosadores sem resíduos do lote anterior",
+  "Esteiras e elevadores limpos e sem incrustações",
+  "Utensílios e baldes lavados e armazenados corretamente",
+  "Ralos e canaletas limpos e com telas de proteção",
+  "Lixeiras identificadas, com tampa e saco plástico",
+  "Luminárias com proteção contra quebra",
+  "Registro de produto químico utilizado na limpeza",
+];
+
 // Checklist items for POP-04 water potability
 const POP04_AGUA_ITENS = [
   "Cloro residual dentro do padrão (0,2 a 2,0 mg/L)",
@@ -77,6 +91,18 @@ const POP04_AGUA_ITENS = [
   "Reservatório com tampa e vedação adequada",
   "Laudo laboratorial mensal em dia",
   "Certificado de limpeza do reservatório válido",
+];
+
+// Checklist items for POP-05 vehicle transport inspection (IN 15/2009)
+const POP05_VEICULO_ITENS = [
+  "Carroceria/baú limpo e seco, sem resíduos de cargas anteriores",
+  "Ausência de odor estranho ou contaminante no veículo",
+  "Lona/cobertura em bom estado (sem rasgos ou furos)",
+  "Ausência de sinais de pragas (insetos, roedores)",
+  "Veículo sem carga proibida anterior (proteína animal para ruminantes — IN 15/2009)",
+  "Lacre de segurança íntegro (quando aplicável)",
+  "Documentação de transporte completa (DANFE, romaneio)",
+  "Temperatura do veículo adequada (quando refrigerado)",
 ];
 
 // POPs obrigatórios com periodicidade em dias
