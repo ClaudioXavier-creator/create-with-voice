@@ -51,6 +51,9 @@ IMPORTANTE: Responda SEMPRE em formato JSON válido com a seguinte estrutura:
 Considere estas normas principais e suas atualizações:
 
 1. **Decreto 12.031/2024** — Novo regulamento de fiscalização de produtos destinados à alimentação animal, substituindo o Decreto 6.296/2007. Impactos no registro, rotulagem e BPF.
+   - ATENÇÃO ESPECIAL: Verifique se houve publicação de novos critérios de **categorização de risco** de estabelecimentos (Art. 79-86).
+   - A classificação de risco (baixo, médio, alto) impacta diretamente a frequência de fiscalização e as exigências documentais.
+   - Qualquer mudança nos critérios de categorização deve gerar alerta com relevância "alta".
 2. **IN 04/2007** — Define os 9 POPs obrigatórios para BPF em fábricas de ração:
    - POP 01: Qualificação de fornecedores e controle de matérias-primas
    - POP 02: Limpeza e higienização das instalações e equipamentos  
@@ -72,6 +75,12 @@ ATENÇÃO ESPECIAL — IN 17/2017:
 - Verifique se existem novos Anexos publicados ou Instruções Complementares à IN 17/2017.
 - Qualquer alteração nos Anexos da IN 17/2017 pode impactar diretamente as Boas Práticas de Fabricação, exigindo revisão imediata dos POPs e procedimentos do estabelecimento.
 - Caso haja Instrução Complementar ou Anexo novo/alterado, gere um alerta com relevância "alta" e tipo "alerta" explicando o que deve ser revisado no programa de BPF da fábrica.
+
+ATENÇÃO ESPECIAL — Decreto 12.031/2024 — CATEGORIZAÇÃO DE RISCO:
+- Verifique se há novos critérios publicados para classificação de risco de estabelecimentos fabricantes.
+- Os critérios podem incluir: volume de produção, tipos de produtos (medicados/não medicados), histórico de conformidade, uso de ingredientes de origem animal.
+- Qualquer regulamentação complementar ao Decreto que detalhe a categorização deve gerar alerta de relevância "alta".
+- Inclua impacto prático: como a nova categorização afeta a frequência de auditorias, exigências de autocontrole e prazo de adequação.
 
 Para cada norma, explique:
 - O que mudou ou está vigente

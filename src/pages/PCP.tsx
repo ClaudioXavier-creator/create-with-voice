@@ -314,8 +314,13 @@ export default function PCP() {
               Sequenciamento de Produção — Prevenção de Contaminação Cruzada
             </CardTitle>
             <p className="text-xs text-muted-foreground mt-1">
-              IN 15/2009 — Sequência de produção baseada na Matriz de Sensibilidade. Ordens que requerem flushing são destacadas.
+              IN 15/2009 — Sequência baseada na Matriz de Sensibilidade. Flushing/lavagem obrigatórios entre produtos com restrição.
             </p>
+            <div className="flex flex-wrap gap-2 mt-2">
+              <Badge variant="outline" className="text-[10px] border-yellow-500 text-yellow-700">Vassouragem: sem restrição</Badge>
+              <Badge variant="outline" className="text-[10px] border-orange-500 text-orange-700">Flushing: contaminação cruzada</Badge>
+              <Badge variant="outline" className="text-[10px] border-destructive text-destructive">Lavagem: origem animal → ruminantes</Badge>
+            </div>
           </div>
         </CardHeader>
         <CardContent>
@@ -385,6 +390,25 @@ export default function PCP() {
                     {matrizSensibilidade.filter((m: any) => m.requer_flushing).length} combinação(ões) na Matriz de Sensibilidade requerem flushing/lavagem.
                   </p>
                 )}
+
+                {/* Procedimentos de Flushing — IN 15/2009 */}
+                <div className="mt-4 p-3 rounded-lg border bg-muted/30">
+                  <p className="text-xs font-semibold mb-2">📋 Procedimentos de Flushing — IN 15/2009</p>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+                    <div className="p-2 rounded border bg-background">
+                      <p className="font-semibold text-muted-foreground mb-1">Vassouragem</p>
+                      <p className="text-muted-foreground">Limpeza mecânica seca. Aceitável entre produtos sem restrição de ingredientes.</p>
+                    </div>
+                    <div className="p-2 rounded border border-orange-300 bg-orange-50 dark:bg-orange-900/10">
+                      <p className="font-semibold text-orange-700 mb-1">Flushing</p>
+                      <p className="text-muted-foreground">Passagem de produto inerte (milho/farelo) pela linha. Obrigatório quando Matriz de Sensibilidade indica. Volume: ≥ 50% capacidade do misturador.</p>
+                    </div>
+                    <div className="p-2 rounded border border-destructive bg-destructive/5">
+                      <p className="font-semibold text-destructive mb-1">Lavagem Completa</p>
+                      <p className="text-muted-foreground">Desmontagem + lavagem com água + secagem. Obrigatória para transição com ingredientes de origem animal → ruminantes (Prevenção EEB).</p>
+                    </div>
+                  </div>
+                </div>
               </div>
             );
           })()}
