@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Package, Plus, CheckCircle2, XCircle, Loader2, Search, FileText, Download, Truck } from "lucide-react";
+import { Package, Plus, CheckCircle2, XCircle, Loader2, Search, FileText, Download, Truck, AlertTriangle, ShieldAlert } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
@@ -60,6 +60,11 @@ export default function Recebimento() {
   const [certValido, setCertValido] = useState<boolean | null>(null);
   const [observacoes, setObservacoes] = useState("");
 
+  // Segregação de Origem Animal — IN 15/2009
+  const [contemOrigemAnimal, setContemOrigemAnimal] = useState(false);
+  const [tipoOrigemAnimal, setTipoOrigemAnimal] = useState("");
+  const [destinoEspecie, setDestinoEspecie] = useState("");
+
   // POP-05 Vehicle inspection
   const VISTORIA_ITENS = [
     "Carroceria limpa e seca",
@@ -92,6 +97,7 @@ export default function Recebimento() {
     setUnidade("kg"); setValidade(""); setAprovado(true); setCertNumero("");
     setCertUrl(""); setCertValido(null); setObservacoes("");
     setVistoriaVeiculo({}); setPlacaVeiculo("");
+    setContemOrigemAnimal(false); setTipoOrigemAnimal(""); setDestinoEspecie("");
   };
 
   const handleAdd = async () => {
@@ -109,6 +115,12 @@ export default function Recebimento() {
       const naoConformes = VISTORIA_ITENS.filter((_, i) => vistoriaVeiculo[i] === false).length;
       const vistoriaObs = `[VISTORIA VEÍCULO — POP-05 / IN 15/2009]\nPlaca: ${placaVeiculo || "N/I"}\n${checkItems}${naoConformes > 0 ? `\n⚠️ ${naoConformes} item(ns) não conforme(s)` : "\n✅ Veículo aprovado"}`;
       obsCompleta = vistoriaObs + (observacoes ? `\n\n${observacoes}` : "");
+    }
+
+    // Segregação Origem Animal
+    if (contemOrigemAnimal) {
+      const segregObs = `[SEGREGAÇÃO ORIGEM ANIMAL — IN 15/2009]\nTipo: ${tipoOrigemAnimal || "N/I"}\nEspécie destino: ${destinoEspecie || "N/I"}${destinoEspecie === "bovinos" ? "\n⚠️ ALERTA EEB: Proteína animal proibida para ruminantes!" : ""}`;
+      obsCompleta = (obsCompleta ? obsCompleta + "\n\n" : "") + segregObs;
     }
 
     const { error } = await supabase.from("recebimento_mp").insert({
@@ -298,6 +310,63 @@ export default function Recebimento() {
                          </div>
                        ))}
                      </div>
+                   </div>
+
+                   {/* Segregação Origem Animal — IN 15/2009 */}
+                   <div className="p-3 rounded-lg border border-orange-400 bg-orange-50 dark:bg-orange-900/20 space-y-3">
+                     <p className="text-sm font-semibold flex items-center gap-2 text-orange-700 dark:text-orange-400">
+                       <ShieldAlert className="w-4 h-4" /> Segregação de Origem Animal — IN 15/2009
+                     </p>
+                     <p className="text-[10px] text-muted-foreground">
+                       Identifique matérias-primas de origem animal para garantir segregação e prevenir contaminação cruzada com ruminantes (prevenção EEB).
+                     </p>
+                     <div className="flex items-center gap-2">
+                       <input type="checkbox" checked={contemOrigemAnimal} onChange={e => setContemOrigemAnimal(e.target.checked)} className="h-4 w-4" />
+                       <Label className="text-sm">Contém ingrediente de origem animal</Label>
+                     </div>
+                     {contemOrigemAnimal && (
+                       <div className="space-y-2">
+                         <div>
+                           <Label>Tipo de Origem Animal</Label>
+                           <Select value={tipoOrigemAnimal} onValueChange={setTipoOrigemAnimal}>
+                             <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
+                             <SelectContent>
+                               <SelectItem value="farinha_carne_ossos">Farinha de Carne e Ossos</SelectItem>
+                               <SelectItem value="farinha_penas">Farinha de Penas</SelectItem>
+                               <SelectItem value="farinha_sangue">Farinha de Sangue</SelectItem>
+                               <SelectItem value="farinha_peixe">Farinha de Peixe</SelectItem>
+                               <SelectItem value="sebo_gordura">Sebo / Gordura Animal</SelectItem>
+                               <SelectItem value="outro">Outro</SelectItem>
+                             </SelectContent>
+                           </Select>
+                         </div>
+                         <div>
+                           <Label>Espécie de Destino do Produto Final</Label>
+                           <Select value={destinoEspecie} onValueChange={setDestinoEspecie}>
+                             <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
+                             <SelectContent>
+                               <SelectItem value="bovinos">Bovinos</SelectItem>
+                               <SelectItem value="suinos">Suínos</SelectItem>
+                               <SelectItem value="aves">Aves</SelectItem>
+                               <SelectItem value="equinos">Equinos</SelectItem>
+                               <SelectItem value="peixes">Peixes / Aquicultura</SelectItem>
+                               <SelectItem value="pets">Pets (Cães e Gatos)</SelectItem>
+                               <SelectItem value="multiespecie">Multiespécie</SelectItem>
+                             </SelectContent>
+                           </Select>
+                         </div>
+                         {destinoEspecie === "bovinos" && (
+                           <div className="p-2 rounded bg-destructive/10 border border-destructive/30">
+                             <p className="text-xs text-destructive font-bold flex items-center gap-1">
+                               <AlertTriangle className="w-4 h-4" /> ALERTA EEB: Uso de proteína animal de ruminantes é PROIBIDO para bovinos!
+                             </p>
+                             <p className="text-[10px] text-destructive/80 mt-1">
+                               Esta matéria-prima deve ser segregada e armazenada separadamente. Necessita limpeza de linha antes da produção para bovinos.
+                             </p>
+                           </div>
+                         )}
+                       </div>
+                     )}
                    </div>
 
                   <div className="flex items-center gap-3">

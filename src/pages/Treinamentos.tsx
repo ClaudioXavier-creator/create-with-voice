@@ -234,6 +234,7 @@ export default function Treinamentos() {
       <Tabs defaultValue="treinamentos">
         <TabsList className="flex flex-wrap">
           <TabsTrigger value="treinamentos"><GraduationCap className="w-4 h-4 mr-1" />Treinamentos</TabsTrigger>
+          <TabsTrigger value="eficacia"><ShieldCheck className="w-4 h-4 mr-1" />Avaliação Eficácia</TabsTrigger>
           <TabsTrigger value="aso"><HeartPulse className="w-4 h-4 mr-1" />ASO / Saúde</TabsTrigger>
           <TabsTrigger value="triagem"><ClipboardCheck className="w-4 h-4 mr-1" />Triagem Diária</TabsTrigger>
         </TabsList>
@@ -300,6 +301,84 @@ export default function Treinamentos() {
               </Table>
             </Card>
           )}
+        </TabsContent>
+
+        {/* ── AVALIAÇÃO DE EFICÁCIA ── */}
+        <TabsContent value="eficacia" className="space-y-4">
+          <Card className="border-primary/20 bg-primary/5">
+            <CardContent className="pt-4">
+              <div className="flex items-start gap-3">
+                <ShieldCheck className="w-6 h-6 text-primary mt-0.5" />
+                <div>
+                  <h4 className="font-display font-semibold text-sm">Avaliação de Eficácia Pós-Treinamento — IN 15/2009</h4>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Após cada treinamento, avalie se o conhecimento foi assimilado (30–90 dias). Treinamentos sem avaliação são sinalizados.
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {treinamentos.length === 0 ? (
+            <Card><CardContent className="py-12 text-center text-muted-foreground">
+              <GraduationCap className="w-12 h-12 mx-auto mb-3 opacity-40" />
+              <p>Registre treinamentos primeiro para avaliar a eficácia</p>
+            </CardContent></Card>
+          ) : (
+            <Card>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Funcionário</TableHead>
+                    <TableHead>Treinamento</TableHead>
+                    <TableHead>Data Treino</TableHead>
+                    <TableHead>Prazo Avaliação</TableHead>
+                    <TableHead>Status Eficácia</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {treinamentos.map((t: any) => {
+                    const dataTreino = new Date(t.data);
+                    const prazo90 = new Date(dataTreino);
+                    prazo90.setDate(prazo90.getDate() + 90);
+                    const hoje = new Date();
+                    const dentroPrazo = hoje <= prazo90 && hoje >= dataTreino;
+                    const expirado = hoje > prazo90;
+                    const temAvaliacao = t.instrutor?.includes("[EFICÁCIA:");
+                    return (
+                      <TableRow key={t.id}>
+                        <TableCell className="font-medium">{t.funcionario}</TableCell>
+                        <TableCell>{t.treinamento}</TableCell>
+                        <TableCell className="whitespace-nowrap">{t.data}</TableCell>
+                        <TableCell className="whitespace-nowrap">{prazo90.toISOString().split("T")[0]}</TableCell>
+                        <TableCell>
+                          {temAvaliacao ? (
+                            <Badge className="bg-primary/20 text-primary">Avaliado ✓</Badge>
+                          ) : expirado ? (
+                            <Badge className="bg-destructive text-destructive-foreground">Prazo expirado</Badge>
+                          ) : dentroPrazo ? (
+                            <Badge className="bg-yellow-500/20 text-yellow-700">Pendente</Badge>
+                          ) : (
+                            <Badge variant="outline">Aguardando prazo</Badge>
+                          )}
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            </Card>
+          )}
+
+          <Card className="border-accent/20">
+            <CardContent className="pt-4">
+              <p className="text-xs text-muted-foreground">
+                <strong>Como avaliar:</strong> Ao editar um treinamento, inclua no campo Instrutor a marcação
+                <code className="bg-muted px-1 rounded">[EFICÁCIA: Aprovado]</code> ou <code className="bg-muted px-1 rounded">[EFICÁCIA: Reprovado]</code>.
+                Treinamentos reprovados devem ser reciclados.
+              </p>
+            </CardContent>
+          </Card>
         </TabsContent>
 
         {/* ── ASO / SAÚDE OCUPACIONAL ── */}

@@ -112,7 +112,7 @@ export default function ManutencaoPreventiva() {
 
   return (
     <div className="space-y-6">
-      <PageHeader title="POP 05 — Manutenção Preventiva" description="Histórico de manutenções vinculado a equipamentos — IN 04/2007" />
+      <PageHeader title="POP 06 — Manutenção Preventiva e Calibração" description="Planos de manutenção de máquinas (moinhos, misturadores) e instrumentos — IN 04/2007" />
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card><CardContent className="pt-6 text-center"><p className="text-3xl font-bold text-primary">{manutencoes.length}</p><p className="text-sm text-muted-foreground">Total Manutenções</p></CardContent></Card>
@@ -182,7 +182,9 @@ export default function ManutencaoPreventiva() {
             <DialogHeader><DialogTitle>Registrar Manutenção</DialogTitle></DialogHeader>
             <div className="grid gap-3">
               <div className="grid grid-cols-2 gap-3">
-                <div><Label>Equipamento *</Label><Input value={form.equipamento} onChange={e => setForm(p => ({ ...p, equipamento: e.target.value }))} placeholder="Ex: Misturador 01" /></div>
+                <div><Label>Equipamento *</Label><Input value={form.equipamento} onChange={e => setForm(p => ({ ...p, equipamento: e.target.value }))} placeholder="Ex: Misturador 01" />
+                  <p className="text-[10px] text-muted-foreground mt-1">Inclua moinhos, misturadores, peletizadoras, silos, balanças, etc.</p>
+                </div>
                 <div><Label>Código</Label><Input value={form.codigo_equipamento} onChange={e => setForm(p => ({ ...p, codigo_equipamento: e.target.value }))} placeholder="MX-001" /></div>
               </div>
               <div className="grid grid-cols-2 gap-3">
