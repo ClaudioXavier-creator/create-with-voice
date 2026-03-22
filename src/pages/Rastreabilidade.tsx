@@ -215,6 +215,7 @@ export default function Rastreabilidade() {
   };
 
 
+  const handleAdd = async () => {
     if (!produto || !materiaPrima || !user) return;
     setSaving(true);
     const { error } = await supabase.from("rastreabilidade").insert({
