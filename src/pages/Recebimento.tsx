@@ -60,6 +60,20 @@ export default function Recebimento() {
   const [certValido, setCertValido] = useState<boolean | null>(null);
   const [observacoes, setObservacoes] = useState("");
 
+  // POP-05 Vehicle inspection
+  const VISTORIA_ITENS = [
+    "Carroceria limpa e seca",
+    "Sem resíduos de cargas anteriores",
+    "Sem odor estranho",
+    "Lona/cobertura em bom estado",
+    "Sem sinais de pragas",
+    "Sem carga proibida anterior (proteína animal p/ ruminantes)",
+    "Lacre íntegro",
+    "Documentação de transporte completa",
+  ];
+  const [vistoriaVeiculo, setVistoriaVeiculo] = useState<Record<number, boolean | null>>({});
+  const [placaVeiculo, setPlacaVeiculo] = useState("");
+
   const fetchData = async () => {
     if (!user) return;
     const { data, error } = await supabase
