@@ -850,6 +850,78 @@ export type Database = {
         }
         Relationships: []
       }
+      matriz_risco: {
+        Row: {
+          created_at: string
+          etapa_processo: string
+          id: string
+          medidas_controle: string | null
+          nivel_risco: string
+          perigo_identificado: string
+          probabilidade: string
+          severidade: string
+          tipo_perigo: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          etapa_processo: string
+          id?: string
+          medidas_controle?: string | null
+          nivel_risco?: string
+          perigo_identificado: string
+          probabilidade?: string
+          severidade?: string
+          tipo_perigo?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          etapa_processo?: string
+          id?: string
+          medidas_controle?: string | null
+          nivel_risco?: string
+          perigo_identificado?: string
+          probabilidade?: string
+          severidade?: string
+          tipo_perigo?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      matriz_sensibilidade: {
+        Row: {
+          created_at: string
+          id: string
+          produto_anterior: string
+          produto_seguinte: string
+          requer_flushing: boolean
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          produto_anterior: string
+          produto_seguinte: string
+          requer_flushing?: boolean
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          produto_anterior?: string
+          produto_seguinte?: string
+          requer_flushing?: boolean
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       nao_conformidades: {
         Row: {
           acao_corretiva: string | null
