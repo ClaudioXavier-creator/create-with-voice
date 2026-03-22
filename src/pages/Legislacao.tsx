@@ -642,7 +642,120 @@ export default function Legislacao() {
           </Card>
         </TabsContent>
 
-        {/* ──── Tab: Resumo ──── */}
+        {/* ──── Tab: Pesquisa SISLEGIS ──── */}
+        <TabsContent value="pesquisa">
+          <Card>
+            <CardHeader>
+              <CardTitle className="font-display flex items-center gap-2">
+                <Globe className="w-5 h-5 text-primary" />
+                Pesquisa de Legislação — SISLEGIS / MAPA
+              </CardTitle>
+              <p className="text-sm text-muted-foreground">
+                Pesquise normas, alterações e consultas públicas na área de alimentação animal.
+                Referência: <a href="https://sistemasweb.agricultura.gov.br/sislegis/loginAction.do?method=exibirTela" target="_blank" rel="noopener noreferrer" className="text-primary underline">SISLEGIS/MAPA</a>
+              </p>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {/* Search form */}
+              <div className="flex flex-col sm:flex-row gap-3">
+                <div className="relative flex-1">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Ex: aditivos, rotulagem, BPF, medicamentos veterinários..."
+                    value={pesquisaTermo}
+                    onChange={(e) => setPesquisaTermo(e.target.value)}
+                    className="pl-9"
+                    onKeyDown={(e) => e.key === "Enter" && pesquisarLegislacao()}
+                  />
+                </div>
+                <Select value={pesquisaCategoria} onValueChange={setPesquisaCategoria}>
+                  <SelectTrigger className="w-full sm:w-[200px]">
+                    <Filter className="w-4 h-4 mr-1" />
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="todas">Todas as categorias</SelectItem>
+                    <SelectItem value="novas">Normas Novas</SelectItem>
+                    <SelectItem value="alteracoes">Alterações</SelectItem>
+                    <SelectItem value="consultas_publicas">Consultas Públicas</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Button onClick={pesquisarLegislacao} disabled={pesquisaLoading} className="bg-primary hover:bg-primary/90">
+                  {pesquisaLoading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Search className="w-4 h-4 mr-2" />}
+                  {pesquisaLoading ? "Pesquisando..." : "Pesquisar"}
+                </Button>
+              </div>
+
+              {/* Resumo da pesquisa */}
+              {pesquisaResumo && (
+                <div className="p-4 rounded-lg bg-primary/5 border border-primary/20">
+                  <div className="flex items-start gap-2">
+                    <Info className="w-5 h-5 text-primary mt-0.5 shrink-0" />
+                    <div>
+                      <p className="font-medium text-sm text-primary mb-1">Resumo da Pesquisa</p>
+                      <p className="text-sm text-muted-foreground">{pesquisaResumo}</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Resultados */}
+              {pesquisaLoading ? (
+                <div className="flex flex-col items-center justify-center py-12 gap-3">
+                  <Loader2 className="w-8 h-8 animate-spin text-primary" />
+                  <p className="text-sm text-muted-foreground">Consultando base legislativa do MAPA...</p>
+                </div>
+              ) : pesquisaResultados.length === 0 ? (
+                <div className="text-center py-8 text-muted-foreground">
+                  <Globe className="w-12 h-12 mx-auto mb-3 opacity-30" />
+                  <p>Pesquise normas, alterações e consultas públicas.</p>
+                  <p className="text-sm mt-1">Digite um termo ou selecione uma categoria e clique em "Pesquisar".</p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {pesquisaResultados.map((r, i) => {
+                    const st = statusLabel(r.status || "vigente");
+                    return (
+                      <div key={i} className="p-4 rounded-lg border bg-card hover:shadow-sm transition-shadow">
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 flex-wrap mb-1">
+                              {r.codigo && <span className="font-mono text-xs font-bold text-primary">{r.codigo}</span>}
+                              <Badge variant="secondary" className="text-[10px]">{categoriaLabel(r.categoria)}</Badge>
+                              <Badge className={`text-[10px] ${st.cls}`}>{st.label}</Badge>
+                            </div>
+                            <h4 className="font-medium text-sm leading-snug">{r.titulo}</h4>
+                            <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{r.resumo}</p>
+                            {r.impacto_bpf && (
+                              <p className="text-xs mt-1"><span className="font-medium text-primary">Impacto BPF:</span> <span className="text-muted-foreground">{r.impacto_bpf}</span></p>
+                            )}
+                            <div className="flex items-center gap-3 mt-2 text-xs text-muted-foreground">
+                              {r.orgao && <span>{r.orgao}</span>}
+                              {r.data_publicacao && <span>{r.data_publicacao}</span>}
+                            </div>
+                          </div>
+                          <div className="flex flex-col gap-1 shrink-0">
+                            <Button variant="outline" size="sm" onClick={() => salvarResultadoComoNorma(r)} title="Salvar na biblioteca">
+                              <Save className="w-4 h-4" />
+                            </Button>
+                            {r.link_referencia && (
+                              <a href={r.link_referencia} target="_blank" rel="noopener noreferrer">
+                                <Button variant="ghost" size="sm" title="Abrir link externo">
+                                  <ExternalLink className="w-4 h-4" />
+                                </Button>
+                              </a>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
         <TabsContent value="resumo">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
