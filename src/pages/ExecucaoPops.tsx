@@ -65,7 +65,9 @@ const POP02_TRIAGEM_ITENS = [
   "Barba aparada ou protegida (rede)",
   "Ausência de ferimentos expostos / curativos impermeáveis",
   "Sem uso de perfume ou maquiagem",
-  "ASO (Atestado de Saúde Ocupacional) válido",
+  "ASO (Atestado de Saúde Ocupacional) válido e dentro da validade",
+  "Exames médicos periódicos em dia (admissional, periódico, retorno ao trabalho)",
+  "Certificado de capacitação em manipulação de alimentos / BPF válido",
 ];
 
 // Checklist items for POP-03 pre-operational cleaning (IN 04/2007)
