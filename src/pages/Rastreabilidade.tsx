@@ -113,6 +113,7 @@ export default function Rastreabilidade() {
     setDataVenda(""); setNotaFiscal(""); setQuantidadeVendida("");
     setEspecieDestino(""); setContemOrigemAnimal(false); setTipoOrigemAnimal("");
     setTempoMistura(""); setTesteHomogeneidade("");
+    setContraprovaColetada(false); setContraprovaLocal(""); setContraprovaValidade("");
   };
 
   const fetchData = async () => {
