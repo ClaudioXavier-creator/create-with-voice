@@ -592,6 +592,54 @@ export type Database = {
         }
         Relationships: []
       }
+      normas_legislacao: {
+        Row: {
+          arquivo_nome: string | null
+          arquivo_url: string | null
+          codigo: string | null
+          created_at: string
+          data_publicacao: string | null
+          id: string
+          orgao: string | null
+          resumo: string | null
+          tags: string[] | null
+          tipo: string | null
+          titulo: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          arquivo_nome?: string | null
+          arquivo_url?: string | null
+          codigo?: string | null
+          created_at?: string
+          data_publicacao?: string | null
+          id?: string
+          orgao?: string | null
+          resumo?: string | null
+          tags?: string[] | null
+          tipo?: string | null
+          titulo: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          arquivo_nome?: string | null
+          arquivo_url?: string | null
+          codigo?: string | null
+          created_at?: string
+          data_publicacao?: string | null
+          id?: string
+          orgao?: string | null
+          resumo?: string | null
+          tags?: string[] | null
+          tipo?: string | null
+          titulo?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       ordens_producao: {
         Row: {
           created_at: string
