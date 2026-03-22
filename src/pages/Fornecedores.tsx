@@ -66,6 +66,8 @@ export default function Fornecedores() {
   const [email, setEmail] = useState("");
   const [tipoProduto, setTipoProduto] = useState("");
   const [observacoes, setObservacoes] = useState("");
+  const [registroSipeagro, setRegistroSipeagro] = useState("");
+  const [sipeagroVerificado, setSipeagroVerificado] = useState(false);
 
   // Avaliação
   const [nota, setNota] = useState(0);
@@ -86,7 +88,7 @@ export default function Fornecedores() {
   useEffect(() => { fetchData(); }, [user]);
 
   const resetForm = () => {
-    setNome(""); setCnpj(""); setEndereco(""); setContato(""); setEmail(""); setTipoProduto(""); setObservacoes("");
+    setNome(""); setCnpj(""); setEndereco(""); setContato(""); setEmail(""); setTipoProduto(""); setObservacoes(""); setRegistroSipeagro(""); setSipeagroVerificado(false);
   };
 
   const handleAdd = async () => {
@@ -94,6 +96,8 @@ export default function Fornecedores() {
     setSaving(true);
     const { error } = await supabase.from("fornecedores").insert({
       user_id: user.id, nome, cnpj, endereco, contato, email, tipo_produto: tipoProduto, observacoes,
+      registro_sipeagro: registroSipeagro, sipeagro_verificado: sipeagroVerificado,
+      sipeagro_data_verificacao: sipeagroVerificado ? new Date().toISOString().split("T")[0] : null,
     } as any);
     if (error) toast.error("Erro ao salvar");
     else { toast.success("Fornecedor cadastrado!"); setOpen(false); resetForm(); fetchData(); }
@@ -174,6 +178,18 @@ export default function Fornecedores() {
                   <div><Label>E-mail</Label><Input type="email" value={email} onChange={e => setEmail(e.target.value)} /></div>
                 </div>
                 <div><Label>Tipo de Produto Fornecido</Label><Input value={tipoProduto} onChange={e => setTipoProduto(e.target.value)} placeholder="Ex: Milho, Farelo de soja, Premix" /></div>
+                
+                {/* SIPEAGRO — IN 17/2017 */}
+                <div className="p-3 rounded-lg border bg-muted/20 space-y-3">
+                  <p className="text-sm font-semibold flex items-center gap-2">🏛️ Registro SIPEAGRO — IN 17/2017</p>
+                  <p className="text-[10px] text-muted-foreground">Estabelecimentos fornecedores de insumos para alimentação animal devem possuir registro no SIPEAGRO/MAPA.</p>
+                  <div><Label>Nº Registro SIPEAGRO</Label><Input value={registroSipeagro} onChange={e => setRegistroSipeagro(e.target.value)} placeholder="Ex: BR-0000000000" /></div>
+                  <div className="flex items-center gap-2">
+                    <input type="checkbox" checked={sipeagroVerificado} onChange={e => setSipeagroVerificado(e.target.checked)} className="h-4 w-4" />
+                    <Label className="text-sm">Registro verificado e ativo no SIPEAGRO</Label>
+                  </div>
+                </div>
+
                 <div><Label>Observações</Label><Textarea value={observacoes} onChange={e => setObservacoes(e.target.value)} placeholder="Certificações, laudos, etc." /></div>
                 <Button onClick={handleAdd} className="w-full" disabled={saving || !nome}>
                   {saving && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}Salvar Fornecedor
@@ -190,15 +206,16 @@ export default function Fornecedores() {
           ) : (
             <Table>
               <TableHeader>
-                <TableRow>
-                  <TableHead>Fornecedor</TableHead>
-                  <TableHead>Produto</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Nota</TableHead>
-                  <TableHead>Taxa Aprovação MP</TableHead>
-                  <TableHead>Última Avaliação</TableHead>
-                  <TableHead></TableHead>
-                </TableRow>
+               <TableRow>
+                   <TableHead>Fornecedor</TableHead>
+                   <TableHead>Produto</TableHead>
+                   <TableHead>SIPEAGRO</TableHead>
+                   <TableHead>Status</TableHead>
+                   <TableHead>Nota</TableHead>
+                   <TableHead>Taxa Aprovação MP</TableHead>
+                   <TableHead>Última Avaliação</TableHead>
+                   <TableHead></TableHead>
+                 </TableRow>
               </TableHeader>
               <TableBody>
                 {fornecedores.map(f => {
@@ -212,6 +229,16 @@ export default function Fornecedores() {
                         {f.cnpj && <span className="text-xs text-muted-foreground">{f.cnpj}</span>}
                       </TableCell>
                       <TableCell className="text-sm">{f.tipo_produto || "—"}</TableCell>
+                      <TableCell>
+                        {(f as any).registro_sipeagro ? (
+                          <div className="flex items-center gap-1">
+                            <span className="text-xs font-mono">{(f as any).registro_sipeagro}</span>
+                            {(f as any).sipeagro_verificado ? <CheckCircle2 className="w-3 h-3 text-primary" /> : <Clock className="w-3 h-3 text-muted-foreground" />}
+                          </div>
+                        ) : (
+                          <span className="text-xs text-destructive">Sem registro</span>
+                        )}
+                      </TableCell>
                       <TableCell><Badge className={st.color}>{st.label}</Badge></TableCell>
                       <TableCell>
                         <div className="flex items-center gap-1">

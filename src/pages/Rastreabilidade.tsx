@@ -99,11 +99,16 @@ export default function Rastreabilidade() {
   const [testesHistorico, setTestesHistorico] = useState<any[]>([]);
   const testeInterval = useRef<NodeJS.Timeout | null>(null);
 
+  // Process validation fields
+  const [tempoMistura, setTempoMistura] = useState("");
+  const [testeHomogeneidade, setTesteHomogeneidade] = useState("");
+
   const resetForm = () => {
     setProduto(""); setLoteProduto(""); setMateriaPrima(""); setLoteMP("");
     setFornecedor(""); setClienteDestino(""); setLocalEntrega("");
     setDataVenda(""); setNotaFiscal(""); setQuantidadeVendida("");
     setEspecieDestino(""); setContemOrigemAnimal(false); setTipoOrigemAnimal("");
+    setTempoMistura(""); setTesteHomogeneidade("");
   };
 
   const fetchData = async () => {
@@ -889,6 +894,32 @@ export default function Rastreabilidade() {
                       )}
                     </div>
                   )}
+                </div>
+
+                {/* Processo Produtivo — Validação IN 04/2007 */}
+                <div className="p-3 rounded-lg border border-blue-400 bg-blue-50 dark:bg-blue-900/20">
+                  <p className="text-xs font-semibold text-blue-700 dark:text-blue-400 mb-2">⚙️ Validação do Processo — IN 04/2007</p>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <Label>Tempo de Mistura (min)</Label>
+                      <Input value={tempoMistura} onChange={e => setTempoMistura(e.target.value)} placeholder="Ex: 5" type="number" />
+                      {tempoMistura && parseFloat(tempoMistura) < 3 && (
+                        <p className="text-xs text-destructive mt-1">⚠️ Tempo inferior ao mínimo recomendado (3 min)</p>
+                      )}
+                    </div>
+                    <div>
+                      <Label>Teste Homogeneidade</Label>
+                      <Select value={testeHomogeneidade} onValueChange={setTesteHomogeneidade}>
+                        <SelectTrigger><SelectValue placeholder="Resultado" /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="aprovado">Aprovado (CV ≤ 10%)</SelectItem>
+                          <SelectItem value="reprovado">Reprovado (CV {'>'} 10%)</SelectItem>
+                          <SelectItem value="nao_realizado">Não realizado</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                  <p className="text-[10px] text-muted-foreground mt-2">Registre o tempo de mistura e resultado do teste de homogeneidade (coeficiente de variação) para validação perante MAPA.</p>
                 </div>
 
                 {/* Venda/Entrega Section */}

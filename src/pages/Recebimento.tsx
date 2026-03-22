@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Package, Plus, CheckCircle2, XCircle, Loader2, Search, FileText, Download } from "lucide-react";
+import { Package, Plus, CheckCircle2, XCircle, Loader2, Search, FileText, Download, Truck } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
@@ -60,6 +60,20 @@ export default function Recebimento() {
   const [certValido, setCertValido] = useState<boolean | null>(null);
   const [observacoes, setObservacoes] = useState("");
 
+  // POP-05 Vehicle inspection
+  const VISTORIA_ITENS = [
+    "Carroceria limpa e seca",
+    "Sem resíduos de cargas anteriores",
+    "Sem odor estranho",
+    "Lona/cobertura em bom estado",
+    "Sem sinais de pragas",
+    "Sem carga proibida anterior (proteína animal p/ ruminantes)",
+    "Lacre íntegro",
+    "Documentação de transporte completa",
+  ];
+  const [vistoriaVeiculo, setVistoriaVeiculo] = useState<Record<number, boolean | null>>({});
+  const [placaVeiculo, setPlacaVeiculo] = useState("");
+
   const fetchData = async () => {
     if (!user) return;
     const { data, error } = await supabase
@@ -77,11 +91,26 @@ export default function Recebimento() {
     setUmidade(""); setInsetos("ausente"); setTemperatura(""); setQuantidade("");
     setUnidade("kg"); setValidade(""); setAprovado(true); setCertNumero("");
     setCertUrl(""); setCertValido(null); setObservacoes("");
+    setVistoriaVeiculo({}); setPlacaVeiculo("");
   };
 
   const handleAdd = async () => {
     if (!fornecedor || !materiaPrima || !user) return;
     setSaving(true);
+
+    // Build vehicle inspection obs
+    let obsCompleta = observacoes;
+    const vistoriaKeys = Object.keys(vistoriaVeiculo);
+    if (vistoriaKeys.length > 0 || placaVeiculo) {
+      const checkItems = VISTORIA_ITENS.map((item, i) => {
+        const val = vistoriaVeiculo[i];
+        return `${val === true ? "✅" : val === false ? "❌" : "⬜"} ${item}`;
+      }).join("\n");
+      const naoConformes = VISTORIA_ITENS.filter((_, i) => vistoriaVeiculo[i] === false).length;
+      const vistoriaObs = `[VISTORIA VEÍCULO — POP-05 / IN 15/2009]\nPlaca: ${placaVeiculo || "N/I"}\n${checkItems}${naoConformes > 0 ? `\n⚠️ ${naoConformes} item(ns) não conforme(s)` : "\n✅ Veículo aprovado"}`;
+      obsCompleta = vistoriaObs + (observacoes ? `\n\n${observacoes}` : "");
+    }
+
     const { error } = await supabase.from("recebimento_mp").insert({
       user_id: user.id,
       fornecedor,
@@ -98,7 +127,7 @@ export default function Recebimento() {
       quantidade: quantidade || null,
       unidade: unidade || null,
       temperatura: temperatura || null,
-      observacoes: observacoes || null,
+      observacoes: obsCompleta || null,
     } as any);
     if (error) toast.error("Erro: " + error.message);
     else {
@@ -248,6 +277,26 @@ export default function Recebimento() {
                      <div className="flex items-center gap-3">
                        <Switch checked={certValido === true} onCheckedChange={(v) => setCertValido(v ? true : false)} />
                        <Label className="text-sm">Certificado conforme / válido</Label>
+                     </div>
+                   </div>
+
+                   {/* POP-05 Vehicle Inspection */}
+                   <div className="p-3 rounded-lg border bg-muted/20 space-y-3">
+                     <p className="text-sm font-semibold flex items-center gap-2"><Truck className="w-4 h-4" /> Vistoria de Veículo — POP-05 (IN 15/2009)</p>
+                     <p className="text-[10px] text-muted-foreground">Avalie as condições do veículo de transporte antes de descarregar.</p>
+                     <div><Label>Placa do Veículo</Label><Input value={placaVeiculo} onChange={e => setPlacaVeiculo(e.target.value)} placeholder="Ex: ABC-1234" /></div>
+                     <div className="space-y-1.5">
+                       {VISTORIA_ITENS.map((item, idx) => (
+                         <div key={idx} className="flex items-center gap-2 p-1.5 rounded bg-background border text-xs">
+                           <div className="flex gap-1 shrink-0">
+                             <button type="button" onClick={() => setVistoriaVeiculo(p => ({ ...p, [idx]: p[idx] === true ? null : true }))}
+                               className={`w-6 h-6 rounded text-xs font-bold border ${vistoriaVeiculo[idx] === true ? "bg-primary text-primary-foreground border-primary" : "border-muted-foreground/30 hover:border-primary/50"}`}>✓</button>
+                             <button type="button" onClick={() => setVistoriaVeiculo(p => ({ ...p, [idx]: p[idx] === false ? null : false }))}
+                               className={`w-6 h-6 rounded text-xs font-bold border ${vistoriaVeiculo[idx] === false ? "bg-destructive text-destructive-foreground border-destructive" : "border-muted-foreground/30 hover:border-destructive/50"}`}>✗</button>
+                           </div>
+                           <span className="leading-tight">{item}</span>
+                         </div>
+                       ))}
                      </div>
                    </div>
 
