@@ -88,7 +88,7 @@ export default function Fornecedores() {
   useEffect(() => { fetchData(); }, [user]);
 
   const resetForm = () => {
-    setNome(""); setCnpj(""); setEndereco(""); setContato(""); setEmail(""); setTipoProduto(""); setObservacoes("");
+    setNome(""); setCnpj(""); setEndereco(""); setContato(""); setEmail(""); setTipoProduto(""); setObservacoes(""); setRegistroSipeagro(""); setSipeagroVerificado(false);
   };
 
   const handleAdd = async () => {
