@@ -840,6 +840,90 @@ export default function Rastreabilidade() {
         </CardContent>
       </Card>
 
+      {/* ── ANÁLISES LABORATORIAIS VINCULADAS — IN 17/2017 ── */}
+      <Card className="mb-6 border-accent/20">
+        <CardHeader>
+          <CardTitle className="font-display text-sm flex items-center gap-2">
+            <FlaskConical className="w-5 h-5 text-accent" />
+            Análises Laboratoriais Vinculadas ao Lote — IN 17/2017
+          </CardTitle>
+          <p className="text-xs text-muted-foreground mt-1">
+            Conformidade do controle de qualidade: análises de PA vinculadas automaticamente por lote de produto.
+          </p>
+        </CardHeader>
+        <CardContent>
+          {(() => {
+            // Match lab analyses to traceability lots
+            const lotesPA = Array.from(new Set(registros.map(r => r.lote_produto).filter(Boolean)));
+            const analisesVinculadas = analisesLab.filter(a => lotesPA.some(l => a.lote === l || a.produto?.toLowerCase().includes(registros.find(r => r.lote_produto === l)?.produto?.toLowerCase() || "__")));
+
+            if (analisesVinculadas.length === 0) {
+              return (
+                <div className="text-center py-6 text-muted-foreground">
+                  <FlaskConical className="w-10 h-10 mx-auto mb-2 opacity-30" />
+                  <p className="text-sm">Nenhuma análise vinculada aos lotes rastreados.</p>
+                  <p className="text-xs mt-1">Cadastre análises no módulo Análises Laboratoriais usando o mesmo lote do PA.</p>
+                </div>
+              );
+            }
+
+            const conformes = analisesVinculadas.filter(a => a.conforme === true).length;
+            const ncs = analisesVinculadas.filter(a => a.conforme === false).length;
+            const pendentes = analisesVinculadas.filter(a => a.conforme === null).length;
+
+            return (
+              <>
+                <div className="grid grid-cols-3 gap-3 mb-4">
+                  <div className="text-center p-2 rounded-lg bg-primary/5 border border-primary/20">
+                    <p className="text-lg font-bold font-display text-primary">{conformes}</p>
+                    <p className="text-[10px] text-muted-foreground">Conformes</p>
+                  </div>
+                  <div className="text-center p-2 rounded-lg bg-destructive/5 border border-destructive/20">
+                    <p className="text-lg font-bold font-display text-destructive">{ncs}</p>
+                    <p className="text-[10px] text-muted-foreground">Não Conformes</p>
+                  </div>
+                  <div className="text-center p-2 rounded-lg bg-muted/30 border">
+                    <p className="text-lg font-bold font-display">{pendentes}</p>
+                    <p className="text-[10px] text-muted-foreground">Pendentes</p>
+                  </div>
+                </div>
+                <Table>
+                  <TableHeader><TableRow>
+                    <TableHead>Produto</TableHead>
+                    <TableHead>Lote</TableHead>
+                    <TableHead>Tipo Análise</TableHead>
+                    <TableHead>Parâmetro</TableHead>
+                    <TableHead>Resultado</TableHead>
+                    <TableHead>Limite</TableHead>
+                    <TableHead>Laudo</TableHead>
+                    <TableHead>Conforme</TableHead>
+                  </TableRow></TableHeader>
+                  <TableBody>
+                    {analisesVinculadas.slice(0, 15).map((a: any) => (
+                      <TableRow key={a.id}>
+                        <TableCell className="font-medium text-sm">{a.produto}</TableCell>
+                        <TableCell className="font-mono text-xs">{a.lote || "—"}</TableCell>
+                        <TableCell className="text-xs">{a.tipo_analise?.replace(/_/g, " ")}</TableCell>
+                        <TableCell className="text-xs">{a.parametro || "—"}</TableCell>
+                        <TableCell className="font-mono text-xs">{a.resultado || "—"} {a.unidade || ""}</TableCell>
+                        <TableCell className="text-xs text-muted-foreground">{a.limite_referencia || "—"}</TableCell>
+                        <TableCell className="font-mono text-xs">{a.laudo_numero || "—"}</TableCell>
+                        <TableCell>
+                          {a.conforme === true ? <Badge className="bg-primary/20 text-primary text-[10px]">OK</Badge> :
+                           a.conforme === false ? <Badge variant="destructive" className="text-[10px]">NC</Badge> :
+                           <Badge variant="outline" className="text-[10px]">Pendente</Badge>}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+                {analisesVinculadas.length > 15 && <p className="text-xs text-muted-foreground text-center mt-2">Mostrando 15 de {analisesVinculadas.length} análises.</p>}
+              </>
+            );
+          })()}
+        </CardContent>
+      </Card>
+
       <Card>
         <CardHeader className="flex flex-row items-center justify-between gap-4">
           <div className="flex-1">

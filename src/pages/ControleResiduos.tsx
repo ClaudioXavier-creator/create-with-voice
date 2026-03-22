@@ -205,6 +205,62 @@ export default function ControleResiduos() {
           </Table>
         </Card>
       )}
+        </TabsContent>
+
+        {/* ── EFLUENTES TAB ── */}
+        <TabsContent value="efluentes" className="space-y-4">
+          <Card className="border-blue-400/20 bg-blue-50 dark:bg-blue-900/10">
+            <CardContent className="pt-4">
+              <div className="flex items-start gap-3">
+                <Droplets className="w-6 h-6 text-blue-600 mt-0.5" />
+                <div>
+                  <h4 className="font-semibold text-sm">Controle de Efluentes — POP 05 (IN 04/2007 / IN 15/2009)</h4>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Registros de efluentes líquidos, industriais e água de lavagem com tipo de tratamento.
+                    Parâmetros obrigatórios: pH, DBO, DQO (registrar nas observações). Laudos devem ser anexados no módulo Relatórios.
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          {efluentes.length === 0 ? (
+            <Card><CardContent className="py-12 text-center text-muted-foreground">
+              <Droplets className="w-12 h-12 mx-auto mb-3 opacity-40" />
+              <p>Nenhum efluente registrado</p>
+              <p className="text-xs mt-1">Use "Novo Registro" e selecione um tipo de efluente.</p>
+            </CardContent></Card>
+          ) : (
+            <Card>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Data</TableHead>
+                    <TableHead>Tipo</TableHead>
+                    <TableHead>Origem</TableHead>
+                    <TableHead>Destino / Tratamento</TableHead>
+                    <TableHead>Qtd</TableHead>
+                    <TableHead>Manifesto</TableHead>
+                    <TableHead>Observações</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {efluentes.map((r: any) => (
+                    <TableRow key={r.id}>
+                      <TableCell className="whitespace-nowrap">{r.data_coleta}</TableCell>
+                      <TableCell className="font-medium">{r.tipo_residuo}</TableCell>
+                      <TableCell>{r.origem}</TableCell>
+                      <TableCell>{r.destino_final}</TableCell>
+                      <TableCell>{r.quantidade} {r.unidade}</TableCell>
+                      <TableCell>{r.manifesto_numero || "—"}</TableCell>
+                      <TableCell className="max-w-[200px] text-xs truncate">{r.observacoes}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </Card>
+          )}
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

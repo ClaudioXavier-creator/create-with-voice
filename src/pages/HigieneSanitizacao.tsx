@@ -229,14 +229,129 @@ export default function HigieneSanitizacao() {
     <div className="space-y-6">
       <PageHeader title="POP 02/03/04 — Higiene, Sanitização e Controle de Água" description="Cronogramas de limpeza e controle de potabilidade — IN 04/2007 e IN 15/2009" />
 
-      <Tabs defaultValue="cronogramas">
+      <Tabs defaultValue="preop">
         <TabsList className="flex flex-wrap">
+          <TabsTrigger value="preop"><ShieldCheck className="w-4 h-4 mr-1" />Pré-Operacional</TabsTrigger>
           <TabsTrigger value="cronogramas"><Droplets className="w-4 h-4 mr-1" />Cronogramas</TabsTrigger>
           <TabsTrigger value="registros"><CheckCircle2 className="w-4 h-4 mr-1" />Registros Limpeza</TabsTrigger>
           <TabsTrigger value="agua"><Beaker className="w-4 h-4 mr-1" />Controle de Água (POP-04)</TabsTrigger>
           <TabsTrigger value="laudos"><FileText className="w-4 h-4 mr-1" />Laudos Vinculados</TabsTrigger>
           <TabsTrigger value="planilha"><ClipboardList className="w-4 h-4 mr-1" />Planilha Mensal</TabsTrigger>
         </TabsList>
+
+        {/* ── CHECKLIST PRÉ-OPERACIONAL ── */}
+        <TabsContent value="preop" className="space-y-4">
+          <Card className="border-primary/20 bg-primary/5">
+            <CardContent className="pt-4">
+              <div className="flex items-start gap-3">
+                <ShieldCheck className="w-6 h-6 text-primary mt-0.5" />
+                <div>
+                  <h4 className="font-display font-semibold text-sm">Checklist Pré-Operacional — POP 02/03 (IN 04/2007)</h4>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Verificação obrigatória antes do início de cada turno/produção. Todos os itens devem ser inspecionados
+                    e registrados conforme Art. 2º da IN 04/2007 e requisitos de BPF da IN 15/2009.
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <div className="grid grid-cols-2 gap-3 mb-4">
+            <div><Label>Responsável pela Inspeção *</Label><Input value={preOpResponsavel} onChange={e => setPreOpResponsavel(e.target.value)} placeholder="Nome do inspetor" /></div>
+            <div className="grid grid-cols-2 gap-3">
+              <div><Label>Data</Label><Input type="date" value={preOpData} onChange={e => setPreOpData(e.target.value)} /></div>
+              <div>
+                <Label>Setor/Turno</Label>
+                <Select value={preOpSetor} onValueChange={setPreOpSetor}>
+                  <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Turno 1 (Manhã)">Turno 1 (Manhã)</SelectItem>
+                    <SelectItem value="Turno 2 (Tarde)">Turno 2 (Tarde)</SelectItem>
+                    <SelectItem value="Turno 3 (Noite)">Turno 3 (Noite)</SelectItem>
+                    <SelectItem value="Turno Único">Turno Único</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            {CHECKLIST_PRE_OP.map(grupo => (
+              <Card key={grupo.area}>
+                <CardHeader className="py-3">
+                  <CardTitle className="text-sm font-display">{grupo.area}</CardTitle>
+                </CardHeader>
+                <CardContent className="py-0 pb-3">
+                  <div className="space-y-2">
+                    {grupo.itens.map(item => {
+                      const key = `${grupo.area}__${item}`;
+                      const checked = preOpChecklist[key] ?? false;
+                      return (
+                        <div key={key} className="flex items-center justify-between p-2 rounded border bg-background">
+                          <span className="text-sm">{item}</span>
+                          <div className="flex items-center gap-2">
+                            <span className={`text-xs font-semibold ${checked ? "text-primary" : "text-muted-foreground"}`}>
+                              {checked ? "OK" : "—"}
+                            </span>
+                            <Switch checked={checked} onCheckedChange={v => setPreOpChecklist(p => ({ ...p, [key]: v }))} />
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          {(() => {
+            const totalItens = CHECKLIST_PRE_OP.reduce((acc, g) => acc + g.itens.length, 0);
+            const marcados = Object.values(preOpChecklist).filter(Boolean).length;
+            const todosOk = marcados === totalItens;
+            return (
+              <div className="flex items-center justify-between p-4 rounded-lg border bg-muted/30">
+                <div>
+                  <p className="text-sm font-semibold">{marcados}/{totalItens} itens verificados</p>
+                  <p className="text-xs text-muted-foreground">{todosOk ? "✅ Todos os itens conformes" : "Conclua todos os itens para liberar"}</p>
+                </div>
+                <Button
+                  disabled={!preOpResponsavel || !preOpSetor || savingPreOp}
+                  onClick={async () => {
+                    if (!user) return;
+                    setSavingPreOp(true);
+                    const ncs = CHECKLIST_PRE_OP.flatMap(g => g.itens.filter(item => !preOpChecklist[`${g.area}__${item}`]).map(item => `${g.area}: ${item}`));
+                    const obs = [
+                      `[CHECKLIST PRÉ-OPERACIONAL — POP-02/03]`,
+                      `Data: ${preOpData} | Turno: ${preOpSetor}`,
+                      `Itens conformes: ${marcados}/${totalItens}`,
+                      ncs.length > 0 ? `NCs: ${ncs.join("; ")}` : "Todos conformes",
+                    ].join("\n");
+                    const { error } = await supabase.from("execucao_pops").insert({
+                      user_id: user.id,
+                      codigo_pop: "POP-02/03-PREOP",
+                      nome_pop: "Checklist Pré-Operacional Limpeza",
+                      executor: preOpResponsavel,
+                      setor: preOpSetor,
+                      status: todosOk ? "concluido" : "nao_conforme",
+                      observacoes: obs,
+                      data_execucao: preOpData,
+                    });
+                    if (error) toast.error("Erro ao salvar: " + error.message);
+                    else {
+                      toast.success("Checklist pré-operacional salvo!");
+                      setPreOpChecklist({});
+                      setPreOpResponsavel("");
+                      setPreOpSetor("");
+                    }
+                    setSavingPreOp(false);
+                  }}
+                >
+                  Salvar Checklist
+                </Button>
+              </div>
+            );
+          })()}
+        </TabsContent>
 
         {/* ── CRONOGRAMAS ── */}
         <TabsContent value="cronogramas" className="space-y-4">
