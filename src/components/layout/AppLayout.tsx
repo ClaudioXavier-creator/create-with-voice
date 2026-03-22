@@ -47,6 +47,7 @@ const NAV_ENTRIES: NavEntry[] = [
       { path: "/residuos", label: "Resíduos / Efluentes", icon: Recycle },
       { path: "/substancias", label: "Substâncias Proibidas", icon: ShieldAlert },
       { path: "/validacao-limpeza", label: "Validação Limpeza", icon: ShieldCheck },
+      { path: "/matriz-risco", label: "Matriz de Risco", icon: AlertTriangle },
     ],
   },
   {
