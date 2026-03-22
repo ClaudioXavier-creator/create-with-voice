@@ -673,7 +673,7 @@ export default function RotuloEditor({ produtoId, produtoNome }: Props) {
                 </Label>
               </div>
               <p className="text-[10px] text-muted-foreground">
-                Ativado automaticamente para Sal Mineral e Suplementos de Bovinos. Mostra macro e microminerais com valores de referência (VR) para 450 kg de peso corporal.
+                Ativado automaticamente para Sal Mineral e Suplementos de Bovinos (conforme IN 12/2004 – MAPA). Mostra macro e microminerais com valores de referência (VR) para 450 kg de peso corporal.
               </p>
             </CardContent>
           </Card>
