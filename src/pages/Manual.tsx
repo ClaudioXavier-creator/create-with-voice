@@ -259,9 +259,11 @@ const sections: ManualSection[] = [
       "Cadastro e avaliação de fornecedores com verificação SIPEAGRO e controle de qualificação.",
     features: [
       { title: "Cadastro Completo", text: "Nome, CNPJ, endereço, contato, e-mail e tipo de produto fornecido." },
-      { title: "Avaliação e Nota", text: "Atribua notas de 0 a 10 e defina o status de qualificação (Aprovado, Pendente, Reprovado)." },
+      { title: "Avaliação e Nota", text: "Atribua notas de 0 a 10 e defina o status de qualificação (Aprovado, Aprovado c/ Restrições, Pendente, Reprovado)." },
       { title: "Verificação SIPEAGRO", text: "Registre o número de registro SIPEAGRO e a data de verificação para compliance com o MAPA." },
       { title: "Controle de Validade", text: "Registre a última e próxima avaliação programada." },
+      { title: "Lista de Fornecedores Aprovados", text: "Tabela consolidada (PL POP 1.1) exibindo todos os fornecedores com status Aprovado ou Aprovado c/ Restrições, com indicação visual de cada resultado." },
+      { title: "Exportação Excel e PDF", text: "Exporte o questionário de qualificação (em branco ou preenchido) e a lista de fornecedores aprovados nos formatos Excel (.xlsx) e PDF para impressão." },
     ],
   },
   {
