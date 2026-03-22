@@ -197,7 +197,13 @@ export default function PCP() {
 
   const handleAddBatida = async () => {
     if (!batidaOrdemId || !user) return;
+    if (!limpezaConfirmada) {
+      toast.error("⚠️ É obrigatório confirmar a limpeza entre lotes antes de registrar a batida (IN 15/2009).");
+      return;
+    }
     setSaving(true);
+    const limpezaInfo = `[LIMPEZA ENTRE LOTES] Tipo: ${limpezaTipo === "vassouragem" ? "Vassouragem" : limpezaTipo === "flushing" ? "Flushing" : "Lavagem completa"} | Resp: ${limpezaResponsavel} | Hora: ${limpezaHora}`;
+    const obsCompleta = batidaObs ? `${limpezaInfo}\n${batidaObs}` : limpezaInfo;
     const { error } = await supabase.from("batidas_producao").insert({
       user_id: user.id,
       ordem_id: batidaOrdemId,
@@ -208,14 +214,15 @@ export default function PCP() {
       tempo_mistura_minutos: batidaTempoMin ? parseInt(batidaTempoMin) : null,
       temperatura: batidaTemp,
       status: "concluida",
-      observacoes: batidaObs,
+      observacoes: obsCompleta,
     } as any);
     if (error) toast.error("Erro ao salvar batida");
     else {
-      toast.success("Batida registrada!");
+      toast.success("Batida registrada com verificação de limpeza!");
       setBatidaOpen(false);
       setBatidaNum("1"); setBatidaOperador(""); setBatidaInicio(""); setBatidaFim("");
       setBatidaTempoMin(""); setBatidaTemp(""); setBatidaObs("");
+      setLimpezaConfirmada(false); setLimpezaTipo("vassouragem"); setLimpezaResponsavel(""); setLimpezaHora("");
       fetchData();
     }
     setSaving(false);
