@@ -110,6 +110,13 @@ export default function Legislacao() {
   const quickUploadRef = useRef<HTMLInputElement>(null);
   const [quickUploading, setQuickUploading] = useState(false);
 
+  // Pesquisa SISLEGIS state
+  const [pesquisaTermo, setPesquisaTermo] = useState("");
+  const [pesquisaCategoria, setPesquisaCategoria] = useState("todas");
+  const [pesquisaLoading, setPesquisaLoading] = useState(false);
+  const [pesquisaResultados, setPesquisaResultados] = useState<any[]>([]);
+  const [pesquisaResumo, setPesquisaResumo] = useState("");
+
   const [normaForm, setNormaForm] = useState({
     titulo: "",
     codigo: "",
