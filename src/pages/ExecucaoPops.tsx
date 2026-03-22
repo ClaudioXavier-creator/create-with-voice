@@ -121,6 +121,7 @@ export default function ExecucaoPops() {
   const [setor, setSetor] = useState("");
   const [statusExec, setStatusExec] = useState("concluido");
   const [obs, setObs] = useState("");
+  const [checklistTriagem, setChecklistTriagem] = useState<Record<number, boolean | null>>({});
 
   const fetchData = async () => {
     if (!user) return;
