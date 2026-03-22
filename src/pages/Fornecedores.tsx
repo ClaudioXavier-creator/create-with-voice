@@ -206,15 +206,16 @@ export default function Fornecedores() {
           ) : (
             <Table>
               <TableHeader>
-                <TableRow>
-                  <TableHead>Fornecedor</TableHead>
-                  <TableHead>Produto</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Nota</TableHead>
-                  <TableHead>Taxa Aprovação MP</TableHead>
-                  <TableHead>Última Avaliação</TableHead>
-                  <TableHead></TableHead>
-                </TableRow>
+               <TableRow>
+                   <TableHead>Fornecedor</TableHead>
+                   <TableHead>Produto</TableHead>
+                   <TableHead>SIPEAGRO</TableHead>
+                   <TableHead>Status</TableHead>
+                   <TableHead>Nota</TableHead>
+                   <TableHead>Taxa Aprovação MP</TableHead>
+                   <TableHead>Última Avaliação</TableHead>
+                   <TableHead></TableHead>
+                 </TableRow>
               </TableHeader>
               <TableBody>
                 {fornecedores.map(f => {
