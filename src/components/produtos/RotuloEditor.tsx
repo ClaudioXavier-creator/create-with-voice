@@ -292,7 +292,7 @@ function TabelaConsumo({ niveisObj }: { niveisObj: Record<string, any> }) {
       </div>
 
       <p className="text-[9px] text-muted-foreground italic">
-        ¹ Valor diário de referência para manutenção de um animal de 450 kg de peso corporal.
+        ¹ Valor diário de referência para manutenção de um animal de 450 kg de peso corporal (IN 12/2004 – MAPA).
       </p>
     </div>
   );
