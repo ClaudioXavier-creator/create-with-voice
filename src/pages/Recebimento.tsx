@@ -110,13 +110,15 @@ export default function Recebimento() {
     // Build vehicle inspection obs
     let obsCompleta = observacoes;
     const vistoriaKeys = Object.keys(vistoriaVeiculo);
-    if (vistoriaKeys.length > 0 || placaVeiculo) {
+    if (vistoriaKeys.length > 0 || placaVeiculo || lacreNumero) {
       const checkItems = VISTORIA_ITENS.map((item, i) => {
         const val = vistoriaVeiculo[i];
         return `${val === true ? "✅" : val === false ? "❌" : "⬜"} ${item}`;
       }).join("\n");
       const naoConformes = VISTORIA_ITENS.filter((_, i) => vistoriaVeiculo[i] === false).length;
-      const vistoriaObs = `[VISTORIA VEÍCULO — POP-05 / IN 15/2009]\nPlaca: ${placaVeiculo || "N/I"}\n${checkItems}${naoConformes > 0 ? `\n⚠️ ${naoConformes} item(ns) não conforme(s)` : "\n✅ Veículo aprovado"}`;
+      const lacreInfo = `Lacre Nº: ${lacreNumero || "N/I"} | Status: ${lacreIntegro === "integro" ? "Íntegro" : lacreIntegro === "violado" ? "VIOLADO ⚠️" : lacreIntegro === "sem_lacre" ? "Sem lacre ⚠️" : "N/I"}`;
+      const transporteInfo = `Condições Transporte: ${condicoesTransporte === "adequado" ? "Adequado" : condicoesTransporte === "parcial" ? "Parcialmente adequado ⚠️" : condicoesTransporte === "inadequado" ? "INADEQUADO ⚠️" : "N/I"}`;
+      const vistoriaObs = `[VISTORIA VEÍCULO — POP-01 / IN 15/2009]\nPlaca: ${placaVeiculo || "N/I"}\n${lacreInfo}\n${transporteInfo}\n${checkItems}${naoConformes > 0 ? `\n⚠️ ${naoConformes} item(ns) não conforme(s)` : "\n✅ Veículo aprovado"}`;
       obsCompleta = vistoriaObs + (observacoes ? `\n\n${observacoes}` : "");
     }
 
