@@ -184,7 +184,7 @@ export default function ExecucaoPops() {
         return `${val === true ? "✅" : val === false ? "❌" : "⬜"} ${item}`;
       }).join("\n");
       const naoConformes = activeChecklist.filter((_, i) => checklistTriagem[i] === false).length;
-      const header = isPOP02 ? "[TRIAGEM DIÁRIA — POP-02 / IN 15/2009]" : "[CONTROLE POTABILIDADE — POP-04 / IN 04/2007]";
+      const header = isPOP02 ? "[TRIAGEM DIÁRIA — POP-02 / IN 15/2009]" : isPOP03 ? "[LIMPEZA PRÉ-OPERACIONAL — POP-03 / IN 04/2007]" : isPOP04 ? "[CONTROLE POTABILIDADE — POP-04 / IN 04/2007]" : "[VISTORIA VEÍCULO — POP-05 / IN 15/2009]";
       obsCompleta = `${header}\n${checkItems}${naoConformes > 0 ? `\n⚠️ ${naoConformes} item(ns) não conforme(s)` : "\n✅ Todos os itens conformes"}${obs ? `\nObs: ${obs}` : ""}`;
     }
 
