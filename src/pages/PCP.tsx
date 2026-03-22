@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { ClipboardList, Plus, Loader2, ChevronDown, ChevronUp, Clock, CheckCircle2, AlertTriangle, Factory, FlaskConical } from "lucide-react";
+import { ClipboardList, Plus, Loader2, ChevronDown, ChevronUp, Clock, CheckCircle2, AlertTriangle, Factory, FlaskConical, ArrowRightLeft, ShieldAlert } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
@@ -79,6 +79,7 @@ export default function PCP() {
   const [ordens, setOrdens] = useState<OrdemProd[]>([]);
   const [formulaItens, setFormulaItens] = useState<FormulaItem[]>([]);
   const [batidas, setBatidas] = useState<Batida[]>([]);
+  const [matrizSensibilidade, setMatrizSensibilidade] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [expandedOrdem, setExpandedOrdem] = useState<string | null>(null);
@@ -128,14 +129,16 @@ export default function PCP() {
 
   const fetchData = async () => {
     if (!user) return;
-    const [ordensRes, itensRes, batidasRes] = await Promise.all([
+    const [ordensRes, itensRes, batidasRes, matrizRes] = await Promise.all([
       supabase.from("ordens_producao").select("*").order("data_programada", { ascending: false }),
       supabase.from("formula_itens").select("*").order("created_at"),
       supabase.from("batidas_producao").select("*").order("numero_batida"),
+      supabase.from("matriz_sensibilidade").select("*").order("produto_anterior"),
     ]);
     if (ordensRes.data) setOrdens(ordensRes.data as unknown as OrdemProd[]);
     if (itensRes.data) setFormulaItens(itensRes.data as unknown as FormulaItem[]);
     if (batidasRes.data) setBatidas(batidasRes.data as unknown as Batida[]);
+    if (matrizRes.data) setMatrizSensibilidade(matrizRes.data);
     setLoading(false);
   };
 
@@ -301,6 +304,92 @@ export default function PCP() {
           <p className="text-xs text-muted-foreground">Concluídas</p>
         </CardContent></Card>
       </div>
+
+      {/* ── SEQUENCIAMENTO DE PRODUÇÃO — PREVENÇÃO CONTAMINAÇÃO CRUZADA ── */}
+      <Card className="mb-6 border-yellow-500/20">
+        <CardHeader className="flex flex-row items-center justify-between">
+          <div>
+            <CardTitle className="font-display text-sm flex items-center gap-2">
+              <ArrowRightLeft className="w-5 h-5 text-yellow-600" />
+              Sequenciamento de Produção — Prevenção de Contaminação Cruzada
+            </CardTitle>
+            <p className="text-xs text-muted-foreground mt-1">
+              IN 15/2009 — Sequência de produção baseada na Matriz de Sensibilidade. Ordens que requerem flushing são destacadas.
+            </p>
+          </div>
+        </CardHeader>
+        <CardContent>
+          {(() => {
+            // Get today's and future programmed orders
+            const programadas = ordens.filter(o => o.status === "programada" || o.status === "em_producao");
+            if (programadas.length < 2 && matrizSensibilidade.length === 0) {
+              return (
+                <p className="text-sm text-muted-foreground text-center py-4">
+                  Cadastre ordens de produção e configure a Matriz de Sensibilidade para visualizar o sequenciamento.
+                </p>
+              );
+            }
+
+            // Check consecutive orders for flushing requirements
+            const sequencia: { ordem: OrdemProd; anterior?: OrdemProd; requerFlushing: boolean; tipoLimpeza: string }[] = [];
+            const sortedOrdens = [...programadas].sort((a, b) => a.data_programada.localeCompare(b.data_programada));
+
+            sortedOrdens.forEach((ordem, idx) => {
+              const anterior = idx > 0 ? sortedOrdens[idx - 1] : undefined;
+              let requerFlushing = false;
+              let tipoLimpeza = "Vassouragem";
+
+              if (anterior) {
+                const match = matrizSensibilidade.find(
+                  (m: any) => m.produto_anterior.toLowerCase() === anterior.produto.toLowerCase() &&
+                              m.produto_seguinte.toLowerCase() === ordem.produto.toLowerCase()
+                );
+                if (match) {
+                  requerFlushing = match.requer_flushing;
+                  tipoLimpeza = requerFlushing ? "Flushing / Lavagem" : "Vassouragem";
+                }
+              }
+
+              sequencia.push({ ordem, anterior, requerFlushing, tipoLimpeza });
+            });
+
+            return (
+              <div className="space-y-2">
+                {sequencia.map(({ ordem, anterior, requerFlushing, tipoLimpeza }, i) => (
+                  <div key={ordem.id} className={`flex items-center gap-3 p-3 rounded-lg border ${requerFlushing ? "border-yellow-500 bg-yellow-50 dark:bg-yellow-900/10" : "border-border"}`}>
+                    <div className="text-xs font-bold text-muted-foreground w-6 text-center">{i + 1}</div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <span className="font-mono text-xs font-bold">{ordem.numero_ordem}</span>
+                        <span className="font-medium text-sm truncate">{ordem.produto}</span>
+                        <Badge variant="outline" className="text-[10px]">{ordem.data_programada}</Badge>
+                      </div>
+                      {anterior && (
+                        <p className="text-[10px] text-muted-foreground mt-0.5">
+                          Após: {anterior.produto} ({anterior.numero_ordem})
+                        </p>
+                      )}
+                    </div>
+                    {requerFlushing ? (
+                      <div className="flex items-center gap-1.5">
+                        <ShieldAlert className="w-4 h-4 text-yellow-600" />
+                        <Badge className="bg-yellow-500/20 text-yellow-700 text-[10px]">{tipoLimpeza}</Badge>
+                      </div>
+                    ) : anterior ? (
+                      <Badge variant="outline" className="text-[10px]">{tipoLimpeza}</Badge>
+                    ) : null}
+                  </div>
+                ))}
+                {matrizSensibilidade.length > 0 && (
+                  <p className="text-[10px] text-muted-foreground mt-2">
+                    {matrizSensibilidade.filter((m: any) => m.requer_flushing).length} combinação(ões) na Matriz de Sensibilidade requerem flushing/lavagem.
+                  </p>
+                )}
+              </div>
+            );
+          })()}
+        </CardContent>
+      </Card>
 
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
