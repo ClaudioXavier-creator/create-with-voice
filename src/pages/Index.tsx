@@ -43,6 +43,8 @@ interface DashboardData {
   conformidadePorArea: { area: string; pct: number }[];
   ncPorMes: NCPorMes[];
   conformidadePorMes: ConformidadePorMes[];
+  atividadesVencidas: { atividade: string; proxima_execucao: string; categoria: string }[];
+  atividadesProximas: { atividade: string; proxima_execucao: string; categoria: string; dias: number }[];
   loading: boolean;
 }
 
