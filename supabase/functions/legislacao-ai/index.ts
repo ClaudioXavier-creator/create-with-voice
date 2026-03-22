@@ -12,7 +12,9 @@ serve(async (req) => {
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
-    const { action } = await req.json();
+    const bodyText = await req.text();
+    const bodyJson = JSON.parse(bodyText);
+    const { action, termo, categoria } = bodyJson;
 
     let systemPrompt = "";
     let userPrompt = "";
@@ -136,6 +138,63 @@ Responda SEMPRE em formato JSON:
 Avalie cada módulo em relação às exigências da IN 04/2007, IN 15/2009, Decreto 12.031/2024 e IN 17/2017.
 Identifique gaps e gere recomendações práticas para melhorar a conformidade.
 Responda APENAS com JSON.`;
+    } else if (action === "pesquisar_legislacao") {
+      const termoBusca = termo || "alimentação animal";
+      const categoriaBusca = categoria || "todas";
+
+      systemPrompt = `Você é um especialista em legislação brasileira de ALIMENTAÇÃO ANIMAL do MAPA. Sua função é pesquisar e retornar normas, instruções normativas, decretos, portarias, consultas públicas e alterações legislativas relacionadas ao setor de alimentação animal.
+
+Considere o sistema SISLEGIS do MAPA (https://sistemasweb.agricultura.gov.br/sislegis/) como referência principal.
+
+Categorias de busca:
+- "novas": Normas publicadas recentemente (últimos 2 anos)
+- "alteracoes": Alterações e atualizações de normas existentes
+- "consultas_publicas": Consultas públicas abertas ou recentes do MAPA sobre alimentação animal
+- "todas": Todas as categorias acima
+
+Responda SEMPRE em formato JSON válido:
+{
+  "resultados": [
+    {
+      "titulo": "Título completo da norma/consulta",
+      "codigo": "Ex: IN 04/2007, Decreto 12.031/2024",
+      "tipo": "instrucao_normativa | decreto | lei | portaria | resolucao | consulta_publica | nota_tecnica",
+      "categoria": "nova | alteracao | consulta_publica",
+      "orgao": "MAPA",
+      "data_publicacao": "YYYY-MM-DD ou data aproximada",
+      "resumo": "Resumo claro do conteúdo e impacto prático para fábricas de ração",
+      "status": "vigente | revogada | em_consulta | aprovada",
+      "link_referencia": "URL do SISLEGIS ou DOU quando disponível",
+      "impacto_bpf": "Como impacta as Boas Práticas de Fabricação"
+    }
+  ],
+  "total_encontrados": 0,
+  "resumo_pesquisa": "Resumo geral dos resultados encontrados"
+}`;
+
+      userPrompt = `Pesquise legislação brasileira de ALIMENTAÇÃO ANIMAL no MAPA com os seguintes critérios:
+
+Termo de busca: "${termoBusca}"
+Categoria: "${categoriaBusca}"
+
+Considere as seguintes fontes e normas base:
+- SISLEGIS/MAPA — Sistema de Consulta à Legislação
+- Diário Oficial da União (DOU)
+- IN 04/2007 (POPs de BPF)
+- IN 15/2009 (Condições higiênico-sanitárias)
+- IN 17/2017 (Estabelecimentos fabricantes)
+- IN 13/2004 (Aditivos)
+- Decreto 12.031/2024 (Fiscalização)
+- Lei 6.198/1974 (Lei base)
+- RDC/MAPA sobre ingredientes e matérias-primas
+- Consultas públicas do MAPA sobre alimentação animal
+
+${categoriaBusca === "novas" ? "Foque em normas publicadas nos últimos 2 anos (2024-2026)." : ""}
+${categoriaBusca === "alteracoes" ? "Foque em alterações, retificações e atualizações de normas existentes." : ""}
+${categoriaBusca === "consultas_publicas" ? "Foque em consultas públicas abertas ou recentemente encerradas do MAPA sobre alimentação animal." : ""}
+
+Liste de 5 a 15 resultados relevantes. Responda APENAS com o JSON, sem markdown.`;
+
     } else {
       throw new Error("Ação inválida");
     }
