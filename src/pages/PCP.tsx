@@ -94,6 +94,11 @@ export default function PCP() {
   const [pesoBatida, setPesoBatida] = useState("");
   const [prioridade, setPrioridade] = useState("normal");
   const [obsOrdem, setObsOrdem] = useState("");
+  const [tipoOrdem, setTipoOrdem] = useState("normal");
+  const [ordemOrigemId, setOrdemOrigemId] = useState("");
+  const [motivoRetrabalho, setMotivoRetrabalho] = useState("");
+  const [qtdSobra, setQtdSobra] = useState("");
+  const [destinoSobra, setDestinoSobra] = useState("");
 
   // Formula item form
   const [itemOpen, setItemOpen] = useState(false);
