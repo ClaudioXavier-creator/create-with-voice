@@ -25,6 +25,7 @@ import Fornecedores from "./pages/Fornecedores";
 import Manual from "./pages/Manual";
 import PlanilhasPop from "./pages/PlanilhasPop";
 import Produtos from "./pages/Produtos";
+import AnalisesLaboratorio from "./pages/AnalisesLaboratorio";
 import Auth from "./pages/Auth";
 import AtivarLicenca from "./pages/AtivarLicenca";
 import NotFound from "./pages/NotFound";
@@ -104,6 +105,7 @@ const AppRoutes = () => {
                   <Route path="/manual" element={<Manual />} />
                   <Route path="/planilhas-pop" element={<PlanilhasPop />} />
                   <Route path="/produtos" element={<Produtos />} />
+                  <Route path="/analises" element={<AnalisesLaboratorio />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </AppLayout>

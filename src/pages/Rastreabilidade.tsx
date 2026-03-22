@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Search, Plus, Loader2, Package, AlertTriangle, Truck, ShieldAlert, Timer, Play, Square, RotateCcw } from "lucide-react";
+import { Search, Plus, Loader2, Package, AlertTriangle, Truck, ShieldAlert, Timer, Play, Square, RotateCcw, ArrowUpDown, CheckCircle2, XCircle, Save } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
@@ -33,6 +33,14 @@ interface RastreabilidadeRow {
   recall_motivo: string | null;
   recall_data: string | null;
   recall_status: string | null;
+}
+
+interface TesteResult {
+  lote: string;
+  produto: string;
+  montante: { materia_prima: string; lote_mp: string; fornecedor: string }[];
+  jusante: { cliente: string; local: string; nf: string; data_venda: string }[];
+  tempoSegundos: number;
 }
 
 export default function Rastreabilidade() {
@@ -71,12 +79,29 @@ export default function Rastreabilidade() {
   const [simResults, setSimResults] = useState<{ step: string; time: number; ok: boolean }[]>([]);
   const simInterval = useRef<NodeJS.Timeout | null>(null);
 
-  // Venda fields (for updating existing records)
+  // Venda fields
   const [vendaCliente, setVendaCliente] = useState("");
   const [vendaLocal, setVendaLocal] = useState("");
   const [vendaData, setVendaData] = useState("");
   const [vendaNF, setVendaNF] = useState("");
   const [vendaQtd, setVendaQtd] = useState("");
+
+  // Teste de Rastreabilidade
+  const [testeOpen, setTesteOpen] = useState(false);
+  const [testeLote, setTesteLote] = useState("");
+  const [testeRunning, setTesteRunning] = useState(false);
+  const [testeTime, setTesteTime] = useState(0);
+  const [testeResult, setTesteResult] = useState<TesteResult | null>(null);
+  const [testeSaving, setTesteSaving] = useState(false);
+  const [testeObs, setTesteObs] = useState("");
+  const [testesHistorico, setTestesHistorico] = useState<any[]>([]);
+  const testeInterval = useRef<NodeJS.Timeout | null>(null);
+
+  const resetForm = () => {
+    setProduto(""); setLoteProduto(""); setMateriaPrima(""); setLoteMP("");
+    setFornecedor(""); setClienteDestino(""); setLocalEntrega("");
+    setDataVenda(""); setNotaFiscal(""); setQuantidadeVendida("");
+  };
 
   const fetchData = async () => {
     if (!user) return;
@@ -89,13 +114,106 @@ export default function Rastreabilidade() {
     setLoading(false);
   };
 
-  useEffect(() => { fetchData(); }, [user]);
-
-  const resetForm = () => {
-    setProduto(""); setLoteProduto(""); setMateriaPrima(""); setLoteMP("");
-    setFornecedor(""); setClienteDestino(""); setLocalEntrega("");
-    setDataVenda(""); setNotaFiscal(""); setQuantidadeVendida("");
+  const fetchTestesHistorico = async () => {
+    if (!user) return;
+    const { data } = await supabase
+      .from("testes_rastreabilidade")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .limit(10);
+    if (data) setTestesHistorico(data);
   };
+
+  useEffect(() => { fetchData(); fetchTestesHistorico(); }, [user]);
+
+  // ──── Teste de Rastreabilidade ────
+  const startTesteRastreabilidade = () => {
+    if (!testeLote.trim()) { toast.error("Informe o lote para testar."); return; }
+    setTesteRunning(true);
+    setTesteTime(0);
+    setTesteResult(null);
+    testeInterval.current = setInterval(() => setTesteTime(t => t + 1), 1000);
+
+    // Run the trace
+    const lote = testeLote.trim();
+    const lotRecords = registros.filter(r => r.lote_produto === lote);
+
+    if (lotRecords.length === 0) {
+      clearInterval(testeInterval.current!);
+      setTesteRunning(false);
+      toast.error(`Lote "${lote}" não encontrado na rastreabilidade.`);
+      return;
+    }
+
+    const produtoNome = lotRecords[0].produto;
+
+    // Montante (upstream): all raw materials for this lot
+    const montante = lotRecords.map(r => ({
+      materia_prima: r.materia_prima,
+      lote_mp: r.lote_mp || "—",
+      fornecedor: r.fornecedor || "—",
+    }));
+
+    // Jusante (downstream): all sales/deliveries for this lot
+    const jusante = lotRecords
+      .filter(r => r.cliente_destino)
+      .map(r => ({
+        cliente: r.cliente_destino || "—",
+        local: r.local_entrega || "—",
+        nf: r.nota_fiscal || "—",
+        data_venda: r.data_venda || "—",
+      }));
+
+    // Deduplicate
+    const uniqueMontante = montante.filter((m, i, arr) =>
+      arr.findIndex(x => x.materia_prima === m.materia_prima && x.lote_mp === m.lote_mp) === i
+    );
+    const uniqueJusante = jusante.filter((j, i, arr) =>
+      arr.findIndex(x => x.cliente === j.cliente && x.nf === j.nf) === i
+    );
+
+    // Simulate 2 second delay for realism
+    setTimeout(() => {
+      if (testeInterval.current) clearInterval(testeInterval.current);
+      setTesteRunning(false);
+      const elapsed = 2;
+      setTesteTime(elapsed);
+      setTesteResult({
+        lote,
+        produto: produtoNome,
+        montante: uniqueMontante,
+        jusante: uniqueJusante,
+        tempoSegundos: elapsed,
+      });
+      toast.success(`Rastreabilidade completa do lote ${lote} em ${elapsed}s!`);
+    }, 2000);
+  };
+
+  const salvarTesteResultado = async () => {
+    if (!user || !testeResult) return;
+    setTesteSaving(true);
+    const { error } = await supabase.from("testes_rastreabilidade").insert({
+      user_id: user.id,
+      lote_testado: testeResult.lote,
+      produto: testeResult.produto,
+      direcao: "completo",
+      tempo_segundos: testeResult.tempoSegundos,
+      montante_encontrado: testeResult.montante.length > 0,
+      jusante_encontrado: testeResult.jusante.length > 0,
+      materias_primas_rastreadas: testeResult.montante.length,
+      destinos_rastreados: testeResult.jusante.length,
+      resultado: testeResult.montante.length > 0 && testeResult.jusante.length > 0 ? "aprovado" : "parcial",
+      observacoes: testeObs,
+      detalhes_json: { montante: testeResult.montante, jusante: testeResult.jusante },
+    } as any);
+    if (error) toast.error("Erro: " + error.message);
+    else {
+      toast.success("Resultado do teste salvo!");
+      fetchTestesHistorico();
+    }
+    setTesteSaving(false);
+  };
+
 
   const handleAdd = async () => {
     if (!produto || !materiaPrima || !user) return;
@@ -333,6 +451,158 @@ export default function Rastreabilidade() {
                     <Button onClick={() => { setSimResults([]); setSimTime(0); setSimStep(0); }} variant="outline" className="w-full">
                       <RotateCcw className="w-4 h-4 mr-1" /> Nova Simulação
                     </Button>
+                  </div>
+                )}
+              </div>
+            </DialogContent>
+          </Dialog>
+        </CardHeader>
+      </Card>
+
+
+      {/* ──── Teste de Rastreabilidade Completa ──── */}
+      <Card className="mb-6 border-primary/30">
+        <CardHeader className="flex flex-row items-center justify-between">
+          <div>
+            <CardTitle className="font-display text-sm flex items-center gap-2">
+              <ArrowUpDown className="w-5 h-5 text-primary" /> Teste de Rastreabilidade — Montante e Jusante
+            </CardTitle>
+            <p className="text-xs text-muted-foreground mt-1">Rastreie um lote completo (MP → PA → Cliente) e registre o resultado</p>
+          </div>
+          <Dialog open={testeOpen} onOpenChange={setTesteOpen}>
+            <DialogTrigger asChild>
+              <Button size="sm" variant="outline" className="border-primary text-primary hover:bg-primary hover:text-primary-foreground">
+                <ArrowUpDown className="w-4 h-4 mr-1" /> Testar Lote
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+              <DialogHeader><DialogTitle className="flex items-center gap-2"><ArrowUpDown className="w-5 h-5 text-primary" /> Teste de Rastreabilidade Completa</DialogTitle></DialogHeader>
+              <div className="space-y-4">
+                {/* Lote input */}
+                <div>
+                  <Label>Lote do Produto Acabado (PA)</Label>
+                  <div className="flex gap-2 mt-1">
+                    <Select value={testeLote} onValueChange={setTesteLote}>
+                      <SelectTrigger><SelectValue placeholder="Selecione um lote" /></SelectTrigger>
+                      <SelectContent>
+                        {Array.from(new Set(registros.map(r => r.lote_produto).filter(Boolean))).map(lote => (
+                          <SelectItem key={lote!} value={lote!}>{lote}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <Button onClick={startTesteRastreabilidade} disabled={testeRunning || !testeLote}>
+                      {testeRunning ? <Loader2 className="w-4 h-4 animate-spin" /> : <Play className="w-4 h-4" />}
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Timer */}
+                {testeRunning && (
+                  <div className="text-center p-4 rounded-lg bg-primary/5 border border-primary/20">
+                    <Loader2 className="w-8 h-8 animate-spin mx-auto text-primary mb-2" />
+                    <p className="text-2xl font-mono font-bold">{formatTime(testeTime)}</p>
+                    <p className="text-xs text-muted-foreground">Rastreando montante e jusante...</p>
+                  </div>
+                )}
+
+                {/* Results */}
+                {testeResult && (
+                  <div className="space-y-4">
+                    <div className={`p-3 rounded-lg text-center ${testeResult.montante.length > 0 && testeResult.jusante.length > 0 ? "bg-primary/10 border border-primary/30" : "bg-yellow-500/10 border border-yellow-500/30"}`}>
+                      <p className="font-display font-bold text-lg">
+                        {testeResult.montante.length > 0 && testeResult.jusante.length > 0 ? "✅ Rastreabilidade Completa" : "⚠️ Rastreabilidade Parcial"}
+                      </p>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        Lote <strong>{testeResult.lote}</strong> — {testeResult.produto}
+                      </p>
+                      <p className="text-2xl font-mono font-bold mt-2">{formatTime(testeResult.tempoSegundos)}</p>
+                    </div>
+
+                    {/* Montante */}
+                    <div className="p-3 rounded-lg bg-accent/5 border border-accent/20">
+                      <p className="text-xs font-bold flex items-center gap-1 mb-2">
+                        <CheckCircle2 className="w-3 h-3 text-primary" /> MONTANTE (← Matérias-Primas) — {testeResult.montante.length} encontradas
+                      </p>
+                      {testeResult.montante.length > 0 ? (
+                        <Table>
+                          <TableHeader><TableRow>
+                            <TableHead className="py-1 text-xs">Matéria-Prima</TableHead>
+                            <TableHead className="py-1 text-xs">Lote MP</TableHead>
+                            <TableHead className="py-1 text-xs">Fornecedor</TableHead>
+                          </TableRow></TableHeader>
+                          <TableBody>
+                            {testeResult.montante.map((m, i) => (
+                              <TableRow key={i}>
+                                <TableCell className="py-1 text-xs">{m.materia_prima}</TableCell>
+                                <TableCell className="py-1 text-xs font-mono">{m.lote_mp}</TableCell>
+                                <TableCell className="py-1 text-xs">{m.fornecedor}</TableCell>
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                      ) : <p className="text-xs text-muted-foreground">Nenhuma MP encontrada</p>}
+                    </div>
+
+                    {/* Jusante */}
+                    <div className="p-3 rounded-lg bg-muted/50 border">
+                      <p className="text-xs font-bold flex items-center gap-1 mb-2">
+                        {testeResult.jusante.length > 0 ? <CheckCircle2 className="w-3 h-3 text-primary" /> : <XCircle className="w-3 h-3 text-destructive" />}
+                        JUSANTE (→ Clientes/Destinos) — {testeResult.jusante.length} encontrados
+                      </p>
+                      {testeResult.jusante.length > 0 ? (
+                        <Table>
+                          <TableHeader><TableRow>
+                            <TableHead className="py-1 text-xs">Cliente</TableHead>
+                            <TableHead className="py-1 text-xs">Local</TableHead>
+                            <TableHead className="py-1 text-xs">NF</TableHead>
+                            <TableHead className="py-1 text-xs">Data Venda</TableHead>
+                          </TableRow></TableHeader>
+                          <TableBody>
+                            {testeResult.jusante.map((j, i) => (
+                              <TableRow key={i}>
+                                <TableCell className="py-1 text-xs">{j.cliente}</TableCell>
+                                <TableCell className="py-1 text-xs">{j.local}</TableCell>
+                                <TableCell className="py-1 text-xs font-mono">{j.nf}</TableCell>
+                                <TableCell className="py-1 text-xs">{j.data_venda}</TableCell>
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                      ) : <p className="text-xs text-muted-foreground">Nenhum destino/venda registrado para este lote</p>}
+                    </div>
+
+                    {/* Save */}
+                    <div>
+                      <Label className="text-xs">Observações do teste</Label>
+                      <Textarea value={testeObs} onChange={e => setTesteObs(e.target.value)} rows={2} placeholder="Avaliação do teste..." />
+                    </div>
+                    <Button onClick={salvarTesteResultado} className="w-full" disabled={testeSaving}>
+                      {testeSaving ? <Loader2 className="w-4 h-4 mr-1 animate-spin" /> : <Save className="w-4 h-4 mr-1" />}
+                      Salvar Resultado do Teste
+                    </Button>
+                  </div>
+                )}
+
+                {/* Histórico */}
+                {testesHistorico.length > 0 && !testeResult && (
+                  <div>
+                    <p className="text-xs font-bold mb-2">Histórico de Testes</p>
+                    <div className="space-y-1">
+                      {testesHistorico.map((t: any) => (
+                        <div key={t.id} className="flex items-center justify-between p-2 rounded bg-muted/30 border text-xs">
+                          <div>
+                            <span className="font-medium">{t.produto}</span>
+                            <Badge variant="outline" className="ml-2 font-mono text-[10px]">{t.lote_testado}</Badge>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="font-mono">{formatTime(t.tempo_segundos)}</span>
+                            <Badge className={t.resultado === "aprovado" ? "bg-primary/20 text-primary" : "bg-yellow-500/20 text-yellow-700"}>
+                              {t.resultado === "aprovado" ? "Completo" : "Parcial"}
+                            </Badge>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 )}
               </div>

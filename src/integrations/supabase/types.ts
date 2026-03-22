@@ -14,6 +14,75 @@ export type Database = {
   }
   public: {
     Tables: {
+      analises_laboratorio: {
+        Row: {
+          conforme: boolean | null
+          created_at: string
+          data_analise: string | null
+          data_resultado: string | null
+          id: string
+          laboratorio: string | null
+          laudo_numero: string | null
+          laudo_url: string | null
+          limite_referencia: string | null
+          lote: string | null
+          metodo: string | null
+          observacoes: string | null
+          parametro: string | null
+          produto: string
+          resultado: string | null
+          status: string | null
+          tipo_analise: string
+          unidade: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          conforme?: boolean | null
+          created_at?: string
+          data_analise?: string | null
+          data_resultado?: string | null
+          id?: string
+          laboratorio?: string | null
+          laudo_numero?: string | null
+          laudo_url?: string | null
+          limite_referencia?: string | null
+          lote?: string | null
+          metodo?: string | null
+          observacoes?: string | null
+          parametro?: string | null
+          produto: string
+          resultado?: string | null
+          status?: string | null
+          tipo_analise?: string
+          unidade?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          conforme?: boolean | null
+          created_at?: string
+          data_analise?: string | null
+          data_resultado?: string | null
+          id?: string
+          laboratorio?: string | null
+          laudo_numero?: string | null
+          laudo_url?: string | null
+          limite_referencia?: string | null
+          lote?: string | null
+          metodo?: string | null
+          observacoes?: string | null
+          parametro?: string | null
+          produto?: string
+          resultado?: string | null
+          status?: string | null
+          tipo_analise?: string
+          unidade?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       arquivos_bpf: {
         Row: {
           arquivo_nome: string | null
@@ -1228,6 +1297,60 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      testes_rastreabilidade: {
+        Row: {
+          created_at: string
+          data_teste: string | null
+          destinos_rastreados: number | null
+          detalhes_json: Json | null
+          direcao: string
+          id: string
+          jusante_encontrado: boolean | null
+          lote_testado: string
+          materias_primas_rastreadas: number | null
+          montante_encontrado: boolean | null
+          observacoes: string | null
+          produto: string
+          resultado: string | null
+          tempo_segundos: number | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          data_teste?: string | null
+          destinos_rastreados?: number | null
+          detalhes_json?: Json | null
+          direcao?: string
+          id?: string
+          jusante_encontrado?: boolean | null
+          lote_testado: string
+          materias_primas_rastreadas?: number | null
+          montante_encontrado?: boolean | null
+          observacoes?: string | null
+          produto: string
+          resultado?: string | null
+          tempo_segundos?: number | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          data_teste?: string | null
+          destinos_rastreados?: number | null
+          detalhes_json?: Json | null
+          direcao?: string
+          id?: string
+          jusante_encontrado?: boolean | null
+          lote_testado?: string
+          materias_primas_rastreadas?: number | null
+          montante_encontrado?: boolean | null
+          observacoes?: string | null
+          produto?: string
+          resultado?: string | null
+          tempo_segundos?: number | null
+          user_id?: string
+        }
+        Relationships: []
       }
       treinamentos: {
         Row: {

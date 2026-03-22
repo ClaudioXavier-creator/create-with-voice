@@ -3,7 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import {
   LayoutDashboard, Building2, FileText, ClipboardCheck, AlertTriangle,
   Package, Factory, Search, Bug, GraduationCap, BarChart3, Menu, X, LogOut,
-  PlayCircle, FileDown, Scale, Users, ChevronDown, Wrench, Settings, BookOpen
+  PlayCircle, FileDown, Scale, Users, ChevronDown, Wrench, Settings, BookOpen, FlaskConical
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -40,6 +40,7 @@ const NAV_ENTRIES: NavEntry[] = [
       { path: "/auditoria", label: "Auditoria BPF", icon: ClipboardCheck },
       { path: "/nao-conformidades", label: "Não Conformidades", icon: AlertTriangle },
       { path: "/planilhas-pop", label: "Planilhas de POPs", icon: ClipboardCheck },
+      { path: "/analises", label: "Análises Laboratoriais", icon: FlaskConical },
     ],
   },
   {
