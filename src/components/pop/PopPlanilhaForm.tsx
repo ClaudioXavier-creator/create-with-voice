@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { Check, X, Minus } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { Check, X, Minus, Upload } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { PopPeriodicidade } from "@/config/popsConfig";
+import * as XLSX from "xlsx";
 
 interface CellData {
   conforme: boolean | null;
