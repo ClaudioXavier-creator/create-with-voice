@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Users, Plus, Loader2, Star, AlertCircle, CheckCircle2, Clock, FileText } from "lucide-react";
+import { Users, Plus, Loader2, Star, AlertCircle, CheckCircle2, Clock, FileText, Download, Printer } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
