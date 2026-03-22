@@ -744,6 +744,7 @@ export default function Rastreabilidade() {
               </div>
             </DialogContent>
           </Dialog>
+          </div>
         </CardHeader>
         <CardContent className="overflow-x-auto">
           {loading ? (
