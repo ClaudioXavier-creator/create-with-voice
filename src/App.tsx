@@ -105,6 +105,7 @@ const AppRoutes = () => {
                   <Route path="/manual" element={<Manual />} />
                   <Route path="/planilhas-pop" element={<PlanilhasPop />} />
                   <Route path="/produtos" element={<Produtos />} />
+                  <Route path="/analises" element={<AnalisesLaboratorio />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </AppLayout>
