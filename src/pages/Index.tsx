@@ -176,6 +176,20 @@ export default function Index() {
         };
       });
 
+      // --- Planejamento Anual: vencidas e próximas ---
+      const planejamento = ((planejamentoRes.data || []) as any[]);
+      const now = new Date();
+      const atividadesVencidas = planejamento
+        .filter(p => p.proxima_execucao && differenceInDays(parseISO(p.proxima_execucao), now) < 0)
+        .map(p => ({ atividade: p.atividade, proxima_execucao: p.proxima_execucao, categoria: p.categoria }));
+      const atividadesProximas = planejamento
+        .filter(p => {
+          if (!p.proxima_execucao) return false;
+          const dias = differenceInDays(parseISO(p.proxima_execucao), now);
+          return dias >= 0 && dias <= 7;
+        })
+        .map(p => ({ atividade: p.atividade, proxima_execucao: p.proxima_execucao, categoria: p.categoria, dias: differenceInDays(parseISO(p.proxima_execucao), now) }));
+
       setData({
         ncAbertas,
         auditoriasRealizadas,
@@ -185,6 +199,8 @@ export default function Index() {
         conformidadePorArea,
         ncPorMes,
         conformidadePorMes,
+        atividadesVencidas,
+        atividadesProximas,
         loading: false,
       });
     }
