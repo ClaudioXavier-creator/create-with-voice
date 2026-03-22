@@ -1084,6 +1084,7 @@ export type Database = {
           created_at: string
           endereco: string | null
           especie_categoria: string | null
+          eventuais_substitutivos: string | null
           fabricacao_placeholder: string | null
           id: string
           indicacoes_uso: string | null
@@ -1115,6 +1116,7 @@ export type Database = {
           created_at?: string
           endereco?: string | null
           especie_categoria?: string | null
+          eventuais_substitutivos?: string | null
           fabricacao_placeholder?: string | null
           id?: string
           indicacoes_uso?: string | null
@@ -1146,6 +1148,7 @@ export type Database = {
           created_at?: string
           endereco?: string | null
           especie_categoria?: string | null
+          eventuais_substitutivos?: string | null
           fabricacao_placeholder?: string | null
           id?: string
           indicacoes_uso?: string | null
