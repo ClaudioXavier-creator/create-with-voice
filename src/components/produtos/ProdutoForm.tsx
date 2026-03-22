@@ -246,12 +246,12 @@ export default function ProdutoForm({ produtoId, onSaved }: Props) {
       precaucoes, indicacoes, composicao,
       diferenciais, modo_preparo: modoPreparo,
       embalagem, observacoes,
-      niveis_garantia: niveis,
+      niveis_garantia: niveis as any,
     };
 
     const { error } = produtoId
-      ? await supabase.from("produtos").update(payload).eq("id", produtoId)
-      : await supabase.from("produtos").insert(payload);
+      ? await supabase.from("produtos").update(payload as any).eq("id", produtoId)
+      : await supabase.from("produtos").insert(payload as any);
 
     if (error) toast.error("Erro: " + error.message);
     else { toast.success("Produto salvo!"); onSaved(); }
