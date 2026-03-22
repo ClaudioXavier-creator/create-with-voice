@@ -63,6 +63,7 @@ interface RecebimentoRow {
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; icon: typeof CheckCircle2 }> = {
   aprovado: { label: "Aprovado", color: "bg-primary text-primary-foreground", icon: CheckCircle2 },
+  aprovado_com_restricoes: { label: "Aprovado c/ Restrições", color: "bg-yellow-600/20 text-yellow-700", icon: CheckCircle2 },
   pendente: { label: "Pendente", color: "bg-accent text-accent-foreground", icon: Clock },
   reprovado: { label: "Reprovado", color: "bg-destructive text-destructive-foreground", icon: AlertCircle },
   em_avaliacao: { label: "Em Avaliação", color: "bg-yellow-500/20 text-yellow-700", icon: Clock },
@@ -201,7 +202,7 @@ export default function Fornecedores() {
     return Math.round((recs.filter(r => r.aprovado).length / recs.length) * 100);
   };
 
-  const aprovados = fornecedores.filter(f => f.status_qualificacao === "aprovado");
+  const aprovados = fornecedores.filter(f => f.status_qualificacao === "aprovado" || f.status_qualificacao === "aprovado_com_restricoes");
   const pendentes = fornecedores.filter(f => f.status_qualificacao === "pendente" || f.status_qualificacao === "em_avaliacao");
   const reprovados = fornecedores.filter(f => f.status_qualificacao === "reprovado");
 
@@ -398,30 +399,42 @@ export default function Fornecedores() {
                 <TabsContent value="resultado" className="space-y-4 mt-4">
                   <h3 className="text-sm font-semibold border-b pb-1">4 — Resultado da Qualificação</h3>
 
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-3 gap-3">
                     <button
                       type="button"
                       onClick={() => setResultadoQualificacao("aprovado")}
-                      className={`p-6 rounded-lg border-2 text-center transition-all ${
+                      className={`p-5 rounded-lg border-2 text-center transition-all ${
                         resultadoQualificacao === "aprovado"
                           ? "border-primary bg-primary/10 text-primary"
                           : "border-muted hover:border-primary/50"
                       }`}
                     >
-                      <CheckCircle2 className="w-8 h-8 mx-auto mb-2" />
-                      <p className="font-semibold">Aprovado</p>
+                      <CheckCircle2 className="w-7 h-7 mx-auto mb-2" />
+                      <p className="font-semibold text-sm">Aprovado</p>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setResultadoQualificacao("aprovado_com_restricoes")}
+                      className={`p-5 rounded-lg border-2 text-center transition-all ${
+                        resultadoQualificacao === "aprovado_com_restricoes"
+                          ? "border-yellow-600 bg-yellow-600/10 text-yellow-700"
+                          : "border-muted hover:border-yellow-500/50"
+                      }`}
+                    >
+                      <CheckCircle2 className="w-7 h-7 mx-auto mb-2" />
+                      <p className="font-semibold text-sm">Aprovado c/ Restrições</p>
                     </button>
                     <button
                       type="button"
                       onClick={() => setResultadoQualificacao("reprovado")}
-                      className={`p-6 rounded-lg border-2 text-center transition-all ${
+                      className={`p-5 rounded-lg border-2 text-center transition-all ${
                         resultadoQualificacao === "reprovado"
                           ? "border-destructive bg-destructive/10 text-destructive"
                           : "border-muted hover:border-destructive/50"
                       }`}
                     >
-                      <AlertCircle className="w-8 h-8 mx-auto mb-2" />
-                      <p className="font-semibold">Reprovado</p>
+                      <AlertCircle className="w-7 h-7 mx-auto mb-2" />
+                      <p className="font-semibold text-sm">Reprovado</p>
                     </button>
                   </div>
 
@@ -581,6 +594,54 @@ export default function Fornecedores() {
         </Card>
       )}
 
+      {/* Lista de Fornecedores Aprovados — PL POP 1.1 */}
+      <Card className="mt-6">
+        <CardHeader>
+          <CardTitle className="font-display text-sm flex items-center gap-2">
+            <CheckCircle2 className="w-4 h-4 text-primary" />
+            Lista de Fornecedores Aprovados
+          </CardTitle>
+          <p className="text-xs text-muted-foreground">Conforme PL POP 1.1 — Lista de Fornecedores Aprovados</p>
+        </CardHeader>
+        <CardContent>
+          {aprovados.length === 0 ? (
+            <p className="text-center text-muted-foreground py-6 text-sm">Nenhum fornecedor aprovado ainda</p>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-12">Nº</TableHead>
+                  <TableHead>Fornecedor</TableHead>
+                  <TableHead>Produto Fornecido</TableHead>
+                  <TableHead className="text-center">Aprovado</TableHead>
+                  <TableHead className="text-center">Aprovado c/ Restrições</TableHead>
+                  <TableHead className="text-center">Reprovado</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {aprovados.map((f, idx) => (
+                  <TableRow key={f.id}>
+                    <TableCell className="font-mono text-xs text-muted-foreground">{idx + 1}</TableCell>
+                    <TableCell>
+                      <p className="font-medium text-sm">{f.nome}</p>
+                      {f.cnpj && <span className="text-xs text-muted-foreground">{f.cnpj}</span>}
+                    </TableCell>
+                    <TableCell className="text-sm">{f.produtos_fornecidos || f.tipo_produto || "—"}</TableCell>
+                    <TableCell className="text-center">
+                      {f.status_qualificacao === "aprovado" && <CheckCircle2 className="w-5 h-5 text-primary mx-auto" />}
+                    </TableCell>
+                    <TableCell className="text-center">
+                      {f.status_qualificacao === "aprovado_com_restricoes" && <CheckCircle2 className="w-5 h-5 text-yellow-600 mx-auto" />}
+                    </TableCell>
+                    <TableCell className="text-center">{/* Vazio */}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
+        </CardContent>
+      </Card>
+
       {/* Avaliação Dialog */}
       <Dialog open={avaliarOpen} onOpenChange={setAvaliarOpen}>
         <DialogContent>
@@ -602,6 +663,7 @@ export default function Fornecedores() {
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="aprovado">Aprovado</SelectItem>
+                  <SelectItem value="aprovado_com_restricoes">Aprovado c/ Restrições</SelectItem>
                   <SelectItem value="em_avaliacao">Em Avaliação</SelectItem>
                   <SelectItem value="pendente">Pendente</SelectItem>
                   <SelectItem value="reprovado">Reprovado</SelectItem>
