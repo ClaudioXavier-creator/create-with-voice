@@ -97,6 +97,20 @@ export default function Recebimento() {
   const handleAdd = async () => {
     if (!fornecedor || !materiaPrima || !user) return;
     setSaving(true);
+
+    // Build vehicle inspection obs
+    let obsCompleta = observacoes;
+    const vistoriaKeys = Object.keys(vistoriaVeiculo);
+    if (vistoriaKeys.length > 0 || placaVeiculo) {
+      const checkItems = VISTORIA_ITENS.map((item, i) => {
+        const val = vistoriaVeiculo[i];
+        return `${val === true ? "✅" : val === false ? "❌" : "⬜"} ${item}`;
+      }).join("\n");
+      const naoConformes = VISTORIA_ITENS.filter((_, i) => vistoriaVeiculo[i] === false).length;
+      const vistoriaObs = `[VISTORIA VEÍCULO — POP-05 / IN 15/2009]\nPlaca: ${placaVeiculo || "N/I"}\n${checkItems}${naoConformes > 0 ? `\n⚠️ ${naoConformes} item(ns) não conforme(s)` : "\n✅ Veículo aprovado"}`;
+      obsCompleta = vistoriaObs + (observacoes ? `\n\n${observacoes}` : "");
+    }
+
     const { error } = await supabase.from("recebimento_mp").insert({
       user_id: user.id,
       fornecedor,
@@ -113,7 +127,7 @@ export default function Recebimento() {
       quantidade: quantidade || null,
       unidade: unidade || null,
       temperatura: temperatura || null,
-      observacoes: observacoes || null,
+      observacoes: obsCompleta || null,
     } as any);
     if (error) toast.error("Erro: " + error.message);
     else {
