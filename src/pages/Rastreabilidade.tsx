@@ -351,9 +351,25 @@ export default function Rastreabilidade() {
 
   const formatTime = (s: number) => `${Math.floor(s / 60).toString().padStart(2, "0")}:${(s % 60).toString().padStart(2, "0")}`;
 
+  const exportHistoricoCSV = () => {
+    const headers = ["Produto", "Lote PA", "Matéria-Prima", "Lote MP", "Fornecedor", "Cliente/Destino", "Local Entrega", "Data Venda", "Nota Fiscal", "Qtd Vendida", "Recall Ativo", "Recall Motivo", "Recall Status"];
+    const rows = registros.map(r => [
+      r.produto, r.lote_produto || "", r.materia_prima, r.lote_mp || "", r.fornecedor || "",
+      r.cliente_destino || "", r.local_entrega || "", r.data_venda || "", r.nota_fiscal || "",
+      r.quantidade_vendida || "", r.recall_ativo ? "Sim" : "Não", r.recall_motivo || "", r.recall_status || "",
+    ]);
+    const csv = [headers.join(";"), ...rows.map(r => r.join(";"))].join("\n");
+    const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = `rastreabilidade_historico_${new Date().toISOString().split("T")[0]}.csv`;
+    link.click();
+    toast.success("Histórico exportado para CSV!");
+  };
+
   return (
     <>
-      <PageHeader icon={Search} title="Rastreabilidade" description="Cadeia completa: MP → PA → Venda/Entrega → Recall" />
+      <PageHeader icon={Search} title="Rastreabilidade" description="Cadeia completa: MP → PA → Venda/Entrega → Recall — Decreto 12.031/2024" />
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         <Card><CardContent className="pt-4 text-center">
