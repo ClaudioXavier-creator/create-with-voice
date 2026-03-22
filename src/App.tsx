@@ -31,6 +31,7 @@ import ManutencaoPreventiva from "./pages/ManutencaoPreventiva";
 import ControleResiduos from "./pages/ControleResiduos";
 import ControleSubstancias from "./pages/ControleSubstancias";
 import ValidacaoLimpezaLinha from "./pages/ValidacaoLimpezaLinha";
+import MatrizRisco from "./pages/MatrizRisco";
 import Auth from "./pages/Auth";
 import AtivarLicenca from "./pages/AtivarLicenca";
 import NotFound from "./pages/NotFound";
