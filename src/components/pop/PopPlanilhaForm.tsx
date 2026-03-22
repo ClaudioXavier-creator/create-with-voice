@@ -344,7 +344,7 @@ export default function PopPlanilhaForm({ planilhaId, periodicidade, userId, pop
         <p className="text-xs text-muted-foreground">
           *C = Conforme | NC = Não Conforme | Clique para alternar. Em caso de NC, emitir RNC.
         </p>
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
           <input
             ref={fileInputRef}
             type="file"
@@ -352,6 +352,9 @@ export default function PopPlanilhaForm({ planilhaId, periodicidade, userId, pop
             className="hidden"
             onChange={handleImportExcel}
           />
+          <Button variant="outline" onClick={downloadTemplate}>
+            <Download className="w-4 h-4 mr-1" /> Baixar Template
+          </Button>
           <Button variant="outline" onClick={() => fileInputRef.current?.click()}>
             <Upload className="w-4 h-4 mr-1" /> Importar Excel
           </Button>
