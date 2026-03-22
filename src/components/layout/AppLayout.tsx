@@ -150,7 +150,7 @@ function SidebarNav({ currentPath, onNavigate }: { currentPath: string; onNaviga
             <div
               className={cn(
                 "overflow-hidden transition-all duration-200",
-                groupOpen ? "max-h-96 opacity-100 mt-0.5" : "max-h-0 opacity-0"
+                groupOpen ? "max-h-[800px] opacity-100 mt-0.5" : "max-h-0 opacity-0"
               )}
             >
               <div className="ml-3 pl-3 border-l border-sidebar-border space-y-0.5">
