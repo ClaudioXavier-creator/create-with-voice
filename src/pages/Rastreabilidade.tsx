@@ -51,6 +51,10 @@ export default function Rastreabilidade() {
   const [busca, setBusca] = useState("");
   const [open, setOpen] = useState(false);
   const [recallOpen, setRecallOpen] = useState(false);
+  // Contraprova (POP-08)
+  const [contraprovaColetada, setContraprovaColetada] = useState(false);
+  const [contraprovaLocal, setContraprovaLocal] = useState("");
+  const [contraprovaValidade, setContraprovaValidade] = useState("");
   const [vendaOpen, setVendaOpen] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
