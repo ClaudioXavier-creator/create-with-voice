@@ -159,6 +159,14 @@ export default function ExecucaoPops() {
   const [statusExec, setStatusExec] = useState("concluido");
   const [obs, setObs] = useState("");
   const [checklistTriagem, setChecklistTriagem] = useState<Record<number, boolean | null>>({});
+  // POP-02 ASO fields
+  const [asoNumero, setAsoNumero] = useState("");
+  const [asoValidade, setAsoValidade] = useState("");
+  const [asoTipo, setAsoTipo] = useState("periodico");
+  // POP-03 chemical fields
+  const [produtoQuimico, setProdutoQuimico] = useState("");
+  const [concentracaoQuimico, setConcentracaoQuimico] = useState("");
+  const [tempoContato, setTempoContato] = useState("");
   // POP-04 laudo fields
   const [laudoNumero, setLaudoNumero] = useState("");
   const [laudoLaboratorio, setLaudoLaboratorio] = useState("");
