@@ -79,6 +79,7 @@ export default function PCP() {
   const [ordens, setOrdens] = useState<OrdemProd[]>([]);
   const [formulaItens, setFormulaItens] = useState<FormulaItem[]>([]);
   const [batidas, setBatidas] = useState<Batida[]>([]);
+  const [matrizSensibilidade, setMatrizSensibilidade] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [expandedOrdem, setExpandedOrdem] = useState<string | null>(null);
