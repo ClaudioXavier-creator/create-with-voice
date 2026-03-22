@@ -24,6 +24,7 @@ import Legislacao from "./pages/Legislacao";
 import Fornecedores from "./pages/Fornecedores";
 import Manual from "./pages/Manual";
 import PlanilhasPop from "./pages/PlanilhasPop";
+import GuiaPops from "./pages/GuiaPops";
 import Produtos from "./pages/Produtos";
 import AnalisesLaboratorio from "./pages/AnalisesLaboratorio";
 import HigieneSanitizacao from "./pages/HigieneSanitizacao";
