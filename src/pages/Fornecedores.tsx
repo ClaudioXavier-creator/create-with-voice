@@ -16,6 +16,13 @@ import PageHeader from "@/components/PageHeader";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
+import {
+  exportQuestionarioBlankXlsx,
+  exportQuestionarioPreenchidoXlsx,
+  exportListaAprovadosXlsx,
+  printQuestionario,
+  printListaAprovados,
+} from "@/utils/fornecedorExport";
 
 interface FornecedorRow {
   id: string;
