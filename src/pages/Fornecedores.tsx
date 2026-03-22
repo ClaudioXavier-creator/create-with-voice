@@ -467,6 +467,7 @@ export default function Fornecedores() {
               </Tabs>
             </DialogContent>
           </Dialog>
+          </div>
         </CardHeader>
         <CardContent className="overflow-x-auto">
           {loading ? (
