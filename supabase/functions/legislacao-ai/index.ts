@@ -139,11 +139,8 @@ Avalie cada módulo em relação às exigências da IN 04/2007, IN 15/2009, Decr
 Identifique gaps e gere recomendações práticas para melhorar a conformidade.
 Responda APENAS com JSON.`;
     } else if (action === "pesquisar_legislacao") {
-      const { termo, categoria } = await req.json().catch(() => ({}));
-      const body = JSON.parse(await new Request(req.url, { headers: req.headers }).text().catch(() => "{}"));
-      // Re-parse since we already consumed body above — use closure vars
-      const termoBusca = termo || body?.termo || "alimentação animal";
-      const categoriaBusca = categoria || body?.categoria || "todas";
+      const termoBusca = termo || "alimentação animal";
+      const categoriaBusca = categoria || "todas";
 
       systemPrompt = `Você é um especialista em legislação brasileira de ALIMENTAÇÃO ANIMAL do MAPA. Sua função é pesquisar e retornar normas, instruções normativas, decretos, portarias, consultas públicas e alterações legislativas relacionadas ao setor de alimentação animal.
 
