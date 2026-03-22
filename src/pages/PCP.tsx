@@ -424,6 +424,8 @@ export default function PCP() {
                           <p className="text-xs text-muted-foreground truncate">{o.formula_nome} {o.lote_produto && `• Lote: ${o.lote_produto}`}</p>
                         </div>
                         <div className="flex items-center gap-2 shrink-0">
+                          {o.tipo_ordem === "retrabalho" && <Badge className="bg-yellow-500/20 text-yellow-700">Retrabalho</Badge>}
+                          {o.tipo_ordem === "sobra" && <Badge className="bg-blue-500/20 text-blue-700">Sobra</Badge>}
                           <Badge className={pr.className}>{pr.label}</Badge>
                           <Badge className={st.className}>{st.label}</Badge>
                           <span className="text-xs text-muted-foreground">{itens.length} ing. • {bats.length}/{o.numero_batidas} bat.</span>
