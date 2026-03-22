@@ -129,14 +129,16 @@ export default function PCP() {
 
   const fetchData = async () => {
     if (!user) return;
-    const [ordensRes, itensRes, batidasRes] = await Promise.all([
+    const [ordensRes, itensRes, batidasRes, matrizRes] = await Promise.all([
       supabase.from("ordens_producao").select("*").order("data_programada", { ascending: false }),
       supabase.from("formula_itens").select("*").order("created_at"),
       supabase.from("batidas_producao").select("*").order("numero_batida"),
+      supabase.from("matriz_sensibilidade").select("*").order("produto_anterior"),
     ]);
     if (ordensRes.data) setOrdens(ordensRes.data as unknown as OrdemProd[]);
     if (itensRes.data) setFormulaItens(itensRes.data as unknown as FormulaItem[]);
     if (batidasRes.data) setBatidas(batidasRes.data as unknown as Batida[]);
+    if (matrizRes.data) setMatrizSensibilidade(matrizRes.data);
     setLoading(false);
   };
 
