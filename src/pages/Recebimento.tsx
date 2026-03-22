@@ -220,18 +220,36 @@ export default function Recebimento() {
                     <div><Label>Validade</Label><Input value={validade} onChange={e => setValidade(e.target.value)} placeholder="Ex: 12 meses" /></div>
                   </div>
 
-                  {/* Certificado de Análise */}
-                  <div className="p-3 rounded-lg border bg-muted/20 space-y-3">
-                    <p className="text-sm font-semibold flex items-center gap-2"><FileText className="w-4 h-4" /> Certificado de Análise do Fornecedor (IN 15/2009)</p>
-                    <div className="grid grid-cols-2 gap-3">
-                      <div><Label>Nº do Certificado</Label><Input value={certNumero} onChange={e => setCertNumero(e.target.value)} placeholder="Ex: CA-2026-0321" /></div>
-                      <div><Label>URL / Link do Laudo</Label><Input value={certUrl} onChange={e => setCertUrl(e.target.value)} placeholder="https://..." /></div>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <Switch checked={certValido === true} onCheckedChange={(v) => setCertValido(v ? true : false)} />
-                      <Label className="text-sm">Certificado conforme / válido</Label>
-                    </div>
-                  </div>
+                   {/* Certificado de Análise / Laudo de Conformidade */}
+                   <div className="p-3 rounded-lg border bg-muted/20 space-y-3">
+                     <p className="text-sm font-semibold flex items-center gap-2"><FileText className="w-4 h-4" /> Laudo de Conformidade do Fornecedor (Art. 12 — Decreto 12.031/2024)</p>
+                     <div className="grid grid-cols-2 gap-3">
+                       <div><Label>Nº do Certificado / Laudo</Label><Input value={certNumero} onChange={e => setCertNumero(e.target.value)} placeholder="Ex: CA-2026-0321" /></div>
+                       <div><Label>URL / Link do Laudo</Label><Input value={certUrl} onChange={e => setCertUrl(e.target.value)} placeholder="https://..." /></div>
+                     </div>
+                     <div>
+                       <Label>Anexar Laudo (PDF, imagem)</Label>
+                       <Input type="file" accept=".pdf,.jpg,.jpeg,.png" onChange={async (e) => {
+                         const file = e.target.files?.[0];
+                         if (!file || !user) return;
+                         const filePath = `${user.id}/laudos/${Date.now()}_${file.name}`;
+                         const { error: uploadErr } = await supabase.storage.from("documentos_bpf").upload(filePath, file);
+                         if (uploadErr) { toast.error("Erro no upload: " + uploadErr.message); return; }
+                         const { data: urlData } = supabase.storage.from("documentos_bpf").getPublicUrl(filePath);
+                         setCertUrl(urlData.publicUrl);
+                         toast.success("Laudo anexado com sucesso!");
+                       }} />
+                       {certUrl && certUrl.startsWith("http") && (
+                         <a href={certUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-primary underline mt-1 inline-block">
+                           📎 Ver laudo anexado
+                         </a>
+                       )}
+                     </div>
+                     <div className="flex items-center gap-3">
+                       <Switch checked={certValido === true} onCheckedChange={(v) => setCertValido(v ? true : false)} />
+                       <Label className="text-sm">Certificado conforme / válido</Label>
+                     </div>
+                   </div>
 
                   <div className="flex items-center gap-3">
                     <Switch checked={aprovado} onCheckedChange={setAprovado} />

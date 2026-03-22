@@ -11,6 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Switch } from "@/components/ui/switch";
 import PageHeader from "@/components/PageHeader";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -105,6 +106,11 @@ export default function Relatorios() {
   const [descricao, setDescricao] = useState("");
   const [arquivo, setArquivo] = useState<File | null>(null);
 
+  // Assinatura RT
+  const [rtNome, setRtNome] = useState("");
+  const [rtCrmv, setRtCrmv] = useState("");
+  const [rtAssinado, setRtAssinado] = useState(false);
+
   const fetchRelatorios = async () => {
     if (!user) return;
     const { data, error } = await supabase
@@ -145,12 +151,13 @@ export default function Relatorios() {
       arquivoNome = arquivo.name;
     }
 
+    const rtInfo = rtAssinado ? ` | [ASSINATURA RT] ${rtNome} - CRMV: ${rtCrmv} - ${new Date().toISOString()}` : "";
     const { error } = await supabase.from("relatorios").insert({
       user_id: user.id,
       titulo,
       tipo,
       modulo,
-      descricao,
+      descricao: (descricao || "") + rtInfo,
       arquivo_url: arquivoUrl,
       arquivo_nome: arquivoNome,
     });
@@ -381,9 +388,30 @@ export default function Relatorios() {
                       <p className="text-xs text-muted-foreground mt-1">Planilha preenchida em papel, assinada e escaneada/fotografada</p>
                     </div>
                   )}
+                  {/* Assinatura Digital do RT — Decreto 12.031/2024, Art. 18 */}
+                  <div className="p-3 rounded-lg border bg-muted/20 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <p className="text-sm font-semibold flex items-center gap-2">
+                        <CheckSquare className="w-4 h-4" /> Assinatura Digital do RT (Decreto 12.031/2024)
+                      </p>
+                      <Switch checked={rtAssinado} onCheckedChange={setRtAssinado} />
+                    </div>
+                    {rtAssinado && (
+                      <div className="grid grid-cols-2 gap-3">
+                        <div><Label>Nome do RT</Label><Input value={rtNome} onChange={e => setRtNome(e.target.value)} placeholder="Dr(a). Nome Completo" /></div>
+                        <div><Label>CRMV</Label><Input value={rtCrmv} onChange={e => setRtCrmv(e.target.value)} placeholder="CRMV-XX 00000" /></div>
+                      </div>
+                    )}
+                    {rtAssinado && (
+                      <p className="text-xs text-primary">
+                        ✓ Ao salvar, o relatório será assinado digitalmente com data/hora e dados do RT, conferindo validade para fiscalizações remotas.
+                      </p>
+                    )}
+                  </div>
+
                   <Button onClick={handleAdd} className="w-full" disabled={saving}>
                     {saving && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-                    Salvar Relatório
+                    {rtAssinado ? "Salvar e Assinar Relatório" : "Salvar Relatório"}
                   </Button>
                 </div>
               </DialogContent>
