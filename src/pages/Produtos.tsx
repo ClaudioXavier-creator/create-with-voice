@@ -17,6 +17,7 @@ const CLASSIFICACAO_LABELS: Record<string, string> = {
   racao: "Ração",
   suplemento: "Suplemento",
   premix: "Premix",
+  nucleo: "Núcleo",
   aditivo: "Aditivo",
   sal_mineral: "Sal Mineral",
 };
