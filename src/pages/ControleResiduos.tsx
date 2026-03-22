@@ -84,9 +84,53 @@ export default function ControleResiduos() {
     onSuccess: () => { qc.invalidateQueries({ queryKey: ["controle_residuos"] }); toast.success("Removido"); },
   });
 
+  const totalResiduos = residuos.length;
+  const comManifesto = residuos.filter((r: any) => r.manifesto_numero).length;
+  const efluentes = residuos.filter((r: any) => ["Efluente líquido", "Efluente industrial", "Água de lavagem"].includes(r.tipo_residuo));
+  const comLicenca = residuos.filter((r: any) => r.licenca_ambiental).length;
+
   return (
     <div className="space-y-6">
-      <PageHeader title="POP 05 — Controle de Resíduos e Efluentes" description="Gestão ambiental, destinação de vencidos/rejeitados — IN 04/2007, Decreto 12.031/2024" />
+      <PageHeader title="POP 05 — Manejo de Resíduos e Efluentes" description="IN 04/2007 (POP-05), IN 15/2009, Decreto 12.031/2024 — Gestão ambiental completa" />
+
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <Card><CardContent className="pt-4 text-center">
+          <p className="text-2xl font-bold font-display">{totalResiduos}</p>
+          <p className="text-xs text-muted-foreground">Registros totais</p>
+        </CardContent></Card>
+        <Card><CardContent className="pt-4 text-center">
+          <p className="text-2xl font-bold font-display text-primary">{comManifesto}</p>
+          <p className="text-xs text-muted-foreground">Com manifesto</p>
+        </CardContent></Card>
+        <Card><CardContent className="pt-4 text-center">
+          <p className="text-2xl font-bold font-display text-blue-600">{efluentes.length}</p>
+          <p className="text-xs text-muted-foreground">Efluentes</p>
+        </CardContent></Card>
+        <Card><CardContent className="pt-4 text-center">
+          <p className="text-2xl font-bold font-display text-accent">{comLicenca}</p>
+          <p className="text-xs text-muted-foreground">Com licença ambiental</p>
+        </CardContent></Card>
+      </div>
+
+      <Card className="border-primary/20 bg-primary/5">
+        <CardContent className="pt-4">
+          <div className="flex items-start gap-3">
+            <ShieldAlert className="w-6 h-6 text-primary mt-0.5" />
+            <div>
+              <h4 className="font-display font-semibold text-sm">POP 05 — Prevenção de Contaminação Cruzada e Manejo de Resíduos (IN 04/2007)</h4>
+              <p className="text-xs text-muted-foreground mt-1">
+                Abrange: separação e identificação de resíduos por classe (ABNT), rastreamento de produtos descartados,
+                controle de efluentes (pH, DBO, DQO), manifestos de transporte e licenças ambientais.
+              </p>
+              <div className="flex flex-wrap gap-2 mt-2">
+                <Badge variant="outline" className="text-[10px]">IN 04/2007 Art. 2º §5</Badge>
+                <Badge variant="outline" className="text-[10px]">IN 15/2009 Cap. IV</Badge>
+                <Badge variant="outline" className="text-[10px]">Decreto 12.031/2024</Badge>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       <div className="flex justify-end">
         <Dialog open={open} onOpenChange={setOpen}>
@@ -108,7 +152,6 @@ export default function ControleResiduos() {
                   <SelectContent>{CLASSIFICACOES.map(c => <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>)}</SelectContent>
                 </Select>
               </div>
-              {/* Produto vencido/rejeitado fields */}
               {["Produto vencido", "Produto rejeitado/reprovado", "Sobra de produção"].includes(form.tipo_residuo) && (
                 <div className="p-3 rounded-lg border border-yellow-400 bg-yellow-50 dark:bg-yellow-900/20 space-y-3">
                   <p className="text-xs font-semibold text-yellow-700 dark:text-yellow-400">⚠️ Controle de Produto Descartado (POP 05 — IN 04/2007)</p>
@@ -125,7 +168,6 @@ export default function ControleResiduos() {
                   </div>
                 </div>
               )}
-              {/* Effluent-specific fields (IN 15/2009) */}
               {isEfluente && (
                 <div className="p-3 rounded-lg border border-blue-400 bg-blue-50 dark:bg-blue-900/20 space-y-3">
                   <p className="text-xs font-semibold text-blue-700 dark:text-blue-400">💧 Controle de Efluentes — IN 15/2009</p>
@@ -137,7 +179,7 @@ export default function ControleResiduos() {
                     </Select>
                   </div>
                   <p className="text-[10px] text-muted-foreground">
-                    Registre pH, DBO e demais parâmetros nas observações. Laudos de análise de efluentes devem ser arquivados no módulo Relatórios.
+                    Registre pH, DBO e demais parâmetros nas observações. Laudos devem ser arquivados no módulo Relatórios.
                   </p>
                 </div>
               )}
@@ -171,43 +213,49 @@ export default function ControleResiduos() {
         </Dialog>
       </div>
 
-      {residuos.length === 0 ? (
-        <Card><CardContent className="py-12 text-center text-muted-foreground"><Recycle className="w-12 h-12 mx-auto mb-3 opacity-40" /><p>Nenhum registro de resíduo</p></CardContent></Card>
-      ) : (
-        <Card>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Data</TableHead>
-                <TableHead>Tipo</TableHead>
-                <TableHead>Classificação</TableHead>
-                <TableHead>Qtd</TableHead>
-                <TableHead>Destino</TableHead>
-                <TableHead>Empresa Coletora</TableHead>
-                <TableHead>Manifesto</TableHead>
-                <TableHead></TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {residuos.map((r: any) => (
-                <TableRow key={r.id}>
-                  <TableCell>{r.data_coleta}</TableCell>
-                  <TableCell className="font-medium">{r.tipo_residuo}</TableCell>
-                  <TableCell><Badge variant={r.classificacao === "classe_I" ? "destructive" : "outline"}>{CLASSIFICACOES.find(c => c.value === r.classificacao)?.label || r.classificacao}</Badge></TableCell>
-                  <TableCell>{r.quantidade} {r.unidade}</TableCell>
-                  <TableCell>{r.destino_final}</TableCell>
-                  <TableCell>{r.empresa_coletora}</TableCell>
-                  <TableCell>{r.manifesto_numero}</TableCell>
-                  <TableCell><Button variant="ghost" size="icon" onClick={() => del.mutate(r.id)}><Trash2 className="w-4 h-4 text-destructive" /></Button></TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </Card>
-      )}
+      <Tabs defaultValue="registros" className="space-y-4">
+        <TabsList>
+          <TabsTrigger value="registros"><Recycle className="w-4 h-4 mr-1" />Registros</TabsTrigger>
+          <TabsTrigger value="efluentes"><Droplets className="w-4 h-4 mr-1" />Efluentes ({efluentes.length})</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="registros" className="space-y-4">
+          {residuos.length === 0 ? (
+            <Card><CardContent className="py-12 text-center text-muted-foreground"><Recycle className="w-12 h-12 mx-auto mb-3 opacity-40" /><p>Nenhum registro de resíduo</p></CardContent></Card>
+          ) : (
+            <Card>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Data</TableHead>
+                    <TableHead>Tipo</TableHead>
+                    <TableHead>Classificação</TableHead>
+                    <TableHead>Qtd</TableHead>
+                    <TableHead>Destino</TableHead>
+                    <TableHead>Empresa Coletora</TableHead>
+                    <TableHead>Manifesto</TableHead>
+                    <TableHead></TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {residuos.map((r: any) => (
+                    <TableRow key={r.id}>
+                      <TableCell>{r.data_coleta}</TableCell>
+                      <TableCell className="font-medium">{r.tipo_residuo}</TableCell>
+                      <TableCell><Badge variant={r.classificacao === "classe_I" ? "destructive" : "outline"}>{CLASSIFICACOES.find(c => c.value === r.classificacao)?.label || r.classificacao}</Badge></TableCell>
+                      <TableCell>{r.quantidade} {r.unidade}</TableCell>
+                      <TableCell>{r.destino_final}</TableCell>
+                      <TableCell>{r.empresa_coletora}</TableCell>
+                      <TableCell>{r.manifesto_numero}</TableCell>
+                      <TableCell><Button variant="ghost" size="icon" onClick={() => del.mutate(r.id)}><Trash2 className="w-4 h-4 text-destructive" /></Button></TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </Card>
+          )}
         </TabsContent>
 
-        {/* ── EFLUENTES TAB ── */}
         <TabsContent value="efluentes" className="space-y-4">
           <Card className="border-blue-400/20 bg-blue-50 dark:bg-blue-900/10">
             <CardContent className="pt-4">
@@ -217,7 +265,7 @@ export default function ControleResiduos() {
                   <h4 className="font-semibold text-sm">Controle de Efluentes — POP 05 (IN 04/2007 / IN 15/2009)</h4>
                   <p className="text-xs text-muted-foreground mt-1">
                     Registros de efluentes líquidos, industriais e água de lavagem com tipo de tratamento.
-                    Parâmetros obrigatórios: pH, DBO, DQO (registrar nas observações). Laudos devem ser anexados no módulo Relatórios.
+                    Parâmetros obrigatórios: pH, DBO, DQO (registrar nas observações).
                   </p>
                 </div>
               </div>
