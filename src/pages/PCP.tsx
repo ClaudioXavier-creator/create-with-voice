@@ -314,8 +314,13 @@ export default function PCP() {
               Sequenciamento de Produção — Prevenção de Contaminação Cruzada
             </CardTitle>
             <p className="text-xs text-muted-foreground mt-1">
-              IN 15/2009 — Sequência de produção baseada na Matriz de Sensibilidade. Ordens que requerem flushing são destacadas.
+              IN 15/2009 — Sequência baseada na Matriz de Sensibilidade. Flushing/lavagem obrigatórios entre produtos com restrição.
             </p>
+            <div className="flex flex-wrap gap-2 mt-2">
+              <Badge variant="outline" className="text-[10px] border-yellow-500 text-yellow-700">Vassouragem: sem restrição</Badge>
+              <Badge variant="outline" className="text-[10px] border-orange-500 text-orange-700">Flushing: contaminação cruzada</Badge>
+              <Badge variant="outline" className="text-[10px] border-destructive text-destructive">Lavagem: origem animal → ruminantes</Badge>
+            </div>
           </div>
         </CardHeader>
         <CardContent>
