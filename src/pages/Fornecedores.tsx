@@ -229,6 +229,16 @@ export default function Fornecedores() {
                         {f.cnpj && <span className="text-xs text-muted-foreground">{f.cnpj}</span>}
                       </TableCell>
                       <TableCell className="text-sm">{f.tipo_produto || "—"}</TableCell>
+                      <TableCell>
+                        {(f as any).registro_sipeagro ? (
+                          <div className="flex items-center gap-1">
+                            <span className="text-xs font-mono">{(f as any).registro_sipeagro}</span>
+                            {(f as any).sipeagro_verificado ? <CheckCircle2 className="w-3 h-3 text-primary" /> : <Clock className="w-3 h-3 text-muted-foreground" />}
+                          </div>
+                        ) : (
+                          <span className="text-xs text-destructive">Sem registro</span>
+                        )}
+                      </TableCell>
                       <TableCell><Badge className={st.color}>{st.label}</Badge></TableCell>
                       <TableCell>
                         <div className="flex items-center gap-1">
