@@ -262,6 +262,28 @@ export default function HigieneSanitizacao() {
           {cronogramas.length === 0 ? (
             <Card><CardContent className="py-12 text-center text-muted-foreground"><Droplets className="w-12 h-12 mx-auto mb-3 opacity-40" /><p>Nenhum cronograma cadastrado</p></CardContent></Card>
           ) : (
+            <>
+              {/* Alerta: Silos e Equipamentos sem cronograma */}
+              {(() => {
+                const silosEquips = ["Silo 01", "Silo 02", "Silo 03", "Silo 04", "Silo 05", "Misturador", "Moinho", "Peletizadora", "Extrusora", "Transportador / Elevador"];
+                const comCronograma = cronogramas.map((c: any) => c.area);
+                const semCronograma = silosEquips.filter(s => !comCronograma.includes(s));
+                if (semCronograma.length === 0) return null;
+                return (
+                  <Card className="border-yellow-400 bg-yellow-50 dark:bg-yellow-900/10 mb-4">
+                    <CardContent className="pt-4">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Droplets className="w-4 h-4 text-yellow-600" />
+                        <h4 className="text-sm font-semibold text-yellow-700 dark:text-yellow-400">POP-03: Silos/Equipamentos sem Cronograma de Higienização</h4>
+                      </div>
+                      <p className="text-xs text-muted-foreground mb-2">IN 04/2007 Art. 2º exige cronograma de higienização para todos os silos e equipamentos de produção.</p>
+                      <div className="flex flex-wrap gap-2">
+                        {semCronograma.map(s => <Badge key={s} variant="outline" className="border-yellow-500 text-yellow-700">{s}</Badge>)}
+                      </div>
+                    </CardContent>
+                  </Card>
+                );
+              })()}
             <Card>
               <Table>
                 <TableHeader><TableRow>
