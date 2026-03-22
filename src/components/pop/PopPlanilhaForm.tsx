@@ -126,6 +126,29 @@ export default function PopPlanilhaForm({ planilhaId, periodicidade, userId, pop
     setSaving(false);
   }
 
+  function downloadTemplate() {
+    const areas = periodicidade.areas.map((a) => a.area);
+    const header = ["Período", ...areas, "Responsável", "Função"];
+
+    const rows: string[][] = [header];
+    for (const p of periodicidade.periodos) {
+      rows.push([p, ...areas.map(() => ""), "", ""]);
+    }
+
+    const ws = XLSX.utils.aoa_to_sheet(rows);
+
+    // Style header widths
+    ws["!cols"] = header.map((h) => ({ wch: Math.max(h.length + 4, 14) }));
+
+    const wb = XLSX.utils.book_new();
+    const sheetName = periodicidade.label.substring(0, 31);
+    XLSX.utils.book_append_sheet(wb, ws, sheetName);
+
+    const filename = `Template_${popCodigo || "POP"}_${periodicidade.key}.xlsx`;
+    XLSX.writeFile(wb, filename);
+    toast.success("Template baixado com sucesso!");
+  }
+
   function handleImportExcel(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
