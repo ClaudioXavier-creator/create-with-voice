@@ -25,6 +25,7 @@ export default function PopPlanilhaForm({ planilhaId, periodicidade, userId }: P
   const [grid, setGrid] = useState<Record<string, CellData>>({});
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const cellKey = (periodo: string, area: string) => `${periodo}||${area}`;
 
