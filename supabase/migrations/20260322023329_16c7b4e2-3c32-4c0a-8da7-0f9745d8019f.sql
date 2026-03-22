@@ -1,0 +1,1 @@
+ALTER TABLE public.reclamacoes_qualidade ALTER COLUMN pop_referencia SET DEFAULT 'POP-008';

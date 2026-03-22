@@ -92,7 +92,7 @@ const emptyForm = {
   data_resposta_cliente: "",
   satisfacao_cliente: "",
   status: "aberta",
-  pop_referencia: "POP-009",
+  pop_referencia: "POP-008",
   observacoes: "",
 };
 
@@ -182,7 +182,7 @@ export default function QualidadeTotal() {
       data_resposta_cliente: r.data_resposta_cliente || "",
       satisfacao_cliente: r.satisfacao_cliente || "",
       status: r.status,
-      pop_referencia: r.pop_referencia || "POP-009",
+      pop_referencia: r.pop_referencia || "POP-008",
       observacoes: r.observacoes || "",
     });
     setEditingId(r.id);
@@ -276,7 +276,7 @@ export default function QualidadeTotal() {
       <PageHeader
         icon={ClipboardList}
         title="Qualidade Total – Relatório Técnico"
-        description="Reclamações de clientes, análise técnica, plano de ação e recolhimento de produtos. Ref.: POP-009"
+        description="Reclamações de clientes, análise técnica, plano de ação e recolhimento de produtos. Ref.: POP-008"
       />
 
       {/* KPIs */}
