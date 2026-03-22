@@ -535,15 +535,26 @@ export default function Fornecedores() {
                         ) : <span className="text-xs text-muted-foreground">Sem recebimentos</span>}
                       </TableCell>
                       <TableCell>
-                        <Button variant="outline" size="sm" className="text-xs" onClick={() => {
-                          setSelectedId(f.id);
-                          setNota(f.nota_avaliacao || 0);
-                          setStatusQual(f.status_qualificacao || "pendente");
-                          setObsAval(f.observacoes || "");
-                          setAvaliarOpen(true);
-                        }}>
-                          <Star className="w-3 h-3 mr-1" /> Avaliar
-                        </Button>
+                        <div className="flex gap-1">
+                          <Button variant="outline" size="sm" className="text-xs" onClick={() => {
+                            setSelectedId(f.id);
+                            setNota(f.nota_avaliacao || 0);
+                            setStatusQual(f.status_qualificacao || "pendente");
+                            setObsAval(f.observacoes || "");
+                            setAvaliarOpen(true);
+                          }}>
+                            <Star className="w-3 h-3 mr-1" /> Avaliar
+                          </Button>
+                          <Button variant="ghost" size="sm" className="text-xs" title="Exportar questionário" onClick={() => {
+                            exportQuestionarioPreenchidoXlsx(f as any);
+                            toast.success("Questionário exportado!");
+                          }}>
+                            <Download className="w-3 h-3" />
+                          </Button>
+                          <Button variant="ghost" size="sm" className="text-xs" title="Imprimir questionário" onClick={() => printQuestionario(f as any)}>
+                            <Printer className="w-3 h-3" />
+                          </Button>
+                        </div>
                       </TableCell>
                     </TableRow>
                   );
