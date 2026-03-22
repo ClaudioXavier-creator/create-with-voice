@@ -23,6 +23,7 @@ import Relatorios from "./pages/Relatorios";
 import Legislacao from "./pages/Legislacao";
 import Fornecedores from "./pages/Fornecedores";
 import Manual from "./pages/Manual";
+import PlanilhasPop from "./pages/PlanilhasPop";
 import Auth from "./pages/Auth";
 import AtivarLicenca from "./pages/AtivarLicenca";
 import NotFound from "./pages/NotFound";
@@ -100,6 +101,7 @@ const AppRoutes = () => {
                   <Route path="/relatorios" element={<Relatorios />} />
                   <Route path="/legislacao" element={<Legislacao />} />
                   <Route path="/manual" element={<Manual />} />
+                  <Route path="/planilhas-pop" element={<PlanilhasPop />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </AppLayout>
