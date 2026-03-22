@@ -276,7 +276,7 @@ export default function QualidadeTotal() {
       <PageHeader
         icon={ClipboardList}
         title="Qualidade Total – Relatório Técnico"
-        description="Reclamações de clientes, análise técnica, plano de ação e recolhimento de produtos. Ref.: POP-009"
+        description="Reclamações de clientes, análise técnica, plano de ação e recolhimento de produtos. Ref.: POP-008"
       />
 
       {/* KPIs */}
