@@ -82,6 +82,13 @@ ATENÇÃO ESPECIAL — Decreto 12.031/2024 — CATEGORIZAÇÃO DE RISCO:
 - Qualquer regulamentação complementar ao Decreto que detalhe a categorização deve gerar alerta de relevância "alta".
 - Inclua impacto prático: como a nova categorização afeta a frequência de auditorias, exigências de autocontrole e prazo de adequação.
 
+ATENÇÃO ESPECIAL — SIPEAGRO — RENOVAÇÃO DE REGISTROS (IN 17/2017):
+- Verifique alertas sobre prazos de renovação de registros de PRODUTOS e do ESTABELECIMENTO junto ao SIPEAGRO (Sistema Integrado de Produtos e Estabelecimentos Agropecuários).
+- Registros de produtos destinados à alimentação animal devem ser renovados periodicamente conforme IN 17/2017.
+- O registro do estabelecimento fabricante no SIPEAGRO é obrigatório e deve ser mantido atualizado.
+- Qualquer mudança nas regras de renovação, novos prazos ou procedimentos do SIPEAGRO devem gerar alerta com relevância "alta".
+- Inclua: prazos de validade dos registros, documentação necessária para renovação e consequências do vencimento.
+
 Para cada norma, explique:
 - O que mudou ou está vigente
 - Impacto prático para fábricas de ração

@@ -479,6 +479,44 @@ export default function ExecucaoPops() {
                       <p className="text-xs text-destructive font-semibold mt-2">⚠️ Itens não conformes detectados — registrar como "Não conforme" se necessário.</p>
                     )}
 
+                    {/* POP-02 ASO/Exames fields */}
+                    {isPOP02 && (
+                      <div className="mt-3 p-3 rounded-lg bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-300 space-y-2">
+                        <p className="text-xs font-semibold text-emerald-700 dark:text-emerald-400">🩺 Registro de ASO / Exames Médicos Periódicos (IN 04/2007)</p>
+                        <div className="grid grid-cols-3 gap-2">
+                          <div>
+                            <Label className="text-xs">Tipo de Exame</Label>
+                            <Select value={asoTipo} onValueChange={setAsoTipo}>
+                              <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="admissional">Admissional</SelectItem>
+                                <SelectItem value="periodico">Periódico</SelectItem>
+                                <SelectItem value="retorno">Retorno ao Trabalho</SelectItem>
+                                <SelectItem value="mudanca_funcao">Mudança de Função</SelectItem>
+                                <SelectItem value="demissional">Demissional</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          <div><Label className="text-xs">Nº ASO</Label><Input value={asoNumero} onChange={e => setAsoNumero(e.target.value)} placeholder="Ex: ASO-2026/045" className="h-8 text-xs" /></div>
+                          <div><Label className="text-xs">Validade do ASO</Label><Input type="date" value={asoValidade} onChange={e => setAsoValidade(e.target.value)} className="h-8 text-xs" /></div>
+                        </div>
+                        <p className="text-[10px] text-muted-foreground">Exames periódicos devem ser realizados anualmente ou conforme PCMSO. Mantenha cópia do ASO no prontuário do colaborador.</p>
+                      </div>
+                    )}
+
+                    {/* POP-03 chemical substance fields */}
+                    {isPOP03 && (
+                      <div className="mt-3 p-3 rounded-lg bg-amber-50 dark:bg-amber-900/20 border border-amber-300 space-y-2">
+                        <p className="text-xs font-semibold text-amber-700 dark:text-amber-400">🧴 Produtos Químicos Utilizados (IN 15/2009)</p>
+                        <div className="grid grid-cols-3 gap-2">
+                          <div><Label className="text-xs">Produto / Sanitizante</Label><Input value={produtoQuimico} onChange={e => setProdutoQuimico(e.target.value)} placeholder="Ex: Hipoclorito de Sódio" className="h-8 text-xs" /></div>
+                          <div><Label className="text-xs">Concentração</Label><Input value={concentracaoQuimico} onChange={e => setConcentracaoQuimico(e.target.value)} placeholder="Ex: 200 ppm" className="h-8 text-xs" /></div>
+                          <div><Label className="text-xs">Tempo de Contato</Label><Input value={tempoContato} onChange={e => setTempoContato(e.target.value)} placeholder="Ex: 15 min" className="h-8 text-xs" /></div>
+                        </div>
+                        <p className="text-[10px] text-muted-foreground">Registrar nome comercial, princípio ativo, concentração de uso e tempo de contato. Manter FISPQ disponível no setor.</p>
+                      </div>
+                    )}
+
                     {/* POP-04 laudo fields */}
                     {isPOP04 && (
                       <div className="mt-3 p-3 rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-300 space-y-2">
