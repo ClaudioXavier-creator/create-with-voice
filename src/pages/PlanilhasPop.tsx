@@ -199,7 +199,7 @@ export default function PlanilhasPop() {
             className="border border-border hover:shadow-md transition-shadow cursor-pointer"
             onClick={() => {
               setSelectedPeriodicidade(per);
-              loadOrCreatePlanilha();
+              loadOrCreatePlanilha(per);
             }}
           >
             <CardHeader className="pb-3">
