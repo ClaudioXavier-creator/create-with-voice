@@ -384,11 +384,23 @@ export default function Legislacao() {
                 <BookOpen className="w-5 h-5 text-primary" />
                 Biblioteca de Normas e Legislações
               </CardTitle>
-              <Button onClick={() => { resetNormaForm(); setNormaDialogOpen(true); }}>
-                <Plus className="w-4 h-4 mr-1" /> Adicionar Norma
-              </Button>
-            </CardHeader>
-            <CardContent>
+              <div className="flex gap-2 flex-wrap">
+                <input
+                  ref={quickUploadRef}
+                  type="file"
+                  accept=".pdf,.doc,.docx,.xls,.xlsx,.txt,.csv"
+                  multiple
+                  className="hidden"
+                  onChange={handleQuickUpload}
+                />
+                <Button variant="outline" onClick={() => quickUploadRef.current?.click()} disabled={quickUploading}>
+                  {quickUploading ? <Loader2 className="w-4 h-4 mr-1 animate-spin" /> : <FolderOpen className="w-4 h-4 mr-1" />}
+                  {quickUploading ? "Importando..." : "Importar do Dispositivo"}
+                </Button>
+                <Button onClick={() => { resetNormaForm(); setNormaDialogOpen(true); }}>
+                  <Plus className="w-4 h-4 mr-1" /> Adicionar Norma
+                </Button>
+              </div>
               {/* Search bar */}
               <div className="relative mb-4">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
