@@ -53,6 +53,12 @@ export default function HigieneSanitizacao() {
   const [openCronograma, setOpenCronograma] = useState(false);
   const [openRegistro, setOpenRegistro] = useState(false);
   const [openAgua, setOpenAgua] = useState(false);
+  // Pre-op checklist state
+  const [preOpChecklist, setPreOpChecklist] = useState<Record<string, boolean>>({});
+  const [preOpResponsavel, setPreOpResponsavel] = useState("");
+  const [preOpSetor, setPreOpSetor] = useState("");
+  const [preOpData, setPreOpData] = useState(new Date().toISOString().split("T")[0]);
+  const [savingPreOp, setSavingPreOp] = useState(false);
   const [selectedCronograma, setSelectedCronograma] = useState<string | null>(null);
 
   const [form, setForm] = useState({
