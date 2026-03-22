@@ -267,7 +267,7 @@ export default function ProdutoForm({ produtoId, onSaved }: Props) {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
           {nutrients.map((n) => {
             const isActive = activeNutrients.has(n.key);
-            const val = nutrientValues[n.key] || {};
+            const val: NutrientValue = nutrientValues[n.key] || { unit: n.unit };
             return (
               <div key={n.key} className={`border rounded-lg p-2.5 transition-colors ${isActive ? "border-primary bg-primary/5" : "border-border"}`}>
                 <div className="flex items-center gap-2">
