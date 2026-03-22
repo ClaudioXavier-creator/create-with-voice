@@ -292,11 +292,43 @@ export default function Recebimento() {
                      </div>
                    </div>
 
-                   {/* POP-05 Vehicle Inspection */}
+                   {/* POP-01 / POP-05 Vehicle Inspection & Transport */}
                    <div className="p-3 rounded-lg border bg-muted/20 space-y-3">
-                     <p className="text-sm font-semibold flex items-center gap-2"><Truck className="w-4 h-4" /> Vistoria de Veículo — POP-05 (IN 15/2009)</p>
-                     <p className="text-[10px] text-muted-foreground">Avalie as condições do veículo de transporte antes de descarregar.</p>
-                     <div><Label>Placa do Veículo</Label><Input value={placaVeiculo} onChange={e => setPlacaVeiculo(e.target.value)} placeholder="Ex: ABC-1234" /></div>
+                     <p className="text-sm font-semibold flex items-center gap-2"><Truck className="w-4 h-4" /> Vistoria de Veículo e Transporte — POP-01 / IN 15/2009</p>
+                     <p className="text-[10px] text-muted-foreground">Confira lacres, condições de transporte e estado do veículo antes de descarregar.</p>
+                     <div className="grid grid-cols-2 gap-3">
+                       <div><Label>Placa do Veículo</Label><Input value={placaVeiculo} onChange={e => setPlacaVeiculo(e.target.value)} placeholder="Ex: ABC-1234" /></div>
+                       <div><Label>Nº do Lacre</Label><Input value={lacreNumero} onChange={e => setLacreNumero(e.target.value)} placeholder="Ex: LAC-00456" /></div>
+                     </div>
+                     <div className="grid grid-cols-2 gap-3">
+                       <div>
+                         <Label>Lacre Íntegro?</Label>
+                         <Select value={lacreIntegro} onValueChange={setLacreIntegro}>
+                           <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
+                           <SelectContent>
+                             <SelectItem value="integro">✅ Íntegro</SelectItem>
+                             <SelectItem value="violado">❌ Violado</SelectItem>
+                             <SelectItem value="sem_lacre">⚠️ Sem lacre</SelectItem>
+                           </SelectContent>
+                         </Select>
+                       </div>
+                       <div>
+                         <Label>Condições do Transporte</Label>
+                         <Select value={condicoesTransporte} onValueChange={setCondicoesTransporte}>
+                           <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
+                           <SelectContent>
+                             <SelectItem value="adequado">✅ Adequado</SelectItem>
+                             <SelectItem value="parcial">⚠️ Parcialmente adequado</SelectItem>
+                             <SelectItem value="inadequado">❌ Inadequado</SelectItem>
+                           </SelectContent>
+                         </Select>
+                       </div>
+                     </div>
+                     {(lacreIntegro === "violado" || condicoesTransporte === "inadequado") && (
+                       <div className="p-2 rounded bg-destructive/10 border border-destructive/30">
+                         <p className="text-xs text-destructive font-bold">⚠️ Atenção: Lacre violado ou transporte inadequado. Considerar rejeição da carga (POP-01 / IN 15/2009).</p>
+                       </div>
+                     )}
                      <div className="space-y-1.5">
                        {VISTORIA_ITENS.map((item, idx) => (
                          <div key={idx} className="flex items-center gap-2 p-1.5 rounded bg-background border text-xs">
