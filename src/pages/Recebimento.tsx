@@ -112,6 +112,12 @@ export default function Recebimento() {
       obsCompleta = vistoriaObs + (observacoes ? `\n\n${observacoes}` : "");
     }
 
+    // Segregação Origem Animal
+    if (contemOrigemAnimal) {
+      const segregObs = `[SEGREGAÇÃO ORIGEM ANIMAL — IN 15/2009]\nTipo: ${tipoOrigemAnimal || "N/I"}\nEspécie destino: ${destinoEspecie || "N/I"}${destinoEspecie === "bovinos" ? "\n⚠️ ALERTA EEB: Proteína animal proibida para ruminantes!" : ""}`;
+      obsCompleta = (obsCompleta ? obsCompleta + "\n\n" : "") + segregObs;
+    }
+
     const { error } = await supabase.from("recebimento_mp").insert({
       user_id: user.id,
       fornecedor,
