@@ -1,51 +1,312 @@
-import { Package, Plus, CheckCircle2, XCircle } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Package, Plus, CheckCircle2, XCircle, Loader2, Search, FileText, Download } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 import PageHeader from "@/components/PageHeader";
-import { useRecebimentos } from "@/store/feedbpf-store";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
+import { toast } from "sonner";
+
+interface RecebimentoRow {
+  id: string;
+  data: string;
+  fornecedor: string;
+  materia_prima: string;
+  lote: string | null;
+  odor: string | null;
+  umidade: string | null;
+  insetos: string | null;
+  aprovado: boolean | null;
+  certificado_analise_numero: string | null;
+  certificado_analise_url: string | null;
+  certificado_analise_valido: boolean | null;
+  validade: string | null;
+  quantidade: string | null;
+  unidade: string | null;
+  temperatura: string | null;
+  observacoes: string | null;
+}
 
 export default function Recebimento() {
-  const [items] = useRecebimentos();
+  const { user } = useAuth();
+  const [items, setItems] = useState<RecebimentoRow[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [busca, setBusca] = useState("");
+
+  // Form
+  const [fornecedor, setFornecedor] = useState("");
+  const [materiaPrima, setMateriaPrima] = useState("");
+  const [lote, setLote] = useState("");
+  const [odor, setOdor] = useState("normal");
+  const [umidade, setUmidade] = useState("");
+  const [insetos, setInsetos] = useState("ausente");
+  const [temperatura, setTemperatura] = useState("");
+  const [quantidade, setQuantidade] = useState("");
+  const [unidade, setUnidade] = useState("kg");
+  const [validade, setValidade] = useState("");
+  const [aprovado, setAprovado] = useState(true);
+  const [certNumero, setCertNumero] = useState("");
+  const [certUrl, setCertUrl] = useState("");
+  const [certValido, setCertValido] = useState<boolean | null>(null);
+  const [observacoes, setObservacoes] = useState("");
+
+  const fetchData = async () => {
+    if (!user) return;
+    const { data, error } = await supabase
+      .from("recebimento_mp")
+      .select("*")
+      .order("data", { ascending: false });
+    if (!error && data) setItems(data as any);
+    setLoading(false);
+  };
+
+  useEffect(() => { fetchData(); }, [user]);
+
+  const resetForm = () => {
+    setFornecedor(""); setMateriaPrima(""); setLote(""); setOdor("normal");
+    setUmidade(""); setInsetos("ausente"); setTemperatura(""); setQuantidade("");
+    setUnidade("kg"); setValidade(""); setAprovado(true); setCertNumero("");
+    setCertUrl(""); setCertValido(null); setObservacoes("");
+  };
+
+  const handleAdd = async () => {
+    if (!fornecedor || !materiaPrima || !user) return;
+    setSaving(true);
+    const { error } = await supabase.from("recebimento_mp").insert({
+      user_id: user.id,
+      fornecedor,
+      materia_prima: materiaPrima,
+      lote: lote || null,
+      odor: odor || null,
+      umidade: umidade || null,
+      insetos: insetos || null,
+      aprovado,
+      certificado_analise_numero: certNumero || null,
+      certificado_analise_url: certUrl || null,
+      certificado_analise_valido: certValido,
+      validade: validade || null,
+      quantidade: quantidade || null,
+      unidade: unidade || null,
+      temperatura: temperatura || null,
+      observacoes: observacoes || null,
+    } as any);
+    if (error) toast.error("Erro: " + error.message);
+    else {
+      toast.success("Recebimento registrado!");
+      setOpen(false);
+      resetForm();
+      fetchData();
+    }
+    setSaving(false);
+  };
+
+  const exportCSV = () => {
+    const headers = ["Data", "Fornecedor", "Matéria-Prima", "Lote", "Quantidade", "Unidade", "Odor", "Umidade", "Temperatura", "Insetos", "Aprovado", "Cert. Análise Nº", "Cert. Válido", "Validade", "Observações"];
+    const rows = items.map(r => [
+      r.data, r.fornecedor, r.materia_prima, r.lote || "", r.quantidade || "", r.unidade || "",
+      r.odor || "", r.umidade || "", r.temperatura || "", r.insetos || "",
+      r.aprovado ? "Sim" : "Não", r.certificado_analise_numero || "",
+      r.certificado_analise_valido === true ? "Sim" : r.certificado_analise_valido === false ? "Não" : "",
+      r.validade || "", r.observacoes || "",
+    ]);
+    const csv = [headers.join(";"), ...rows.map(r => r.join(";"))].join("\n");
+    const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = `recebimento_mp_${new Date().toISOString().split("T")[0]}.csv`;
+    link.click();
+  };
+
+  const filtered = items.filter(r =>
+    [r.fornecedor, r.materia_prima, r.lote].some(v => v?.toLowerCase().includes(busca.toLowerCase()))
+  );
+
+  const totalAprovados = items.filter(r => r.aprovado).length;
+  const totalReprovados = items.filter(r => r.aprovado === false).length;
+  const comCertificado = items.filter(r => r.certificado_analise_numero).length;
 
   return (
     <>
-      <PageHeader icon={Package} title="Recebimento de Matérias-Primas" description="Controle de qualidade no recebimento de insumos" />
+      <PageHeader icon={Package} title="Recebimento de Matérias-Primas" description="Controle de qualidade no recebimento — IN 15/2009" />
+
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+        <Card><CardContent className="pt-4 text-center">
+          <p className="text-2xl font-bold font-display">{items.length}</p>
+          <p className="text-xs text-muted-foreground">Total recebimentos</p>
+        </CardContent></Card>
+        <Card><CardContent className="pt-4 text-center">
+          <p className="text-2xl font-bold font-display text-primary">{totalAprovados}</p>
+          <p className="text-xs text-muted-foreground">Aprovados</p>
+        </CardContent></Card>
+        <Card><CardContent className="pt-4 text-center">
+          <p className="text-2xl font-bold font-display text-destructive">{totalReprovados}</p>
+          <p className="text-xs text-muted-foreground">Reprovados</p>
+        </CardContent></Card>
+        <Card><CardContent className="pt-4 text-center">
+          <p className="text-2xl font-bold font-display text-accent">{comCertificado}</p>
+          <p className="text-xs text-muted-foreground">C/ Certificado</p>
+        </CardContent></Card>
+      </div>
+
       <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
+        <CardHeader className="flex flex-row items-center justify-between flex-wrap gap-2">
           <CardTitle className="font-display">Registros de Recebimento</CardTitle>
-          <Button size="sm"><Plus className="w-4 h-4 mr-1" /> Novo Recebimento</Button>
+          <div className="flex gap-2">
+            <Button size="sm" variant="outline" onClick={exportCSV} disabled={items.length === 0}>
+              <Download className="w-4 h-4 mr-1" /> CSV
+            </Button>
+            <Dialog open={open} onOpenChange={setOpen}>
+              <DialogTrigger asChild>
+                <Button size="sm"><Plus className="w-4 h-4 mr-1" /> Novo Recebimento</Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto">
+                <DialogHeader><DialogTitle>Registrar Recebimento de MP</DialogTitle></DialogHeader>
+                <div className="space-y-3">
+                  <div className="grid grid-cols-2 gap-3">
+                    <div><Label>Fornecedor *</Label><Input value={fornecedor} onChange={e => setFornecedor(e.target.value)} /></div>
+                    <div><Label>Matéria-Prima *</Label><Input value={materiaPrima} onChange={e => setMateriaPrima(e.target.value)} /></div>
+                  </div>
+                  <div className="grid grid-cols-3 gap-3">
+                    <div><Label>Lote</Label><Input value={lote} onChange={e => setLote(e.target.value)} /></div>
+                    <div><Label>Quantidade</Label><Input value={quantidade} onChange={e => setQuantidade(e.target.value)} /></div>
+                    <div>
+                      <Label>Unidade</Label>
+                      <Select value={unidade} onValueChange={setUnidade}>
+                        <SelectTrigger><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="kg">kg</SelectItem>
+                          <SelectItem value="ton">ton</SelectItem>
+                          <SelectItem value="sacos">sacos</SelectItem>
+                          <SelectItem value="litros">litros</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-3 gap-3">
+                    <div>
+                      <Label>Odor</Label>
+                      <Select value={odor} onValueChange={setOdor}>
+                        <SelectTrigger><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="normal">Normal</SelectItem>
+                          <SelectItem value="alterado">Alterado</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div><Label>Umidade (%)</Label><Input value={umidade} onChange={e => setUmidade(e.target.value)} /></div>
+                    <div><Label>Temperatura (°C)</Label><Input value={temperatura} onChange={e => setTemperatura(e.target.value)} /></div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <Label>Insetos</Label>
+                      <Select value={insetos} onValueChange={setInsetos}>
+                        <SelectTrigger><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="ausente">Ausente</SelectItem>
+                          <SelectItem value="presente">Presente</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div><Label>Validade</Label><Input value={validade} onChange={e => setValidade(e.target.value)} placeholder="Ex: 12 meses" /></div>
+                  </div>
+
+                  {/* Certificado de Análise */}
+                  <div className="p-3 rounded-lg border bg-muted/20 space-y-3">
+                    <p className="text-sm font-semibold flex items-center gap-2"><FileText className="w-4 h-4" /> Certificado de Análise do Fornecedor (IN 15/2009)</p>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div><Label>Nº do Certificado</Label><Input value={certNumero} onChange={e => setCertNumero(e.target.value)} placeholder="Ex: CA-2026-0321" /></div>
+                      <div><Label>URL / Link do Laudo</Label><Input value={certUrl} onChange={e => setCertUrl(e.target.value)} placeholder="https://..." /></div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <Switch checked={certValido === true} onCheckedChange={(v) => setCertValido(v ? true : false)} />
+                      <Label className="text-sm">Certificado conforme / válido</Label>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    <Switch checked={aprovado} onCheckedChange={setAprovado} />
+                    <Label className="text-sm font-medium">Matéria-prima aprovada</Label>
+                  </div>
+
+                  <div><Label>Observações</Label><Textarea value={observacoes} onChange={e => setObservacoes(e.target.value)} /></div>
+
+                  <Button onClick={handleAdd} className="w-full" disabled={saving || !fornecedor || !materiaPrima}>
+                    {saving && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+                    Registrar Recebimento
+                  </Button>
+                </div>
+              </DialogContent>
+            </Dialog>
+          </div>
         </CardHeader>
-        <CardContent className="overflow-x-auto">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Data</TableHead>
-                <TableHead>Fornecedor</TableHead>
-                <TableHead>Matéria-Prima</TableHead>
-                <TableHead>Lote</TableHead>
-                <TableHead>Odor</TableHead>
-                <TableHead>Umidade</TableHead>
-                <TableHead>Insetos</TableHead>
-                <TableHead>Aprovado</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {items.map((r) => (
-                <TableRow key={r.id}>
-                  <TableCell className="whitespace-nowrap">{r.data}</TableCell>
-                  <TableCell>{r.fornecedor}</TableCell>
-                  <TableCell>{r.materiaPrima}</TableCell>
-                  <TableCell className="font-mono text-sm">{r.lote}</TableCell>
-                  <TableCell><Badge variant={r.odor === "normal" ? "default" : "destructive"}>{r.odor}</Badge></TableCell>
-                  <TableCell>{r.umidade}</TableCell>
-                  <TableCell><Badge variant={r.insetos === "ausente" ? "default" : "destructive"}>{r.insetos}</Badge></TableCell>
-                  <TableCell>{r.aprovado ? <CheckCircle2 className="w-5 h-5 text-success" /> : <XCircle className="w-5 h-5 text-destructive" />}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+        <CardContent>
+          <div className="mb-4">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input placeholder="Buscar fornecedor, MP, lote..." value={busca} onChange={e => setBusca(e.target.value)} className="pl-10" />
+            </div>
+          </div>
+          {loading ? (
+            <div className="flex justify-center py-8"><Loader2 className="w-6 h-6 animate-spin text-muted-foreground" /></div>
+          ) : filtered.length === 0 ? (
+            <p className="text-center text-muted-foreground py-8">Nenhum recebimento registrado.</p>
+          ) : (
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Data</TableHead>
+                    <TableHead>Fornecedor</TableHead>
+                    <TableHead>Matéria-Prima</TableHead>
+                    <TableHead>Lote</TableHead>
+                    <TableHead>Qtd</TableHead>
+                    <TableHead>Odor</TableHead>
+                    <TableHead>Umidade</TableHead>
+                    <TableHead>Insetos</TableHead>
+                    <TableHead>Cert. Análise</TableHead>
+                    <TableHead>Aprovado</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filtered.map((r) => (
+                    <TableRow key={r.id}>
+                      <TableCell className="whitespace-nowrap">{r.data}</TableCell>
+                      <TableCell>{r.fornecedor}</TableCell>
+                      <TableCell>{r.materia_prima}</TableCell>
+                      <TableCell className="font-mono text-sm">{r.lote || "—"}</TableCell>
+                      <TableCell>{r.quantidade ? `${r.quantidade} ${r.unidade || ""}` : "—"}</TableCell>
+                      <TableCell><Badge variant={r.odor === "normal" ? "default" : "destructive"}>{r.odor || "—"}</Badge></TableCell>
+                      <TableCell>{r.umidade || "—"}</TableCell>
+                      <TableCell><Badge variant={r.insetos === "ausente" ? "default" : "destructive"}>{r.insetos || "—"}</Badge></TableCell>
+                      <TableCell>
+                        {r.certificado_analise_numero ? (
+                          <div className="flex items-center gap-1">
+                            <FileText className="w-3 h-3" />
+                            <span className="text-xs font-mono">{r.certificado_analise_numero}</span>
+                            {r.certificado_analise_valido === true && <CheckCircle2 className="w-3 h-3 text-primary" />}
+                            {r.certificado_analise_valido === false && <XCircle className="w-3 h-3 text-destructive" />}
+                          </div>
+                        ) : (
+                          <span className="text-xs text-muted-foreground">—</span>
+                        )}
+                      </TableCell>
+                      <TableCell>{r.aprovado ? <CheckCircle2 className="w-5 h-5 text-primary" /> : <XCircle className="w-5 h-5 text-destructive" />}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          )}
         </CardContent>
       </Card>
     </>

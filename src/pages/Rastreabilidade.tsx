@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Search, Plus, Loader2, Package, AlertTriangle, Truck, ShieldAlert, Timer, Play, Square, RotateCcw, ArrowUpDown, CheckCircle2, XCircle, Save } from "lucide-react";
+import { Search, Plus, Loader2, Package, AlertTriangle, Truck, ShieldAlert, Timer, Play, Square, RotateCcw, ArrowUpDown, CheckCircle2, XCircle, Save, Download } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
@@ -351,9 +351,25 @@ export default function Rastreabilidade() {
 
   const formatTime = (s: number) => `${Math.floor(s / 60).toString().padStart(2, "0")}:${(s % 60).toString().padStart(2, "0")}`;
 
+  const exportHistoricoCSV = () => {
+    const headers = ["Produto", "Lote PA", "Matéria-Prima", "Lote MP", "Fornecedor", "Cliente/Destino", "Local Entrega", "Data Venda", "Nota Fiscal", "Qtd Vendida", "Recall Ativo", "Recall Motivo", "Recall Status"];
+    const rows = registros.map(r => [
+      r.produto, r.lote_produto || "", r.materia_prima, r.lote_mp || "", r.fornecedor || "",
+      r.cliente_destino || "", r.local_entrega || "", r.data_venda || "", r.nota_fiscal || "",
+      r.quantidade_vendida || "", r.recall_ativo ? "Sim" : "Não", r.recall_motivo || "", r.recall_status || "",
+    ]);
+    const csv = [headers.join(";"), ...rows.map(r => r.join(";"))].join("\n");
+    const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = `rastreabilidade_historico_${new Date().toISOString().split("T")[0]}.csv`;
+    link.click();
+    toast.success("Histórico exportado para CSV!");
+  };
+
   return (
     <>
-      <PageHeader icon={Search} title="Rastreabilidade" description="Cadeia completa: MP → PA → Venda/Entrega → Recall" />
+      <PageHeader icon={Search} title="Rastreabilidade" description="Cadeia completa: MP → PA → Venda/Entrega → Recall — Decreto 12.031/2024" />
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         <Card><CardContent className="pt-4 text-center">
@@ -643,10 +659,14 @@ export default function Rastreabilidade() {
             <CardTitle className="font-display">Rastreabilidade Completa</CardTitle>
             <Input placeholder="Buscar por produto, lote, MP, fornecedor, cliente, NF..." value={busca} onChange={(e) => setBusca(e.target.value)} className="mt-2" />
           </div>
-          <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger asChild>
-              <Button size="sm"><Plus className="w-4 h-4 mr-1" /> Novo Registro</Button>
-            </DialogTrigger>
+          <div className="flex gap-2">
+            <Button size="sm" variant="outline" onClick={exportHistoricoCSV} disabled={registros.length === 0}>
+              <Download className="w-4 h-4 mr-1" /> Exportar Histórico
+            </Button>
+            <Dialog open={open} onOpenChange={setOpen}>
+              <DialogTrigger asChild>
+                <Button size="sm"><Plus className="w-4 h-4 mr-1" /> Novo Registro</Button>
+              </DialogTrigger>
             <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
               <DialogHeader><DialogTitle>Registro de Rastreabilidade</DialogTitle></DialogHeader>
               <div className="space-y-4">
@@ -724,6 +744,7 @@ export default function Rastreabilidade() {
               </div>
             </DialogContent>
           </Dialog>
+          </div>
         </CardHeader>
         <CardContent className="overflow-x-auto">
           {loading ? (

@@ -20,6 +20,8 @@ const TIPOS_VALIDACAO = [
   { value: "swab", label: "Swab / Teste de Superfície" },
   { value: "laboratorial", label: "Análise Laboratorial" },
   { value: "rinse", label: "Água de Enxágue" },
+  { value: "homogeneidade", label: "Teste de Homogeneidade (CV%)" },
+  { value: "carryover", label: "Teste de Carry-Over / Arraste" },
 ];
 
 export default function ValidacaoLimpezaLinha() {

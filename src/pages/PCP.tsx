@@ -29,6 +29,11 @@ interface OrdemProd {
   prioridade: string | null;
   status: string | null;
   observacoes: string | null;
+  tipo_ordem: string;
+  ordem_origem_id: string | null;
+  motivo_retrabalho: string | null;
+  quantidade_sobra: string | null;
+  destino_sobra: string | null;
 }
 
 interface FormulaItem {
@@ -89,6 +94,11 @@ export default function PCP() {
   const [pesoBatida, setPesoBatida] = useState("");
   const [prioridade, setPrioridade] = useState("normal");
   const [obsOrdem, setObsOrdem] = useState("");
+  const [tipoOrdem, setTipoOrdem] = useState("normal");
+  const [ordemOrigemId, setOrdemOrigemId] = useState("");
+  const [motivoRetrabalho, setMotivoRetrabalho] = useState("");
+  const [qtdSobra, setQtdSobra] = useState("");
+  const [destinoSobra, setDestinoSobra] = useState("");
 
   // Formula item form
   const [itemOpen, setItemOpen] = useState(false);
@@ -139,6 +149,11 @@ export default function PCP() {
       peso_por_batida: pesoBatida,
       prioridade,
       observacoes: obsOrdem,
+      tipo_ordem: tipoOrdem,
+      ordem_origem_id: ordemOrigemId || null,
+      motivo_retrabalho: motivoRetrabalho || null,
+      quantidade_sobra: qtdSobra || null,
+      destino_sobra: destinoSobra || null,
     } as any);
     if (error) toast.error("Erro ao salvar");
     else {
@@ -146,6 +161,7 @@ export default function PCP() {
       setOrdemOpen(false);
       setNumOrdem(""); setProduto(""); setFormulaNome(""); setLotePA(""); setQtdProgramada("");
       setNumBatidas("1"); setPesoBatida(""); setPrioridade("normal"); setObsOrdem("");
+      setTipoOrdem("normal"); setOrdemOrigemId(""); setMotivoRetrabalho(""); setQtdSobra(""); setDestinoSobra("");
       fetchData();
     }
     setSaving(false);
@@ -282,7 +298,46 @@ export default function PCP() {
             </DialogTrigger>
             <DialogContent className="max-w-lg">
               <DialogHeader><DialogTitle>Nova Ordem de Produção</DialogTitle></DialogHeader>
-              <div className="space-y-3 max-h-[60vh] overflow-y-auto pr-2">
+              <div className="space-y-3 max-h-[65vh] overflow-y-auto pr-2">
+                {/* Tipo de Ordem */}
+                <div>
+                  <Label>Tipo de Ordem (IN 17/2017)</Label>
+                  <Select value={tipoOrdem} onValueChange={setTipoOrdem}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="normal">Normal</SelectItem>
+                      <SelectItem value="retrabalho">Retrabalho</SelectItem>
+                      <SelectItem value="sobra">Sobra de Produção</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                {tipoOrdem !== "normal" && (
+                  <div className="p-3 rounded-lg border border-yellow-500/30 bg-yellow-500/5 space-y-3">
+                    <p className="text-xs font-semibold text-yellow-700">
+                      {tipoOrdem === "retrabalho" ? "⚠️ Ordem de Retrabalho — Rastreabilidade preservada" : "⚠️ Sobra de Produção — Rastreabilidade preservada"}
+                    </p>
+                    <div>
+                      <Label>Ordem de Origem</Label>
+                      <Select value={ordemOrigemId} onValueChange={setOrdemOrigemId}>
+                        <SelectTrigger><SelectValue placeholder="Selecione a ordem original" /></SelectTrigger>
+                        <SelectContent>
+                          {ordens.filter(o => o.status === "concluida").map(o => (
+                            <SelectItem key={o.id} value={o.id}>{o.numero_ordem} — {o.produto}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    {tipoOrdem === "retrabalho" && (
+                      <div><Label>Motivo do Retrabalho</Label><Input value={motivoRetrabalho} onChange={e => setMotivoRetrabalho(e.target.value)} placeholder="Ex: Fora de especificação" /></div>
+                    )}
+                    {tipoOrdem === "sobra" && (
+                      <div className="grid grid-cols-2 gap-3">
+                        <div><Label>Quantidade da Sobra</Label><Input value={qtdSobra} onChange={e => setQtdSobra(e.target.value)} placeholder="Ex: 200 kg" /></div>
+                        <div><Label>Destino da Sobra</Label><Input value={destinoSobra} onChange={e => setDestinoSobra(e.target.value)} placeholder="Ex: Incorporar à OP-005" /></div>
+                      </div>
+                    )}
+                  </div>
+                )}
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <Label>Nº Ordem</Label>
@@ -369,6 +424,8 @@ export default function PCP() {
                           <p className="text-xs text-muted-foreground truncate">{o.formula_nome} {o.lote_produto && `• Lote: ${o.lote_produto}`}</p>
                         </div>
                         <div className="flex items-center gap-2 shrink-0">
+                          {o.tipo_ordem === "retrabalho" && <Badge className="bg-yellow-500/20 text-yellow-700">Retrabalho</Badge>}
+                          {o.tipo_ordem === "sobra" && <Badge className="bg-blue-500/20 text-blue-700">Sobra</Badge>}
                           <Badge className={pr.className}>{pr.label}</Badge>
                           <Badge className={st.className}>{st.label}</Badge>
                           <span className="text-xs text-muted-foreground">{itens.length} ing. • {bats.length}/{o.numero_batidas} bat.</span>

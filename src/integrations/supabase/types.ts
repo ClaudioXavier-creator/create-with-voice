@@ -1019,17 +1019,22 @@ export type Database = {
         Row: {
           created_at: string
           data_programada: string
+          destino_sobra: string | null
           formula_nome: string
           id: string
           lote_produto: string | null
+          motivo_retrabalho: string | null
           numero_batidas: number | null
           numero_ordem: string
           observacoes: string | null
+          ordem_origem_id: string | null
           peso_por_batida: string | null
           prioridade: string | null
           produto: string
           quantidade_programada: string | null
+          quantidade_sobra: string | null
           status: string | null
+          tipo_ordem: string
           unidade: string | null
           updated_at: string
           user_id: string
@@ -1037,17 +1042,22 @@ export type Database = {
         Insert: {
           created_at?: string
           data_programada?: string
+          destino_sobra?: string | null
           formula_nome?: string
           id?: string
           lote_produto?: string | null
+          motivo_retrabalho?: string | null
           numero_batidas?: number | null
           numero_ordem: string
           observacoes?: string | null
+          ordem_origem_id?: string | null
           peso_por_batida?: string | null
           prioridade?: string | null
           produto: string
           quantidade_programada?: string | null
+          quantidade_sobra?: string | null
           status?: string | null
+          tipo_ordem?: string
           unidade?: string | null
           updated_at?: string
           user_id: string
@@ -1055,22 +1065,35 @@ export type Database = {
         Update: {
           created_at?: string
           data_programada?: string
+          destino_sobra?: string | null
           formula_nome?: string
           id?: string
           lote_produto?: string | null
+          motivo_retrabalho?: string | null
           numero_batidas?: number | null
           numero_ordem?: string
           observacoes?: string | null
+          ordem_origem_id?: string | null
           peso_por_batida?: string | null
           prioridade?: string | null
           produto?: string
           quantidade_programada?: string | null
+          quantidade_sobra?: string | null
           status?: string | null
+          tipo_ordem?: string
           unidade?: string | null
           updated_at?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "ordens_producao_ordem_origem_id_fkey"
+            columns: ["ordem_origem_id"]
+            isOneToOne: false
+            referencedRelation: "ordens_producao"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       planejamento_anual: {
         Row: {
@@ -1467,6 +1490,9 @@ export type Database = {
       recebimento_mp: {
         Row: {
           aprovado: boolean | null
+          certificado_analise_numero: string | null
+          certificado_analise_url: string | null
+          certificado_analise_valido: boolean | null
           created_at: string
           data: string
           fornecedor: string
@@ -1474,12 +1500,20 @@ export type Database = {
           insetos: string | null
           lote: string | null
           materia_prima: string
+          observacoes: string | null
           odor: string | null
+          quantidade: string | null
+          temperatura: string | null
           umidade: string | null
+          unidade: string | null
           user_id: string
+          validade: string | null
         }
         Insert: {
           aprovado?: boolean | null
+          certificado_analise_numero?: string | null
+          certificado_analise_url?: string | null
+          certificado_analise_valido?: boolean | null
           created_at?: string
           data?: string
           fornecedor: string
@@ -1487,12 +1521,20 @@ export type Database = {
           insetos?: string | null
           lote?: string | null
           materia_prima: string
+          observacoes?: string | null
           odor?: string | null
+          quantidade?: string | null
+          temperatura?: string | null
           umidade?: string | null
+          unidade?: string | null
           user_id: string
+          validade?: string | null
         }
         Update: {
           aprovado?: boolean | null
+          certificado_analise_numero?: string | null
+          certificado_analise_url?: string | null
+          certificado_analise_valido?: boolean | null
           created_at?: string
           data?: string
           fornecedor?: string
@@ -1500,9 +1542,14 @@ export type Database = {
           insetos?: string | null
           lote?: string | null
           materia_prima?: string
+          observacoes?: string | null
           odor?: string | null
+          quantidade?: string | null
+          temperatura?: string | null
           umidade?: string | null
+          unidade?: string | null
           user_id?: string
+          validade?: string | null
         }
         Relationships: []
       }
