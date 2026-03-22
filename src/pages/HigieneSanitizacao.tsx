@@ -16,7 +16,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Plus, Droplets, CheckCircle2, Clock, Trash2, Beaker, FileText, ClipboardList, Download } from "lucide-react";
 import PageHeader from "@/components/PageHeader";
 
-const AREAS = ["Recepção de MP", "Mistura", "Ensaque", "Expedição", "Almoxarifado", "Laboratório", "Banheiros", "Refeitório", "Área Externa"];
+const AREAS = ["Recepção de MP", "Mistura", "Ensaque", "Expedição", "Almoxarifado", "Laboratório", "Banheiros", "Refeitório", "Área Externa",
+  "Silo 01", "Silo 02", "Silo 03", "Silo 04", "Silo 05", "Misturador", "Moinho", "Peletizadora", "Extrusora", "Transportador / Elevador"];
 const FREQUENCIAS = [
   { value: "diario", label: "Diário" },
   { value: "semanal", label: "Semanal" },
@@ -24,6 +25,7 @@ const FREQUENCIAS = [
   { value: "mensal", label: "Mensal" },
   { value: "trimestral", label: "Trimestral" },
   { value: "semestral", label: "Semestral" },
+  { value: "anual", label: "Anual" },
 ];
 
 const PONTOS_AGUA = [
