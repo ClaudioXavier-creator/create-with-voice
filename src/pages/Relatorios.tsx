@@ -387,9 +387,30 @@ export default function Relatorios() {
                       <p className="text-xs text-muted-foreground mt-1">Planilha preenchida em papel, assinada e escaneada/fotografada</p>
                     </div>
                   )}
+                  {/* Assinatura Digital do RT — Decreto 12.031/2024, Art. 18 */}
+                  <div className="p-3 rounded-lg border bg-muted/20 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <p className="text-sm font-semibold flex items-center gap-2">
+                        <CheckSquare className="w-4 h-4" /> Assinatura Digital do RT (Decreto 12.031/2024)
+                      </p>
+                      <Switch checked={rtAssinado} onCheckedChange={setRtAssinado} />
+                    </div>
+                    {rtAssinado && (
+                      <div className="grid grid-cols-2 gap-3">
+                        <div><Label>Nome do RT</Label><Input value={rtNome} onChange={e => setRtNome(e.target.value)} placeholder="Dr(a). Nome Completo" /></div>
+                        <div><Label>CRMV</Label><Input value={rtCrmv} onChange={e => setRtCrmv(e.target.value)} placeholder="CRMV-XX 00000" /></div>
+                      </div>
+                    )}
+                    {rtAssinado && (
+                      <p className="text-xs text-primary">
+                        ✓ Ao salvar, o relatório será assinado digitalmente com data/hora e dados do RT, conferindo validade para fiscalizações remotas.
+                      </p>
+                    )}
+                  </div>
+
                   <Button onClick={handleAdd} className="w-full" disabled={saving}>
                     {saving && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-                    Salvar Relatório
+                    {rtAssinado ? "Salvar e Assinar Relatório" : "Salvar Relatório"}
                   </Button>
                 </div>
               </DialogContent>
