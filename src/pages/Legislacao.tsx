@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Scale, Sparkles, Loader2, RefreshCw, Bell, BookOpen, CheckCircle2, AlertTriangle, Info, Eye, Search, Upload, FileText, Trash2, ExternalLink, Plus, X } from "lucide-react";
+import { Scale, Sparkles, Loader2, RefreshCw, Bell, BookOpen, CheckCircle2, AlertTriangle, Info, Eye, Search, Upload, FileText, Trash2, ExternalLink, Plus, X, FolderOpen } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -107,6 +107,8 @@ export default function Legislacao() {
   const [savingNorma, setSavingNorma] = useState(false);
   const [uploadingFile, setUploadingFile] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const quickUploadRef = useRef<HTMLInputElement>(null);
+  const [quickUploading, setQuickUploading] = useState(false);
 
   const [normaForm, setNormaForm] = useState({
     titulo: "",
@@ -269,6 +271,50 @@ export default function Legislacao() {
     setNormaForm({ titulo: "", codigo: "", tipo: "instrucao_normativa", orgao: "MAPA", data_publicacao: "", resumo: "", arquivo_nome: "", arquivo_url: "", tags: "" });
   };
 
+  const handleQuickUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0 || !user) return;
+    setQuickUploading(true);
+    let successCount = 0;
+
+    for (const file of Array.from(files)) {
+      const path = `${user.id}/${Date.now()}_${file.name}`;
+      const { error: uploadError } = await supabase.storage.from("normas_legislacao").upload(path, file);
+      if (uploadError) {
+        toast.error(`Erro ao enviar "${file.name}": ${uploadError.message}`);
+        continue;
+      }
+      const { data: urlData } = supabase.storage.from("normas_legislacao").getPublicUrl(path);
+      const titulo = file.name.replace(/\.[^/.]+$/, "").replace(/[_-]/g, " ");
+      const ext = file.name.split(".").pop()?.toLowerCase() || "";
+      const tipo = ext === "pdf" ? "instrucao_normativa" : "outro";
+
+      const { error: insertError } = await supabase.from("normas_legislacao").insert({
+        user_id: user.id,
+        titulo,
+        codigo: "",
+        tipo,
+        orgao: "MAPA",
+        arquivo_nome: file.name,
+        arquivo_url: urlData.publicUrl,
+        tags: [],
+      } as any);
+
+      if (insertError) {
+        toast.error(`Erro ao salvar "${file.name}": ${insertError.message}`);
+      } else {
+        successCount++;
+      }
+    }
+
+    if (successCount > 0) {
+      toast.success(`${successCount} arquivo(s) importado(s) com sucesso!`);
+      fetchNormas();
+    }
+    setQuickUploading(false);
+    if (quickUploadRef.current) quickUploadRef.current.value = "";
+  };
+
   const filteredNormas = normas.filter(n => {
     if (!normaSearch) return true;
     const q = normaSearch.toLowerCase();
@@ -338,9 +384,23 @@ export default function Legislacao() {
                 <BookOpen className="w-5 h-5 text-primary" />
                 Biblioteca de Normas e Legislações
               </CardTitle>
-              <Button onClick={() => { resetNormaForm(); setNormaDialogOpen(true); }}>
-                <Plus className="w-4 h-4 mr-1" /> Adicionar Norma
-              </Button>
+              <div className="flex gap-2 flex-wrap">
+                <input
+                  ref={quickUploadRef}
+                  type="file"
+                  accept=".pdf,.doc,.docx,.xls,.xlsx,.txt,.csv"
+                  multiple
+                  className="hidden"
+                  onChange={handleQuickUpload}
+                />
+                <Button variant="outline" onClick={() => quickUploadRef.current?.click()} disabled={quickUploading}>
+                  {quickUploading ? <Loader2 className="w-4 h-4 mr-1 animate-spin" /> : <FolderOpen className="w-4 h-4 mr-1" />}
+                  {quickUploading ? "Importando..." : "Importar do Dispositivo"}
+                </Button>
+                <Button onClick={() => { resetNormaForm(); setNormaDialogOpen(true); }}>
+                  <Plus className="w-4 h-4 mr-1" /> Adicionar Norma
+                </Button>
+              </div>
             </CardHeader>
             <CardContent>
               {/* Search bar */}
