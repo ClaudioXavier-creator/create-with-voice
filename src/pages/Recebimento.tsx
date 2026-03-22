@@ -92,6 +92,7 @@ export default function Recebimento() {
     setUnidade("kg"); setValidade(""); setAprovado(true); setCertNumero("");
     setCertUrl(""); setCertValido(null); setObservacoes("");
     setVistoriaVeiculo({}); setPlacaVeiculo("");
+    setContemOrigemAnimal(false); setTipoOrigemAnimal(""); setDestinoEspecie("");
   };
 
   const handleAdd = async () => {
