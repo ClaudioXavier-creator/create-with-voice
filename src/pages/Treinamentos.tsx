@@ -234,6 +234,7 @@ export default function Treinamentos() {
       <Tabs defaultValue="treinamentos">
         <TabsList className="flex flex-wrap">
           <TabsTrigger value="treinamentos"><GraduationCap className="w-4 h-4 mr-1" />Treinamentos</TabsTrigger>
+          <TabsTrigger value="eficacia"><ShieldCheck className="w-4 h-4 mr-1" />Avaliação Eficácia</TabsTrigger>
           <TabsTrigger value="aso"><HeartPulse className="w-4 h-4 mr-1" />ASO / Saúde</TabsTrigger>
           <TabsTrigger value="triagem"><ClipboardCheck className="w-4 h-4 mr-1" />Triagem Diária</TabsTrigger>
         </TabsList>
