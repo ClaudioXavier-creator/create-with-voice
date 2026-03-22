@@ -74,7 +74,7 @@ export default function ControleResiduos() {
 
   return (
     <div className="space-y-6">
-      <PageHeader title="POP 04 — Controle de Resíduos e Efluentes" description="Gestão ambiental conforme Decreto 12.031/2024" />
+      <PageHeader title="POP 05 — Controle de Resíduos e Efluentes" description="Gestão ambiental, destinação de vencidos/rejeitados — IN 04/2007, Decreto 12.031/2024" />
 
       <div className="flex justify-end">
         <Dialog open={open} onOpenChange={setOpen}>
