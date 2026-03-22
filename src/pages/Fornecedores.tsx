@@ -594,6 +594,54 @@ export default function Fornecedores() {
         </Card>
       )}
 
+      {/* Lista de Fornecedores Aprovados — PL POP 1.1 */}
+      <Card className="mt-6">
+        <CardHeader>
+          <CardTitle className="font-display text-sm flex items-center gap-2">
+            <CheckCircle2 className="w-4 h-4 text-primary" />
+            Lista de Fornecedores Aprovados
+          </CardTitle>
+          <p className="text-xs text-muted-foreground">Conforme PL POP 1.1 — Lista de Fornecedores Aprovados</p>
+        </CardHeader>
+        <CardContent>
+          {aprovados.length === 0 ? (
+            <p className="text-center text-muted-foreground py-6 text-sm">Nenhum fornecedor aprovado ainda</p>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-12">Nº</TableHead>
+                  <TableHead>Fornecedor</TableHead>
+                  <TableHead>Produto Fornecido</TableHead>
+                  <TableHead className="text-center">Aprovado</TableHead>
+                  <TableHead className="text-center">Aprovado c/ Restrições</TableHead>
+                  <TableHead className="text-center">Reprovado</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {aprovados.map((f, idx) => (
+                  <TableRow key={f.id}>
+                    <TableCell className="font-mono text-xs text-muted-foreground">{idx + 1}</TableCell>
+                    <TableCell>
+                      <p className="font-medium text-sm">{f.nome}</p>
+                      {f.cnpj && <span className="text-xs text-muted-foreground">{f.cnpj}</span>}
+                    </TableCell>
+                    <TableCell className="text-sm">{f.produtos_fornecidos || f.tipo_produto || "—"}</TableCell>
+                    <TableCell className="text-center">
+                      {f.status_qualificacao === "aprovado" && <CheckCircle2 className="w-5 h-5 text-primary mx-auto" />}
+                    </TableCell>
+                    <TableCell className="text-center">
+                      {f.status_qualificacao === "aprovado_com_restricoes" && <CheckCircle2 className="w-5 h-5 text-yellow-600 mx-auto" />}
+                    </TableCell>
+                    <TableCell className="text-center">{/* Vazio */}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
+        </CardContent>
+      </Card>
+
       {/* Avaliação Dialog */}
       <Dialog open={avaliarOpen} onOpenChange={setAvaliarOpen}>
         <DialogContent>
