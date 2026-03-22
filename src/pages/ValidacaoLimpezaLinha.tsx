@@ -22,6 +22,8 @@ const TIPOS_VALIDACAO = [
   { value: "rinse", label: "Água de Enxágue" },
   { value: "homogeneidade", label: "Teste de Homogeneidade (CV%)" },
   { value: "carryover", label: "Teste de Carry-Over / Arraste" },
+  { value: "tempo_mistura", label: "Validação Tempo de Mistura" },
+  { value: "flushing", label: "Flushing / Limpeza de Linha" },
 ];
 
 export default function ValidacaoLimpezaLinha() {
