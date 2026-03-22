@@ -49,6 +49,7 @@ const NAV_ENTRIES: NavEntry[] = [
       { path: "/validacao-limpeza", label: "Validação Limpeza", icon: ShieldCheck },
       { path: "/matriz-risco", label: "Matriz de Risco", icon: AlertTriangle },
       { path: "/planejamento-anual", label: "Planejamento Anual", icon: CalendarDays },
+      { path: "/qualidade-total", label: "Qualidade Total-rel", icon: ClipboardList },
     ],
   },
   {

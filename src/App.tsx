@@ -121,6 +121,7 @@ const AppRoutes = () => {
                   <Route path="/validacao-limpeza" element={<ValidacaoLimpezaLinha />} />
                   <Route path="/matriz-risco" element={<MatrizRisco />} />
                   <Route path="/planejamento-anual" element={<PlanejamentoAnual />} />
+                  <Route path="/qualidade-total" element={<QualidadeTotal />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </AppLayout>
