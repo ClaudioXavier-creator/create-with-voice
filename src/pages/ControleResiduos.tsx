@@ -15,7 +15,16 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Plus, Trash2, Recycle } from "lucide-react";
 import PageHeader from "@/components/PageHeader";
 
-const TIPOS_RESIDUO = ["Orgânico", "Pó/Varredura", "Embalagens plásticas", "Embalagens papel/papelão", "Efluente líquido", "Óleo lubrificante", "Resíduo químico", "Produto vencido", "Produto rejeitado/reprovado", "Sobra de produção", "Outro"];
+const TIPOS_RESIDUO = ["Orgânico", "Pó/Varredura", "Embalagens plásticas", "Embalagens papel/papelão", "Efluente líquido", "Efluente industrial", "Água de lavagem", "Óleo lubrificante", "Resíduo químico", "Produto vencido", "Produto rejeitado/reprovado", "Sobra de produção", "Outro"];
+const TRATAMENTO_EFLUENTE = [
+  { value: "fossa_septica", label: "Fossa Séptica" },
+  { value: "ete_propria", label: "ETE Própria" },
+  { value: "rede_publica", label: "Rede Pública de Esgoto" },
+  { value: "lagoa_estabilizacao", label: "Lagoa de Estabilização" },
+  { value: "filtro_biologico", label: "Filtro Biológico" },
+  { value: "sem_tratamento", label: "Sem Tratamento (irregular)" },
+  { value: "outro", label: "Outro" },
+];
 const CLASSIFICACOES = [
   { value: "classe_I", label: "Classe I — Perigoso" },
   { value: "classe_II_A", label: "Classe II-A — Não Inerte" },
