@@ -82,15 +82,19 @@ const POP03_LIMPEZA_ITENS = [
   "Registro de produto químico utilizado na limpeza",
 ];
 
-// Checklist items for POP-04 water potability
+// Checklist items for POP-04 water potability (IN 04/2007 — Art. 2º)
 const POP04_AGUA_ITENS = [
   "Cloro residual dentro do padrão (0,2 a 2,0 mg/L)",
   "pH dentro do padrão (6,0 a 9,5)",
   "Turbidez dentro do padrão (≤ 5 NTU)",
   "Ausência de odor ou sabor anormal",
   "Reservatório com tampa e vedação adequada",
-  "Laudo laboratorial mensal em dia",
-  "Certificado de limpeza do reservatório válido",
+  "Laudo laboratorial mensal em dia (portaria 888/2021)",
+  "Certificado de limpeza do reservatório válido (semestral)",
+  "Ponto de coleta identificado e registrado",
+  "Laudo microbiológico da água (coliformes totais e E. coli) — vigente",
+  "Registro de tratamento da água (quando fonte alternativa)",
+  "Frequência de análise conforme plano de amostragem",
 ];
 
 // Checklist items for POP-05 vehicle transport inspection (IN 15/2009)
