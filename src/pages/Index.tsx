@@ -59,6 +59,8 @@ export default function Index() {
     conformidadePorArea: [],
     ncPorMes: [],
     conformidadePorMes: [],
+    atividadesVencidas: [],
+    atividadesProximas: [],
     loading: true,
   });
 
