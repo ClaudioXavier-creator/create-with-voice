@@ -49,6 +49,7 @@ const NAV_ENTRIES: NavEntry[] = [
       { path: "/recebimento", label: "Recebimento MP", icon: Package },
       { path: "/fornecedores", label: "Fornecedores", icon: Users },
       { path: "/producao", label: "Produção", icon: Factory },
+      { path: "/produtos", label: "Produtos / Rótulos", icon: Package },
       { path: "/pcp", label: "PCP / Ordens", icon: Settings },
       { path: "/rastreabilidade", label: "Rastreabilidade", icon: Search },
     ],
