@@ -724,7 +724,10 @@ export default function Rastreabilidade() {
             <CardTitle className="font-display">Rastreabilidade Completa</CardTitle>
             <Input placeholder="Buscar por produto, lote, MP, fornecedor, cliente, NF..." value={busca} onChange={(e) => setBusca(e.target.value)} className="mt-2" />
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-2 flex-wrap">
+            <Button size="sm" variant="outline" onClick={exportBalancoMassa} disabled={registros.length === 0}>
+              <Download className="w-4 h-4 mr-1" /> Balanço de Massa
+            </Button>
             <Button size="sm" variant="outline" onClick={exportHistoricoCSV} disabled={registros.length === 0}>
               <Download className="w-4 h-4 mr-1" /> Exportar Histórico
             </Button>
