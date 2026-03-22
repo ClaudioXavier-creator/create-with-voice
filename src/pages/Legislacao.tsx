@@ -337,7 +337,65 @@ export default function Legislacao() {
     );
   });
 
-  const naoLidos = alertas.filter(a => !a.lido).length;
+  const pesquisarLegislacao = async () => {
+    if (!user) return;
+    setPesquisaLoading(true);
+    setPesquisaResultados([]);
+    setPesquisaResumo("");
+    try {
+      const { data, error } = await supabase.functions.invoke("legislacao-ai", {
+        body: { action: "pesquisar_legislacao", termo: pesquisaTermo || "alimentação animal", categoria: pesquisaCategoria },
+      });
+      if (error) { toast.error("Erro na pesquisa: " + error.message); setPesquisaLoading(false); return; }
+      if (data?.error) { toast.error(data.error); setPesquisaLoading(false); return; }
+      const result = data?.data;
+      if (result?.resultados) {
+        setPesquisaResultados(result.resultados);
+        setPesquisaResumo(result.resumo_pesquisa || "");
+        toast.success(`${result.resultados.length} resultado(s) encontrado(s)`);
+      } else {
+        toast.warning("Nenhum resultado encontrado.");
+      }
+    } catch (err) {
+      toast.error("Erro ao conectar com a IA");
+      console.error(err);
+    }
+    setPesquisaLoading(false);
+  };
+
+  const salvarResultadoComoNorma = async (resultado: any) => {
+    if (!user) return;
+    const { error } = await supabase.from("normas_legislacao").insert({
+      user_id: user.id,
+      titulo: resultado.titulo,
+      codigo: resultado.codigo || "",
+      tipo: resultado.tipo === "consulta_publica" ? "outro" : (resultado.tipo || "instrucao_normativa"),
+      orgao: resultado.orgao || "MAPA",
+      data_publicacao: resultado.data_publicacao || null,
+      resumo: resultado.resumo + (resultado.impacto_bpf ? `\n\nImpacto BPF: ${resultado.impacto_bpf}` : ""),
+      arquivo_url: resultado.link_referencia || "",
+      arquivo_nome: resultado.link_referencia ? "Link SISLEGIS" : "",
+      tags: [resultado.categoria || "pesquisa", "sislegis"],
+    } as any);
+    if (error) toast.error("Erro ao salvar: " + error.message);
+    else { toast.success("Norma salva na biblioteca!"); fetchNormas(); }
+  };
+
+  const categoriaLabel = (cat: string) => {
+    const map: Record<string, string> = { nova: "Nova", alteracao: "Alteração", consulta_publica: "Consulta Pública" };
+    return map[cat] || cat;
+  };
+
+  const statusLabel = (s: string) => {
+    const map: Record<string, { label: string; cls: string }> = {
+      vigente: { label: "Vigente", cls: "bg-primary/20 text-primary" },
+      revogada: { label: "Revogada", cls: "bg-destructive/20 text-destructive" },
+      em_consulta: { label: "Em Consulta", cls: "bg-yellow-500/20 text-yellow-700" },
+      aprovada: { label: "Aprovada", cls: "bg-primary/20 text-primary" },
+    };
+    return map[s] || { label: s, cls: "bg-muted text-muted-foreground" };
+  };
+
 
   const tipoNormaLabel = (tipo: string) => TIPO_NORMA_OPTIONS.find(t => t.value === tipo)?.label || tipo;
 
