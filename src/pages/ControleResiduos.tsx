@@ -96,9 +96,26 @@ export default function ControleResiduos() {
                   <SelectContent>{CLASSIFICACOES.map(c => <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>)}</SelectContent>
                 </Select>
               </div>
+              {/* Produto vencido/rejeitado fields */}
+              {["Produto vencido", "Produto rejeitado/reprovado", "Sobra de produção"].includes(form.tipo_residuo) && (
+                <div className="p-3 rounded-lg border border-yellow-400 bg-yellow-50 dark:bg-yellow-900/20 space-y-3">
+                  <p className="text-xs font-semibold text-yellow-700 dark:text-yellow-400">⚠️ Controle de Produto Descartado (POP 05 — IN 04/2007)</p>
+                  <div>
+                    <Label>Motivo do Descarte</Label>
+                    <Select value={form.motivo_descarte} onValueChange={v => setForm(p => ({ ...p, motivo_descarte: v }))}>
+                      <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
+                      <SelectContent>{MOTIVOS_DESCARTE.map(m => <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>)}</SelectContent>
+                    </Select>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div><Label>Produto</Label><Input value={form.produto_nome} onChange={e => setForm(p => ({ ...p, produto_nome: e.target.value }))} placeholder="Ex: Ração Bovino 20kg" /></div>
+                    <div><Label>Lote do Produto</Label><Input value={form.lote_produto} onChange={e => setForm(p => ({ ...p, lote_produto: e.target.value }))} placeholder="Ex: RBE-0320-01" /></div>
+                  </div>
+                </div>
+              )}
               <div className="grid grid-cols-2 gap-3">
                 <div><Label>Origem / Setor</Label><Input value={form.origem} onChange={e => setForm(p => ({ ...p, origem: e.target.value }))} /></div>
-                <div><Label>Destino Final</Label><Input value={form.destino_final} onChange={e => setForm(p => ({ ...p, destino_final: e.target.value }))} placeholder="Aterro, reciclagem..." /></div>
+                <div><Label>Destino Final</Label><Input value={form.destino_final} onChange={e => setForm(p => ({ ...p, destino_final: e.target.value }))} placeholder="Aterro, reciclagem, incineração..." /></div>
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div><Label>Empresa Coletora</Label><Input value={form.empresa_coletora} onChange={e => setForm(p => ({ ...p, empresa_coletora: e.target.value }))} /></div>

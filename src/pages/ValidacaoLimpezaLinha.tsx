@@ -118,12 +118,19 @@ export default function ValidacaoLimpezaLinha() {
                 <div><Label>Resíduo Detectado</Label><Input value={form.residuo_detectado} onChange={e => setForm(p => ({ ...p, residuo_detectado: e.target.value }))} placeholder="Ex: Monensina" /></div>
                 <div><Label>Limite Aceitável</Label><Input value={form.limite_aceitavel} onChange={e => setForm(p => ({ ...p, limite_aceitavel: e.target.value }))} placeholder="Ex: < 1 ppm" /></div>
               </div>
+              <div><Label>Método de Análise</Label><Input value={form.metodo_analise} onChange={e => setForm(p => ({ ...p, metodo_analise: e.target.value }))} placeholder="Ex: HPLC, ELISA, CV% < 10%" /></div>
+              {(form.tipo_validacao === "tempo_mistura" || form.tipo_validacao === "homogeneidade") && (
+                <div className="p-3 rounded-lg border border-blue-400 bg-blue-50 dark:bg-blue-900/20">
+                  <p className="text-xs font-semibold text-blue-700 dark:text-blue-400 mb-2">📐 Validação de Mistura — IN 04/2007</p>
+                  <p className="text-xs text-muted-foreground">Registre o CV% (Coeficiente de Variação) do teste de homogeneidade. O limite aceitável é CV ≤ 10% para misturadores. Informe o tempo de mistura validado no campo "Observações".</p>
+                </div>
+              )}
               <div className="grid grid-cols-2 gap-3">
                 <div><Label>Data</Label><Input type="date" value={form.data_validacao} onChange={e => setForm(p => ({ ...p, data_validacao: e.target.value }))} /></div>
                 <div><Label>Hora</Label><Input value={form.hora_validacao} onChange={e => setForm(p => ({ ...p, hora_validacao: e.target.value }))} placeholder="14:30" /></div>
               </div>
               <div><Label>Responsável</Label><Input value={form.responsavel} onChange={e => setForm(p => ({ ...p, responsavel: e.target.value }))} /></div>
-              <div><Label>Observações</Label><Textarea value={form.observacoes} onChange={e => setForm(p => ({ ...p, observacoes: e.target.value }))} /></div>
+              <div><Label>Observações</Label><Textarea value={form.observacoes} onChange={e => setForm(p => ({ ...p, observacoes: e.target.value }))} placeholder={form.tipo_validacao === "tempo_mistura" ? "Informe o tempo de mistura validado (ex: 4 min para lote de 2 ton)" : ""} /></div>
               <Button onClick={() => add.mutate()} disabled={!form.linha_producao || !form.produto_anterior || !form.produto_seguinte}>Salvar</Button>
             </div>
           </DialogContent>
