@@ -152,6 +152,10 @@ export default function ExecucaoPops() {
   const [statusExec, setStatusExec] = useState("concluido");
   const [obs, setObs] = useState("");
   const [checklistTriagem, setChecklistTriagem] = useState<Record<number, boolean | null>>({});
+  // POP-04 laudo fields
+  const [laudoNumero, setLaudoNumero] = useState("");
+  const [laudoLaboratorio, setLaudoLaboratorio] = useState("");
+  const [laudoData, setLaudoData] = useState("");
 
   const fetchData = async () => {
     if (!user) return;
