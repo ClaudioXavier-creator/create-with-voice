@@ -47,10 +47,12 @@ const CHECKLIST_DECRETO_12031: ChecklistItem[] = [
   { id: "d25", area: "4. Rastreabilidade (Art. 41)", item: "Lotes identificados corretamente em todas as etapas", conforme: null, observacao: "", popVinculado: "POP-006" },
   { id: "d26", area: "4. Rastreabilidade (Art. 41)", item: "Rastreabilidade desde MP até produto final expedido", conforme: null, observacao: "", popVinculado: "POP-006" },
 
-  // ── 5. CONTROLE DE CONTAMINAÇÃO CRUZADA (Art. 10-XII) ──
-  { id: "d27", area: "5. Contaminação Cruzada (Art. 10-XII)", item: "Medidas para evitar contaminação cruzada implementadas", conforme: null, observacao: "", popVinculado: "POP-005" },
-  { id: "d28", area: "5. Contaminação Cruzada (Art. 10-XII)", item: "Flushing realizado conforme sequência de produção", conforme: null, observacao: "", popVinculado: "POP-005" },
-  { id: "d29", area: "5. Contaminação Cruzada (Art. 10-XII)", item: "Rações medicamentosas segregadas adequadamente", conforme: null, observacao: "", popVinculado: "POP-005" },
+  // ── 5. CONTAMINAÇÃO CRUZADA (Art. 10-XII) — RISCO ALTO ──
+  { id: "d27", area: "5. Contaminação Cruzada (Art. 10-XII) — ⚠️ RISCO ALTO", item: "Medidas para evitar contaminação cruzada implementadas", conforme: null, observacao: "", popVinculado: "POP-005" },
+  { id: "d28", area: "5. Contaminação Cruzada (Art. 10-XII) — ⚠️ RISCO ALTO", item: "Flushing realizado conforme sequência de produção", conforme: null, observacao: "", popVinculado: "POP-005" },
+  { id: "d29", area: "5. Contaminação Cruzada (Art. 10-XII) — ⚠️ RISCO ALTO", item: "Rações medicamentosas segregadas adequadamente", conforme: null, observacao: "", popVinculado: "POP-005" },
+  { id: "d29b", area: "5. Contaminação Cruzada (Art. 10-XII) — ⚠️ RISCO ALTO", item: "Teste de carry-over (arraste) realizado e conforme", conforme: null, observacao: "", popVinculado: "POP-005" },
+  { id: "d29c", area: "5. Contaminação Cruzada (Art. 10-XII) — ⚠️ RISCO ALTO", item: "Ingredientes de origem animal segregados de rações para ruminantes (IN 15/2009)", conforme: null, observacao: "", popVinculado: "POP-005" },
 
   // ── 6. RECEBIMENTO E ARMAZENAMENTO (Art. 38-39) ──
   { id: "d30", area: "6. Recebimento e Armazenamento (Art. 38-39)", item: "Controle de recepção com indicação de procedência (Art. 39-XIII)", conforme: null, observacao: "", popVinculado: "POP-003" },
@@ -81,6 +83,7 @@ const CHECKLIST_DECRETO_12031: ChecklistItem[] = [
   { id: "d47", area: "10. Análise Laboratorial (Art. 68, 76)", item: "Controle do processo por análises (Art. 76)", conforme: null, observacao: "", popVinculado: "POP-007" },
   { id: "d48", area: "10. Análise Laboratorial (Art. 68, 76)", item: "Documentação auditável das análises (Art. 76)", conforme: null, observacao: "", popVinculado: "POP-007" },
   { id: "d49", area: "10. Análise Laboratorial (Art. 68, 76)", item: "Medidas corretivas em caso de desvios (Art. 76)", conforme: null, observacao: "", popVinculado: "" },
+  { id: "d49b", area: "10. Análise Laboratorial (Art. 68, 76)", item: "Retenção de amostras de contraprova vinculada ao lote (POP-08)", conforme: null, observacao: "", popVinculado: "POP-008" },
 
   // ── 11. TRÂNSITO E TRANSPORTE (Art. 77) ──
   { id: "d50", area: "11. Trânsito e Transporte (Art. 77)", item: "Transporte apropriado garantindo integridade (Art. 77)", conforme: null, observacao: "", popVinculado: "" },
@@ -90,6 +93,8 @@ const CHECKLIST_DECRETO_12031: ChecklistItem[] = [
   { id: "d52", area: "12. Responsável Técnico e Treinamento (Art. 43)", item: "Responsável técnico designado (Art. 43)", conforme: null, observacao: "", popVinculado: "" },
   { id: "d53", area: "12. Responsável Técnico e Treinamento (Art. 43)", item: "Equipe treinada e habilitada (Art. 39-XIV)", conforme: null, observacao: "", popVinculado: "" },
   { id: "d54", area: "12. Responsável Técnico e Treinamento (Art. 43)", item: "Registros de treinamento mantidos e atualizados", conforme: null, observacao: "", popVinculado: "" },
+  { id: "d54b", area: "12. Responsável Técnico e Treinamento (Art. 43)", item: "Avaliação de eficácia pós-treinamento realizada (IN 15/2009)", conforme: null, observacao: "", popVinculado: "POP-009" },
+  { id: "d54c", area: "12. Responsável Técnico e Treinamento (Art. 43)", item: "ASOs válidos para todos os manipuladores (NR-7 / POP-02)", conforme: null, observacao: "", popVinculado: "POP-002" },
 
   // ── 13. DOCUMENTAÇÃO (Art. 39-IV, 42) ──
   { id: "d55", area: "13. Documentação (Art. 39-IV, 42)", item: "Documentação exigida disponível no estabelecimento (Art. 39-IV)", conforme: null, observacao: "", popVinculado: "" },
@@ -101,9 +106,17 @@ const CHECKLIST_DECRETO_12031: ChecklistItem[] = [
   { id: "d59", area: "14. Embalagem (Art. 58-60)", item: "Embalagens de primeiro uso e íntegras (Art. 59)", conforme: null, observacao: "", popVinculado: "" },
   { id: "d60", area: "14. Embalagem (Art. 58-60)", item: "Reutilização controlada com procedimento em autocontrole (Art. 59 §único)", conforme: null, observacao: "", popVinculado: "" },
 
-  // ── 15. ÁGUA (Controle de qualidade) ──
+  // ── 15. QUALIDADE DA ÁGUA ──
   { id: "d61", area: "15. Qualidade da Água", item: "Controle de qualidade da água utilizada", conforme: null, observacao: "", popVinculado: "" },
   { id: "d62", area: "15. Qualidade da Água", item: "Análises periódicas realizadas e registradas", conforme: null, observacao: "", popVinculado: "" },
+
+  // ── 16. CATEGORIZAÇÃO DE RISCO (Decreto 12.031/2024 — Art. 79-86) ──
+  { id: "d63", area: "16. Categorização de Risco (Art. 79-86) — 🔴 NOVO", item: "Estabelecimento classificado conforme nível de risco (Art. 79)", conforme: null, observacao: "", popVinculado: "" },
+  { id: "d64", area: "16. Categorização de Risco (Art. 79-86) — 🔴 NOVO", item: "Frequência de fiscalização compatível com a categoria de risco", conforme: null, observacao: "", popVinculado: "" },
+  { id: "d65", area: "16. Categorização de Risco (Art. 79-86) — 🔴 NOVO", item: "Histórico de não conformidades considerado na classificação", conforme: null, observacao: "", popVinculado: "" },
+  { id: "d66", area: "16. Categorização de Risco (Art. 79-86) — 🔴 NOVO", item: "Fabricação de rações medicamentosas: risco elevado identificado", conforme: null, observacao: "", popVinculado: "POP-005" },
+  { id: "d67", area: "16. Categorização de Risco (Art. 79-86) — 🔴 NOVO", item: "Medidas de mitigação implementadas proporcionais ao nível de risco", conforme: null, observacao: "", popVinculado: "" },
+  { id: "d68", area: "16. Categorização de Risco (Art. 79-86) — 🔴 NOVO", item: "Plano de ação para redução de categoria de risco documentado", conforme: null, observacao: "", popVinculado: "" },
 ];
 
 const DEMO_NCS: NaoConformidade[] = [

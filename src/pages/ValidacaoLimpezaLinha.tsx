@@ -125,6 +125,29 @@ export default function ValidacaoLimpezaLinha() {
                   <p className="text-xs text-muted-foreground">Registre o CV% (Coeficiente de Variação) do teste de homogeneidade. O limite aceitável é CV ≤ 10% para misturadores. Informe o tempo de mistura validado no campo "Observações".</p>
                 </div>
               )}
+              {form.tipo_validacao === "carryover" && (
+                <div className="p-3 rounded-lg border border-orange-400 bg-orange-50 dark:bg-orange-900/20 space-y-2">
+                  <p className="text-xs font-semibold text-orange-700 dark:text-orange-400 mb-1">🔬 Teste de Carry-Over (Arraste) — POP-05 / IN 15/2009</p>
+                  <p className="text-xs text-muted-foreground">
+                    Meça o % de arraste do princípio ativo (ex: monensina, salinomicina) do lote anterior para o seguinte.
+                    O limite aceitável varia conforme a substância ativa e espécie destino.
+                  </p>
+                  <div className="grid grid-cols-2 gap-2 mt-2">
+                    <div className="text-[10px] p-2 rounded bg-background border space-y-1">
+                      <p className="font-semibold">Limites de referência (IN 15/2009):</p>
+                      <p>• Ionóforos para bovinos: &lt; 1% arraste</p>
+                      <p>• Medicamentos veterinários: &lt; 3% arraste</p>
+                      <p>• Proibidos p/ espécie seguinte: 0% (flushing obrigatório)</p>
+                    </div>
+                    <div className="text-[10px] p-2 rounded bg-background border space-y-1">
+                      <p className="font-semibold">Metodologia recomendada:</p>
+                      <p>• Coleta após 1ª batida do lote seguinte</p>
+                      <p>• Análise por HPLC, ELISA ou teste rápido</p>
+                      <p>• Resultado no campo "Resíduo Detectado"</p>
+                    </div>
+                  </div>
+                </div>
+              )}
               <div className="grid grid-cols-2 gap-3">
                 <div><Label>Data</Label><Input type="date" value={form.data_validacao} onChange={e => setForm(p => ({ ...p, data_validacao: e.target.value }))} /></div>
                 <div><Label>Hora</Label><Input value={form.hora_validacao} onChange={e => setForm(p => ({ ...p, hora_validacao: e.target.value }))} placeholder="14:30" /></div>

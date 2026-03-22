@@ -32,12 +32,15 @@ export default function Auditoria() {
 
   return (
     <>
-      <PageHeader icon={ClipboardCheck} title="Auditoria BPF" description="Checklist conforme Decreto 12.031/2024 — MAPA" />
+      <PageHeader icon={ClipboardCheck} title="Auditoria BPF" description="Checklist conforme Decreto 12.031/2024 — MAPA — Categorização de Risco" />
 
-      <div className="mb-4">
+      <div className="mb-4 flex flex-wrap gap-2">
         <Badge variant="outline" className="text-xs border-primary/40 text-primary">
           <FileText className="w-3 h-3 mr-1" />
           Decreto nº 12.031/2024 — {total} itens de verificação
+        </Badge>
+        <Badge variant="outline" className="text-xs border-destructive/40 text-destructive">
+          Inclui categorização de risco (Art. 79-86)
         </Badge>
       </div>
 

@@ -82,15 +82,19 @@ const POP03_LIMPEZA_ITENS = [
   "Registro de produto químico utilizado na limpeza",
 ];
 
-// Checklist items for POP-04 water potability
+// Checklist items for POP-04 water potability (IN 04/2007 — Art. 2º)
 const POP04_AGUA_ITENS = [
   "Cloro residual dentro do padrão (0,2 a 2,0 mg/L)",
   "pH dentro do padrão (6,0 a 9,5)",
   "Turbidez dentro do padrão (≤ 5 NTU)",
   "Ausência de odor ou sabor anormal",
   "Reservatório com tampa e vedação adequada",
-  "Laudo laboratorial mensal em dia",
-  "Certificado de limpeza do reservatório válido",
+  "Laudo laboratorial mensal em dia (portaria 888/2021)",
+  "Certificado de limpeza do reservatório válido (semestral)",
+  "Ponto de coleta identificado e registrado",
+  "Laudo microbiológico da água (coliformes totais e E. coli) — vigente",
+  "Registro de tratamento da água (quando fonte alternativa)",
+  "Frequência de análise conforme plano de amostragem",
 ];
 
 // Checklist items for POP-05 vehicle transport inspection (IN 15/2009)
@@ -148,6 +152,10 @@ export default function ExecucaoPops() {
   const [statusExec, setStatusExec] = useState("concluido");
   const [obs, setObs] = useState("");
   const [checklistTriagem, setChecklistTriagem] = useState<Record<number, boolean | null>>({});
+  // POP-04 laudo fields
+  const [laudoNumero, setLaudoNumero] = useState("");
+  const [laudoLaboratorio, setLaudoLaboratorio] = useState("");
+  const [laudoData, setLaudoData] = useState("");
 
   const fetchData = async () => {
     if (!user) return;
@@ -185,7 +193,8 @@ export default function ExecucaoPops() {
       }).join("\n");
       const naoConformes = activeChecklist.filter((_, i) => checklistTriagem[i] === false).length;
       const header = isPOP02 ? "[TRIAGEM DIÁRIA — POP-02 / IN 15/2009]" : isPOP03 ? "[LIMPEZA PRÉ-OPERACIONAL — POP-03 / IN 04/2007]" : isPOP04 ? "[CONTROLE POTABILIDADE — POP-04 / IN 04/2007]" : "[VISTORIA VEÍCULO — POP-05 / IN 15/2009]";
-      obsCompleta = `${header}\n${checkItems}${naoConformes > 0 ? `\n⚠️ ${naoConformes} item(ns) não conforme(s)` : "\n✅ Todos os itens conformes"}${obs ? `\nObs: ${obs}` : ""}`;
+      const laudoInfo = isPOP04 && laudoNumero ? `\n📄 Laudo nº ${laudoNumero} | Lab: ${laudoLaboratorio} | Data: ${laudoData}` : "";
+      obsCompleta = `${header}\n${checkItems}${naoConformes > 0 ? `\n⚠️ ${naoConformes} item(ns) não conforme(s)` : "\n✅ Todos os itens conformes"}${laudoInfo}${obs ? `\nObs: ${obs}` : ""}`;
     }
 
     const { error } = await supabase.from("execucao_pops").insert({
@@ -203,7 +212,7 @@ export default function ExecucaoPops() {
       toast.success("Execução registrada!");
       setOpen(false);
       setDocSelecionado(""); setExecutor(""); setSetor(""); setObs(""); setStatusExec("concluido");
-      setChecklistTriagem({});
+      setChecklistTriagem({}); setLaudoNumero(""); setLaudoLaboratorio(""); setLaudoData("");
       fetchData();
     }
     setSaving(false);
@@ -449,6 +458,19 @@ export default function ExecucaoPops() {
                     </div>
                     {Object.values(checklistTriagem).some(v => v === false) && (
                       <p className="text-xs text-destructive font-semibold mt-2">⚠️ Itens não conformes detectados — registrar como "Não conforme" se necessário.</p>
+                    )}
+
+                    {/* POP-04 laudo fields */}
+                    {isPOP04 && (
+                      <div className="mt-3 p-3 rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-300 space-y-2">
+                        <p className="text-xs font-semibold text-blue-700 dark:text-blue-400">📄 Dados do Laudo de Análise da Água</p>
+                        <div className="grid grid-cols-3 gap-2">
+                          <div><Label className="text-xs">Nº Laudo</Label><Input value={laudoNumero} onChange={e => setLaudoNumero(e.target.value)} placeholder="Ex: 2026/0145" className="h-8 text-xs" /></div>
+                          <div><Label className="text-xs">Laboratório</Label><Input value={laudoLaboratorio} onChange={e => setLaudoLaboratorio(e.target.value)} placeholder="Nome do lab" className="h-8 text-xs" /></div>
+                          <div><Label className="text-xs">Data do Laudo</Label><Input type="date" value={laudoData} onChange={e => setLaudoData(e.target.value)} className="h-8 text-xs" /></div>
+                        </div>
+                        <p className="text-[10px] text-muted-foreground">Anexe o laudo completo no módulo Documentos/Arquivo BPF para evidência fiscal.</p>
+                      </div>
                     )}
                   </div>
                 )}
