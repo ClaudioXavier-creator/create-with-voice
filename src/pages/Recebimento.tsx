@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Package, Plus, CheckCircle2, XCircle, Loader2, Search, FileText, Download } from "lucide-react";
+import { Package, Plus, CheckCircle2, XCircle, Loader2, Search, FileText, Download, Truck } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
