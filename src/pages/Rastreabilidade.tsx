@@ -460,7 +460,158 @@ export default function Rastreabilidade() {
       </Card>
 
 
-      {comRecall.length > 0 && (
+      {/* ──── Teste de Rastreabilidade Completa ──── */}
+      <Card className="mb-6 border-primary/30">
+        <CardHeader className="flex flex-row items-center justify-between">
+          <div>
+            <CardTitle className="font-display text-sm flex items-center gap-2">
+              <ArrowUpDown className="w-5 h-5 text-primary" /> Teste de Rastreabilidade — Montante e Jusante
+            </CardTitle>
+            <p className="text-xs text-muted-foreground mt-1">Rastreie um lote completo (MP → PA → Cliente) e registre o resultado</p>
+          </div>
+          <Dialog open={testeOpen} onOpenChange={setTesteOpen}>
+            <DialogTrigger asChild>
+              <Button size="sm" variant="outline" className="border-primary text-primary hover:bg-primary hover:text-primary-foreground">
+                <ArrowUpDown className="w-4 h-4 mr-1" /> Testar Lote
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+              <DialogHeader><DialogTitle className="flex items-center gap-2"><ArrowUpDown className="w-5 h-5 text-primary" /> Teste de Rastreabilidade Completa</DialogTitle></DialogHeader>
+              <div className="space-y-4">
+                {/* Lote input */}
+                <div>
+                  <Label>Lote do Produto Acabado (PA)</Label>
+                  <div className="flex gap-2 mt-1">
+                    <Select value={testeLote} onValueChange={setTesteLote}>
+                      <SelectTrigger><SelectValue placeholder="Selecione um lote" /></SelectTrigger>
+                      <SelectContent>
+                        {Array.from(new Set(registros.map(r => r.lote_produto).filter(Boolean))).map(lote => (
+                          <SelectItem key={lote!} value={lote!}>{lote}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <Button onClick={startTesteRastreabilidade} disabled={testeRunning || !testeLote}>
+                      {testeRunning ? <Loader2 className="w-4 h-4 animate-spin" /> : <Play className="w-4 h-4" />}
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Timer */}
+                {testeRunning && (
+                  <div className="text-center p-4 rounded-lg bg-primary/5 border border-primary/20">
+                    <Loader2 className="w-8 h-8 animate-spin mx-auto text-primary mb-2" />
+                    <p className="text-2xl font-mono font-bold">{formatTime(testeTime)}</p>
+                    <p className="text-xs text-muted-foreground">Rastreando montante e jusante...</p>
+                  </div>
+                )}
+
+                {/* Results */}
+                {testeResult && (
+                  <div className="space-y-4">
+                    <div className={`p-3 rounded-lg text-center ${testeResult.montante.length > 0 && testeResult.jusante.length > 0 ? "bg-primary/10 border border-primary/30" : "bg-yellow-500/10 border border-yellow-500/30"}`}>
+                      <p className="font-display font-bold text-lg">
+                        {testeResult.montante.length > 0 && testeResult.jusante.length > 0 ? "✅ Rastreabilidade Completa" : "⚠️ Rastreabilidade Parcial"}
+                      </p>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        Lote <strong>{testeResult.lote}</strong> — {testeResult.produto}
+                      </p>
+                      <p className="text-2xl font-mono font-bold mt-2">{formatTime(testeResult.tempoSegundos)}</p>
+                    </div>
+
+                    {/* Montante */}
+                    <div className="p-3 rounded-lg bg-accent/5 border border-accent/20">
+                      <p className="text-xs font-bold flex items-center gap-1 mb-2">
+                        <CheckCircle2 className="w-3 h-3 text-primary" /> MONTANTE (← Matérias-Primas) — {testeResult.montante.length} encontradas
+                      </p>
+                      {testeResult.montante.length > 0 ? (
+                        <Table>
+                          <TableHeader><TableRow>
+                            <TableHead className="py-1 text-xs">Matéria-Prima</TableHead>
+                            <TableHead className="py-1 text-xs">Lote MP</TableHead>
+                            <TableHead className="py-1 text-xs">Fornecedor</TableHead>
+                          </TableRow></TableHeader>
+                          <TableBody>
+                            {testeResult.montante.map((m, i) => (
+                              <TableRow key={i}>
+                                <TableCell className="py-1 text-xs">{m.materia_prima}</TableCell>
+                                <TableCell className="py-1 text-xs font-mono">{m.lote_mp}</TableCell>
+                                <TableCell className="py-1 text-xs">{m.fornecedor}</TableCell>
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                      ) : <p className="text-xs text-muted-foreground">Nenhuma MP encontrada</p>}
+                    </div>
+
+                    {/* Jusante */}
+                    <div className="p-3 rounded-lg bg-muted/50 border">
+                      <p className="text-xs font-bold flex items-center gap-1 mb-2">
+                        {testeResult.jusante.length > 0 ? <CheckCircle2 className="w-3 h-3 text-primary" /> : <XCircle className="w-3 h-3 text-destructive" />}
+                        JUSANTE (→ Clientes/Destinos) — {testeResult.jusante.length} encontrados
+                      </p>
+                      {testeResult.jusante.length > 0 ? (
+                        <Table>
+                          <TableHeader><TableRow>
+                            <TableHead className="py-1 text-xs">Cliente</TableHead>
+                            <TableHead className="py-1 text-xs">Local</TableHead>
+                            <TableHead className="py-1 text-xs">NF</TableHead>
+                            <TableHead className="py-1 text-xs">Data Venda</TableHead>
+                          </TableRow></TableHeader>
+                          <TableBody>
+                            {testeResult.jusante.map((j, i) => (
+                              <TableRow key={i}>
+                                <TableCell className="py-1 text-xs">{j.cliente}</TableCell>
+                                <TableCell className="py-1 text-xs">{j.local}</TableCell>
+                                <TableCell className="py-1 text-xs font-mono">{j.nf}</TableCell>
+                                <TableCell className="py-1 text-xs">{j.data_venda}</TableCell>
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                      ) : <p className="text-xs text-muted-foreground">Nenhum destino/venda registrado para este lote</p>}
+                    </div>
+
+                    {/* Save */}
+                    <div>
+                      <Label className="text-xs">Observações do teste</Label>
+                      <Textarea value={testeObs} onChange={e => setTesteObs(e.target.value)} rows={2} placeholder="Avaliação do teste..." />
+                    </div>
+                    <Button onClick={salvarTesteResultado} className="w-full" disabled={testeSaving}>
+                      {testeSaving ? <Loader2 className="w-4 h-4 mr-1 animate-spin" /> : <Save className="w-4 h-4 mr-1" />}
+                      Salvar Resultado do Teste
+                    </Button>
+                  </div>
+                )}
+
+                {/* Histórico */}
+                {testesHistorico.length > 0 && !testeResult && (
+                  <div>
+                    <p className="text-xs font-bold mb-2">Histórico de Testes</p>
+                    <div className="space-y-1">
+                      {testesHistorico.map((t: any) => (
+                        <div key={t.id} className="flex items-center justify-between p-2 rounded bg-muted/30 border text-xs">
+                          <div>
+                            <span className="font-medium">{t.produto}</span>
+                            <Badge variant="outline" className="ml-2 font-mono text-[10px]">{t.lote_testado}</Badge>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="font-mono">{formatTime(t.tempo_segundos)}</span>
+                            <Badge className={t.resultado === "aprovado" ? "bg-primary/20 text-primary" : "bg-yellow-500/20 text-yellow-700"}>
+                              {t.resultado === "aprovado" ? "Completo" : "Parcial"}
+                            </Badge>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </DialogContent>
+          </Dialog>
+        </CardHeader>
+      </Card>
+
+
         <Card className="border-destructive/30 bg-destructive/5 mb-6">
           <CardContent className="pt-4">
             <div className="flex items-center gap-2 mb-3">
