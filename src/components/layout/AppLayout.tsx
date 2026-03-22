@@ -77,8 +77,10 @@ const NAV_ENTRIES: NavEntry[] = [
     icon: BookOpen,
     items: [
       { path: "/indicadores", label: "Indicadores", icon: BarChart3 },
+      { path: "/relatorio-producao", label: "Rel. Produção Mensal", icon: BarChart3 },
       { path: "/relatorios", label: "Relatórios", icon: FileDown },
       { path: "/legislacao", label: "Legislação & IA", icon: Scale },
+      { path: "/sala-auditor", label: "Sala do Auditor", icon: ClipboardCheck },
     ],
   },
   { path: "/manual", label: "Manual", icon: BookOpen },
