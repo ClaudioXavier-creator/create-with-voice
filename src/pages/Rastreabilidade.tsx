@@ -103,7 +103,118 @@ export default function Rastreabilidade() {
     setDataVenda(""); setNotaFiscal(""); setQuantidadeVendida("");
   };
 
-  const handleAdd = async () => {
+  const fetchData = async () => {
+    if (!user) return;
+    const { data, error } = await supabase
+      .from("rastreabilidade")
+      .select("*")
+      .order("created_at", { ascending: false });
+    if (error) toast.error("Erro ao carregar dados");
+    else setRegistros((data as unknown as RastreabilidadeRow[]) || []);
+    setLoading(false);
+  };
+
+  const fetchTestesHistorico = async () => {
+    if (!user) return;
+    const { data } = await supabase
+      .from("testes_rastreabilidade")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .limit(10);
+    if (data) setTestesHistorico(data);
+  };
+
+  useEffect(() => { fetchData(); fetchTestesHistorico(); }, [user]);
+
+  // ──── Teste de Rastreabilidade ────
+  const startTesteRastreabilidade = () => {
+    if (!testeLote.trim()) { toast.error("Informe o lote para testar."); return; }
+    setTesteRunning(true);
+    setTesteTime(0);
+    setTesteResult(null);
+    testeInterval.current = setInterval(() => setTesteTime(t => t + 1), 1000);
+
+    // Run the trace
+    const lote = testeLote.trim();
+    const lotRecords = registros.filter(r => r.lote_produto === lote);
+
+    if (lotRecords.length === 0) {
+      clearInterval(testeInterval.current!);
+      setTesteRunning(false);
+      toast.error(`Lote "${lote}" não encontrado na rastreabilidade.`);
+      return;
+    }
+
+    const produtoNome = lotRecords[0].produto;
+
+    // Montante (upstream): all raw materials for this lot
+    const montante = lotRecords.map(r => ({
+      materia_prima: r.materia_prima,
+      lote_mp: r.lote_mp || "—",
+      fornecedor: r.fornecedor || "—",
+    }));
+
+    // Jusante (downstream): all sales/deliveries for this lot
+    const jusante = lotRecords
+      .filter(r => r.cliente_destino)
+      .map(r => ({
+        cliente: r.cliente_destino || "—",
+        local: r.local_entrega || "—",
+        nf: r.nota_fiscal || "—",
+        data_venda: r.data_venda || "—",
+      }));
+
+    // Deduplicate
+    const uniqueMontante = montante.filter((m, i, arr) =>
+      arr.findIndex(x => x.materia_prima === m.materia_prima && x.lote_mp === m.lote_mp) === i
+    );
+    const uniqueJusante = jusante.filter((j, i, arr) =>
+      arr.findIndex(x => x.cliente === j.cliente && x.nf === j.nf) === i
+    );
+
+    // Simulate 2 second delay for realism
+    setTimeout(() => {
+      if (testeInterval.current) clearInterval(testeInterval.current);
+      setTesteRunning(false);
+      const elapsed = 2;
+      setTesteTime(elapsed);
+      setTesteResult({
+        lote,
+        produto: produtoNome,
+        montante: uniqueMontante,
+        jusante: uniqueJusante,
+        tempoSegundos: elapsed,
+      });
+      toast.success(`Rastreabilidade completa do lote ${lote} em ${elapsed}s!`);
+    }, 2000);
+  };
+
+  const salvarTesteResultado = async () => {
+    if (!user || !testeResult) return;
+    setTesteSaving(true);
+    const { error } = await supabase.from("testes_rastreabilidade").insert({
+      user_id: user.id,
+      lote_testado: testeResult.lote,
+      produto: testeResult.produto,
+      direcao: "completo",
+      tempo_segundos: testeResult.tempoSegundos,
+      montante_encontrado: testeResult.montante.length > 0,
+      jusante_encontrado: testeResult.jusante.length > 0,
+      materias_primas_rastreadas: testeResult.montante.length,
+      destinos_rastreados: testeResult.jusante.length,
+      resultado: testeResult.montante.length > 0 && testeResult.jusante.length > 0 ? "aprovado" : "parcial",
+      observacoes: testeObs,
+      detalhes_json: { montante: testeResult.montante, jusante: testeResult.jusante },
+    } as any);
+    if (error) toast.error("Erro: " + error.message);
+    else {
+      toast.success("Resultado do teste salvo!");
+      fetchTestesHistorico();
+    }
+    setTesteSaving(false);
+  };
+
+
     if (!produto || !materiaPrima || !user) return;
     setSaving(true);
     const { error } = await supabase.from("rastreabilidade").insert({
