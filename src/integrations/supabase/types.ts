@@ -804,6 +804,93 @@ export type Database = {
         }
         Relationships: []
       }
+      produtos: {
+        Row: {
+          armazenamento: string | null
+          categoria_animal: string | null
+          classificacao: string
+          composicao: string | null
+          created_at: string
+          diferenciais: string | null
+          embalagem: string | null
+          especie_alvo: string | null
+          forma_fisica: string | null
+          foto_url: string | null
+          id: string
+          indicacoes: string | null
+          marca: string | null
+          modo_preparo: string | null
+          modo_uso: string | null
+          niveis_garantia: Json | null
+          nome: string
+          observacoes: string | null
+          peso_liquido: string | null
+          precaucoes: string | null
+          registro_mapa: string | null
+          status: string | null
+          unidade_peso: string | null
+          updated_at: string
+          user_id: string
+          validade_meses: number | null
+        }
+        Insert: {
+          armazenamento?: string | null
+          categoria_animal?: string | null
+          classificacao?: string
+          composicao?: string | null
+          created_at?: string
+          diferenciais?: string | null
+          embalagem?: string | null
+          especie_alvo?: string | null
+          forma_fisica?: string | null
+          foto_url?: string | null
+          id?: string
+          indicacoes?: string | null
+          marca?: string | null
+          modo_preparo?: string | null
+          modo_uso?: string | null
+          niveis_garantia?: Json | null
+          nome: string
+          observacoes?: string | null
+          peso_liquido?: string | null
+          precaucoes?: string | null
+          registro_mapa?: string | null
+          status?: string | null
+          unidade_peso?: string | null
+          updated_at?: string
+          user_id: string
+          validade_meses?: number | null
+        }
+        Update: {
+          armazenamento?: string | null
+          categoria_animal?: string | null
+          classificacao?: string
+          composicao?: string | null
+          created_at?: string
+          diferenciais?: string | null
+          embalagem?: string | null
+          especie_alvo?: string | null
+          forma_fisica?: string | null
+          foto_url?: string | null
+          id?: string
+          indicacoes?: string | null
+          marca?: string | null
+          modo_preparo?: string | null
+          modo_uso?: string | null
+          niveis_garantia?: Json | null
+          nome?: string
+          observacoes?: string | null
+          peso_liquido?: string | null
+          precaucoes?: string | null
+          registro_mapa?: string | null
+          status?: string | null
+          unidade_peso?: string | null
+          updated_at?: string
+          user_id?: string
+          validade_meses?: number | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -986,6 +1073,110 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      rotulos: {
+        Row: {
+          altura_mm: number | null
+          armazenamento: string | null
+          classificacao_label: string | null
+          cnpj: string | null
+          composicao_ingredientes: string | null
+          created_at: string
+          endereco: string | null
+          especie_categoria: string | null
+          fabricacao_placeholder: string | null
+          id: string
+          indicacoes_uso: string | null
+          largura_mm: number | null
+          lote_placeholder: string | null
+          modo_usar: string | null
+          niveis_garantia_texto: string | null
+          nome_comercial: string | null
+          peso_liquido: string | null
+          prazo_validade: string | null
+          precaucoes_restricoes: string | null
+          produto_id: string
+          razao_social: string | null
+          registro_mapa: string | null
+          rt_crmv: string | null
+          rt_nome: string | null
+          sac_contato: string | null
+          status: string | null
+          tipo_rotulo: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          altura_mm?: number | null
+          armazenamento?: string | null
+          classificacao_label?: string | null
+          cnpj?: string | null
+          composicao_ingredientes?: string | null
+          created_at?: string
+          endereco?: string | null
+          especie_categoria?: string | null
+          fabricacao_placeholder?: string | null
+          id?: string
+          indicacoes_uso?: string | null
+          largura_mm?: number | null
+          lote_placeholder?: string | null
+          modo_usar?: string | null
+          niveis_garantia_texto?: string | null
+          nome_comercial?: string | null
+          peso_liquido?: string | null
+          prazo_validade?: string | null
+          precaucoes_restricoes?: string | null
+          produto_id: string
+          razao_social?: string | null
+          registro_mapa?: string | null
+          rt_crmv?: string | null
+          rt_nome?: string | null
+          sac_contato?: string | null
+          status?: string | null
+          tipo_rotulo?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          altura_mm?: number | null
+          armazenamento?: string | null
+          classificacao_label?: string | null
+          cnpj?: string | null
+          composicao_ingredientes?: string | null
+          created_at?: string
+          endereco?: string | null
+          especie_categoria?: string | null
+          fabricacao_placeholder?: string | null
+          id?: string
+          indicacoes_uso?: string | null
+          largura_mm?: number | null
+          lote_placeholder?: string | null
+          modo_usar?: string | null
+          niveis_garantia_texto?: string | null
+          nome_comercial?: string | null
+          peso_liquido?: string | null
+          prazo_validade?: string | null
+          precaucoes_restricoes?: string | null
+          produto_id?: string
+          razao_social?: string | null
+          registro_mapa?: string | null
+          rt_crmv?: string | null
+          rt_nome?: string | null
+          sac_contato?: string | null
+          status?: string | null
+          tipo_rotulo?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rotulos_produto_id_fkey"
+            columns: ["produto_id"]
+            isOneToOne: false
+            referencedRelation: "produtos"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       treinamentos: {
         Row: {
