@@ -207,6 +207,7 @@ export default function Documentos() {
                     <TableHead className="w-24">Código</TableHead>
                     <TableHead>Procedimento</TableHead>
                     <TableHead className="w-28">Status</TableHead>
+                    <TableHead className="w-40">Módulo Vinculado</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
