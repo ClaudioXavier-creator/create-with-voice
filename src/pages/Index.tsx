@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { LayoutDashboard, AlertTriangle, ClipboardCheck, GraduationCap, CheckCircle2 } from "lucide-react";
+import { LayoutDashboard, AlertTriangle, ClipboardCheck, GraduationCap, CheckCircle2, CalendarDays, Bell } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
@@ -7,7 +7,9 @@ import { Skeleton } from "@/components/ui/skeleton";
 import PageHeader from "@/components/PageHeader";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { Link } from "react-router-dom";
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts";
+import { differenceInDays, parseISO, format } from "date-fns";
 
 const statusColors: Record<string, string> = {
   aberta: "bg-destructive text-destructive-foreground",
@@ -41,6 +43,8 @@ interface DashboardData {
   conformidadePorArea: { area: string; pct: number }[];
   ncPorMes: NCPorMes[];
   conformidadePorMes: ConformidadePorMes[];
+  atividadesVencidas: { atividade: string; proxima_execucao: string; categoria: string }[];
+  atividadesProximas: { atividade: string; proxima_execucao: string; categoria: string; dias: number }[];
   loading: boolean;
 }
 
@@ -55,6 +59,8 @@ export default function Index() {
     conformidadePorArea: [],
     ncPorMes: [],
     conformidadePorMes: [],
+    atividadesVencidas: [],
+    atividadesProximas: [],
     loading: true,
   });
 
@@ -62,7 +68,7 @@ export default function Index() {
     if (!user) return;
 
     async function fetchDashboard() {
-      const [ncsRes, ncsFullRes, checklistRes, checklistDatesRes, treinamentosRes, recentNcsRes] = await Promise.all([
+      const [ncsRes, ncsFullRes, checklistRes, checklistDatesRes, treinamentosRes, recentNcsRes, planejamentoRes] = await Promise.all([
         supabase.from("nao_conformidades").select("status").eq("user_id", user!.id),
         supabase.from("nao_conformidades").select("data, status").eq("user_id", user!.id),
         supabase.from("checklist_items").select("area, conforme").eq("user_id", user!.id),
@@ -74,6 +80,7 @@ export default function Index() {
           .eq("user_id", user!.id)
           .order("data", { ascending: false })
           .limit(5),
+        supabase.from("planejamento_anual").select("atividade, proxima_execucao, categoria").eq("user_id", user!.id).not("proxima_execucao", "is", null),
       ]);
 
       const ncs = ncsRes.data || [];
@@ -169,6 +176,20 @@ export default function Index() {
         };
       });
 
+      // --- Planejamento Anual: vencidas e próximas ---
+      const planejamento = ((planejamentoRes.data || []) as any[]);
+      const now = new Date();
+      const atividadesVencidas = planejamento
+        .filter(p => p.proxima_execucao && differenceInDays(parseISO(p.proxima_execucao), now) < 0)
+        .map(p => ({ atividade: p.atividade, proxima_execucao: p.proxima_execucao, categoria: p.categoria }));
+      const atividadesProximas = planejamento
+        .filter(p => {
+          if (!p.proxima_execucao) return false;
+          const dias = differenceInDays(parseISO(p.proxima_execucao), now);
+          return dias >= 0 && dias <= 7;
+        })
+        .map(p => ({ atividade: p.atividade, proxima_execucao: p.proxima_execucao, categoria: p.categoria, dias: differenceInDays(parseISO(p.proxima_execucao), now) }));
+
       setData({
         ncAbertas,
         auditoriasRealizadas,
@@ -178,6 +199,8 @@ export default function Index() {
         conformidadePorArea,
         ncPorMes,
         conformidadePorMes,
+        atividadesVencidas,
+        atividadesProximas,
         loading: false,
       });
     }
@@ -195,6 +218,52 @@ export default function Index() {
   return (
     <>
       <PageHeader icon={LayoutDashboard} title="Dashboard" description="Visão geral do sistema FeedBPF" />
+
+      {/* Alertas do Planejamento Anual */}
+      {!data.loading && (data.atividadesVencidas.length > 0 || data.atividadesProximas.length > 0) && (
+        <div className="space-y-3 mb-6">
+          {data.atividadesVencidas.length > 0 && (
+            <Card className="border-destructive bg-destructive/5">
+              <CardContent className="flex items-start gap-3 p-4">
+                <AlertTriangle className="h-5 w-5 text-destructive mt-0.5 shrink-0" />
+                <div className="flex-1">
+                  <p className="font-semibold text-destructive text-sm">
+                    {data.atividadesVencidas.length} atividade(s) do planejamento anual VENCIDA(S)
+                  </p>
+                  <ul className="mt-1 space-y-0.5">
+                    {data.atividadesVencidas.slice(0, 5).map((a, i) => (
+                      <li key={i} className="text-xs text-muted-foreground">
+                        • {a.atividade} — venceu em {format(parseISO(a.proxima_execucao), "dd/MM/yyyy")}
+                      </li>
+                    ))}
+                  </ul>
+                  <Link to="/planejamento-anual" className="text-xs text-primary underline mt-1 inline-block">Ver Planejamento Anual →</Link>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+          {data.atividadesProximas.length > 0 && (
+            <Card className="border-yellow-500 bg-yellow-500/5">
+              <CardContent className="flex items-start gap-3 p-4">
+                <Bell className="h-5 w-5 text-yellow-600 mt-0.5 shrink-0" />
+                <div className="flex-1">
+                  <p className="font-semibold text-yellow-700 text-sm">
+                    {data.atividadesProximas.length} atividade(s) vencem nos próximos 7 dias
+                  </p>
+                  <ul className="mt-1 space-y-0.5">
+                    {data.atividadesProximas.map((a, i) => (
+                      <li key={i} className="text-xs text-muted-foreground">
+                        • {a.atividade} — vence em {a.dias === 0 ? "hoje" : `${a.dias} dia(s)`} ({format(parseISO(a.proxima_execucao), "dd/MM/yyyy")})
+                      </li>
+                    ))}
+                  </ul>
+                  <Link to="/planejamento-anual" className="text-xs text-primary underline mt-1 inline-block">Ver Planejamento Anual →</Link>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+        </div>
+      )}
 
       {/* Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
