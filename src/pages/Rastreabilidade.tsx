@@ -150,7 +150,7 @@ export default function Rastreabilidade() {
     if (data) setTestesHistorico(data);
   };
 
-  useEffect(() => { fetchData(); fetchTestesHistorico(); }, [user]);
+  useEffect(() => { fetchData(); fetchTestesHistorico(); fetchAnalisesLab(); }, [user]);
 
   // ──── Teste de Rastreabilidade ────
   const startTesteRastreabilidade = () => {
