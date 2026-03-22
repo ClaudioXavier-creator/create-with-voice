@@ -233,6 +233,9 @@ export default function Rastreabilidade() {
       data_venda: dataVenda || null,
       nota_fiscal: notaFiscal,
       quantidade_vendida: quantidadeVendida,
+      especie_destino: especieDestino || null,
+      contem_origem_animal: contemOrigemAnimal,
+      tipo_origem_animal: tipoOrigemAnimal || null,
     } as any);
     if (error) {
       toast.error("Erro ao salvar");
