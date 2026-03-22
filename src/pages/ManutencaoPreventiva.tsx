@@ -299,6 +299,135 @@ export default function ManutencaoPreventiva() {
             </Card>
           )}
         </TabsContent>
+
+        {/* ── CRONOGRAMA ── */}
+        <TabsContent value="cronograma" className="space-y-4">
+          <Card className="border-accent/20 bg-accent/5">
+            <CardContent className="pt-4">
+              <p className="text-xs text-muted-foreground">
+                Cronograma de manutenção preventiva dos próximos 90 dias — POP 06 (IN 04/2007).
+                Equipamentos sem próxima manutenção programada são destacados como pendentes.
+              </p>
+            </CardContent>
+          </Card>
+
+          {(() => {
+            const hoje = new Date();
+            const em90dias = new Date(hoje);
+            em90dias.setDate(em90dias.getDate() + 90);
+
+            // Upcoming maintenance
+            const proximas = manutencoes
+              .filter((m: any) => m.proxima_manutencao && m.proxima_manutencao >= today)
+              .sort((a: any, b: any) => a.proxima_manutencao.localeCompare(b.proxima_manutencao));
+
+            // Overdue
+            const atrasadas = manutencoes.filter((m: any) => m.status === "programada" && m.data_programada && m.data_programada < today);
+
+            // Upcoming calibrations
+            const proxCalibs = calibracoes
+              .filter((c: any) => c.proxima_calibracao && c.proxima_calibracao >= today && c.proxima_calibracao <= em90dias.toISOString().split("T")[0])
+              .sort((a: any, b: any) => a.proxima_calibracao.localeCompare(b.proxima_calibracao));
+
+            // Equipment without next maintenance
+            const equipSemProxima = manutencoes.filter((m: any) => !m.proxima_manutencao && m.status !== "concluida");
+
+            return (
+              <div className="space-y-4">
+                {atrasadas.length > 0 && (
+                  <Card className="border-destructive/30">
+                    <CardHeader className="py-3"><CardTitle className="text-sm text-destructive flex items-center gap-2"><AlertTriangle className="w-4 h-4" /> Manutenções Atrasadas ({atrasadas.length})</CardTitle></CardHeader>
+                    <Table>
+                      <TableHeader><TableRow>
+                        <TableHead>Equipamento</TableHead><TableHead>Código</TableHead><TableHead>Data Prog.</TableHead><TableHead>Tipo</TableHead><TableHead>Descrição</TableHead>
+                      </TableRow></TableHeader>
+                      <TableBody>
+                        {atrasadas.map((m: any) => (
+                          <TableRow key={m.id} className="bg-destructive/5">
+                            <TableCell className="font-medium">{m.equipamento}</TableCell>
+                            <TableCell>{m.codigo_equipamento || "—"}</TableCell>
+                            <TableCell className="text-destructive font-semibold">{m.data_programada}</TableCell>
+                            <TableCell className="capitalize">{m.tipo}</TableCell>
+                            <TableCell className="max-w-[180px] truncate">{m.descricao}</TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </Card>
+                )}
+
+                <Card>
+                  <CardHeader className="py-3"><CardTitle className="text-sm">Próximas Manutenções (90 dias)</CardTitle></CardHeader>
+                  {proximas.length === 0 ? (
+                    <CardContent><p className="text-sm text-muted-foreground text-center py-4">Nenhuma manutenção programada nos próximos 90 dias</p></CardContent>
+                  ) : (
+                    <Table>
+                      <TableHeader><TableRow>
+                        <TableHead>Equipamento</TableHead><TableHead>Próxima Data</TableHead><TableHead>Tipo</TableHead><TableHead>Responsável</TableHead>
+                      </TableRow></TableHeader>
+                      <TableBody>
+                        {proximas.map((m: any) => {
+                          const dias = Math.ceil((new Date(m.proxima_manutencao).getTime() - hoje.getTime()) / 86400000);
+                          return (
+                            <TableRow key={m.id}>
+                              <TableCell className="font-medium">{m.equipamento}</TableCell>
+                              <TableCell>
+                                {m.proxima_manutencao}
+                                <Badge variant="outline" className="ml-2 text-[10px]">{dias}d</Badge>
+                              </TableCell>
+                              <TableCell className="capitalize">{m.tipo}</TableCell>
+                              <TableCell>{m.responsavel || "—"}</TableCell>
+                            </TableRow>
+                          );
+                        })}
+                      </TableBody>
+                    </Table>
+                  )}
+                </Card>
+
+                {proxCalibs.length > 0 && (
+                  <Card>
+                    <CardHeader className="py-3"><CardTitle className="text-sm">Próximas Calibrações (90 dias)</CardTitle></CardHeader>
+                    <Table>
+                      <TableHeader><TableRow>
+                        <TableHead>Equipamento</TableHead><TableHead>Código</TableHead><TableHead>Próxima Calibração</TableHead><TableHead>Tipo</TableHead>
+                      </TableRow></TableHeader>
+                      <TableBody>
+                        {proxCalibs.map((c: any) => {
+                          const dias = Math.ceil((new Date(c.proxima_calibracao).getTime() - hoje.getTime()) / 86400000);
+                          return (
+                            <TableRow key={c.id}>
+                              <TableCell className="font-medium">{c.equipamento}</TableCell>
+                              <TableCell>{c.codigo || "—"}</TableCell>
+                              <TableCell>
+                                {c.proxima_calibracao}
+                                <Badge variant="outline" className="ml-2 text-[10px]">{dias}d</Badge>
+                              </TableCell>
+                              <TableCell className="capitalize">{c.tipo || "Balança"}</TableCell>
+                            </TableRow>
+                          );
+                        })}
+                      </TableBody>
+                    </Table>
+                  </Card>
+                )}
+
+                {equipSemProxima.length > 0 && (
+                  <Card className="border-yellow-500/20">
+                    <CardHeader className="py-3"><CardTitle className="text-sm text-yellow-700 flex items-center gap-2"><AlertTriangle className="w-4 h-4" /> Equipamentos sem Próxima Manutenção</CardTitle></CardHeader>
+                    <CardContent>
+                      <div className="flex flex-wrap gap-2">
+                        {equipSemProxima.map((m: any) => (
+                          <Badge key={m.id} variant="outline" className="border-yellow-500 text-yellow-700">{m.equipamento} ({m.codigo_equipamento || "s/cód"})</Badge>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+              </div>
+            );
+          })()}
+        </TabsContent>
       </Tabs>
     </div>
   );

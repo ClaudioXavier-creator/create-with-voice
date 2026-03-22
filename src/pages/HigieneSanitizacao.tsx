@@ -451,6 +451,172 @@ export default function HigieneSanitizacao() {
             </Card>
           )}
         </TabsContent>
+
+        {/* ── LAUDOS VINCULADOS ── */}
+        <TabsContent value="laudos" className="space-y-4">
+          <Card className="border-blue-500/20 bg-blue-50 dark:bg-blue-900/10">
+            <CardContent className="pt-4">
+              <div className="flex items-start gap-3">
+                <FileText className="w-6 h-6 text-blue-600 mt-0.5" />
+                <div>
+                  <h4 className="font-semibold text-sm">Laudos Laboratoriais de Água — POP-05 (IN 04/2007)</h4>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Laudos de potabilidade cadastrados no módulo de Análises Laboratoriais, vinculados automaticamente
+                    por parâmetros de água (cloro, pH, coliformes, turbidez). Laudos mensais obrigatórios.
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {laudosAgua.length === 0 ? (
+            <Card><CardContent className="py-12 text-center text-muted-foreground">
+              <FileText className="w-12 h-12 mx-auto mb-3 opacity-40" />
+              <p>Nenhum laudo de água encontrado.</p>
+              <p className="text-xs mt-1">Cadastre análises com parâmetros de água no módulo Análises Laboratoriais.</p>
+            </CardContent></Card>
+          ) : (
+            <Card>
+              <Table>
+                <TableHeader><TableRow>
+                  <TableHead>Data Análise</TableHead>
+                  <TableHead>Produto/Amostra</TableHead>
+                  <TableHead>Parâmetro</TableHead>
+                  <TableHead>Resultado</TableHead>
+                  <TableHead>Limite Ref.</TableHead>
+                  <TableHead>Laudo Nº</TableHead>
+                  <TableHead>Conforme</TableHead>
+                </TableRow></TableHeader>
+                <TableBody>
+                  {laudosAgua.map((l: any) => (
+                    <TableRow key={l.id}>
+                      <TableCell className="whitespace-nowrap">{l.data_analise}</TableCell>
+                      <TableCell className="font-medium">{l.produto}</TableCell>
+                      <TableCell>{l.parametro || "—"}</TableCell>
+                      <TableCell className="font-mono">{l.resultado || "—"} {l.unidade || ""}</TableCell>
+                      <TableCell className="text-xs text-muted-foreground">{l.limite_referencia || "—"}</TableCell>
+                      <TableCell className="font-mono text-xs">{l.laudo_numero || "—"}</TableCell>
+                      <TableCell>
+                        {l.conforme === true ? <Badge className="bg-primary/20 text-primary">Conforme</Badge> :
+                         l.conforme === false ? <Badge variant="destructive">NC</Badge> :
+                         <Badge variant="outline">Pendente</Badge>}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </Card>
+          )}
+        </TabsContent>
+
+        {/* ── PLANILHA MENSAL ── */}
+        <TabsContent value="planilha" className="space-y-4">
+          <Card className="border-accent/20 bg-accent/5">
+            <CardContent className="pt-4">
+              <div className="flex items-start gap-3">
+                <ClipboardList className="w-6 h-6 text-accent mt-0.5" />
+                <div>
+                  <h4 className="font-semibold text-sm">Planilha Mensal de Higiene e Sanitização</h4>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Consolidação mensal dos registros de limpeza (POP-02/03) e controle de água (POP-04)
+                    para atender IN 04/2007 e IN 15/2009. Disponível para fiscalização (Art. 18, Decreto 12.031/2024).
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <div className="flex items-center gap-4">
+            <div>
+              <Label>Mês/Ano</Label>
+              <Input type="month" value={mesAno} onChange={e => setMesAno(e.target.value)} className="w-48" />
+            </div>
+            <Button variant="outline" onClick={exportPlanilhaMensal}>
+              <Download className="w-4 h-4 mr-2" />Exportar Planilha Mensal
+            </Button>
+          </div>
+
+          {(() => {
+            const registrosMes = registros.filter((r: any) => r.data_execucao?.startsWith(mesAno));
+            const aguaMes = registrosAgua.filter((r: any) => r.data_execucao?.startsWith(mesAno));
+            const conformesLimp = registrosMes.filter((r: any) => r.conforme).length;
+            const ncsLimp = registrosMes.filter((r: any) => !r.conforme).length;
+            const conformesAgua = aguaMes.filter((r: any) => r.status === "concluido").length;
+            const ncsAgua = aguaMes.filter((r: any) => r.status !== "concluido").length;
+
+            return (
+              <>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <Card><CardContent className="pt-4 text-center">
+                    <p className="text-2xl font-bold text-primary">{registrosMes.length}</p>
+                    <p className="text-xs text-muted-foreground">Limpezas Realizadas</p>
+                  </CardContent></Card>
+                  <Card><CardContent className="pt-4 text-center">
+                    <p className="text-2xl font-bold text-green-600">{conformesLimp}</p>
+                    <p className="text-xs text-muted-foreground">Conformes</p>
+                  </CardContent></Card>
+                  <Card><CardContent className="pt-4 text-center">
+                    <p className="text-2xl font-bold text-blue-600">{aguaMes.length}</p>
+                    <p className="text-xs text-muted-foreground">Registros Água</p>
+                  </CardContent></Card>
+                  <Card><CardContent className="pt-4 text-center">
+                    <p className="text-2xl font-bold text-destructive">{ncsLimp + ncsAgua}</p>
+                    <p className="text-xs text-muted-foreground">Total NCs</p>
+                  </CardContent></Card>
+                </div>
+
+                {registrosMes.length === 0 && aguaMes.length === 0 ? (
+                  <Card><CardContent className="py-8 text-center text-muted-foreground">Nenhum registro neste mês</CardContent></Card>
+                ) : (
+                  <>
+                    {registrosMes.length > 0 && (
+                      <Card>
+                        <CardHeader><CardTitle className="text-sm">Registros de Limpeza — {mesAno}</CardTitle></CardHeader>
+                        <Table>
+                          <TableHeader><TableRow>
+                            <TableHead>Data</TableHead><TableHead>Executor</TableHead><TableHead>Horário</TableHead>
+                            <TableHead>Conforme</TableHead><TableHead>Observações</TableHead>
+                          </TableRow></TableHeader>
+                          <TableBody>
+                            {registrosMes.map((r: any) => (
+                              <TableRow key={r.id}>
+                                <TableCell>{r.data_execucao}</TableCell>
+                                <TableCell>{r.executor}</TableCell>
+                                <TableCell>{r.hora_inicio}{r.hora_fim ? ` — ${r.hora_fim}` : ""}</TableCell>
+                                <TableCell>{r.conforme ? <CheckCircle2 className="w-4 h-4 text-green-600" /> : <Badge variant="destructive">NC</Badge>}</TableCell>
+                                <TableCell className="max-w-[200px] truncate">{r.observacoes}</TableCell>
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                      </Card>
+                    )}
+                    {aguaMes.length > 0 && (
+                      <Card>
+                        <CardHeader><CardTitle className="text-sm">Controle de Água — {mesAno}</CardTitle></CardHeader>
+                        <Table>
+                          <TableHeader><TableRow>
+                            <TableHead>Data</TableHead><TableHead>Ponto</TableHead><TableHead>Executor</TableHead><TableHead>Status</TableHead>
+                          </TableRow></TableHeader>
+                          <TableBody>
+                            {aguaMes.map((r: any) => (
+                              <TableRow key={r.id}>
+                                <TableCell>{r.data_execucao}</TableCell>
+                                <TableCell>{r.setor}</TableCell>
+                                <TableCell>{r.executor}</TableCell>
+                                <TableCell>{r.status === "concluido" ? <Badge className="bg-primary/20 text-primary">Conforme</Badge> : <Badge variant="destructive">NC</Badge>}</TableCell>
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                      </Card>
+                    )}
+                  </>
+                )}
+              </>
+            );
+          })()}
+        </TabsContent>
       </Tabs>
     </div>
   );

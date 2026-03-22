@@ -718,6 +718,79 @@ export default function Rastreabilidade() {
         </Card>
       )}
 
+      {/* ── BALANÇO DE MASSA VISUAL ── */}
+      <Card className="mb-6 border-primary/20">
+        <CardHeader className="flex flex-row items-center justify-between">
+          <div>
+            <CardTitle className="font-display text-sm flex items-center gap-2">
+              <Package className="w-5 h-5 text-primary" />
+              Balanço de Massa — Conciliação de Estoque (IN 17/2017 | Decreto 12.031/2024)
+            </CardTitle>
+            <p className="text-xs text-muted-foreground mt-1">
+              Conciliação entrada de MP × saída de PA por lote. Requisito de fiscalização baseada em risco.
+            </p>
+          </div>
+          <Button size="sm" variant="outline" onClick={exportBalancoMassa} disabled={registros.length === 0}>
+            <Download className="w-4 h-4 mr-1" /> Exportar CSV
+          </Button>
+        </CardHeader>
+        <CardContent>
+          {(() => {
+            const lotes = new Map<string, { produto: string; materias: string[]; clientes: string[]; qtdVendida: number }>();
+            registros.forEach(r => {
+              const lote = r.lote_produto || "SEM_LOTE";
+              if (!lotes.has(lote)) lotes.set(lote, { produto: r.produto, materias: [], clientes: [], qtdVendida: 0 });
+              const entry = lotes.get(lote)!;
+              const mpKey = `${r.materia_prima} (${r.lote_mp || "s/lote"})`;
+              if (!entry.materias.includes(mpKey)) entry.materias.push(mpKey);
+              if (r.cliente_destino && !entry.clientes.includes(r.cliente_destino)) entry.clientes.push(r.cliente_destino);
+              if (r.quantidade_vendida) entry.qtdVendida += parseFloat(r.quantidade_vendida.replace(",", ".")) || 0;
+            });
+
+            if (lotes.size === 0) return <p className="text-center text-muted-foreground py-4">Sem dados para balanço de massa</p>;
+
+            return (
+              <Table>
+                <TableHeader><TableRow>
+                  <TableHead>Lote PA</TableHead>
+                  <TableHead>Produto</TableHead>
+                  <TableHead>Entradas (MP)</TableHead>
+                  <TableHead>Saídas (Clientes)</TableHead>
+                  <TableHead>Qtd Vendida</TableHead>
+                  <TableHead>Status</TableHead>
+                </TableRow></TableHeader>
+                <TableBody>
+                  {Array.from(lotes.entries()).slice(0, 20).map(([lote, data]) => (
+                    <TableRow key={lote}>
+                      <TableCell className="font-mono text-xs font-bold">{lote}</TableCell>
+                      <TableCell className="font-medium text-sm">{data.produto}</TableCell>
+                      <TableCell className="text-xs max-w-[200px]">
+                        {data.materias.slice(0, 3).map((mp, i) => <div key={i} className="truncate">{mp}</div>)}
+                        {data.materias.length > 3 && <span className="text-muted-foreground">+{data.materias.length - 3}</span>}
+                      </TableCell>
+                      <TableCell className="text-xs max-w-[150px]">
+                        {data.clientes.length > 0 ? data.clientes.slice(0, 2).map((c, i) => <div key={i} className="truncate">{c}</div>) : <span className="text-muted-foreground">—</span>}
+                        {data.clientes.length > 2 && <span className="text-muted-foreground">+{data.clientes.length - 2}</span>}
+                      </TableCell>
+                      <TableCell className="font-mono text-xs">{data.qtdVendida > 0 ? `${data.qtdVendida.toLocaleString("pt-BR")}` : "—"}</TableCell>
+                      <TableCell>
+                        {data.clientes.length > 0 && data.materias.length > 0 ? (
+                          <Badge className="bg-primary/20 text-primary text-[10px]">Completo</Badge>
+                        ) : data.materias.length > 0 ? (
+                          <Badge className="bg-yellow-500/20 text-yellow-700 text-[10px]">Sem saída</Badge>
+                        ) : (
+                          <Badge variant="outline" className="text-[10px]">Parcial</Badge>
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            );
+          })()}
+        </CardContent>
+      </Card>
+
       <Card>
         <CardHeader className="flex flex-row items-center justify-between gap-4">
           <div className="flex-1">
