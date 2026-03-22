@@ -1,18 +1,32 @@
 import { useState, useEffect, useRef } from "react";
-import { Check, X, Minus, Upload, Download } from "lucide-react";
+import { Check, X, Minus, Upload, Download, PenLine } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
 import type { PopPeriodicidade } from "@/config/popsConfig";
 import * as XLSX from "xlsx";
+import { format } from "date-fns";
 
 interface CellData {
   conforme: boolean | null;
   responsavel: string;
   funcao: string;
+}
+
+interface Signatures {
+  executor: string;
+  executorData: string | null;
+  supervisor: string;
+  supervisorData: string | null;
+  rt: string;
+  rtCrmv: string;
+  rtData: string | null;
 }
 
 interface Props {
@@ -27,6 +41,11 @@ export default function PopPlanilhaForm({ planilhaId, periodicidade, userId, pop
   const [grid, setGrid] = useState<Record<string, CellData>>({});
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [signatures, setSignatures] = useState<Signatures>({
+    executor: "", executorData: null,
+    supervisor: "", supervisorData: null,
+    rt: "", rtCrmv: "", rtData: null,
+  });
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const cellKey = (periodo: string, area: string) => `${periodo}||${area}`;
@@ -37,19 +56,27 @@ export default function PopPlanilhaForm({ planilhaId, periodicidade, userId, pop
 
   async function loadData() {
     setLoading(true);
-    const { data, error } = await supabase
-      .from("pop_planilha_itens")
-      .select("periodo_label, area, conforme, responsavel, funcao")
-      .eq("planilha_id", planilhaId);
 
-    if (error) {
+    const [itensRes, planilhaRes] = await Promise.all([
+      supabase
+        .from("pop_planilha_itens")
+        .select("periodo_label, area, conforme, responsavel, funcao")
+        .eq("planilha_id", planilhaId),
+      supabase
+        .from("pop_planilhas")
+        .select("assinatura_executor, assinatura_executor_data, assinatura_supervisor, assinatura_supervisor_data, assinatura_rt, assinatura_rt_crmv, assinatura_rt_data")
+        .eq("id", planilhaId)
+        .maybeSingle(),
+    ]);
+
+    if (itensRes.error) {
       toast.error("Erro ao carregar dados");
       setLoading(false);
       return;
     }
 
     const newGrid: Record<string, CellData> = {};
-    (data || []).forEach((item) => {
+    (itensRes.data || []).forEach((item) => {
       newGrid[cellKey(item.periodo_label, item.area)] = {
         conforme: item.conforme,
         responsavel: item.responsavel || "",
@@ -57,6 +84,20 @@ export default function PopPlanilhaForm({ planilhaId, periodicidade, userId, pop
       };
     });
     setGrid(newGrid);
+
+    if (planilhaRes.data) {
+      const p = planilhaRes.data;
+      setSignatures({
+        executor: p.assinatura_executor || "",
+        executorData: p.assinatura_executor_data || null,
+        supervisor: p.assinatura_supervisor || "",
+        supervisorData: p.assinatura_supervisor_data || null,
+        rt: p.assinatura_rt || "",
+        rtCrmv: p.assinatura_rt_crmv || "",
+        rtData: p.assinatura_rt_data || null,
+      });
+    }
+
     setLoading(false);
   }
 
@@ -71,7 +112,6 @@ export default function PopPlanilhaForm({ planilhaId, periodicidade, userId, pop
   }
 
   function updateField(periodo: string, field: "responsavel" | "funcao", value: string) {
-    // Update all areas for this periodo
     periodicidade.areas.forEach((a) => {
       const key = cellKey(periodo, a.area);
       setGrid((prev) => ({
@@ -87,13 +127,36 @@ export default function PopPlanilhaForm({ planilhaId, periodicidade, userId, pop
     return grid[cellKey(periodo, firstArea)]?.[field] || "";
   }
 
+  async function signField(field: "executor" | "supervisor" | "rt") {
+    const now = new Date().toISOString();
+    const nameField = field === "executor" ? "executor" : field === "supervisor" ? "supervisor" : "rt";
+    if (!signatures[nameField]) {
+      toast.error("Preencha o nome antes de assinar.");
+      return;
+    }
+
+    const updateData: Record<string, string> = {};
+    updateData[`assinatura_${field}`] = signatures[nameField];
+    updateData[`assinatura_${field}_data`] = now;
+    if (field === "rt") updateData.assinatura_rt_crmv = signatures.rtCrmv;
+
+    const { error } = await supabase.from("pop_planilhas").update(updateData).eq("id", planilhaId);
+    if (error) {
+      toast.error("Erro ao registrar assinatura");
+      return;
+    }
+
+    setSignatures((prev) => ({
+      ...prev,
+      [`${nameField}Data`]: now,
+    }));
+    toast.success(`Assinatura de ${field === "executor" ? "Executor" : field === "supervisor" ? "Supervisor" : "Responsável Técnico"} registrada!`);
+  }
+
   async function saveAll() {
     setSaving(true);
-
-    // Delete existing items for this planilha
     await supabase.from("pop_planilha_itens").delete().eq("planilha_id", planilhaId);
 
-    // Insert all non-empty items
     const inserts: any[] = [];
     for (const periodo of periodicidade.periodos) {
       for (const area of periodicidade.areas) {
@@ -130,15 +193,45 @@ export default function PopPlanilhaForm({ planilhaId, periodicidade, userId, pop
     const areas = periodicidade.areas.map((a) => a.area);
     const header = ["Período", ...areas, "Responsável", "Função"];
 
-    const rows: string[][] = [header];
+    const rows: any[][] = [];
+
+    // Title rows
+    rows.push([`${popCodigo || "POP"} - ${popNome || ""}`]);
+    rows.push([`${periodicidade.label} | Preencher com C (Conforme) ou NC (Não Conforme)`]);
+    rows.push([]);
+    rows.push(header);
+
     for (const p of periodicidade.periodos) {
       rows.push([p, ...areas.map(() => ""), "", ""]);
     }
 
+    // Blank rows before signatures
+    rows.push([]);
+    rows.push([]);
+
+    // Signature block
+    rows.push(["ASSINATURAS"]);
+    rows.push([]);
+    rows.push(["Responsável pela Execução:", "", "", "Data: ____/____/________"]);
+    rows.push(["Nome: ________________________________", "", "", "Assinatura: ________________________________"]);
+    rows.push([]);
+    rows.push(["Verificador / Supervisor:", "", "", "Data: ____/____/________"]);
+    rows.push(["Nome: ________________________________", "", "", "Assinatura: ________________________________"]);
+    rows.push([]);
+    rows.push(["Responsável Técnico (RT):", "", "", "Data: ____/____/________"]);
+    rows.push(["Nome: ________________________________", "", "", "CRMV: ____________"]);
+    rows.push(["Assinatura: ________________________________"]);
+
     const ws = XLSX.utils.aoa_to_sheet(rows);
 
-    // Style header widths
-    ws["!cols"] = header.map((h) => ({ wch: Math.max(h.length + 4, 14) }));
+    // Merge title cells
+    const totalCols = header.length;
+    ws["!merges"] = [
+      { s: { r: 0, c: 0 }, e: { r: 0, c: totalCols - 1 } },
+      { s: { r: 1, c: 0 }, e: { r: 1, c: totalCols - 1 } },
+    ];
+
+    ws["!cols"] = header.map((h) => ({ wch: Math.max(h.length + 4, 16) }));
 
     const wb = XLSX.utils.book_new();
     const sheetName = periodicidade.label.substring(0, 31);
@@ -146,7 +239,7 @@ export default function PopPlanilhaForm({ planilhaId, periodicidade, userId, pop
 
     const filename = `Template_${popCodigo || "POP"}_${periodicidade.key}.xlsx`;
     XLSX.writeFile(wb, filename);
-    toast.success("Template baixado com sucesso!");
+    toast.success("Template com campos de assinatura baixado!");
   }
 
   function handleImportExcel(e: React.ChangeEvent<HTMLInputElement>) {
@@ -161,7 +254,6 @@ export default function PopPlanilhaForm({ planilhaId, periodicidade, userId, pop
         const sheet = workbook.Sheets[workbook.SheetNames[0]];
         const rows: any[][] = XLSX.utils.sheet_to_json(sheet, { header: 1 });
 
-        // Find header row (contains area names)
         let headerRowIdx = -1;
         const areaNames = periodicidade.areas.map((a) => a.area.toLowerCase().trim());
 
@@ -175,8 +267,6 @@ export default function PopPlanilhaForm({ planilhaId, periodicidade, userId, pop
         }
 
         if (headerRowIdx === -1) {
-          // Fallback: assume first column is period, remaining are areas in order
-          headerRowIdx = -1;
           const newGrid: Record<string, CellData> = { ...grid };
           let imported = 0;
 
@@ -196,16 +286,11 @@ export default function PopPlanilhaForm({ planilhaId, periodicidade, userId, pop
               else if (cellVal === "NC" || cellVal === "NÃO CONFORME" || cellVal === "NAO CONFORME" || cellVal === "NÃO" || cellVal === "N") conforme = false;
 
               if (conforme !== null) {
-                newGrid[key] = {
-                  conforme,
-                  responsavel: newGrid[key]?.responsavel || "",
-                  funcao: newGrid[key]?.funcao || "",
-                };
+                newGrid[key] = { conforme, responsavel: newGrid[key]?.responsavel || "", funcao: newGrid[key]?.funcao || "" };
                 imported++;
               }
             });
 
-            // Check for responsavel/funcao in last columns
             const respIdx = periodicidade.areas.length + 1;
             const funcIdx = periodicidade.areas.length + 2;
             const resp = row[respIdx] ? String(row[respIdx]).trim() : "";
@@ -213,9 +298,7 @@ export default function PopPlanilhaForm({ planilhaId, periodicidade, userId, pop
             if (resp || func) {
               periodicidade.areas.forEach((area) => {
                 const key = cellKey(periodo, area.area);
-                if (newGrid[key]) {
-                  newGrid[key] = { ...newGrid[key], responsavel: resp, funcao: func };
-                }
+                if (newGrid[key]) newGrid[key] = { ...newGrid[key], responsavel: resp, funcao: func };
               });
             }
           }
@@ -225,7 +308,6 @@ export default function PopPlanilhaForm({ planilhaId, periodicidade, userId, pop
           return;
         }
 
-        // Map header columns to areas
         const headerRow = rows[headerRowIdx].map((v: any) => String(v || "").toLowerCase().trim());
         const areaColMap: Record<number, string> = {};
         let respCol = -1;
@@ -250,6 +332,7 @@ export default function PopPlanilhaForm({ planilhaId, periodicidade, userId, pop
           const row = rows[i];
           if (!row || !row[0]) continue;
           const periodoRaw = String(row[0]).trim();
+          if (periodoRaw.toUpperCase().startsWith("ASSINATURA")) break;
           const periodo = periodicidade.periodos.find(
             (p) => p === periodoRaw || p === periodoRaw.replace(/^0/, "")
           );
@@ -293,6 +376,8 @@ export default function PopPlanilhaForm({ planilhaId, periodicidade, userId, pop
       </div>
     );
   }
+
+  const formatSignDate = (d: string | null) => d ? format(new Date(d), "dd/MM/yyyy HH:mm") : null;
 
   return (
     <div className="space-y-4">
@@ -362,6 +447,88 @@ export default function PopPlanilhaForm({ planilhaId, periodicidade, userId, pop
           </tbody>
         </table>
       </div>
+
+      {/* Signature Section */}
+      <Card>
+        <CardHeader className="pb-3">
+          <CardTitle className="text-sm flex items-center gap-2">
+            <PenLine className="w-4 h-4" /> Assinaturas Digitais
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* Executor */}
+            <div className="space-y-2 p-3 border border-border rounded-lg">
+              <Label className="text-xs font-semibold text-foreground">Responsável pela Execução</Label>
+              <Input
+                placeholder="Nome completo"
+                value={signatures.executor}
+                onChange={(e) => setSignatures((s) => ({ ...s, executor: e.target.value }))}
+                className="h-8 text-xs"
+                disabled={!!signatures.executorData}
+              />
+              {signatures.executorData ? (
+                <p className="text-xs text-primary font-medium">
+                  ✓ Assinado em {formatSignDate(signatures.executorData)}
+                </p>
+              ) : (
+                <Button size="sm" variant="outline" className="w-full text-xs" onClick={() => signField("executor")}>
+                  <PenLine className="w-3 h-3 mr-1" /> Assinar
+                </Button>
+              )}
+            </div>
+
+            {/* Supervisor */}
+            <div className="space-y-2 p-3 border border-border rounded-lg">
+              <Label className="text-xs font-semibold text-foreground">Verificador / Supervisor</Label>
+              <Input
+                placeholder="Nome completo"
+                value={signatures.supervisor}
+                onChange={(e) => setSignatures((s) => ({ ...s, supervisor: e.target.value }))}
+                className="h-8 text-xs"
+                disabled={!!signatures.supervisorData}
+              />
+              {signatures.supervisorData ? (
+                <p className="text-xs text-primary font-medium">
+                  ✓ Assinado em {formatSignDate(signatures.supervisorData)}
+                </p>
+              ) : (
+                <Button size="sm" variant="outline" className="w-full text-xs" onClick={() => signField("supervisor")}>
+                  <PenLine className="w-3 h-3 mr-1" /> Assinar
+                </Button>
+              )}
+            </div>
+
+            {/* RT */}
+            <div className="space-y-2 p-3 border border-border rounded-lg">
+              <Label className="text-xs font-semibold text-foreground">Responsável Técnico (RT)</Label>
+              <Input
+                placeholder="Nome completo"
+                value={signatures.rt}
+                onChange={(e) => setSignatures((s) => ({ ...s, rt: e.target.value }))}
+                className="h-8 text-xs"
+                disabled={!!signatures.rtData}
+              />
+              <Input
+                placeholder="CRMV"
+                value={signatures.rtCrmv}
+                onChange={(e) => setSignatures((s) => ({ ...s, rtCrmv: e.target.value }))}
+                className="h-8 text-xs"
+                disabled={!!signatures.rtData}
+              />
+              {signatures.rtData ? (
+                <p className="text-xs text-primary font-medium">
+                  ✓ Assinado em {formatSignDate(signatures.rtData)}
+                </p>
+              ) : (
+                <Button size="sm" variant="outline" className="w-full text-xs" onClick={() => signField("rt")}>
+                  <PenLine className="w-3 h-3 mr-1" /> Assinar
+                </Button>
+              )}
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       <div className="flex items-center justify-between flex-wrap gap-2">
         <p className="text-xs text-muted-foreground">

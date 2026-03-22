@@ -702,6 +702,13 @@ export type Database = {
       pop_planilhas: {
         Row: {
           ano: number
+          assinatura_executor: string | null
+          assinatura_executor_data: string | null
+          assinatura_rt: string | null
+          assinatura_rt_crmv: string | null
+          assinatura_rt_data: string | null
+          assinatura_supervisor: string | null
+          assinatura_supervisor_data: string | null
           created_at: string
           data_verificacao: string | null
           id: string
@@ -717,6 +724,13 @@ export type Database = {
         }
         Insert: {
           ano: number
+          assinatura_executor?: string | null
+          assinatura_executor_data?: string | null
+          assinatura_rt?: string | null
+          assinatura_rt_crmv?: string | null
+          assinatura_rt_data?: string | null
+          assinatura_supervisor?: string | null
+          assinatura_supervisor_data?: string | null
           created_at?: string
           data_verificacao?: string | null
           id?: string
@@ -732,6 +746,13 @@ export type Database = {
         }
         Update: {
           ano?: number
+          assinatura_executor?: string | null
+          assinatura_executor_data?: string | null
+          assinatura_rt?: string | null
+          assinatura_rt_crmv?: string | null
+          assinatura_rt_data?: string | null
+          assinatura_supervisor?: string | null
+          assinatura_supervisor_data?: string | null
           created_at?: string
           data_verificacao?: string | null
           id?: string
