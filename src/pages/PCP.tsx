@@ -298,7 +298,46 @@ export default function PCP() {
             </DialogTrigger>
             <DialogContent className="max-w-lg">
               <DialogHeader><DialogTitle>Nova Ordem de Produção</DialogTitle></DialogHeader>
-              <div className="space-y-3 max-h-[60vh] overflow-y-auto pr-2">
+              <div className="space-y-3 max-h-[65vh] overflow-y-auto pr-2">
+                {/* Tipo de Ordem */}
+                <div>
+                  <Label>Tipo de Ordem (IN 17/2017)</Label>
+                  <Select value={tipoOrdem} onValueChange={setTipoOrdem}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="normal">Normal</SelectItem>
+                      <SelectItem value="retrabalho">Retrabalho</SelectItem>
+                      <SelectItem value="sobra">Sobra de Produção</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                {tipoOrdem !== "normal" && (
+                  <div className="p-3 rounded-lg border border-yellow-500/30 bg-yellow-500/5 space-y-3">
+                    <p className="text-xs font-semibold text-yellow-700">
+                      {tipoOrdem === "retrabalho" ? "⚠️ Ordem de Retrabalho — Rastreabilidade preservada" : "⚠️ Sobra de Produção — Rastreabilidade preservada"}
+                    </p>
+                    <div>
+                      <Label>Ordem de Origem</Label>
+                      <Select value={ordemOrigemId} onValueChange={setOrdemOrigemId}>
+                        <SelectTrigger><SelectValue placeholder="Selecione a ordem original" /></SelectTrigger>
+                        <SelectContent>
+                          {ordens.filter(o => o.status === "concluida").map(o => (
+                            <SelectItem key={o.id} value={o.id}>{o.numero_ordem} — {o.produto}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    {tipoOrdem === "retrabalho" && (
+                      <div><Label>Motivo do Retrabalho</Label><Input value={motivoRetrabalho} onChange={e => setMotivoRetrabalho(e.target.value)} placeholder="Ex: Fora de especificação" /></div>
+                    )}
+                    {tipoOrdem === "sobra" && (
+                      <div className="grid grid-cols-2 gap-3">
+                        <div><Label>Quantidade da Sobra</Label><Input value={qtdSobra} onChange={e => setQtdSobra(e.target.value)} placeholder="Ex: 200 kg" /></div>
+                        <div><Label>Destino da Sobra</Label><Input value={destinoSobra} onChange={e => setDestinoSobra(e.target.value)} placeholder="Ex: Incorporar à OP-005" /></div>
+                      </div>
+                    )}
+                  </div>
+                )}
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <Label>Nº Ordem</Label>
