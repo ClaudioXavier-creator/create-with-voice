@@ -300,6 +300,183 @@ export type Database = {
         }
         Relationships: []
       }
+      controle_residuos: {
+        Row: {
+          classificacao: string | null
+          created_at: string
+          data_coleta: string | null
+          destino_final: string | null
+          empresa_coletora: string | null
+          frequencia_coleta: string | null
+          id: string
+          licenca_ambiental: string | null
+          manifesto_numero: string | null
+          observacoes: string | null
+          origem: string | null
+          quantidade: string | null
+          responsavel: string | null
+          status: string | null
+          tipo_residuo: string
+          unidade: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          classificacao?: string | null
+          created_at?: string
+          data_coleta?: string | null
+          destino_final?: string | null
+          empresa_coletora?: string | null
+          frequencia_coleta?: string | null
+          id?: string
+          licenca_ambiental?: string | null
+          manifesto_numero?: string | null
+          observacoes?: string | null
+          origem?: string | null
+          quantidade?: string | null
+          responsavel?: string | null
+          status?: string | null
+          tipo_residuo: string
+          unidade?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          classificacao?: string | null
+          created_at?: string
+          data_coleta?: string | null
+          destino_final?: string | null
+          empresa_coletora?: string | null
+          frequencia_coleta?: string | null
+          id?: string
+          licenca_ambiental?: string | null
+          manifesto_numero?: string | null
+          observacoes?: string | null
+          origem?: string | null
+          quantidade?: string | null
+          responsavel?: string | null
+          status?: string | null
+          tipo_residuo?: string
+          unidade?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      controle_substancias: {
+        Row: {
+          conforme: boolean | null
+          created_at: string
+          data_analise: string | null
+          fornecedor: string | null
+          id: string
+          limite_maximo: string | null
+          lote: string | null
+          materia_prima: string
+          metodo_analise: string | null
+          observacoes: string | null
+          referencia_normativa: string | null
+          resultado: string | null
+          status: string | null
+          substancia: string
+          tipo: string
+          unidade: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          conforme?: boolean | null
+          created_at?: string
+          data_analise?: string | null
+          fornecedor?: string | null
+          id?: string
+          limite_maximo?: string | null
+          lote?: string | null
+          materia_prima: string
+          metodo_analise?: string | null
+          observacoes?: string | null
+          referencia_normativa?: string | null
+          resultado?: string | null
+          status?: string | null
+          substancia: string
+          tipo?: string
+          unidade?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          conforme?: boolean | null
+          created_at?: string
+          data_analise?: string | null
+          fornecedor?: string | null
+          id?: string
+          limite_maximo?: string | null
+          lote?: string | null
+          materia_prima?: string
+          metodo_analise?: string | null
+          observacoes?: string | null
+          referencia_normativa?: string | null
+          resultado?: string | null
+          status?: string | null
+          substancia?: string
+          tipo?: string
+          unidade?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      cronogramas_higiene: {
+        Row: {
+          area: string
+          concentracao: string | null
+          created_at: string
+          equipamento: string | null
+          frequencia: string
+          horario_previsto: string | null
+          id: string
+          observacoes: string | null
+          procedimento: string
+          produto_utilizado: string | null
+          responsavel: string | null
+          status: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          area: string
+          concentracao?: string | null
+          created_at?: string
+          equipamento?: string | null
+          frequencia?: string
+          horario_previsto?: string | null
+          id?: string
+          observacoes?: string | null
+          procedimento: string
+          produto_utilizado?: string | null
+          responsavel?: string | null
+          status?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          area?: string
+          concentracao?: string | null
+          created_at?: string
+          equipamento?: string | null
+          frequencia?: string
+          horario_previsto?: string | null
+          id?: string
+          observacoes?: string | null
+          procedimento?: string
+          produto_utilizado?: string | null
+          responsavel?: string | null
+          status?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       documentos: {
         Row: {
           codigo: string
@@ -613,6 +790,63 @@ export type Database = {
           stripe_customer_id?: string | null
           updated_at?: string
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      manutencoes: {
+        Row: {
+          codigo_equipamento: string | null
+          created_at: string
+          custo: string | null
+          data_execucao: string | null
+          data_programada: string | null
+          descricao: string
+          equipamento: string
+          id: string
+          observacoes: string | null
+          pecas_trocadas: string | null
+          proxima_manutencao: string | null
+          responsavel: string | null
+          status: string | null
+          tipo: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          codigo_equipamento?: string | null
+          created_at?: string
+          custo?: string | null
+          data_execucao?: string | null
+          data_programada?: string | null
+          descricao: string
+          equipamento: string
+          id?: string
+          observacoes?: string | null
+          pecas_trocadas?: string | null
+          proxima_manutencao?: string | null
+          responsavel?: string | null
+          status?: string | null
+          tipo?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          codigo_equipamento?: string | null
+          created_at?: string
+          custo?: string | null
+          data_execucao?: string | null
+          data_programada?: string | null
+          descricao?: string
+          equipamento?: string
+          id?: string
+          observacoes?: string | null
+          pecas_trocadas?: string | null
+          proxima_manutencao?: string | null
+          responsavel?: string | null
+          status?: string | null
+          tipo?: string
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -1146,6 +1380,53 @@ export type Database = {
         }
         Relationships: []
       }
+      registros_limpeza: {
+        Row: {
+          conforme: boolean | null
+          created_at: string
+          cronograma_id: string | null
+          data_execucao: string
+          executor: string
+          hora_fim: string | null
+          hora_inicio: string | null
+          id: string
+          observacoes: string | null
+          user_id: string
+        }
+        Insert: {
+          conforme?: boolean | null
+          created_at?: string
+          cronograma_id?: string | null
+          data_execucao?: string
+          executor: string
+          hora_fim?: string | null
+          hora_inicio?: string | null
+          id?: string
+          observacoes?: string | null
+          user_id: string
+        }
+        Update: {
+          conforme?: boolean | null
+          created_at?: string
+          cronograma_id?: string | null
+          data_execucao?: string
+          executor?: string
+          hora_fim?: string | null
+          hora_inicio?: string | null
+          id?: string
+          observacoes?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "registros_limpeza_cronograma_id_fkey"
+            columns: ["cronograma_id"]
+            isOneToOne: false
+            referencedRelation: "cronogramas_higiene"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       relatorios: {
         Row: {
           arquivo_nome: string | null
@@ -1382,6 +1663,63 @@ export type Database = {
           treinamento?: string
           user_id?: string
           validade?: string | null
+        }
+        Relationships: []
+      }
+      validacao_limpeza_linha: {
+        Row: {
+          contem_medicamento: boolean | null
+          created_at: string
+          data_validacao: string | null
+          hora_validacao: string | null
+          id: string
+          limite_aceitavel: string | null
+          linha_producao: string
+          metodo_analise: string | null
+          observacoes: string | null
+          produto_anterior: string
+          produto_seguinte: string
+          residuo_detectado: string | null
+          responsavel: string | null
+          resultado: string | null
+          tipo_validacao: string | null
+          user_id: string
+        }
+        Insert: {
+          contem_medicamento?: boolean | null
+          created_at?: string
+          data_validacao?: string | null
+          hora_validacao?: string | null
+          id?: string
+          limite_aceitavel?: string | null
+          linha_producao: string
+          metodo_analise?: string | null
+          observacoes?: string | null
+          produto_anterior: string
+          produto_seguinte: string
+          residuo_detectado?: string | null
+          responsavel?: string | null
+          resultado?: string | null
+          tipo_validacao?: string | null
+          user_id: string
+        }
+        Update: {
+          contem_medicamento?: boolean | null
+          created_at?: string
+          data_validacao?: string | null
+          hora_validacao?: string | null
+          id?: string
+          limite_aceitavel?: string | null
+          linha_producao?: string
+          metodo_analise?: string | null
+          observacoes?: string | null
+          produto_anterior?: string
+          produto_seguinte?: string
+          residuo_detectado?: string | null
+          responsavel?: string | null
+          resultado?: string | null
+          tipo_validacao?: string | null
+          user_id?: string
         }
         Relationships: []
       }

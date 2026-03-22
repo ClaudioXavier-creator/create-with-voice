@@ -26,6 +26,11 @@ import Manual from "./pages/Manual";
 import PlanilhasPop from "./pages/PlanilhasPop";
 import Produtos from "./pages/Produtos";
 import AnalisesLaboratorio from "./pages/AnalisesLaboratorio";
+import HigieneSanitizacao from "./pages/HigieneSanitizacao";
+import ManutencaoPreventiva from "./pages/ManutencaoPreventiva";
+import ControleResiduos from "./pages/ControleResiduos";
+import ControleSubstancias from "./pages/ControleSubstancias";
+import ValidacaoLimpezaLinha from "./pages/ValidacaoLimpezaLinha";
 import Auth from "./pages/Auth";
 import AtivarLicenca from "./pages/AtivarLicenca";
 import NotFound from "./pages/NotFound";
@@ -106,6 +111,11 @@ const AppRoutes = () => {
                   <Route path="/planilhas-pop" element={<PlanilhasPop />} />
                   <Route path="/produtos" element={<Produtos />} />
                   <Route path="/analises" element={<AnalisesLaboratorio />} />
+                  <Route path="/higiene" element={<HigieneSanitizacao />} />
+                  <Route path="/manutencao" element={<ManutencaoPreventiva />} />
+                  <Route path="/residuos" element={<ControleResiduos />} />
+                  <Route path="/substancias" element={<ControleSubstancias />} />
+                  <Route path="/validacao-limpeza" element={<ValidacaoLimpezaLinha />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </AppLayout>
