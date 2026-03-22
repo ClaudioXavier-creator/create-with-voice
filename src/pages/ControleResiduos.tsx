@@ -50,8 +50,10 @@ export default function ControleResiduos() {
     empresa_coletora: "", licenca_ambiental: "", frequencia_coleta: "semanal",
     quantidade: "", unidade: "kg", data_coleta: new Date().toISOString().split("T")[0],
     responsavel: "", manifesto_numero: "", observacoes: "",
-    motivo_descarte: "", lote_produto: "", produto_nome: ""
+    motivo_descarte: "", lote_produto: "", produto_nome: "",
   });
+
+  const isEfluente = ["Efluente líquido", "Efluente industrial", "Água de lavagem"].includes(form.tipo_residuo);
 
   const { data: residuos = [] } = useQuery({
     queryKey: ["controle_residuos"],
