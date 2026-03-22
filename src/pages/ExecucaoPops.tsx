@@ -459,6 +459,19 @@ export default function ExecucaoPops() {
                     {Object.values(checklistTriagem).some(v => v === false) && (
                       <p className="text-xs text-destructive font-semibold mt-2">⚠️ Itens não conformes detectados — registrar como "Não conforme" se necessário.</p>
                     )}
+
+                    {/* POP-04 laudo fields */}
+                    {isPOP04 && (
+                      <div className="mt-3 p-3 rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-300 space-y-2">
+                        <p className="text-xs font-semibold text-blue-700 dark:text-blue-400">📄 Dados do Laudo de Análise da Água</p>
+                        <div className="grid grid-cols-3 gap-2">
+                          <div><Label className="text-xs">Nº Laudo</Label><Input value={laudoNumero} onChange={e => setLaudoNumero(e.target.value)} placeholder="Ex: 2026/0145" className="h-8 text-xs" /></div>
+                          <div><Label className="text-xs">Laboratório</Label><Input value={laudoLaboratorio} onChange={e => setLaudoLaboratorio(e.target.value)} placeholder="Nome do lab" className="h-8 text-xs" /></div>
+                          <div><Label className="text-xs">Data do Laudo</Label><Input type="date" value={laudoData} onChange={e => setLaudoData(e.target.value)} className="h-8 text-xs" /></div>
+                        </div>
+                        <p className="text-[10px] text-muted-foreground">Anexe o laudo completo no módulo Documentos/Arquivo BPF para evidência fiscal.</p>
+                      </div>
+                    )}
                   </div>
                 )}
 

@@ -953,6 +953,31 @@ export default function Rastreabilidade() {
                   <p className="text-[10px] text-muted-foreground mt-2">Registre o tempo de mistura e resultado do teste de homogeneidade (coeficiente de variação) para validação perante MAPA.</p>
                 </div>
 
+                {/* Contraprova — POP-08 */}
+                <div className="p-3 rounded-lg border border-green-400 bg-green-50 dark:bg-green-900/20">
+                  <p className="text-xs font-semibold text-green-700 dark:text-green-400 mb-2">🧪 Retenção de Amostra de Contraprova — POP-08</p>
+                  <div className="flex items-center gap-2 mb-2">
+                    <input type="checkbox" checked={contraprovaColetada} onChange={e => setContraprovaColetada(e.target.checked)} className="h-4 w-4" />
+                    <Label className="text-xs">Amostra de contraprova coletada e retida para este lote</Label>
+                  </div>
+                  {contraprovaColetada && (
+                    <div className="grid grid-cols-2 gap-3 mt-2">
+                      <div>
+                        <Label className="text-xs">Local de Armazenamento</Label>
+                        <Input value={contraprovaLocal} onChange={e => setContraprovaLocal(e.target.value)} placeholder="Ex: Sala de Retenção - Prateleira A3" className="h-8 text-xs" />
+                      </div>
+                      <div>
+                        <Label className="text-xs">Validade da Retenção</Label>
+                        <Input type="date" value={contraprovaValidade} onChange={e => setContraprovaValidade(e.target.value)} className="h-8 text-xs" />
+                      </div>
+                    </div>
+                  )}
+                  <p className="text-[10px] text-muted-foreground mt-2">
+                    A amostra deve ser retida por no mínimo o prazo de validade do produto + 30 dias (IN 04/2007).
+                    Identificar com lote, data de fabricação e validade de retenção.
+                  </p>
+                </div>
+
                 {/* Venda/Entrega Section */}
                 <div className="p-3 rounded-lg bg-muted/50 border">
                   <p className="text-xs font-semibold mb-2">③ Venda e Entrega</p>
