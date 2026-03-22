@@ -111,6 +111,11 @@ const AppRoutes = () => {
                   <Route path="/planilhas-pop" element={<PlanilhasPop />} />
                   <Route path="/produtos" element={<Produtos />} />
                   <Route path="/analises" element={<AnalisesLaboratorio />} />
+                  <Route path="/higiene" element={<HigieneSanitizacao />} />
+                  <Route path="/manutencao" element={<ManutencaoPreventiva />} />
+                  <Route path="/residuos" element={<ControleResiduos />} />
+                  <Route path="/substancias" element={<ControleSubstancias />} />
+                  <Route path="/validacao-limpeza" element={<ValidacaoLimpezaLinha />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </AppLayout>

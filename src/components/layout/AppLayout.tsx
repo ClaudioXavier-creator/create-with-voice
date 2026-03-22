@@ -42,6 +42,11 @@ const NAV_ENTRIES: NavEntry[] = [
       { path: "/nao-conformidades", label: "Não Conformidades", icon: AlertTriangle },
       { path: "/planilhas-pop", label: "Planilhas de POPs", icon: ClipboardCheck },
       { path: "/analises", label: "Análises Laboratoriais", icon: FlaskConical },
+      { path: "/higiene", label: "Higiene / Sanitização", icon: Droplets },
+      { path: "/manutencao", label: "Manutenção Preventiva", icon: Wrench },
+      { path: "/residuos", label: "Resíduos / Efluentes", icon: Recycle },
+      { path: "/substancias", label: "Substâncias Proibidas", icon: ShieldAlert },
+      { path: "/validacao-limpeza", label: "Validação Limpeza", icon: ShieldCheck },
     ],
   },
   {
