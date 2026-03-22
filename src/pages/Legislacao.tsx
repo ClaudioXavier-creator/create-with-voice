@@ -271,6 +271,50 @@ export default function Legislacao() {
     setNormaForm({ titulo: "", codigo: "", tipo: "instrucao_normativa", orgao: "MAPA", data_publicacao: "", resumo: "", arquivo_nome: "", arquivo_url: "", tags: "" });
   };
 
+  const handleQuickUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0 || !user) return;
+    setQuickUploading(true);
+    let successCount = 0;
+
+    for (const file of Array.from(files)) {
+      const path = `${user.id}/${Date.now()}_${file.name}`;
+      const { error: uploadError } = await supabase.storage.from("normas_legislacao").upload(path, file);
+      if (uploadError) {
+        toast.error(`Erro ao enviar "${file.name}": ${uploadError.message}`);
+        continue;
+      }
+      const { data: urlData } = supabase.storage.from("normas_legislacao").getPublicUrl(path);
+      const titulo = file.name.replace(/\.[^/.]+$/, "").replace(/[_-]/g, " ");
+      const ext = file.name.split(".").pop()?.toLowerCase() || "";
+      const tipo = ext === "pdf" ? "instrucao_normativa" : "outro";
+
+      const { error: insertError } = await supabase.from("normas_legislacao").insert({
+        user_id: user.id,
+        titulo,
+        codigo: "",
+        tipo,
+        orgao: "MAPA",
+        arquivo_nome: file.name,
+        arquivo_url: urlData.publicUrl,
+        tags: [],
+      } as any);
+
+      if (insertError) {
+        toast.error(`Erro ao salvar "${file.name}": ${insertError.message}`);
+      } else {
+        successCount++;
+      }
+    }
+
+    if (successCount > 0) {
+      toast.success(`${successCount} arquivo(s) importado(s) com sucesso!`);
+      fetchNormas();
+    }
+    setQuickUploading(false);
+    if (quickUploadRef.current) quickUploadRef.current.value = "";
+  };
+
   const filteredNormas = normas.filter(n => {
     if (!normaSearch) return true;
     const q = normaSearch.toLowerCase();
