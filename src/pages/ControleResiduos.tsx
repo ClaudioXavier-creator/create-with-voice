@@ -124,6 +124,22 @@ export default function ControleResiduos() {
                   </div>
                 </div>
               )}
+              {/* Effluent-specific fields (IN 15/2009) */}
+              {isEfluente && (
+                <div className="p-3 rounded-lg border border-blue-400 bg-blue-50 dark:bg-blue-900/20 space-y-3">
+                  <p className="text-xs font-semibold text-blue-700 dark:text-blue-400">💧 Controle de Efluentes — IN 15/2009</p>
+                  <div>
+                    <Label>Tipo de Tratamento</Label>
+                    <Select value={form.observacoes.includes("[TRATAMENTO:") ? "" : ""} onValueChange={v => setForm(p => ({ ...p, observacoes: `[TRATAMENTO: ${TRATAMENTO_EFLUENTE.find(t => t.value === v)?.label || v}] ${p.observacoes.replace(/\[TRATAMENTO:.*?\]\s?/, "")}` }))}>
+                      <SelectTrigger><SelectValue placeholder="Selecione o tratamento" /></SelectTrigger>
+                      <SelectContent>{TRATAMENTO_EFLUENTE.map(t => <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>)}</SelectContent>
+                    </Select>
+                  </div>
+                  <p className="text-[10px] text-muted-foreground">
+                    Registre pH, DBO e demais parâmetros nas observações. Laudos de análise de efluentes devem ser arquivados no módulo Relatórios.
+                  </p>
+                </div>
+              )}
               <div className="grid grid-cols-2 gap-3">
                 <div><Label>Origem / Setor</Label><Input value={form.origem} onChange={e => setForm(p => ({ ...p, origem: e.target.value }))} /></div>
                 <div><Label>Destino Final</Label><Input value={form.destino_final} onChange={e => setForm(p => ({ ...p, destino_final: e.target.value }))} placeholder="Aterro, reciclagem, incineração..." /></div>
@@ -138,7 +154,7 @@ export default function ControleResiduos() {
                   <Label>Unidade</Label>
                   <Select value={form.unidade} onValueChange={v => setForm(p => ({ ...p, unidade: v }))}>
                     <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent><SelectItem value="kg">kg</SelectItem><SelectItem value="litros">Litros</SelectItem><SelectItem value="ton">Toneladas</SelectItem></SelectContent>
+                    <SelectContent><SelectItem value="kg">kg</SelectItem><SelectItem value="litros">Litros</SelectItem><SelectItem value="ton">Toneladas</SelectItem><SelectItem value="m3">m³</SelectItem></SelectContent>
                   </Select>
                 </div>
                 <div><Label>Data Coleta</Label><Input type="date" value={form.data_coleta} onChange={e => setForm(p => ({ ...p, data_coleta: e.target.value }))} /></div>
@@ -147,7 +163,7 @@ export default function ControleResiduos() {
                 <div><Label>Responsável</Label><Input value={form.responsavel} onChange={e => setForm(p => ({ ...p, responsavel: e.target.value }))} /></div>
                 <div><Label>Nº Manifesto</Label><Input value={form.manifesto_numero} onChange={e => setForm(p => ({ ...p, manifesto_numero: e.target.value }))} /></div>
               </div>
-              <div><Label>Observações</Label><Textarea value={form.observacoes} onChange={e => setForm(p => ({ ...p, observacoes: e.target.value }))} /></div>
+              <div><Label>Observações</Label><Textarea value={form.observacoes} onChange={e => setForm(p => ({ ...p, observacoes: e.target.value }))} placeholder={isEfluente ? "Ex: pH=7.2, DBO=45mg/L, DQO=90mg/L..." : ""} /></div>
               <Button onClick={() => add.mutate()} disabled={!form.tipo_residuo}>Salvar</Button>
             </div>
           </DialogContent>
