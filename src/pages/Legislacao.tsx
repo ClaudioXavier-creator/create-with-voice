@@ -395,7 +395,7 @@ export default function Legislacao() {
     };
     return map[s] || { label: s, cls: "bg-muted text-muted-foreground" };
   };
-
+  const tipoNormaLabel = (tipo: string) => TIPO_NORMA_OPTIONS.find(t => t.value === tipo)?.label || tipo;
 
   const naoLidos = alertas.filter(a => !a.lido).length;
 
