@@ -237,12 +237,19 @@ export default function Fornecedores() {
       </div>
 
       <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
+        <CardHeader className="flex flex-row items-center justify-between flex-wrap gap-2">
           <CardTitle className="font-display">Fornecedores Cadastrados</CardTitle>
-          <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) resetForm(); }}>
-            <DialogTrigger asChild>
-              <Button size="sm"><Plus className="w-4 h-4 mr-1" /> Novo Fornecedor</Button>
-            </DialogTrigger>
+          <div className="flex items-center gap-2 flex-wrap">
+            <Button size="sm" variant="outline" onClick={() => exportQuestionarioBlankXlsx()}>
+              <Download className="w-3.5 h-3.5 mr-1" /> Modelo Excel
+            </Button>
+            <Button size="sm" variant="outline" onClick={() => printQuestionario()}>
+              <Printer className="w-3.5 h-3.5 mr-1" /> Modelo PDF
+            </Button>
+            <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) resetForm(); }}>
+              <DialogTrigger asChild>
+                <Button size="sm"><Plus className="w-4 h-4 mr-1" /> Novo Fornecedor</Button>
+              </DialogTrigger>
             <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
               <DialogHeader>
                 <DialogTitle className="flex items-center gap-2">
