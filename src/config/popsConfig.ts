@@ -53,23 +53,27 @@ export const POPS_CONFIG: PopConfig[] = [
   },
   {
     codigo: "POP-02",
-    nome: "Limpeza e Higienização",
-    descricao: "Registro de limpeza de instalações, equipamentos e utensílios.",
+    nome: "Limpeza e Higienização das Instalações",
+    descricao: "Registro de limpeza de instalações, equipamentos e utensílios — IN 15/2009.",
     periodicidades: [
       {
         key: "diario",
-        label: "Limpeza Diária",
+        label: "Limpeza Diária — Áreas Internas",
         periodos: diasDoMes(),
         areas: [
           { area: "Escritório e anexos" },
           { area: "Vestiário/banheiros (produção)" },
           { area: "Área de produção (piso)" },
           { area: "Área de recepção de grãos (piso)" },
+          { area: "Refeitório e copa" },
+          { area: "Corredores de circulação" },
+          { area: "Ralos e canaletas (desobstrução)" },
+          { area: "Lixeiras internas (higienização)" },
         ],
       },
       {
         key: "semanal",
-        label: "Limpeza Semanal",
+        label: "Limpeza Semanal — Equipamentos e Utensílios",
         periodos: semanas(),
         areas: [
           { area: "Pesagem e Misturas (Equipamentos)" },
@@ -77,11 +81,15 @@ export const POPS_CONFIG: PopConfig[] = [
           { area: "Ensaque (Silos e balanças)" },
           { area: "Ensaque (Paletes)" },
           { area: "Área Externa (Pátio)" },
+          { area: "Paredes e tetos (área de produção)" },
+          { area: "Luminárias e proteções" },
+          { area: "Portas e janelas (vedação e limpeza)" },
+          { area: "Telas anti-inseto (verificação)" },
         ],
       },
       {
         key: "mensal",
-        label: "Limpeza Mensal",
+        label: "Limpeza Mensal — Áreas e Estruturas",
         periodos: ["Mês"],
         areas: [
           { area: "Recepção de grãos" },
@@ -90,6 +98,9 @@ export const POPS_CONFIG: PopConfig[] = [
           { area: "Embalagens" },
           { area: "Expedição" },
           { area: "Pátio" },
+          { area: "Caixa d'água / reservatório" },
+          { area: "Sistema de exaustão / ventilação" },
+          { area: "Caixa de gordura / esgoto" },
         ],
       },
       {
@@ -99,6 +110,19 @@ export const POPS_CONFIG: PopConfig[] = [
         areas: [
           { area: "Caminhão Entrega" },
           { area: "Empilhadeira" },
+          { area: "Caçambas e contêineres" },
+        ],
+      },
+      {
+        key: "validacao",
+        label: "Validação de Limpeza (IN 15/2009)",
+        periodos: meses(),
+        areas: [
+          { area: "Swab de superfície — equipamentos" },
+          { area: "Teste água de enxágue — misturador" },
+          { area: "Inspeção visual pós-limpeza — produção" },
+          { area: "Registro de produtos químicos utilizados" },
+          { area: "Verificação de concentração de soluções" },
         ],
       },
     ],

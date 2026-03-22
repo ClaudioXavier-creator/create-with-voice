@@ -15,11 +15,20 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Plus, Trash2, Recycle } from "lucide-react";
 import PageHeader from "@/components/PageHeader";
 
-const TIPOS_RESIDUO = ["Orgânico", "Pó/Varredura", "Embalagens plásticas", "Embalagens papel/papelão", "Efluente líquido", "Óleo lubrificante", "Resíduo químico", "Outro"];
+const TIPOS_RESIDUO = ["Orgânico", "Pó/Varredura", "Embalagens plásticas", "Embalagens papel/papelão", "Efluente líquido", "Óleo lubrificante", "Resíduo químico", "Produto vencido", "Produto rejeitado/reprovado", "Sobra de produção", "Outro"];
 const CLASSIFICACOES = [
   { value: "classe_I", label: "Classe I — Perigoso" },
   { value: "classe_II_A", label: "Classe II-A — Não Inerte" },
   { value: "classe_II_B", label: "Classe II-B — Inerte" },
+];
+const MOTIVOS_DESCARTE = [
+  { value: "vencido", label: "Produto Vencido" },
+  { value: "rejeitado_recebimento", label: "Rejeitado no Recebimento" },
+  { value: "reprovado_analise", label: "Reprovado em Análise" },
+  { value: "contaminado", label: "Contaminação / Avaria" },
+  { value: "sobra_producao", label: "Sobra de Produção (s/ aproveitamento)" },
+  { value: "recall", label: "Recolhimento / Recall" },
+  { value: "outro", label: "Outro" },
 ];
 
 export default function ControleResiduos() {
@@ -31,7 +40,8 @@ export default function ControleResiduos() {
     tipo_residuo: "", classificacao: "classe_II_A", origem: "", destino_final: "",
     empresa_coletora: "", licenca_ambiental: "", frequencia_coleta: "semanal",
     quantidade: "", unidade: "kg", data_coleta: new Date().toISOString().split("T")[0],
-    responsavel: "", manifesto_numero: "", observacoes: ""
+    responsavel: "", manifesto_numero: "", observacoes: "",
+    motivo_descarte: "", lote_produto: "", produto_nome: ""
   });
 
   const { data: residuos = [] } = useQuery({
@@ -52,7 +62,7 @@ export default function ControleResiduos() {
       qc.invalidateQueries({ queryKey: ["controle_residuos"] });
       toast.success("Registro de resíduo salvo");
       setOpen(false);
-      setForm({ tipo_residuo: "", classificacao: "classe_II_A", origem: "", destino_final: "", empresa_coletora: "", licenca_ambiental: "", frequencia_coleta: "semanal", quantidade: "", unidade: "kg", data_coleta: new Date().toISOString().split("T")[0], responsavel: "", manifesto_numero: "", observacoes: "" });
+      setForm({ tipo_residuo: "", classificacao: "classe_II_A", origem: "", destino_final: "", empresa_coletora: "", licenca_ambiental: "", frequencia_coleta: "semanal", quantidade: "", unidade: "kg", data_coleta: new Date().toISOString().split("T")[0], responsavel: "", manifesto_numero: "", observacoes: "", motivo_descarte: "", lote_produto: "", produto_nome: "" });
     },
     onError: () => toast.error("Erro ao salvar"),
   });
@@ -64,7 +74,7 @@ export default function ControleResiduos() {
 
   return (
     <div className="space-y-6">
-      <PageHeader title="POP 04 — Controle de Resíduos e Efluentes" description="Gestão ambiental conforme Decreto 12.031/2024" />
+      <PageHeader title="POP 05 — Controle de Resíduos e Efluentes" description="Gestão ambiental, destinação de vencidos/rejeitados — IN 04/2007, Decreto 12.031/2024" />
 
       <div className="flex justify-end">
         <Dialog open={open} onOpenChange={setOpen}>
@@ -86,9 +96,26 @@ export default function ControleResiduos() {
                   <SelectContent>{CLASSIFICACOES.map(c => <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>)}</SelectContent>
                 </Select>
               </div>
+              {/* Produto vencido/rejeitado fields */}
+              {["Produto vencido", "Produto rejeitado/reprovado", "Sobra de produção"].includes(form.tipo_residuo) && (
+                <div className="p-3 rounded-lg border border-yellow-400 bg-yellow-50 dark:bg-yellow-900/20 space-y-3">
+                  <p className="text-xs font-semibold text-yellow-700 dark:text-yellow-400">⚠️ Controle de Produto Descartado (POP 05 — IN 04/2007)</p>
+                  <div>
+                    <Label>Motivo do Descarte</Label>
+                    <Select value={form.motivo_descarte} onValueChange={v => setForm(p => ({ ...p, motivo_descarte: v }))}>
+                      <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
+                      <SelectContent>{MOTIVOS_DESCARTE.map(m => <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>)}</SelectContent>
+                    </Select>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div><Label>Produto</Label><Input value={form.produto_nome} onChange={e => setForm(p => ({ ...p, produto_nome: e.target.value }))} placeholder="Ex: Ração Bovino 20kg" /></div>
+                    <div><Label>Lote do Produto</Label><Input value={form.lote_produto} onChange={e => setForm(p => ({ ...p, lote_produto: e.target.value }))} placeholder="Ex: RBE-0320-01" /></div>
+                  </div>
+                </div>
+              )}
               <div className="grid grid-cols-2 gap-3">
                 <div><Label>Origem / Setor</Label><Input value={form.origem} onChange={e => setForm(p => ({ ...p, origem: e.target.value }))} /></div>
-                <div><Label>Destino Final</Label><Input value={form.destino_final} onChange={e => setForm(p => ({ ...p, destino_final: e.target.value }))} placeholder="Aterro, reciclagem..." /></div>
+                <div><Label>Destino Final</Label><Input value={form.destino_final} onChange={e => setForm(p => ({ ...p, destino_final: e.target.value }))} placeholder="Aterro, reciclagem, incineração..." /></div>
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div><Label>Empresa Coletora</Label><Input value={form.empresa_coletora} onChange={e => setForm(p => ({ ...p, empresa_coletora: e.target.value }))} /></div>

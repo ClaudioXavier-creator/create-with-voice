@@ -65,7 +65,9 @@ export default function Rastreabilidade() {
   const [dataVenda, setDataVenda] = useState("");
   const [notaFiscal, setNotaFiscal] = useState("");
   const [quantidadeVendida, setQuantidadeVendida] = useState("");
-
+  const [especieDestino, setEspecieDestino] = useState("");
+  const [contemOrigemAnimal, setContemOrigemAnimal] = useState(false);
+  const [tipoOrigemAnimal, setTipoOrigemAnimal] = useState("");
   // Recall fields
   const [recallMotivo, setRecallMotivo] = useState("");
   const [recallData, setRecallData] = useState("");
@@ -101,6 +103,7 @@ export default function Rastreabilidade() {
     setProduto(""); setLoteProduto(""); setMateriaPrima(""); setLoteMP("");
     setFornecedor(""); setClienteDestino(""); setLocalEntrega("");
     setDataVenda(""); setNotaFiscal(""); setQuantidadeVendida("");
+    setEspecieDestino(""); setContemOrigemAnimal(false); setTipoOrigemAnimal("");
   };
 
   const fetchData = async () => {
@@ -230,6 +233,9 @@ export default function Rastreabilidade() {
       data_venda: dataVenda || null,
       nota_fiscal: notaFiscal,
       quantidade_vendida: quantidadeVendida,
+      especie_destino: especieDestino || null,
+      contem_origem_animal: contemOrigemAnimal,
+      tipo_origem_animal: tipoOrigemAnimal || null,
     } as any);
     if (error) {
       toast.error("Erro ao salvar");
@@ -704,6 +710,50 @@ export default function Rastreabilidade() {
                       <Input value={loteProduto} onChange={e => setLoteProduto(e.target.value)} placeholder="Ex: RBE-0320-01" />
                     </div>
                   </div>
+                  <div className="mt-3">
+                    <Label>Espécie Destino</Label>
+                    <Select value={especieDestino} onValueChange={setEspecieDestino}>
+                      <SelectTrigger><SelectValue placeholder="Selecione a espécie" /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="bovinos">Bovinos</SelectItem>
+                        <SelectItem value="suinos">Suínos</SelectItem>
+                        <SelectItem value="aves">Aves</SelectItem>
+                        <SelectItem value="equinos">Equinos</SelectItem>
+                        <SelectItem value="caprinos_ovinos">Caprinos/Ovinos</SelectItem>
+                        <SelectItem value="peixes">Peixes / Aquicultura</SelectItem>
+                        <SelectItem value="pets">Pets (Cães e Gatos)</SelectItem>
+                        <SelectItem value="multiespecie">Multiespécie</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                {/* EEB Prevention - IN 15/2009 */}
+                <div className="p-3 rounded-lg border border-orange-400 bg-orange-50 dark:bg-orange-900/20">
+                  <p className="text-xs font-semibold text-orange-700 dark:text-orange-400 mb-2">🛡️ Prevenção EEB — IN 15/2009</p>
+                  <div className="flex items-center gap-2 mb-2">
+                    <input type="checkbox" checked={contemOrigemAnimal} onChange={e => setContemOrigemAnimal(e.target.checked)} className="h-4 w-4" />
+                    <Label>Matéria-prima contém ingrediente de origem animal</Label>
+                  </div>
+                  {contemOrigemAnimal && (
+                    <div>
+                      <Label>Tipo de Origem Animal</Label>
+                      <Select value={tipoOrigemAnimal} onValueChange={setTipoOrigemAnimal}>
+                        <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="farinha_carne_ossos">Farinha de Carne e Ossos</SelectItem>
+                          <SelectItem value="farinha_penas">Farinha de Penas</SelectItem>
+                          <SelectItem value="farinha_sangue">Farinha de Sangue</SelectItem>
+                          <SelectItem value="farinha_peixe">Farinha de Peixe</SelectItem>
+                          <SelectItem value="sebo_gordura">Sebo / Gordura Animal</SelectItem>
+                          <SelectItem value="outro">Outro</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      {especieDestino === "bovinos" && (
+                        <p className="text-xs text-destructive mt-2 font-semibold">⚠️ ATENÇÃO: Uso de farinha de carne/ossos de ruminantes é PROIBIDO para bovinos (Prevenção EEB)</p>
+                      )}
+                    </div>
+                  )}
                 </div>
 
                 {/* Venda/Entrega Section */}

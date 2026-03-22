@@ -189,48 +189,60 @@ export type Database = {
           codigo: string | null
           created_at: string
           data_calibracao: string | null
+          data_verificacao_intermediaria: string | null
           equipamento: string
           id: string
           localizacao: string | null
           observacoes: string | null
           proxima_calibracao: string | null
+          proxima_verificacao_intermediaria: string | null
           responsavel: string | null
+          resultado_verificacao: string | null
           status: string | null
           tipo: string | null
           updated_at: string
           user_id: string
+          verificacao_conforme: boolean | null
         }
         Insert: {
           certificado_numero?: string | null
           codigo?: string | null
           created_at?: string
           data_calibracao?: string | null
+          data_verificacao_intermediaria?: string | null
           equipamento: string
           id?: string
           localizacao?: string | null
           observacoes?: string | null
           proxima_calibracao?: string | null
+          proxima_verificacao_intermediaria?: string | null
           responsavel?: string | null
+          resultado_verificacao?: string | null
           status?: string | null
           tipo?: string | null
           updated_at?: string
           user_id: string
+          verificacao_conforme?: boolean | null
         }
         Update: {
           certificado_numero?: string | null
           codigo?: string | null
           created_at?: string
           data_calibracao?: string | null
+          data_verificacao_intermediaria?: string | null
           equipamento?: string
           id?: string
           localizacao?: string | null
           observacoes?: string | null
           proxima_calibracao?: string | null
+          proxima_verificacao_intermediaria?: string | null
           responsavel?: string | null
+          resultado_verificacao?: string | null
           status?: string | null
           tipo?: string | null
           updated_at?: string
           user_id?: string
+          verificacao_conforme?: boolean | null
         }
         Relationships: []
       }
@@ -310,9 +322,12 @@ export type Database = {
           frequencia_coleta: string | null
           id: string
           licenca_ambiental: string | null
+          lote_produto: string | null
           manifesto_numero: string | null
+          motivo_descarte: string | null
           observacoes: string | null
           origem: string | null
+          produto_nome: string | null
           quantidade: string | null
           responsavel: string | null
           status: string | null
@@ -330,9 +345,12 @@ export type Database = {
           frequencia_coleta?: string | null
           id?: string
           licenca_ambiental?: string | null
+          lote_produto?: string | null
           manifesto_numero?: string | null
+          motivo_descarte?: string | null
           observacoes?: string | null
           origem?: string | null
+          produto_nome?: string | null
           quantidade?: string | null
           responsavel?: string | null
           status?: string | null
@@ -350,9 +368,12 @@ export type Database = {
           frequencia_coleta?: string | null
           id?: string
           licenca_ambiental?: string | null
+          lote_produto?: string | null
           manifesto_numero?: string | null
+          motivo_descarte?: string | null
           observacoes?: string | null
           origem?: string | null
+          produto_nome?: string | null
           quantidade?: string | null
           responsavel?: string | null
           status?: string | null
@@ -1430,8 +1451,10 @@ export type Database = {
       rastreabilidade: {
         Row: {
           cliente_destino: string | null
+          contem_origem_animal: boolean | null
           created_at: string
           data_venda: string | null
+          especie_destino: string | null
           fornecedor: string | null
           id: string
           local_entrega: string | null
@@ -1445,12 +1468,15 @@ export type Database = {
           recall_data: string | null
           recall_motivo: string | null
           recall_status: string | null
+          tipo_origem_animal: string | null
           user_id: string
         }
         Insert: {
           cliente_destino?: string | null
+          contem_origem_animal?: boolean | null
           created_at?: string
           data_venda?: string | null
+          especie_destino?: string | null
           fornecedor?: string | null
           id?: string
           local_entrega?: string | null
@@ -1464,12 +1490,15 @@ export type Database = {
           recall_data?: string | null
           recall_motivo?: string | null
           recall_status?: string | null
+          tipo_origem_animal?: string | null
           user_id: string
         }
         Update: {
           cliente_destino?: string | null
+          contem_origem_animal?: boolean | null
           created_at?: string
           data_venda?: string | null
+          especie_destino?: string | null
           fornecedor?: string | null
           id?: string
           local_entrega?: string | null
@@ -1483,6 +1512,7 @@ export type Database = {
           recall_data?: string | null
           recall_motivo?: string | null
           recall_status?: string | null
+          tipo_origem_animal?: string | null
           user_id?: string
         }
         Relationships: []

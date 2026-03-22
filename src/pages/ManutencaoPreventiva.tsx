@@ -12,8 +12,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Plus, Wrench, Trash2 } from "lucide-react";
+import { Plus, Wrench, Trash2, AlertTriangle, Scale } from "lucide-react";
 import PageHeader from "@/components/PageHeader";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const TIPOS = [
   { value: "preventiva", label: "Preventiva" },
@@ -92,6 +93,23 @@ export default function ManutencaoPreventiva() {
     },
   });
 
+  const today = new Date().toISOString().split("T")[0];
+  const calibracoesComAlerta = calibracoes.filter((c: any) => {
+    if (!c.proxima_verificacao_intermediaria) {
+      // If no intermediate verification set, check if midpoint between calibrations has passed
+      if (c.data_calibracao && c.proxima_calibracao) {
+        const start = new Date(c.data_calibracao).getTime();
+        const end = new Date(c.proxima_calibracao).getTime();
+        const mid = new Date((start + end) / 2).toISOString().split("T")[0];
+        return mid <= today;
+      }
+      return false;
+    }
+    return c.proxima_verificacao_intermediaria <= today;
+  });
+
+  const calibracoesVencidas = calibracoes.filter((c: any) => c.proxima_calibracao && c.proxima_calibracao <= today);
+
   return (
     <div className="space-y-6">
       <PageHeader title="POP 05 — Manutenção Preventiva" description="Histórico de manutenções vinculado a equipamentos — IN 04/2007" />
@@ -102,6 +120,59 @@ export default function ManutencaoPreventiva() {
         <Card><CardContent className="pt-6 text-center"><p className="text-3xl font-bold text-green-600">{calibracoes.length}</p><p className="text-sm text-muted-foreground">Equipamentos Calibrados</p></CardContent></Card>
       </div>
 
+      {/* Alertas de Verificação Intermediária */}
+      {calibracoesComAlerta.length > 0 && (
+        <Card className="border-yellow-400 bg-yellow-50 dark:bg-yellow-900/10">
+          <CardContent className="pt-4">
+            <div className="flex items-center gap-2 mb-3">
+              <AlertTriangle className="w-5 h-5 text-yellow-600" />
+              <h3 className="font-semibold text-sm text-yellow-700 dark:text-yellow-400">Verificação Intermediária Pendente — IN 04/2007</h3>
+            </div>
+            <p className="text-xs text-muted-foreground mb-3">Balanças e instrumentos de medição requerem verificação intermediária entre calibrações anuais para manter a conformidade.</p>
+            <div className="space-y-2">
+              {calibracoesComAlerta.map((c: any) => (
+                <div key={c.id} className="flex items-center justify-between p-2 rounded bg-background border">
+                  <div>
+                    <span className="font-medium text-sm">{c.equipamento}</span>
+                    <span className="text-xs text-muted-foreground ml-2">Código: {c.codigo || "—"}</span>
+                  </div>
+                  <Badge variant="outline" className="border-yellow-500 text-yellow-700 dark:text-yellow-400">Verificação Pendente</Badge>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {calibracoesVencidas.length > 0 && (
+        <Card className="border-destructive/40 bg-destructive/5">
+          <CardContent className="pt-4">
+            <div className="flex items-center gap-2 mb-3">
+              <AlertTriangle className="w-5 h-5 text-destructive" />
+              <h3 className="font-semibold text-sm text-destructive">Calibrações Vencidas</h3>
+            </div>
+            <div className="space-y-2">
+              {calibracoesVencidas.map((c: any) => (
+                <div key={c.id} className="flex items-center justify-between p-2 rounded bg-background border">
+                  <div>
+                    <span className="font-medium text-sm">{c.equipamento}</span>
+                    <span className="text-xs text-muted-foreground ml-2">Venceu: {c.proxima_calibracao}</span>
+                  </div>
+                  <Badge variant="destructive">Vencida</Badge>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      <Tabs defaultValue="manutencoes">
+        <TabsList>
+          <TabsTrigger value="manutencoes">Manutenções ({manutencoes.length})</TabsTrigger>
+          <TabsTrigger value="calibracoes">Calibrações ({calibracoes.length})</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="manutencoes" className="space-y-4">
       <div className="flex justify-between items-center gap-4 flex-wrap">
         <Input placeholder="Filtrar por equipamento..." value={filtroEquip} onChange={e => setFiltroEquip(e.target.value)} className="max-w-xs" />
         <Dialog open={open} onOpenChange={setOpen}>
@@ -181,6 +252,53 @@ export default function ManutencaoPreventiva() {
           </Table>
         </Card>
       )}
+        </TabsContent>
+
+        <TabsContent value="calibracoes" className="space-y-4">
+          {calibracoes.length === 0 ? (
+            <Card><CardContent className="py-12 text-center text-muted-foreground"><Scale className="w-12 h-12 mx-auto mb-3 opacity-40" /><p>Nenhuma calibração registrada. Use o módulo de Documentos para cadastrar calibrações.</p></CardContent></Card>
+          ) : (
+            <Card>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Equipamento</TableHead>
+                    <TableHead>Código</TableHead>
+                    <TableHead>Última Calibração</TableHead>
+                    <TableHead>Próxima Calibração</TableHead>
+                    <TableHead>Verif. Intermediária</TableHead>
+                    <TableHead>Status</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {calibracoes.map((c: any) => {
+                    const vencida = c.proxima_calibracao && c.proxima_calibracao <= today;
+                    const verifPendente = calibracoesComAlerta.some((a: any) => a.id === c.id);
+                    return (
+                      <TableRow key={c.id} className={vencida ? "bg-destructive/5" : verifPendente ? "bg-yellow-50 dark:bg-yellow-900/10" : ""}>
+                        <TableCell className="font-medium">{c.equipamento}</TableCell>
+                        <TableCell>{c.codigo || "—"}</TableCell>
+                        <TableCell>{c.data_calibracao || "—"}</TableCell>
+                        <TableCell>{c.proxima_calibracao || "—"}</TableCell>
+                        <TableCell>
+                          {c.proxima_verificacao_intermediaria ? (
+                            <span className={c.proxima_verificacao_intermediaria <= today ? "text-yellow-600 font-semibold" : ""}>{c.proxima_verificacao_intermediaria}</span>
+                          ) : "—"}
+                        </TableCell>
+                        <TableCell>
+                          {vencida ? <Badge variant="destructive">Vencida</Badge> :
+                           verifPendente ? <Badge variant="outline" className="border-yellow-500 text-yellow-700">Verif. Pendente</Badge> :
+                           <Badge variant="default">Calibrado</Badge>}
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            </Card>
+          )}
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
