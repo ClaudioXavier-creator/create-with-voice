@@ -99,7 +99,7 @@ export default function Recebimento() {
     setUmidade(""); setInsetos("ausente"); setTemperatura(""); setQuantidade("");
     setUnidade("kg"); setValidade(""); setAprovado(true); setCertNumero("");
     setCertUrl(""); setCertValido(null); setObservacoes("");
-    setVistoriaVeiculo({}); setPlacaVeiculo("");
+    setVistoriaVeiculo({}); setPlacaVeiculo(""); setLacreNumero(""); setLacreIntegro(""); setCondicoesTransporte("");
     setContemOrigemAnimal(false); setTipoOrigemAnimal(""); setDestinoEspecie("");
   };
 
