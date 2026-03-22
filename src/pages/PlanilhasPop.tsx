@@ -129,6 +129,8 @@ export default function PlanilhasPop() {
           planilhaId={planilhaId}
           periodicidade={selectedPeriodicidade}
           userId={user!.id}
+          popCodigo={selectedPop.codigo}
+          popNome={selectedPop.nome}
         />
       </>
     );
