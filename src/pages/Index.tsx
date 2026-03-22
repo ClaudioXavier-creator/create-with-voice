@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { LayoutDashboard, AlertTriangle, ClipboardCheck, GraduationCap, CheckCircle2 } from "lucide-react";
+import { LayoutDashboard, AlertTriangle, ClipboardCheck, GraduationCap, CheckCircle2, CalendarDays, Bell } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
@@ -7,7 +7,9 @@ import { Skeleton } from "@/components/ui/skeleton";
 import PageHeader from "@/components/PageHeader";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { Link } from "react-router-dom";
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts";
+import { differenceInDays, parseISO, format } from "date-fns";
 
 const statusColors: Record<string, string> = {
   aberta: "bg-destructive text-destructive-foreground",
