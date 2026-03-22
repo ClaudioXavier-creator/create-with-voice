@@ -333,7 +333,7 @@ export default function ExecucaoPops() {
             <DialogTrigger asChild>
               <Button size="sm"><Plus className="w-4 h-4 mr-1" /> Nova Execução</Button>
             </DialogTrigger>
-            <DialogContent>
+            <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
               <DialogHeader><DialogTitle>Registrar Execução de POP/IT</DialogTitle></DialogHeader>
               <div className="space-y-4">
                 <div>
