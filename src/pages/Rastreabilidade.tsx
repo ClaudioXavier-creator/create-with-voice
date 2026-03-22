@@ -65,7 +65,9 @@ export default function Rastreabilidade() {
   const [dataVenda, setDataVenda] = useState("");
   const [notaFiscal, setNotaFiscal] = useState("");
   const [quantidadeVendida, setQuantidadeVendida] = useState("");
-
+  const [especieDestino, setEspecieDestino] = useState("");
+  const [contemOrigemAnimal, setContemOrigemAnimal] = useState(false);
+  const [tipoOrigemAnimal, setTipoOrigemAnimal] = useState("");
   // Recall fields
   const [recallMotivo, setRecallMotivo] = useState("");
   const [recallData, setRecallData] = useState("");
