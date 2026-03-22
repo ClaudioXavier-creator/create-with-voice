@@ -66,6 +66,8 @@ export default function Fornecedores() {
   const [email, setEmail] = useState("");
   const [tipoProduto, setTipoProduto] = useState("");
   const [observacoes, setObservacoes] = useState("");
+  const [registroSipeagro, setRegistroSipeagro] = useState("");
+  const [sipeagroVerificado, setSipeagroVerificado] = useState(false);
 
   // Avaliação
   const [nota, setNota] = useState(0);
