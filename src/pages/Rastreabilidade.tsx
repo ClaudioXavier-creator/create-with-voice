@@ -99,11 +99,16 @@ export default function Rastreabilidade() {
   const [testesHistorico, setTestesHistorico] = useState<any[]>([]);
   const testeInterval = useRef<NodeJS.Timeout | null>(null);
 
+  // Process validation fields
+  const [tempoMistura, setTempoMistura] = useState("");
+  const [testeHomogeneidade, setTesteHomogeneidade] = useState("");
+
   const resetForm = () => {
     setProduto(""); setLoteProduto(""); setMateriaPrima(""); setLoteMP("");
     setFornecedor(""); setClienteDestino(""); setLocalEntrega("");
     setDataVenda(""); setNotaFiscal(""); setQuantidadeVendida("");
     setEspecieDestino(""); setContemOrigemAnimal(false); setTipoOrigemAnimal("");
+    setTempoMistura(""); setTesteHomogeneidade("");
   };
 
   const fetchData = async () => {

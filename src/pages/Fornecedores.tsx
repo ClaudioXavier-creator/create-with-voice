@@ -96,6 +96,8 @@ export default function Fornecedores() {
     setSaving(true);
     const { error } = await supabase.from("fornecedores").insert({
       user_id: user.id, nome, cnpj, endereco, contato, email, tipo_produto: tipoProduto, observacoes,
+      registro_sipeagro: registroSipeagro, sipeagro_verificado: sipeagroVerificado,
+      sipeagro_data_verificacao: sipeagroVerificado ? new Date().toISOString().split("T")[0] : null,
     } as any);
     if (error) toast.error("Erro ao salvar");
     else { toast.success("Fornecedor cadastrado!"); setOpen(false); resetForm(); fetchData(); }
