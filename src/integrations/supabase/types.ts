@@ -1506,6 +1506,135 @@ export type Database = {
         }
         Relationships: []
       }
+      reclamacoes_qualidade: {
+        Row: {
+          acao_corretiva: string | null
+          acao_imediata: string | null
+          acao_preventiva: string | null
+          analise_tecnica: string | null
+          causa_raiz: string | null
+          cliente: string
+          cliente_notificado: boolean | null
+          conclusao: string | null
+          contato_cliente: string | null
+          created_at: string
+          data_analise: string | null
+          data_compra: string | null
+          data_fim_recolhimento: string | null
+          data_inicio_recolhimento: string | null
+          data_reclamacao: string
+          data_resposta_cliente: string | null
+          descricao_problema: string
+          destino_produto_recolhido: string | null
+          evidencias: string | null
+          id: string
+          lote: string | null
+          lotes_afetados: string | null
+          motivo_recolhimento: string | null
+          nota_fiscal: string | null
+          numero_reclamacao: string
+          observacoes: string | null
+          pop_referencia: string | null
+          prazo_resolucao: string | null
+          produto: string
+          quantidade_reclamada: string | null
+          quantidade_recolhida: string | null
+          requer_recolhimento: boolean | null
+          responsavel_analise: string | null
+          responsavel_resolucao: string | null
+          satisfacao_cliente: string | null
+          status: string
+          status_recolhimento: string | null
+          tipo_reclamacao: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          acao_corretiva?: string | null
+          acao_imediata?: string | null
+          acao_preventiva?: string | null
+          analise_tecnica?: string | null
+          causa_raiz?: string | null
+          cliente: string
+          cliente_notificado?: boolean | null
+          conclusao?: string | null
+          contato_cliente?: string | null
+          created_at?: string
+          data_analise?: string | null
+          data_compra?: string | null
+          data_fim_recolhimento?: string | null
+          data_inicio_recolhimento?: string | null
+          data_reclamacao?: string
+          data_resposta_cliente?: string | null
+          descricao_problema: string
+          destino_produto_recolhido?: string | null
+          evidencias?: string | null
+          id?: string
+          lote?: string | null
+          lotes_afetados?: string | null
+          motivo_recolhimento?: string | null
+          nota_fiscal?: string | null
+          numero_reclamacao: string
+          observacoes?: string | null
+          pop_referencia?: string | null
+          prazo_resolucao?: string | null
+          produto: string
+          quantidade_reclamada?: string | null
+          quantidade_recolhida?: string | null
+          requer_recolhimento?: boolean | null
+          responsavel_analise?: string | null
+          responsavel_resolucao?: string | null
+          satisfacao_cliente?: string | null
+          status?: string
+          status_recolhimento?: string | null
+          tipo_reclamacao?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          acao_corretiva?: string | null
+          acao_imediata?: string | null
+          acao_preventiva?: string | null
+          analise_tecnica?: string | null
+          causa_raiz?: string | null
+          cliente?: string
+          cliente_notificado?: boolean | null
+          conclusao?: string | null
+          contato_cliente?: string | null
+          created_at?: string
+          data_analise?: string | null
+          data_compra?: string | null
+          data_fim_recolhimento?: string | null
+          data_inicio_recolhimento?: string | null
+          data_reclamacao?: string
+          data_resposta_cliente?: string | null
+          descricao_problema?: string
+          destino_produto_recolhido?: string | null
+          evidencias?: string | null
+          id?: string
+          lote?: string | null
+          lotes_afetados?: string | null
+          motivo_recolhimento?: string | null
+          nota_fiscal?: string | null
+          numero_reclamacao?: string
+          observacoes?: string | null
+          pop_referencia?: string | null
+          prazo_resolucao?: string | null
+          produto?: string
+          quantidade_reclamada?: string | null
+          quantidade_recolhida?: string | null
+          requer_recolhimento?: boolean | null
+          responsavel_analise?: string | null
+          responsavel_resolucao?: string | null
+          satisfacao_cliente?: string | null
+          status?: string
+          status_recolhimento?: string | null
+          tipo_reclamacao?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       registros_limpeza: {
         Row: {
           conforme: boolean | null
