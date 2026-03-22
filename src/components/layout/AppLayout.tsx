@@ -40,6 +40,7 @@ const NAV_ENTRIES: NavEntry[] = [
       { path: "/auditoria", label: "Auditoria BPF", icon: ClipboardCheck },
       { path: "/nao-conformidades", label: "Não Conformidades", icon: AlertTriangle },
       { path: "/planilhas-pop", label: "Planilhas de POPs", icon: ClipboardCheck },
+      { path: "/analises", label: "Análises Laboratoriais", icon: FlaskConical },
     ],
   },
   {
