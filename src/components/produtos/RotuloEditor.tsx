@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Loader2, Printer, Download, Save } from "lucide-react";
+import { Loader2, Printer, Download, Save, RefreshCw } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -23,6 +23,7 @@ interface RotuloData {
   classificacao_label: string;
   especie_categoria: string;
   composicao_ingredientes: string;
+  eventuais_substitutivos: string;
   niveis_garantia_texto: string;
   indicacoes_uso: string;
   modo_usar: string;
@@ -46,7 +47,7 @@ interface RotuloData {
 const EMPTY_ROTULO: RotuloData = {
   tipo_rotulo: "racao",
   nome_comercial: "", classificacao_label: "", especie_categoria: "",
-  composicao_ingredientes: "", niveis_garantia_texto: "",
+  composicao_ingredientes: "", eventuais_substitutivos: "", niveis_garantia_texto: "",
   indicacoes_uso: "", modo_usar: "", precaucoes_restricoes: "",
   peso_liquido: "", prazo_validade: "", armazenamento: "",
   lote_placeholder: "LOTE: ___________",
@@ -56,12 +57,78 @@ const EMPTY_ROTULO: RotuloData = {
   largura_mm: 100, altura_mm: 75,
 };
 
+const CLASSIFICACAO_FULL: Record<string, string> = {
+  racao: "RAÇÃO",
+  suplemento: "SUPLEMENTO",
+  premix: "PREMIX",
+  nucleo: "NÚCLEO",
+  aditivo: "ADITIVO",
+  sal_mineral: "SAL MINERAL",
+};
+
+/** Convert structured niveis_garantia JSON to IN 22 formatted text */
+function formatNiveisIN22(niveisObj: Record<string, any>): string {
+  const lines: string[] = [];
+  
+  Object.entries(niveisObj).forEach(([key, val]) => {
+    if (key.startsWith("_")) return; // skip metadata
+    
+    const label = key.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+    
+    if (typeof val === "object" && val !== null) {
+      const { min, max, unit } = val as { min?: string; max?: string; unit?: string };
+      const u = unit || "";
+      
+      if (min && max) {
+        lines.push(`${label} (Mín.) ${min} ${u}; ${label} (Máx.) ${max} ${u}`);
+      } else if (min) {
+        lines.push(`${label} (Mín.) ${min} ${u}`);
+      } else if (max) {
+        lines.push(`${label} (Máx.) ${max} ${u}`);
+      }
+    } else if (val) {
+      lines.push(`${label}: ${val}`);
+    }
+  });
+  
+  return lines.join("; ") + ".";
+}
+
+function extractFromProduto(prod: any): Partial<RotuloData> {
+  const niveisObj = (prod.niveis_garantia as Record<string, any>) || {};
+  const niveisText = formatNiveisIN22(niveisObj);
+  const eventuais = niveisObj._eventuais_substitutos || "";
+  const tipo = prod.classificacao || "racao";
+  const classificacaoLabel = CLASSIFICACAO_FULL[tipo] || tipo.toUpperCase();
+  const especie = `${prod.especie_alvo || ""}`.toUpperCase();
+  const categoria = `${prod.categoria_animal || ""}`.toUpperCase();
+  const especieCategoria = [especie, categoria].filter(Boolean).join(" – ");
+
+  return {
+    nome_comercial: prod.nome || "",
+    tipo_rotulo: tipo,
+    classificacao_label: `${classificacaoLabel} PARA ${especieCategoria}`,
+    especie_categoria: especieCategoria,
+    composicao_ingredientes: (prod.composicao || "").toUpperCase(),
+    eventuais_substitutivos: eventuais,
+    niveis_garantia_texto: niveisText,
+    indicacoes_uso: prod.indicacoes || "",
+    modo_usar: prod.modo_uso || "",
+    precaucoes_restricoes: prod.precaucoes || "",
+    peso_liquido: `${prod.peso_liquido || ""} ${prod.unidade_peso || "kg"}`.trim(),
+    prazo_validade: `${prod.validade_meses || 6} meses a partir da data de fabricação`,
+    armazenamento: prod.armazenamento || "",
+    registro_mapa: prod.registro_mapa || "",
+  };
+}
+
 export default function RotuloEditor({ produtoId, produtoNome }: Props) {
   const { user } = useAuth();
   const [rotulo, setRotulo] = useState<RotuloData>({ ...EMPTY_ROTULO, nome_comercial: produtoNome });
   const [rotuloId, setRotuloId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [syncing, setSyncing] = useState(false);
   const printRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => { loadRotulo(); }, [produtoId]);
@@ -82,6 +149,7 @@ export default function RotuloEditor({ produtoId, produtoNome }: Props) {
         classificacao_label: data.classificacao_label || "",
         especie_categoria: data.especie_categoria || "",
         composicao_ingredientes: data.composicao_ingredientes || "",
+        eventuais_substitutivos: "",
         niveis_garantia_texto: data.niveis_garantia_texto || "",
         indicacoes_uso: data.indicacoes_uso || "",
         modo_usar: data.modo_usar || "",
@@ -102,43 +170,32 @@ export default function RotuloEditor({ produtoId, produtoNome }: Props) {
         altura_mm: data.altura_mm || 75,
       });
     } else {
-      // Pre-fill from produto data
-      const { data: prod } = await supabase.from("produtos").select("*").eq("id", produtoId).single();
-      if (prod) {
-        const niveisObj = (prod.niveis_garantia as Record<string, string>) || {};
-        const niveisText = Object.entries(niveisObj)
-          .filter(([_, v]) => v)
-          .map(([k, v]) => `${k}: ${v}`)
-          .join("\n");
-
-        setRotulo((prev) => ({
-          ...prev,
-          nome_comercial: prod.nome,
-          classificacao_label: prod.classificacao,
-          especie_categoria: `${prod.especie_alvo || ""} ${prod.categoria_animal || ""}`.trim(),
-          composicao_ingredientes: prod.composicao || "",
-          niveis_garantia_texto: niveisText,
-          indicacoes_uso: prod.indicacoes || "",
-          modo_usar: prod.modo_uso || "",
-          precaucoes_restricoes: prod.precaucoes || "",
-          peso_liquido: `${prod.peso_liquido || ""} ${prod.unidade_peso || "kg"}`.trim(),
-          prazo_validade: `${prod.validade_meses || 6} meses`,
-          armazenamento: prod.armazenamento || "",
-          registro_mapa: prod.registro_mapa || "",
-        }));
-      }
+      // Auto pre-fill from product on first load
+      await syncFromProduto(true);
     }
     setLoading(false);
+  }
+
+  async function syncFromProduto(silent = false) {
+    setSyncing(true);
+    const { data: prod } = await supabase.from("produtos").select("*").eq("id", produtoId).single();
+    if (prod) {
+      const extracted = extractFromProduto(prod);
+      setRotulo((prev) => ({ ...prev, ...extracted }));
+      if (!silent) toast.success("Dados sincronizados do cadastro do produto!");
+    }
+    setSyncing(false);
   }
 
   async function handleSave() {
     if (!user) return;
     setSaving(true);
 
+    const { eventuais_substitutivos, ...rotuloToSave } = rotulo;
     const payload = {
       user_id: user.id,
       produto_id: produtoId,
-      ...rotulo,
+      ...rotuloToSave,
     };
 
     const { error } = rotuloId
@@ -156,7 +213,7 @@ export default function RotuloEditor({ produtoId, produtoNome }: Props) {
   function generateZPL(): string {
     const w = rotulo.largura_mm;
     const h = rotulo.altura_mm;
-    const dotsW = w * 8; // 203 dpi ≈ 8 dots/mm
+    const dotsW = w * 8;
     const dotsH = h * 8;
 
     let zpl = `^XA\n^PW${dotsW}\n^LL${dotsH}\n`;
@@ -166,39 +223,27 @@ export default function RotuloEditor({ produtoId, produtoNome }: Props) {
     const lineH = 32;
     const x = 20;
 
-    // Product name (bold, larger)
     zpl += `^FO${x},${y}^A0N,36,36^FD${rotulo.nome_comercial}^FS\n`;
     y += 44;
 
-    // Classification & species
-    zpl += `^FO${x},${y}^A0N,24,24^FD${rotulo.classificacao_label} - ${rotulo.especie_categoria}^FS\n`;
+    zpl += `^FO${x},${y}^A0N,24,24^FD${rotulo.classificacao_label}^FS\n`;
     y += lineH;
 
-    // Separator
     zpl += `^FO${x},${y}^GB${dotsW - 40},2,2^FS\n`;
     y += 10;
 
-    // Composition (truncated for label)
     const compShort = rotulo.composicao_ingredientes.substring(0, 120);
     zpl += `^FO${x},${y}^A0N,18,18^FB${dotsW - 40},3,,^FDCOMP: ${compShort}^FS\n`;
     y += 58;
 
-    // Níveis de garantia (first 4 lines)
-    const niveisLines = rotulo.niveis_garantia_texto.split("\n").filter(Boolean).slice(0, 4);
-    if (niveisLines.length > 0) {
-      zpl += `^FO${x},${y}^A0N,18,18^FDNIVEIS DE GARANTIA:^FS\n`;
-      y += 22;
-      niveisLines.forEach((line) => {
-        zpl += `^FO${x + 10},${y}^A0N,16,16^FD${line}^FS\n`;
-        y += 20;
-      });
-    }
+    // Níveis de garantia
+    const niveisShort = rotulo.niveis_garantia_texto.substring(0, 200);
+    zpl += `^FO${x},${y}^A0N,16,16^FB${dotsW - 40},5,,^FDNIVEIS DE GARANTIA POR KG: ${niveisShort}^FS\n`;
+    y += 90;
 
-    // Separator
     zpl += `^FO${x},${y}^GB${dotsW - 40},1,1^FS\n`;
     y += 8;
 
-    // Peso, Lote, Fab, Validade
     zpl += `^FO${x},${y}^A0N,20,20^FDPESO LIQ: ${rotulo.peso_liquido}^FS\n`;
     zpl += `^FO${dotsW / 2},${y}^A0N,20,20^FDVAL: ${rotulo.prazo_validade}^FS\n`;
     y += 26;
@@ -206,13 +251,11 @@ export default function RotuloEditor({ produtoId, produtoNome }: Props) {
     zpl += `^FO${dotsW / 2},${y}^A0N,20,20^FD${rotulo.fabricacao_placeholder}^FS\n`;
     y += 26;
 
-    // Reg MAPA
     if (rotulo.registro_mapa) {
       zpl += `^FO${x},${y}^A0N,18,18^FDREG. MAPA: ${rotulo.registro_mapa}^FS\n`;
       y += 24;
     }
 
-    // Company info
     zpl += `^FO${x},${y}^A0N,16,16^FD${rotulo.razao_social} - CNPJ: ${rotulo.cnpj}^FS\n`;
     y += 20;
     if (rotulo.endereco) {
@@ -220,7 +263,6 @@ export default function RotuloEditor({ produtoId, produtoNome }: Props) {
       y += 18;
     }
 
-    // RT
     if (rotulo.rt_nome) {
       zpl += `^FO${x},${y}^A0N,16,16^FDRT: ${rotulo.rt_nome} - CRMV: ${rotulo.rt_crmv}^FS\n`;
       y += 20;
@@ -275,6 +317,14 @@ export default function RotuloEditor({ produtoId, produtoNome }: Props) {
 
   return (
     <div className="space-y-4">
+      {/* Sync button */}
+      <div className="flex justify-end">
+        <Button variant="outline" size="sm" onClick={() => syncFromProduto()} disabled={syncing}>
+          {syncing ? <Loader2 className="w-4 h-4 mr-1 animate-spin" /> : <RefreshCw className="w-4 h-4 mr-1" />}
+          Sincronizar do Produto
+        </Button>
+      </div>
+
       <Tabs defaultValue="editor">
         <TabsList>
           <TabsTrigger value="editor">Editor</TabsTrigger>
@@ -282,7 +332,6 @@ export default function RotuloEditor({ produtoId, produtoNome }: Props) {
         </TabsList>
 
         <TabsContent value="editor" className="space-y-4">
-          {/* Editor fields */}
           <Card>
             <CardContent className="pt-6 space-y-4">
               <h3 className="font-semibold text-foreground text-sm">Identificação do Produto</h3>
@@ -296,12 +345,13 @@ export default function RotuloEditor({ produtoId, produtoNome }: Props) {
                       <SelectItem value="racao">Ração</SelectItem>
                       <SelectItem value="suplemento">Suplemento</SelectItem>
                       <SelectItem value="premix">Premix</SelectItem>
+                      <SelectItem value="nucleo">Núcleo</SelectItem>
                       <SelectItem value="aditivo">Aditivo</SelectItem>
                       <SelectItem value="sal_mineral">Sal Mineral</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
-                <div><Label className="text-xs">Classificação</Label><Input value={rotulo.classificacao_label} onChange={(e) => updateField("classificacao_label", e.target.value)} placeholder="Ex: Ração completa para bovinos" /></div>
+                <div><Label className="text-xs">Classificação</Label><Input value={rotulo.classificacao_label} onChange={(e) => updateField("classificacao_label", e.target.value)} placeholder="Ex: RAÇÃO PARA BOVINOS DE CORTE" /></div>
                 <div><Label className="text-xs">Espécie / Categoria</Label><Input value={rotulo.especie_categoria} onChange={(e) => updateField("especie_categoria", e.target.value)} /></div>
                 <div><Label className="text-xs">Peso Líquido</Label><Input value={rotulo.peso_liquido} onChange={(e) => updateField("peso_liquido", e.target.value)} /></div>
                 <div><Label className="text-xs">Prazo de Validade</Label><Input value={rotulo.prazo_validade} onChange={(e) => updateField("prazo_validade", e.target.value)} /></div>
@@ -313,8 +363,19 @@ export default function RotuloEditor({ produtoId, produtoNome }: Props) {
           <Card>
             <CardContent className="pt-6 space-y-3">
               <h3 className="font-semibold text-foreground text-sm">Composição e Garantias</h3>
-              <div><Label className="text-xs">Composição (Ingredientes)</Label><Textarea value={rotulo.composicao_ingredientes} onChange={(e) => updateField("composicao_ingredientes", e.target.value)} rows={3} /></div>
-              <div><Label className="text-xs">Níveis de Garantia</Label><Textarea value={rotulo.niveis_garantia_texto} onChange={(e) => updateField("niveis_garantia_texto", e.target.value)} rows={4} placeholder="Umidade (máx.): 13%&#10;Proteína Bruta (mín.): 22%" /></div>
+              <div>
+                <Label className="text-xs">Composição Básica (Ingredientes)</Label>
+                <Textarea value={rotulo.composicao_ingredientes} onChange={(e) => updateField("composicao_ingredientes", e.target.value)} rows={3} />
+              </div>
+              <div>
+                <Label className="text-xs">Eventuais Substitutivos</Label>
+                <Textarea value={rotulo.eventuais_substitutivos} onChange={(e) => updateField("eventuais_substitutivos", e.target.value)} rows={2} placeholder="Ingredientes que podem substituir os da composição básica..." />
+              </div>
+              <div>
+                <Label className="text-xs">Níveis de Garantia por kg do Produto</Label>
+                <Textarea value={rotulo.niveis_garantia_texto} onChange={(e) => updateField("niveis_garantia_texto", e.target.value)} rows={5} placeholder="Gerado automaticamente ao sincronizar do produto" />
+                <p className="text-[10px] text-muted-foreground mt-1">Formato IN 22: Nutriente (Mín./Máx.) valor unidade. Editável manualmente.</p>
+              </div>
             </CardContent>
           </Card>
 
@@ -349,7 +410,7 @@ export default function RotuloEditor({ produtoId, produtoNome }: Props) {
                 <div><Label className="text-xs">Largura (mm)</Label><Input type="number" value={rotulo.largura_mm} onChange={(e) => updateField("largura_mm", parseInt(e.target.value) || 100)} /></div>
                 <div><Label className="text-xs">Altura (mm)</Label><Input type="number" value={rotulo.altura_mm} onChange={(e) => updateField("altura_mm", parseInt(e.target.value) || 75)} /></div>
               </div>
-              <p className="text-xs text-muted-foreground">Padrão ZD220: 100x75mm (203 dpi). Ajuste conforme o rolo de etiquetas utilizado.</p>
+              <p className="text-xs text-muted-foreground">Padrão ZD220: 100x75mm (203 dpi).</p>
             </CardContent>
           </Card>
 
@@ -369,7 +430,7 @@ export default function RotuloEditor({ produtoId, produtoNome }: Props) {
 
         <TabsContent value="preview">
           <Card>
-            <CardHeader><CardTitle className="text-sm">Pré-visualização do Rótulo</CardTitle></CardHeader>
+            <CardHeader><CardTitle className="text-sm">Pré-visualização do Rótulo (IN 22)</CardTitle></CardHeader>
             <CardContent>
               <div className="flex gap-2 mb-4">
                 <Button variant="outline" size="sm" onClick={downloadZPL}>
@@ -380,56 +441,107 @@ export default function RotuloEditor({ produtoId, produtoNome }: Props) {
                 </Button>
               </div>
 
-              <div className="border-2 border-foreground p-3 bg-background mx-auto" style={{ maxWidth: `${rotulo.largura_mm * 3.78}px` }} ref={printRef}>
-                <h2 style={{ fontSize: "14px", fontWeight: "bold", marginBottom: "4px", textAlign: "center" }}>
-                  {rotulo.nome_comercial || "NOME DO PRODUTO"}
-                </h2>
-                <p style={{ fontSize: "10px", textAlign: "center", marginBottom: "4px" }}>
-                  {rotulo.classificacao_label} — {rotulo.especie_categoria}
-                </p>
-                <hr style={{ borderTop: "1px solid black", margin: "4px 0" }} />
-
-                {rotulo.composicao_ingredientes && (
-                  <>
-                    <p style={{ fontSize: "8px", fontWeight: "bold" }}>COMPOSIÇÃO:</p>
-                    <p style={{ fontSize: "7px", lineHeight: "1.3" }}>{rotulo.composicao_ingredientes}</p>
-                  </>
-                )}
-
-                {rotulo.niveis_garantia_texto && (
-                  <>
-                    <p style={{ fontSize: "8px", fontWeight: "bold", marginTop: "3px" }}>NÍVEIS DE GARANTIA:</p>
-                    {rotulo.niveis_garantia_texto.split("\n").map((line, i) => (
-                      <p key={i} style={{ fontSize: "7px" }}>{line}</p>
-                    ))}
-                  </>
-                )}
-
-                <hr style={{ borderTop: "1px solid black", margin: "4px 0" }} />
-
-                {rotulo.indicacoes_uso && <p style={{ fontSize: "7px" }}><strong>INDICAÇÕES:</strong> {rotulo.indicacoes_uso}</p>}
-                {rotulo.modo_usar && <p style={{ fontSize: "7px" }}><strong>MODO DE USAR:</strong> {rotulo.modo_usar}</p>}
-                {rotulo.precaucoes_restricoes && <p style={{ fontSize: "7px" }}><strong>PRECAUÇÕES:</strong> {rotulo.precaucoes_restricoes}</p>}
-                {rotulo.armazenamento && <p style={{ fontSize: "7px" }}><strong>ARMAZENAMENTO:</strong> {rotulo.armazenamento}</p>}
-
-                <hr style={{ borderTop: "0.5px solid black", margin: "3px 0" }} />
-
-                <div style={{ display: "flex", justifyContent: "space-between", fontSize: "8px" }}>
-                  <span><strong>PESO LÍQ:</strong> {rotulo.peso_liquido}</span>
-                  <span><strong>VAL:</strong> {rotulo.prazo_validade}</span>
-                </div>
-                <div style={{ display: "flex", justifyContent: "space-between", fontSize: "8px" }}>
-                  <span>{rotulo.lote_placeholder}</span>
-                  <span>{rotulo.fabricacao_placeholder}</span>
+              <div className="border-2 border-foreground bg-background mx-auto" style={{ maxWidth: "700px", fontFamily: "Arial, sans-serif" }} ref={printRef}>
+                {/* Header */}
+                <div style={{ display: "flex", borderBottom: "2px solid black" }}>
+                  <div style={{ flex: 1, padding: "8px 12px", borderRight: "2px solid black" }}>
+                    <p style={{ fontSize: "10px", textAlign: "center", marginBottom: "4px", fontWeight: "bold" }}>
+                      {rotulo.classificacao_label || "CLASSIFICAÇÃO DO PRODUTO"}
+                    </p>
+                    <h2 style={{ fontSize: "18px", fontWeight: "bold", textAlign: "center", margin: "4px 0" }}>
+                      {rotulo.nome_comercial || "NOME DO PRODUTO"}
+                    </h2>
+                  </div>
+                  <div style={{ width: "200px", padding: "6px 8px", fontSize: "8px", lineHeight: "1.5" }}>
+                    <p style={{ fontWeight: "bold", fontSize: "9px", margin: "0 0 2px" }}>Fabricado por:</p>
+                    <p style={{ margin: 0 }}>{rotulo.razao_social}</p>
+                    <p style={{ margin: 0 }}>{rotulo.endereco}</p>
+                    <p style={{ margin: 0 }}>CNPJ: {rotulo.cnpj}</p>
+                    <p style={{ margin: 0, fontWeight: "bold" }}>INDÚSTRIA BRASILEIRA</p>
+                  </div>
                 </div>
 
-                {rotulo.registro_mapa && <p style={{ fontSize: "7px", marginTop: "2px" }}><strong>REG. MAPA Nº:</strong> {rotulo.registro_mapa}</p>}
+                {/* Body */}
+                <div style={{ padding: "8px 12px" }}>
+                  {rotulo.composicao_ingredientes && (
+                    <>
+                      <p style={{ fontSize: "8px", fontWeight: "bold", margin: "4px 0 2px" }}>COMPOSIÇÃO BÁSICA:</p>
+                      <p style={{ fontSize: "7.5px", lineHeight: "1.4", margin: "0 0 4px" }}>{rotulo.composicao_ingredientes}</p>
+                    </>
+                  )}
 
-                <hr style={{ borderTop: "0.5px solid black", margin: "3px 0" }} />
-                <p style={{ fontSize: "6px" }}>{rotulo.razao_social} — CNPJ: {rotulo.cnpj}</p>
-                {rotulo.endereco && <p style={{ fontSize: "6px" }}>{rotulo.endereco}</p>}
-                {rotulo.rt_nome && <p style={{ fontSize: "6px" }}>RT: {rotulo.rt_nome} — CRMV: {rotulo.rt_crmv}</p>}
-                {rotulo.sac_contato && <p style={{ fontSize: "6px" }}>SAC: {rotulo.sac_contato}</p>}
+                  {rotulo.eventuais_substitutivos && (
+                    <>
+                      <p style={{ fontSize: "8px", fontWeight: "bold", margin: "4px 0 2px" }}>EVENTUAIS SUBSTITUTIVOS:</p>
+                      <p style={{ fontSize: "7.5px", lineHeight: "1.4", margin: "0 0 4px" }}>{rotulo.eventuais_substitutivos}</p>
+                    </>
+                  )}
+
+                  {rotulo.niveis_garantia_texto && (
+                    <>
+                      <p style={{ fontSize: "8px", fontWeight: "bold", margin: "4px 0 2px" }}>NÍVEIS DE GARANTIA POR KG DO PRODUTO:</p>
+                      <p style={{ fontSize: "7.5px", lineHeight: "1.4", margin: "0 0 4px" }}>{rotulo.niveis_garantia_texto}</p>
+                    </>
+                  )}
+
+                  {rotulo.indicacoes_uso && (
+                    <>
+                      <p style={{ fontSize: "8px", fontWeight: "bold", margin: "4px 0 2px" }}>INDICAÇÕES DE USO:</p>
+                      <p style={{ fontSize: "7.5px", lineHeight: "1.4", margin: "0 0 4px" }}>{rotulo.indicacoes_uso}</p>
+                    </>
+                  )}
+
+                  {rotulo.modo_usar && (
+                    <>
+                      <p style={{ fontSize: "8px", fontWeight: "bold", margin: "4px 0 2px" }}>MODO DE USAR:</p>
+                      <p style={{ fontSize: "7.5px", lineHeight: "1.4", margin: "0 0 4px" }}>{rotulo.modo_usar}</p>
+                    </>
+                  )}
+
+                  {rotulo.precaucoes_restricoes && (
+                    <>
+                      <p style={{ fontSize: "8px", fontWeight: "bold", margin: "4px 0 2px" }}>RESTRIÇÕES E OUTRAS RECOMENDAÇÕES:</p>
+                      <p style={{ fontSize: "7.5px", lineHeight: "1.4", margin: "0 0 4px" }}>{rotulo.precaucoes_restricoes}</p>
+                    </>
+                  )}
+
+                  {rotulo.armazenamento && (
+                    <>
+                      <p style={{ fontSize: "8px", fontWeight: "bold", margin: "4px 0 2px" }}>CONDIÇÕES DE CONSERVAÇÃO:</p>
+                      <p style={{ fontSize: "7.5px", lineHeight: "1.4", margin: "0 0 4px" }}>{rotulo.armazenamento}</p>
+                    </>
+                  )}
+
+                  <hr style={{ borderTop: "1px solid black", margin: "6px 0" }} />
+
+                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: "8px", marginBottom: "4px" }}>
+                    <span><strong>PESO LÍQ:</strong> {rotulo.peso_liquido}</span>
+                    <span><strong>VALIDADE:</strong> {rotulo.prazo_validade}</span>
+                  </div>
+                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: "8px", marginBottom: "4px" }}>
+                    <span>{rotulo.lote_placeholder}</span>
+                    <span>{rotulo.fabricacao_placeholder}</span>
+                  </div>
+
+                  {rotulo.registro_mapa && <p style={{ fontSize: "7.5px", marginTop: "4px" }}><strong>Registro no MAPA Nº:</strong> {rotulo.registro_mapa}</p>}
+
+                  <hr style={{ borderTop: "1px solid black", margin: "6px 0" }} />
+
+                  <div style={{ textAlign: "center", fontSize: "8px" }}>
+                    <p style={{ fontWeight: "bold", margin: "2px 0" }}>INDÚSTRIA BRASILEIRA</p>
+                    {rotulo.registro_mapa
+                      ? <p style={{ margin: "2px 0" }}>Produto Registrado no Ministério da Agricultura, Pecuária e Abastecimento.</p>
+                      : <p style={{ margin: "2px 0" }}>Produto Isento de Registro no Ministério da Agricultura, Pecuária e Abastecimento.</p>
+                    }
+                  </div>
+
+                  {rotulo.rt_nome && (
+                    <p style={{ fontSize: "7px", textAlign: "center", marginTop: "4px" }}>
+                      RT: {rotulo.rt_nome} — CRMV: {rotulo.rt_crmv}
+                    </p>
+                  )}
+                  {rotulo.sac_contato && <p style={{ fontSize: "7px", textAlign: "center" }}>SAC: {rotulo.sac_contato}</p>}
+                </div>
               </div>
             </CardContent>
           </Card>
