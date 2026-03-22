@@ -78,6 +78,9 @@ export default function Recebimento() {
   ];
   const [vistoriaVeiculo, setVistoriaVeiculo] = useState<Record<number, boolean | null>>({});
   const [placaVeiculo, setPlacaVeiculo] = useState("");
+  const [lacreNumero, setLacreNumero] = useState("");
+  const [lacreIntegro, setLacreIntegro] = useState("");
+  const [condicoesTransporte, setCondicoesTransporte] = useState("");
 
   const fetchData = async () => {
     if (!user) return;
