@@ -16,15 +16,15 @@ import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 
 const POPS_OBRIGATORIOS = [
-  { codigo: "POP-001", nome: "Qualificação de fornecedores e controle de matérias-primas, ingredientes e de embalagens" },
-  { codigo: "POP-002", nome: "Limpeza, higienização e manutenção de instalações, equipamentos e utensílios" },
-  { codigo: "POP-003", nome: "Higiene e saúde do pessoal" },
-  { codigo: "POP-004", nome: "Potabilidade da água e higienização do reservatório" },
-  { codigo: "POP-005", nome: "Prevenção de contaminação cruzada" },
-  { codigo: "POP-006", nome: "Manejo de resíduos" },
-  { codigo: "POP-007", nome: "Programa de controle integrado de pragas" },
-  { codigo: "POP-008", nome: "Programa de rastreabilidade e recolhimento de produtos (recall)" },
-  { codigo: "POP-009", nome: "Procedimentos sobre o programa de autocontrole (PAC)" },
+  { codigo: "POP-001", nome: "Qualificação de fornecedores e controle de matérias-primas, ingredientes e de embalagens", modulo: "/recebimento", moduloLabel: "Recebimento MP" },
+  { codigo: "POP-002", nome: "Limpeza, higienização e manutenção de instalações, equipamentos e utensílios", modulo: "/higiene", moduloLabel: "Higiene / Sanitização" },
+  { codigo: "POP-003", nome: "Higiene e saúde do pessoal", modulo: "/treinamentos", moduloLabel: "Treinamentos / RH" },
+  { codigo: "POP-004", nome: "Potabilidade da água e higienização do reservatório", modulo: "/higiene", moduloLabel: "Controle de Água (POP-04)" },
+  { codigo: "POP-005", nome: "Prevenção de contaminação cruzada", modulo: "/pcp", moduloLabel: "PCP / Sequenciamento" },
+  { codigo: "POP-006", nome: "Manejo de resíduos", modulo: "/residuos", moduloLabel: "Resíduos / Efluentes" },
+  { codigo: "POP-007", nome: "Programa de controle integrado de pragas", modulo: "/pragas", moduloLabel: "Controle de Pragas" },
+  { codigo: "POP-008", nome: "Programa de rastreabilidade e recolhimento de produtos (recall)", modulo: "/rastreabilidade", moduloLabel: "Rastreabilidade" },
+  { codigo: "POP-009", nome: "Procedimentos sobre o programa de autocontrole (PAC)", modulo: "/auditoria", moduloLabel: "Auditoria BPF" },
 ];
 
 const CATEGORIAS = [
