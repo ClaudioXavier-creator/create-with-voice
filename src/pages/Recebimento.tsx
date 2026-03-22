@@ -78,6 +78,9 @@ export default function Recebimento() {
   ];
   const [vistoriaVeiculo, setVistoriaVeiculo] = useState<Record<number, boolean | null>>({});
   const [placaVeiculo, setPlacaVeiculo] = useState("");
+  const [lacreNumero, setLacreNumero] = useState("");
+  const [lacreIntegro, setLacreIntegro] = useState("");
+  const [condicoesTransporte, setCondicoesTransporte] = useState("");
 
   const fetchData = async () => {
     if (!user) return;
@@ -96,7 +99,7 @@ export default function Recebimento() {
     setUmidade(""); setInsetos("ausente"); setTemperatura(""); setQuantidade("");
     setUnidade("kg"); setValidade(""); setAprovado(true); setCertNumero("");
     setCertUrl(""); setCertValido(null); setObservacoes("");
-    setVistoriaVeiculo({}); setPlacaVeiculo("");
+    setVistoriaVeiculo({}); setPlacaVeiculo(""); setLacreNumero(""); setLacreIntegro(""); setCondicoesTransporte("");
     setContemOrigemAnimal(false); setTipoOrigemAnimal(""); setDestinoEspecie("");
   };
 
@@ -107,13 +110,15 @@ export default function Recebimento() {
     // Build vehicle inspection obs
     let obsCompleta = observacoes;
     const vistoriaKeys = Object.keys(vistoriaVeiculo);
-    if (vistoriaKeys.length > 0 || placaVeiculo) {
+    if (vistoriaKeys.length > 0 || placaVeiculo || lacreNumero) {
       const checkItems = VISTORIA_ITENS.map((item, i) => {
         const val = vistoriaVeiculo[i];
         return `${val === true ? "✅" : val === false ? "❌" : "⬜"} ${item}`;
       }).join("\n");
       const naoConformes = VISTORIA_ITENS.filter((_, i) => vistoriaVeiculo[i] === false).length;
-      const vistoriaObs = `[VISTORIA VEÍCULO — POP-05 / IN 15/2009]\nPlaca: ${placaVeiculo || "N/I"}\n${checkItems}${naoConformes > 0 ? `\n⚠️ ${naoConformes} item(ns) não conforme(s)` : "\n✅ Veículo aprovado"}`;
+      const lacreInfo = `Lacre Nº: ${lacreNumero || "N/I"} | Status: ${lacreIntegro === "integro" ? "Íntegro" : lacreIntegro === "violado" ? "VIOLADO ⚠️" : lacreIntegro === "sem_lacre" ? "Sem lacre ⚠️" : "N/I"}`;
+      const transporteInfo = `Condições Transporte: ${condicoesTransporte === "adequado" ? "Adequado" : condicoesTransporte === "parcial" ? "Parcialmente adequado ⚠️" : condicoesTransporte === "inadequado" ? "INADEQUADO ⚠️" : "N/I"}`;
+      const vistoriaObs = `[VISTORIA VEÍCULO — POP-01 / IN 15/2009]\nPlaca: ${placaVeiculo || "N/I"}\n${lacreInfo}\n${transporteInfo}\n${checkItems}${naoConformes > 0 ? `\n⚠️ ${naoConformes} item(ns) não conforme(s)` : "\n✅ Veículo aprovado"}`;
       obsCompleta = vistoriaObs + (observacoes ? `\n\n${observacoes}` : "");
     }
 
@@ -292,11 +297,43 @@ export default function Recebimento() {
                      </div>
                    </div>
 
-                   {/* POP-05 Vehicle Inspection */}
+                   {/* POP-01 / POP-05 Vehicle Inspection & Transport */}
                    <div className="p-3 rounded-lg border bg-muted/20 space-y-3">
-                     <p className="text-sm font-semibold flex items-center gap-2"><Truck className="w-4 h-4" /> Vistoria de Veículo — POP-05 (IN 15/2009)</p>
-                     <p className="text-[10px] text-muted-foreground">Avalie as condições do veículo de transporte antes de descarregar.</p>
-                     <div><Label>Placa do Veículo</Label><Input value={placaVeiculo} onChange={e => setPlacaVeiculo(e.target.value)} placeholder="Ex: ABC-1234" /></div>
+                     <p className="text-sm font-semibold flex items-center gap-2"><Truck className="w-4 h-4" /> Vistoria de Veículo e Transporte — POP-01 / IN 15/2009</p>
+                     <p className="text-[10px] text-muted-foreground">Confira lacres, condições de transporte e estado do veículo antes de descarregar.</p>
+                     <div className="grid grid-cols-2 gap-3">
+                       <div><Label>Placa do Veículo</Label><Input value={placaVeiculo} onChange={e => setPlacaVeiculo(e.target.value)} placeholder="Ex: ABC-1234" /></div>
+                       <div><Label>Nº do Lacre</Label><Input value={lacreNumero} onChange={e => setLacreNumero(e.target.value)} placeholder="Ex: LAC-00456" /></div>
+                     </div>
+                     <div className="grid grid-cols-2 gap-3">
+                       <div>
+                         <Label>Lacre Íntegro?</Label>
+                         <Select value={lacreIntegro} onValueChange={setLacreIntegro}>
+                           <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
+                           <SelectContent>
+                             <SelectItem value="integro">✅ Íntegro</SelectItem>
+                             <SelectItem value="violado">❌ Violado</SelectItem>
+                             <SelectItem value="sem_lacre">⚠️ Sem lacre</SelectItem>
+                           </SelectContent>
+                         </Select>
+                       </div>
+                       <div>
+                         <Label>Condições do Transporte</Label>
+                         <Select value={condicoesTransporte} onValueChange={setCondicoesTransporte}>
+                           <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
+                           <SelectContent>
+                             <SelectItem value="adequado">✅ Adequado</SelectItem>
+                             <SelectItem value="parcial">⚠️ Parcialmente adequado</SelectItem>
+                             <SelectItem value="inadequado">❌ Inadequado</SelectItem>
+                           </SelectContent>
+                         </Select>
+                       </div>
+                     </div>
+                     {(lacreIntegro === "violado" || condicoesTransporte === "inadequado") && (
+                       <div className="p-2 rounded bg-destructive/10 border border-destructive/30">
+                         <p className="text-xs text-destructive font-bold">⚠️ Atenção: Lacre violado ou transporte inadequado. Considerar rejeição da carga (POP-01 / IN 15/2009).</p>
+                       </div>
+                     )}
                      <div className="space-y-1.5">
                        {VISTORIA_ITENS.map((item, idx) => (
                          <div key={idx} className="flex items-center gap-2 p-1.5 rounded bg-background border text-xs">

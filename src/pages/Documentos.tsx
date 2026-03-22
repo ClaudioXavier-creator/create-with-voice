@@ -301,6 +301,26 @@ export default function Documentos() {
 
         {/* Tab 3: Arquivo BPF */}
         <TabsContent value="arquivos">
+          {/* ICP-Brasil Digital Signature Notice */}
+          <Card className="mb-4 border-primary/20 bg-primary/5">
+            <CardContent className="pt-4">
+              <div className="flex items-start gap-3">
+                <Wrench className="w-6 h-6 text-primary mt-0.5 shrink-0" />
+                <div>
+                  <h3 className="font-display font-semibold text-sm">Assinatura Digital — Validade Jurídica (MP 2.200-2/2001)</h3>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Para que documentos digitais tenham <strong>plena validade jurídica em fiscalizações eletrônicas do MAPA</strong>, é recomendável que sejam assinados com certificado digital ICP-Brasil (e-CPF ou e-CNPJ).
+                  </p>
+                  <ul className="text-xs text-muted-foreground mt-2 space-y-1 list-disc pl-4">
+                    <li>Documentos com assinatura ICP-Brasil possuem presunção de integridade e autoria (Art. 10, MP 2.200-2).</li>
+                    <li>Para fiscalizações presenciais, a assinatura manuscrita em documento impresso continua válida.</li>
+                    <li>O sistema registra data/hora e responsável pela aprovação digital como evidência de controle.</li>
+                    <li>Integração com certificadoras ICP-Brasil pode ser habilitada sob demanda.</li>
+                  </ul>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
           <div className="grid md:grid-cols-2 gap-4 mb-6">
             <Card className="border-primary/20 bg-primary/5">
               <CardContent className="pt-4">

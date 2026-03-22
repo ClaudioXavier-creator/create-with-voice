@@ -694,39 +694,64 @@ export default function PCP() {
           <DialogHeader><DialogTitle>Registrar Batida de Produção</DialogTitle></DialogHeader>
           <div className="space-y-3">
             {/* Limpeza entre lotes - OBRIGATÓRIO */}
-            <div className={`p-3 rounded-lg border-2 ${limpezaConfirmada ? "border-green-500 bg-green-50 dark:bg-green-900/10" : "border-yellow-500 bg-yellow-50 dark:bg-yellow-900/10"}`}>
-              <p className="text-xs font-semibold mb-2 flex items-center gap-1">
-                <AlertTriangle className="w-4 h-4 text-yellow-600" />
-                Verificação de Limpeza entre Lotes — IN 15/2009 / Decreto 12.031/2024
-              </p>
-              <p className="text-xs text-muted-foreground mb-3">Obrigatório confirmar a limpeza da linha antes de iniciar nova batida para prevenir contaminação cruzada.</p>
-              <div className="grid grid-cols-3 gap-2 mb-2">
-                <div>
-                  <Label className="text-xs">Tipo de Limpeza</Label>
-                  <Select value={limpezaTipo} onValueChange={setLimpezaTipo}>
-                    <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="vassouragem">Vassouragem</SelectItem>
-                      <SelectItem value="flushing">Flushing</SelectItem>
-                      <SelectItem value="lavagem_completa">Lavagem Completa</SelectItem>
-                    </SelectContent>
-                  </Select>
+            {(() => {
+              const ordem = ordens.find(o => o.id === batidaOrdemId);
+              const itensOrdem = formulaItens.filter(i => i.ordem_id === batidaOrdemId);
+              const contemRestricao = itensOrdem.some(i =>
+                ["farinha de carne", "farinha de osso", "farinha de sangue", "sebo", "gordura animal", "farinha de penas"]
+                  .some(r => i.materia_prima.toLowerCase().includes(r))
+              );
+              const produtoRuminante = ordem?.produto?.toLowerCase().includes("bovin") || ordem?.produto?.toLowerCase().includes("ruminante");
+              const alertaEEB = contemRestricao && produtoRuminante;
+
+              return (
+                <div className={`p-3 rounded-lg border-2 ${limpezaConfirmada ? "border-green-500 bg-green-50 dark:bg-green-900/10" : alertaEEB ? "border-destructive bg-destructive/5" : "border-yellow-500 bg-yellow-50 dark:bg-yellow-900/10"}`}>
+                  <p className="text-xs font-semibold mb-2 flex items-center gap-1">
+                    <AlertTriangle className={`w-4 h-4 ${alertaEEB ? "text-destructive" : "text-yellow-600"}`} />
+                    Verificação de Limpeza entre Lotes — IN 15/2009 / Decreto 12.031/2024
+                  </p>
+                  {alertaEEB && (
+                    <div className="p-2 rounded bg-destructive/10 border border-destructive/30 mb-3">
+                      <p className="text-xs text-destructive font-bold">⚠️ ALERTA EEB: Esta ordem contém ingredientes de origem animal com destino a ruminantes!</p>
+                      <p className="text-[10px] text-destructive/80">Obrigatório flushing ou lavagem completa da linha. Vassouragem NÃO é suficiente (IN 15/2009).</p>
+                    </div>
+                  )}
+                  {contemRestricao && !produtoRuminante && (
+                    <div className="p-2 rounded bg-yellow-500/10 border border-yellow-500/30 mb-3">
+                      <p className="text-xs text-yellow-700 font-semibold">🛡️ Ingrediente com restrição de uso detectado na fórmula.</p>
+                      <p className="text-[10px] text-muted-foreground">Recomenda-se flushing entre batidas para prevenir contaminação cruzada.</p>
+                    </div>
+                  )}
+                  <p className="text-xs text-muted-foreground mb-3">Obrigatório confirmar a limpeza da linha antes de iniciar nova batida para prevenir contaminação cruzada.</p>
+                  <div className="grid grid-cols-3 gap-2 mb-2">
+                    <div>
+                      <Label className="text-xs">Tipo de Limpeza</Label>
+                      <Select value={limpezaTipo} onValueChange={setLimpezaTipo}>
+                        <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="vassouragem" disabled={alertaEEB}>Vassouragem {alertaEEB ? "(insuficiente)" : ""}</SelectItem>
+                          <SelectItem value="flushing">Flushing</SelectItem>
+                          <SelectItem value="lavagem_completa">Lavagem Completa</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label className="text-xs">Responsável</Label>
+                      <Input className="h-8 text-xs" value={limpezaResponsavel} onChange={e => setLimpezaResponsavel(e.target.value)} placeholder="Nome" />
+                    </div>
+                    <div>
+                      <Label className="text-xs">Hora</Label>
+                      <Input className="h-8 text-xs" type="time" value={limpezaHora} onChange={e => setLimpezaHora(e.target.value)} />
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <input type="checkbox" checked={limpezaConfirmada} onChange={e => setLimpezaConfirmada(e.target.checked)} className="h-4 w-4" />
+                    <Label className="text-xs font-semibold">Confirmo que a limpeza entre lotes foi realizada</Label>
+                    {limpezaConfirmada && <CheckCircle2 className="w-4 h-4 text-green-600" />}
+                  </div>
                 </div>
-                <div>
-                  <Label className="text-xs">Responsável</Label>
-                  <Input className="h-8 text-xs" value={limpezaResponsavel} onChange={e => setLimpezaResponsavel(e.target.value)} placeholder="Nome" />
-                </div>
-                <div>
-                  <Label className="text-xs">Hora</Label>
-                  <Input className="h-8 text-xs" type="time" value={limpezaHora} onChange={e => setLimpezaHora(e.target.value)} />
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <input type="checkbox" checked={limpezaConfirmada} onChange={e => setLimpezaConfirmada(e.target.checked)} className="h-4 w-4" />
-                <Label className="text-xs font-semibold">Confirmo que a limpeza entre lotes foi realizada</Label>
-                {limpezaConfirmada && <CheckCircle2 className="w-4 h-4 text-green-600" />}
-              </div>
-            </div>
+              );
+            })()}
 
             <div className="grid grid-cols-2 gap-3">
               <div>

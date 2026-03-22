@@ -68,6 +68,11 @@ Considere estas normas principais e suas atualizações:
 7. **Lei 6.198/1974** — Lei base de inspeção e fiscalização de alimentação animal
 8. Quaisquer Instruções Normativas recentes do MAPA sobre alimentação animal
 
+ATENÇÃO ESPECIAL — IN 17/2017:
+- Verifique se existem novos Anexos publicados ou Instruções Complementares à IN 17/2017.
+- Qualquer alteração nos Anexos da IN 17/2017 pode impactar diretamente as Boas Práticas de Fabricação, exigindo revisão imediata dos POPs e procedimentos do estabelecimento.
+- Caso haja Instrução Complementar ou Anexo novo/alterado, gere um alerta com relevância "alta" e tipo "alerta" explicando o que deve ser revisado no programa de BPF da fábrica.
+
 Para cada norma, explique:
 - O que mudou ou está vigente
 - Impacto prático para fábricas de ração

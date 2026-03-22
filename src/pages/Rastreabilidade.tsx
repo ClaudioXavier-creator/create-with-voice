@@ -741,10 +741,10 @@ export default function Rastreabilidade() {
         </CardHeader>
         <CardContent>
           {(() => {
-            const lotes = new Map<string, { produto: string; materias: string[]; clientes: string[]; qtdVendida: number }>();
+            const lotes = new Map<string, { produto: string; materias: string[]; clientes: string[]; qtdVendida: number; qtdEntrada: number }>();
             registros.forEach(r => {
               const lote = r.lote_produto || "SEM_LOTE";
-              if (!lotes.has(lote)) lotes.set(lote, { produto: r.produto, materias: [], clientes: [], qtdVendida: 0 });
+              if (!lotes.has(lote)) lotes.set(lote, { produto: r.produto, materias: [], clientes: [], qtdVendida: 0, qtdEntrada: 0 });
               const entry = lotes.get(lote)!;
               const mpKey = `${r.materia_prima} (${r.lote_mp || "s/lote"})`;
               if (!entry.materias.includes(mpKey)) entry.materias.push(mpKey);
@@ -754,43 +754,69 @@ export default function Rastreabilidade() {
 
             if (lotes.size === 0) return <p className="text-center text-muted-foreground py-4">Sem dados para balanço de massa</p>;
 
+            // Summary stats
+            const totalLotes = lotes.size;
+            const lotesCompletos = Array.from(lotes.values()).filter(d => d.clientes.length > 0 && d.materias.length > 0).length;
+            const lotesSemSaida = Array.from(lotes.values()).filter(d => d.clientes.length === 0).length;
+
             return (
-              <Table>
-                <TableHeader><TableRow>
-                  <TableHead>Lote PA</TableHead>
-                  <TableHead>Produto</TableHead>
-                  <TableHead>Entradas (MP)</TableHead>
-                  <TableHead>Saídas (Clientes)</TableHead>
-                  <TableHead>Qtd Vendida</TableHead>
-                  <TableHead>Status</TableHead>
-                </TableRow></TableHeader>
-                <TableBody>
-                  {Array.from(lotes.entries()).slice(0, 20).map(([lote, data]) => (
-                    <TableRow key={lote}>
-                      <TableCell className="font-mono text-xs font-bold">{lote}</TableCell>
-                      <TableCell className="font-medium text-sm">{data.produto}</TableCell>
-                      <TableCell className="text-xs max-w-[200px]">
-                        {data.materias.slice(0, 3).map((mp, i) => <div key={i} className="truncate">{mp}</div>)}
-                        {data.materias.length > 3 && <span className="text-muted-foreground">+{data.materias.length - 3}</span>}
-                      </TableCell>
-                      <TableCell className="text-xs max-w-[150px]">
-                        {data.clientes.length > 0 ? data.clientes.slice(0, 2).map((c, i) => <div key={i} className="truncate">{c}</div>) : <span className="text-muted-foreground">—</span>}
-                        {data.clientes.length > 2 && <span className="text-muted-foreground">+{data.clientes.length - 2}</span>}
-                      </TableCell>
-                      <TableCell className="font-mono text-xs">{data.qtdVendida > 0 ? `${data.qtdVendida.toLocaleString("pt-BR")}` : "—"}</TableCell>
-                      <TableCell>
-                        {data.clientes.length > 0 && data.materias.length > 0 ? (
-                          <Badge className="bg-primary/20 text-primary text-[10px]">Completo</Badge>
-                        ) : data.materias.length > 0 ? (
-                          <Badge className="bg-yellow-500/20 text-yellow-700 text-[10px]">Sem saída</Badge>
-                        ) : (
-                          <Badge variant="outline" className="text-[10px]">Parcial</Badge>
-                        )}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+              <>
+                <div className="grid grid-cols-3 gap-3 mb-4">
+                  <div className="text-center p-2 rounded-lg bg-muted/30 border">
+                    <p className="text-lg font-bold font-display">{totalLotes}</p>
+                    <p className="text-[10px] text-muted-foreground">Total de lotes</p>
+                  </div>
+                  <div className="text-center p-2 rounded-lg bg-primary/5 border border-primary/20">
+                    <p className="text-lg font-bold font-display text-primary">{lotesCompletos}</p>
+                    <p className="text-[10px] text-muted-foreground">Conciliados (E/S)</p>
+                  </div>
+                  <div className="text-center p-2 rounded-lg bg-yellow-500/5 border border-yellow-500/20">
+                    <p className="text-lg font-bold font-display text-yellow-700">{lotesSemSaida}</p>
+                    <p className="text-[10px] text-muted-foreground">Sem saída registrada</p>
+                  </div>
+                </div>
+                <Table>
+                  <TableHeader><TableRow>
+                    <TableHead>Lote PA</TableHead>
+                    <TableHead>Produto</TableHead>
+                    <TableHead>Entradas (MP)</TableHead>
+                    <TableHead>Saídas (Clientes)</TableHead>
+                    <TableHead>Qtd Vendida</TableHead>
+                    <TableHead>Conciliação</TableHead>
+                  </TableRow></TableHeader>
+                  <TableBody>
+                    {Array.from(lotes.entries()).slice(0, 20).map(([lote, data]) => {
+                      const conciliado = data.clientes.length > 0 && data.materias.length > 0;
+                      const parcial = data.materias.length > 0 && data.clientes.length === 0;
+                      return (
+                        <TableRow key={lote}>
+                          <TableCell className="font-mono text-xs font-bold">{lote}</TableCell>
+                          <TableCell className="font-medium text-sm">{data.produto}</TableCell>
+                          <TableCell className="text-xs max-w-[200px]">
+                            {data.materias.slice(0, 3).map((mp, i) => <div key={i} className="truncate">{mp}</div>)}
+                            {data.materias.length > 3 && <span className="text-muted-foreground">+{data.materias.length - 3}</span>}
+                          </TableCell>
+                          <TableCell className="text-xs max-w-[150px]">
+                            {data.clientes.length > 0 ? data.clientes.slice(0, 2).map((c, i) => <div key={i} className="truncate">{c}</div>) : <span className="text-muted-foreground">—</span>}
+                            {data.clientes.length > 2 && <span className="text-muted-foreground">+{data.clientes.length - 2}</span>}
+                          </TableCell>
+                          <TableCell className="font-mono text-xs">{data.qtdVendida > 0 ? `${data.qtdVendida.toLocaleString("pt-BR")}` : "—"}</TableCell>
+                          <TableCell>
+                            {conciliado ? (
+                              <Badge className="bg-primary/20 text-primary text-[10px]">✅ Conciliado</Badge>
+                            ) : parcial ? (
+                              <Badge className="bg-yellow-500/20 text-yellow-700 text-[10px]">⚠️ Sem saída</Badge>
+                            ) : (
+                              <Badge variant="outline" className="text-[10px]">Parcial</Badge>
+                            )}
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+                {lotes.size > 20 && <p className="text-xs text-muted-foreground text-center mt-2">Mostrando 20 de {lotes.size} lotes. Exporte CSV para dados completos.</p>}
+              </>
             );
           })()}
         </CardContent>
