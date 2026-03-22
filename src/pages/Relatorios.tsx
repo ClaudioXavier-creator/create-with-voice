@@ -150,12 +150,13 @@ export default function Relatorios() {
       arquivoNome = arquivo.name;
     }
 
+    const rtInfo = rtAssinado ? ` | [ASSINATURA RT] ${rtNome} - CRMV: ${rtCrmv} - ${new Date().toISOString()}` : "";
     const { error } = await supabase.from("relatorios").insert({
       user_id: user.id,
       titulo,
       tipo,
       modulo,
-      descricao,
+      descricao: (descricao || "") + rtInfo,
       arquivo_url: arquivoUrl,
       arquivo_nome: arquivoNome,
     });
