@@ -68,7 +68,7 @@ export default function Index() {
     if (!user) return;
 
     async function fetchDashboard() {
-      const [ncsRes, ncsFullRes, checklistRes, checklistDatesRes, treinamentosRes, recentNcsRes] = await Promise.all([
+      const [ncsRes, ncsFullRes, checklistRes, checklistDatesRes, treinamentosRes, recentNcsRes, planejamentoRes] = await Promise.all([
         supabase.from("nao_conformidades").select("status").eq("user_id", user!.id),
         supabase.from("nao_conformidades").select("data, status").eq("user_id", user!.id),
         supabase.from("checklist_items").select("area, conforme").eq("user_id", user!.id),
@@ -80,6 +80,7 @@ export default function Index() {
           .eq("user_id", user!.id)
           .order("data", { ascending: false })
           .limit(5),
+        supabase.from("planejamento_anual").select("atividade, proxima_execucao, categoria").eq("user_id", user!.id).not("proxima_execucao", "is", null),
       ]);
 
       const ncs = ncsRes.data || [];
