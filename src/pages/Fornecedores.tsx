@@ -202,7 +202,7 @@ export default function Fornecedores() {
     return Math.round((recs.filter(r => r.aprovado).length / recs.length) * 100);
   };
 
-  const aprovados = fornecedores.filter(f => f.status_qualificacao === "aprovado");
+  const aprovados = fornecedores.filter(f => f.status_qualificacao === "aprovado" || f.status_qualificacao === "aprovado_com_restricoes");
   const pendentes = fornecedores.filter(f => f.status_qualificacao === "pendente" || f.status_qualificacao === "em_avaliacao");
   const reprovados = fornecedores.filter(f => f.status_qualificacao === "reprovado");
 
