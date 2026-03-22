@@ -681,17 +681,34 @@ export type Database = {
       }
       fornecedores: {
         Row: {
+          bairro: string | null
+          cep: string | null
+          cidade: string | null
           cnpj: string | null
           contato: string | null
+          contato_comercial: string | null
+          contato_comercial_tel_email: string | null
+          contato_qualidade: string | null
+          contato_qualidade_tel_email: string | null
           created_at: string
+          doc_alvara_funcionamento: boolean | null
+          doc_certificado_analise: boolean | null
+          doc_certificado_registro_mapa: boolean | null
+          doc_certificado_registro_produto: boolean | null
+          doc_ficha_tecnica: boolean | null
           email: string | null
           endereco: string | null
+          estado: string | null
           id: string
+          inscricao_estadual: string | null
           nome: string
           nota_avaliacao: number | null
           observacoes: string | null
+          produtos_fornecidos: string | null
           proxima_avaliacao: string | null
+          registro_mapa: string | null
           registro_sipeagro: string | null
+          resultado_qualificacao: string | null
           sipeagro_data_verificacao: string | null
           sipeagro_verificado: boolean | null
           status_qualificacao: string | null
@@ -701,17 +718,34 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          bairro?: string | null
+          cep?: string | null
+          cidade?: string | null
           cnpj?: string | null
           contato?: string | null
+          contato_comercial?: string | null
+          contato_comercial_tel_email?: string | null
+          contato_qualidade?: string | null
+          contato_qualidade_tel_email?: string | null
           created_at?: string
+          doc_alvara_funcionamento?: boolean | null
+          doc_certificado_analise?: boolean | null
+          doc_certificado_registro_mapa?: boolean | null
+          doc_certificado_registro_produto?: boolean | null
+          doc_ficha_tecnica?: boolean | null
           email?: string | null
           endereco?: string | null
+          estado?: string | null
           id?: string
+          inscricao_estadual?: string | null
           nome: string
           nota_avaliacao?: number | null
           observacoes?: string | null
+          produtos_fornecidos?: string | null
           proxima_avaliacao?: string | null
+          registro_mapa?: string | null
           registro_sipeagro?: string | null
+          resultado_qualificacao?: string | null
           sipeagro_data_verificacao?: string | null
           sipeagro_verificado?: boolean | null
           status_qualificacao?: string | null
@@ -721,17 +755,34 @@ export type Database = {
           user_id: string
         }
         Update: {
+          bairro?: string | null
+          cep?: string | null
+          cidade?: string | null
           cnpj?: string | null
           contato?: string | null
+          contato_comercial?: string | null
+          contato_comercial_tel_email?: string | null
+          contato_qualidade?: string | null
+          contato_qualidade_tel_email?: string | null
           created_at?: string
+          doc_alvara_funcionamento?: boolean | null
+          doc_certificado_analise?: boolean | null
+          doc_certificado_registro_mapa?: boolean | null
+          doc_certificado_registro_produto?: boolean | null
+          doc_ficha_tecnica?: boolean | null
           email?: string | null
           endereco?: string | null
+          estado?: string | null
           id?: string
+          inscricao_estadual?: string | null
           nome?: string
           nota_avaliacao?: number | null
           observacoes?: string | null
+          produtos_fornecidos?: string | null
           proxima_avaliacao?: string | null
+          registro_mapa?: string | null
           registro_sipeagro?: string | null
+          resultado_qualificacao?: string | null
           sipeagro_data_verificacao?: string | null
           sipeagro_verificado?: boolean | null
           status_qualificacao?: string | null

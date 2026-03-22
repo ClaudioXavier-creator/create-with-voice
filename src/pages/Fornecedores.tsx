@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Users, Plus, Loader2, Star, AlertCircle, CheckCircle2, Clock } from "lucide-react";
+import { Users, Plus, Loader2, Star, AlertCircle, CheckCircle2, Clock, FileText } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
@@ -11,6 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
+import { Checkbox } from "@/components/ui/checkbox";
 import PageHeader from "@/components/PageHeader";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -21,14 +22,33 @@ interface FornecedorRow {
   nome: string;
   cnpj: string | null;
   endereco: string | null;
+  bairro: string | null;
+  cep: string | null;
+  cidade: string | null;
+  estado: string | null;
+  inscricao_estadual: string | null;
+  registro_mapa: string | null;
   contato: string | null;
   email: string | null;
+  contato_qualidade: string | null;
+  contato_qualidade_tel_email: string | null;
+  contato_comercial: string | null;
+  contato_comercial_tel_email: string | null;
   tipo_produto: string | null;
+  produtos_fornecidos: string | null;
   status_qualificacao: string | null;
   nota_avaliacao: number | null;
   ultima_avaliacao: string | null;
   proxima_avaliacao: string | null;
   observacoes: string | null;
+  registro_sipeagro: string | null;
+  sipeagro_verificado: boolean | null;
+  doc_certificado_registro_mapa: boolean | null;
+  doc_alvara_funcionamento: boolean | null;
+  doc_certificado_registro_produto: boolean | null;
+  doc_ficha_tecnica: boolean | null;
+  doc_certificado_analise: boolean | null;
+  resultado_qualificacao: string | null;
   created_at: string;
 }
 
@@ -48,6 +68,11 @@ const STATUS_CONFIG: Record<string, { label: string; color: string; icon: typeof
   em_avaliacao: { label: "Em Avaliação", color: "bg-yellow-500/20 text-yellow-700", icon: Clock },
 };
 
+const ESTADOS_BR = [
+  "AC","AL","AP","AM","BA","CE","DF","ES","GO","MA","MT","MS","MG","PA",
+  "PB","PR","PE","PI","RJ","RN","RS","RO","RR","SC","SP","SE","TO"
+];
+
 export default function Fornecedores() {
   const { user } = useAuth();
   const [fornecedores, setFornecedores] = useState<FornecedorRow[]>([]);
@@ -57,15 +82,40 @@ export default function Fornecedores() {
   const [open, setOpen] = useState(false);
   const [avaliarOpen, setAvaliarOpen] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [formTab, setFormTab] = useState("dados");
 
-  // Form
+  // Form - Dados do Fornecedor
   const [nome, setNome] = useState("");
   const [cnpj, setCnpj] = useState("");
   const [endereco, setEndereco] = useState("");
-  const [contato, setContato] = useState("");
-  const [email, setEmail] = useState("");
+  const [bairro, setBairro] = useState("");
+  const [cep, setCep] = useState("");
+  const [cidade, setCidade] = useState("");
+  const [estado, setEstado] = useState("");
+  const [inscricaoEstadual, setInscricaoEstadual] = useState("");
+  const [registroMapa, setRegistroMapa] = useState("");
+  const [contatoQualidade, setContatoQualidade] = useState("");
+  const [contatoQualidadeTelEmail, setContatoQualidadeTelEmail] = useState("");
+  const [contatoComercial, setContatoComercial] = useState("");
+  const [contatoComercialTelEmail, setContatoComercialTelEmail] = useState("");
+  const [dataAvaliacao, setDataAvaliacao] = useState(new Date().toISOString().split("T")[0]);
+
+  // Form - Produtos
+  const [produtosFornecidos, setProdutosFornecidos] = useState("");
   const [tipoProduto, setTipoProduto] = useState("");
+
+  // Form - Documentos
+  const [docCertRegistroMapa, setDocCertRegistroMapa] = useState(false);
+  const [docAlvara, setDocAlvara] = useState(false);
+  const [docCertRegistroProduto, setDocCertRegistroProduto] = useState(false);
+  const [docFichaTecnica, setDocFichaTecnica] = useState(false);
+  const [docCertAnalise, setDocCertAnalise] = useState(false);
+
+  // Form - Resultado
+  const [resultadoQualificacao, setResultadoQualificacao] = useState("pendente");
   const [observacoes, setObservacoes] = useState("");
+
+  // SIPEAGRO
   const [registroSipeagro, setRegistroSipeagro] = useState("");
   const [sipeagroVerificado, setSipeagroVerificado] = useState(false);
 
@@ -88,15 +138,35 @@ export default function Fornecedores() {
   useEffect(() => { fetchData(); }, [user]);
 
   const resetForm = () => {
-    setNome(""); setCnpj(""); setEndereco(""); setContato(""); setEmail(""); setTipoProduto(""); setObservacoes(""); setRegistroSipeagro(""); setSipeagroVerificado(false);
+    setNome(""); setCnpj(""); setEndereco(""); setBairro(""); setCep(""); setCidade(""); setEstado("");
+    setInscricaoEstadual(""); setRegistroMapa(""); setContatoQualidade(""); setContatoQualidadeTelEmail("");
+    setContatoComercial(""); setContatoComercialTelEmail(""); setProdutosFornecidos(""); setTipoProduto("");
+    setDocCertRegistroMapa(false); setDocAlvara(false); setDocCertRegistroProduto(false);
+    setDocFichaTecnica(false); setDocCertAnalise(false); setResultadoQualificacao("pendente");
+    setObservacoes(""); setRegistroSipeagro(""); setSipeagroVerificado(false);
+    setDataAvaliacao(new Date().toISOString().split("T")[0]); setFormTab("dados");
   };
 
   const handleAdd = async () => {
     if (!nome || !user) return;
     setSaving(true);
     const { error } = await supabase.from("fornecedores").insert({
-      user_id: user.id, nome, cnpj, endereco, contato, email, tipo_produto: tipoProduto, observacoes,
-      registro_sipeagro: registroSipeagro, sipeagro_verificado: sipeagroVerificado,
+      user_id: user.id, nome, cnpj, endereco, contato: contatoQualidade, email: contatoQualidadeTelEmail,
+      tipo_produto: tipoProduto, observacoes,
+      bairro, cep, cidade, estado, inscricao_estadual: inscricaoEstadual,
+      registro_mapa: registroMapa, contato_qualidade: contatoQualidade,
+      contato_qualidade_tel_email: contatoQualidadeTelEmail,
+      contato_comercial: contatoComercial, contato_comercial_tel_email: contatoComercialTelEmail,
+      produtos_fornecidos: produtosFornecidos,
+      doc_certificado_registro_mapa: docCertRegistroMapa,
+      doc_alvara_funcionamento: docAlvara,
+      doc_certificado_registro_produto: docCertRegistroProduto,
+      doc_ficha_tecnica: docFichaTecnica,
+      doc_certificado_analise: docCertAnalise,
+      resultado_qualificacao: resultadoQualificacao,
+      status_qualificacao: resultadoQualificacao,
+      registro_sipeagro: registroSipeagro,
+      sipeagro_verificado: sipeagroVerificado,
       sipeagro_data_verificacao: sipeagroVerificado ? new Date().toISOString().split("T")[0] : null,
     } as any);
     if (error) toast.error("Erro ao salvar");
@@ -161,40 +231,213 @@ export default function Fornecedores() {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="font-display">Fornecedores Cadastrados</CardTitle>
-          <Dialog open={open} onOpenChange={setOpen}>
+          <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) resetForm(); }}>
             <DialogTrigger asChild>
               <Button size="sm"><Plus className="w-4 h-4 mr-1" /> Novo Fornecedor</Button>
             </DialogTrigger>
-            <DialogContent className="max-w-lg">
-              <DialogHeader><DialogTitle>Cadastrar Fornecedor</DialogTitle></DialogHeader>
-              <div className="space-y-4">
-                <div className="grid grid-cols-2 gap-3">
-                  <div><Label>Nome / Razão Social *</Label><Input value={nome} onChange={e => setNome(e.target.value)} placeholder="Ex: AgroCorp Ltda" /></div>
-                  <div><Label>CNPJ</Label><Input value={cnpj} onChange={e => setCnpj(e.target.value)} placeholder="00.000.000/0000-00" /></div>
-                </div>
-                <div><Label>Endereço</Label><Input value={endereco} onChange={e => setEndereco(e.target.value)} placeholder="Cidade - UF" /></div>
-                <div className="grid grid-cols-2 gap-3">
-                  <div><Label>Contato / Telefone</Label><Input value={contato} onChange={e => setContato(e.target.value)} /></div>
-                  <div><Label>E-mail</Label><Input type="email" value={email} onChange={e => setEmail(e.target.value)} /></div>
-                </div>
-                <div><Label>Tipo de Produto Fornecido</Label><Input value={tipoProduto} onChange={e => setTipoProduto(e.target.value)} placeholder="Ex: Milho, Farelo de soja, Premix" /></div>
-                
-                {/* SIPEAGRO — IN 17/2017 */}
-                <div className="p-3 rounded-lg border bg-muted/20 space-y-3">
-                  <p className="text-sm font-semibold flex items-center gap-2">🏛️ Registro SIPEAGRO — IN 17/2017</p>
-                  <p className="text-[10px] text-muted-foreground">Estabelecimentos fornecedores de insumos para alimentação animal devem possuir registro no SIPEAGRO/MAPA.</p>
-                  <div><Label>Nº Registro SIPEAGRO</Label><Input value={registroSipeagro} onChange={e => setRegistroSipeagro(e.target.value)} placeholder="Ex: BR-0000000000" /></div>
-                  <div className="flex items-center gap-2">
-                    <input type="checkbox" checked={sipeagroVerificado} onChange={e => setSipeagroVerificado(e.target.checked)} className="h-4 w-4" />
-                    <Label className="text-sm">Registro verificado e ativo no SIPEAGRO</Label>
-                  </div>
-                </div>
+            <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-2">
+                  <FileText className="w-5 h-5" />
+                  Questionário de Qualificação — PL POP 1.1
+                </DialogTitle>
+              </DialogHeader>
 
-                <div><Label>Observações</Label><Textarea value={observacoes} onChange={e => setObservacoes(e.target.value)} placeholder="Certificações, laudos, etc." /></div>
-                <Button onClick={handleAdd} className="w-full" disabled={saving || !nome}>
-                  {saving && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}Salvar Fornecedor
-                </Button>
-              </div>
+              <Tabs value={formTab} onValueChange={setFormTab}>
+                <TabsList className="grid grid-cols-4 w-full">
+                  <TabsTrigger value="dados" className="text-xs">1. Dados</TabsTrigger>
+                  <TabsTrigger value="produtos" className="text-xs">2. Produtos</TabsTrigger>
+                  <TabsTrigger value="documentos" className="text-xs">3. Documentos</TabsTrigger>
+                  <TabsTrigger value="resultado" className="text-xs">4. Resultado</TabsTrigger>
+                </TabsList>
+
+                {/* ABA 1 — DADOS DO FORNECEDOR */}
+                <TabsContent value="dados" className="space-y-4 mt-4">
+                  <h3 className="text-sm font-semibold border-b pb-1">1 — Dados do Fornecedor</h3>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="col-span-2 sm:col-span-1">
+                      <Label>Nome / Razão Social *</Label>
+                      <Input value={nome} onChange={e => setNome(e.target.value)} placeholder="Ex: AgroCorp Ltda" />
+                    </div>
+                    <div>
+                      <Label>Data</Label>
+                      <Input type="date" value={dataAvaliacao} onChange={e => setDataAvaliacao(e.target.value)} />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="col-span-2">
+                      <Label>Endereço</Label>
+                      <Input value={endereco} onChange={e => setEndereco(e.target.value)} placeholder="Rua, número" />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <Label>Nº Registro MAPA</Label>
+                      <Input value={registroMapa} onChange={e => setRegistroMapa(e.target.value)} placeholder="Ex: BR-00000" />
+                    </div>
+                    <div>
+                      <Label>Bairro</Label>
+                      <Input value={bairro} onChange={e => setBairro(e.target.value)} />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-3 gap-3">
+                    <div>
+                      <Label>CEP</Label>
+                      <Input value={cep} onChange={e => setCep(e.target.value)} placeholder="00000-000" />
+                    </div>
+                    <div>
+                      <Label>Cidade</Label>
+                      <Input value={cidade} onChange={e => setCidade(e.target.value)} />
+                    </div>
+                    <div>
+                      <Label>Estado</Label>
+                      <Select value={estado} onValueChange={setEstado}>
+                        <SelectTrigger><SelectValue placeholder="UF" /></SelectTrigger>
+                        <SelectContent>
+                          {ESTADOS_BR.map(uf => <SelectItem key={uf} value={uf}>{uf}</SelectItem>)}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <Label>CNPJ</Label>
+                      <Input value={cnpj} onChange={e => setCnpj(e.target.value)} placeholder="00.000.000/0000-00" />
+                    </div>
+                    <div>
+                      <Label>Inscrição Estadual</Label>
+                      <Input value={inscricaoEstadual} onChange={e => setInscricaoEstadual(e.target.value)} />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <Label>Contato Qualidade</Label>
+                      <Input value={contatoQualidade} onChange={e => setContatoQualidade(e.target.value)} placeholder="Nome do contato" />
+                    </div>
+                    <div>
+                      <Label>Telefone / E-mail (Qualidade)</Label>
+                      <Input value={contatoQualidadeTelEmail} onChange={e => setContatoQualidadeTelEmail(e.target.value)} placeholder="(00) 00000-0000 / email" />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <Label>Contato Comercial</Label>
+                      <Input value={contatoComercial} onChange={e => setContatoComercial(e.target.value)} placeholder="Nome do contato" />
+                    </div>
+                    <div>
+                      <Label>Telefone / E-mail (Comercial)</Label>
+                      <Input value={contatoComercialTelEmail} onChange={e => setContatoComercialTelEmail(e.target.value)} placeholder="(00) 00000-0000 / email" />
+                    </div>
+                  </div>
+
+                  {/* SIPEAGRO */}
+                  <div className="p-3 rounded-lg border bg-muted/20 space-y-3">
+                    <p className="text-sm font-semibold flex items-center gap-2">🏛️ Registro SIPEAGRO — IN 17/2017</p>
+                    <p className="text-[10px] text-muted-foreground">Estabelecimentos fornecedores de insumos para alimentação animal devem possuir registro no SIPEAGRO/MAPA.</p>
+                    <div><Label>Nº Registro SIPEAGRO</Label><Input value={registroSipeagro} onChange={e => setRegistroSipeagro(e.target.value)} placeholder="Ex: BR-0000000000" /></div>
+                    <div className="flex items-center gap-2">
+                      <Checkbox checked={sipeagroVerificado} onCheckedChange={(v) => setSipeagroVerificado(!!v)} />
+                      <Label className="text-sm">Registro verificado e ativo no SIPEAGRO</Label>
+                    </div>
+                  </div>
+
+                  <div className="flex justify-end">
+                    <Button type="button" onClick={() => setFormTab("produtos")}>Próximo →</Button>
+                  </div>
+                </TabsContent>
+
+                {/* ABA 2 — PRODUTOS FORNECIDOS */}
+                <TabsContent value="produtos" className="space-y-4 mt-4">
+                  <h3 className="text-sm font-semibold border-b pb-1">2 — Produto(s) Fornecido(s)</h3>
+                  <div>
+                    <Label>Tipo de Produto</Label>
+                    <Input value={tipoProduto} onChange={e => setTipoProduto(e.target.value)} placeholder="Ex: Milho, Farelo de soja, Premix" />
+                  </div>
+                  <div>
+                    <Label>Produtos Fornecidos (lista detalhada)</Label>
+                    <Textarea
+                      value={produtosFornecidos}
+                      onChange={e => setProdutosFornecidos(e.target.value)}
+                      placeholder="Liste os produtos fornecidos, um por linha"
+                      rows={6}
+                    />
+                  </div>
+                  <div className="flex justify-between">
+                    <Button type="button" variant="outline" onClick={() => setFormTab("dados")}>← Anterior</Button>
+                    <Button type="button" onClick={() => setFormTab("documentos")}>Próximo →</Button>
+                  </div>
+                </TabsContent>
+
+                {/* ABA 3 — DOCUMENTOS EXIGIDOS */}
+                <TabsContent value="documentos" className="space-y-4 mt-4">
+                  <h3 className="text-sm font-semibold border-b pb-1">3 — Documento(s) Exigido(s) para Qualificação</h3>
+                  <p className="text-xs text-muted-foreground">Marque os documentos apresentados pelo fornecedor:</p>
+
+                  <div className="space-y-3 p-4 border rounded-lg bg-muted/10">
+                    {[
+                      { label: "Certificado de Registro do Estabelecimento no MAPA", checked: docCertRegistroMapa, onChange: setDocCertRegistroMapa },
+                      { label: "Alvará de Funcionamento da Prefeitura", checked: docAlvara, onChange: setDocAlvara },
+                      { label: "Certificado de Registro do Produto no MAPA", checked: docCertRegistroProduto, onChange: setDocCertRegistroProduto },
+                      { label: "Ficha Técnica", checked: docFichaTecnica, onChange: setDocFichaTecnica },
+                      { label: "Certificado de Análise", checked: docCertAnalise, onChange: setDocCertAnalise },
+                    ].map((doc) => (
+                      <div key={doc.label} className="flex items-center gap-3 p-2 rounded hover:bg-muted/20">
+                        <Checkbox checked={doc.checked} onCheckedChange={(v) => doc.onChange(!!v)} />
+                        <Label className="text-sm cursor-pointer">{doc.label}</Label>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="flex justify-between">
+                    <Button type="button" variant="outline" onClick={() => setFormTab("produtos")}>← Anterior</Button>
+                    <Button type="button" onClick={() => setFormTab("resultado")}>Próximo →</Button>
+                  </div>
+                </TabsContent>
+
+                {/* ABA 4 — RESULTADO */}
+                <TabsContent value="resultado" className="space-y-4 mt-4">
+                  <h3 className="text-sm font-semibold border-b pb-1">4 — Resultado da Qualificação</h3>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <button
+                      type="button"
+                      onClick={() => setResultadoQualificacao("aprovado")}
+                      className={`p-6 rounded-lg border-2 text-center transition-all ${
+                        resultadoQualificacao === "aprovado"
+                          ? "border-primary bg-primary/10 text-primary"
+                          : "border-muted hover:border-primary/50"
+                      }`}
+                    >
+                      <CheckCircle2 className="w-8 h-8 mx-auto mb-2" />
+                      <p className="font-semibold">Aprovado</p>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setResultadoQualificacao("reprovado")}
+                      className={`p-6 rounded-lg border-2 text-center transition-all ${
+                        resultadoQualificacao === "reprovado"
+                          ? "border-destructive bg-destructive/10 text-destructive"
+                          : "border-muted hover:border-destructive/50"
+                      }`}
+                    >
+                      <AlertCircle className="w-8 h-8 mx-auto mb-2" />
+                      <p className="font-semibold">Reprovado</p>
+                    </button>
+                  </div>
+
+                  <div>
+                    <Label>Observações</Label>
+                    <Textarea value={observacoes} onChange={e => setObservacoes(e.target.value)} placeholder="Certificações, laudos, justificativas..." rows={3} />
+                  </div>
+
+                  <div className="flex justify-between">
+                    <Button type="button" variant="outline" onClick={() => setFormTab("documentos")}>← Anterior</Button>
+                    <Button onClick={handleAdd} disabled={saving || !nome}>
+                      {saving && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}Salvar Fornecedor
+                    </Button>
+                  </div>
+                </TabsContent>
+              </Tabs>
             </DialogContent>
           </Dialog>
         </CardHeader>
@@ -210,10 +453,10 @@ export default function Fornecedores() {
                    <TableHead>Fornecedor</TableHead>
                    <TableHead>Produto</TableHead>
                    <TableHead>SIPEAGRO</TableHead>
+                   <TableHead>Documentos</TableHead>
                    <TableHead>Status</TableHead>
                    <TableHead>Nota</TableHead>
                    <TableHead>Taxa Aprovação MP</TableHead>
-                   <TableHead>Última Avaliação</TableHead>
                    <TableHead></TableHead>
                  </TableRow>
               </TableHeader>
@@ -222,22 +465,29 @@ export default function Fornecedores() {
                   const taxa = getTaxaAprovacao(f.nome);
                   const st = STATUS_CONFIG[f.status_qualificacao || "pendente"] || STATUS_CONFIG.pendente;
                   const recs = getRecebimentosFornecedor(f.nome);
+                  const docsCount = [f.doc_certificado_registro_mapa, f.doc_alvara_funcionamento, f.doc_certificado_registro_produto, f.doc_ficha_tecnica, f.doc_certificado_analise].filter(Boolean).length;
                   return (
                     <TableRow key={f.id}>
                       <TableCell>
                         <p className="font-medium text-sm">{f.nome}</p>
                         {f.cnpj && <span className="text-xs text-muted-foreground">{f.cnpj}</span>}
+                        {f.cidade && f.estado && <span className="text-xs text-muted-foreground block">{f.cidade}/{f.estado}</span>}
                       </TableCell>
                       <TableCell className="text-sm">{f.tipo_produto || "—"}</TableCell>
                       <TableCell>
-                        {(f as any).registro_sipeagro ? (
+                        {f.registro_sipeagro ? (
                           <div className="flex items-center gap-1">
-                            <span className="text-xs font-mono">{(f as any).registro_sipeagro}</span>
-                            {(f as any).sipeagro_verificado ? <CheckCircle2 className="w-3 h-3 text-primary" /> : <Clock className="w-3 h-3 text-muted-foreground" />}
+                            <span className="text-xs font-mono">{f.registro_sipeagro}</span>
+                            {f.sipeagro_verificado ? <CheckCircle2 className="w-3 h-3 text-primary" /> : <Clock className="w-3 h-3 text-muted-foreground" />}
                           </div>
                         ) : (
                           <span className="text-xs text-destructive">Sem registro</span>
                         )}
+                      </TableCell>
+                      <TableCell>
+                        <span className={`text-xs font-mono ${docsCount === 5 ? "text-primary" : docsCount >= 3 ? "text-accent" : "text-destructive"}`}>
+                          {docsCount}/5
+                        </span>
                       </TableCell>
                       <TableCell><Badge className={st.color}>{st.label}</Badge></TableCell>
                       <TableCell>
@@ -256,7 +506,6 @@ export default function Fornecedores() {
                           </div>
                         ) : <span className="text-xs text-muted-foreground">Sem recebimentos</span>}
                       </TableCell>
-                      <TableCell className="text-xs text-muted-foreground">{f.ultima_avaliacao || "Nunca"}</TableCell>
                       <TableCell>
                         <Button variant="outline" size="sm" className="text-xs" onClick={() => {
                           setSelectedId(f.id);
