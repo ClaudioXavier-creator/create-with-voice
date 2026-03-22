@@ -280,6 +280,26 @@ export default function Recebimento() {
                      </div>
                    </div>
 
+                   {/* POP-05 Vehicle Inspection */}
+                   <div className="p-3 rounded-lg border bg-muted/20 space-y-3">
+                     <p className="text-sm font-semibold flex items-center gap-2"><Truck className="w-4 h-4" /> Vistoria de Veículo — POP-05 (IN 15/2009)</p>
+                     <p className="text-[10px] text-muted-foreground">Avalie as condições do veículo de transporte antes de descarregar.</p>
+                     <div><Label>Placa do Veículo</Label><Input value={placaVeiculo} onChange={e => setPlacaVeiculo(e.target.value)} placeholder="Ex: ABC-1234" /></div>
+                     <div className="space-y-1.5">
+                       {VISTORIA_ITENS.map((item, idx) => (
+                         <div key={idx} className="flex items-center gap-2 p-1.5 rounded bg-background border text-xs">
+                           <div className="flex gap-1 shrink-0">
+                             <button type="button" onClick={() => setVistoriaVeiculo(p => ({ ...p, [idx]: p[idx] === true ? null : true }))}
+                               className={`w-6 h-6 rounded text-xs font-bold border ${vistoriaVeiculo[idx] === true ? "bg-primary text-primary-foreground border-primary" : "border-muted-foreground/30 hover:border-primary/50"}`}>✓</button>
+                             <button type="button" onClick={() => setVistoriaVeiculo(p => ({ ...p, [idx]: p[idx] === false ? null : false }))}
+                               className={`w-6 h-6 rounded text-xs font-bold border ${vistoriaVeiculo[idx] === false ? "bg-destructive text-destructive-foreground border-destructive" : "border-muted-foreground/30 hover:border-destructive/50"}`}>✗</button>
+                           </div>
+                           <span className="leading-tight">{item}</span>
+                         </div>
+                       ))}
+                     </div>
+                   </div>
+
                   <div className="flex items-center gap-3">
                     <Switch checked={aprovado} onCheckedChange={setAprovado} />
                     <Label className="text-sm font-medium">Matéria-prima aprovada</Label>
