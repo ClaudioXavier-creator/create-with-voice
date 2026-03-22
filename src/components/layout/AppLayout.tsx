@@ -3,7 +3,8 @@ import { Link, useLocation } from "react-router-dom";
 import {
   LayoutDashboard, Building2, FileText, ClipboardCheck, AlertTriangle,
   Package, Factory, Search, Bug, GraduationCap, BarChart3, Menu, X, LogOut,
-  PlayCircle, FileDown, Scale, Users, ChevronDown, Wrench, Settings, BookOpen, FlaskConical
+  PlayCircle, FileDown, Scale, Users, ChevronDown, Wrench, Settings, BookOpen, FlaskConical,
+  Droplets, Recycle, ShieldAlert, ShieldCheck
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
