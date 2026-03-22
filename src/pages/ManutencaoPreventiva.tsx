@@ -170,6 +170,7 @@ export default function ManutencaoPreventiva() {
         <TabsList>
           <TabsTrigger value="manutencoes">Manutenções ({manutencoes.length})</TabsTrigger>
           <TabsTrigger value="calibracoes">Calibrações ({calibracoes.length})</TabsTrigger>
+          <TabsTrigger value="cronograma">Cronograma</TabsTrigger>
         </TabsList>
 
         <TabsContent value="manutencoes" className="space-y-4">
