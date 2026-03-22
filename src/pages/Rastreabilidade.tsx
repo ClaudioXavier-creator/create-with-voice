@@ -116,6 +116,9 @@ export default function Rastreabilidade() {
     setContraprovaColetada(false); setContraprovaLocal(""); setContraprovaValidade("");
   };
 
+  // Lab analyses linked to traceability lots
+  const [analisesLab, setAnalisesLab] = useState<any[]>([]);
+
   const fetchData = async () => {
     if (!user) return;
     const { data, error } = await supabase
@@ -125,6 +128,16 @@ export default function Rastreabilidade() {
     if (error) toast.error("Erro ao carregar dados");
     else setRegistros((data as unknown as RastreabilidadeRow[]) || []);
     setLoading(false);
+  };
+
+  const fetchAnalisesLab = async () => {
+    if (!user) return;
+    const { data } = await supabase
+      .from("analises_laboratorio")
+      .select("*")
+      .order("data_analise", { ascending: false })
+      .limit(200);
+    if (data) setAnalisesLab(data);
   };
 
   const fetchTestesHistorico = async () => {
