@@ -54,6 +54,31 @@ const statusConfig: Record<string, { label: string; className: string; icon: Rea
   nao_conforme: { label: "Não conforme", className: "bg-destructive/20 text-destructive", icon: AlertTriangle },
 };
 
+// Checklist items for POP-02 daily health screening
+const POP02_TRIAGEM_ITENS = [
+  "Colaborador sem sintomas (febre, diarreia, vômito, lesões de pele)",
+  "Uniforme limpo e em bom estado",
+  "Uso adequado de EPIs (luvas, touca, botas)",
+  "Mãos lavadas e higienizadas",
+  "Ausência de adornos (anéis, relógio, brincos, pulseiras)",
+  "Unhas curtas, limpas e sem esmalte",
+  "Barba aparada ou protegida (rede)",
+  "Ausência de ferimentos expostos / curativos impermeáveis",
+  "Sem uso de perfume ou maquiagem",
+  "ASO (Atestado de Saúde Ocupacional) válido",
+];
+
+// Checklist items for POP-04 water potability
+const POP04_AGUA_ITENS = [
+  "Cloro residual dentro do padrão (0,2 a 2,0 mg/L)",
+  "pH dentro do padrão (6,0 a 9,5)",
+  "Turbidez dentro do padrão (≤ 5 NTU)",
+  "Ausência de odor ou sabor anormal",
+  "Reservatório com tampa e vedação adequada",
+  "Laudo laboratorial mensal em dia",
+  "Certificado de limpeza do reservatório válido",
+];
+
 // POPs obrigatórios com periodicidade em dias
 const POPS_PERIODICIDADE: Record<string, number> = {
   "POP-001": 30,
