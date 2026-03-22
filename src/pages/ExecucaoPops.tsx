@@ -207,9 +207,11 @@ export default function ExecucaoPops() {
         return `${val === true ? "✅" : val === false ? "❌" : "⬜"} ${item}`;
       }).join("\n");
       const naoConformes = activeChecklist.filter((_, i) => checklistTriagem[i] === false).length;
-      const header = isPOP02 ? "[TRIAGEM DIÁRIA — POP-02 / IN 15/2009]" : isPOP03 ? "[LIMPEZA PRÉ-OPERACIONAL — POP-03 / IN 04/2007]" : isPOP04 ? "[CONTROLE POTABILIDADE — POP-04 / IN 04/2007]" : "[VISTORIA VEÍCULO — POP-05 / IN 15/2009]";
+      const header = isPOP02 ? "[TRIAGEM DIÁRIA — POP-02 / IN 15/2009]" : isPOP03 ? "[LIMPEZA PRÉ-OPERACIONAL — POP-03 / IN 04/2007 + IN 15/2009]" : isPOP04 ? "[CONTROLE POTABILIDADE — POP-04 / IN 04/2007]" : "[VISTORIA VEÍCULO — POP-05 / IN 15/2009]";
       const laudoInfo = isPOP04 && laudoNumero ? `\n📄 Laudo nº ${laudoNumero} | Lab: ${laudoLaboratorio} | Data: ${laudoData}` : "";
-      obsCompleta = `${header}\n${checkItems}${naoConformes > 0 ? `\n⚠️ ${naoConformes} item(ns) não conforme(s)` : "\n✅ Todos os itens conformes"}${laudoInfo}${obs ? `\nObs: ${obs}` : ""}`;
+      const asoInfo = isPOP02 && asoNumero ? `\n🩺 ASO nº ${asoNumero} | Tipo: ${asoTipo} | Validade: ${asoValidade}` : "";
+      const quimicoInfo = isPOP03 && produtoQuimico ? `\n🧴 Produto: ${produtoQuimico} | Conc: ${concentracaoQuimico} | Tempo contato: ${tempoContato}` : "";
+      obsCompleta = `${header}\n${checkItems}${naoConformes > 0 ? `\n⚠️ ${naoConformes} item(ns) não conforme(s)` : "\n✅ Todos os itens conformes"}${laudoInfo}${asoInfo}${quimicoInfo}${obs ? `\nObs: ${obs}` : ""}`;
     }
 
     const { error } = await supabase.from("execucao_pops").insert({
