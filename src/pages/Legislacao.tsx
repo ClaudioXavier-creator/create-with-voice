@@ -397,7 +397,7 @@ export default function Legislacao() {
   };
 
 
-  const tipoNormaLabel = (tipo: string) => TIPO_NORMA_OPTIONS.find(t => t.value === tipo)?.label || tipo;
+  const naoLidos = alertas.filter(a => !a.lido).length;
 
   return (
     <>
