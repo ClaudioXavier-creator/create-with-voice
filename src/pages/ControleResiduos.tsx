@@ -62,7 +62,7 @@ export default function ControleResiduos() {
       qc.invalidateQueries({ queryKey: ["controle_residuos"] });
       toast.success("Registro de resíduo salvo");
       setOpen(false);
-      setForm({ tipo_residuo: "", classificacao: "classe_II_A", origem: "", destino_final: "", empresa_coletora: "", licenca_ambiental: "", frequencia_coleta: "semanal", quantidade: "", unidade: "kg", data_coleta: new Date().toISOString().split("T")[0], responsavel: "", manifesto_numero: "", observacoes: "" });
+      setForm({ tipo_residuo: "", classificacao: "classe_II_A", origem: "", destino_final: "", empresa_coletora: "", licenca_ambiental: "", frequencia_coleta: "semanal", quantidade: "", unidade: "kg", data_coleta: new Date().toISOString().split("T")[0], responsavel: "", manifesto_numero: "", observacoes: "", motivo_descarte: "", lote_produto: "", produto_nome: "" });
     },
     onError: () => toast.error("Erro ao salvar"),
   });
