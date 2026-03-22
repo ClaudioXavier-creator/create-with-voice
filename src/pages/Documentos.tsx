@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { FileText, Plus, Upload, Eye, FolderOpen, Loader2, BookOpen, ClipboardList, Wrench, Gauge, AlertCircle } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { FileText, Plus, Upload, Eye, FolderOpen, Loader2, BookOpen, ClipboardList, Wrench, Gauge, AlertCircle, ExternalLink } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
