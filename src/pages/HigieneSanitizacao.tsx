@@ -290,7 +290,7 @@ export default function HigieneSanitizacao() {
             <Select value={selectedCronograma || ""} onValueChange={v => setSelectedCronograma(v || null)}>
               <SelectTrigger className="w-[300px]"><SelectValue placeholder="Filtrar por cronograma" /></SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Todos</SelectItem>
+                <SelectItem value="__all__">Todos</SelectItem>
                 {cronogramas.map((c: any) => <SelectItem key={c.id} value={c.id}>{c.area} — {c.procedimento?.substring(0, 30)}</SelectItem>)}
               </SelectContent>
             </Select>
