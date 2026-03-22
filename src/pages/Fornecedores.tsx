@@ -622,12 +622,22 @@ export default function Fornecedores() {
 
       {/* Lista de Fornecedores Aprovados — PL POP 1.1 */}
       <Card className="mt-6">
-        <CardHeader>
-          <CardTitle className="font-display text-sm flex items-center gap-2">
-            <CheckCircle2 className="w-4 h-4 text-primary" />
-            Lista de Fornecedores Aprovados
-          </CardTitle>
-          <p className="text-xs text-muted-foreground">Conforme PL POP 1.1 — Lista de Fornecedores Aprovados</p>
+        <CardHeader className="flex flex-row items-center justify-between flex-wrap gap-2">
+          <div>
+            <CardTitle className="font-display text-sm flex items-center gap-2">
+              <CheckCircle2 className="w-4 h-4 text-primary" />
+              Lista de Fornecedores Aprovados
+            </CardTitle>
+            <p className="text-xs text-muted-foreground">Conforme PL POP 1.1 — Lista de Fornecedores Aprovados</p>
+          </div>
+          <div className="flex gap-2">
+            <Button size="sm" variant="outline" onClick={() => { exportListaAprovadosXlsx(fornecedores as any); toast.success("Lista exportada!"); }}>
+              <Download className="w-3.5 h-3.5 mr-1" /> Excel
+            </Button>
+            <Button size="sm" variant="outline" onClick={() => printListaAprovados(fornecedores as any)}>
+              <Printer className="w-3.5 h-3.5 mr-1" /> PDF
+            </Button>
+          </div>
         </CardHeader>
         <CardContent>
           {aprovados.length === 0 ? (
