@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Check, X, Minus, Upload } from "lucide-react";
+import { Check, X, Minus, Upload, Download } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -19,9 +19,11 @@ interface Props {
   planilhaId: string;
   periodicidade: PopPeriodicidade;
   userId: string;
+  popCodigo?: string;
+  popNome?: string;
 }
 
-export default function PopPlanilhaForm({ planilhaId, periodicidade, userId }: Props) {
+export default function PopPlanilhaForm({ planilhaId, periodicidade, userId, popCodigo, popNome }: Props) {
   const [grid, setGrid] = useState<Record<string, CellData>>({});
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -122,6 +124,29 @@ export default function PopPlanilhaForm({ planilhaId, periodicidade, userId }: P
 
     toast.success(`${inserts.length} registros salvos com sucesso!`);
     setSaving(false);
+  }
+
+  function downloadTemplate() {
+    const areas = periodicidade.areas.map((a) => a.area);
+    const header = ["Período", ...areas, "Responsável", "Função"];
+
+    const rows: string[][] = [header];
+    for (const p of periodicidade.periodos) {
+      rows.push([p, ...areas.map(() => ""), "", ""]);
+    }
+
+    const ws = XLSX.utils.aoa_to_sheet(rows);
+
+    // Style header widths
+    ws["!cols"] = header.map((h) => ({ wch: Math.max(h.length + 4, 14) }));
+
+    const wb = XLSX.utils.book_new();
+    const sheetName = periodicidade.label.substring(0, 31);
+    XLSX.utils.book_append_sheet(wb, ws, sheetName);
+
+    const filename = `Template_${popCodigo || "POP"}_${periodicidade.key}.xlsx`;
+    XLSX.writeFile(wb, filename);
+    toast.success("Template baixado com sucesso!");
   }
 
   function handleImportExcel(e: React.ChangeEvent<HTMLInputElement>) {
@@ -342,7 +367,7 @@ export default function PopPlanilhaForm({ planilhaId, periodicidade, userId }: P
         <p className="text-xs text-muted-foreground">
           *C = Conforme | NC = Não Conforme | Clique para alternar. Em caso de NC, emitir RNC.
         </p>
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
           <input
             ref={fileInputRef}
             type="file"
@@ -350,6 +375,9 @@ export default function PopPlanilhaForm({ planilhaId, periodicidade, userId }: P
             className="hidden"
             onChange={handleImportExcel}
           />
+          <Button variant="outline" onClick={downloadTemplate}>
+            <Download className="w-4 h-4 mr-1" /> Baixar Template
+          </Button>
           <Button variant="outline" onClick={() => fileInputRef.current?.click()}>
             <Upload className="w-4 h-4 mr-1" /> Importar Excel
           </Button>
