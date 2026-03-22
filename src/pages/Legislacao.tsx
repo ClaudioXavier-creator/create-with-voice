@@ -278,7 +278,10 @@ export default function Legislacao() {
     let successCount = 0;
 
     for (const file of Array.from(files)) {
-      const path = `${user.id}/${Date.now()}_${file.name}`;
+      const safeName = file.name
+        .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+        .replace(/[^a-zA-Z0-9._-]/g, "_");
+      const path = `${user.id}/${Date.now()}_${safeName}`;
       const { error: uploadError } = await supabase.storage.from("normas_legislacao").upload(path, file);
       if (uploadError) {
         toast.error(`Erro ao enviar "${file.name}": ${uploadError.message}`);
