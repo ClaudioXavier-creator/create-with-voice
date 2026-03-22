@@ -88,6 +88,56 @@ export default function HigieneSanitizacao() {
     },
   });
 
+  // Laudos laboratoriais de água vinculados
+  const { data: laudosAgua = [] } = useQuery({
+    queryKey: ["laudos_agua"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("analises_laboratorio").select("*")
+        .or("produto.ilike.%água%,produto.ilike.%agua%,parametro.ilike.%cloro%,parametro.ilike.%coliform%,parametro.ilike.%turbidez%,parametro.ilike.%ph%")
+        .order("data_analise", { ascending: false }).limit(50);
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  // Planilha mensal state
+  const [mesAno, setMesAno] = useState(() => {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+  });
+
+  const exportPlanilhaMensal = () => {
+    const [ano, mes] = mesAno.split("-");
+    const mesNome = new Date(parseInt(ano), parseInt(mes) - 1).toLocaleDateString("pt-BR", { month: "long", year: "numeric" });
+    const registrosMes = registros.filter((r: any) => r.data_execucao?.startsWith(mesAno));
+    const aguaMes = registrosAgua.filter((r: any) => r.data_execucao?.startsWith(mesAno));
+
+    const lines = [
+      `PLANILHA MENSAL DE HIGIENE E SANITIZAÇÃO — ${mesNome.toUpperCase()}`,
+      "POPs 02, 03 e 04 — IN 04/2007 | IN 15/2009",
+      "",
+      "=== REGISTROS DE LIMPEZA ===",
+      "Data;Executor;Hora Início;Hora Fim;Conforme;Observações",
+      ...registrosMes.map((r: any) => [r.data_execucao, r.executor, r.hora_inicio || "", r.hora_fim || "", r.conforme ? "Sim" : "Não", r.observacoes || ""].join(";")),
+      "",
+      "=== CONTROLE DE ÁGUA (POP-04) ===",
+      "Data;Ponto;Executor;Status;Detalhes",
+      ...aguaMes.map((r: any) => [r.data_execucao, r.setor || "", r.executor, r.status === "concluido" ? "Conforme" : "NC", (r.observacoes || "").replace(/\n/g, " | ")].join(";")),
+      "",
+      `Total Registros Limpeza: ${registrosMes.length}`,
+      `Total Registros Água: ${aguaMes.length}`,
+      `Conformes Limpeza: ${registrosMes.filter((r: any) => r.conforme).length}`,
+      `NCs Limpeza: ${registrosMes.filter((r: any) => !r.conforme).length}`,
+    ];
+    const csv = lines.join("\n");
+    const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = `planilha_higiene_${mesAno}.csv`;
+    link.click();
+    toast.success("Planilha mensal exportada!");
+  };
+
   const addCronograma = useMutation({
     mutationFn: async () => {
       const { error } = await supabase.from("cronogramas_higiene").insert({ ...form, user_id: user!.id });
