@@ -107,6 +107,8 @@ export default function Legislacao() {
   const [savingNorma, setSavingNorma] = useState(false);
   const [uploadingFile, setUploadingFile] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const quickUploadRef = useRef<HTMLInputElement>(null);
+  const [quickUploading, setQuickUploading] = useState(false);
 
   const [normaForm, setNormaForm] = useState({
     titulo: "",
