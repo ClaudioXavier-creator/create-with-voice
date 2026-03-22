@@ -1,0 +1,1 @@
+ALTER TABLE public.rotulos ADD COLUMN IF NOT EXISTS eventuais_substitutivos text DEFAULT '';
