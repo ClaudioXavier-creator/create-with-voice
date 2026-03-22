@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Users, Plus, Loader2, Star, AlertCircle, CheckCircle2, Clock, FileText } from "lucide-react";
+import { Users, Plus, Loader2, Star, AlertCircle, CheckCircle2, Clock, FileText, Download, Printer } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
@@ -16,6 +16,13 @@ import PageHeader from "@/components/PageHeader";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
+import {
+  exportQuestionarioBlankXlsx,
+  exportQuestionarioPreenchidoXlsx,
+  exportListaAprovadosXlsx,
+  printQuestionario,
+  printListaAprovados,
+} from "@/utils/fornecedorExport";
 
 interface FornecedorRow {
   id: string;
@@ -230,12 +237,19 @@ export default function Fornecedores() {
       </div>
 
       <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
+        <CardHeader className="flex flex-row items-center justify-between flex-wrap gap-2">
           <CardTitle className="font-display">Fornecedores Cadastrados</CardTitle>
-          <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) resetForm(); }}>
-            <DialogTrigger asChild>
-              <Button size="sm"><Plus className="w-4 h-4 mr-1" /> Novo Fornecedor</Button>
-            </DialogTrigger>
+          <div className="flex items-center gap-2 flex-wrap">
+            <Button size="sm" variant="outline" onClick={() => exportQuestionarioBlankXlsx()}>
+              <Download className="w-3.5 h-3.5 mr-1" /> Modelo Excel
+            </Button>
+            <Button size="sm" variant="outline" onClick={() => printQuestionario()}>
+              <Printer className="w-3.5 h-3.5 mr-1" /> Modelo PDF
+            </Button>
+            <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) resetForm(); }}>
+              <DialogTrigger asChild>
+                <Button size="sm"><Plus className="w-4 h-4 mr-1" /> Novo Fornecedor</Button>
+              </DialogTrigger>
             <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
               <DialogHeader>
                 <DialogTitle className="flex items-center gap-2">
@@ -453,6 +467,7 @@ export default function Fornecedores() {
               </Tabs>
             </DialogContent>
           </Dialog>
+          </div>
         </CardHeader>
         <CardContent className="overflow-x-auto">
           {loading ? (
@@ -520,15 +535,26 @@ export default function Fornecedores() {
                         ) : <span className="text-xs text-muted-foreground">Sem recebimentos</span>}
                       </TableCell>
                       <TableCell>
-                        <Button variant="outline" size="sm" className="text-xs" onClick={() => {
-                          setSelectedId(f.id);
-                          setNota(f.nota_avaliacao || 0);
-                          setStatusQual(f.status_qualificacao || "pendente");
-                          setObsAval(f.observacoes || "");
-                          setAvaliarOpen(true);
-                        }}>
-                          <Star className="w-3 h-3 mr-1" /> Avaliar
-                        </Button>
+                        <div className="flex gap-1">
+                          <Button variant="outline" size="sm" className="text-xs" onClick={() => {
+                            setSelectedId(f.id);
+                            setNota(f.nota_avaliacao || 0);
+                            setStatusQual(f.status_qualificacao || "pendente");
+                            setObsAval(f.observacoes || "");
+                            setAvaliarOpen(true);
+                          }}>
+                            <Star className="w-3 h-3 mr-1" /> Avaliar
+                          </Button>
+                          <Button variant="ghost" size="sm" className="text-xs" title="Exportar questionário" onClick={() => {
+                            exportQuestionarioPreenchidoXlsx(f as any);
+                            toast.success("Questionário exportado!");
+                          }}>
+                            <Download className="w-3 h-3" />
+                          </Button>
+                          <Button variant="ghost" size="sm" className="text-xs" title="Imprimir questionário" onClick={() => printQuestionario(f as any)}>
+                            <Printer className="w-3 h-3" />
+                          </Button>
+                        </div>
                       </TableCell>
                     </TableRow>
                   );
@@ -596,12 +622,22 @@ export default function Fornecedores() {
 
       {/* Lista de Fornecedores Aprovados — PL POP 1.1 */}
       <Card className="mt-6">
-        <CardHeader>
-          <CardTitle className="font-display text-sm flex items-center gap-2">
-            <CheckCircle2 className="w-4 h-4 text-primary" />
-            Lista de Fornecedores Aprovados
-          </CardTitle>
-          <p className="text-xs text-muted-foreground">Conforme PL POP 1.1 — Lista de Fornecedores Aprovados</p>
+        <CardHeader className="flex flex-row items-center justify-between flex-wrap gap-2">
+          <div>
+            <CardTitle className="font-display text-sm flex items-center gap-2">
+              <CheckCircle2 className="w-4 h-4 text-primary" />
+              Lista de Fornecedores Aprovados
+            </CardTitle>
+            <p className="text-xs text-muted-foreground">Conforme PL POP 1.1 — Lista de Fornecedores Aprovados</p>
+          </div>
+          <div className="flex gap-2">
+            <Button size="sm" variant="outline" onClick={() => { exportListaAprovadosXlsx(fornecedores as any); toast.success("Lista exportada!"); }}>
+              <Download className="w-3.5 h-3.5 mr-1" /> Excel
+            </Button>
+            <Button size="sm" variant="outline" onClick={() => printListaAprovados(fornecedores as any)}>
+              <Printer className="w-3.5 h-3.5 mr-1" /> PDF
+            </Button>
+          </div>
         </CardHeader>
         <CardContent>
           {aprovados.length === 0 ? (
