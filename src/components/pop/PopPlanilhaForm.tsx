@@ -123,6 +123,141 @@ export default function PopPlanilhaForm({ planilhaId, periodicidade, userId }: P
     setSaving(false);
   }
 
+  function handleImportExcel(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+      try {
+        const data = new Uint8Array(evt.target?.result as ArrayBuffer);
+        const workbook = XLSX.read(data, { type: "array" });
+        const sheet = workbook.Sheets[workbook.SheetNames[0]];
+        const rows: any[][] = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+
+        // Find header row (contains area names)
+        let headerRowIdx = -1;
+        const areaNames = periodicidade.areas.map((a) => a.area.toLowerCase().trim());
+
+        for (let i = 0; i < Math.min(rows.length, 10); i++) {
+          const rowVals = (rows[i] || []).map((v: any) => String(v || "").toLowerCase().trim());
+          const matches = areaNames.filter((a) => rowVals.some((v: string) => v.includes(a) || a.includes(v)));
+          if (matches.length >= Math.min(2, areaNames.length)) {
+            headerRowIdx = i;
+            break;
+          }
+        }
+
+        if (headerRowIdx === -1) {
+          // Fallback: assume first column is period, remaining are areas in order
+          headerRowIdx = -1;
+          const newGrid: Record<string, CellData> = { ...grid };
+          let imported = 0;
+
+          for (const row of rows) {
+            if (!row || !row[0]) continue;
+            const periodoRaw = String(row[0]).trim();
+            const periodo = periodicidade.periodos.find(
+              (p) => p === periodoRaw || p === periodoRaw.replace(/^0/, "")
+            );
+            if (!periodo) continue;
+
+            periodicidade.areas.forEach((area, aIdx) => {
+              const cellVal = String(row[aIdx + 1] || "").trim().toUpperCase();
+              const key = cellKey(periodo, area.area);
+              let conforme: boolean | null = null;
+              if (cellVal === "C" || cellVal === "CONFORME" || cellVal === "OK" || cellVal === "SIM" || cellVal === "S") conforme = true;
+              else if (cellVal === "NC" || cellVal === "NÃO CONFORME" || cellVal === "NAO CONFORME" || cellVal === "NÃO" || cellVal === "N") conforme = false;
+
+              if (conforme !== null) {
+                newGrid[key] = {
+                  conforme,
+                  responsavel: newGrid[key]?.responsavel || "",
+                  funcao: newGrid[key]?.funcao || "",
+                };
+                imported++;
+              }
+            });
+
+            // Check for responsavel/funcao in last columns
+            const respIdx = periodicidade.areas.length + 1;
+            const funcIdx = periodicidade.areas.length + 2;
+            const resp = row[respIdx] ? String(row[respIdx]).trim() : "";
+            const func = row[funcIdx] ? String(row[funcIdx]).trim() : "";
+            if (resp || func) {
+              periodicidade.areas.forEach((area) => {
+                const key = cellKey(periodo, area.area);
+                if (newGrid[key]) {
+                  newGrid[key] = { ...newGrid[key], responsavel: resp, funcao: func };
+                }
+              });
+            }
+          }
+
+          setGrid(newGrid);
+          toast.success(`${imported} registros importados! Revise e salve.`);
+          return;
+        }
+
+        // Map header columns to areas
+        const headerRow = rows[headerRowIdx].map((v: any) => String(v || "").toLowerCase().trim());
+        const areaColMap: Record<number, string> = {};
+        let respCol = -1;
+        let funcCol = -1;
+
+        headerRow.forEach((val: string, colIdx: number) => {
+          if (val.includes("responsável") || val.includes("responsavel")) { respCol = colIdx; return; }
+          if (val.includes("função") || val.includes("funcao")) { funcCol = colIdx; return; }
+          for (const area of periodicidade.areas) {
+            const areaLower = area.area.toLowerCase().trim();
+            if (val.includes(areaLower) || areaLower.includes(val)) {
+              areaColMap[colIdx] = area.area;
+              break;
+            }
+          }
+        });
+
+        const newGrid: Record<string, CellData> = { ...grid };
+        let imported = 0;
+
+        for (let i = headerRowIdx + 1; i < rows.length; i++) {
+          const row = rows[i];
+          if (!row || !row[0]) continue;
+          const periodoRaw = String(row[0]).trim();
+          const periodo = periodicidade.periodos.find(
+            (p) => p === periodoRaw || p === periodoRaw.replace(/^0/, "")
+          );
+          if (!periodo) continue;
+
+          const resp = respCol >= 0 && row[respCol] ? String(row[respCol]).trim() : "";
+          const func = funcCol >= 0 && row[funcCol] ? String(row[funcCol]).trim() : "";
+
+          for (const [colStr, areaName] of Object.entries(areaColMap)) {
+            const colIdx = Number(colStr);
+            const cellVal = String(row[colIdx] || "").trim().toUpperCase();
+            const key = cellKey(periodo, areaName);
+            let conforme: boolean | null = null;
+            if (cellVal === "C" || cellVal === "CONFORME" || cellVal === "OK" || cellVal === "SIM" || cellVal === "S") conforme = true;
+            else if (cellVal === "NC" || cellVal === "NÃO CONFORME" || cellVal === "NAO CONFORME" || cellVal === "NÃO" || cellVal === "N") conforme = false;
+
+            if (conforme !== null) {
+              newGrid[key] = { conforme, responsavel: resp, funcao: func };
+              imported++;
+            }
+          }
+        }
+
+        setGrid(newGrid);
+        toast.success(`${imported} registros importados! Revise e salve.`);
+      } catch (err) {
+        console.error(err);
+        toast.error("Erro ao ler o arquivo. Verifique se é um .xlsx válido.");
+      }
+    };
+    reader.readAsArrayBuffer(file);
+    e.target.value = "";
+  }
+
   if (loading) {
     return (
       <div className="space-y-2">
