@@ -287,7 +287,7 @@ export default function HigieneSanitizacao() {
         {/* ── REGISTROS LIMPEZA ── */}
         <TabsContent value="registros" className="space-y-4">
           <div className="flex justify-between items-center gap-4 flex-wrap">
-            <Select value={selectedCronograma || ""} onValueChange={v => setSelectedCronograma(v || null)}>
+            <Select value={selectedCronograma || "__all__"} onValueChange={v => setSelectedCronograma(v === "__all__" ? null : v)}>
               <SelectTrigger className="w-[300px]"><SelectValue placeholder="Filtrar por cronograma" /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="__all__">Todos</SelectItem>
