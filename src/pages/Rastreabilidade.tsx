@@ -35,6 +35,14 @@ interface RastreabilidadeRow {
   recall_status: string | null;
 }
 
+interface TesteResult {
+  lote: string;
+  produto: string;
+  montante: { materia_prima: string; lote_mp: string; fornecedor: string }[];
+  jusante: { cliente: string; local: string; nf: string; data_venda: string }[];
+  tempoSegundos: number;
+}
+
 export default function Rastreabilidade() {
   const { user } = useAuth();
   const [registros, setRegistros] = useState<RastreabilidadeRow[]>([]);
@@ -71,25 +79,23 @@ export default function Rastreabilidade() {
   const [simResults, setSimResults] = useState<{ step: string; time: number; ok: boolean }[]>([]);
   const simInterval = useRef<NodeJS.Timeout | null>(null);
 
-  // Venda fields (for updating existing records)
+  // Venda fields
   const [vendaCliente, setVendaCliente] = useState("");
   const [vendaLocal, setVendaLocal] = useState("");
   const [vendaData, setVendaData] = useState("");
   const [vendaNF, setVendaNF] = useState("");
   const [vendaQtd, setVendaQtd] = useState("");
 
-  const fetchData = async () => {
-    if (!user) return;
-    const { data, error } = await supabase
-      .from("rastreabilidade")
-      .select("*")
-      .order("created_at", { ascending: false });
-    if (error) toast.error("Erro ao carregar dados");
-    else setRegistros((data as unknown as RastreabilidadeRow[]) || []);
-    setLoading(false);
-  };
-
-  useEffect(() => { fetchData(); }, [user]);
+  // Teste de Rastreabilidade
+  const [testeOpen, setTesteOpen] = useState(false);
+  const [testeLote, setTesteLote] = useState("");
+  const [testeRunning, setTesteRunning] = useState(false);
+  const [testeTime, setTesteTime] = useState(0);
+  const [testeResult, setTesteResult] = useState<TesteResult | null>(null);
+  const [testeSaving, setTesteSaving] = useState(false);
+  const [testeObs, setTesteObs] = useState("");
+  const [testesHistorico, setTestesHistorico] = useState<any[]>([]);
+  const testeInterval = useRef<NodeJS.Timeout | null>(null);
 
   const resetForm = () => {
     setProduto(""); setLoteProduto(""); setMateriaPrima(""); setLoteMP("");
