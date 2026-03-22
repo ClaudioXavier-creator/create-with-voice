@@ -691,6 +691,9 @@ export type Database = {
           nota_avaliacao: number | null
           observacoes: string | null
           proxima_avaliacao: string | null
+          registro_sipeagro: string | null
+          sipeagro_data_verificacao: string | null
+          sipeagro_verificado: boolean | null
           status_qualificacao: string | null
           tipo_produto: string | null
           ultima_avaliacao: string | null
@@ -708,6 +711,9 @@ export type Database = {
           nota_avaliacao?: number | null
           observacoes?: string | null
           proxima_avaliacao?: string | null
+          registro_sipeagro?: string | null
+          sipeagro_data_verificacao?: string | null
+          sipeagro_verificado?: boolean | null
           status_qualificacao?: string | null
           tipo_produto?: string | null
           ultima_avaliacao?: string | null
@@ -725,6 +731,9 @@ export type Database = {
           nota_avaliacao?: number | null
           observacoes?: string | null
           proxima_avaliacao?: string | null
+          registro_sipeagro?: string | null
+          sipeagro_data_verificacao?: string | null
+          sipeagro_verificado?: boolean | null
           status_qualificacao?: string | null
           tipo_produto?: string | null
           ultima_avaliacao?: string | null
