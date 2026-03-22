@@ -120,6 +120,12 @@ export default function PCP() {
   const [batidaTemp, setBatidaTemp] = useState("");
   const [batidaObs, setBatidaObs] = useState("");
 
+  // Limpeza entre lotes
+  const [limpezaConfirmada, setLimpezaConfirmada] = useState(false);
+  const [limpezaTipo, setLimpezaTipo] = useState("vassouragem");
+  const [limpezaResponsavel, setLimpezaResponsavel] = useState("");
+  const [limpezaHora, setLimpezaHora] = useState("");
+
   const fetchData = async () => {
     if (!user) return;
     const [ordensRes, itensRes, batidasRes] = await Promise.all([
