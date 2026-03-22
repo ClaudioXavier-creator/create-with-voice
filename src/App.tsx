@@ -25,6 +25,7 @@ import Fornecedores from "./pages/Fornecedores";
 import Manual from "./pages/Manual";
 import PlanilhasPop from "./pages/PlanilhasPop";
 import Produtos from "./pages/Produtos";
+import AnalisesLaboratorio from "./pages/AnalisesLaboratorio";
 import Auth from "./pages/Auth";
 import AtivarLicenca from "./pages/AtivarLicenca";
 import NotFound from "./pages/NotFound";
