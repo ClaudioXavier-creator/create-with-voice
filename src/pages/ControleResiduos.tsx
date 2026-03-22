@@ -15,11 +15,20 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Plus, Trash2, Recycle } from "lucide-react";
 import PageHeader from "@/components/PageHeader";
 
-const TIPOS_RESIDUO = ["Orgânico", "Pó/Varredura", "Embalagens plásticas", "Embalagens papel/papelão", "Efluente líquido", "Óleo lubrificante", "Resíduo químico", "Outro"];
+const TIPOS_RESIDUO = ["Orgânico", "Pó/Varredura", "Embalagens plásticas", "Embalagens papel/papelão", "Efluente líquido", "Óleo lubrificante", "Resíduo químico", "Produto vencido", "Produto rejeitado/reprovado", "Sobra de produção", "Outro"];
 const CLASSIFICACOES = [
   { value: "classe_I", label: "Classe I — Perigoso" },
   { value: "classe_II_A", label: "Classe II-A — Não Inerte" },
   { value: "classe_II_B", label: "Classe II-B — Inerte" },
+];
+const MOTIVOS_DESCARTE = [
+  { value: "vencido", label: "Produto Vencido" },
+  { value: "rejeitado_recebimento", label: "Rejeitado no Recebimento" },
+  { value: "reprovado_analise", label: "Reprovado em Análise" },
+  { value: "contaminado", label: "Contaminação / Avaria" },
+  { value: "sobra_producao", label: "Sobra de Produção (s/ aproveitamento)" },
+  { value: "recall", label: "Recolhimento / Recall" },
+  { value: "outro", label: "Outro" },
 ];
 
 export default function ControleResiduos() {
