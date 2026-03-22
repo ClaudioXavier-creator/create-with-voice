@@ -141,7 +141,7 @@ export default function SalaAuditor() {
           <p className="text-xs text-muted-foreground">Conformidade</p>
         </CardContent></Card>
         <Card><CardContent className="pt-4 text-center">
-          <p className="text-2xl font-bold font-display text-green-600">{conformes}</p>
+          <p className="text-2xl font-bold font-display text-success">{conformes}</p>
           <p className="text-xs text-muted-foreground">Conformes</p>
         </CardContent></Card>
         <Card className="border-destructive/30"><CardContent className="pt-4 text-center">
