@@ -182,7 +182,7 @@ export default function QualidadeTotal() {
       data_resposta_cliente: r.data_resposta_cliente || "",
       satisfacao_cliente: r.satisfacao_cliente || "",
       status: r.status,
-      pop_referencia: r.pop_referencia || "POP-009",
+      pop_referencia: r.pop_referencia || "POP-008",
       observacoes: r.observacoes || "",
     });
     setEditingId(r.id);
