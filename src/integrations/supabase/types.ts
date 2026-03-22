@@ -1072,6 +1072,60 @@ export type Database = {
         }
         Relationships: []
       }
+      planejamento_anual: {
+        Row: {
+          atividade: string
+          categoria: string
+          created_at: string
+          descricao: string | null
+          frequencia: string
+          id: string
+          mes_inicio: number | null
+          observacoes: string | null
+          proxima_execucao: string | null
+          quantidade_prevista: number | null
+          responsavel: string | null
+          status: string | null
+          ultima_execucao: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          atividade: string
+          categoria?: string
+          created_at?: string
+          descricao?: string | null
+          frequencia?: string
+          id?: string
+          mes_inicio?: number | null
+          observacoes?: string | null
+          proxima_execucao?: string | null
+          quantidade_prevista?: number | null
+          responsavel?: string | null
+          status?: string | null
+          ultima_execucao?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          atividade?: string
+          categoria?: string
+          created_at?: string
+          descricao?: string | null
+          frequencia?: string
+          id?: string
+          mes_inicio?: number | null
+          observacoes?: string | null
+          proxima_execucao?: string | null
+          quantidade_prevista?: number | null
+          responsavel?: string | null
+          status?: string | null
+          ultima_execucao?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       pop_planilha_itens: {
         Row: {
           area: string

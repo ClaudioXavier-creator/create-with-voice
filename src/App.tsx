@@ -32,6 +32,7 @@ import ControleResiduos from "./pages/ControleResiduos";
 import ControleSubstancias from "./pages/ControleSubstancias";
 import ValidacaoLimpezaLinha from "./pages/ValidacaoLimpezaLinha";
 import MatrizRisco from "./pages/MatrizRisco";
+import PlanejamentoAnual from "./pages/PlanejamentoAnual";
 import Auth from "./pages/Auth";
 import AtivarLicenca from "./pages/AtivarLicenca";
 import NotFound from "./pages/NotFound";
@@ -118,6 +119,7 @@ const AppRoutes = () => {
                   <Route path="/substancias" element={<ControleSubstancias />} />
                   <Route path="/validacao-limpeza" element={<ValidacaoLimpezaLinha />} />
                   <Route path="/matriz-risco" element={<MatrizRisco />} />
+                  <Route path="/planejamento-anual" element={<PlanejamentoAnual />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </AppLayout>
