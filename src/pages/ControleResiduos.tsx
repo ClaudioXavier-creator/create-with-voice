@@ -40,7 +40,8 @@ export default function ControleResiduos() {
     tipo_residuo: "", classificacao: "classe_II_A", origem: "", destino_final: "",
     empresa_coletora: "", licenca_ambiental: "", frequencia_coleta: "semanal",
     quantidade: "", unidade: "kg", data_coleta: new Date().toISOString().split("T")[0],
-    responsavel: "", manifesto_numero: "", observacoes: ""
+    responsavel: "", manifesto_numero: "", observacoes: "",
+    motivo_descarte: "", lote_produto: "", produto_nome: ""
   });
 
   const { data: residuos = [] } = useQuery({
