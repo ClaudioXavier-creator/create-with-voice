@@ -223,7 +223,7 @@ export default function PlanilhasPop() {
                 onClick={(e) => {
                   e.stopPropagation();
                   setSelectedPeriodicidade(per);
-                  setTimeout(loadOrCreatePlanilha, 0);
+                  loadOrCreatePlanilha(per);
                 }}
               >
                 <FileSpreadsheet className="w-4 h-4 mr-1" /> Abrir Planilha
