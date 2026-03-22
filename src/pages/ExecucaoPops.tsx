@@ -140,9 +140,26 @@ export default function ExecucaoPops() {
 
   const selectedDoc = docs.find(d => d.id === docSelecionado);
 
+  const isPOP02 = selectedDoc?.codigo?.toUpperCase().includes("POP-002") || selectedDoc?.codigo?.toUpperCase().includes("POP-02") || selectedDoc?.nome?.toLowerCase().includes("higiene") && selectedDoc?.nome?.toLowerCase().includes("saúde");
+  const isPOP04 = selectedDoc?.codigo?.toUpperCase().includes("POP-004") || selectedDoc?.codigo?.toUpperCase().includes("POP-04") || selectedDoc?.nome?.toLowerCase().includes("potabilidade");
+  const activeChecklist = isPOP02 ? POP02_TRIAGEM_ITENS : isPOP04 ? POP04_AGUA_ITENS : null;
+
   const handleAdd = async () => {
     if (!selectedDoc || !executor || !user) return;
     setSaving(true);
+
+    // Build checklist observation
+    let obsCompleta = obs;
+    if (activeChecklist) {
+      const checkItems = activeChecklist.map((item, i) => {
+        const val = checklistTriagem[i];
+        return `${val === true ? "✅" : val === false ? "❌" : "⬜"} ${item}`;
+      }).join("\n");
+      const naoConformes = activeChecklist.filter((_, i) => checklistTriagem[i] === false).length;
+      const header = isPOP02 ? "[TRIAGEM DIÁRIA — POP-02 / IN 15/2009]" : "[CONTROLE POTABILIDADE — POP-04 / IN 04/2007]";
+      obsCompleta = `${header}\n${checkItems}${naoConformes > 0 ? `\n⚠️ ${naoConformes} item(ns) não conforme(s)` : "\n✅ Todos os itens conformes"}${obs ? `\nObs: ${obs}` : ""}`;
+    }
+
     const { error } = await supabase.from("execucao_pops").insert({
       user_id: user.id,
       codigo_pop: selectedDoc.codigo,
@@ -150,7 +167,7 @@ export default function ExecucaoPops() {
       executor,
       setor,
       status: statusExec,
-      observacoes: obs,
+      observacoes: obsCompleta,
       documento_id: selectedDoc.id,
     });
     if (error) toast.error("Erro ao salvar execução");
@@ -158,6 +175,7 @@ export default function ExecucaoPops() {
       toast.success("Execução registrada!");
       setOpen(false);
       setDocSelecionado(""); setExecutor(""); setSetor(""); setObs(""); setStatusExec("concluido");
+      setChecklistTriagem({});
       fetchData();
     }
     setSaving(false);
