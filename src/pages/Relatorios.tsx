@@ -105,6 +105,11 @@ export default function Relatorios() {
   const [descricao, setDescricao] = useState("");
   const [arquivo, setArquivo] = useState<File | null>(null);
 
+  // Assinatura RT
+  const [rtNome, setRtNome] = useState("");
+  const [rtCrmv, setRtCrmv] = useState("");
+  const [rtAssinado, setRtAssinado] = useState(false);
+
   const fetchRelatorios = async () => {
     if (!user) return;
     const { data, error } = await supabase
