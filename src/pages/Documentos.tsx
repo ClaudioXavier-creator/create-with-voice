@@ -226,6 +226,13 @@ export default function Documentos() {
                             </Badge>
                           ) : <Badge variant="outline" className="text-destructive border-destructive">Pendente</Badge>}
                         </TableCell>
+                        <TableCell>
+                          {p.modulo && (
+                            <Button variant="ghost" size="sm" className="text-xs gap-1 h-7" onClick={() => navigate(p.modulo)}>
+                              <ExternalLink className="w-3 h-3" /> {p.moduloLabel}
+                            </Button>
+                          )}
+                        </TableCell>
                       </TableRow>
                     );
                   })}
