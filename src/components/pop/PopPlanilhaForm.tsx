@@ -19,9 +19,11 @@ interface Props {
   planilhaId: string;
   periodicidade: PopPeriodicidade;
   userId: string;
+  popCodigo?: string;
+  popNome?: string;
 }
 
-export default function PopPlanilhaForm({ planilhaId, periodicidade, userId }: Props) {
+export default function PopPlanilhaForm({ planilhaId, periodicidade, userId, popCodigo, popNome }: Props) {
   const [grid, setGrid] = useState<Record<string, CellData>>({});
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
