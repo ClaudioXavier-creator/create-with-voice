@@ -399,30 +399,42 @@ export default function Fornecedores() {
                 <TabsContent value="resultado" className="space-y-4 mt-4">
                   <h3 className="text-sm font-semibold border-b pb-1">4 — Resultado da Qualificação</h3>
 
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-3 gap-3">
                     <button
                       type="button"
                       onClick={() => setResultadoQualificacao("aprovado")}
-                      className={`p-6 rounded-lg border-2 text-center transition-all ${
+                      className={`p-5 rounded-lg border-2 text-center transition-all ${
                         resultadoQualificacao === "aprovado"
                           ? "border-primary bg-primary/10 text-primary"
                           : "border-muted hover:border-primary/50"
                       }`}
                     >
-                      <CheckCircle2 className="w-8 h-8 mx-auto mb-2" />
-                      <p className="font-semibold">Aprovado</p>
+                      <CheckCircle2 className="w-7 h-7 mx-auto mb-2" />
+                      <p className="font-semibold text-sm">Aprovado</p>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setResultadoQualificacao("aprovado_com_restricoes")}
+                      className={`p-5 rounded-lg border-2 text-center transition-all ${
+                        resultadoQualificacao === "aprovado_com_restricoes"
+                          ? "border-yellow-600 bg-yellow-600/10 text-yellow-700"
+                          : "border-muted hover:border-yellow-500/50"
+                      }`}
+                    >
+                      <CheckCircle2 className="w-7 h-7 mx-auto mb-2" />
+                      <p className="font-semibold text-sm">Aprovado c/ Restrições</p>
                     </button>
                     <button
                       type="button"
                       onClick={() => setResultadoQualificacao("reprovado")}
-                      className={`p-6 rounded-lg border-2 text-center transition-all ${
+                      className={`p-5 rounded-lg border-2 text-center transition-all ${
                         resultadoQualificacao === "reprovado"
                           ? "border-destructive bg-destructive/10 text-destructive"
                           : "border-muted hover:border-destructive/50"
                       }`}
                     >
-                      <AlertCircle className="w-8 h-8 mx-auto mb-2" />
-                      <p className="font-semibold">Reprovado</p>
+                      <AlertCircle className="w-7 h-7 mx-auto mb-2" />
+                      <p className="font-semibold text-sm">Reprovado</p>
                     </button>
                   </div>
 
