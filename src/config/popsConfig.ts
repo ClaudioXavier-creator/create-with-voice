@@ -36,7 +36,7 @@ function meses(): string[] {
 export const POPS_CONFIG: PopConfig[] = [
   {
     codigo: "POP-01",
-    nome: "Qualificação de Fornecedores e Controle de Matérias-Primas e Embalagens",
+    nome: "Qualificação de Fornecedores",
     descricao: "Procedimentos para qualificação de fornecedores, especificação e controle de matérias-primas e embalagens conforme IN 04/2007.",
     periodicidades: [
       {
