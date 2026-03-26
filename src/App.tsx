@@ -92,6 +92,7 @@ const AppRoutes = () => {
   return (
     <Routes>
       <Route path="/auth" element={session ? <Navigate to="/" replace /> : <Auth />} />
+      <Route path="/instalar" element={<Instalar />} />
       <Route
         path="/*"
         element={
