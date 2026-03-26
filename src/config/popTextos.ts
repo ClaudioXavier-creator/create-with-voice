@@ -15,7 +15,7 @@ export interface PopTexto {
 export const POP_TEXTOS: PopTexto[] = [
   {
     codigo: "POP-01",
-    nome: "Qualificação de Fornecedores e Controle de Matérias-Primas e de Embalagens",
+    nome: "Qualificação de Fornecedores",
     objetivo: "Estabelecer os procedimentos de qualificação dos fornecedores e o controle no recebimento e armazenamento de matérias-primas e embalagens, para garantir a qualidade e segurança dos produtos acabados.",
     campoAplicacao: "Aplica-se a todos os fornecedores de matérias-primas, ingredientes e embalagens utilizados na fabricação de produtos destinados à alimentação animal.",
     documentosReferencia: [
@@ -80,7 +80,7 @@ export const POP_TEXTOS: PopTexto[] = [
   },
   {
     codigo: "POP-03",
-    nome: "Higiene e Saúde do Pessoal",
+    nome: "Higiene e Saúde Pessoal",
     objetivo: "Estabelecer os procedimentos de higiene pessoal e controle de saúde dos colaboradores, garantindo a manipulação segura dos alimentos para animais.",
     campoAplicacao: "Aplica-se a todos os funcionários que participam direta ou indiretamente do processo produtivo, incluindo visitantes.",
     documentosReferencia: [
@@ -112,7 +112,7 @@ export const POP_TEXTOS: PopTexto[] = [
   },
   {
     codigo: "POP-04",
-    nome: "Potabilidade da Água e Higienização de Reservatório",
+    nome: "Potabilidade da Água",
     objetivo: "Estabelecer procedimentos para garantia da potabilidade da água e higienização dos reservatórios utilizados no estabelecimento.",
     campoAplicacao: "Aplica-se a todos os pontos de coleta de água e reservatórios do estabelecimento.",
     documentosReferencia: [
@@ -266,7 +266,7 @@ export const POP_TEXTOS: PopTexto[] = [
   },
   {
     codigo: "POP-09",
-    nome: "Programa de Rastreabilidade e Recolhimento de Produtos (Recall)",
+    nome: "Programa de Rastreabilidade e Recolhimento (Recall)",
     objetivo: "Estabelecer procedimentos para garantir a rastreabilidade completa dos produtos e o recolhimento eficiente em caso de não conformidades que afetem a segurança.",
     campoAplicacao: "Aplica-se a todos os produtos fabricados, desde o recebimento de matérias-primas até a distribuição ao cliente final.",
     documentosReferencia: [
@@ -297,5 +297,42 @@ export const POP_TEXTOS: PopTexto[] = [
       { naoConformidade: "NC identificada pelo cliente", acao: "Registrar reclamação, analisar causa raiz, definir ações corretivas e preventivas." },
     ],
     tempoRetencao: "2 anos (planilhas), 5 anos (registros de recall)",
+  },
+  {
+    codigo: "POP-10",
+    nome: "PAC — Programa de Autocontrole",
+    objetivo: "Estabelecer o programa de autocontrole da empresa, integrando todos os POPs obrigatórios e definindo os procedimentos de verificação, auditoria interna e melhoria contínua do sistema de Boas Práticas de Fabricação.",
+    campoAplicacao: "Aplica-se a todas as atividades de gestão da qualidade e autocontrole do estabelecimento, abrangendo todos os 9 POPs obrigatórios e o Manual de BPF.",
+    documentosReferencia: [
+      "Instrução Normativa nº 04 de 23 de fevereiro de 2007",
+      "Decreto 12.031/2024",
+      "Manual de BPF da Empresa",
+      "POPs 01 a 09",
+    ],
+    definicoes: [
+      { termo: "PAC", definicao: "Programa de Autocontrole — conjunto de procedimentos que a empresa implementa para garantir a qualidade e segurança dos produtos." },
+      { termo: "Auditoria Interna", definicao: "Verificação sistemática e documentada dos procedimentos e registros do sistema de BPF." },
+      { termo: "Indicador de Desempenho", definicao: "Métrica utilizada para avaliar a eficácia do programa de autocontrole." },
+      { termo: "Verificação Oficial", definicao: "Ação realizada pelo SIF/MAPA para avaliar a conformidade do estabelecimento com a legislação." },
+    ],
+    procedimentos: [
+      "Realizar checklist mensal de conformidade de todos os POPs (PL POP 10.1).",
+      "Conduzir auditorias internas semestrais abrangendo todos os procedimentos operacionais.",
+      "Monitorar indicadores de desempenho mensalmente (% conformidade, NCs, reclamações, treinamentos).",
+      "Revisar e atualizar POPs e Manual BPF anualmente ou quando necessário.",
+      "Garantir que todos os registros estejam completos, assinados e arquivados pelo período de retenção.",
+      "Preparar documentação para verificações oficiais do SIF/MAPA.",
+      "Manter equipe treinada e atualizada nos procedimentos de BPF.",
+      "Tratar não conformidades de auditoria com ações corretivas e verificação de eficácia.",
+    ],
+    monitoramento: { controle: "Checklist de autocontrole e indicadores de desempenho", frequencia: "Mensal (checklist), semestral (auditoria)", registro: "PL POP 10.1, PL POP 10.2, PL POP 10.3", responsavel: "CQ, RT ou Coordenador de Qualidade" },
+    verificacao: { controle: "Verificação dos registros e resultados de auditorias", frequencia: "Semestral", registro: "Relatório de auditoria e plano de ação", responsavel: "RT ou Direção (verificador ≠ auditor)" },
+    acoesCorretivas: [
+      { naoConformidade: "POP não implementado ou desatualizado", acao: "Revisar e atualizar o POP. Retreinar equipe envolvida." },
+      { naoConformidade: "Registros incompletos ou ausentes", acao: "Orientar responsável, completar registros e registrar NC." },
+      { naoConformidade: "Indicadores abaixo da meta", acao: "Investigar causa raiz, definir ações corretivas e acompanhar eficácia." },
+      { naoConformidade: "Não conformidade em auditoria oficial", acao: "Elaborar plano de ação imediato, implementar e verificar eficácia." },
+    ],
+    tempoRetencao: "5 anos",
   },
 ];

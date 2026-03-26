@@ -36,7 +36,7 @@ function meses(): string[] {
 export const POPS_CONFIG: PopConfig[] = [
   {
     codigo: "POP-01",
-    nome: "Qualificação de Fornecedores e Controle de Matérias-Primas e Embalagens",
+    nome: "Qualificação de Fornecedores",
     descricao: "Procedimentos para qualificação de fornecedores, especificação e controle de matérias-primas e embalagens conforme IN 04/2007.",
     periodicidades: [
       {
@@ -234,7 +234,7 @@ export const POPS_CONFIG: PopConfig[] = [
   },
   {
     codigo: "POP-03",
-    nome: "Higiene e Saúde do Pessoal",
+    nome: "Higiene e Saúde Pessoal",
     descricao: "Procedimentos de higiene pessoal, saúde dos colaboradores, uso de EPIs e comportamento nas áreas de produção conforme IN 04/2007.",
     periodicidades: [
       {
@@ -278,7 +278,7 @@ export const POPS_CONFIG: PopConfig[] = [
   },
   {
     codigo: "POP-04",
-    nome: "Potabilidade da Água e Higienização de Reservatório",
+    nome: "Potabilidade da Água",
     descricao: "Procedimentos de controle da potabilidade da água e higienização dos reservatórios conforme IN 04/2007 e Portaria de Potabilidade.",
     periodicidades: [
       {
@@ -506,7 +506,7 @@ export const POPS_CONFIG: PopConfig[] = [
   },
   {
     codigo: "POP-09",
-    nome: "Programa de Rastreabilidade e Recolhimento de Produtos (Recall)",
+    nome: "Programa de Rastreabilidade e Recolhimento (Recall)",
     descricao: "Procedimentos de rastreabilidade de produtos, controle de não conformidades e programa de recolhimento (recall) conforme IN 04/2007.",
     periodicidades: [
       {
@@ -601,6 +601,69 @@ export const POPS_CONFIG: PopConfig[] = [
       "ANEXO 4: Produtos Recolhidos (Recall) – PL POP 9.4",
       "ANEXO 5: Controle de RNC – PL POP 9.5",
       "ANEXO 6: Registro de Reclamações de Clientes – PL POP 9.6",
+    ],
+  },
+  {
+    codigo: "POP-10",
+    nome: "PAC — Programa de Autocontrole",
+    descricao: "Programa de Autocontrole que integra todos os POPs e estabelece os procedimentos de verificação, auditoria interna e melhoria contínua do sistema de BPF.",
+    periodicidades: [
+      {
+        key: "checklist_autocontrole",
+        label: "PL POP 10.1 — Checklist de Autocontrole (Verificação Geral)",
+        periodos: meses(),
+        areas: [
+          { area: "POP 01 — Qualificação de Fornecedores" },
+          { area: "POP 02 — Limpeza de Instalações" },
+          { area: "POP 03 — Higiene e Saúde Pessoal" },
+          { area: "POP 04 — Potabilidade da Água" },
+          { area: "POP 05 — Prevenção Contaminação Cruzada" },
+          { area: "POP 06 — Manutenção e Calibração" },
+          { area: "POP 07 — Controle de Pragas" },
+          { area: "POP 08 — Controle de Resíduos" },
+          { area: "POP 09 — Rastreabilidade e Recall" },
+          { area: "Manual BPF atualizado" },
+          { area: "Treinamentos em dia" },
+          { area: "Registros completos e assinados" },
+        ],
+      },
+      {
+        key: "auditoria_interna",
+        label: "PL POP 10.2 — Auditoria Interna",
+        periodos: ["Ocorrência"],
+        areas: [
+          { area: "Data da Auditoria" },
+          { area: "Auditor Interno" },
+          { area: "Escopo (POPs auditados)" },
+          { area: "Não Conformidades Encontradas" },
+          { area: "Ações Corretivas Definidas" },
+          { area: "Prazo para Correção" },
+          { area: "Responsável" },
+          { area: "Status (Aberta/Fechada)" },
+          { area: "Verificação de Eficácia" },
+          { area: "Observações" },
+        ],
+      },
+      {
+        key: "indicadores_desempenho",
+        label: "PL POP 10.3 — Indicadores de Desempenho do PAC",
+        periodos: meses(),
+        areas: [
+          { area: "% Conformidade de POPs" },
+          { area: "Nº de Não Conformidades abertas" },
+          { area: "Nº de Não Conformidades fechadas" },
+          { area: "Nº de Reclamações de Clientes" },
+          { area: "Treinamentos realizados vs. programados" },
+          { area: "Manutenções realizadas vs. programadas" },
+          { area: "Calibrações em dia" },
+          { area: "Resultado de auditorias internas" },
+        ],
+      },
+    ],
+    anexos: [
+      "ANEXO 1: Checklist de Autocontrole – PL POP 10.1",
+      "ANEXO 2: Auditoria Interna – PL POP 10.2",
+      "ANEXO 3: Indicadores de Desempenho – PL POP 10.3",
     ],
   },
 ];
