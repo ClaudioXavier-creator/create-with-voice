@@ -55,15 +55,17 @@ export const POPS_CONFIG: PopConfig[] = [
       },
       {
         key: "controle_entrada_mp",
-        label: "PL POP 1.3 — Controle de Entrada de MP",
+        label: "PL POP 1.3 — Controle de Entrada de Matéria-Prima",
         periodos: diasDoMes(),
         areas: [
+          { area: "Data" },
           { area: "Matéria-prima" },
           { area: "Fornecedor" },
-          { area: "Lote interno" },
-          { area: "Data de fabricação" },
-          { area: "Validade" },
-          { area: "Quantidade recebida" },
+          { area: "Lote" },
+          { area: "Nota Fiscal" },
+          { area: "C/NC" },
+          { area: "Responsável" },
+          { area: "Função" },
         ],
       },
       {
