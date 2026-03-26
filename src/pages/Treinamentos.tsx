@@ -13,8 +13,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { GraduationCap, Plus, AlertCircle, Trash2, HeartPulse, ShieldCheck, ClipboardCheck, Download } from "lucide-react";
+import { GraduationCap, Plus, AlertCircle, Trash2, HeartPulse, ShieldCheck, ClipboardCheck, Download, FileText } from "lucide-react";
 import PageHeader from "@/components/PageHeader";
+import * as XLSX from "xlsx";
 
 // ── Triagem diária POP-02 items ──
 const TRIAGEM_ITENS = [
@@ -237,6 +238,7 @@ export default function Treinamentos() {
           <TabsTrigger value="eficacia"><ShieldCheck className="w-4 h-4 mr-1" />Avaliação Eficácia</TabsTrigger>
           <TabsTrigger value="aso"><HeartPulse className="w-4 h-4 mr-1" />ASO / Saúde</TabsTrigger>
           <TabsTrigger value="triagem"><ClipboardCheck className="w-4 h-4 mr-1" />Triagem Diária</TabsTrigger>
+          <TabsTrigger value="modelos"><FileText className="w-4 h-4 mr-1" />Modelos</TabsTrigger>
         </TabsList>
 
         {/* ── TREINAMENTOS ── */}
@@ -568,6 +570,123 @@ export default function Treinamentos() {
               </Table>
             </Card>
           )}
+        </TabsContent>
+
+        {/* ── MODELOS / TEMPLATES ── */}
+        <TabsContent value="modelos" className="space-y-4">
+          <Card className="border-primary/20 bg-primary/5">
+            <CardContent className="pt-4">
+              <div className="flex items-start gap-3">
+                <FileText className="w-6 h-6 text-primary mt-0.5" />
+                <div>
+                  <h4 className="font-display font-semibold text-sm">Modelos de Documentos — Educação Sanitária BPF</h4>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Templates prontos para impressão conforme IN 04/2007 e IN 15/2009. Clique para baixar o modelo em Excel.
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {/* Cronograma de Treinamentos */}
+            <Card className="hover:shadow-md transition-shadow">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm">📅 Cronograma de Treinamentos Anual</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-xs text-muted-foreground mb-3">
+                  Programa anual de treinamentos BPF com calendário mensal (dias 1–31) para marcação das datas de capacitação.
+                </p>
+                <Button size="sm" className="w-full" onClick={() => {
+                  const wb = XLSX.utils.book_new();
+                  const mesesNomes = ["JANEIRO","FEVEREIRO","MARÇO","ABRIL","MAIO","JUNHO","JULHO","AGOSTO","SETEMBRO","OUTUBRO","NOVEMBRO","DEZEMBRO"];
+                  const header = ["MESES / TREINAMENTOS BPF", ...Array.from({length: 31}, (_, i) => String(i + 1))];
+                  const rows = [["PROGRAMA DE TREINAMENTOS — " + new Date().getFullYear()], [], ["", "DIAS", ...Array.from({length: 30}, () => "")], header];
+                  mesesNomes.forEach(m => rows.push([m, ...Array(31).fill("")]));
+                  rows.push([]);
+                  rows.push(["Observações: Os treinamentos de integração são realizados conforme Manual BPF."]);
+                  const ws = XLSX.utils.aoa_to_sheet(rows);
+                  ws["!cols"] = [{wch: 40}, ...Array(31).fill({wch: 4})];
+                  XLSX.utils.book_append_sheet(wb, ws, "Cronograma");
+                  XLSX.writeFile(wb, `Cronograma_Treinamentos_${new Date().getFullYear()}.xlsx`);
+                  toast.success("Cronograma de treinamentos gerado!");
+                }}>
+                  <Download className="w-4 h-4 mr-1" /> Baixar Template
+                </Button>
+              </CardContent>
+            </Card>
+
+            {/* Lista de Presença */}
+            <Card className="hover:shadow-md transition-shadow">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm">📝 Lista de Presença — Treinamentos</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-xs text-muted-foreground mb-3">
+                  Educação Sanitária BPF — Lista de presença com campos para data, assunto, palestrante, nome, função e assinatura.
+                </p>
+                <Button size="sm" className="w-full" onClick={() => {
+                  const wb = XLSX.utils.book_new();
+                  const rows = [
+                    ["EDUCAÇÃO SANITÁRIA BPF"],
+                    ["LISTA DE PRESENÇA EM TREINAMENTOS MINISTRADOS"],
+                    [],
+                    ["Data:", "", "", "Duração:"],
+                    ["Assunto:"],
+                    ["Material utilizado:"],
+                    ["Palestrante:"],
+                    [],
+                    ["NOME", "FUNÇÃO", "ASSINATURA"],
+                    ...Array(20).fill(["", "", ""]),
+                    [],
+                    ["Palestrante: ___________________________"],
+                    ["Responsável Técnico: ___________________________"],
+                    ["Responsável Empresa: ___________________________"],
+                  ];
+                  const ws = XLSX.utils.aoa_to_sheet(rows);
+                  ws["!cols"] = [{wch: 35}, {wch: 20}, {wch: 30}];
+                  XLSX.utils.book_append_sheet(wb, ws, "Lista de Presença");
+                  XLSX.writeFile(wb, "Lista_Presenca_Treinamento.xlsx");
+                  toast.success("Lista de presença gerada!");
+                }}>
+                  <Download className="w-4 h-4 mr-1" /> Baixar Template
+                </Button>
+              </CardContent>
+            </Card>
+
+            {/* Lista de Balanças */}
+            <Card className="hover:shadow-md transition-shadow">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm">⚖️ Lista de Balanças — POP 06</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-xs text-muted-foreground mb-3">
+                  Relação de balanças e instrumentos de pesagem com marca, capacidade e identificação para controle de calibração.
+                </p>
+                <Button size="sm" className="w-full" onClick={() => {
+                  const wb = XLSX.utils.book_new();
+                  const rows = [
+                    ["LISTA DE BALANÇAS — POP 06"],
+                    [],
+                    ["Nº", "DESCRIÇÃO DO EQUIPAMENTO", "MARCA", "CAPACIDADE", "IDENTIFICAÇÃO", "LOCALIZAÇÃO"],
+                    ["1", "Balança com célula digital para MP em sacos", "Ramuza", "300 kg", "BALANÇA 01", "Pesagem MP"],
+                    ["2", "Balança caçamba com célula digital para MP a granel, rosca de descarga motor 2 CV", "Digitron", "2.000 kg", "BALANÇA 02", "Pesagem MP"],
+                    ["3", "Balança com célula digital para MP em sacos", "Ramuza", "300 kg", "BALANÇA 03", "Ensaque"],
+                    ["4", "Balança com célula digital para MP em sacos", "Ramuza", "300 kg", "BALANÇA 04", "Ensaque"],
+                    ...Array(10).fill(["", "", "", "", "", ""]),
+                  ];
+                  const ws = XLSX.utils.aoa_to_sheet(rows);
+                  ws["!cols"] = [{wch: 5}, {wch: 55}, {wch: 15}, {wch: 15}, {wch: 18}, {wch: 18}];
+                  XLSX.utils.book_append_sheet(wb, ws, "Balanças");
+                  XLSX.writeFile(wb, "Lista_Balancas_POP06.xlsx");
+                  toast.success("Lista de balanças gerada!");
+                }}>
+                  <Download className="w-4 h-4 mr-1" /> Baixar Template
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
         </TabsContent>
       </Tabs>
     </div>
