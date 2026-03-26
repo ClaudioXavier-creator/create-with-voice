@@ -76,12 +76,12 @@ export default function Treinamentos() {
   });
 
   const { data: checklist_asos = [] } = useQuery({
-    queryKey: ["checklist_asos"],
+    queryKey: ["saude_manipuladores"],
     queryFn: async () => {
-      const { data, error } = await supabase.from("checklist_items").select("*")
-        .eq("area", "ASO - Saúde Ocupacional").order("auditoria_data", { ascending: false });
+      const { data, error } = await supabase.from("saude_manipuladores" as any).select("*")
+        .order("data_exame", { ascending: false });
       if (error) throw error;
-      return data;
+      return data as any[];
     },
   });
 
@@ -116,25 +116,43 @@ export default function Treinamentos() {
 
   const addAso = useMutation({
     mutationFn: async () => {
-      const obs = `Tipo: ${asoForm.tipo_exame} | Médico: ${asoForm.medico} (CRM: ${asoForm.crm}) | ${asoForm.apto ? "APTO" : "INAPTO"}${asoForm.restricoes ? ` | Restrições: ${asoForm.restricoes}` : ""}`;
-      const { error } = await supabase.from("checklist_items").insert({
+      const { error } = await supabase.from("saude_manipuladores" as any).insert({
         user_id: user!.id,
-        area: "ASO - Saúde Ocupacional",
-        item: `ASO ${asoForm.funcionario} — ${asoForm.tipo_exame}`,
-        conforme: asoForm.apto,
-        auditoria_data: asoForm.data,
-        observacao: obs,
+        funcionario: asoForm.funcionario,
+        tipo_exame: asoForm.tipo_exame,
+        data_exame: asoForm.data,
+        data_validade: asoForm.validade || null,
+        medico: asoForm.medico,
+        crm: asoForm.crm,
+        apto: asoForm.apto,
+        restricoes: asoForm.restricoes,
       });
       if (error) throw error;
     },
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["checklist_asos"] });
+      qc.invalidateQueries({ queryKey: ["saude_manipuladores"] });
       toast.success("ASO registrado");
       setOpenAso(false);
       setAsoForm({ funcionario: "", data: new Date().toISOString().split("T")[0], validade: "", tipo_exame: "periodico", medico: "", crm: "", apto: true, restricoes: "" });
     },
     onError: () => toast.error("Erro ao salvar ASO"),
   });
+
+  const delAso = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from("saude_manipuladores" as any).delete().eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ["saude_manipuladores"] }); toast.success("ASO removido"); },
+  });
+
+  const isAsoVencido = (val: string | null) => val ? new Date(val) < new Date() : false;
+  const isAsoProximo = (val: string | null) => {
+    if (!val) return false;
+    const d = new Date(val);
+    const diff = (d.getTime() - Date.now()) / (1000 * 60 * 60 * 24);
+    return diff > 0 && diff <= 60;
+  };
 
   const addTriagem = useMutation({
     mutationFn: async () => {
@@ -202,29 +220,35 @@ export default function Treinamentos() {
   };
 
   const vencidos = treinamentos.filter((t: any) => isVencido(t.validade)).length;
-  const asosInaptos = checklist_asos.filter((a: any) => a.conforme === false).length;
+  const asosVencidos = checklist_asos.filter((a: any) => isAsoVencido(a.data_validade)).length;
+  const asosProximos = checklist_asos.filter((a: any) => isAsoProximo(a.data_validade)).length;
+  const asosInaptos = checklist_asos.filter((a: any) => a.apto === false).length;
 
   return (
     <div className="space-y-6">
       <PageHeader icon={GraduationCap} title="Treinamentos, Saúde e Higiene Pessoal" description="POP-02 (IN 04/2007) — Capacitação, ASOs e triagem diária de higiene" />
 
       {/* Summary */}
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
         <Card><CardContent className="pt-4 text-center">
           <p className="text-2xl font-bold font-display">{treinamentos.length}</p>
           <p className="text-xs text-muted-foreground">Treinamentos</p>
         </CardContent></Card>
         <Card className={vencidos > 0 ? "border-destructive/30" : ""}><CardContent className="pt-4 text-center">
           <p className={`text-2xl font-bold font-display ${vencidos > 0 ? "text-destructive" : ""}`}>{vencidos}</p>
-          <p className="text-xs text-muted-foreground">Vencidos</p>
+          <p className="text-xs text-muted-foreground">Treinos Vencidos</p>
         </CardContent></Card>
         <Card><CardContent className="pt-4 text-center">
           <p className="text-2xl font-bold font-display">{checklist_asos.length}</p>
           <p className="text-xs text-muted-foreground">ASOs</p>
         </CardContent></Card>
-        <Card className={asosInaptos > 0 ? "border-destructive/30" : ""}><CardContent className="pt-4 text-center">
-          <p className={`text-2xl font-bold font-display ${asosInaptos > 0 ? "text-destructive" : ""}`}>{asosInaptos}</p>
-          <p className="text-xs text-muted-foreground">Inaptos</p>
+        <Card className={asosVencidos > 0 ? "border-destructive/30" : ""}><CardContent className="pt-4 text-center">
+          <p className={`text-2xl font-bold font-display ${asosVencidos > 0 ? "text-destructive" : ""}`}>{asosVencidos}</p>
+          <p className="text-xs text-muted-foreground">ASOs Vencidos</p>
+        </CardContent></Card>
+        <Card className={asosProximos > 0 ? "border-yellow-500/30" : ""}><CardContent className="pt-4 text-center">
+          <p className={`text-2xl font-bold font-display ${asosProximos > 0 ? "text-yellow-600" : ""}`}>{asosProximos}</p>
+          <p className="text-xs text-muted-foreground">ASOs Próx. Vencer</p>
         </CardContent></Card>
         <Card><CardContent className="pt-4 text-center">
           <p className="text-2xl font-bold font-display text-primary">{triagens.length}</p>
@@ -436,15 +460,39 @@ export default function Treinamentos() {
               <div className="flex items-start gap-3">
                 <HeartPulse className="w-6 h-6 text-primary mt-0.5" />
                 <div>
-                  <h4 className="font-display font-semibold text-sm">Saúde Ocupacional — POP-02 / PCMSO</h4>
+                  <h4 className="font-display font-semibold text-sm">Saúde Ocupacional — POP-03 / PCMSO</h4>
                   <p className="text-xs text-muted-foreground mt-1">
                     Controle de ASOs conforme NR-7 (PCMSO) e exigências da IN 04/2007. Todos os colaboradores
-                    que manipulam produtos devem possuir ASO válido.
+                    que manipulam produtos devem possuir ASO válido. <strong>ASOs com validade de 1 ano são alertados automaticamente.</strong>
                   </p>
                 </div>
               </div>
             </CardContent>
           </Card>
+
+          {/* Alerts for expiring ASOs */}
+          {(asosVencidos > 0 || asosProximos > 0) && (
+            <Card className="border-destructive/30 bg-destructive/5 mb-4">
+              <CardContent className="pt-4">
+                <div className="flex items-start gap-3">
+                  <AlertCircle className="w-6 h-6 text-destructive mt-0.5" />
+                  <div>
+                    <h4 className="font-display font-semibold text-sm text-destructive">⚠️ Alertas de ASO</h4>
+                    {asosVencidos > 0 && <p className="text-xs text-destructive mt-1">🔴 {asosVencidos} ASO(s) VENCIDO(s) — Colaborador(es) não pode(m) atuar até renovação!</p>}
+                    {asosProximos > 0 && <p className="text-xs text-yellow-700 dark:text-yellow-300 mt-1">🟡 {asosProximos} ASO(s) vencendo em até 60 dias — Agende renovação!</p>}
+                    <div className="mt-2 space-y-1">
+                      {checklist_asos.filter((a: any) => isAsoVencido(a.data_validade)).map((a: any) => (
+                        <div key={a.id} className="text-xs text-destructive">❌ {a.funcionario} — venceu em {a.data_validade}</div>
+                      ))}
+                      {checklist_asos.filter((a: any) => isAsoProximo(a.data_validade)).map((a: any) => (
+                        <div key={a.id} className="text-xs text-yellow-700 dark:text-yellow-300">⚠️ {a.funcionario} — vence em {a.data_validade}</div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
 
           {checklist_asos.length === 0 ? (
             <Card><CardContent className="py-12 text-center text-muted-foreground"><HeartPulse className="w-12 h-12 mx-auto mb-3 opacity-40" /><p>Nenhum ASO registrado</p></CardContent></Card>
@@ -453,19 +501,35 @@ export default function Treinamentos() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Data</TableHead>
-                    <TableHead>Funcionário / Tipo</TableHead>
+                    <TableHead>Funcionário</TableHead>
+                    <TableHead>Tipo</TableHead>
+                    <TableHead>Data Exame</TableHead>
+                    <TableHead>Validade</TableHead>
+                    <TableHead>Médico/CRM</TableHead>
                     <TableHead>Resultado</TableHead>
-                    <TableHead>Detalhes</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead></TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {checklist_asos.map((a: any) => (
-                    <TableRow key={a.id}>
-                      <TableCell className="whitespace-nowrap">{a.auditoria_data}</TableCell>
-                      <TableCell className="font-medium">{a.item}</TableCell>
-                      <TableCell>{a.conforme ? <Badge className="bg-primary/20 text-primary">Apto</Badge> : <Badge className="bg-destructive text-destructive-foreground">Inapto</Badge>}</TableCell>
-                      <TableCell className="max-w-[300px] text-xs truncate">{a.observacao}</TableCell>
+                    <TableRow key={a.id} className={isAsoVencido(a.data_validade) ? "bg-destructive/5" : isAsoProximo(a.data_validade) ? "bg-yellow-500/5" : ""}>
+                      <TableCell className="font-medium">{a.funcionario}</TableCell>
+                      <TableCell className="text-xs capitalize">{a.tipo_exame?.replace(/_/g, " ")}</TableCell>
+                      <TableCell className="whitespace-nowrap text-xs">{a.data_exame}</TableCell>
+                      <TableCell className="whitespace-nowrap text-xs">{a.data_validade || "—"}</TableCell>
+                      <TableCell className="text-xs">{a.medico ? `${a.medico} (${a.crm})` : "—"}</TableCell>
+                      <TableCell>{a.apto ? <Badge className="bg-primary/20 text-primary">Apto</Badge> : <Badge className="bg-destructive text-destructive-foreground">Inapto</Badge>}</TableCell>
+                      <TableCell>
+                        {isAsoVencido(a.data_validade) ? (
+                          <Badge className="bg-destructive text-destructive-foreground gap-1"><AlertCircle className="w-3 h-3" />Vencido</Badge>
+                        ) : isAsoProximo(a.data_validade) ? (
+                          <Badge className="bg-yellow-500/20 text-yellow-700">Próximo</Badge>
+                        ) : (
+                          <Badge className="bg-primary/20 text-primary">Válido</Badge>
+                        )}
+                      </TableCell>
+                      <TableCell><Button variant="ghost" size="icon" onClick={() => delAso.mutate(a.id)}><Trash2 className="w-4 h-4 text-destructive" /></Button></TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
