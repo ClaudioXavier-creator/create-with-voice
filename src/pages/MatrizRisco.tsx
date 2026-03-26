@@ -249,6 +249,18 @@ export default function MatrizRisco() {
           <TabsTrigger value="risco">Matriz de Risco</TabsTrigger>
         </TabsList>
 
+        <TabsContent value="questionario">
+          <QuestionarioRisco onSave={(perguntas) => {
+            // Save to localStorage for persistence
+            localStorage.setItem("questionario_risco", JSON.stringify(perguntas));
+          }} savedData={(() => {
+            try {
+              const saved = localStorage.getItem("questionario_risco");
+              return saved ? JSON.parse(saved) : undefined;
+            } catch { return undefined; }
+          })()} />
+        </TabsContent>
+
         <TabsContent value="sensibilidade">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between flex-wrap gap-2">
