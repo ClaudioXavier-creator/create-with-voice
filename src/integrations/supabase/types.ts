@@ -1003,6 +1003,36 @@ export type Database = {
         }
         Relationships: []
       }
+      modelos_acesso: {
+        Row: {
+          ativa: boolean | null
+          created_at: string | null
+          created_by: string | null
+          descricao: string | null
+          id: string
+          senha_hash: string
+          updated_at: string | null
+        }
+        Insert: {
+          ativa?: boolean | null
+          created_at?: string | null
+          created_by?: string | null
+          descricao?: string | null
+          id?: string
+          senha_hash: string
+          updated_at?: string | null
+        }
+        Update: {
+          ativa?: boolean | null
+          created_at?: string | null
+          created_by?: string | null
+          descricao?: string | null
+          id?: string
+          senha_hash?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       nao_conformidades: {
         Row: {
           acao_corretiva: string | null
