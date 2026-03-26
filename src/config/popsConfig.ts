@@ -85,14 +85,13 @@ export const POPS_CONFIG: PopConfig[] = [
       },
       {
         key: "umidade_silos",
-        label: "PL POP 1.5 — Medição de Umidade dos Silos",
-        periodos: diasDoMes(),
+        label: "PL POP 1.5 — Medição de Umidade de Grãos nos Silos",
+        periodos: semanas(),
         areas: [
-          { area: "Silo 1" },
-          { area: "Silo 2" },
-          { area: "Silo 3" },
-          { area: "Silo 4" },
-          { area: "Silo 5" },
+          { area: "Local (Silo)" },
+          { area: "Produto" },
+          { area: "% Umidade" },
+          { area: "C/NC" },
         ],
       },
       {
