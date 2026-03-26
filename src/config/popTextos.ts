@@ -80,7 +80,7 @@ export const POP_TEXTOS: PopTexto[] = [
   },
   {
     codigo: "POP-03",
-    nome: "Higiene e Saúde do Pessoal",
+    nome: "Higiene e Saúde Pessoal",
     objetivo: "Estabelecer os procedimentos de higiene pessoal e controle de saúde dos colaboradores, garantindo a manipulação segura dos alimentos para animais.",
     campoAplicacao: "Aplica-se a todos os funcionários que participam direta ou indiretamente do processo produtivo, incluindo visitantes.",
     documentosReferencia: [
