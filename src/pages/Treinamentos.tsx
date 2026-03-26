@@ -238,6 +238,7 @@ export default function Treinamentos() {
           <TabsTrigger value="eficacia"><ShieldCheck className="w-4 h-4 mr-1" />Avaliação Eficácia</TabsTrigger>
           <TabsTrigger value="aso"><HeartPulse className="w-4 h-4 mr-1" />ASO / Saúde</TabsTrigger>
           <TabsTrigger value="triagem"><ClipboardCheck className="w-4 h-4 mr-1" />Triagem Diária</TabsTrigger>
+          <TabsTrigger value="modelos"><FileText className="w-4 h-4 mr-1" />Modelos</TabsTrigger>
         </TabsList>
 
         {/* ── TREINAMENTOS ── */}
