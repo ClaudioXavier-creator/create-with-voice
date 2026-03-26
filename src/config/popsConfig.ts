@@ -70,15 +70,17 @@ export const POPS_CONFIG: PopConfig[] = [
       },
       {
         key: "controle_entrada_embalagens",
-        label: "PL POP 1.4 — Controle de Entrada de Embalagens",
+        label: "PL POP 1.4 — Entrada de Embalagens",
         periodos: diasDoMes(),
         areas: [
+          { area: "Data" },
           { area: "Tipo de embalagem" },
           { area: "Fornecedor" },
-          { area: "Lote / NF" },
+          { area: "Nota Fiscal" },
+          { area: "Quantidade" },
           { area: "Inspeção visual" },
-          { area: "Quantidade recebida" },
-          { area: "Aprovado / Rejeitado" },
+          { area: "C/NC" },
+          { area: "Responsável" },
         ],
       },
       {
