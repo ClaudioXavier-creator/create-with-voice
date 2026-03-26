@@ -104,3 +104,71 @@
     font-family: 'Sora', sans-serif;
   }
 }
+
+/* ===== Print Styles ===== */
+@media print {
+  @page {
+    size: A4;
+    margin: 12mm;
+  }
+
+  body {
+    background: white !important;
+    color: black !important;
+    font-size: 10pt !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* Hide non-printable UI elements */
+  nav, aside, header, footer,
+  button, .no-print,
+  [role="navigation"],
+  [data-sidebar],
+  .sidebar,
+  input[type="file"] {
+    display: none !important;
+  }
+
+  /* Force tables to have visible borders */
+  table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    page-break-inside: auto;
+  }
+
+  tr {
+    page-break-inside: avoid;
+    page-break-after: auto;
+  }
+
+  th, td {
+    border: 1px solid #333 !important;
+    padding: 3px 6px !important;
+    font-size: 9pt !important;
+    color: black !important;
+    background: white !important;
+  }
+
+  th {
+    background: #e8e8e8 !important;
+    font-weight: bold !important;
+  }
+
+  /* Cards should have no shadow in print */
+  .card, [class*="card"] {
+    box-shadow: none !important;
+    border: none !important;
+  }
+
+  /* Ensure text is visible */
+  * {
+    color: black !important;
+    text-shadow: none !important;
+  }
+
+  /* Avoid page breaks inside important blocks */
+  .print-section {
+    page-break-inside: avoid;
+  }
+}
