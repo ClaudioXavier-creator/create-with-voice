@@ -969,6 +969,74 @@ export default function PCP() {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Dialog: Teste de Carry-over */}
+      <Dialog open={carryoverOpen} onOpenChange={setCarryoverOpen}>
+        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+          <DialogHeader><DialogTitle>Registrar Teste de Carry-over — IN 15/2009</DialogTitle></DialogHeader>
+          <div className="space-y-3">
+            <div className="p-3 rounded-lg border border-orange-500/20 bg-orange-50 dark:bg-orange-900/10">
+              <p className="text-xs font-semibold flex items-center gap-1"><Shield className="w-4 h-4 text-orange-600" /> Limites de Arraste (IN 15/2009)</p>
+              <div className="grid grid-cols-3 gap-2 mt-2 text-[10px]">
+                <div className="text-center"><span className="font-bold text-orange-700">Ionóforos</span><br/>{"<"} 1% dose terapêutica</div>
+                <div className="text-center"><span className="font-bold text-destructive">Medicados</span><br/>{"<"} 3% dose terapêutica</div>
+                <div className="text-center"><span className="font-bold text-yellow-700">Micotoxinas</span><br/>Aflatoxina ≤ 20 ppb</div>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div><Label>Data</Label><Input type="date" value={coData} onChange={e => setCoData(e.target.value)} /></div>
+              <div><Label>Responsável *</Label><Input value={coResponsavel} onChange={e => setCoResponsavel(e.target.value)} placeholder="Nome" /></div>
+            </div>
+            <div>
+              <Label>Método de Análise</Label>
+              <Select value={coMetodo} onValueChange={setCoMetodo}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="visual">Inspeção Visual</SelectItem>
+                  <SelectItem value="swab">Swab de Superfície</SelectItem>
+                  <SelectItem value="flushing_analise">Análise do Material de Flushing</SelectItem>
+                  <SelectItem value="laboratorial">Análise Laboratorial (HPLC/LC-MS)</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div><Label>Produto Anterior</Label><Input value={coProdAnterior} onChange={e => setCoProdAnterior(e.target.value)} placeholder="Produto da OP anterior" /></div>
+              <div><Label>Produto Seguinte</Label><Input value={coProdSeguinte} onChange={e => setCoProdSeguinte(e.target.value)} placeholder="Produto desta OP" /></div>
+            </div>
+            <div className="grid grid-cols-3 gap-3">
+              <div><Label>Substância Monitorada</Label><Input value={coSubstancia} onChange={e => setCoSubstancia(e.target.value)} placeholder="Ex: Monensina" /></div>
+              <div><Label>Limite Aceitável</Label><Input value={coLimite} onChange={e => setCoLimite(e.target.value)} placeholder="Ex: 1.0" /></div>
+              <div><Label>Resultado</Label><Input value={coResultado} onChange={e => setCoResultado(e.target.value)} placeholder="Ex: 0.3" /></div>
+            </div>
+            <div>
+              <Label>Unidade</Label>
+              <Select value={coUnidade} onValueChange={setCoUnidade}>
+                <SelectTrigger className="w-32"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="ppm">ppm</SelectItem>
+                  <SelectItem value="ppb">ppb</SelectItem>
+                  <SelectItem value="mg/kg">mg/kg</SelectItem>
+                  <SelectItem value="%">%</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="flex items-center gap-3 p-3 rounded-lg border bg-muted/30">
+              <input type="checkbox" checked={coConforme} onChange={e => setCoConforme(e.target.checked)} className="h-4 w-4" />
+              <div>
+                <Label className="text-sm font-semibold">Resultado Conforme</Label>
+                <p className="text-[10px] text-muted-foreground">Resíduo dentro dos limites aceitáveis da IN 15/2009</p>
+              </div>
+              {coConforme ? <CheckCircle2 className="w-5 h-5 text-green-600 ml-auto" /> : <AlertTriangle className="w-5 h-5 text-destructive ml-auto" />}
+            </div>
+            <div><Label>Observações</Label><Textarea value={coObs} onChange={e => setCoObs(e.target.value)} placeholder="Detalhes do teste, volumes de flushing utilizados, etc." /></div>
+            <Button onClick={handleAddCarryover} className="w-full" disabled={saving || !coResponsavel}>
+              {saving && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+              Registrar Teste de Carry-over
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }
