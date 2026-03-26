@@ -244,8 +244,9 @@ export default function MatrizRisco() {
 
       <Tabs value={tab} onValueChange={setTab}>
         <TabsList>
+          <TabsTrigger value="questionario">Questionário de Risco</TabsTrigger>
           <TabsTrigger value="sensibilidade">Matriz de Sensibilidade</TabsTrigger>
-          <TabsTrigger value="risco">Matriz de Risco de Contaminação</TabsTrigger>
+          <TabsTrigger value="risco">Matriz de Risco</TabsTrigger>
         </TabsList>
 
         <TabsContent value="sensibilidade">
