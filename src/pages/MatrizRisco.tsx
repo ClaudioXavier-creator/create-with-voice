@@ -8,8 +8,9 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Plus, Trash2, Save, AlertTriangle } from "lucide-react";
+import { Plus, Trash2, Save, AlertTriangle, ClipboardCheck } from "lucide-react";
 import PageHeader from "@/components/PageHeader";
+import QuestionarioRisco from "@/components/risco/QuestionarioRisco";
 
 const DEFAULT_PRODUCTS = [
   "EQUINOS",
@@ -70,7 +71,7 @@ function riskColor(nivel: string) {
 
 export default function MatrizRisco() {
   const { user } = useAuth();
-  const [tab, setTab] = useState("sensibilidade");
+  const [tab, setTab] = useState("questionario");
 
   // Sensitivity state
   const [products, setProducts] = useState<string[]>(DEFAULT_PRODUCTS);
@@ -243,9 +244,22 @@ export default function MatrizRisco() {
 
       <Tabs value={tab} onValueChange={setTab}>
         <TabsList>
+          <TabsTrigger value="questionario">Questionário de Risco</TabsTrigger>
           <TabsTrigger value="sensibilidade">Matriz de Sensibilidade</TabsTrigger>
-          <TabsTrigger value="risco">Matriz de Risco de Contaminação</TabsTrigger>
+          <TabsTrigger value="risco">Matriz de Risco</TabsTrigger>
         </TabsList>
+
+        <TabsContent value="questionario">
+          <QuestionarioRisco onSave={(perguntas) => {
+            // Save to localStorage for persistence
+            localStorage.setItem("questionario_risco", JSON.stringify(perguntas));
+          }} savedData={(() => {
+            try {
+              const saved = localStorage.getItem("questionario_risco");
+              return saved ? JSON.parse(saved) : undefined;
+            } catch { return undefined; }
+          })()} />
+        </TabsContent>
 
         <TabsContent value="sensibilidade">
           <Card>
