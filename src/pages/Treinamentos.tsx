@@ -229,22 +229,26 @@ export default function Treinamentos() {
       <PageHeader icon={GraduationCap} title="Treinamentos, Saúde e Higiene Pessoal" description="POP-02 (IN 04/2007) — Capacitação, ASOs e triagem diária de higiene" />
 
       {/* Summary */}
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
         <Card><CardContent className="pt-4 text-center">
           <p className="text-2xl font-bold font-display">{treinamentos.length}</p>
           <p className="text-xs text-muted-foreground">Treinamentos</p>
         </CardContent></Card>
         <Card className={vencidos > 0 ? "border-destructive/30" : ""}><CardContent className="pt-4 text-center">
           <p className={`text-2xl font-bold font-display ${vencidos > 0 ? "text-destructive" : ""}`}>{vencidos}</p>
-          <p className="text-xs text-muted-foreground">Vencidos</p>
+          <p className="text-xs text-muted-foreground">Treinos Vencidos</p>
         </CardContent></Card>
         <Card><CardContent className="pt-4 text-center">
           <p className="text-2xl font-bold font-display">{checklist_asos.length}</p>
           <p className="text-xs text-muted-foreground">ASOs</p>
         </CardContent></Card>
-        <Card className={asosInaptos > 0 ? "border-destructive/30" : ""}><CardContent className="pt-4 text-center">
-          <p className={`text-2xl font-bold font-display ${asosInaptos > 0 ? "text-destructive" : ""}`}>{asosInaptos}</p>
-          <p className="text-xs text-muted-foreground">Inaptos</p>
+        <Card className={asosVencidos > 0 ? "border-destructive/30" : ""}><CardContent className="pt-4 text-center">
+          <p className={`text-2xl font-bold font-display ${asosVencidos > 0 ? "text-destructive" : ""}`}>{asosVencidos}</p>
+          <p className="text-xs text-muted-foreground">ASOs Vencidos</p>
+        </CardContent></Card>
+        <Card className={asosProximos > 0 ? "border-yellow-500/30" : ""}><CardContent className="pt-4 text-center">
+          <p className={`text-2xl font-bold font-display ${asosProximos > 0 ? "text-yellow-600" : ""}`}>{asosProximos}</p>
+          <p className="text-xs text-muted-foreground">ASOs Próx. Vencer</p>
         </CardContent></Card>
         <Card><CardContent className="pt-4 text-center">
           <p className="text-2xl font-bold font-display text-primary">{triagens.length}</p>
