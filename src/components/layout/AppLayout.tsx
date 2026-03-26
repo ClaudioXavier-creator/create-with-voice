@@ -85,6 +85,7 @@ const NAV_ENTRIES: NavEntry[] = [
   },
   { path: "/manual", label: "Manual", icon: BookOpen },
   { path: "/guia-pops", label: "Guia POPs", icon: ClipboardList },
+  { path: "/modelos", label: "📁 Modelos", icon: FileText },
 ];
 
 function SidebarNav({ currentPath, onNavigate }: { currentPath: string; onNavigate?: () => void }) {

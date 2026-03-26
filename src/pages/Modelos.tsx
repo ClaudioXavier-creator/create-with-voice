@@ -148,8 +148,8 @@ export default function Modelos() {
       />
 
       <div className="flex items-center gap-2 flex-wrap">
-        <Unlock className="w-5 h-5 text-green-500" />
-        <span className="text-sm font-medium text-green-600">Acesso ativo</span>
+        <Unlock className="w-5 h-5 text-primary" />
+        <span className="text-sm font-medium text-primary">Acesso ativo</span>
         <span className="text-muted-foreground mx-2">|</span>
         {categorias.map(cat => (
           <Button
