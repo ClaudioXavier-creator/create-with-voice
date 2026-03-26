@@ -14,7 +14,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Switch } from "@/components/ui/switch";
-import { Plus, Droplets, CheckCircle2, Clock, Trash2, Beaker, FileText, ClipboardList, Download, ShieldCheck } from "lucide-react";
+import { Plus, Droplets, CheckCircle2, Clock, Trash2, Beaker, FileText, ClipboardList, Download, ShieldCheck, Layers, FlaskConical } from "lucide-react";
 import PageHeader from "@/components/PageHeader";
 
 const AREAS = ["Recepção de MP", "Mistura", "Ensaque", "Expedição", "Almoxarifado", "Laboratório", "Banheiros", "Refeitório", "Área Externa",
@@ -36,7 +36,6 @@ const PONTOS_AGUA = [
   "Ponto 4 — Lavagem de equipamentos",
 ];
 
-// Pre-operational cleaning checklist items (POP-02/03 IN 04/2007)
 const CHECKLIST_PRE_OP: { area: string; itens: string[] }[] = [
   { area: "Pisos e Ralos", itens: ["Piso limpo e seco", "Ralos desobstruídos", "Ausência de acúmulo de resíduos"] },
   { area: "Paredes e Tetos", itens: ["Sem manchas ou mofos", "Pinturas íntegras", "Sem teias de aranha"] },
@@ -47,19 +46,111 @@ const CHECKLIST_PRE_OP: { area: string; itens: string[] }[] = [
   { area: "Instalações de Apoio", itens: ["Banheiros limpos e abastecidos", "Lavatórios com sabonete e papel", "Lixeiras com tampa e identificadas"] },
 ];
 
+// ── CHECKLIST LIBERAÇÃO DE LINHA (POP-02 / IN 04/2007 e IN 15/2009) ──
+const CHECKLIST_LIBERACAO_LINHA: { area: string; itens: string[] }[] = [
+  { area: "Misturador", itens: [
+    "Interior do misturador limpo (sem resíduo do produto anterior)",
+    "Porta de descarga sem acúmulo de material",
+    "Roscas transportadoras limpas",
+    "Inspeção visual satisfatória — ausência de crostas",
+    "Registro de flushing/vassoura realizado (se aplicável)",
+  ]},
+  { area: "Silos e Moegas", itens: [
+    "Silos de dosagem vazios ou limpos",
+    "Moegas sem resíduo de lote anterior",
+    "Bocais de carga/descarga sem obstrução",
+    "Ausência de contaminação cruzada visível",
+  ]},
+  { area: "Dosadores e Balanças", itens: [
+    "Dosadores limpos (micro-ingredientes)",
+    "Balanças de pesagem zeradas e limpas",
+    "Sem resíduo de pré-misturas medicamentosas",
+    "Recipientes de pesagem higienizados",
+  ]},
+  { area: "Ensaque e Expedição", itens: [
+    "Boca de ensaque limpa",
+    "Costuradeira/seladora sem resíduo",
+    "Paletes limpos e identificados",
+    "Área de expedição sem produto do lote anterior",
+  ]},
+  { area: "Documentação", itens: [
+    "Ordem de produção anterior encerrada",
+    "Rótulos do lote anterior recolhidos",
+    "Nova ordem de produção disponível",
+    "Identificação do novo produto/lote afixada",
+  ]},
+  { area: "Medicamentos / Carry-over", itens: [
+    "Produto anterior continha medicamento? (verificar)",
+    "Flushing realizado conforme IN 15/2009",
+    "Destino do material de flushing registrado",
+    "Carry-over dentro do limite aceitável (< 1% ionóforos / < 3% medicados)",
+  ]},
+];
+
+// ── CHECKLIST MONITORAMENTO DE SUPERFÍCIES (POP-02/03 / IN 04/2007) ──
+const CHECKLIST_SUPERFICIES: { area: string; itens: string[] }[] = [
+  { area: "Superfícies de Contato Direto", itens: [
+    "Misturador — parede interna",
+    "Rosca transportadora — hélice e calha",
+    "Dosadores — funil e comportas",
+    "Peneiras e classificadores",
+    "Boca de ensaque — funil e cone",
+  ]},
+  { area: "Superfícies de Contato Indireto", itens: [
+    "Piso da área de produção",
+    "Paredes da área de produção (até 2m)",
+    "Estruturas metálicas / passarelas",
+    "Portas e cortinas de PVC",
+    "Painéis elétricos (parte externa)",
+  ]},
+  { area: "Utensílios e Ferramentas", itens: [
+    "Pás e conchas de dosagem",
+    "Bombonas e baldes de pesagem",
+    "Vassouras e rodos (área de produção)",
+    "Coletores de amostra",
+    "Facas de corte de embalagens",
+  ]},
+  { area: "Método de Verificação", itens: [
+    "Inspeção visual realizada",
+    "Swab de superfície coletado (se programado)",
+    "Teste de água de enxágue (se aplicável)",
+    "Bioluminescência ATP (se disponível)",
+    "Resultado registrado e conforme",
+  ]},
+];
+
 export default function HigieneSanitizacao() {
   const { user } = useAuth();
   const qc = useQueryClient();
   const [openCronograma, setOpenCronograma] = useState(false);
   const [openRegistro, setOpenRegistro] = useState(false);
   const [openAgua, setOpenAgua] = useState(false);
-  // Pre-op checklist state
   const [preOpChecklist, setPreOpChecklist] = useState<Record<string, boolean>>({});
   const [preOpResponsavel, setPreOpResponsavel] = useState("");
   const [preOpSetor, setPreOpSetor] = useState("");
   const [preOpData, setPreOpData] = useState(new Date().toISOString().split("T")[0]);
   const [savingPreOp, setSavingPreOp] = useState(false);
   const [selectedCronograma, setSelectedCronograma] = useState<string | null>(null);
+
+  // Liberação de Linha state
+  const [libLinhaChecklist, setLibLinhaChecklist] = useState<Record<string, boolean>>({});
+  const [libLinhaResp, setLibLinhaResp] = useState("");
+  const [libLinhaData, setLibLinhaData] = useState(new Date().toISOString().split("T")[0]);
+  const [libLinhaProdAnterior, setLibLinhaProdAnterior] = useState("");
+  const [libLinhaProdSeguinte, setLibLinhaProdSeguinte] = useState("");
+  const [libLinhaLinha, setLibLinhaLinha] = useState("");
+  const [libLinhaObs, setLibLinhaObs] = useState("");
+  const [savingLibLinha, setSavingLibLinha] = useState(false);
+
+  // Monitoramento de Superfícies state
+  const [supChecklist, setSupChecklist] = useState<Record<string, boolean>>({});
+  const [supResp, setSupResp] = useState("");
+  const [supData, setSupData] = useState(new Date().toISOString().split("T")[0]);
+  const [supSetor, setSupSetor] = useState("");
+  const [supProdQuimico, setSupProdQuimico] = useState("");
+  const [supConcentracao, setSupConcentracao] = useState("");
+  const [supObs, setSupObs] = useState("");
+  const [savingSup, setSavingSup] = useState(false);
 
   const [form, setForm] = useState({
     area: "", equipamento: "", procedimento: "", produto_utilizado: "",
@@ -108,7 +199,6 @@ export default function HigieneSanitizacao() {
     },
   });
 
-  // Laudos laboratoriais de água vinculados
   const { data: laudosAgua = [] } = useQuery({
     queryKey: ["laudos_agua"],
     queryFn: async () => {
@@ -120,7 +210,28 @@ export default function HigieneSanitizacao() {
     },
   });
 
-  // Planilha mensal state
+  // Histórico de Liberação de Linha
+  const { data: historicoLibLinha = [] } = useQuery({
+    queryKey: ["historico_lib_linha"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("execucao_pops").select("*")
+        .eq("codigo_pop", "POP-02-LIB-LINHA").order("data_execucao", { ascending: false }).limit(50);
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  // Histórico de Monitoramento de Superfícies
+  const { data: historicoSup = [] } = useQuery({
+    queryKey: ["historico_sup"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("execucao_pops").select("*")
+        .eq("codigo_pop", "POP-02-SUPERFICIE").order("data_execucao", { ascending: false }).limit(50);
+      if (error) throw error;
+      return data;
+    },
+  });
+
   const [mesAno, setMesAno] = useState(() => {
     const d = new Date();
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
@@ -225,13 +336,100 @@ export default function HigieneSanitizacao() {
 
   const freqLabel = (v: string) => FREQUENCIAS.find(f => f.value === v)?.label || v;
 
+  // ── Save Liberação de Linha ──
+  const salvarLibLinha = async () => {
+    if (!user) return;
+    setSavingLibLinha(true);
+    const totalItens = CHECKLIST_LIBERACAO_LINHA.reduce((a, g) => a + g.itens.length, 0);
+    const marcados = Object.values(libLinhaChecklist).filter(Boolean).length;
+    const todosOk = marcados === totalItens;
+    const ncs = CHECKLIST_LIBERACAO_LINHA.flatMap(g => g.itens.filter(item => !libLinhaChecklist[`${g.area}__${item}`]).map(item => `${g.area}: ${item}`));
+
+    const obs = [
+      `[LIBERAÇÃO DE LINHA — POP-02 / IN 04/2007 | IN 15/2009]`,
+      `Data: ${libLinhaData} | Linha: ${libLinhaLinha || "—"}`,
+      `Produto anterior: ${libLinhaProdAnterior || "—"}`,
+      `Produto seguinte: ${libLinhaProdSeguinte || "—"}`,
+      `Itens conformes: ${marcados}/${totalItens}`,
+      ncs.length > 0 ? `NCs: ${ncs.join("; ")}` : "Todos conformes ✅",
+      libLinhaObs ? `Obs: ${libLinhaObs}` : "",
+    ].filter(Boolean).join("\n");
+
+    const { error } = await supabase.from("execucao_pops").insert({
+      user_id: user.id,
+      codigo_pop: "POP-02-LIB-LINHA",
+      nome_pop: "Checklist Liberação de Linha",
+      executor: libLinhaResp,
+      setor: libLinhaLinha || "Linha de Produção",
+      status: todosOk ? "concluido" : "nao_conforme",
+      observacoes: obs,
+      data_execucao: libLinhaData,
+    });
+    if (error) toast.error("Erro ao salvar: " + error.message);
+    else {
+      toast.success("Checklist de Liberação de Linha salvo!");
+      qc.invalidateQueries({ queryKey: ["historico_lib_linha"] });
+      setLibLinhaChecklist({});
+      setLibLinhaResp("");
+      setLibLinhaProdAnterior("");
+      setLibLinhaProdSeguinte("");
+      setLibLinhaLinha("");
+      setLibLinhaObs("");
+    }
+    setSavingLibLinha(false);
+  };
+
+  // ── Save Monitoramento de Superfícies ──
+  const salvarSup = async () => {
+    if (!user) return;
+    setSavingSup(true);
+    const totalItens = CHECKLIST_SUPERFICIES.reduce((a, g) => a + g.itens.length, 0);
+    const marcados = Object.values(supChecklist).filter(Boolean).length;
+    const todosOk = marcados === totalItens;
+    const ncs = CHECKLIST_SUPERFICIES.flatMap(g => g.itens.filter(item => !supChecklist[`${g.area}__${item}`]).map(item => `${g.area}: ${item}`));
+
+    const obs = [
+      `[MONITORAMENTO DE SUPERFÍCIES — POP-02/03 / IN 04/2007]`,
+      `Data: ${supData} | Setor: ${supSetor || "—"}`,
+      `Produto químico: ${supProdQuimico || "—"} | Concentração: ${supConcentracao || "—"}`,
+      `Itens conformes: ${marcados}/${totalItens}`,
+      ncs.length > 0 ? `NCs: ${ncs.join("; ")}` : "Todas as superfícies conformes ✅",
+      supObs ? `Obs: ${supObs}` : "",
+    ].filter(Boolean).join("\n");
+
+    const { error } = await supabase.from("execucao_pops").insert({
+      user_id: user.id,
+      codigo_pop: "POP-02-SUPERFICIE",
+      nome_pop: "Monitoramento de Limpeza de Superfícies",
+      executor: supResp,
+      setor: supSetor || "Produção",
+      status: todosOk ? "concluido" : "nao_conforme",
+      observacoes: obs,
+      data_execucao: supData,
+    });
+    if (error) toast.error("Erro ao salvar: " + error.message);
+    else {
+      toast.success("Monitoramento de superfícies salvo!");
+      qc.invalidateQueries({ queryKey: ["historico_sup"] });
+      setSupChecklist({});
+      setSupResp("");
+      setSupSetor("");
+      setSupProdQuimico("");
+      setSupConcentracao("");
+      setSupObs("");
+    }
+    setSavingSup(false);
+  };
+
   return (
     <div className="space-y-6">
-      <PageHeader title="POP 02/03/04 — Higiene, Sanitização e Controle de Água" description="Cronogramas de limpeza e controle de potabilidade — IN 04/2007 e IN 15/2009" />
+      <PageHeader title="POP 02/03/04 — Higiene, Sanitização e Controle de Água" description="Cronogramas de limpeza, liberação de linha, monitoramento de superfícies e controle de potabilidade — IN 04/2007 e IN 15/2009" />
 
       <Tabs defaultValue="preop">
         <TabsList className="flex flex-wrap">
           <TabsTrigger value="preop"><ShieldCheck className="w-4 h-4 mr-1" />Pré-Operacional</TabsTrigger>
+          <TabsTrigger value="liberacao"><Layers className="w-4 h-4 mr-1" />Liberação de Linha</TabsTrigger>
+          <TabsTrigger value="superficies"><FlaskConical className="w-4 h-4 mr-1" />Superfícies</TabsTrigger>
           <TabsTrigger value="cronogramas"><Droplets className="w-4 h-4 mr-1" />Cronogramas</TabsTrigger>
           <TabsTrigger value="registros"><CheckCircle2 className="w-4 h-4 mr-1" />Registros Limpeza</TabsTrigger>
           <TabsTrigger value="agua"><Beaker className="w-4 h-4 mr-1" />Controle de Água (POP-04)</TabsTrigger>
@@ -353,6 +551,223 @@ export default function HigieneSanitizacao() {
           })()}
         </TabsContent>
 
+        {/* ── LIBERAÇÃO DE LINHA (POP-02 / IN 04/2007 | IN 15/2009) ── */}
+        <TabsContent value="liberacao" className="space-y-4">
+          <Card className="border-orange-500/20 bg-orange-50 dark:bg-orange-900/10">
+            <CardContent className="pt-4">
+              <div className="flex items-start gap-3">
+                <Layers className="w-6 h-6 text-orange-600 mt-0.5" />
+                <div>
+                  <h4 className="font-display font-semibold text-sm">Checklist de Liberação de Linha — POP-02 (IN 04/2007 | IN 15/2009)</h4>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Verificação obrigatória antes da troca de produto/lote na linha de produção.
+                    Garante ausência de contaminação cruzada, conformidade com limites de carry-over
+                    (Ionóforos {"<"} 1%, Medicados {"<"} 3%) e rastreabilidade do flushing conforme IN 15/2009.
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+            <div><Label>Responsável *</Label><Input value={libLinhaResp} onChange={e => setLibLinhaResp(e.target.value)} placeholder="Nome do inspetor" /></div>
+            <div><Label>Data</Label><Input type="date" value={libLinhaData} onChange={e => setLibLinhaData(e.target.value)} /></div>
+            <div><Label>Produto Anterior</Label><Input value={libLinhaProdAnterior} onChange={e => setLibLinhaProdAnterior(e.target.value)} placeholder="Ex: Ração Bovinos Engorda" /></div>
+            <div><Label>Produto Seguinte</Label><Input value={libLinhaProdSeguinte} onChange={e => setLibLinhaProdSeguinte(e.target.value)} placeholder="Ex: Ração Suínos Crescimento" /></div>
+          </div>
+          <div className="grid grid-cols-2 gap-3 mb-4">
+            <div><Label>Linha de Produção</Label><Input value={libLinhaLinha} onChange={e => setLibLinhaLinha(e.target.value)} placeholder="Ex: Linha 01 — Farelados" /></div>
+            <div><Label>Observações Gerais</Label><Input value={libLinhaObs} onChange={e => setLibLinhaObs(e.target.value)} placeholder="Opcional" /></div>
+          </div>
+
+          <div className="space-y-4">
+            {CHECKLIST_LIBERACAO_LINHA.map(grupo => (
+              <Card key={grupo.area}>
+                <CardHeader className="py-3">
+                  <CardTitle className="text-sm font-display">{grupo.area}</CardTitle>
+                </CardHeader>
+                <CardContent className="py-0 pb-3">
+                  <div className="space-y-2">
+                    {grupo.itens.map(item => {
+                      const key = `${grupo.area}__${item}`;
+                      const checked = libLinhaChecklist[key] ?? false;
+                      return (
+                        <div key={key} className="flex items-center justify-between p-2 rounded border bg-background">
+                          <span className="text-sm">{item}</span>
+                          <div className="flex items-center gap-2">
+                            <span className={`text-xs font-semibold ${checked ? "text-primary" : "text-muted-foreground"}`}>
+                              {checked ? "OK" : "—"}
+                            </span>
+                            <Switch checked={checked} onCheckedChange={v => setLibLinhaChecklist(p => ({ ...p, [key]: v }))} />
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          {(() => {
+            const totalItens = CHECKLIST_LIBERACAO_LINHA.reduce((a, g) => a + g.itens.length, 0);
+            const marcados = Object.values(libLinhaChecklist).filter(Boolean).length;
+            const todosOk = marcados === totalItens;
+            return (
+              <div className="flex items-center justify-between p-4 rounded-lg border bg-muted/30">
+                <div>
+                  <p className="text-sm font-semibold">{marcados}/{totalItens} itens verificados</p>
+                  <p className="text-xs text-muted-foreground">{todosOk ? "✅ Linha liberada — todos os itens conformes" : "Conclua todos os itens para liberar a linha"}</p>
+                </div>
+                <Button disabled={!libLinhaResp || savingLibLinha} onClick={salvarLibLinha}>
+                  Salvar Liberação de Linha
+                </Button>
+              </div>
+            );
+          })()}
+
+          {/* Histórico */}
+          {historicoLibLinha.length > 0 && (
+            <Card>
+              <CardHeader><CardTitle className="text-sm">Histórico de Liberações de Linha</CardTitle></CardHeader>
+              <Table>
+                <TableHeader><TableRow>
+                  <TableHead>Data</TableHead><TableHead>Executor</TableHead><TableHead>Linha/Setor</TableHead>
+                  <TableHead>Status</TableHead><TableHead className="max-w-[250px]">Detalhes</TableHead>
+                </TableRow></TableHeader>
+                <TableBody>
+                  {historicoLibLinha.map((r: any) => (
+                    <TableRow key={r.id}>
+                      <TableCell className="whitespace-nowrap">{r.data_execucao}</TableCell>
+                      <TableCell>{r.executor}</TableCell>
+                      <TableCell>{r.setor}</TableCell>
+                      <TableCell>
+                        {r.status === "concluido" ? <Badge className="bg-primary/20 text-primary">Liberada</Badge> : <Badge variant="destructive">NC</Badge>}
+                      </TableCell>
+                      <TableCell className="max-w-[250px] text-xs whitespace-pre-line truncate">{(r.observacoes || "").slice(0, 120)}{(r.observacoes?.length || 0) > 120 ? "…" : ""}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </Card>
+          )}
+        </TabsContent>
+
+        {/* ── MONITORAMENTO DE SUPERFÍCIES (POP-02/03 / IN 04/2007) ── */}
+        <TabsContent value="superficies" className="space-y-4">
+          <Card className="border-emerald-500/20 bg-emerald-50 dark:bg-emerald-900/10">
+            <CardContent className="pt-4">
+              <div className="flex items-start gap-3">
+                <FlaskConical className="w-6 h-6 text-emerald-600 mt-0.5" />
+                <div>
+                  <h4 className="font-display font-semibold text-sm">Monitoramento de Limpeza de Superfícies — POP-02/03 (IN 04/2007)</h4>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Verificação da eficácia da limpeza em superfícies de contato direto e indireto.
+                    Inclui inspeção visual, swab de superfície, teste de água de enxágue e bioluminescência ATP
+                    conforme requisitos de BPF da IN 04/2007 e IN 15/2009.
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+            <div><Label>Responsável *</Label><Input value={supResp} onChange={e => setSupResp(e.target.value)} placeholder="Nome do inspetor" /></div>
+            <div><Label>Data</Label><Input type="date" value={supData} onChange={e => setSupData(e.target.value)} /></div>
+            <div>
+              <Label>Setor</Label>
+              <Select value={supSetor} onValueChange={setSupSetor}>
+                <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Produção — Mistura">Produção — Mistura</SelectItem>
+                  <SelectItem value="Produção — Ensaque">Produção — Ensaque</SelectItem>
+                  <SelectItem value="Recepção de MP">Recepção de MP</SelectItem>
+                  <SelectItem value="Expedição">Expedição</SelectItem>
+                  <SelectItem value="Todas as áreas">Todas as áreas</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              <div><Label>Produto Químico</Label><Input value={supProdQuimico} onChange={e => setSupProdQuimico(e.target.value)} placeholder="Ex: Hipoclorito" /></div>
+              <div><Label>Concentração</Label><Input value={supConcentracao} onChange={e => setSupConcentracao(e.target.value)} placeholder="Ex: 200 ppm" /></div>
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            {CHECKLIST_SUPERFICIES.map(grupo => (
+              <Card key={grupo.area}>
+                <CardHeader className="py-3">
+                  <CardTitle className="text-sm font-display">{grupo.area}</CardTitle>
+                </CardHeader>
+                <CardContent className="py-0 pb-3">
+                  <div className="space-y-2">
+                    {grupo.itens.map(item => {
+                      const key = `${grupo.area}__${item}`;
+                      const checked = supChecklist[key] ?? false;
+                      return (
+                        <div key={key} className="flex items-center justify-between p-2 rounded border bg-background">
+                          <span className="text-sm">{item}</span>
+                          <div className="flex items-center gap-2">
+                            <span className={`text-xs font-semibold ${checked ? "text-primary" : "text-muted-foreground"}`}>
+                              {checked ? "OK" : "—"}
+                            </span>
+                            <Switch checked={checked} onCheckedChange={v => setSupChecklist(p => ({ ...p, [key]: v }))} />
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          <div><Label>Observações</Label><Textarea value={supObs} onChange={e => setSupObs(e.target.value)} placeholder="Detalhes sobre resultados de swab, ATP, ou outras observações relevantes" /></div>
+
+          {(() => {
+            const totalItens = CHECKLIST_SUPERFICIES.reduce((a, g) => a + g.itens.length, 0);
+            const marcados = Object.values(supChecklist).filter(Boolean).length;
+            const todosOk = marcados === totalItens;
+            return (
+              <div className="flex items-center justify-between p-4 rounded-lg border bg-muted/30">
+                <div>
+                  <p className="text-sm font-semibold">{marcados}/{totalItens} itens verificados</p>
+                  <p className="text-xs text-muted-foreground">{todosOk ? "✅ Todas as superfícies conformes" : "Conclua a inspeção de todas as superfícies"}</p>
+                </div>
+                <Button disabled={!supResp || savingSup} onClick={salvarSup}>
+                  Salvar Monitoramento
+                </Button>
+              </div>
+            );
+          })()}
+
+          {/* Histórico */}
+          {historicoSup.length > 0 && (
+            <Card>
+              <CardHeader><CardTitle className="text-sm">Histórico de Monitoramento de Superfícies</CardTitle></CardHeader>
+              <Table>
+                <TableHeader><TableRow>
+                  <TableHead>Data</TableHead><TableHead>Executor</TableHead><TableHead>Setor</TableHead>
+                  <TableHead>Status</TableHead><TableHead className="max-w-[250px]">Detalhes</TableHead>
+                </TableRow></TableHeader>
+                <TableBody>
+                  {historicoSup.map((r: any) => (
+                    <TableRow key={r.id}>
+                      <TableCell className="whitespace-nowrap">{r.data_execucao}</TableCell>
+                      <TableCell>{r.executor}</TableCell>
+                      <TableCell>{r.setor}</TableCell>
+                      <TableCell>
+                        {r.status === "concluido" ? <Badge className="bg-primary/20 text-primary">Conforme</Badge> : <Badge variant="destructive">NC</Badge>}
+                      </TableCell>
+                      <TableCell className="max-w-[250px] text-xs whitespace-pre-line truncate">{(r.observacoes || "").slice(0, 120)}{(r.observacoes?.length || 0) > 120 ? "…" : ""}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </Card>
+          )}
+        </TabsContent>
+
         {/* ── CRONOGRAMAS ── */}
         <TabsContent value="cronogramas" className="space-y-4">
           <div className="flex justify-end">
@@ -396,7 +811,6 @@ export default function HigieneSanitizacao() {
             <Card><CardContent className="py-12 text-center text-muted-foreground"><Droplets className="w-12 h-12 mx-auto mb-3 opacity-40" /><p>Nenhum cronograma cadastrado</p></CardContent></Card>
           ) : (
             <>
-              {/* Alerta: Silos e Equipamentos sem cronograma */}
               {(() => {
                 const silosEquips = ["Silo 01", "Silo 02", "Silo 03", "Silo 04", "Silo 05", "Misturador", "Moinho", "Peletizadora", "Extrusora", "Transportador / Elevador"];
                 const comCronograma = cronogramas.map((c: any) => c.area);
