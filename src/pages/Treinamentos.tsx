@@ -116,25 +116,43 @@ export default function Treinamentos() {
 
   const addAso = useMutation({
     mutationFn: async () => {
-      const obs = `Tipo: ${asoForm.tipo_exame} | Médico: ${asoForm.medico} (CRM: ${asoForm.crm}) | ${asoForm.apto ? "APTO" : "INAPTO"}${asoForm.restricoes ? ` | Restrições: ${asoForm.restricoes}` : ""}`;
-      const { error } = await supabase.from("checklist_items").insert({
+      const { error } = await supabase.from("saude_manipuladores" as any).insert({
         user_id: user!.id,
-        area: "ASO - Saúde Ocupacional",
-        item: `ASO ${asoForm.funcionario} — ${asoForm.tipo_exame}`,
-        conforme: asoForm.apto,
-        auditoria_data: asoForm.data,
-        observacao: obs,
+        funcionario: asoForm.funcionario,
+        tipo_exame: asoForm.tipo_exame,
+        data_exame: asoForm.data,
+        data_validade: asoForm.validade || null,
+        medico: asoForm.medico,
+        crm: asoForm.crm,
+        apto: asoForm.apto,
+        restricoes: asoForm.restricoes,
       });
       if (error) throw error;
     },
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["checklist_asos"] });
+      qc.invalidateQueries({ queryKey: ["saude_manipuladores"] });
       toast.success("ASO registrado");
       setOpenAso(false);
       setAsoForm({ funcionario: "", data: new Date().toISOString().split("T")[0], validade: "", tipo_exame: "periodico", medico: "", crm: "", apto: true, restricoes: "" });
     },
     onError: () => toast.error("Erro ao salvar ASO"),
   });
+
+  const delAso = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from("saude_manipuladores" as any).delete().eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ["saude_manipuladores"] }); toast.success("ASO removido"); },
+  });
+
+  const isAsoVencido = (val: string | null) => val ? new Date(val) < new Date() : false;
+  const isAsoProximo = (val: string | null) => {
+    if (!val) return false;
+    const d = new Date(val);
+    const diff = (d.getTime() - Date.now()) / (1000 * 60 * 60 * 24);
+    return diff > 0 && diff <= 60;
+  };
 
   const addTriagem = useMutation({
     mutationFn: async () => {
