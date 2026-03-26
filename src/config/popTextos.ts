@@ -266,7 +266,7 @@ export const POP_TEXTOS: PopTexto[] = [
   },
   {
     codigo: "POP-09",
-    nome: "Programa de Rastreabilidade e Recolhimento de Produtos (Recall)",
+    nome: "Programa de Rastreabilidade e Recolhimento (Recall)",
     objetivo: "Estabelecer procedimentos para garantir a rastreabilidade completa dos produtos e o recolhimento eficiente em caso de não conformidades que afetem a segurança.",
     campoAplicacao: "Aplica-se a todos os produtos fabricados, desde o recebimento de matérias-primas até a distribuição ao cliente final.",
     documentosReferencia: [
