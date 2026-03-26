@@ -447,6 +447,60 @@ export type Database = {
         }
         Relationships: []
       }
+      controle_visitantes: {
+        Row: {
+          acompanhante: string | null
+          areas_visitadas: string | null
+          created_at: string
+          data_visita: string
+          documento: string | null
+          empresa: string | null
+          epi_fornecido: boolean | null
+          hora_entrada: string | null
+          hora_saida: string | null
+          id: string
+          motivo: string | null
+          nome_visitante: string
+          observacoes: string | null
+          orientacao_biosseguridade: boolean | null
+          user_id: string
+        }
+        Insert: {
+          acompanhante?: string | null
+          areas_visitadas?: string | null
+          created_at?: string
+          data_visita?: string
+          documento?: string | null
+          empresa?: string | null
+          epi_fornecido?: boolean | null
+          hora_entrada?: string | null
+          hora_saida?: string | null
+          id?: string
+          motivo?: string | null
+          nome_visitante: string
+          observacoes?: string | null
+          orientacao_biosseguridade?: boolean | null
+          user_id: string
+        }
+        Update: {
+          acompanhante?: string | null
+          areas_visitadas?: string | null
+          created_at?: string
+          data_visita?: string
+          documento?: string | null
+          empresa?: string | null
+          epi_fornecido?: boolean | null
+          hora_entrada?: string | null
+          hora_saida?: string | null
+          id?: string
+          motivo?: string | null
+          nome_visitante?: string
+          observacoes?: string | null
+          orientacao_biosseguridade?: boolean | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       cronogramas_higiene: {
         Row: {
           area: string
@@ -2000,6 +2054,57 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      saude_manipuladores: {
+        Row: {
+          apto: boolean | null
+          created_at: string
+          crm: string | null
+          data_exame: string
+          data_validade: string | null
+          funcionario: string
+          id: string
+          medico: string | null
+          observacoes: string | null
+          restricoes: string | null
+          status: string | null
+          tipo_exame: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          apto?: boolean | null
+          created_at?: string
+          crm?: string | null
+          data_exame?: string
+          data_validade?: string | null
+          funcionario: string
+          id?: string
+          medico?: string | null
+          observacoes?: string | null
+          restricoes?: string | null
+          status?: string | null
+          tipo_exame?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          apto?: boolean | null
+          created_at?: string
+          crm?: string | null
+          data_exame?: string
+          data_validade?: string | null
+          funcionario?: string
+          id?: string
+          medico?: string | null
+          observacoes?: string | null
+          restricoes?: string | null
+          status?: string | null
+          tipo_exame?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       testes_rastreabilidade: {
         Row: {
