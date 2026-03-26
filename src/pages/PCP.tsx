@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { ClipboardList, Plus, Loader2, ChevronDown, ChevronUp, Clock, CheckCircle2, AlertTriangle, Factory, FlaskConical, ArrowRightLeft, ShieldAlert } from "lucide-react";
+import { ClipboardList, Plus, Loader2, ChevronDown, ChevronUp, Clock, CheckCircle2, AlertTriangle, Factory, FlaskConical, ArrowRightLeft, ShieldAlert, TestTube, Shield } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
@@ -127,18 +127,36 @@ export default function PCP() {
   const [limpezaResponsavel, setLimpezaResponsavel] = useState("");
   const [limpezaHora, setLimpezaHora] = useState("");
 
+  // Carry-over test
+  const [carryoverOpen, setCarryoverOpen] = useState(false);
+  const [coOrdemId, setCoOrdemId] = useState("");
+  const [coData, setCoData] = useState(new Date().toISOString().split("T")[0]);
+  const [coResponsavel, setCoResponsavel] = useState("");
+  const [coMetodo, setCoMetodo] = useState("visual");
+  const [coProdAnterior, setCoProdAnterior] = useState("");
+  const [coProdSeguinte, setCoProdSeguinte] = useState("");
+  const [coSubstancia, setCoSubstancia] = useState("");
+  const [coLimite, setCoLimite] = useState("");
+  const [coResultado, setCoResultado] = useState("");
+  const [coUnidade, setCoUnidade] = useState("ppm");
+  const [coConforme, setCoConforme] = useState(true);
+  const [coObs, setCoObs] = useState("");
+  const [carryoverRecords, setCarryoverRecords] = useState<any[]>([]);
+
   const fetchData = async () => {
     if (!user) return;
-    const [ordensRes, itensRes, batidasRes, matrizRes] = await Promise.all([
+    const [ordensRes, itensRes, batidasRes, matrizRes, coRes] = await Promise.all([
       supabase.from("ordens_producao").select("*").order("data_programada", { ascending: false }),
       supabase.from("formula_itens").select("*").order("created_at"),
       supabase.from("batidas_producao").select("*").order("numero_batida"),
       supabase.from("matriz_sensibilidade").select("*").order("produto_anterior"),
+      supabase.from("execucao_pops").select("*").eq("codigo_pop", "POP-CARRYOVER").order("data_execucao", { ascending: false }).limit(100),
     ]);
     if (ordensRes.data) setOrdens(ordensRes.data as unknown as OrdemProd[]);
     if (itensRes.data) setFormulaItens(itensRes.data as unknown as FormulaItem[]);
     if (batidasRes.data) setBatidas(batidasRes.data as unknown as Batida[]);
     if (matrizRes.data) setMatrizSensibilidade(matrizRes.data);
+    if (coRes.data) setCarryoverRecords(coRes.data);
     setLoading(false);
   };
 
@@ -274,6 +292,56 @@ export default function PCP() {
   const programadas = ordens.filter(o => o.status === "programada").length;
   const emProducao = ordens.filter(o => o.status === "em_producao").length;
   const concluidas = ordens.filter(o => o.status === "concluida").length;
+
+  const openCarryoverTest = (ordemId: string) => {
+    const ordem = ordens.find(o => o.id === ordemId);
+    setCoOrdemId(ordemId);
+    setCoProdSeguinte(ordem?.produto || "");
+    // find the previous order
+    const sorted = [...ordens].sort((a, b) => a.data_programada.localeCompare(b.data_programada));
+    const idx = sorted.findIndex(o => o.id === ordemId);
+    if (idx > 0) setCoProdAnterior(sorted[idx - 1].produto);
+    setCarryoverOpen(true);
+  };
+
+  const handleAddCarryover = async () => {
+    if (!user || !coResponsavel) return;
+    setSaving(true);
+    const ordem = ordens.find(o => o.id === coOrdemId);
+    const obs = [
+      `[TESTE DE CARRY-OVER — IN 15/2009 / Decreto 12.031/2024]`,
+      `Data: ${coData} | Responsável: ${coResponsavel}`,
+      `Método: ${coMetodo === "visual" ? "Inspeção Visual" : coMetodo === "swab" ? "Swab de Superfície" : coMetodo === "flushing_analise" ? "Análise do Flushing" : "Análise Laboratorial"}`,
+      `Produto anterior: ${coProdAnterior || "—"}`,
+      `Produto seguinte: ${coProdSeguinte || "—"}`,
+      coSubstancia ? `Substância monitorada: ${coSubstancia}` : "",
+      coLimite ? `Limite aceitável: ${coLimite} ${coUnidade}` : "",
+      coResultado ? `Resultado encontrado: ${coResultado} ${coUnidade}` : "",
+      `Conforme: ${coConforme ? "SIM ✅" : "NÃO ❌"}`,
+      coObs ? `Obs: ${coObs}` : "",
+    ].filter(Boolean).join("\n");
+
+    const { error } = await supabase.from("execucao_pops").insert({
+      user_id: user.id,
+      codigo_pop: "POP-CARRYOVER",
+      nome_pop: "Teste de Carry-over",
+      executor: coResponsavel,
+      setor: ordem?.numero_ordem || "PCP",
+      status: coConforme ? "concluido" : "nao_conforme",
+      observacoes: obs,
+      data_execucao: coData,
+      checklist_auditoria_ref: coOrdemId,
+    });
+    if (error) toast.error("Erro: " + error.message);
+    else {
+      toast.success("Teste de carry-over registrado!");
+      setCarryoverOpen(false);
+      setCoResponsavel(""); setCoMetodo("visual"); setCoProdAnterior(""); setCoProdSeguinte("");
+      setCoSubstancia(""); setCoLimite(""); setCoResultado(""); setCoUnidade("ppm"); setCoConforme(true); setCoObs("");
+      fetchData();
+    }
+    setSaving(false);
+  };
 
   if (loading) return (
     <>
@@ -567,6 +635,7 @@ export default function PCP() {
                             <TabsList>
                               <TabsTrigger value="formula"><FlaskConical className="w-3 h-3 mr-1" /> Fórmula ({itens.length})</TabsTrigger>
                               <TabsTrigger value="batidas"><Factory className="w-3 h-3 mr-1" /> Batidas ({bats.length})</TabsTrigger>
+                              <TabsTrigger value="carryover"><TestTube className="w-3 h-3 mr-1" /> Carry-over</TabsTrigger>
                             </TabsList>
                             <div className="flex gap-2">
                               <Select value={o.status || "programada"} onValueChange={(v) => handleUpdateStatus(o.id, v)}>
@@ -655,6 +724,88 @@ export default function PCP() {
                               )}
                               <Button size="sm" variant="outline" onClick={() => openAddBatida(o.id)}>
                                 <Plus className="w-3 h-3 mr-1" /> Registrar Batida
+                              </Button>
+                            </div>
+                          </TabsContent>
+
+                          {/* ── CARRY-OVER TAB ── */}
+                          <TabsContent value="carryover">
+                            <div className="space-y-3">
+                              <div className="p-3 rounded-lg border border-orange-500/20 bg-orange-50 dark:bg-orange-900/10">
+                                <div className="flex items-start gap-2">
+                                  <TestTube className="w-5 h-5 text-orange-600 mt-0.5" />
+                                  <div>
+                                    <p className="text-xs font-semibold">Teste de Carry-over — IN 15/2009 | Decreto 12.031/2024</p>
+                                    <p className="text-[10px] text-muted-foreground mt-1">
+                                      Limite de arraste: Ionóforos {"<"} 1% da dose terapêutica • Medicados {"<"} 3% da dose terapêutica •
+                                      Micotoxinas {"<"} limite da legislação vigente. Teste obrigatório após flushing.
+                                    </p>
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* Limites de referência IN 15/2009 */}
+                              <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+                                <div className="p-2 rounded border bg-background text-center">
+                                  <p className="text-xs font-bold text-orange-700">Ionóforos</p>
+                                  <p className="text-lg font-bold text-orange-600">{"<"} 1%</p>
+                                  <p className="text-[10px] text-muted-foreground">da dose terapêutica</p>
+                                  <p className="text-[9px] text-muted-foreground mt-1">Monensina, Salinomicina, Lasalocida</p>
+                                </div>
+                                <div className="p-2 rounded border bg-background text-center">
+                                  <p className="text-xs font-bold text-destructive">Medicados</p>
+                                  <p className="text-lg font-bold text-destructive">{"<"} 3%</p>
+                                  <p className="text-[10px] text-muted-foreground">da dose terapêutica</p>
+                                  <p className="text-[9px] text-muted-foreground mt-1">Antibióticos, Coccidiostáticos, Promotores</p>
+                                </div>
+                                <div className="p-2 rounded border bg-background text-center">
+                                  <p className="text-xs font-bold text-yellow-700">Micotoxinas</p>
+                                  <p className="text-lg font-bold text-yellow-600">Limite legal</p>
+                                  <p className="text-[10px] text-muted-foreground">Aflatoxina: ≤ 20 ppb</p>
+                                  <p className="text-[9px] text-muted-foreground mt-1">DON, Fumonisina, Zearalenona</p>
+                                </div>
+                              </div>
+
+                              {/* Testes de carry-over desta ordem */}
+                              {(() => {
+                                const testsOrdem = carryoverRecords.filter((r: any) => r.checklist_auditoria_ref === o.id);
+                                return testsOrdem.length > 0 ? (
+                                  <Table>
+                                    <TableHeader><TableRow>
+                                      <TableHead>Data</TableHead>
+                                      <TableHead>Responsável</TableHead>
+                                      <TableHead>Método</TableHead>
+                                      <TableHead>Status</TableHead>
+                                      <TableHead className="max-w-[200px]">Detalhes</TableHead>
+                                    </TableRow></TableHeader>
+                                    <TableBody>
+                                      {testsOrdem.map((r: any) => (
+                                        <TableRow key={r.id}>
+                                          <TableCell className="whitespace-nowrap">{r.data_execucao}</TableCell>
+                                          <TableCell>{r.executor}</TableCell>
+                                          <TableCell className="text-xs">{
+                                            r.observacoes?.includes("Visual") ? "Inspeção Visual" :
+                                            r.observacoes?.includes("Swab") ? "Swab" :
+                                            r.observacoes?.includes("Flushing") ? "Análise Flushing" : "Laboratorial"
+                                          }</TableCell>
+                                          <TableCell>
+                                            {r.status === "concluido" ?
+                                              <Badge className="bg-primary/20 text-primary">Conforme</Badge> :
+                                              <Badge variant="destructive">NC</Badge>
+                                            }
+                                          </TableCell>
+                                          <TableCell className="text-xs max-w-[200px] truncate">{(r.observacoes || "").slice(0, 100)}</TableCell>
+                                        </TableRow>
+                                      ))}
+                                    </TableBody>
+                                  </Table>
+                                ) : (
+                                  <p className="text-xs text-muted-foreground text-center py-3">Nenhum teste de carry-over registrado para esta ordem</p>
+                                );
+                              })()}
+
+                              <Button size="sm" variant="outline" onClick={() => openCarryoverTest(o.id)}>
+                                <TestTube className="w-3 h-3 mr-1" /> Registrar Teste de Carry-over
                               </Button>
                             </div>
                           </TabsContent>
@@ -814,6 +965,74 @@ export default function PCP() {
             <Button onClick={handleAddBatida} className="w-full" disabled={saving || !limpezaConfirmada}>
               {saving && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
               {!limpezaConfirmada ? "⚠️ Confirme a limpeza para prosseguir" : "Registrar Batida"}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Dialog: Teste de Carry-over */}
+      <Dialog open={carryoverOpen} onOpenChange={setCarryoverOpen}>
+        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+          <DialogHeader><DialogTitle>Registrar Teste de Carry-over — IN 15/2009</DialogTitle></DialogHeader>
+          <div className="space-y-3">
+            <div className="p-3 rounded-lg border border-orange-500/20 bg-orange-50 dark:bg-orange-900/10">
+              <p className="text-xs font-semibold flex items-center gap-1"><Shield className="w-4 h-4 text-orange-600" /> Limites de Arraste (IN 15/2009)</p>
+              <div className="grid grid-cols-3 gap-2 mt-2 text-[10px]">
+                <div className="text-center"><span className="font-bold text-orange-700">Ionóforos</span><br/>{"<"} 1% dose terapêutica</div>
+                <div className="text-center"><span className="font-bold text-destructive">Medicados</span><br/>{"<"} 3% dose terapêutica</div>
+                <div className="text-center"><span className="font-bold text-yellow-700">Micotoxinas</span><br/>Aflatoxina ≤ 20 ppb</div>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div><Label>Data</Label><Input type="date" value={coData} onChange={e => setCoData(e.target.value)} /></div>
+              <div><Label>Responsável *</Label><Input value={coResponsavel} onChange={e => setCoResponsavel(e.target.value)} placeholder="Nome" /></div>
+            </div>
+            <div>
+              <Label>Método de Análise</Label>
+              <Select value={coMetodo} onValueChange={setCoMetodo}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="visual">Inspeção Visual</SelectItem>
+                  <SelectItem value="swab">Swab de Superfície</SelectItem>
+                  <SelectItem value="flushing_analise">Análise do Material de Flushing</SelectItem>
+                  <SelectItem value="laboratorial">Análise Laboratorial (HPLC/LC-MS)</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div><Label>Produto Anterior</Label><Input value={coProdAnterior} onChange={e => setCoProdAnterior(e.target.value)} placeholder="Produto da OP anterior" /></div>
+              <div><Label>Produto Seguinte</Label><Input value={coProdSeguinte} onChange={e => setCoProdSeguinte(e.target.value)} placeholder="Produto desta OP" /></div>
+            </div>
+            <div className="grid grid-cols-3 gap-3">
+              <div><Label>Substância Monitorada</Label><Input value={coSubstancia} onChange={e => setCoSubstancia(e.target.value)} placeholder="Ex: Monensina" /></div>
+              <div><Label>Limite Aceitável</Label><Input value={coLimite} onChange={e => setCoLimite(e.target.value)} placeholder="Ex: 1.0" /></div>
+              <div><Label>Resultado</Label><Input value={coResultado} onChange={e => setCoResultado(e.target.value)} placeholder="Ex: 0.3" /></div>
+            </div>
+            <div>
+              <Label>Unidade</Label>
+              <Select value={coUnidade} onValueChange={setCoUnidade}>
+                <SelectTrigger className="w-32"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="ppm">ppm</SelectItem>
+                  <SelectItem value="ppb">ppb</SelectItem>
+                  <SelectItem value="mg/kg">mg/kg</SelectItem>
+                  <SelectItem value="%">%</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="flex items-center gap-3 p-3 rounded-lg border bg-muted/30">
+              <input type="checkbox" checked={coConforme} onChange={e => setCoConforme(e.target.checked)} className="h-4 w-4" />
+              <div>
+                <Label className="text-sm font-semibold">Resultado Conforme</Label>
+                <p className="text-[10px] text-muted-foreground">Resíduo dentro dos limites aceitáveis da IN 15/2009</p>
+              </div>
+              {coConforme ? <CheckCircle2 className="w-5 h-5 text-green-600 ml-auto" /> : <AlertTriangle className="w-5 h-5 text-destructive ml-auto" />}
+            </div>
+            <div><Label>Observações</Label><Textarea value={coObs} onChange={e => setCoObs(e.target.value)} placeholder="Detalhes do teste, volumes de flushing utilizados, etc." /></div>
+            <Button onClick={handleAddCarryover} className="w-full" disabled={saving || !coResponsavel}>
+              {saving && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+              Registrar Teste de Carry-over
             </Button>
           </div>
         </DialogContent>
