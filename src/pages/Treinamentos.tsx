@@ -220,7 +220,9 @@ export default function Treinamentos() {
   };
 
   const vencidos = treinamentos.filter((t: any) => isVencido(t.validade)).length;
-  const asosInaptos = checklist_asos.filter((a: any) => a.conforme === false).length;
+  const asosVencidos = checklist_asos.filter((a: any) => isAsoVencido(a.data_validade)).length;
+  const asosProximos = checklist_asos.filter((a: any) => isAsoProximo(a.data_validade)).length;
+  const asosInaptos = checklist_asos.filter((a: any) => a.apto === false).length;
 
   return (
     <div className="space-y-6">
