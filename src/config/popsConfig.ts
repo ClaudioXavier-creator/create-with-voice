@@ -487,34 +487,21 @@ export const POPS_CONFIG: PopConfig[] = [
     descricao: "Procedimentos de coleta, segregação, transporte e destinação de resíduos sólidos e efluentes conforme Decreto 12.031/2024.",
     periodicidades: [
       {
-        key: "diario",
-        label: "Coleta Diária de Resíduos",
+        key: "controle_residuos",
+        label: "PL POP 8.1 — Controle de Resíduos",
         periodos: diasDoMes(),
         areas: [
-          { area: "Resíduos de varrição (pó, farelo)" },
-          { area: "Resíduos recicláveis (papel, plástico)" },
-          { area: "Resíduos orgânicos" },
-          { area: "Embalagens descartadas" },
-          { area: "Sacarias danificadas" },
-        ],
-      },
-      {
-        key: "mensal",
-        label: "Controle Mensal — Destinação e Efluentes",
-        periodos: meses(),
-        areas: [
-          { area: "Destinação de resíduos (empresa coletora)" },
-          { area: "Manifesto de transporte (MTR)" },
-          { area: "Limpeza de caixas de gordura" },
-          { area: "Controle de efluentes" },
-          { area: "Licença ambiental vigente" },
-          { area: "Frequência de coleta cumprida" },
+          { area: "Data" },
+          { area: "Tipo de Resíduo" },
+          { area: "Peso" },
+          { area: "Destino" },
+          { area: "Monitoramento" },
+          { area: "Função" },
         ],
       },
     ],
     anexos: [
-      "ANEXO 1: Planilha de Coleta Diária de Resíduos",
-      "ANEXO 2: Registro de Destinação Final e MTR",
+      "ANEXO 1: Controle de Resíduos – PL POP 8.1",
     ],
   },
   {
