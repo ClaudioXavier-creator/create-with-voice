@@ -107,14 +107,14 @@ export const POPS_CONFIG: PopConfig[] = [
       },
       {
         key: "lotes_internos",
-        label: "PL POP 1.7 — Controle de Lotes Internos",
-        periodos: diasDoMes(),
+        label: "PL POP 1.7 — Controle de Lotes Internos MP/Embalagens",
+        periodos: ["Anual"],
         areas: [
-          { area: "Matéria-prima / Embalagem" },
-          { area: "Lote do fornecedor" },
-          { area: "Lote interno atribuído" },
-          { area: "Data de entrada" },
-          { area: "FIFO/PEPS verificado" },
+          { area: "Milho em Grãos (Lotes 1–110)" },
+          { area: "Soja (Lotes 1–110)" },
+          { area: "Quirera (Lotes 1–110)" },
+          { area: "Sal (Lotes 1–110)" },
+          { area: "Embalagens (Lotes 1–110)" },
         ],
       },
       {
