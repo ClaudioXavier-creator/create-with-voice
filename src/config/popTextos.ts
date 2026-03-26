@@ -112,7 +112,7 @@ export const POP_TEXTOS: PopTexto[] = [
   },
   {
     codigo: "POP-04",
-    nome: "Potabilidade da Água e Higienização de Reservatório",
+    nome: "Potabilidade da Água",
     objetivo: "Estabelecer procedimentos para garantia da potabilidade da água e higienização dos reservatórios utilizados no estabelecimento.",
     campoAplicacao: "Aplica-se a todos os pontos de coleta de água e reservatórios do estabelecimento.",
     documentosReferencia: [
