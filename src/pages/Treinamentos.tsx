@@ -76,12 +76,12 @@ export default function Treinamentos() {
   });
 
   const { data: checklist_asos = [] } = useQuery({
-    queryKey: ["checklist_asos"],
+    queryKey: ["saude_manipuladores"],
     queryFn: async () => {
-      const { data, error } = await supabase.from("checklist_items").select("*")
-        .eq("area", "ASO - Saúde Ocupacional").order("auditoria_data", { ascending: false });
+      const { data, error } = await supabase.from("saude_manipuladores" as any).select("*")
+        .order("data_exame", { ascending: false });
       if (error) throw error;
-      return data;
+      return data as any[];
     },
   });
 
