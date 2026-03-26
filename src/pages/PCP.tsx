@@ -127,6 +127,22 @@ export default function PCP() {
   const [limpezaResponsavel, setLimpezaResponsavel] = useState("");
   const [limpezaHora, setLimpezaHora] = useState("");
 
+  // Carry-over test
+  const [carryoverOpen, setCarryoverOpen] = useState(false);
+  const [coOrdemId, setCoOrdemId] = useState("");
+  const [coData, setCoData] = useState(new Date().toISOString().split("T")[0]);
+  const [coResponsavel, setCoResponsavel] = useState("");
+  const [coMetodo, setCoMetodo] = useState("visual");
+  const [coProdAnterior, setCoProdAnterior] = useState("");
+  const [coProdSeguinte, setCoProdSeguinte] = useState("");
+  const [coSubstancia, setCoSubstancia] = useState("");
+  const [coLimite, setCoLimite] = useState("");
+  const [coResultado, setCoResultado] = useState("");
+  const [coUnidade, setCoUnidade] = useState("ppm");
+  const [coConforme, setCoConforme] = useState(true);
+  const [coObs, setCoObs] = useState("");
+  const [carryoverRecords, setCarryoverRecords] = useState<any[]>([]);
+
   const fetchData = async () => {
     if (!user) return;
     const [ordensRes, itensRes, batidasRes, matrizRes] = await Promise.all([
