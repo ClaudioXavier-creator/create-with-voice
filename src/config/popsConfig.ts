@@ -234,7 +234,7 @@ export const POPS_CONFIG: PopConfig[] = [
   },
   {
     codigo: "POP-03",
-    nome: "Higiene e Saúde do Pessoal",
+    nome: "Higiene e Saúde Pessoal",
     descricao: "Procedimentos de higiene pessoal, saúde dos colaboradores, uso de EPIs e comportamento nas áreas de produção conforme IN 04/2007.",
     periodicidades: [
       {
