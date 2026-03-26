@@ -326,6 +326,28 @@ const sections: ManualSection[] = [
     ],
   },
   {
+    id: "categorizacao-risco",
+    title: "Categorização de Risco — Tutorial",
+    icon: ShieldCheck,
+    badge: "Legislação",
+    description:
+      "Tutorial completo sobre como categorizar o risco do estabelecimento conforme o Decreto 12.031/2024 e IN 17/2017 do MAPA. Inclui critérios, método de cálculo e ações por nível de risco.",
+    features: [
+      { title: "Critérios de Avaliação", text: "O risco é determinado por: tipo de produto fabricado (medicamentoso = alto), espécies atendidas (multiespécie eleva risco por contaminação cruzada), volume de produção, histórico de conformidade e uso de substâncias controladas (ureia, ionóforos, antibióticos)." },
+      { title: "Método de Pontuação", text: "Responder questionário com SIM (100% do peso), PARCIAL (50%), NÃO (0%) ou N/A (excluído). Calcular: % Conformidade = (Σ Pontos Obtidos / Σ Pontuação Máxima) × 100." },
+      { title: "Classificação de Risco", text: "≥80% = Risco BAIXO (verde) — fiscalização reduzida. 50-79% = Risco MÉDIO (amarelo) — plano de ação em 90 dias. <50% = Risco ALTO (vermelho) — ação imediata, risco de interdição." },
+      { title: "10 Categorias Avaliadas", text: "Infraestrutura, Higiene, Controle de MP, Processo Produtivo, Pragas, Treinamento, Rastreabilidade, Equipamentos, Documentação e PAC — alinhadas aos 10 POPs do sistema." },
+      { title: "Periodicidade", text: "Avaliação semestral como rotina do PAC, após mudanças no processo, após NC crítica/recall, ou quando solicitado pelo SIF/MAPA." },
+      { title: "Questionário Digital", text: "Acesse o módulo Matriz de Risco > aba 'Questionário de Risco' para realizar a avaliação automatizada com cálculo em tempo real e resultado por categoria." },
+    ],
+    tips: [
+      "O Decreto 12.031/2024 alterou a classificação de estabelecimentos — atualize sua avaliação.",
+      "Fábricas que produzem para equinos + aves devem ter atenção especial à contaminação cruzada por ionóforos.",
+      "Mantenha o histórico de avaliações para demonstrar evolução ao fiscal do MAPA.",
+      "Utilize o resultado da categorização para definir a frequência de auditorias internas no Planejamento Anual.",
+    ],
+  },
+  {
     id: "pragas",
     title: "Controle de Pragas",
     icon: Bug,
