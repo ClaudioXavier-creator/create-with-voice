@@ -506,7 +506,7 @@ export const POPS_CONFIG: PopConfig[] = [
   },
   {
     codigo: "POP-09",
-    nome: "Programa de Rastreabilidade e Recolhimento de Produtos (Recall)",
+    nome: "Programa de Rastreabilidade e Recolhimento (Recall)",
     descricao: "Procedimentos de rastreabilidade de produtos, controle de não conformidades e programa de recolhimento (recall) conforme IN 04/2007.",
     periodicidades: [
       {
