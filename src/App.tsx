@@ -39,6 +39,7 @@ import SalaAuditor from "./pages/SalaAuditor";
 import RelatorioProducao from "./pages/RelatorioProducao";
 import Auth from "./pages/Auth";
 import AtivarLicenca from "./pages/AtivarLicenca";
+import Modelos from "./pages/Modelos";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
