@@ -635,6 +635,7 @@ export default function PCP() {
                             <TabsList>
                               <TabsTrigger value="formula"><FlaskConical className="w-3 h-3 mr-1" /> Fórmula ({itens.length})</TabsTrigger>
                               <TabsTrigger value="batidas"><Factory className="w-3 h-3 mr-1" /> Batidas ({bats.length})</TabsTrigger>
+                              <TabsTrigger value="carryover"><TestTube className="w-3 h-3 mr-1" /> Carry-over</TabsTrigger>
                             </TabsList>
                             <div className="flex gap-2">
                               <Select value={o.status || "programada"} onValueChange={(v) => handleUpdateStatus(o.id, v)}>
@@ -723,6 +724,88 @@ export default function PCP() {
                               )}
                               <Button size="sm" variant="outline" onClick={() => openAddBatida(o.id)}>
                                 <Plus className="w-3 h-3 mr-1" /> Registrar Batida
+                              </Button>
+                            </div>
+                          </TabsContent>
+
+                          {/* ── CARRY-OVER TAB ── */}
+                          <TabsContent value="carryover">
+                            <div className="space-y-3">
+                              <div className="p-3 rounded-lg border border-orange-500/20 bg-orange-50 dark:bg-orange-900/10">
+                                <div className="flex items-start gap-2">
+                                  <TestTube className="w-5 h-5 text-orange-600 mt-0.5" />
+                                  <div>
+                                    <p className="text-xs font-semibold">Teste de Carry-over — IN 15/2009 | Decreto 12.031/2024</p>
+                                    <p className="text-[10px] text-muted-foreground mt-1">
+                                      Limite de arraste: Ionóforos {"<"} 1% da dose terapêutica • Medicados {"<"} 3% da dose terapêutica •
+                                      Micotoxinas {"<"} limite da legislação vigente. Teste obrigatório após flushing.
+                                    </p>
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* Limites de referência IN 15/2009 */}
+                              <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+                                <div className="p-2 rounded border bg-background text-center">
+                                  <p className="text-xs font-bold text-orange-700">Ionóforos</p>
+                                  <p className="text-lg font-bold text-orange-600">{"<"} 1%</p>
+                                  <p className="text-[10px] text-muted-foreground">da dose terapêutica</p>
+                                  <p className="text-[9px] text-muted-foreground mt-1">Monensina, Salinomicina, Lasalocida</p>
+                                </div>
+                                <div className="p-2 rounded border bg-background text-center">
+                                  <p className="text-xs font-bold text-destructive">Medicados</p>
+                                  <p className="text-lg font-bold text-destructive">{"<"} 3%</p>
+                                  <p className="text-[10px] text-muted-foreground">da dose terapêutica</p>
+                                  <p className="text-[9px] text-muted-foreground mt-1">Antibióticos, Coccidiostáticos, Promotores</p>
+                                </div>
+                                <div className="p-2 rounded border bg-background text-center">
+                                  <p className="text-xs font-bold text-yellow-700">Micotoxinas</p>
+                                  <p className="text-lg font-bold text-yellow-600">Limite legal</p>
+                                  <p className="text-[10px] text-muted-foreground">Aflatoxina: ≤ 20 ppb</p>
+                                  <p className="text-[9px] text-muted-foreground mt-1">DON, Fumonisina, Zearalenona</p>
+                                </div>
+                              </div>
+
+                              {/* Testes de carry-over desta ordem */}
+                              {(() => {
+                                const testsOrdem = carryoverRecords.filter((r: any) => r.checklist_auditoria_ref === o.id);
+                                return testsOrdem.length > 0 ? (
+                                  <Table>
+                                    <TableHeader><TableRow>
+                                      <TableHead>Data</TableHead>
+                                      <TableHead>Responsável</TableHead>
+                                      <TableHead>Método</TableHead>
+                                      <TableHead>Status</TableHead>
+                                      <TableHead className="max-w-[200px]">Detalhes</TableHead>
+                                    </TableRow></TableHeader>
+                                    <TableBody>
+                                      {testsOrdem.map((r: any) => (
+                                        <TableRow key={r.id}>
+                                          <TableCell className="whitespace-nowrap">{r.data_execucao}</TableCell>
+                                          <TableCell>{r.executor}</TableCell>
+                                          <TableCell className="text-xs">{
+                                            r.observacoes?.includes("Visual") ? "Inspeção Visual" :
+                                            r.observacoes?.includes("Swab") ? "Swab" :
+                                            r.observacoes?.includes("Flushing") ? "Análise Flushing" : "Laboratorial"
+                                          }</TableCell>
+                                          <TableCell>
+                                            {r.status === "concluido" ?
+                                              <Badge className="bg-primary/20 text-primary">Conforme</Badge> :
+                                              <Badge variant="destructive">NC</Badge>
+                                            }
+                                          </TableCell>
+                                          <TableCell className="text-xs max-w-[200px] truncate">{(r.observacoes || "").slice(0, 100)}</TableCell>
+                                        </TableRow>
+                                      ))}
+                                    </TableBody>
+                                  </Table>
+                                ) : (
+                                  <p className="text-xs text-muted-foreground text-center py-3">Nenhum teste de carry-over registrado para esta ordem</p>
+                                );
+                              })()}
+
+                              <Button size="sm" variant="outline" onClick={() => openCarryoverTest(o.id)}>
+                                <TestTube className="w-3 h-3 mr-1" /> Registrar Teste de Carry-over
                               </Button>
                             </div>
                           </TabsContent>
