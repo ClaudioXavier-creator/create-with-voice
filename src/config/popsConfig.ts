@@ -278,7 +278,7 @@ export const POPS_CONFIG: PopConfig[] = [
   },
   {
     codigo: "POP-04",
-    nome: "Potabilidade da Água e Higienização de Reservatório",
+    nome: "Potabilidade da Água",
     descricao: "Procedimentos de controle da potabilidade da água e higienização dos reservatórios conforme IN 04/2007 e Portaria de Potabilidade.",
     periodicidades: [
       {
