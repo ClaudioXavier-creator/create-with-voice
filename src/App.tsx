@@ -40,6 +40,7 @@ import RelatorioProducao from "./pages/RelatorioProducao";
 import Auth from "./pages/Auth";
 import AtivarLicenca from "./pages/AtivarLicenca";
 import Modelos from "./pages/Modelos";
+import Instalar from "./pages/Instalar";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -91,6 +92,7 @@ const AppRoutes = () => {
   return (
     <Routes>
       <Route path="/auth" element={session ? <Navigate to="/" replace /> : <Auth />} />
+      <Route path="/instalar" element={<Instalar />} />
       <Route
         path="/*"
         element={
