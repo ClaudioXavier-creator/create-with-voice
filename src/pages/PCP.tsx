@@ -293,6 +293,56 @@ export default function PCP() {
   const emProducao = ordens.filter(o => o.status === "em_producao").length;
   const concluidas = ordens.filter(o => o.status === "concluida").length;
 
+  const openCarryoverTest = (ordemId: string) => {
+    const ordem = ordens.find(o => o.id === ordemId);
+    setCoOrdemId(ordemId);
+    setCoProdSeguinte(ordem?.produto || "");
+    // find the previous order
+    const sorted = [...ordens].sort((a, b) => a.data_programada.localeCompare(b.data_programada));
+    const idx = sorted.findIndex(o => o.id === ordemId);
+    if (idx > 0) setCoProdAnterior(sorted[idx - 1].produto);
+    setCarryoverOpen(true);
+  };
+
+  const handleAddCarryover = async () => {
+    if (!user || !coResponsavel) return;
+    setSaving(true);
+    const ordem = ordens.find(o => o.id === coOrdemId);
+    const obs = [
+      `[TESTE DE CARRY-OVER — IN 15/2009 / Decreto 12.031/2024]`,
+      `Data: ${coData} | Responsável: ${coResponsavel}`,
+      `Método: ${coMetodo === "visual" ? "Inspeção Visual" : coMetodo === "swab" ? "Swab de Superfície" : coMetodo === "flushing_analise" ? "Análise do Flushing" : "Análise Laboratorial"}`,
+      `Produto anterior: ${coProdAnterior || "—"}`,
+      `Produto seguinte: ${coProdSeguinte || "—"}`,
+      coSubstancia ? `Substância monitorada: ${coSubstancia}` : "",
+      coLimite ? `Limite aceitável: ${coLimite} ${coUnidade}` : "",
+      coResultado ? `Resultado encontrado: ${coResultado} ${coUnidade}` : "",
+      `Conforme: ${coConforme ? "SIM ✅" : "NÃO ❌"}`,
+      coObs ? `Obs: ${coObs}` : "",
+    ].filter(Boolean).join("\n");
+
+    const { error } = await supabase.from("execucao_pops").insert({
+      user_id: user.id,
+      codigo_pop: "POP-CARRYOVER",
+      nome_pop: "Teste de Carry-over",
+      executor: coResponsavel,
+      setor: ordem?.numero_ordem || "PCP",
+      status: coConforme ? "concluido" : "nao_conforme",
+      observacoes: obs,
+      data_execucao: coData,
+      checklist_auditoria_ref: coOrdemId,
+    });
+    if (error) toast.error("Erro: " + error.message);
+    else {
+      toast.success("Teste de carry-over registrado!");
+      setCarryoverOpen(false);
+      setCoResponsavel(""); setCoMetodo("visual"); setCoProdAnterior(""); setCoProdSeguinte("");
+      setCoSubstancia(""); setCoLimite(""); setCoResultado(""); setCoUnidade("ppm"); setCoConforme(true); setCoObs("");
+      fetchData();
+    }
+    setSaving(false);
+  };
+
   if (loading) return (
     <>
       <PageHeader icon={ClipboardList} title="PCP — Ordens de Produção" description="Planejamento e controle de produção com fórmulas, batidas e rastreabilidade de lotes" />
