@@ -71,7 +71,7 @@ function riskColor(nivel: string) {
 
 export default function MatrizRisco() {
   const { user } = useAuth();
-  const [tab, setTab] = useState("sensibilidade");
+  const [tab, setTab] = useState("questionario");
 
   // Sensitivity state
   const [products, setProducts] = useState<string[]>(DEFAULT_PRODUCTS);
