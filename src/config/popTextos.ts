@@ -15,7 +15,7 @@ export interface PopTexto {
 export const POP_TEXTOS: PopTexto[] = [
   {
     codigo: "POP-01",
-    nome: "Qualificação de Fornecedores e Controle de Matérias-Primas e de Embalagens",
+    nome: "Qualificação de Fornecedores",
     objetivo: "Estabelecer os procedimentos de qualificação dos fornecedores e o controle no recebimento e armazenamento de matérias-primas e embalagens, para garantir a qualidade e segurança dos produtos acabados.",
     campoAplicacao: "Aplica-se a todos os fornecedores de matérias-primas, ingredientes e embalagens utilizados na fabricação de produtos destinados à alimentação animal.",
     documentosReferencia: [
