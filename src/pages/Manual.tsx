@@ -4,8 +4,10 @@ import {
   Package, Factory, Search, Bug, GraduationCap, BarChart3, PlayCircle, FileDown,
   Scale, Users, Settings, ChevronDown, ChevronRight, HelpCircle, Droplets,
   Wrench, FlaskConical, ShieldCheck, Beaker, CalendarRange, Tag, FileSpreadsheet,
-  Recycle, Pill, Star, UserCheck, Microscope, Activity
+  Recycle, Pill, Star, UserCheck, Microscope, Activity, FileCheck
 } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { MANUAL_BPF_SECTIONS } from "@/config/manualBpfContent";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import PageHeader from "@/components/PageHeader";

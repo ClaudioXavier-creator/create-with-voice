@@ -1,0 +1,178 @@
+export interface ManualBpfSection {
+  id: string;
+  numero: string;
+  titulo: string;
+  conteudo: string[];
+}
+
+export const MANUAL_BPF_SECTIONS: ManualBpfSection[] = [
+  {
+    id: "identificacao",
+    numero: "1",
+    titulo: "Identificação da Empresa",
+    conteudo: [
+      "RAZÃO SOCIAL: (Preencher com a razão social da empresa)",
+      "NOME FANTASIA: (Preencher com o nome fantasia)",
+      "REGISTRO MAPA: SIF – XX – 000000-0",
+      "ENDEREÇO: (Endereço completo)",
+      "CIDADE: (Cidade - UF)",
+      "CEP: 00000-000",
+      "RESPONSÁVEL TÉCNICO: (Nome do RT)",
+      "HORÁRIO DE FUNCIONAMENTO: (Informar horário de funcionamento)",
+    ],
+  },
+  {
+    id: "objetivo",
+    numero: "2",
+    titulo: "Objetivo",
+    conteudo: [
+      "O Manual de Boas Práticas de Fabricação tem como base a Instrução Normativa 04, de 13 de fevereiro de 2007 — Regulamentos Técnicos sobre as condições higiênico-sanitárias e de boas práticas de fabricação para estabelecimentos fabricantes de alimentos para animais.",
+      "O objetivo é estabelecer diretrizes relativas à implementação e gestão das normas internas que regem as boas práticas de fabricação na unidade, assegurando que os requisitos essenciais sejam adequadamente seguidos e compreendidos.",
+      "O manual descreve as operações realizadas na planta, englobando: higiene sanitária, higienização das instalações, equipamentos e utensílios, controle de pragas, controle da qualidade da água, controle dos hábitos higiênicos e saúde dos funcionários, garantia da rastreabilidade e qualidade do produto final, e prevenção da contaminação cruzada.",
+    ],
+  },
+  {
+    id: "aplicacao",
+    numero: "3",
+    titulo: "Aplicação",
+    conteudo: [
+      "Este manual aplica-se a todos os funcionários e setores envolvidos, direta ou indiretamente, com o processamento industrial de rações.",
+    ],
+  },
+  {
+    id: "definicoes",
+    numero: "4",
+    titulo: "Definições",
+    conteudo: [
+      "BOAS PRÁTICAS DE FABRICAÇÃO (BPF): Procedimentos higiênico-sanitários e operacionais aplicados em todo o fluxo de produção, desde a obtenção dos ingredientes até a distribuição do produto, com o objetivo de garantir a qualidade, conformidade e segurança dos produtos à alimentação animal.",
+      "CONTAMINAÇÃO: Presença de substâncias ou agentes estranhos de origem biológica, química ou física que se considerem indesejáveis ao produto.",
+      "CONTAMINAÇÃO CRUZADA: Contaminação de produtos destinados à alimentação animal com outro produto, durante o processo de produção ou contaminação gerada pelo contato indevido de ingredientes, insumos, superfícies, ambiente, pessoas ou produtos contaminados.",
+      "CONTROLE DE QUALIDADE: Conjunto de procedimentos que envolvem programação, coordenação e execução com o objetivo de verificar e assegurar a conformidade da matéria-prima, do ingrediente, do rótulo, da embalagem e do produto acabado.",
+      "DESINFECÇÃO / SANITIZAÇÃO: Operação de redução por método físico e/ou agente químico do número de microrganismos a um nível que não comprometa a inocuidade do alimento.",
+      "EMBALAGEM PRIMÁRIA: Embalagem que mantém contato direto com o produto.",
+      "HIGIENIZAÇÃO: Operação que compreende duas etapas: limpeza e desinfecção.",
+      "LIMPEZA: Operação de remoção de substâncias minerais e orgânicas indesejáveis.",
+      "LOTE: Quantidade de um produto elaborado em um ciclo de fabricação, cuja característica essencial é a homogeneidade.",
+      "MATÉRIA-PRIMA / INGREDIENTE: Toda substância que se emprega na fabricação de alimentos para animais.",
+      "POP — Procedimento Operacional Padrão: Procedimento escrito de forma objetiva que estabelece instruções sequenciais para a realização de operações rotineiras e específicas na produção.",
+      "PRODUTO ACABADO: Produto que já passou por todas as etapas de produção.",
+      "RASTREABILIDADE: Capacidade de detectar a origem e de seguir o rastro de um alimento, de uma substância ou objeto, ao longo de todas as etapas da produção, transformação e distribuição.",
+    ],
+  },
+  {
+    id: "instalacoes",
+    numero: "5",
+    titulo: "Descrição das Instalações e Fluxo de Produção",
+    conteudo: [
+      "Descrever nesta seção o layout físico da fábrica, incluindo: área de recepção de matérias-primas, áreas de estocagem (silos, armazéns), área de pesagem e mistura, área de ensaque e expedição, laboratório de controle de qualidade, área administrativa, vestiários e sanitários, e área externa.",
+      "Incluir descrição do fluxo de produção: recebimento de MP → pesagem → dosagem → mistura → ensaque → expedição.",
+      "O estabelecimento dispõe de layout que permite separar, por áreas e setores, o fluxo unidirecional de pessoas e produtos, de forma a evitar contaminação cruzada.",
+    ],
+  },
+  {
+    id: "pop01_fornecedores",
+    numero: "5.1",
+    titulo: "Qualificação de Fornecedores e Controle de MP (POP 01)",
+    conteudo: [
+      "A empresa mantém cadastro de fornecedores qualificados conforme critérios de avaliação que incluem: registro no MAPA/SIPEAGRO, certificados de análise, histórico de qualidade e cumprimento de especificações técnicas.",
+      "As matérias-primas são recebidas e avaliadas quanto a: aspecto visual, odor, cor, umidade, temperatura, integridade da embalagem e presença de insetos ou corpos estranhos. A cada recebimento é verificada a nota fiscal e o certificado de análise.",
+      "Para grãos, o padrão interno adotado é de no máximo 14% de umidade no recebimento. Se a MP for rejeitada, é proibida de ser descarregada e comunicado ao fornecedor.",
+      "Para todas as matérias-primas recebidas são criados lotes internos conforme a Planilha de controle (PL POP 1.7). O operador utilizará sempre os lotes que chegaram primeiro, respeitando o FIFO/PEPS.",
+    ],
+  },
+  {
+    id: "pop02_limpeza",
+    numero: "5.2",
+    titulo: "Limpeza de Instalações, Equipamentos e Utensílios (POP 02)",
+    conteudo: [
+      "A limpeza de instalações, equipamentos e utensílios segue cronograma definido com frequência diária, semanal e mensal.",
+      "Os métodos de higienização incluem: limpeza a seco (varrição, aspiração, soprador de folhas), limpeza úmida (água sob pressão, detergentes) e sanitização quando necessário.",
+      "Cada área possui procedimento específico detalhando: responsável, frequência, partes a serem limpas, método de higienização, produtos e equipamentos utilizados, peças desmontáveis e EPIs necessários.",
+      "O monitoramento é realizado pela conformidade da limpeza de 100% dos itens especificados em cada área, registrado por assinatura na planilha de Registro de Limpeza.",
+      "Nunca o monitor pode ser o verificador e vice-versa.",
+    ],
+  },
+  {
+    id: "pop03_higiene",
+    numero: "5.3",
+    titulo: "Higiene e Saúde do Pessoal (POP 03)",
+    conteudo: [
+      "Os funcionários das áreas de manipulação recebem treinamento adequado na admissão e são continuamente treinados em relação à manipulação higiênica e higiene pessoal.",
+      "Os funcionários utilizam o uniforme somente nas dependências da fábrica. São orientados a retirarem quaisquer objetos de adorno (anéis, alianças, pulseiras, relógios, brincos, cordões).",
+      "Os funcionários devem estar sempre: uniformizados, com botinas limpas, cabelos cobertos por touca/boné, barbeados, com unhas aparadas e limpas, com mãos higienizadas.",
+      "Funcionários enfermos são afastados do trabalho ou remanejados para trabalhos fora da área de produção. Colaboradores com ferimentos utilizam luvas de proteção.",
+      "Procedimento de higiene das mãos: molhar o antebraço até o cotovelo, aplicar detergente bactericida, esfregar palma, dorso, antebraço, espaço entre dedos, polegar, unhas e pontas dos dedos, enxaguar e secar.",
+      "As mãos são lavadas: ao entrar na seção de trabalho, após fumar, após recolher lixo, durante pausas, ao tocar o chão, após uso do banheiro, após tocar cabelo/nariz/corpo, depois de tossir ou espirrar.",
+    ],
+  },
+  {
+    id: "pop04_agua",
+    numero: "5.5",
+    titulo: "Potabilidade da Água e Higienização dos Reservatórios (POP 04)",
+    conteudo: [
+      "A água utilizada na empresa é potável e monitorada conforme orientação do POP 04. A qualidade da água é controlada semestralmente pelos laudos de análises.",
+      "A origem da água pode ser de rede pública de abastecimento ou poço artesiano, com potabilidade controlada por laudos periódicos.",
+      "A água chega por encanamento até as caixas d'água, que abastecem sanitários, bebedouros e áreas de produção.",
+      "Os reservatórios são higienizados semestralmente por empresa especializada, com emissão de certificado.",
+    ],
+  },
+  {
+    id: "pop05_contaminacao",
+    numero: "5.6",
+    titulo: "Prevenção de Contaminação Cruzada (POP 05)",
+    conteudo: [
+      "A empresa garante procedimentos para prevenir a contaminação cruzada de matéria-prima, produtos acabados e materiais de embalagem, não ocasionando contaminações de origem biológica, química ou física.",
+      "São tomadas medidas para evitar contaminação por contato direto e indireto em todas as etapas do processo. As matérias-primas, embalagens e produto acabado são identificados e armazenados separados.",
+      "O prédio e instalações da fábrica permitem separar, por áreas e setores, o fluxo unidirecional de pessoas e produtos, de forma a evitar contaminação cruzada.",
+      "A empresa enfatiza através de treinamentos e conscientização dos colaboradores os riscos de contaminação cruzada. Todos os equipamentos e utensílios que entram em contato com matéria-prima são higienizados conforme POP 02.",
+    ],
+  },
+  {
+    id: "pop06_manutencao",
+    numero: "5.7",
+    titulo: "Manutenção e Calibração de Equipamentos (POP 06)",
+    conteudo: [
+      "A empresa é responsável em manter instrumentos de processo (balanças) conforme sua finalidade e, através da aferição, garantir a eficiência dos controles.",
+      "A manutenção das instalações ocorre de forma corretiva (pequenos reparos) e preventiva. Durante manutenção corretiva, a área é isolada com fita de isolamento.",
+      "Os equipamentos e utensílios são projetados de material não contaminante, inertes e de fácil desmontagem.",
+      "A calibração das balanças é realizada por empresa terceirizada habilitada junto ao INMETRO. Cada balança calibrada possui laudo técnico informando suas especificações e condições atuais.",
+      "Após realização dos serviços de manutenção é importante recolher ferramentas e peças substituídas para não comprometer a inocuidade dos produtos.",
+    ],
+  },
+  {
+    id: "pop07_pragas",
+    numero: "5.8",
+    titulo: "Controle Integrado de Pragas (POP 07)",
+    conteudo: [
+      "O programa de Controle Integrado de Pragas inclui medidas preventivas para impedir a invasão, instalação e proliferação de pragas, e aplicação de produtos químicos quando necessário.",
+      "As aberturas entre parede e teto, portas e janelas são teladas para evitar presença de insetos alados e aves.",
+      "A indústria monitora diariamente o controle integrado de pragas pela inspeção dos ambientes internos e externos.",
+      "O controle integrado de pragas é realizado por empresa contratada, devidamente registrada na vigilância sanitária, com execução mensal.",
+      "A empresa contratada possui: registro junto aos órgãos de Defesa Sanitária, responsável técnico, EPIs/EPCs específicos, ficha técnica de todos os produtos utilizados e treinamento atualizado.",
+    ],
+  },
+  {
+    id: "pop08_residuos",
+    numero: "5.9",
+    titulo: "Controle de Resíduos e Efluentes (POP 08)",
+    conteudo: [
+      "A empresa garante o manejo e destino dos resíduos e efluentes produzidos durante as operações, promovendo o atendimento às normas ambientais.",
+      "Os resíduos são acondicionados, recolhidos, segregados e encaminhados para área externa onde aguardam destinação final. A frequência de retirada é de 1 vez por turno ou sempre que necessário.",
+      "Após recolhimento, segregação e armazenamento, os resíduos são encaminhados para destinação final (coleta pública ou empresa especializada) sem causar risco ao produto ou ao meio ambiente.",
+      "Os resíduos inerentes ao processo, embalagens e material descartável são depositados em área específica e removidos periodicamente como prevenção à proliferação de pragas.",
+    ],
+  },
+  {
+    id: "pop09_rastreabilidade",
+    numero: "5.10",
+    titulo: "Rastreabilidade e Recolhimento de Produtos — Recall (POP 09)",
+    conteudo: [
+      "A empresa garante a rastreabilidade dos produtos mediante a utilização de registros adequados para uma retirada ou recolhimento eficiente dos produtos.",
+      "A rastreabilidade é realizada através do número do lote inserido na embalagem. Pelo lote e data de fabricação é possível localizar a ordem de produção.",
+      "A rastreabilidade é assegurada no momento da fabricação, onde o operador insere na Ordem de Produção o lote de matéria-prima, núcleo e embalagens utilizados.",
+      "Para realizar a rastreabilidade verifica-se: identificação da ração (número do lote) → identificação da Ordem de Produção → lotes das MP e embalagens.",
+      "O procedimento de recall aplica-se em situações como: contaminação identificada após liberação dos produtos, ou prejuízo da imagem da empresa. A empresa possui equipe de recall e planos de ação para recolhimento ágil e seguro.",
+      "Etapas do recall: Detectar → Acionar equipe → Comunicar → Rastrear produto no mercado → Isolar e recolher → Avaliar condições → Repor cliente → Tratar NC e realizar ações preventivas/corretivas.",
+    ],
+  },
+];

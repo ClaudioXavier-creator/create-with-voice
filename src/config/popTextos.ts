@@ -1,0 +1,301 @@
+export interface PopTexto {
+  codigo: string;
+  nome: string;
+  objetivo: string;
+  campoAplicacao: string;
+  documentosReferencia: string[];
+  definicoes: { termo: string; definicao: string }[];
+  procedimentos: string[];
+  monitoramento: { controle: string; frequencia: string; registro: string; responsavel: string };
+  verificacao: { controle: string; frequencia: string; registro: string; responsavel: string };
+  acoesCorretivas: { naoConformidade: string; acao: string }[];
+  tempoRetencao: string;
+}
+
+export const POP_TEXTOS: PopTexto[] = [
+  {
+    codigo: "POP-01",
+    nome: "Qualificação de Fornecedores e Controle de Matérias-Primas e de Embalagens",
+    objetivo: "Estabelecer os procedimentos de qualificação dos fornecedores e o controle no recebimento e armazenamento de matérias-primas e embalagens, para garantir a qualidade e segurança dos produtos acabados.",
+    campoAplicacao: "Aplica-se a todos os fornecedores de matérias-primas, ingredientes e embalagens utilizados na fabricação de produtos destinados à alimentação animal.",
+    documentosReferencia: [
+      "Instrução Normativa nº 04 de 23 de fevereiro de 2007",
+      "Manual do Programa Feed & Food Safety – Gestão do Alimento Seguro",
+      "Decreto 12.031/2024",
+    ],
+    definicoes: [
+      { termo: "Fornecedor Qualificado", definicao: "Fornecedor que atende aos critérios de avaliação da empresa, incluindo registro no MAPA/SIPEAGRO, certificados de análise e histórico de qualidade." },
+      { termo: "Certificado de Análise", definicao: "Documento emitido pelo fornecedor ou laboratório que comprova a conformidade da matéria-prima com as especificações técnicas." },
+      { termo: "FIFO/PEPS", definicao: "First In First Out / Primeiro que Entra Primeiro que Sai — sistema de controle de estoque." },
+      { termo: "Lote Interno", definicao: "Código de identificação atribuído internamente pela empresa para rastreabilidade de matérias-primas sem lote de fornecedor." },
+    ],
+    procedimentos: [
+      "Os fornecedores são selecionados e avaliados conforme critérios de registro no MAPA/SIPEAGRO, capacidade de fornecimento, histórico de qualidade e cumprimento de especificações.",
+      "No recebimento de grãos, a cada descarregamento é retirada amostra para verificação da umidade (máx. 14%). A cada lote, amostra é enviada ao laboratório.",
+      "Se a MP for aprovada, é descarregada em local indicado pelo operador. Se rejeitada, é proibida de ser descarregada.",
+      "Para MPs ensacadas, são descarregadas na área de insumos e identificadas com placas: nome do produto, fornecedor, lote, data de chegada, fabricação e validade.",
+      "Para todas as MP recebidas são criados lotes internos (PL POP 1.7), respeitando FIFO/PEPS.",
+      "No recebimento de embalagens, é conferida nota fiscal, condições higiênico-sanitárias e quantidades (PL POP 1.6).",
+    ],
+    monitoramento: { controle: "Planilhas de controle", frequencia: "De acordo com execução do serviço", registro: "Assinatura na planilha", responsavel: "Controle de qualidade, RT ou funcionário indicado pelo CQ" },
+    verificacao: { controle: "Planilha de controle", frequencia: "De acordo com execução do serviço", registro: "Assinatura na planilha", responsavel: "CQ, RT (verificador ≠ monitor)" },
+    acoesCorretivas: [
+      { naoConformidade: "MP fora de especificação", acao: "Devolver a carga e comunicar ao fornecedor" },
+      { naoConformidade: "Ausência de certificado de análise", acao: "Reter o lote e solicitar certificado ao fornecedor" },
+      { naoConformidade: "Embalagem danificada", acao: "Rejeitar e registrar NC" },
+    ],
+    tempoRetencao: "2 anos",
+  },
+  {
+    codigo: "POP-02",
+    nome: "Limpeza de Instalações, Equipamentos e Utensílios",
+    objetivo: "Estabelecer procedimentos e frequência de higienização das instalações, equipamentos e utensílios da fábrica, garantindo condições sanitárias adequadas para a produção.",
+    campoAplicacao: "Aplica-se a todas as áreas internas e externas da fábrica, incluindo escritórios, vestiários, áreas de produção, recepção de grãos, pesagem, mistura, ensaque, embalagens, expedição, pátio e veículos.",
+    documentosReferencia: [
+      "Instrução Normativa nº 04 de 23 de fevereiro de 2007",
+      "Instrução Normativa nº 15 de 26 de maio de 2009",
+    ],
+    definicoes: [
+      { termo: "Limpeza a Seco", definicao: "Remoção de sujidades por varrição, aspiração ou soprador de folhas, sem uso de água." },
+      { termo: "Limpeza Úmida", definicao: "Remoção de sujidades com uso de água e/ou detergentes." },
+      { termo: "Sanitização", definicao: "Aplicação de agente desinfetante após a limpeza para redução microbiana." },
+    ],
+    procedimentos: [
+      "ESCRITÓRIO E ANEXOS (Diário): Varrição dos pisos, limpeza de superfícies com pano úmido, recolhimento de lixo.",
+      "VESTIÁRIOS/BANHEIROS (Diário): Lavagem dos pisos com água e detergente, limpeza de vasos sanitários com detergente bactericida, reposição de sabonete e papel.",
+      "ÁREA DE PRODUÇÃO – PISO (Diário): Varrição após cada turno, recolhimento de resíduos com pá e sacos de rafia.",
+      "RECEPÇÃO DE GRÃOS – MOEGA (Diário): Varrição do piso e recolhimento de resíduos de grãos.",
+      "PESAGEM E MISTURA (Semanal): Limpeza de equipamentos e utensílios com ar comprimido e escova.",
+      "ÁREA EXTERNA – PÁTIO (Semanal): Varrição ou soprador de folhas, recolhimento de resíduos.",
+      "SILOS DE ARMAZENAMENTO (Semestral): Varrição interna e recolhimento de resíduos quando vazios.",
+      "VEÍCULOS (Mensal): Caminhão — água sob pressão e detergente (parte externa), ar comprimido e pano úmido (cabine), varrição (carroceria). Empilhadeira — água sob pressão e detergente.",
+    ],
+    monitoramento: { controle: "Conformidade de 100% dos itens de limpeza", frequencia: "De acordo com a frequência de cada limpeza", registro: "Assinatura na planilha de Registro de Limpeza", responsavel: "CQ, RT ou funcionário designado pelo CQ" },
+    verificacao: { controle: "Verificação dos registros", frequencia: "Mensal", registro: "Assinatura nas planilhas de Registro de Limpeza", responsavel: "Auxiliar administrativo, CQ, RT (verificador ≠ monitor)" },
+    acoesCorretivas: [
+      { naoConformidade: "Falha na limpeza", acao: "O responsável deve refazer o serviço" },
+      { naoConformidade: "Não conformidade no preenchimento dos controles", acao: "O funcionário deve ser orientado do correto preenchimento" },
+    ],
+    tempoRetencao: "2 anos",
+  },
+  {
+    codigo: "POP-03",
+    nome: "Higiene e Saúde do Pessoal",
+    objetivo: "Estabelecer os procedimentos de higiene pessoal e controle de saúde dos colaboradores, garantindo a manipulação segura dos alimentos para animais.",
+    campoAplicacao: "Aplica-se a todos os funcionários que participam direta ou indiretamente do processo produtivo, incluindo visitantes.",
+    documentosReferencia: [
+      "Instrução Normativa nº 04 de 23 de fevereiro de 2007",
+      "NR-6, NR-7 e NR-9 do MTE",
+    ],
+    definicoes: [
+      { termo: "ASO", definicao: "Atestado de Saúde Ocupacional, emitido pelo médico do trabalho." },
+      { termo: "PCMSO", definicao: "Programa de Controle Médico de Saúde Ocupacional." },
+      { termo: "EPI", definicao: "Equipamento de Proteção Individual." },
+    ],
+    procedimentos: [
+      "Funcionários recebem treinamento de BPF na admissão e continuamente.",
+      "Uniforme utilizado somente nas dependências da fábrica. Proibido: adornos, esmalte, perfume, lentes de contato na área de risco.",
+      "Funcionários devem estar: uniformizados, com botinas limpas, cabelos cobertos, barbeados, unhas aparadas, mãos higienizadas.",
+      "Higiene das mãos: molhar antebraço, aplicar detergente bactericida, esfregar palma/dorso/entre dedos/polegar/unhas, enxaguar e secar.",
+      "Colaboradores enfermos são afastados da produção. Colaboradores com ferimentos utilizam luvas de proteção.",
+      "Exames médicos: admissional e periódico anual conforme PCMSO.",
+      "Visitantes devem usar touca, avental descartável, sapatos fechados. Proibido fumar, mascar chiclete, comer na área de produção.",
+    ],
+    monitoramento: { controle: "Observação visual da higiene durante produção e intervalos", frequencia: "Visual diário, registro semanal", registro: "PL POP 3.1", responsavel: "CQ, RT ou funcionário designado pelo CQ" },
+    verificacao: { controle: "Verificação dos registros", frequencia: "Mensal", registro: "Assinatura nas planilhas de Higiene e Saúde do Pessoal", responsavel: "CQ, RT (verificador ≠ monitor)" },
+    acoesCorretivas: [
+      { naoConformidade: "Funcionário sem uniforme adequado", acao: "Orientar e fornecer uniforme. Registrar NC." },
+      { naoConformidade: "Falta de higiene pessoal", acao: "Retreinar o colaborador. Registrar NC." },
+      { naoConformidade: "ASO vencido", acao: "Encaminhar ao médico do trabalho imediatamente." },
+    ],
+    tempoRetencao: "2 anos",
+  },
+  {
+    codigo: "POP-04",
+    nome: "Potabilidade da Água e Higienização de Reservatório",
+    objetivo: "Estabelecer procedimentos para garantia da potabilidade da água e higienização dos reservatórios utilizados no estabelecimento.",
+    campoAplicacao: "Aplica-se a todos os pontos de coleta de água e reservatórios do estabelecimento.",
+    documentosReferencia: [
+      "Instrução Normativa nº 04 de 23 de fevereiro de 2007",
+      "Portaria do MS sobre potabilidade da água",
+    ],
+    definicoes: [
+      { termo: "Cloro Residual Livre", definicao: "Quantidade de cloro disponível na água após desinfecção (faixa: 0,2 a 2,0 mg/L)." },
+      { termo: "Potabilidade", definicao: "Qualidade da água que atende aos padrões microbiológicos e físico-químicos para consumo humano." },
+    ],
+    procedimentos: [
+      "Controle diário de cloro residual em cada ponto de coleta.",
+      "Análise microbiológica e físico-química periódica por laboratório credenciado.",
+      "Higienização semestral dos reservatórios por empresa especializada.",
+      "Arquivo de laudos laboratoriais e certificados de limpeza.",
+    ],
+    monitoramento: { controle: "Medição de cloro residual e análises laboratoriais", frequencia: "Diário (cloro), semestral (análise completa)", registro: "Planilha de controle de água", responsavel: "CQ ou RT" },
+    verificacao: { controle: "Verificação dos registros e laudos", frequencia: "Mensal", registro: "Assinatura nas planilhas", responsavel: "RT (verificador ≠ monitor)" },
+    acoesCorretivas: [
+      { naoConformidade: "Cloro fora da faixa", acao: "Ajustar dosagem e coletar nova amostra" },
+      { naoConformidade: "Laudo não conforme", acao: "Suspender uso do ponto e investigar causa" },
+    ],
+    tempoRetencao: "2 anos",
+  },
+  {
+    codigo: "POP-05",
+    nome: "Prevenção de Contaminação Cruzada",
+    objetivo: "Estabelecer procedimentos para prevenção da contaminação cruzada durante o processo produtivo, armazenamento e manipulação de matérias-primas e produtos acabados.",
+    campoAplicacao: "Aplica-se a todas as etapas do processo produtivo, desde o recebimento até a expedição.",
+    documentosReferencia: [
+      "Instrução Normativa nº 04 de 23 de fevereiro de 2007",
+      "Instrução Normativa nº 15 de 26 de maio de 2009",
+    ],
+    definicoes: [
+      { termo: "Flushing", definicao: "Passagem de produto neutro pelo sistema para remoção de resíduos do produto anterior." },
+      { termo: "Matriz de Sensibilidade", definicao: "Tabela que indica quais transições entre produtos requerem limpeza especial ou flushing." },
+      { termo: "Sequência de Produção", definicao: "Ordem planejada de fabricação para minimizar o risco de contaminação cruzada." },
+    ],
+    procedimentos: [
+      "Produção de ração farelada: seguir sequência de produção conforme matriz de sensibilidade.",
+      "Identificação de MP a granel: placas de identificação em silos com nome, lote, data.",
+      "Identificação de MP ensacadas: etiquetas com nome, fornecedor, lote, datas.",
+      "Limpeza entre lotes: flushing obrigatório na troca de produtos com medicamento para sem medicamento.",
+      "Armazenamento segregado: MP com e sem medicamentos em áreas separadas e identificadas.",
+      "Embalagens armazenadas em local seco e limpo, separadas de MP e produto acabado.",
+    ],
+    monitoramento: { controle: "Checklist de Prevenção de Contaminação Cruzada", frequencia: "Semanal", registro: "Assinatura na planilha de Checklist (PL POP 5.1)", responsavel: "CQ, gerente de produção, RT" },
+    verificacao: { controle: "Preenchimento do Checklist", frequencia: "Mensal", registro: "Assinatura na planilha", responsavel: "CQ ou RT (verificador ≠ monitor)" },
+    acoesCorretivas: [
+      { naoConformidade: "Falha na limpeza", acao: "Refazer a limpeza e registrar NC" },
+      { naoConformidade: "MP contaminada ou não conforme", acao: "Devolver MP e registrar NC" },
+      { naoConformidade: "Dosagem errada de micronutrientes", acao: "Repesar conforme formulação e registrar NC" },
+      { naoConformidade: "Falta de identificação em pilhas de MP", acao: "Identificar imediatamente" },
+      { naoConformidade: "Coeficiente de variação da homogeneidade >10%", acao: "Limpeza do misturador, verificar aterramento, repetir teste" },
+      { naoConformidade: "Contaminação na área de estocagem", acao: "Isolar produto, avaliar e definir destino (descarte/reprocesso)" },
+    ],
+    tempoRetencao: "2 anos",
+  },
+  {
+    codigo: "POP-06",
+    nome: "Manutenção e Calibração de Equipamentos e Instrumentos",
+    objetivo: "Descrever os procedimentos de manutenção preventiva e calibração dos equipamentos e instrumentos de medição, garantindo a eficiência e segurança do produto.",
+    campoAplicacao: "Aplica-se à calibração dos instrumentos de medição e à manutenção preventiva de todos os equipamentos da fábrica.",
+    documentosReferencia: [
+      "Instrução Normativa nº 04 de 23 de fevereiro de 2007",
+      "Manual do Programa Feed & Food Safety – Gestão do Alimento Seguro",
+    ],
+    definicoes: [
+      { termo: "Ajuste", definicao: "Ação sobre o equipamento para ajustá-lo ao padrão." },
+      { termo: "Calibração", definicao: "Operação que estabelece uma relação entre os valores e incertezas de medição fornecida por padrões e as indicações do instrumento." },
+      { termo: "Erro de Medição", definicao: "Diferença entre o valor medido e o valor de referência." },
+      { termo: "Manutenção Preventiva", definicao: "Conjunto de ações planejadas para manter equipamentos em condições ideais de funcionamento." },
+      { termo: "Verificação Intermediária", definicao: "Verificação realizada entre calibrações para confirmar que o instrumento mantém a precisão." },
+    ],
+    procedimentos: [
+      "Manutenção preventiva de equipamentos conforme cronograma mensal.",
+      "Calibração de balanças por empresa terceirizada habilitada pelo INMETRO (semestral ou anual).",
+      "Verificação intermediária de balanças com padrão de referência.",
+      "Registro de todas as manutenções e calibrações com data, responsável e observações.",
+      "Instrumentos fora de calibração devem ser retirados de uso imediatamente e identificados.",
+      "Após manutenção, recolher ferramentas e peças substituídas antes de reiniciar produção.",
+    ],
+    monitoramento: { controle: "Cronograma de manutenção e calibração", frequencia: "Mensal (manutenção), semestral (calibração)", registro: "Planilha de manutenção e certificados de calibração", responsavel: "Responsável pela manutenção e CQ" },
+    verificacao: { controle: "Verificação dos registros e certificados", frequencia: "Mensal", registro: "Assinatura nos registros", responsavel: "RT (verificador ≠ monitor)" },
+    acoesCorretivas: [
+      { naoConformidade: "Equipamento fora de calibração", acao: "Retirar de uso, identificar e enviar para recalibração" },
+      { naoConformidade: "Falha de manutenção preventiva", acao: "Realizar manutenção corretiva e ajustar cronograma" },
+    ],
+    tempoRetencao: "2 anos",
+  },
+  {
+    codigo: "POP-07",
+    nome: "Controle Integrado de Pragas",
+    objetivo: "Estabelecer procedimentos para o controle integrado de pragas, impedindo a invasão, instalação e proliferação de vetores nas instalações.",
+    campoAplicacao: "Aplica-se a todas as áreas internas e externas do estabelecimento.",
+    documentosReferencia: [
+      "Instrução Normativa nº 04 de 23 de fevereiro de 2007",
+      "Legislação sanitária estadual",
+    ],
+    definicoes: [
+      { termo: "Manejo Integrado de Pragas", definicao: "Abordagem que combina medidas preventivas, corretivas e de eliminação para controle de pragas." },
+      { termo: "Medidas Preventivas", definicao: "Ações para impedir a entrada de pragas (telas, vedações, organização)." },
+      { termo: "Medidas Corretivas", definicao: "Ações para eliminar pragas já presentes (armadilhas, aplicação de produtos)." },
+    ],
+    procedimentos: [
+      "Monitoramento semanal de armadilhas internas e externas.",
+      "Inspeção de vedação de portas, janelas e telas anti-inseto.",
+      "Desinsetização e desratização mensal por empresa terceirizada registrada na vigilância sanitária.",
+      "Manutenção de mapa de iscas atualizado.",
+      "Registro de produtos químicos aplicados com ficha técnica.",
+      "Destino adequado de pragas mortas.",
+      "Empresa contratada deve possuir: registro na Defesa Sanitária, RT, EPIs/EPCs, treinamento atualizado.",
+    ],
+    monitoramento: { controle: "Inspeção de ambientes internos e externos", frequencia: "Semanal (inspeção), mensal (aplicação)", registro: "Planilhas de monitoramento e laudos", responsavel: "CQ e empresa terceirizada" },
+    verificacao: { controle: "Verificação dos registros e laudos", frequencia: "Mensal", registro: "Assinatura nos registros", responsavel: "RT (verificador ≠ monitor)" },
+    acoesCorretivas: [
+      { naoConformidade: "Presença de pragas", acao: "Aplicação emergencial e investigação da causa" },
+      { naoConformidade: "Vedação danificada", acao: "Reparo imediato e registro de manutenção" },
+    ],
+    tempoRetencao: "2 anos",
+  },
+  {
+    codigo: "POP-08",
+    nome: "Controle de Resíduos e Efluentes",
+    objetivo: "Estabelecer procedimentos para coleta, segregação, transporte e destinação adequada dos resíduos sólidos e efluentes gerados nas operações de produção.",
+    campoAplicacao: "Aplica-se a todos os resíduos e efluentes gerados no processo produtivo e nas áreas de apoio.",
+    documentosReferencia: [
+      "Instrução Normativa nº 04 de 23 de fevereiro de 2007",
+      "Decreto 12.031/2024",
+      "Legislação ambiental vigente",
+    ],
+    definicoes: [
+      { termo: "Resíduos de Varrição", definicao: "Material recolhido na varrição das áreas de produção (pó, farelo, grãos)." },
+      { termo: "MTR", definicao: "Manifesto de Transporte de Resíduos — documento que acompanha o transporte até a destinação final." },
+    ],
+    procedimentos: [
+      "Coleta diária de resíduos de varrição em cada turno.",
+      "Segregação de resíduos por tipo: orgânico, reciclável, perigoso.",
+      "Armazenamento temporário em área externa específica.",
+      "Destinação final por coleta pública ou empresa especializada.",
+      "Controle de efluentes conforme parâmetros ambientais.",
+      "Arquivo de manifestos de transporte e licenças ambientais.",
+    ],
+    monitoramento: { controle: "Coleta e segregação de resíduos", frequencia: "Diário (coleta), mensal (destinação)", registro: "Planilhas de controle de resíduos", responsavel: "Auxiliar de fábrica e CQ" },
+    verificacao: { controle: "Verificação dos registros e manifestos", frequencia: "Mensal", registro: "Assinatura nos registros", responsavel: "RT (verificador ≠ monitor)" },
+    acoesCorretivas: [
+      { naoConformidade: "Resíduos não segregados", acao: "Orientar funcionários e refazer segregação" },
+      { naoConformidade: "Manifesto ausente", acao: "Solicitar à empresa coletora e registrar NC" },
+    ],
+    tempoRetencao: "5 anos (manifestos), 2 anos (planilhas)",
+  },
+  {
+    codigo: "POP-09",
+    nome: "Programa de Rastreabilidade e Recolhimento de Produtos (Recall)",
+    objetivo: "Estabelecer procedimentos para garantir a rastreabilidade completa dos produtos e o recolhimento eficiente em caso de não conformidades que afetem a segurança.",
+    campoAplicacao: "Aplica-se a todos os produtos fabricados, desde o recebimento de matérias-primas até a distribuição ao cliente final.",
+    documentosReferencia: [
+      "Instrução Normativa nº 04 de 23 de fevereiro de 2007",
+      "Código de Defesa do Consumidor",
+    ],
+    definicoes: [
+      { termo: "Rastreabilidade", definicao: "Capacidade de detectar a origem e seguir o rastro de um produto ao longo de todas as etapas de produção e distribuição." },
+      { termo: "Recall", definicao: "Procedimento de recolhimento de produtos do mercado quando identificada não conformidade que afete a segurança." },
+      { termo: "Produto Não Conforme", definicao: "Produto que apresenta falha ou irregularidade no processo produtivo que possa afetar sua qualidade ou causar risco à saúde animal." },
+    ],
+    procedimentos: [
+      "Registro diário na Ordem de Produção: lotes de MP, núcleo e embalagens utilizados.",
+      "Cada ordem de produção forma um lote com número sequencial de 5 dígitos.",
+      "Na expedição, o conferente registra os lotes carregados na ordem de carregamento.",
+      "Para vendas com cupom fiscal, os lotes são anotados em planilha específica (PL POP 9.2).",
+      "Não conformidades no recebimento: MP é retida, identificada e devolvida ou segregada.",
+      "Não conformidades na produção: produto é retido, avaliado e destinado conforme análise técnica.",
+      "Não conformidades de clientes: registrar, analisar, classificar gravidade e definir ações.",
+      "Recall: detectar NC → acionar equipe → comunicar → rastrear produto → isolar e recolher → avaliar → repor cliente → tratar NC com ações corretivas/preventivas.",
+      "Toda comunicação de recall é feita por porta-voz autorizado pela diretoria.",
+    ],
+    monitoramento: { controle: "Identificação de situações em desacordo, laudos e manifestações de clientes", frequencia: "A cada ocorrência", registro: "Preenchimento das planilhas de controle", responsavel: "CQ, RT ou pessoa indicada pelo CQ" },
+    verificacao: { controle: "Verificação dos preenchimentos das planilhas", frequencia: "Ao término de cada ocorrência", registro: "Assinatura nas planilhas", responsavel: "CQ ou RT (verificador ≠ monitor)" },
+    acoesCorretivas: [
+      { naoConformidade: "Falha na rastreabilidade", acao: "Investigar e corrigir registros. Retreinar operadores." },
+      { naoConformidade: "Produto não conforme no mercado", acao: "Ativar procedimento de recall conforme plano." },
+      { naoConformidade: "NC identificada pelo cliente", acao: "Registrar reclamação, analisar causa raiz, definir ações corretivas e preventivas." },
+    ],
+    tempoRetencao: "2 anos (planilhas), 5 anos (registros de recall)",
+  },
+];
