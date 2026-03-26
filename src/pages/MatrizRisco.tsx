@@ -8,8 +8,9 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Plus, Trash2, Save, AlertTriangle } from "lucide-react";
+import { Plus, Trash2, Save, AlertTriangle, ClipboardCheck } from "lucide-react";
 import PageHeader from "@/components/PageHeader";
+import QuestionarioRisco from "@/components/risco/QuestionarioRisco";
 
 const DEFAULT_PRODUCTS = [
   "EQUINOS",
