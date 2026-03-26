@@ -139,7 +139,7 @@ ${empresa ? `
       </div>
 
       <Card>
-        <CardContent className="pt-6" ref={printRef}>
+        <CardContent className="pt-6">
           <div className="header text-center mb-6">
             {empresa && <p className="text-xs text-muted-foreground">{empresa.nome} — CNPJ: {empresa.cnpj}</p>}
             <h1 className="text-xl font-bold text-foreground mt-1">FICHA TÉCNICA DE PRODUTO</h1>
