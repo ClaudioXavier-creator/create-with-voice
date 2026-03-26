@@ -25,7 +25,7 @@ export default function FichaTecnica({ produtoId }: Props) {
   const [produto, setProduto] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [empresa, setEmpresa] = useState<any>(null);
-  const printRef = useRef<HTMLDivElement>(null);
+  // printRef no longer needed - print uses standalone HTML
 
   useEffect(() => {
     loadData();
