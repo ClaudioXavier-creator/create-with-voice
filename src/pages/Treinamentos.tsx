@@ -13,8 +13,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { GraduationCap, Plus, AlertCircle, Trash2, HeartPulse, ShieldCheck, ClipboardCheck, Download } from "lucide-react";
+import { GraduationCap, Plus, AlertCircle, Trash2, HeartPulse, ShieldCheck, ClipboardCheck, Download, FileText } from "lucide-react";
 import PageHeader from "@/components/PageHeader";
+import * as XLSX from "xlsx";
 
 // ── Triagem diária POP-02 items ──
 const TRIAGEM_ITENS = [
