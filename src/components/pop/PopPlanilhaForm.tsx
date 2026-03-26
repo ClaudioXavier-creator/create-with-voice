@@ -624,6 +624,9 @@ ${signBlock}
             className="hidden"
             onChange={handleImportExcel}
           />
+           <Button variant="outline" onClick={printPlanilha}>
+            <Printer className="w-4 h-4 mr-1" /> Imprimir PDF
+          </Button>
           <Button variant="outline" onClick={downloadTemplate}>
             <Download className="w-4 h-4 mr-1" /> Baixar Template
           </Button>
