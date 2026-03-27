@@ -9,6 +9,7 @@ import {
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
+import EmpresaSelector from "@/components/EmpresaSelector";
 import logoImg from "@/assets/logo.png";
 
 interface NavItem {
@@ -204,7 +205,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           </div>
         </div>
         <SidebarNav currentPath={location.pathname} />
-        <div className="px-4 py-3 border-t border-sidebar-border space-y-2">
+        <div className="px-4 py-3 border-t border-sidebar-border space-y-3">
+          <EmpresaSelector />
           <p className="text-xs text-sidebar-foreground/60 truncate">{user?.email}</p>
           <Button
             variant="ghost"
