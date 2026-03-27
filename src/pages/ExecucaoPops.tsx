@@ -104,8 +104,28 @@ const POP04_AGUA_ITENS = [
   "Frequência de análise conforme plano de amostragem",
 ];
 
-// Checklist items for POP-05 vehicle transport inspection (IN 15/2009)
-const POP05_VEICULO_ITENS = [
+// Checklist items for POP-05 Higiene e Saúde do Pessoal (IN 04/2007 + IN 15/2009)
+const POP05_HIGIENE_PESSOAL_ITENS = [
+  "Colaborador sem sintomas (febre, diarreia, vômito, lesões cutâneas, icterícia)",
+  "ASO (Atestado de Saúde Ocupacional) válido e dentro da validade",
+  "Exame admissional ou periódico em dia (intervalo ≤ 12 meses)",
+  "Exame de retorno ao trabalho realizado (quando aplicável)",
+  "Uniforme limpo, completo e em bom estado (sem botões, sem bolsos externos)",
+  "Uso adequado de EPIs: touca, luvas, botas, máscara (quando aplicável)",
+  "Ausência de adornos: anéis, relógio, brincos, pulseiras, piercings",
+  "Unhas curtas, limpas e sem esmalte ou unhas postiças",
+  "Barba aparada ou protegida com rede/protetor",
+  "Ausência de ferimentos expostos — curativos impermeáveis aplicados",
+  "Sem uso de perfume, maquiagem ou cosmético com fragrância forte",
+  "Mãos lavadas e higienizadas antes do início das atividades",
+  "Colaborador orientado sobre BPF e manipulação de alimentos para animais",
+  "Certificado de capacitação BPF / manipulação válido (reciclagem anual)",
+  "Registro de triagem diária preenchido pelo responsável do setor",
+  "Colaborador apto conforme laudo médico (sem restrições impeditivas)",
+];
+
+// Checklist items for POP-09 vehicle transport inspection (IN 15/2009)
+const POP09_VEICULO_ITENS = [
   "Carroceria/baú limpo e seco, sem resíduos de cargas anteriores",
   "Ausência de odor estranho ou contaminante no veículo",
   "Lona/cobertura em bom estado (sem rasgos ou furos)",
@@ -192,8 +212,9 @@ export default function ExecucaoPops() {
   const isPOP02 = selectedDoc?.codigo?.toUpperCase().includes("POP-002") || selectedDoc?.codigo?.toUpperCase().includes("POP-02") || (selectedDoc?.nome?.toLowerCase().includes("higiene") && selectedDoc?.nome?.toLowerCase().includes("saúde"));
   const isPOP03 = selectedDoc?.codigo?.toUpperCase().includes("POP-003") || selectedDoc?.codigo?.toUpperCase().includes("POP-03") || (selectedDoc?.nome?.toLowerCase().includes("higienização") && selectedDoc?.nome?.toLowerCase().includes("instalações"));
   const isPOP04 = selectedDoc?.codigo?.toUpperCase().includes("POP-004") || selectedDoc?.codigo?.toUpperCase().includes("POP-04") || selectedDoc?.nome?.toLowerCase().includes("potabilidade");
-  const isPOP05 = selectedDoc?.codigo?.toUpperCase().includes("POP-005") || selectedDoc?.codigo?.toUpperCase().includes("POP-05") || (selectedDoc?.nome?.toLowerCase().includes("transporte") || selectedDoc?.nome?.toLowerCase().includes("veículo"));
-  const activeChecklist = isPOP02 ? POP02_TRIAGEM_ITENS : isPOP03 ? POP03_LIMPEZA_ITENS : isPOP04 ? POP04_AGUA_ITENS : isPOP05 ? POP05_VEICULO_ITENS : null;
+  const isPOP05 = selectedDoc?.codigo?.toUpperCase().includes("POP-005") || selectedDoc?.codigo?.toUpperCase().includes("POP-05") || (selectedDoc?.nome?.toLowerCase().includes("higiene") && selectedDoc?.nome?.toLowerCase().includes("pessoal")) || (selectedDoc?.nome?.toLowerCase().includes("saúde") && selectedDoc?.nome?.toLowerCase().includes("pessoal"));
+  const isPOP09 = selectedDoc?.codigo?.toUpperCase().includes("POP-009") || selectedDoc?.codigo?.toUpperCase().includes("POP-09") || selectedDoc?.nome?.toLowerCase().includes("transporte") || selectedDoc?.nome?.toLowerCase().includes("veículo");
+  const activeChecklist = isPOP02 ? POP02_TRIAGEM_ITENS : isPOP03 ? POP03_LIMPEZA_ITENS : isPOP04 ? POP04_AGUA_ITENS : isPOP05 ? POP05_HIGIENE_PESSOAL_ITENS : isPOP09 ? POP09_VEICULO_ITENS : null;
 
   const handleAdd = async () => {
     if (!selectedDoc || !executor || !user) return;
@@ -207,7 +228,7 @@ export default function ExecucaoPops() {
         return `${val === true ? "✅" : val === false ? "❌" : "⬜"} ${item}`;
       }).join("\n");
       const naoConformes = activeChecklist.filter((_, i) => checklistTriagem[i] === false).length;
-      const header = isPOP02 ? "[TRIAGEM DIÁRIA — POP-02 / IN 15/2009]" : isPOP03 ? "[LIMPEZA PRÉ-OPERACIONAL — POP-03 / IN 04/2007 + IN 15/2009]" : isPOP04 ? "[CONTROLE POTABILIDADE — POP-04 / IN 04/2007]" : "[VISTORIA VEÍCULO — POP-05 / IN 15/2009]";
+      const header = isPOP02 ? "[TRIAGEM DIÁRIA — POP-02 / IN 15/2009]" : isPOP03 ? "[LIMPEZA PRÉ-OPERACIONAL — POP-03 / IN 04/2007 + IN 15/2009]" : isPOP04 ? "[CONTROLE POTABILIDADE — POP-04 / IN 04/2007]" : isPOP05 ? "[HIGIENE E SAÚDE DO PESSOAL — POP-05 / IN 04/2007]" : "[VISTORIA VEÍCULO — POP-09 / IN 15/2009]";
       const laudoInfo = isPOP04 && laudoNumero ? `\n📄 Laudo nº ${laudoNumero} | Lab: ${laudoLaboratorio} | Data: ${laudoData}` : "";
       const asoInfo = isPOP02 && asoNumero ? `\n🩺 ASO nº ${asoNumero} | Tipo: ${asoTipo} | Validade: ${asoValidade}` : "";
       const quimicoInfo = isPOP03 && produtoQuimico ? `\n🧴 Produto: ${produtoQuimico} | Conc: ${concentracaoQuimico} | Tempo contato: ${tempoContato}` : "";
@@ -453,7 +474,7 @@ export default function ExecucaoPops() {
                 {activeChecklist && (
                   <div className="p-3 rounded-lg border-2 border-primary/30 bg-primary/5 space-y-2">
                     <p className="text-xs font-semibold text-primary">
-                      {isPOP02 ? "📋 Triagem Diária — Higiene e Saúde do Pessoal (POP-02 / IN 15/2009)" : isPOP03 ? "🧹 Checklist Limpeza Pré-Operacional — Instalações e Equipamentos (POP-03 / IN 04/2007)" : isPOP04 ? "💧 Controle de Potabilidade da Água (POP-04 / IN 04/2007)" : "🚛 Vistoria de Veículo de Transporte (POP-05 / IN 15/2009)"}
+                      {isPOP02 ? "📋 Triagem Diária — Higiene e Saúde do Pessoal (POP-02 / IN 15/2009)" : isPOP03 ? "🧹 Checklist Limpeza Pré-Operacional — Instalações e Equipamentos (POP-03 / IN 04/2007)" : isPOP04 ? "💧 Controle de Potabilidade da Água (POP-04 / IN 04/2007)" : isPOP05 ? "🩺 Higiene e Saúde do Pessoal — Exames Médicos e Adornos (POP-05 / IN 04/2007)" : "🚛 Vistoria de Veículo de Transporte (POP-09 / IN 15/2009)"}
                     </p>
                     <p className="text-xs text-muted-foreground mb-2">Marque cada item como Conforme (✅) ou Não Conforme (❌):</p>
                     <div className="space-y-1.5">
@@ -479,8 +500,8 @@ export default function ExecucaoPops() {
                       <p className="text-xs text-destructive font-semibold mt-2">⚠️ Itens não conformes detectados — registrar como "Não conforme" se necessário.</p>
                     )}
 
-                    {/* POP-02 ASO/Exames fields */}
-                    {isPOP02 && (
+                    {/* POP-02 or POP-05 ASO/Exames fields */}
+                    {(isPOP02 || isPOP05) && (
                       <div className="mt-3 p-3 rounded-lg bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-300 space-y-2">
                         <p className="text-xs font-semibold text-emerald-700 dark:text-emerald-400">🩺 Registro de ASO / Exames Médicos Periódicos (IN 04/2007)</p>
                         <div className="grid grid-cols-3 gap-2">

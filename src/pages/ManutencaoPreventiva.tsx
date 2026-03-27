@@ -32,6 +32,7 @@ export default function ManutencaoPreventiva() {
   const { user } = useAuth();
   const qc = useQueryClient();
   const [open, setOpen] = useState(false);
+  const [openCalib, setOpenCalib] = useState(false);
   const [filtroEquip, setFiltroEquip] = useState("");
 
   const [form, setForm] = useState({
@@ -39,6 +40,13 @@ export default function ManutencaoPreventiva() {
     responsavel: "", data_programada: new Date().toISOString().split("T")[0],
     data_execucao: "", proxima_manutencao: "", custo: "", pecas_trocadas: "",
     observacoes: "", status: "programada"
+  });
+
+  const [calibForm, setCalibForm] = useState({
+    equipamento: "", codigo: "", tipo: "balanca", localizacao: "", responsavel: "",
+    data_calibracao: new Date().toISOString().split("T")[0], proxima_calibracao: "",
+    certificado_numero: "", observacoes: "", status: "calibrado",
+    proxima_verificacao_intermediaria: "", verificacao_conforme: true, resultado_verificacao: "",
   });
 
   const { data: manutencoes = [] } = useQuery({
@@ -78,6 +86,36 @@ export default function ManutencaoPreventiva() {
   });
 
   const statusColor = (s: string) => {
+    if (s === "concluida") return "default";
+    if (s === "atrasada") return "destructive";
+    return "outline";
+  };
+
+  const addCalibracao = useMutation({
+    mutationFn: async () => {
+      const payload: any = { ...calibForm, user_id: user!.id };
+      if (!payload.proxima_calibracao) delete payload.proxima_calibracao;
+      if (!payload.proxima_verificacao_intermediaria) delete payload.proxima_verificacao_intermediaria;
+      if (!payload.resultado_verificacao) delete payload.resultado_verificacao;
+      const { error } = await supabase.from("calibracoes").insert(payload);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["calibracoes"] });
+      toast.success("Calibração registrada");
+      setOpenCalib(false);
+      setCalibForm({ equipamento: "", codigo: "", tipo: "balanca", localizacao: "", responsavel: "", data_calibracao: new Date().toISOString().split("T")[0], proxima_calibracao: "", certificado_numero: "", observacoes: "", status: "calibrado", proxima_verificacao_intermediaria: "", verificacao_conforme: true, resultado_verificacao: "" });
+    },
+    onError: () => toast.error("Erro ao salvar calibração"),
+  });
+
+  const deleteCalib = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from("calibracoes").delete().eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ["calibracoes"] }); toast.success("Calibração removida"); },
+  });
     if (s === "concluida") return "default";
     if (s === "atrasada") return "destructive";
     return "outline";
@@ -258,8 +296,57 @@ export default function ManutencaoPreventiva() {
         </TabsContent>
 
         <TabsContent value="calibracoes" className="space-y-4">
+          <div className="flex justify-between items-center gap-4 flex-wrap">
+            <p className="text-xs text-muted-foreground">Balanças, termômetros, higrômetros e demais instrumentos — IN 04/2007</p>
+            <Dialog open={openCalib} onOpenChange={setOpenCalib}>
+              <DialogTrigger asChild><Button><Plus className="w-4 h-4 mr-2" />Nova Calibração</Button></DialogTrigger>
+              <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+                <DialogHeader><DialogTitle>Registrar Calibração de Equipamento</DialogTitle></DialogHeader>
+                <div className="grid gap-3">
+                  <div className="grid grid-cols-2 gap-3">
+                    <div><Label>Equipamento *</Label><Input value={calibForm.equipamento} onChange={e => setCalibForm(p => ({ ...p, equipamento: e.target.value }))} placeholder="Ex: Balança Toledo 01" /></div>
+                    <div><Label>Código</Label><Input value={calibForm.codigo} onChange={e => setCalibForm(p => ({ ...p, codigo: e.target.value }))} placeholder="BAL-001" /></div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <Label>Tipo</Label>
+                      <Select value={calibForm.tipo} onValueChange={v => setCalibForm(p => ({ ...p, tipo: v }))}>
+                        <SelectTrigger><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="balanca">Balança</SelectItem>
+                          <SelectItem value="termometro">Termômetro</SelectItem>
+                          <SelectItem value="higrometro">Higrômetro</SelectItem>
+                          <SelectItem value="manometro">Manômetro</SelectItem>
+                          <SelectItem value="phmetro">pHmetro</SelectItem>
+                          <SelectItem value="outro">Outro</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div><Label>Localização</Label><Input value={calibForm.localizacao} onChange={e => setCalibForm(p => ({ ...p, localizacao: e.target.value }))} placeholder="Ex: Setor de Pesagem" /></div>
+                  </div>
+                  <div><Label>Responsável / Empresa</Label><Input value={calibForm.responsavel} onChange={e => setCalibForm(p => ({ ...p, responsavel: e.target.value }))} placeholder="Ex: Empresa XYZ Metrologia" /></div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div><Label>Data Calibração</Label><Input type="date" value={calibForm.data_calibracao} onChange={e => setCalibForm(p => ({ ...p, data_calibracao: e.target.value }))} /></div>
+                    <div><Label>Próxima Calibração</Label><Input type="date" value={calibForm.proxima_calibracao} onChange={e => setCalibForm(p => ({ ...p, proxima_calibracao: e.target.value }))} /></div>
+                  </div>
+                  <div><Label>Nº Certificado</Label><Input value={calibForm.certificado_numero} onChange={e => setCalibForm(p => ({ ...p, certificado_numero: e.target.value }))} placeholder="Ex: CERT-2026-0045" /></div>
+                  <div className="p-3 rounded-lg border border-yellow-400 bg-yellow-50 dark:bg-yellow-900/20 space-y-2">
+                    <p className="text-xs font-semibold text-yellow-700 dark:text-yellow-400">Verificação Intermediária — IN 04/2007</p>
+                    <div><Label className="text-xs">Próxima Verificação Intermediária</Label><Input type="date" value={calibForm.proxima_verificacao_intermediaria} onChange={e => setCalibForm(p => ({ ...p, proxima_verificacao_intermediaria: e.target.value }))} /></div>
+                    <div className="flex items-center gap-2">
+                      <input type="checkbox" checked={calibForm.verificacao_conforme} onChange={e => setCalibForm(p => ({ ...p, verificacao_conforme: e.target.checked }))} className="h-4 w-4" />
+                      <Label className="text-sm">Verificação conforme</Label>
+                    </div>
+                    <div><Label className="text-xs">Resultado da Verificação</Label><Input value={calibForm.resultado_verificacao} onChange={e => setCalibForm(p => ({ ...p, resultado_verificacao: e.target.value }))} placeholder="Ex: Erro ≤ 0,1% — Conforme" /></div>
+                  </div>
+                  <div><Label>Observações</Label><Textarea value={calibForm.observacoes} onChange={e => setCalibForm(p => ({ ...p, observacoes: e.target.value }))} /></div>
+                  <Button onClick={() => addCalibracao.mutate()} disabled={!calibForm.equipamento}>Salvar Calibração</Button>
+                </div>
+              </DialogContent>
+            </Dialog>
+          </div>
           {calibracoes.length === 0 ? (
-            <Card><CardContent className="py-12 text-center text-muted-foreground"><Scale className="w-12 h-12 mx-auto mb-3 opacity-40" /><p>Nenhuma calibração registrada. Use o módulo de Documentos para cadastrar calibrações.</p></CardContent></Card>
+            <Card><CardContent className="py-12 text-center text-muted-foreground"><Scale className="w-12 h-12 mx-auto mb-3 opacity-40" /><p>Nenhuma calibração registrada</p></CardContent></Card>
           ) : (
             <Card>
               <Table>
@@ -269,8 +356,9 @@ export default function ManutencaoPreventiva() {
                     <TableHead>Código</TableHead>
                     <TableHead>Última Calibração</TableHead>
                     <TableHead>Próxima Calibração</TableHead>
-                    <TableHead>Verif. Intermediária</TableHead>
-                    <TableHead>Status</TableHead>
+                        <TableHead>Verif. Intermediária</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead></TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -293,6 +381,7 @@ export default function ManutencaoPreventiva() {
                            verifPendente ? <Badge variant="outline" className="border-yellow-500 text-yellow-700">Verif. Pendente</Badge> :
                            <Badge variant="default">Calibrado</Badge>}
                         </TableCell>
+                        <TableCell><Button variant="ghost" size="icon" onClick={() => deleteCalib.mutate(c.id)}><Trash2 className="w-4 h-4 text-destructive" /></Button></TableCell>
                       </TableRow>
                     );
                   })}
