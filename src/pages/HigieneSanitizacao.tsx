@@ -423,7 +423,7 @@ export default function HigieneSanitizacao() {
 
   return (
     <div className="space-y-6">
-      <PageHeader title="POP 02/03/04 — Higiene, Sanitização e Controle de Água" description="Cronogramas de limpeza, liberação de linha, monitoramento de superfícies e controle de potabilidade — IN 04/2007 e IN 15/2009" />
+      <PageHeader title="POP 02/03/04 — Limpeza, Higiene Pessoal e Água" description="POP 02 (Limpeza de Instalações), POP 03 (Higiene e Saúde Pessoal), POP 04 (Potabilidade da Água) — IN 04/2007 e IN 15/2009" />
 
       <Tabs defaultValue="preop">
         <TabsList className="flex flex-wrap">
