@@ -32,6 +32,7 @@ export default function ManutencaoPreventiva() {
   const { user } = useAuth();
   const qc = useQueryClient();
   const [open, setOpen] = useState(false);
+  const [openCalib, setOpenCalib] = useState(false);
   const [filtroEquip, setFiltroEquip] = useState("");
 
   const [form, setForm] = useState({
@@ -39,6 +40,13 @@ export default function ManutencaoPreventiva() {
     responsavel: "", data_programada: new Date().toISOString().split("T")[0],
     data_execucao: "", proxima_manutencao: "", custo: "", pecas_trocadas: "",
     observacoes: "", status: "programada"
+  });
+
+  const [calibForm, setCalibForm] = useState({
+    equipamento: "", codigo: "", tipo: "balanca", localizacao: "", responsavel: "",
+    data_calibracao: new Date().toISOString().split("T")[0], proxima_calibracao: "",
+    certificado_numero: "", observacoes: "", status: "calibrado",
+    proxima_verificacao_intermediaria: "", verificacao_conforme: true, resultado_verificacao: "",
   });
 
   const { data: manutencoes = [] } = useQuery({
