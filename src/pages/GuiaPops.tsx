@@ -183,7 +183,7 @@ export default function GuiaPops() {
 
   return (
     <>
-      <PageHeader icon={BookOpen} title="Guia dos POPs — IN 04/2007" description="Textos procedimentais completos dos 9 POPs obrigatórios com orientações de preenchimento" />
+      <PageHeader icon={BookOpen} title="Guia dos POPs — IN 04/2007" description="Textos procedimentais completos dos 10 POPs obrigatórios com orientações de preenchimento" />
       <div className="flex gap-2 mb-6">
         <button onClick={expandAll} className="text-sm text-primary hover:underline font-medium">Expandir tudo</button>
         <span className="text-muted-foreground">|</span>
