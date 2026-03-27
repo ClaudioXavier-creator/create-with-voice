@@ -20,6 +20,7 @@ export type Database = {
           created_at: string
           data_analise: string | null
           data_resultado: string | null
+          empresa_id: string | null
           id: string
           laboratorio: string | null
           laudo_numero: string | null
@@ -42,6 +43,7 @@ export type Database = {
           created_at?: string
           data_analise?: string | null
           data_resultado?: string | null
+          empresa_id?: string | null
           id?: string
           laboratorio?: string | null
           laudo_numero?: string | null
@@ -64,6 +66,7 @@ export type Database = {
           created_at?: string
           data_analise?: string | null
           data_resultado?: string | null
+          empresa_id?: string | null
           id?: string
           laboratorio?: string | null
           laudo_numero?: string | null
@@ -81,7 +84,15 @@ export type Database = {
           updated_at?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "analises_laboratorio_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       arquivos_bpf: {
         Row: {
@@ -91,6 +102,7 @@ export type Database = {
           created_at: string
           descricao: string | null
           documento_ref_id: string | null
+          empresa_id: string | null
           id: string
           titulo: string
           updated_at: string
@@ -103,6 +115,7 @@ export type Database = {
           created_at?: string
           descricao?: string | null
           documento_ref_id?: string | null
+          empresa_id?: string | null
           id?: string
           titulo: string
           updated_at?: string
@@ -115,6 +128,7 @@ export type Database = {
           created_at?: string
           descricao?: string | null
           documento_ref_id?: string | null
+          empresa_id?: string | null
           id?: string
           titulo?: string
           updated_at?: string
@@ -128,11 +142,19 @@ export type Database = {
             referencedRelation: "documentos"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "arquivos_bpf_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
         ]
       }
       batidas_producao: {
         Row: {
           created_at: string
+          empresa_id: string | null
           hora_fim: string | null
           hora_inicio: string | null
           id: string
@@ -147,6 +169,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          empresa_id?: string | null
           hora_fim?: string | null
           hora_inicio?: string | null
           id?: string
@@ -161,6 +184,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          empresa_id?: string | null
           hora_fim?: string | null
           hora_inicio?: string | null
           id?: string
@@ -174,6 +198,13 @@ export type Database = {
           user_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "batidas_producao_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "batidas_producao_ordem_id_fkey"
             columns: ["ordem_id"]
@@ -190,6 +221,7 @@ export type Database = {
           created_at: string
           data_calibracao: string | null
           data_verificacao_intermediaria: string | null
+          empresa_id: string | null
           equipamento: string
           id: string
           localizacao: string | null
@@ -210,6 +242,7 @@ export type Database = {
           created_at?: string
           data_calibracao?: string | null
           data_verificacao_intermediaria?: string | null
+          empresa_id?: string | null
           equipamento: string
           id?: string
           localizacao?: string | null
@@ -230,6 +263,7 @@ export type Database = {
           created_at?: string
           data_calibracao?: string | null
           data_verificacao_intermediaria?: string | null
+          empresa_id?: string | null
           equipamento?: string
           id?: string
           localizacao?: string | null
@@ -244,7 +278,15 @@ export type Database = {
           user_id?: string
           verificacao_conforme?: boolean | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "calibracoes_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       checklist_items: {
         Row: {
@@ -252,6 +294,7 @@ export type Database = {
           auditoria_data: string | null
           conforme: boolean | null
           created_at: string
+          empresa_id: string | null
           id: string
           item: string
           observacao: string | null
@@ -262,6 +305,7 @@ export type Database = {
           auditoria_data?: string | null
           conforme?: boolean | null
           created_at?: string
+          empresa_id?: string | null
           id?: string
           item: string
           observacao?: string | null
@@ -272,18 +316,28 @@ export type Database = {
           auditoria_data?: string | null
           conforme?: boolean | null
           created_at?: string
+          empresa_id?: string | null
           id?: string
           item?: string
           observacao?: string | null
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "checklist_items_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       controle_pragas: {
         Row: {
           acao: string | null
           created_at: string
           data: string
+          empresa_id: string | null
           id: string
           local: string
           responsavel: string | null
@@ -294,6 +348,7 @@ export type Database = {
           acao?: string | null
           created_at?: string
           data?: string
+          empresa_id?: string | null
           id?: string
           local: string
           responsavel?: string | null
@@ -304,13 +359,22 @@ export type Database = {
           acao?: string | null
           created_at?: string
           data?: string
+          empresa_id?: string | null
           id?: string
           local?: string
           responsavel?: string | null
           tipo_praga?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "controle_pragas_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       controle_residuos: {
         Row: {
@@ -319,6 +383,7 @@ export type Database = {
           data_coleta: string | null
           destino_final: string | null
           empresa_coletora: string | null
+          empresa_id: string | null
           frequencia_coleta: string | null
           id: string
           licenca_ambiental: string | null
@@ -342,6 +407,7 @@ export type Database = {
           data_coleta?: string | null
           destino_final?: string | null
           empresa_coletora?: string | null
+          empresa_id?: string | null
           frequencia_coleta?: string | null
           id?: string
           licenca_ambiental?: string | null
@@ -365,6 +431,7 @@ export type Database = {
           data_coleta?: string | null
           destino_final?: string | null
           empresa_coletora?: string | null
+          empresa_id?: string | null
           frequencia_coleta?: string | null
           id?: string
           licenca_ambiental?: string | null
@@ -382,13 +449,22 @@ export type Database = {
           updated_at?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "controle_residuos_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       controle_substancias: {
         Row: {
           conforme: boolean | null
           created_at: string
           data_analise: string | null
+          empresa_id: string | null
           fornecedor: string | null
           id: string
           limite_maximo: string | null
@@ -409,6 +485,7 @@ export type Database = {
           conforme?: boolean | null
           created_at?: string
           data_analise?: string | null
+          empresa_id?: string | null
           fornecedor?: string | null
           id?: string
           limite_maximo?: string | null
@@ -429,6 +506,7 @@ export type Database = {
           conforme?: boolean | null
           created_at?: string
           data_analise?: string | null
+          empresa_id?: string | null
           fornecedor?: string | null
           id?: string
           limite_maximo?: string | null
@@ -445,7 +523,15 @@ export type Database = {
           updated_at?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "controle_substancias_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       controle_visitantes: {
         Row: {
@@ -455,6 +541,7 @@ export type Database = {
           data_visita: string
           documento: string | null
           empresa: string | null
+          empresa_id: string | null
           epi_fornecido: boolean | null
           hora_entrada: string | null
           hora_saida: string | null
@@ -472,6 +559,7 @@ export type Database = {
           data_visita?: string
           documento?: string | null
           empresa?: string | null
+          empresa_id?: string | null
           epi_fornecido?: boolean | null
           hora_entrada?: string | null
           hora_saida?: string | null
@@ -489,6 +577,7 @@ export type Database = {
           data_visita?: string
           documento?: string | null
           empresa?: string | null
+          empresa_id?: string | null
           epi_fornecido?: boolean | null
           hora_entrada?: string | null
           hora_saida?: string | null
@@ -499,13 +588,22 @@ export type Database = {
           orientacao_biosseguridade?: boolean | null
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "controle_visitantes_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       cronogramas_higiene: {
         Row: {
           area: string
           concentracao: string | null
           created_at: string
+          empresa_id: string | null
           equipamento: string | null
           frequencia: string
           horario_previsto: string | null
@@ -522,6 +620,7 @@ export type Database = {
           area: string
           concentracao?: string | null
           created_at?: string
+          empresa_id?: string | null
           equipamento?: string | null
           frequencia?: string
           horario_previsto?: string | null
@@ -538,6 +637,7 @@ export type Database = {
           area?: string
           concentracao?: string | null
           created_at?: string
+          empresa_id?: string | null
           equipamento?: string | null
           frequencia?: string
           horario_previsto?: string | null
@@ -550,13 +650,22 @@ export type Database = {
           updated_at?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "cronogramas_higiene_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       documentos: {
         Row: {
           codigo: string
           created_at: string
           data_revisao: string | null
+          empresa_id: string | null
           id: string
           nome: string
           responsavel: string | null
@@ -569,6 +678,7 @@ export type Database = {
           codigo: string
           created_at?: string
           data_revisao?: string | null
+          empresa_id?: string | null
           id?: string
           nome: string
           responsavel?: string | null
@@ -581,6 +691,7 @@ export type Database = {
           codigo?: string
           created_at?: string
           data_revisao?: string | null
+          empresa_id?: string | null
           id?: string
           nome?: string
           responsavel?: string | null
@@ -589,7 +700,15 @@ export type Database = {
           user_id?: string
           versao?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "documentos_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       empresas: {
         Row: {
@@ -640,6 +759,7 @@ export type Database = {
           created_at: string
           data_execucao: string
           documento_id: string | null
+          empresa_id: string | null
           executor: string
           id: string
           nome_pop: string
@@ -654,6 +774,7 @@ export type Database = {
           created_at?: string
           data_execucao?: string
           documento_id?: string | null
+          empresa_id?: string | null
           executor: string
           id?: string
           nome_pop: string
@@ -668,6 +789,7 @@ export type Database = {
           created_at?: string
           data_execucao?: string
           documento_id?: string | null
+          empresa_id?: string | null
           executor?: string
           id?: string
           nome_pop?: string
@@ -684,11 +806,19 @@ export type Database = {
             referencedRelation: "documentos"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "execucao_pops_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
         ]
       }
       formula_itens: {
         Row: {
           created_at: string
+          empresa_id: string | null
           fornecedor: string | null
           id: string
           lote_mp: string | null
@@ -701,6 +831,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          empresa_id?: string | null
           fornecedor?: string | null
           id?: string
           lote_mp?: string | null
@@ -713,6 +844,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          empresa_id?: string | null
           fornecedor?: string | null
           id?: string
           lote_mp?: string | null
@@ -724,6 +856,13 @@ export type Database = {
           user_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "formula_itens_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "formula_itens_ordem_id_fkey"
             columns: ["ordem_id"]
@@ -751,6 +890,7 @@ export type Database = {
           doc_certificado_registro_produto: boolean | null
           doc_ficha_tecnica: boolean | null
           email: string | null
+          empresa_id: string | null
           endereco: string | null
           estado: string | null
           id: string
@@ -788,6 +928,7 @@ export type Database = {
           doc_certificado_registro_produto?: boolean | null
           doc_ficha_tecnica?: boolean | null
           email?: string | null
+          empresa_id?: string | null
           endereco?: string | null
           estado?: string | null
           id?: string
@@ -825,6 +966,7 @@ export type Database = {
           doc_certificado_registro_produto?: boolean | null
           doc_ficha_tecnica?: boolean | null
           email?: string | null
+          empresa_id?: string | null
           endereco?: string | null
           estado?: string | null
           id?: string
@@ -845,12 +987,21 @@ export type Database = {
           updated_at?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "fornecedores_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       legislacao_alertas: {
         Row: {
           created_at: string
           data_publicacao: string | null
+          empresa_id: string | null
           fonte: string | null
           id: string
           lido: boolean | null
@@ -863,6 +1014,7 @@ export type Database = {
         Insert: {
           created_at?: string
           data_publicacao?: string | null
+          empresa_id?: string | null
           fonte?: string | null
           id?: string
           lido?: boolean | null
@@ -875,6 +1027,7 @@ export type Database = {
         Update: {
           created_at?: string
           data_publicacao?: string | null
+          empresa_id?: string | null
           fonte?: string | null
           id?: string
           lido?: boolean | null
@@ -884,7 +1037,15 @@ export type Database = {
           titulo?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "legislacao_alertas_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       licencas: {
         Row: {
@@ -936,6 +1097,7 @@ export type Database = {
           data_execucao: string | null
           data_programada: string | null
           descricao: string
+          empresa_id: string | null
           equipamento: string
           id: string
           observacoes: string | null
@@ -954,6 +1116,7 @@ export type Database = {
           data_execucao?: string | null
           data_programada?: string | null
           descricao: string
+          empresa_id?: string | null
           equipamento: string
           id?: string
           observacoes?: string | null
@@ -972,6 +1135,7 @@ export type Database = {
           data_execucao?: string | null
           data_programada?: string | null
           descricao?: string
+          empresa_id?: string | null
           equipamento?: string
           id?: string
           observacoes?: string | null
@@ -983,11 +1147,20 @@ export type Database = {
           updated_at?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "manutencoes_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       matriz_risco: {
         Row: {
           created_at: string
+          empresa_id: string | null
           etapa_processo: string
           id: string
           medidas_controle: string | null
@@ -1001,6 +1174,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          empresa_id?: string | null
           etapa_processo: string
           id?: string
           medidas_controle?: string | null
@@ -1014,6 +1188,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          empresa_id?: string | null
           etapa_processo?: string
           id?: string
           medidas_controle?: string | null
@@ -1025,11 +1200,20 @@ export type Database = {
           updated_at?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "matriz_risco_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       matriz_sensibilidade: {
         Row: {
           created_at: string
+          empresa_id: string | null
           id: string
           produto_anterior: string
           produto_seguinte: string
@@ -1039,6 +1223,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          empresa_id?: string | null
           id?: string
           produto_anterior: string
           produto_seguinte: string
@@ -1048,6 +1233,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          empresa_id?: string | null
           id?: string
           produto_anterior?: string
           produto_seguinte?: string
@@ -1055,7 +1241,15 @@ export type Database = {
           updated_at?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "matriz_sensibilidade_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       modelos_acesso: {
         Row: {
@@ -1094,6 +1288,7 @@ export type Database = {
           created_at: string
           data: string
           descricao: string
+          empresa_id: string | null
           id: string
           prazo: string | null
           responsavel: string | null
@@ -1108,6 +1303,7 @@ export type Database = {
           created_at?: string
           data?: string
           descricao: string
+          empresa_id?: string | null
           id?: string
           prazo?: string | null
           responsavel?: string | null
@@ -1122,6 +1318,7 @@ export type Database = {
           created_at?: string
           data?: string
           descricao?: string
+          empresa_id?: string | null
           id?: string
           prazo?: string | null
           responsavel?: string | null
@@ -1130,7 +1327,15 @@ export type Database = {
           updated_at?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "nao_conformidades_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       normas_legislacao: {
         Row: {
@@ -1139,6 +1344,7 @@ export type Database = {
           codigo: string | null
           created_at: string
           data_publicacao: string | null
+          empresa_id: string | null
           id: string
           orgao: string | null
           resumo: string | null
@@ -1154,6 +1360,7 @@ export type Database = {
           codigo?: string | null
           created_at?: string
           data_publicacao?: string | null
+          empresa_id?: string | null
           id?: string
           orgao?: string | null
           resumo?: string | null
@@ -1169,6 +1376,7 @@ export type Database = {
           codigo?: string | null
           created_at?: string
           data_publicacao?: string | null
+          empresa_id?: string | null
           id?: string
           orgao?: string | null
           resumo?: string | null
@@ -1178,13 +1386,22 @@ export type Database = {
           updated_at?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "normas_legislacao_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       ordens_producao: {
         Row: {
           created_at: string
           data_programada: string
           destino_sobra: string | null
+          empresa_id: string | null
           formula_nome: string
           id: string
           lote_produto: string | null
@@ -1208,6 +1425,7 @@ export type Database = {
           created_at?: string
           data_programada?: string
           destino_sobra?: string | null
+          empresa_id?: string | null
           formula_nome?: string
           id?: string
           lote_produto?: string | null
@@ -1231,6 +1449,7 @@ export type Database = {
           created_at?: string
           data_programada?: string
           destino_sobra?: string | null
+          empresa_id?: string | null
           formula_nome?: string
           id?: string
           lote_produto?: string | null
@@ -1252,6 +1471,13 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "ordens_producao_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "ordens_producao_ordem_origem_id_fkey"
             columns: ["ordem_origem_id"]
             isOneToOne: false
@@ -1266,6 +1492,7 @@ export type Database = {
           categoria: string
           created_at: string
           descricao: string | null
+          empresa_id: string | null
           frequencia: string
           id: string
           mes_inicio: number | null
@@ -1283,6 +1510,7 @@ export type Database = {
           categoria?: string
           created_at?: string
           descricao?: string | null
+          empresa_id?: string | null
           frequencia?: string
           id?: string
           mes_inicio?: number | null
@@ -1300,6 +1528,7 @@ export type Database = {
           categoria?: string
           created_at?: string
           descricao?: string | null
+          empresa_id?: string | null
           frequencia?: string
           id?: string
           mes_inicio?: number | null
@@ -1312,7 +1541,15 @@ export type Database = {
           updated_at?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "planejamento_anual_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       pop_planilha_itens: {
         Row: {
@@ -1320,6 +1557,7 @@ export type Database = {
           conforme: boolean | null
           created_at: string
           data_registro: string | null
+          empresa_id: string | null
           funcao: string | null
           id: string
           observacoes: string | null
@@ -1333,6 +1571,7 @@ export type Database = {
           conforme?: boolean | null
           created_at?: string
           data_registro?: string | null
+          empresa_id?: string | null
           funcao?: string | null
           id?: string
           observacoes?: string | null
@@ -1346,6 +1585,7 @@ export type Database = {
           conforme?: boolean | null
           created_at?: string
           data_registro?: string | null
+          empresa_id?: string | null
           funcao?: string | null
           id?: string
           observacoes?: string | null
@@ -1355,6 +1595,13 @@ export type Database = {
           user_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "pop_planilha_itens_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "pop_planilha_itens_planilha_id_fkey"
             columns: ["planilha_id"]
@@ -1376,6 +1623,7 @@ export type Database = {
           assinatura_supervisor_data: string | null
           created_at: string
           data_verificacao: string | null
+          empresa_id: string | null
           id: string
           mes: number
           observacoes: string | null
@@ -1398,6 +1646,7 @@ export type Database = {
           assinatura_supervisor_data?: string | null
           created_at?: string
           data_verificacao?: string | null
+          empresa_id?: string | null
           id?: string
           mes: number
           observacoes?: string | null
@@ -1420,6 +1669,7 @@ export type Database = {
           assinatura_supervisor_data?: string | null
           created_at?: string
           data_verificacao?: string | null
+          empresa_id?: string | null
           id?: string
           mes?: number
           observacoes?: string | null
@@ -1431,12 +1681,21 @@ export type Database = {
           user_id?: string
           verificado_por?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "pop_planilhas_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       producao: {
         Row: {
           created_at: string
           data: string
+          empresa_id: string | null
           id: string
           lote: string | null
           operador: string | null
@@ -1448,6 +1707,7 @@ export type Database = {
         Insert: {
           created_at?: string
           data?: string
+          empresa_id?: string | null
           id?: string
           lote?: string | null
           operador?: string | null
@@ -1459,6 +1719,7 @@ export type Database = {
         Update: {
           created_at?: string
           data?: string
+          empresa_id?: string | null
           id?: string
           lote?: string | null
           operador?: string | null
@@ -1467,7 +1728,15 @@ export type Database = {
           tempo_mistura?: string | null
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "producao_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       produtos: {
         Row: {
@@ -1478,6 +1747,7 @@ export type Database = {
           created_at: string
           diferenciais: string | null
           embalagem: string | null
+          empresa_id: string | null
           especie_alvo: string | null
           forma_fisica: string | null
           foto_url: string | null
@@ -1506,6 +1776,7 @@ export type Database = {
           created_at?: string
           diferenciais?: string | null
           embalagem?: string | null
+          empresa_id?: string | null
           especie_alvo?: string | null
           forma_fisica?: string | null
           foto_url?: string | null
@@ -1534,6 +1805,7 @@ export type Database = {
           created_at?: string
           diferenciais?: string | null
           embalagem?: string | null
+          empresa_id?: string | null
           especie_alvo?: string | null
           forma_fisica?: string | null
           foto_url?: string | null
@@ -1554,7 +1826,15 @@ export type Database = {
           user_id?: string
           validade_meses?: number | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "produtos_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {
@@ -1598,6 +1878,7 @@ export type Database = {
           contem_origem_animal: boolean | null
           created_at: string
           data_venda: string | null
+          empresa_id: string | null
           especie_destino: string | null
           fornecedor: string | null
           id: string
@@ -1620,6 +1901,7 @@ export type Database = {
           contem_origem_animal?: boolean | null
           created_at?: string
           data_venda?: string | null
+          empresa_id?: string | null
           especie_destino?: string | null
           fornecedor?: string | null
           id?: string
@@ -1642,6 +1924,7 @@ export type Database = {
           contem_origem_animal?: boolean | null
           created_at?: string
           data_venda?: string | null
+          empresa_id?: string | null
           especie_destino?: string | null
           fornecedor?: string | null
           id?: string
@@ -1659,7 +1942,15 @@ export type Database = {
           tipo_origem_animal?: string | null
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "rastreabilidade_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       recebimento_mp: {
         Row: {
@@ -1669,6 +1960,7 @@ export type Database = {
           certificado_analise_valido: boolean | null
           created_at: string
           data: string
+          empresa_id: string | null
           fornecedor: string
           id: string
           insetos: string | null
@@ -1690,6 +1982,7 @@ export type Database = {
           certificado_analise_valido?: boolean | null
           created_at?: string
           data?: string
+          empresa_id?: string | null
           fornecedor: string
           id?: string
           insetos?: string | null
@@ -1711,6 +2004,7 @@ export type Database = {
           certificado_analise_valido?: boolean | null
           created_at?: string
           data?: string
+          empresa_id?: string | null
           fornecedor?: string
           id?: string
           insetos?: string | null
@@ -1725,7 +2019,15 @@ export type Database = {
           user_id?: string
           validade?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "recebimento_mp_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       reclamacoes_qualidade: {
         Row: {
@@ -1747,6 +2049,7 @@ export type Database = {
           data_resposta_cliente: string | null
           descricao_problema: string
           destino_produto_recolhido: string | null
+          empresa_id: string | null
           evidencias: string | null
           id: string
           lote: string | null
@@ -1789,6 +2092,7 @@ export type Database = {
           data_resposta_cliente?: string | null
           descricao_problema: string
           destino_produto_recolhido?: string | null
+          empresa_id?: string | null
           evidencias?: string | null
           id?: string
           lote?: string | null
@@ -1831,6 +2135,7 @@ export type Database = {
           data_resposta_cliente?: string | null
           descricao_problema?: string
           destino_produto_recolhido?: string | null
+          empresa_id?: string | null
           evidencias?: string | null
           id?: string
           lote?: string | null
@@ -1854,7 +2159,15 @@ export type Database = {
           updated_at?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "reclamacoes_qualidade_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       registros_limpeza: {
         Row: {
@@ -1862,6 +2175,7 @@ export type Database = {
           created_at: string
           cronograma_id: string | null
           data_execucao: string
+          empresa_id: string | null
           executor: string
           hora_fim: string | null
           hora_inicio: string | null
@@ -1874,6 +2188,7 @@ export type Database = {
           created_at?: string
           cronograma_id?: string | null
           data_execucao?: string
+          empresa_id?: string | null
           executor: string
           hora_fim?: string | null
           hora_inicio?: string | null
@@ -1886,6 +2201,7 @@ export type Database = {
           created_at?: string
           cronograma_id?: string | null
           data_execucao?: string
+          empresa_id?: string | null
           executor?: string
           hora_fim?: string | null
           hora_inicio?: string | null
@@ -1901,6 +2217,13 @@ export type Database = {
             referencedRelation: "cronogramas_higiene"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "registros_limpeza_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
         ]
       }
       relatorios: {
@@ -1910,6 +2233,7 @@ export type Database = {
           created_at: string
           data_geracao: string | null
           descricao: string | null
+          empresa_id: string | null
           id: string
           modulo: string
           status: string | null
@@ -1924,6 +2248,7 @@ export type Database = {
           created_at?: string
           data_geracao?: string | null
           descricao?: string | null
+          empresa_id?: string | null
           id?: string
           modulo: string
           status?: string | null
@@ -1938,6 +2263,7 @@ export type Database = {
           created_at?: string
           data_geracao?: string | null
           descricao?: string | null
+          empresa_id?: string | null
           id?: string
           modulo?: string
           status?: string | null
@@ -1946,7 +2272,15 @@ export type Database = {
           updated_at?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "relatorios_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       rotulos: {
         Row: {
@@ -1956,6 +2290,7 @@ export type Database = {
           cnpj: string | null
           composicao_ingredientes: string | null
           created_at: string
+          empresa_id: string | null
           endereco: string | null
           especie_categoria: string | null
           eventuais_substitutivos: string | null
@@ -1988,6 +2323,7 @@ export type Database = {
           cnpj?: string | null
           composicao_ingredientes?: string | null
           created_at?: string
+          empresa_id?: string | null
           endereco?: string | null
           especie_categoria?: string | null
           eventuais_substitutivos?: string | null
@@ -2020,6 +2356,7 @@ export type Database = {
           cnpj?: string | null
           composicao_ingredientes?: string | null
           created_at?: string
+          empresa_id?: string | null
           endereco?: string | null
           especie_categoria?: string | null
           eventuais_substitutivos?: string | null
@@ -2047,6 +2384,13 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "rotulos_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "rotulos_produto_id_fkey"
             columns: ["produto_id"]
             isOneToOne: false
@@ -2062,6 +2406,7 @@ export type Database = {
           crm: string | null
           data_exame: string
           data_validade: string | null
+          empresa_id: string | null
           funcionario: string
           id: string
           medico: string | null
@@ -2078,6 +2423,7 @@ export type Database = {
           crm?: string | null
           data_exame?: string
           data_validade?: string | null
+          empresa_id?: string | null
           funcionario: string
           id?: string
           medico?: string | null
@@ -2094,6 +2440,7 @@ export type Database = {
           crm?: string | null
           data_exame?: string
           data_validade?: string | null
+          empresa_id?: string | null
           funcionario?: string
           id?: string
           medico?: string | null
@@ -2104,7 +2451,15 @@ export type Database = {
           updated_at?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "saude_manipuladores_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       testes_rastreabilidade: {
         Row: {
@@ -2113,6 +2468,7 @@ export type Database = {
           destinos_rastreados: number | null
           detalhes_json: Json | null
           direcao: string
+          empresa_id: string | null
           id: string
           jusante_encontrado: boolean | null
           lote_testado: string
@@ -2130,6 +2486,7 @@ export type Database = {
           destinos_rastreados?: number | null
           detalhes_json?: Json | null
           direcao?: string
+          empresa_id?: string | null
           id?: string
           jusante_encontrado?: boolean | null
           lote_testado: string
@@ -2147,6 +2504,7 @@ export type Database = {
           destinos_rastreados?: number | null
           detalhes_json?: Json | null
           direcao?: string
+          empresa_id?: string | null
           id?: string
           jusante_encontrado?: boolean | null
           lote_testado?: string
@@ -2158,12 +2516,21 @@ export type Database = {
           tempo_segundos?: number | null
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "testes_rastreabilidade_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       treinamentos: {
         Row: {
           created_at: string
           data: string
+          empresa_id: string | null
           funcionario: string
           id: string
           instrutor: string | null
@@ -2174,6 +2541,7 @@ export type Database = {
         Insert: {
           created_at?: string
           data?: string
+          empresa_id?: string | null
           funcionario: string
           id?: string
           instrutor?: string | null
@@ -2184,6 +2552,7 @@ export type Database = {
         Update: {
           created_at?: string
           data?: string
+          empresa_id?: string | null
           funcionario?: string
           id?: string
           instrutor?: string | null
@@ -2191,13 +2560,22 @@ export type Database = {
           user_id?: string
           validade?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "treinamentos_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       validacao_limpeza_linha: {
         Row: {
           contem_medicamento: boolean | null
           created_at: string
           data_validacao: string | null
+          empresa_id: string | null
           hora_validacao: string | null
           id: string
           limite_aceitavel: string | null
@@ -2216,6 +2594,7 @@ export type Database = {
           contem_medicamento?: boolean | null
           created_at?: string
           data_validacao?: string | null
+          empresa_id?: string | null
           hora_validacao?: string | null
           id?: string
           limite_aceitavel?: string | null
@@ -2234,6 +2613,7 @@ export type Database = {
           contem_medicamento?: boolean | null
           created_at?: string
           data_validacao?: string | null
+          empresa_id?: string | null
           hora_validacao?: string | null
           id?: string
           limite_aceitavel?: string | null
@@ -2248,7 +2628,15 @@ export type Database = {
           tipo_validacao?: string | null
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "validacao_limpeza_linha_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
