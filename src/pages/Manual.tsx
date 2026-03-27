@@ -158,7 +158,7 @@ const sections: ManualSection[] = [
     icon: Droplets,
     badge: "POPs",
     description:
-      "Módulo integrado para POP 02 (Higiene dos Operadores), POP 03 (Higienização das Instalações/Equipamentos) e POP 04 (Potabilidade da Água), conforme IN 04/2007.",
+      "Módulo integrado para POP 02 (Limpeza e Higienização das Instalações/Equipamentos), POP 03 (Higiene e Saúde dos Colaboradores) e POP 04 (Potabilidade da Água), conforme IN 04/2007.",
     features: [
       { title: "Checklist Pré-Operacional", text: "7 áreas de verificação (pisos, silos, moegas, misturadores, etc.) com registro digital de conformidade antes de cada turno." },
       { title: "Cronograma de Higienização", text: "Programe limpezas por área, frequência, produto utilizado, concentração e responsável." },
