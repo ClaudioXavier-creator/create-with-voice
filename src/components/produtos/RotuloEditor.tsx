@@ -468,54 +468,111 @@ export default function RotuloEditor({ produtoId, produtoNome }: Props) {
   function generateZPL(): string {
     const w = rotulo.largura_mm;
     const h = rotulo.altura_mm;
-    const dotsW = w * 8;
+    const dotsW = w * 8; // 203 dpi ≈ 8 dots/mm
     const dotsH = h * 8;
-
-    let zpl = `^XA\n^PW${dotsW}\n^LL${dotsH}\n^CF0,28\n`;
-    let y = 30;
-    const lineH = 32;
     const x = 20;
+    const maxFB = dotsW - 40; // field block width
 
-    zpl += `^FO${x},${y}^A0N,36,36^FD${rotulo.nome_comercial}^FS\n`;
-    y += 44;
-    zpl += `^FO${x},${y}^A0N,24,24^FD${rotulo.classificacao_label}^FS\n`;
-    y += lineH;
-    zpl += `^FO${x},${y}^GB${dotsW - 40},2,2^FS\n`;
-    y += 10;
+    // Helper: add a text block with automatic line wrapping
+    const lines: string[] = [];
+    let y = 20;
 
-    const compShort = rotulo.composicao_ingredientes.substring(0, 120);
-    zpl += `^FO${x},${y}^A0N,18,18^FB${dotsW - 40},3,,^FDCOMP: ${compShort}^FS\n`;
-    y += 58;
+    const addLine = (text: string, fontH: number, fontW: number, maxLines = 1) => {
+      if (!text) return;
+      if (maxLines > 1) {
+        lines.push(`^FO${x},${y}^A0N,${fontH},${fontW}^FB${maxFB},${maxLines},,^FD${text}^FS`);
+        y += fontH * maxLines + 4;
+      } else {
+        lines.push(`^FO${x},${y}^A0N,${fontH},${fontW}^FD${text}^FS`);
+        y += fontH + 6;
+      }
+    };
 
-    const niveisShort = rotulo.niveis_garantia_texto.substring(0, 200);
-    zpl += `^FO${x},${y}^A0N,16,16^FB${dotsW - 40},5,,^FDNIVEIS DE GARANTIA POR KG: ${niveisShort}^FS\n`;
-    y += 90;
+    const addSeparator = () => {
+      lines.push(`^FO${x},${y}^GB${maxFB},2,2^FS`);
+      y += 8;
+    };
 
-    zpl += `^FO${x},${y}^GB${dotsW - 40},1,1^FS\n`;
-    y += 8;
-    zpl += `^FO${x},${y}^A0N,20,20^FDPESO LIQ: ${rotulo.peso_liquido}^FS\n`;
-    zpl += `^FO${dotsW / 2},${y}^A0N,20,20^FDVAL: ${rotulo.prazo_validade}^FS\n`;
-    y += 26;
-    zpl += `^FO${x},${y}^A0N,20,20^FD${rotulo.lote_placeholder}^FS\n`;
-    zpl += `^FO${dotsW / 2},${y}^A0N,20,20^FD${rotulo.fabricacao_placeholder}^FS\n`;
-    y += 26;
+    const addTwoCol = (left: string, right: string, fontH: number) => {
+      lines.push(`^FO${x},${y}^A0N,${fontH},${fontH}^FD${left}^FS`);
+      lines.push(`^FO${Math.floor(dotsW / 2)},${y}^A0N,${fontH},${fontH}^FD${right}^FS`);
+      y += fontH + 6;
+    };
 
+    const addSection = (title: string, content: string, contentLines = 3) => {
+      if (!content) return;
+      addLine(title, 18, 18);
+      y -= 2;
+      addLine(content, 16, 16, contentLines);
+    };
+
+    // ── Header ──
+    addLine(rotulo.nome_comercial || "PRODUTO", 32, 32);
+    addLine(rotulo.classificacao_label, 22, 22);
+    addSeparator();
+
+    // ── Composição (IN 22 obrigatório) ──
+    addSection("COMPOSICAO BASICA:", rotulo.composicao_ingredientes, 3);
+
+    // ── Eventuais Substitutivos ──
+    addSection("EVENTUAIS SUBSTITUTIVOS:", rotulo.eventuais_substitutivos, 2);
+
+    // ── Níveis de Garantia (IN 22 obrigatório) ──
+    addSection("NIVEIS DE GARANTIA POR KG:", rotulo.niveis_garantia_texto, 5);
+
+    // ── Indicações de Uso ──
+    addSection("INDICACOES DE USO:", rotulo.indicacoes_uso, 2);
+
+    // ── Modo de Usar ──
+    addSection("MODO DE USAR:", rotulo.modo_usar, 2);
+
+    // ── Precauções e Restrições ──
+    addSection("RESTRICOES E PRECAUCOES:", rotulo.precaucoes_restricoes, 2);
+
+    // ── Armazenamento ──
+    if (rotulo.armazenamento) {
+      addLine(`CONSERVACAO: ${rotulo.armazenamento}`, 16, 16);
+    }
+
+    addSeparator();
+
+    // ── Peso, Validade, Lote, Fabricação ──
+    addTwoCol(`PESO LIQ: ${rotulo.peso_liquido}`, `VAL: ${rotulo.prazo_validade}`, 18);
+    addTwoCol(rotulo.lote_placeholder, rotulo.fabricacao_placeholder, 18);
+
+    // ── Registro MAPA ──
     if (rotulo.registro_mapa) {
-      zpl += `^FO${x},${y}^A0N,18,18^FDREG. MAPA: ${rotulo.registro_mapa}^FS\n`;
-      y += 24;
+      addLine(`REG. MAPA: ${rotulo.registro_mapa}`, 16, 16);
     }
 
-    zpl += `^FO${x},${y}^A0N,16,16^FD${rotulo.razao_social} - CNPJ: ${rotulo.cnpj}^FS\n`;
-    y += 20;
-    if (rotulo.endereco) {
-      zpl += `^FO${x},${y}^A0N,14,14^FD${rotulo.endereco}^FS\n`;
-      y += 18;
-    }
+    addSeparator();
+
+    // ── Fabricante (IN 22 obrigatório) ──
+    addLine(`${rotulo.razao_social} - CNPJ: ${rotulo.cnpj}`, 16, 16);
+    if (rotulo.endereco) addLine(rotulo.endereco, 14, 14);
+    addLine("INDUSTRIA BRASILEIRA", 16, 16);
+
+    // ── RT ──
     if (rotulo.rt_nome) {
-      zpl += `^FO${x},${y}^A0N,16,16^FDRT: ${rotulo.rt_nome} - CRMV: ${rotulo.rt_crmv}^FS\n`;
-      y += 20;
+      addLine(`RT: ${rotulo.rt_nome} - CRMV: ${rotulo.rt_crmv}`, 14, 14);
     }
 
+    // ── SAC ──
+    if (rotulo.sac_contato) {
+      addLine(`SAC: ${rotulo.sac_contato}`, 14, 14);
+    }
+
+    // ── Registro status ──
+    if (rotulo.registro_mapa) {
+      addLine("Produto Registrado no MAPA", 14, 14);
+    } else {
+      addLine("Produto Isento de Registro no MAPA", 14, 14);
+    }
+
+    // Build final ZPL with dynamic label length
+    const finalH = Math.max(dotsH, y + 20);
+    let zpl = `^XA\n^PW${dotsW}\n^LL${finalH}\n^CF0,20\n`;
+    zpl += lines.join("\n") + "\n";
     zpl += `^XZ`;
     return zpl;
   }
