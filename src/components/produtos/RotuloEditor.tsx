@@ -57,7 +57,7 @@ const EMPTY_ROTULO: RotuloData = {
   fabricacao_placeholder: "FAB: ___/___/______",
   registro_mapa: "", razao_social: "", cnpj: "", endereco: "",
   rt_nome: "", rt_crmv: "", sac_contato: "",
-  largura_mm: 100, altura_mm: 75,
+  largura_mm: 200, altura_mm: 100,
   exibir_tabela_consumo: false,
 };
 
@@ -70,7 +70,7 @@ const CLASSIFICACAO_FULL: Record<string, string> = {
   sal_mineral: "SAL MINERAL",
 };
 
-// ──── Reference values for 450kg bovine maintenance (NRC) ────
+// ──── Reference values for 450kg bovine maintenance (NRC / IN 12/2004) ────
 const VR_MACRO: { mineral: string; vr: number; unit: string; key: string }[] = [
   { mineral: "Cálcio", vr: 14, unit: "g/dia", key: "calcio" },
   { mineral: "Fósforo", vr: 11, unit: "g/dia", key: "fosforo" },
@@ -96,59 +96,36 @@ const VR_VITAMINAS: { mineral: string; vr: number; unit: string; key: string }[]
   { mineral: "Vitamina E", vr: 350, unit: "UI/dia", key: "vitamina_e" },
 ];
 
-/** Checks if product type + species warrants a consumption table */
 function shouldShowConsumptionTable(tipo: string, especie: string): boolean {
   const tiposValidos = ["sal_mineral", "suplemento"];
   const isBovino = especie.toLowerCase().includes("bovin");
   return tiposValidos.includes(tipo) && isBovino;
 }
 
-/** Calculate nutrient amount per 100g of supplement from niveis_garantia (per kg) */
 function calcQtdPer100g(niveisObj: Record<string, any>, key: string, refUnit: string): number | null {
   const nutrient = niveisObj[key];
   if (!nutrient || typeof nutrient !== "object") return null;
-
-  // Get min value (or max if min unavailable)
   const rawVal = parseFloat(nutrient.min || nutrient.max || "0");
   if (!rawVal) return null;
-
   const nutUnit = (nutrient.unit || "").toLowerCase();
-
-  // Nutrient is per kg, we want per 100g → divide by 10
   let valPer100g = rawVal / 10;
-
-  // Convert units if needed (g/kg → g, mg/kg → mg)
-  // If ref expects g/dia and nutrient is in mg/kg, convert mg→g
-  if (refUnit.includes("g/dia") && nutUnit.includes("mg")) {
-    valPer100g = valPer100g / 1000;
-  }
-  // If ref expects mg/dia and nutrient is in g/kg, convert g→mg
-  if (refUnit.includes("mg/dia") && nutUnit.includes("g/")) {
-    valPer100g = valPer100g * 1000;
-  }
-
+  if (refUnit.includes("g/dia") && nutUnit.includes("mg")) valPer100g = valPer100g / 1000;
+  if (refUnit.includes("mg/dia") && nutUnit.includes("g/")) valPer100g = valPer100g * 1000;
   return valPer100g;
 }
 
-/** Convert structured niveis_garantia JSON to IN 22 formatted text */
 function formatNiveisIN22(niveisObj: Record<string, any>): string {
   const lines: string[] = [];
   Object.entries(niveisObj).forEach(([key, val]) => {
-    if (key.startsWith("_")) return;
+    if (key.startsWith("_") || key === "consumo_pb" || key === "consumo_ndt") return;
     const label = key.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
     if (typeof val === "object" && val !== null) {
       const { min, max, unit } = val as { min?: string; max?: string; unit?: string };
       const u = unit || "";
-      if (min && max) {
-        lines.push(`${label} (Mín.) ${min} ${u}; ${label} (Máx.) ${max} ${u}`);
-      } else if (min) {
-        lines.push(`${label} (Mín.) ${min} ${u}`);
-      } else if (max) {
-        lines.push(`${label} (Máx.) ${max} ${u}`);
-      }
-    } else if (val) {
-      lines.push(`${label}: ${val}`);
-    }
+      if (min && max) lines.push(`${label} (Mín.) ${min} ${u}; ${label} (Máx.) ${max} ${u}`);
+      else if (min) lines.push(`${label} (Mín.) ${min} ${u}`);
+      else if (max) lines.push(`${label} (Máx.) ${max} ${u}`);
+    } else if (val) lines.push(`${label}: ${val}`);
   });
   return lines.join("; ") + ".";
 }
@@ -182,9 +159,8 @@ function extractFromProduto(prod: any): Partial<RotuloData> {
   };
 }
 
-// ──── Consumption table sub-component ────
+// ──── Consumption table UI sub-component ────
 function TabelaConsumo({ niveisObj }: { niveisObj: Record<string, any> }) {
-  // PB and NDT consumption
   const consumoPB = niveisObj.consumo_pb;
   const consumoNDT = niveisObj.consumo_ndt;
 
@@ -195,15 +171,14 @@ function TabelaConsumo({ niveisObj }: { niveisObj: Record<string, any> }) {
       <TableRow key={ref.key}>
         <TableCell className="py-1 text-xs">{ref.mineral}</TableCell>
         <TableCell className="py-1 text-xs text-center">{ref.vr}</TableCell>
-        <TableCell className="py-1 text-xs text-center">{qtd !== null ? qtd.toFixed(2) : "--"}</TableCell>
-        <TableCell className="py-1 text-xs text-center">{pct !== null ? pct.toFixed(2) : "--"}</TableCell>
+        <TableCell className="py-1 text-xs text-center">{qtd !== null ? qtd.toFixed(2) : "–"}</TableCell>
+        <TableCell className="py-1 text-xs text-center">{pct !== null ? pct.toFixed(2) : "–"}</TableCell>
       </TableRow>
     );
   };
 
   return (
     <div className="space-y-3">
-      {/* PB / NDT row */}
       {(consumoPB || consumoNDT) && (
         <Table>
           <TableHeader>
@@ -220,10 +195,10 @@ function TabelaConsumo({ niveisObj }: { niveisObj: Record<string, any> }) {
                 <TableCell className="py-1 text-xs">Consumo em PB</TableCell>
                 <TableCell className="py-1 text-xs text-center">550</TableCell>
                 <TableCell className="py-1 text-xs text-center">
-                  {parseFloat(consumoPB.min || "0") ? (parseFloat(consumoPB.min) / 10).toFixed(1) : "--"}
+                  {parseFloat(consumoPB.min || "0") ? (parseFloat(consumoPB.min) / 10).toFixed(1) : "–"}
                 </TableCell>
                 <TableCell className="py-1 text-xs text-center">
-                  {parseFloat(consumoPB.min || "0") ? ((parseFloat(consumoPB.min) / 10 / 550) * 100).toFixed(2) : "--"}
+                  {parseFloat(consumoPB.min || "0") ? ((parseFloat(consumoPB.min) / 10 / 550) * 100).toFixed(2) : "–"}
                 </TableCell>
               </TableRow>
             )}
@@ -232,65 +207,43 @@ function TabelaConsumo({ niveisObj }: { niveisObj: Record<string, any> }) {
                 <TableCell className="py-1 text-xs">Consumo em NDT</TableCell>
                 <TableCell className="py-1 text-xs text-center">4000</TableCell>
                 <TableCell className="py-1 text-xs text-center">
-                  {parseFloat(consumoNDT.min || "0") ? (parseFloat(consumoNDT.min) / 10).toFixed(1) : "--"}
+                  {parseFloat(consumoNDT.min || "0") ? (parseFloat(consumoNDT.min) / 10).toFixed(1) : "–"}
                 </TableCell>
                 <TableCell className="py-1 text-xs text-center">
-                  {parseFloat(consumoNDT.min || "0") ? ((parseFloat(consumoNDT.min) / 10 / 4000) * 100).toFixed(2) : "--"}
+                  {parseFloat(consumoNDT.min || "0") ? ((parseFloat(consumoNDT.min) / 10 / 4000) * 100).toFixed(2) : "–"}
                 </TableCell>
               </TableRow>
             )}
           </TableBody>
         </Table>
       )}
-
-      {/* Macrominerais */}
       <div>
         <p className="text-xs font-bold mb-1">MACROMINERAIS (g/dia)</p>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="py-1 text-xs">Mineral</TableHead>
-              <TableHead className="py-1 text-xs text-center">VR¹</TableHead>
-              <TableHead className="py-1 text-xs text-center">Qtd/100g</TableHead>
-              <TableHead className="py-1 text-xs text-center">% do VR</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>{VR_MACRO.map(renderRow)}</TableBody>
-        </Table>
+        <Table><TableHeader><TableRow>
+          <TableHead className="py-1 text-xs">Mineral</TableHead>
+          <TableHead className="py-1 text-xs text-center">VR¹</TableHead>
+          <TableHead className="py-1 text-xs text-center">Qtd/100g</TableHead>
+          <TableHead className="py-1 text-xs text-center">% do VR</TableHead>
+        </TableRow></TableHeader><TableBody>{VR_MACRO.map(renderRow)}</TableBody></Table>
       </div>
-
-      {/* Microminerais */}
       <div>
         <p className="text-xs font-bold mb-1">MICROMINERAIS (mg/dia)</p>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="py-1 text-xs">Mineral</TableHead>
-              <TableHead className="py-1 text-xs text-center">VR¹</TableHead>
-              <TableHead className="py-1 text-xs text-center">Qtd/100g</TableHead>
-              <TableHead className="py-1 text-xs text-center">% do VR</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>{VR_MICRO.map(renderRow)}</TableBody>
-        </Table>
+        <Table><TableHeader><TableRow>
+          <TableHead className="py-1 text-xs">Mineral</TableHead>
+          <TableHead className="py-1 text-xs text-center">VR¹</TableHead>
+          <TableHead className="py-1 text-xs text-center">Qtd/100g</TableHead>
+          <TableHead className="py-1 text-xs text-center">% do VR</TableHead>
+        </TableRow></TableHeader><TableBody>{VR_MICRO.map(renderRow)}</TableBody></Table>
       </div>
-
-      {/* Vitaminas */}
       <div>
         <p className="text-xs font-bold mb-1">VITAMINAS (UI/dia)</p>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="py-1 text-xs">Vitamina</TableHead>
-              <TableHead className="py-1 text-xs text-center">VR¹</TableHead>
-              <TableHead className="py-1 text-xs text-center">Qtd/100g</TableHead>
-              <TableHead className="py-1 text-xs text-center">% do VR</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>{VR_VITAMINAS.map(renderRow)}</TableBody>
-        </Table>
+        <Table><TableHeader><TableRow>
+          <TableHead className="py-1 text-xs">Vitamina</TableHead>
+          <TableHead className="py-1 text-xs text-center">VR¹</TableHead>
+          <TableHead className="py-1 text-xs text-center">Qtd/100g</TableHead>
+          <TableHead className="py-1 text-xs text-center">% do VR</TableHead>
+        </TableRow></TableHeader><TableBody>{VR_VITAMINAS.map(renderRow)}</TableBody></Table>
       </div>
-
       <p className="text-[9px] text-muted-foreground italic">
         ¹ Valor diário de referência para manutenção de um animal de 450 kg de peso corporal (IN 12/2004 – MAPA).
       </p>
@@ -298,73 +251,140 @@ function TabelaConsumo({ niveisObj }: { niveisObj: Record<string, any> }) {
   );
 }
 
-// ──── Consumption table for print preview (inline styles) ────
-function TabelaConsumoPreview({ niveisObj }: { niveisObj: Record<string, any> }) {
-  const cellStyle: React.CSSProperties = { border: "1px solid #333", padding: "2px 4px", fontSize: "7px", textAlign: "center" };
-  const headerStyle: React.CSSProperties = { ...cellStyle, fontWeight: "bold", background: "#e5e5e5" };
-  const leftCell: React.CSSProperties = { ...cellStyle, textAlign: "left" };
+// ──── Build print-ready HTML for the label ────
+function buildPrintHTML(rotulo: RotuloData, niveisObj: Record<string, any>): string {
+  const hasTable = rotulo.exibir_tabela_consumo;
 
-  const renderRows = (refs: typeof VR_MACRO) => refs.map(ref => {
-    const qtd = calcQtdPer100g(niveisObj, ref.key, ref.unit);
-    const pct = qtd !== null && ref.vr > 0 ? ((qtd / ref.vr) * 100) : null;
-    return (
-      <tr key={ref.key}>
-        <td style={leftCell}>{ref.mineral}</td>
-        <td style={cellStyle}>{ref.vr}</td>
-        <td style={cellStyle}>{qtd !== null ? qtd.toFixed(2) : "--"}</td>
-        <td style={cellStyle}>{pct !== null ? pct.toFixed(2) : "--"}</td>
-      </tr>
-    );
-  });
+  // Helper: build consumption table HTML
+  const buildTableHTML = () => {
+    const cellS = 'border:1px solid #333;padding:1px 3px;font-size:6.5pt;text-align:center;';
+    const headerS = cellS + 'font-weight:bold;background:#e5e5e5;';
+    const leftS = cellS + 'text-align:left;';
 
-  return (
-    <div style={{ marginTop: "6px" }}>
-      <p style={{ fontSize: "8px", fontWeight: "bold", margin: "6px 0 3px" }}>TABELA DE CONSUMO:</p>
+    const renderRows = (refs: typeof VR_MACRO) => refs.map(ref => {
+      const qtd = calcQtdPer100g(niveisObj, ref.key, ref.unit);
+      const pct = qtd !== null && ref.vr > 0 ? ((qtd / ref.vr) * 100) : null;
+      return `<tr><td style="${leftS}">${ref.mineral}</td><td style="${cellS}">${ref.vr}</td><td style="${cellS}">${qtd !== null ? qtd.toFixed(2) : '–'}</td><td style="${cellS}">${pct !== null ? pct.toFixed(2) : '–'}</td></tr>`;
+    }).join('');
 
-      <p style={{ fontSize: "7px", fontWeight: "bold", margin: "4px 0 2px" }}>MACROMINERAIS (g/dia)</p>
-      <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: "4px" }}>
-        <thead>
-          <tr>
-            <th style={headerStyle}>Mineral</th>
-            <th style={headerStyle}>VR¹</th>
-            <th style={headerStyle}>Qtd/100g</th>
-            <th style={headerStyle}>% do VR</th>
-          </tr>
-        </thead>
-        <tbody>{renderRows(VR_MACRO)}</tbody>
-      </table>
+    const consumoPB = niveisObj.consumo_pb;
+    const consumoNDT = niveisObj.consumo_ndt;
+    let pbNdtRows = '';
+    if (consumoPB && typeof consumoPB === 'object' && parseFloat(consumoPB.min || '0')) {
+      const v = parseFloat(consumoPB.min) / 10;
+      pbNdtRows += `<tr><td style="${leftS}">Consumo em PB (g/dia)</td><td style="${cellS}" colspan="3">${v.toFixed(0)}</td></tr>`;
+    }
+    if (consumoNDT && typeof consumoNDT === 'object' && parseFloat(consumoNDT.min || '0')) {
+      const v = parseFloat(consumoNDT.min) / 10;
+      pbNdtRows += `<tr><td style="${leftS}">Consumo em NDT (g/dia)</td><td style="${cellS}" colspan="3">${v.toFixed(0)}</td></tr>`;
+    }
 
-      <p style={{ fontSize: "7px", fontWeight: "bold", margin: "4px 0 2px" }}>MICROMINERAIS (mg/dia)</p>
-      <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: "4px" }}>
-        <thead>
-          <tr>
-            <th style={headerStyle}>Mineral</th>
-            <th style={headerStyle}>VR¹</th>
-            <th style={headerStyle}>Qtd/100g</th>
-            <th style={headerStyle}>% do VR</th>
-          </tr>
-        </thead>
-        <tbody>{renderRows(VR_MICRO)}</tbody>
-      </table>
+    return `
+      <div style="padding:4px;">
+        <p style="font-size:9pt;font-weight:bold;text-align:center;margin:0 0 4px;">TABELA VALOR DE REFERÊNCIA</p>
+        <table style="width:100%;border-collapse:collapse;margin-bottom:3px;">
+          <thead><tr>
+            <th style="${headerS}">GARANTIA</th>
+            <th style="${headerS}">VALOR REFERÊNCIA (VR)¹</th>
+            <th style="${headerS}">QUANTIDADE POR 100 G DE SUPLEMENTO</th>
+            <th style="${headerS}">QUANTIDADE % DO VR POR 100 G SUPLEMENTO</th>
+          </tr></thead>
+          <tbody>${pbNdtRows}</tbody>
+        </table>
+        <p style="font-size:6.5pt;font-weight:bold;margin:3px 0 1px;">MACROMINERAIS (g/dia)</p>
+        <table style="width:100%;border-collapse:collapse;margin-bottom:2px;">
+          <tbody>${renderRows(VR_MACRO)}</tbody>
+        </table>
+        <p style="font-size:6.5pt;font-weight:bold;margin:3px 0 1px;">MICROMINERAIS (mg/dia)</p>
+        <table style="width:100%;border-collapse:collapse;margin-bottom:2px;">
+          <tbody>${renderRows(VR_MICRO)}</tbody>
+        </table>
+        <p style="font-size:6.5pt;font-weight:bold;margin:3px 0 1px;">VITAMINAS (UI/dia)</p>
+        <table style="width:100%;border-collapse:collapse;margin-bottom:2px;">
+          <tbody>${renderRows(VR_VITAMINAS)}</tbody>
+        </table>
+        <p style="font-size:5.5pt;font-style:italic;margin:2px 0 0;">¹ Valor diário de referência para manutenção de um animal de 450 kg de peso corporal</p>
+      </div>
+    `;
+  };
 
-      <p style={{ fontSize: "7px", fontWeight: "bold", margin: "4px 0 2px" }}>VITAMINAS (UI/dia)</p>
-      <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: "4px" }}>
-        <thead>
-          <tr>
-            <th style={headerStyle}>Vitamina</th>
-            <th style={headerStyle}>VR¹</th>
-            <th style={headerStyle}>Qtd/100g</th>
-            <th style={headerStyle}>% do VR</th>
-          </tr>
-        </thead>
-        <tbody>{renderRows(VR_VITAMINAS)}</tbody>
-      </table>
+  // Helper: build section
+  const section = (title: string, content: string) => {
+    if (!content) return '';
+    return `<p style="font-size:7pt;font-weight:bold;margin:3px 0 1px;">${title}</p><p style="font-size:6.5pt;line-height:1.35;margin:0 0 2px;text-align:justify;">${content}</p>`;
+  };
 
-      <p style={{ fontSize: "6px", fontStyle: "italic", margin: "2px 0" }}>
-        ¹ Valor diário de referência para manutenção de um animal de 450 kg de peso corporal (IN 12/2004 – MAPA).
-      </p>
+  const bodyContent = `
+    ${section('COMPOSIÇÃO BÁSICA:', rotulo.composicao_ingredientes)}
+    ${section('EVENTUAIS SUBSTITUTIVOS:', rotulo.eventuais_substitutivos)}
+    ${section('NÍVEIS DE GARANTIA POR KG DO PRODUTO:', rotulo.niveis_garantia_texto)}
+    ${section('INDICAÇÕES DE USO:', rotulo.indicacoes_uso)}
+    ${section('MODO DE USAR:', rotulo.modo_usar)}
+    ${section('RESTRIÇÕES E OUTRAS RECOMENDAÇÕES:', rotulo.precaucoes_restricoes)}
+    ${section('CONDIÇÕES DE CONSERVAÇÃO:', rotulo.armazenamento)}
+  `;
+
+  const footerCenter = `
+    <div style="text-align:center;font-size:7pt;margin-top:4px;border-top:1px solid #000;padding-top:3px;">
+      <p style="font-weight:bold;margin:1px 0;">INDÚSTRIA BRASILEIRA</p>
+      <p style="margin:1px 0;">${rotulo.registro_mapa
+        ? 'Produto Registrado no Ministério da Agricultura, Pecuária e Abastecimento.'
+        : 'Produto Isento de Registro no Ministério da Agricultura, Pecuária e Abastecimento.'
+      }</p>
     </div>
-  );
+  `;
+
+  const leftColumnWidth = hasTable ? '55%' : '100%';
+
+  return `
+    <div style="width:${rotulo.largura_mm - 4}mm;font-family:Arial,Helvetica,sans-serif;border:2px solid #000;box-sizing:border-box;">
+      <!-- HEADER -->
+      <div style="display:flex;border-bottom:2px solid #000;">
+        <div style="flex:1;padding:4px 8px;border-right:1px solid #000;">
+          <p style="font-size:7.5pt;text-align:center;margin:0 0 2px;font-weight:bold;">${rotulo.classificacao_label}</p>
+          <p style="font-size:16pt;font-weight:bold;text-align:center;margin:2px 0;">${rotulo.nome_comercial}</p>
+        </div>
+        <div style="width:35%;padding:4px 6px;font-size:6.5pt;line-height:1.5;">
+          <p style="font-weight:bold;font-size:7pt;margin:0 0 1px;">Fabricado por:</p>
+          <p style="margin:0;">${rotulo.razao_social}</p>
+          <p style="margin:0;">${rotulo.endereco}</p>
+          <p style="margin:0;">CNPJ: ${rotulo.cnpj}</p>
+          <p style="margin:0;font-weight:bold;">INDÚSTRIA BRASILEIRA</p>
+        </div>
+      </div>
+
+      <!-- BODY -->
+      <div style="display:flex;">
+        <!-- Left column: text content -->
+        <div style="width:${leftColumnWidth};padding:4px 8px;${hasTable ? 'border-right:1px solid #000;' : ''}">
+          ${bodyContent}
+
+          <div style="border-top:0.5pt solid #000;margin-top:3px;padding-top:2px;font-size:6.5pt;">
+            <div style="display:flex;justify-content:space-between;margin-bottom:1px;">
+              <span><strong>PESO LÍQ:</strong> ${rotulo.peso_liquido}</span>
+              <span><strong>VALIDADE:</strong> ${rotulo.prazo_validade}</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:1px;">
+              <span>${rotulo.lote_placeholder}</span>
+              <span>${rotulo.fabricacao_placeholder}</span>
+            </div>
+            ${rotulo.registro_mapa ? `<p style="margin:1px 0;"><strong>Registro MAPA Nº:</strong> ${rotulo.registro_mapa}</p>` : ''}
+            ${rotulo.rt_nome ? `<p style="margin:1px 0;">RT: ${rotulo.rt_nome} – CRMV: ${rotulo.rt_crmv}</p>` : ''}
+            ${rotulo.sac_contato ? `<p style="margin:1px 0;">SAC: ${rotulo.sac_contato}</p>` : ''}
+          </div>
+
+          ${footerCenter}
+        </div>
+
+        ${hasTable ? `
+          <!-- Right column: consumption table -->
+          <div style="width:45%;">
+            ${buildTableHTML()}
+          </div>
+        ` : ''}
+      </div>
+    </div>
+  `;
 }
 
 // ──── Main component ────
@@ -382,17 +402,10 @@ export default function RotuloEditor({ produtoId, produtoNome }: Props) {
 
   async function loadRotulo() {
     setLoading(true);
-    // Load product niveis_garantia for consumption table
     const { data: prod } = await supabase.from("produtos").select("niveis_garantia, classificacao, especie_alvo").eq("id", produtoId).single();
-    if (prod) {
-      setNiveisObj((prod.niveis_garantia as Record<string, any>) || {});
-    }
+    if (prod) setNiveisObj((prod.niveis_garantia as Record<string, any>) || {});
 
-    const { data } = await supabase
-      .from("rotulos")
-      .select("*")
-      .eq("produto_id", produtoId)
-      .maybeSingle();
+    const { data } = await supabase.from("rotulos").select("*").eq("produto_id", produtoId).maybeSingle();
 
     if (data) {
       setRotuloId(data.id);
@@ -420,8 +433,8 @@ export default function RotuloEditor({ produtoId, produtoNome }: Props) {
         rt_nome: data.rt_nome || "",
         rt_crmv: data.rt_crmv || "",
         sac_contato: data.sac_contato || "",
-        largura_mm: data.largura_mm || 100,
-        altura_mm: data.altura_mm || 75,
+        largura_mm: data.largura_mm || 200,
+        altura_mm: data.altura_mm || 100,
         exibir_tabela_consumo: autoTabela,
       });
     } else {
@@ -445,13 +458,8 @@ export default function RotuloEditor({ produtoId, produtoNome }: Props) {
   async function handleSave() {
     if (!user) return;
     setSaving(true);
-
     const { exibir_tabela_consumo, ...rotuloToSave } = rotulo;
-    const payload = {
-      user_id: user.id,
-      produto_id: produtoId,
-      ...rotuloToSave,
-    };
+    const payload = { user_id: user.id, produto_id: produtoId, ...rotuloToSave };
 
     const { error } = rotuloId
       ? await supabase.from("rotulos").update(payload).eq("id", rotuloId)
@@ -468,112 +476,157 @@ export default function RotuloEditor({ produtoId, produtoNome }: Props) {
   function generateZPL(): string {
     const w = rotulo.largura_mm;
     const h = rotulo.altura_mm;
-    const dotsW = w * 8; // 203 dpi ≈ 8 dots/mm
+    const dotsW = w * 8;
     const dotsH = h * 8;
+    const hasTable = rotulo.exibir_tabela_consumo;
+    const textColW = hasTable ? Math.floor(dotsW * 0.55) : dotsW;
+    const tableColX = textColW + 10;
     const x = 20;
-    const maxFB = dotsW - 40; // field block width
+    const maxFB = textColW - 40;
 
-    // Helper: add a text block with automatic line wrapping
     const lines: string[] = [];
     let y = 20;
 
-    const addLine = (text: string, fontH: number, fontW: number, maxLines = 1) => {
+    const addLine = (text: string, fontH: number, fontW: number, maxLines = 1, customX = x, customFB = maxFB) => {
       if (!text) return;
       if (maxLines > 1) {
-        lines.push(`^FO${x},${y}^A0N,${fontH},${fontW}^FB${maxFB},${maxLines},,^FD${text}^FS`);
-        y += fontH * maxLines + 4;
+        lines.push(`^FO${customX},${y}^A0N,${fontH},${fontW}^FB${customFB},${maxLines},,^FD${text}^FS`);
+        y += fontH * maxLines + 2;
       } else {
-        lines.push(`^FO${x},${y}^A0N,${fontH},${fontW}^FD${text}^FS`);
-        y += fontH + 6;
+        lines.push(`^FO${customX},${y}^A0N,${fontH},${fontW}^FD${text}^FS`);
+        y += fontH + 4;
       }
     };
 
-    const addSeparator = () => {
-      lines.push(`^FO${x},${y}^GB${maxFB},2,2^FS`);
-      y += 8;
-    };
-
-    const addTwoCol = (left: string, right: string, fontH: number) => {
-      lines.push(`^FO${x},${y}^A0N,${fontH},${fontH}^FD${left}^FS`);
-      lines.push(`^FO${Math.floor(dotsW / 2)},${y}^A0N,${fontH},${fontH}^FD${right}^FS`);
-      y += fontH + 6;
-    };
+    const addSep = () => { lines.push(`^FO${x},${y}^GB${maxFB},1,1^FS`); y += 6; };
 
     const addSection = (title: string, content: string, contentLines = 3) => {
       if (!content) return;
-      addLine(title, 18, 18);
+      addLine(title, 16, 16);
       y -= 2;
-      addLine(content, 16, 16, contentLines);
+      addLine(content, 14, 14, contentLines);
     };
 
-    // ── Header ──
-    addLine(rotulo.nome_comercial || "PRODUTO", 32, 32);
-    addLine(rotulo.classificacao_label, 22, 22);
-    addSeparator();
+    // ── Header (full width) ──
+    // Classification + Name on left, Manufacturer on right
+    lines.push(`^FO${x},${y}^A0N,16,16^FB${textColW - 40},1,,^FD${rotulo.classificacao_label}^FS`);
+    // Manufacturer block at right
+    const mfX = hasTable ? tableColX : Math.floor(dotsW * 0.65);
+    lines.push(`^FO${mfX},${y}^A0N,14,14^FDFabricado por:^FS`);
+    y += 18;
+    lines.push(`^FO${x},${y}^A0N,28,28^FB${textColW - 40},1,,^FD${rotulo.nome_comercial}^FS`);
+    lines.push(`^FO${mfX},${y}^A0N,12,12^FD${rotulo.razao_social}^FS`);
+    y += 16;
+    lines.push(`^FO${mfX},${y}^A0N,12,12^FD${rotulo.endereco}^FS`);
+    y += 14;
+    lines.push(`^FO${mfX},${y}^A0N,12,12^FDCNPJ: ${rotulo.cnpj}^FS`);
+    y += 14;
+    lines.push(`^FO${mfX},${y}^A0N,12,12^FDINDUSTRIA BRASILEIRA^FS`);
+    y = 90; // normalize after header
 
-    // ── Composição (IN 22 obrigatório) ──
-    addSection("COMPOSICAO BASICA:", rotulo.composicao_ingredientes, 3);
+    // Separator across full width
+    lines.push(`^FO${x},${y}^GB${dotsW - 40},2,2^FS`);
+    y += 8;
 
-    // ── Eventuais Substitutivos ──
+    // ── Body (left column) ──
+    addSection("COMPOSICAO BASICA:", rotulo.composicao_ingredientes, 4);
     addSection("EVENTUAIS SUBSTITUTIVOS:", rotulo.eventuais_substitutivos, 2);
-
-    // ── Níveis de Garantia (IN 22 obrigatório) ──
-    addSection("NIVEIS DE GARANTIA POR KG:", rotulo.niveis_garantia_texto, 5);
-
-    // ── Indicações de Uso ──
+    addSection("NIVEIS DE GARANTIA POR KG DO PRODUTO:", rotulo.niveis_garantia_texto, 5);
     addSection("INDICACOES DE USO:", rotulo.indicacoes_uso, 2);
+    addSection("MODO DE USAR:", rotulo.modo_usar, 3);
+    addSection("RESTRICOES E OUTRAS RECOMENDACOES:", rotulo.precaucoes_restricoes, 2);
+    if (rotulo.armazenamento) addSection("CONDICOES DE CONSERVACAO:", rotulo.armazenamento, 1);
 
-    // ── Modo de Usar ──
-    addSection("MODO DE USAR:", rotulo.modo_usar, 2);
+    addSep();
 
-    // ── Precauções e Restrições ──
-    addSection("RESTRICOES E PRECAUCOES:", rotulo.precaucoes_restricoes, 2);
+    // Peso / Validade
+    lines.push(`^FO${x},${y}^A0N,14,14^FDPESO LIQ: ${rotulo.peso_liquido}^FS`);
+    lines.push(`^FO${Math.floor(textColW / 2)},${y}^A0N,14,14^FDVAL: ${rotulo.prazo_validade}^FS`);
+    y += 18;
+    lines.push(`^FO${x},${y}^A0N,14,14^FD${rotulo.lote_placeholder}^FS`);
+    lines.push(`^FO${Math.floor(textColW / 2)},${y}^A0N,14,14^FD${rotulo.fabricacao_placeholder}^FS`);
+    y += 18;
+    if (rotulo.registro_mapa) { addLine(`REG. MAPA: ${rotulo.registro_mapa}`, 14, 14); }
+    if (rotulo.rt_nome) { addLine(`RT: ${rotulo.rt_nome} - CRMV: ${rotulo.rt_crmv}`, 12, 12); }
+    if (rotulo.sac_contato) { addLine(`SAC: ${rotulo.sac_contato}`, 12, 12); }
 
-    // ── Armazenamento ──
-    if (rotulo.armazenamento) {
-      addLine(`CONSERVACAO: ${rotulo.armazenamento}`, 16, 16);
+    addSep();
+    addLine("INDUSTRIA BRASILEIRA", 14, 14);
+    addLine(rotulo.registro_mapa ? "Produto Registrado no MAPA" : "Produto Isento de Registro no MAPA", 12, 12);
+
+    // ── Right column: consumption table (ZPL grid) ──
+    if (hasTable) {
+      const tX = tableColX;
+      const tW = dotsW - tableColX - 20;
+      let tY = 96;
+      const colW = [Math.floor(tW * 0.28), Math.floor(tW * 0.24), Math.floor(tW * 0.24), Math.floor(tW * 0.24)];
+
+      // Table title
+      lines.push(`^FO${tX},${tY}^A0N,16,16^FB${tW},1,,^FDTABELA VALOR DE REFERENCIA^FS`);
+      tY += 20;
+
+      // Header row
+      const headers = ["GARANTIA", "VR¹", "QTD/100G", "% VR"];
+      let cx = tX;
+      headers.forEach((h, i) => {
+        lines.push(`^FO${cx},${tY}^A0N,12,10^FB${colW[i]},1,,^FD${h}^FS`);
+        cx += colW[i];
+      });
+      tY += 16;
+      lines.push(`^FO${tX},${tY}^GB${tW},1,1^FS`);
+      tY += 4;
+
+      // PB / NDT
+      const consumoPB = niveisObj.consumo_pb;
+      const consumoNDT = niveisObj.consumo_ndt;
+      if (consumoPB && typeof consumoPB === "object" && parseFloat(consumoPB.min || "0")) {
+        const v = (parseFloat(consumoPB.min) / 10).toFixed(0);
+        lines.push(`^FO${tX},${tY}^A0N,11,10^FDConsumo PB (g/dia)^FS`);
+        lines.push(`^FO${tX + colW[0]},${tY}^A0N,11,10^FD550^FS`);
+        lines.push(`^FO${tX + colW[0] + colW[1]},${tY}^A0N,11,10^FD${v}^FS`);
+        tY += 14;
+      }
+      if (consumoNDT && typeof consumoNDT === "object" && parseFloat(consumoNDT.min || "0")) {
+        const v = (parseFloat(consumoNDT.min) / 10).toFixed(0);
+        lines.push(`^FO${tX},${tY}^A0N,11,10^FDConsumo NDT (g/dia)^FS`);
+        lines.push(`^FO${tX + colW[0]},${tY}^A0N,11,10^FD4000^FS`);
+        lines.push(`^FO${tX + colW[0] + colW[1]},${tY}^A0N,11,10^FD${v}^FS`);
+        tY += 14;
+      }
+
+      // Macro/Micro/Vitaminas
+      const allGroups = [
+        { label: "MACROMINERAIS (g/dia)", refs: VR_MACRO },
+        { label: "MICROMINERAIS (mg/dia)", refs: VR_MICRO },
+        { label: "VITAMINAS (UI/dia)", refs: VR_VITAMINAS },
+      ];
+
+      allGroups.forEach(grp => {
+        tY += 4;
+        lines.push(`^FO${tX},${tY}^A0N,12,10^FD${grp.label}^FS`);
+        tY += 14;
+        grp.refs.forEach(ref => {
+          const qtd = calcQtdPer100g(niveisObj, ref.key, ref.unit);
+          const pct = qtd !== null && ref.vr > 0 ? ((qtd / ref.vr) * 100) : null;
+          let cx2 = tX;
+          lines.push(`^FO${cx2},${tY}^A0N,11,10^FD${ref.mineral}^FS`);
+          cx2 += colW[0];
+          lines.push(`^FO${cx2},${tY}^A0N,11,10^FD${ref.vr}^FS`);
+          cx2 += colW[1];
+          lines.push(`^FO${cx2},${tY}^A0N,11,10^FD${qtd !== null ? qtd.toFixed(2) : '--'}^FS`);
+          cx2 += colW[2];
+          lines.push(`^FO${cx2},${tY}^A0N,11,10^FD${pct !== null ? pct.toFixed(2) : '--'}^FS`);
+          tY += 13;
+        });
+      });
+
+      tY += 4;
+      lines.push(`^FO${tX},${tY}^A0N,10,9^FB${tW},2,,^FD1: VR para manutencao de animal de 450 kg^FS`);
     }
 
-    addSeparator();
-
-    // ── Peso, Validade, Lote, Fabricação ──
-    addTwoCol(`PESO LIQ: ${rotulo.peso_liquido}`, `VAL: ${rotulo.prazo_validade}`, 18);
-    addTwoCol(rotulo.lote_placeholder, rotulo.fabricacao_placeholder, 18);
-
-    // ── Registro MAPA ──
-    if (rotulo.registro_mapa) {
-      addLine(`REG. MAPA: ${rotulo.registro_mapa}`, 16, 16);
-    }
-
-    addSeparator();
-
-    // ── Fabricante (IN 22 obrigatório) ──
-    addLine(`${rotulo.razao_social} - CNPJ: ${rotulo.cnpj}`, 16, 16);
-    if (rotulo.endereco) addLine(rotulo.endereco, 14, 14);
-    addLine("INDUSTRIA BRASILEIRA", 16, 16);
-
-    // ── RT ──
-    if (rotulo.rt_nome) {
-      addLine(`RT: ${rotulo.rt_nome} - CRMV: ${rotulo.rt_crmv}`, 14, 14);
-    }
-
-    // ── SAC ──
-    if (rotulo.sac_contato) {
-      addLine(`SAC: ${rotulo.sac_contato}`, 14, 14);
-    }
-
-    // ── Registro status ──
-    if (rotulo.registro_mapa) {
-      addLine("Produto Registrado no MAPA", 14, 14);
-    } else {
-      addLine("Produto Isento de Registro no MAPA", 14, 14);
-    }
-
-    // Build final ZPL with dynamic label length
     const finalH = Math.max(dotsH, y + 20);
-    let zpl = `^XA\n^PW${dotsW}\n^LL${finalH}\n^CF0,20\n`;
-    zpl += lines.join("\n") + "\n";
-    zpl += `^XZ`;
+    let zpl = `^XA\n^PW${dotsW}\n^LL${finalH}\n^CF0,16\n`;
+    zpl += lines.join("\n") + "\n^XZ";
     return zpl;
   }
 
@@ -590,29 +643,17 @@ export default function RotuloEditor({ produtoId, produtoNome }: Props) {
   }
 
   function handlePrint() {
-    const el = printRef.current;
-    if (!el) return;
+    const html = buildPrintHTML(rotulo, niveisObj);
     const printWindow = window.open("", "_blank");
     if (!printWindow) return;
     printWindow.document.write(`
-      <html><head><title>Rótulo - ${rotulo.nome_comercial}</title>
+      <html><head><title>Rótulo – ${rotulo.nome_comercial}</title>
       <style>
         @page { size: ${rotulo.largura_mm}mm ${rotulo.altura_mm}mm; margin: 2mm; }
-        body { font-family: Arial, sans-serif; font-size: 8pt; margin: 0; padding: 2mm; }
-        .label { width: ${rotulo.largura_mm - 4}mm; }
-        h2 { font-size: 12pt; margin: 0 0 2mm; }
-        h3 { font-size: 9pt; margin: 2mm 0 1mm; }
-        p { margin: 0.5mm 0; font-size: 7pt; line-height: 1.3; }
-        .small { font-size: 6pt; }
-        hr { border: none; border-top: 0.5pt solid #000; margin: 1.5mm 0; }
-        .row { display: flex; justify-content: space-between; }
-        table { width: 100%; border-collapse: collapse; margin-bottom: 2mm; }
-        th, td { border: 1px solid #333; padding: 1px 3px; font-size: 6pt; text-align: center; }
-        th { background: #e5e5e5; font-weight: bold; }
-        td:first-child { text-align: left; }
+        body { margin: 0; padding: 0; }
       </style></head><body>
-      <div class="label">${el.innerHTML}</div>
-      <script>window.print();window.close();</script>
+      ${html}
+      <script>window.print();window.close();<\/script>
       </body></html>
     `);
     printWindow.document.close();
@@ -721,16 +762,11 @@ export default function RotuloEditor({ produtoId, produtoNome }: Props) {
             <CardContent className="pt-6 space-y-3">
               <h3 className="font-semibold text-foreground text-sm">Tabela de Consumo (Bovinos)</h3>
               <div className="flex items-center gap-3">
-                <Switch
-                  checked={rotulo.exibir_tabela_consumo}
-                  onCheckedChange={(v) => updateField("exibir_tabela_consumo", v)}
-                />
-                <Label className="text-xs">
-                  Exibir tabela de consumo por 100g de suplemento no rótulo
-                </Label>
+                <Switch checked={rotulo.exibir_tabela_consumo} onCheckedChange={(v) => updateField("exibir_tabela_consumo", v)} />
+                <Label className="text-xs">Exibir tabela de consumo por 100g de suplemento no rótulo</Label>
               </div>
               <p className="text-[10px] text-muted-foreground">
-                Ativado automaticamente para Sal Mineral e Suplementos de Bovinos (conforme IN 12/2004 – MAPA). Mostra macro e microminerais com valores de referência (VR) para 450 kg de peso corporal.
+                Ativado automaticamente para Sal Mineral e Suplementos de Bovinos (IN 12/2004 – MAPA). Mostra macro e microminerais com VR para 450 kg.
               </p>
             </CardContent>
           </Card>
@@ -738,12 +774,12 @@ export default function RotuloEditor({ produtoId, produtoNome }: Props) {
           {/* Dimensões */}
           <Card>
             <CardContent className="pt-6 space-y-3">
-              <h3 className="font-semibold text-foreground text-sm">Dimensões da Etiqueta (Zebra ZD220)</h3>
+              <h3 className="font-semibold text-foreground text-sm">Dimensões da Etiqueta</h3>
               <div className="grid grid-cols-2 gap-3">
-                <div><Label className="text-xs">Largura (mm)</Label><Input type="number" value={rotulo.largura_mm} onChange={(e) => updateField("largura_mm", parseInt(e.target.value) || 100)} /></div>
-                <div><Label className="text-xs">Altura (mm)</Label><Input type="number" value={rotulo.altura_mm} onChange={(e) => updateField("altura_mm", parseInt(e.target.value) || 75)} /></div>
+                <div><Label className="text-xs">Largura (mm)</Label><Input type="number" value={rotulo.largura_mm} onChange={(e) => updateField("largura_mm", parseInt(e.target.value) || 200)} /></div>
+                <div><Label className="text-xs">Altura (mm)</Label><Input type="number" value={rotulo.altura_mm} onChange={(e) => updateField("altura_mm", parseInt(e.target.value) || 100)} /></div>
               </div>
-              <p className="text-xs text-muted-foreground">Padrão ZD220: 100x75mm (203 dpi).</p>
+              <p className="text-xs text-muted-foreground">Padrão: 200x100mm (horizontal, conforme modelo IN 22).</p>
             </CardContent>
           </Card>
 
@@ -776,7 +812,7 @@ export default function RotuloEditor({ produtoId, produtoNome }: Props) {
         {/* Preview Tab */}
         <TabsContent value="preview">
           <Card>
-            <CardHeader><CardTitle className="text-sm">Pré-visualização do Rótulo (IN 22)</CardTitle></CardHeader>
+            <CardHeader><CardTitle className="text-sm">Pré-visualização do Rótulo (IN 22 – Layout Horizontal)</CardTitle></CardHeader>
             <CardContent>
               <div className="flex gap-2 mb-4">
                 <Button variant="outline" size="sm" onClick={downloadZPL}>
@@ -787,112 +823,12 @@ export default function RotuloEditor({ produtoId, produtoNome }: Props) {
                 </Button>
               </div>
 
-              <div className="border-2 border-foreground bg-background mx-auto" style={{ maxWidth: "700px", fontFamily: "Arial, sans-serif" }} ref={printRef}>
-                {/* Header */}
-                <div style={{ display: "flex", borderBottom: "2px solid black" }}>
-                  <div style={{ flex: 1, padding: "8px 12px", borderRight: "2px solid black" }}>
-                    <p style={{ fontSize: "10px", textAlign: "center", marginBottom: "4px", fontWeight: "bold" }}>
-                      {rotulo.classificacao_label || "CLASSIFICAÇÃO DO PRODUTO"}
-                    </p>
-                    <h2 style={{ fontSize: "18px", fontWeight: "bold", textAlign: "center", margin: "4px 0" }}>
-                      {rotulo.nome_comercial || "NOME DO PRODUTO"}
-                    </h2>
-                  </div>
-                  <div style={{ width: "200px", padding: "6px 8px", fontSize: "8px", lineHeight: "1.5" }}>
-                    <p style={{ fontWeight: "bold", fontSize: "9px", margin: "0 0 2px" }}>Fabricado por:</p>
-                    <p style={{ margin: 0 }}>{rotulo.razao_social}</p>
-                    <p style={{ margin: 0 }}>{rotulo.endereco}</p>
-                    <p style={{ margin: 0 }}>CNPJ: {rotulo.cnpj}</p>
-                    <p style={{ margin: 0, fontWeight: "bold" }}>INDÚSTRIA BRASILEIRA</p>
-                  </div>
-                </div>
-
-                {/* Body */}
-                <div style={{ padding: "8px 12px" }}>
-                  {rotulo.composicao_ingredientes && (
-                    <>
-                      <p style={{ fontSize: "8px", fontWeight: "bold", margin: "4px 0 2px" }}>COMPOSIÇÃO BÁSICA:</p>
-                      <p style={{ fontSize: "7.5px", lineHeight: "1.4", margin: "0 0 4px" }}>{rotulo.composicao_ingredientes}</p>
-                    </>
-                  )}
-
-                  {rotulo.eventuais_substitutivos && (
-                    <>
-                      <p style={{ fontSize: "8px", fontWeight: "bold", margin: "4px 0 2px" }}>EVENTUAIS SUBSTITUTIVOS:</p>
-                      <p style={{ fontSize: "7.5px", lineHeight: "1.4", margin: "0 0 4px" }}>{rotulo.eventuais_substitutivos}</p>
-                    </>
-                  )}
-
-                  {rotulo.niveis_garantia_texto && (
-                    <>
-                      <p style={{ fontSize: "8px", fontWeight: "bold", margin: "4px 0 2px" }}>NÍVEIS DE GARANTIA POR KG DO PRODUTO:</p>
-                      <p style={{ fontSize: "7.5px", lineHeight: "1.4", margin: "0 0 4px" }}>{rotulo.niveis_garantia_texto}</p>
-                    </>
-                  )}
-
-                  {rotulo.indicacoes_uso && (
-                    <>
-                      <p style={{ fontSize: "8px", fontWeight: "bold", margin: "4px 0 2px" }}>INDICAÇÕES DE USO:</p>
-                      <p style={{ fontSize: "7.5px", lineHeight: "1.4", margin: "0 0 4px" }}>{rotulo.indicacoes_uso}</p>
-                    </>
-                  )}
-
-                  {rotulo.modo_usar && (
-                    <>
-                      <p style={{ fontSize: "8px", fontWeight: "bold", margin: "4px 0 2px" }}>MODO DE USAR:</p>
-                      <p style={{ fontSize: "7.5px", lineHeight: "1.4", margin: "0 0 4px" }}>{rotulo.modo_usar}</p>
-                    </>
-                  )}
-
-                  {rotulo.precaucoes_restricoes && (
-                    <>
-                      <p style={{ fontSize: "8px", fontWeight: "bold", margin: "4px 0 2px" }}>RESTRIÇÕES E OUTRAS RECOMENDAÇÕES:</p>
-                      <p style={{ fontSize: "7.5px", lineHeight: "1.4", margin: "0 0 4px" }}>{rotulo.precaucoes_restricoes}</p>
-                    </>
-                  )}
-
-                  {rotulo.armazenamento && (
-                    <>
-                      <p style={{ fontSize: "8px", fontWeight: "bold", margin: "4px 0 2px" }}>CONDIÇÕES DE CONSERVAÇÃO:</p>
-                      <p style={{ fontSize: "7.5px", lineHeight: "1.4", margin: "0 0 4px" }}>{rotulo.armazenamento}</p>
-                    </>
-                  )}
-
-                  {/* Consumption Table in preview */}
-                  {rotulo.exibir_tabela_consumo && (
-                    <TabelaConsumoPreview niveisObj={niveisObj} />
-                  )}
-
-                  <hr style={{ borderTop: "1px solid black", margin: "6px 0" }} />
-
-                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: "8px", marginBottom: "4px" }}>
-                    <span><strong>PESO LÍQ:</strong> {rotulo.peso_liquido}</span>
-                    <span><strong>VALIDADE:</strong> {rotulo.prazo_validade}</span>
-                  </div>
-                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: "8px", marginBottom: "4px" }}>
-                    <span>{rotulo.lote_placeholder}</span>
-                    <span>{rotulo.fabricacao_placeholder}</span>
-                  </div>
-
-                  {rotulo.registro_mapa && <p style={{ fontSize: "7.5px", marginTop: "4px" }}><strong>Registro no MAPA Nº:</strong> {rotulo.registro_mapa}</p>}
-
-                  <hr style={{ borderTop: "1px solid black", margin: "6px 0" }} />
-
-                  <div style={{ textAlign: "center", fontSize: "8px" }}>
-                    <p style={{ fontWeight: "bold", margin: "2px 0" }}>INDÚSTRIA BRASILEIRA</p>
-                    {rotulo.registro_mapa
-                      ? <p style={{ margin: "2px 0" }}>Produto Registrado no Ministério da Agricultura, Pecuária e Abastecimento.</p>
-                      : <p style={{ margin: "2px 0" }}>Produto Isento de Registro no Ministério da Agricultura, Pecuária e Abastecimento.</p>
-                    }
-                  </div>
-
-                  {rotulo.rt_nome && (
-                    <p style={{ fontSize: "7px", textAlign: "center", marginTop: "4px" }}>
-                      RT: {rotulo.rt_nome} — CRMV: {rotulo.rt_crmv}
-                    </p>
-                  )}
-                  {rotulo.sac_contato && <p style={{ fontSize: "7px", textAlign: "center" }}>SAC: {rotulo.sac_contato}</p>}
-                </div>
+              <div className="overflow-auto">
+                <div
+                  ref={printRef}
+                  style={{ maxWidth: "900px", fontFamily: "Arial, sans-serif" }}
+                  dangerouslySetInnerHTML={{ __html: buildPrintHTML(rotulo, niveisObj) }}
+                />
               </div>
             </CardContent>
           </Card>
