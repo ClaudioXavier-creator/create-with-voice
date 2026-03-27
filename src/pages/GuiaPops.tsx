@@ -66,6 +66,7 @@ function Tip({ children }: { children: React.ReactNode }) {
 const POP_ICONS: Record<string, React.ElementType> = {
   "POP-01": Users, "POP-02": Droplets, "POP-03": ClipboardCheck, "POP-04": Beaker,
   "POP-05": ShieldCheck, "POP-06": Wrench, "POP-07": Bug, "POP-08": Recycle, "POP-09": Search,
+  "POP-10": FileText,
 };
 
 function PopContent({ codigo }: { codigo: string }) {
@@ -183,7 +184,7 @@ export default function GuiaPops() {
 
   return (
     <>
-      <PageHeader icon={BookOpen} title="Guia dos POPs — IN 04/2007" description="Textos procedimentais completos dos 9 POPs obrigatórios com orientações de preenchimento" />
+      <PageHeader icon={BookOpen} title="Guia dos POPs — IN 04/2007" description="Textos procedimentais completos dos 10 POPs obrigatórios com orientações de preenchimento" />
       <div className="flex gap-2 mb-6">
         <button onClick={expandAll} className="text-sm text-primary hover:underline font-medium">Expandir tudo</button>
         <span className="text-muted-foreground">|</span>

@@ -19,28 +19,28 @@ const MODELOS: ModeloDoc[] = [
   // Manual
   { nome: "Manual BPF", descricao: "Manual de Boas Práticas de Fabricação completo (IN 04/2007)", categoria: "manual", arquivo: "Manual_BPF" },
 
-  // POPs atualizados conforme estrutura do sistema
+  // POPs atualizados conforme estrutura do sistema (10 POPs)
   { nome: "POP 01 — Qualificação de Fornecedores", descricao: "Seleção, avaliação e qualificação de fornecedores de matérias-primas", categoria: "pop", arquivo: "POP-01" },
-  { nome: "POP 02 — Higiene e Sanitização", descricao: "Higienização de instalações, equipamentos e utensílios (IN 04/2007)", categoria: "pop", arquivo: "POP-02" },
-  { nome: "POP 03 — Potabilidade da Água", descricao: "Controle de potabilidade e laudos de análise da água", categoria: "pop", arquivo: "POP-03" },
-  { nome: "POP 04 — Manejo de Resíduos", descricao: "Manejo de resíduos e destino de produtos avariados/vencidos (IN 15/2009)", categoria: "pop", arquivo: "POP-04" },
-  { nome: "POP 05 — Higiene e Saúde Pessoal", descricao: "Exames médicos, monitoramento de adornos, uniformes (IN 04/2007)", categoria: "pop", arquivo: "POP-05" },
+  { nome: "POP 02 — Limpeza de Instalações e Equipamentos", descricao: "Higienização de instalações, equipamentos e utensílios (IN 04/2007)", categoria: "pop", arquivo: "POP-02" },
+  { nome: "POP 03 — Higiene e Saúde Pessoal", descricao: "Exames médicos, monitoramento de adornos, uniformes e EPIs (IN 04/2007)", categoria: "pop", arquivo: "POP-03" },
+  { nome: "POP 04 — Potabilidade da Água", descricao: "Controle de potabilidade, cloro residual e laudos laboratoriais", categoria: "pop", arquivo: "POP-04" },
+  { nome: "POP 05 — Prevenção de Contaminação Cruzada", descricao: "Sequenciamento, flushing, matriz de sensibilidade (IN 04/2007 e IN 15/2009)", categoria: "pop", arquivo: "POP-05" },
   { nome: "POP 06 — Manutenção e Calibração", descricao: "Manutenção preventiva/corretiva separada de calibração de balanças", categoria: "pop", arquivo: "POP-06" },
-  { nome: "POP 07 — Controle de Pragas e Expurgo", descricao: "Controle integrado de pragas e planilha de controle de expurgo", categoria: "pop", arquivo: "POP-07" },
-  { nome: "POP 08 — Retenção de Amostras", descricao: "Procedimento de coleta e retenção de contra-amostras", categoria: "pop", arquivo: "POP-08" },
+  { nome: "POP 07 — Controle Integrado de Pragas", descricao: "Manejo integrado de pragas e controle de expurgo de grãos", categoria: "pop", arquivo: "POP-07" },
+  { nome: "POP 08 — Controle de Resíduos e Efluentes", descricao: "Destinação de resíduos, produtos avariados/vencidos e manifestos", categoria: "pop", arquivo: "POP-08" },
   { nome: "POP 09 — Rastreabilidade e Recall", descricao: "Rastreabilidade de lotes e procedimento de recolhimento", categoria: "pop", arquivo: "POP-09" },
   { nome: "POP 10 — PAC (Autocontrole)", descricao: "Programa de Autocontrole consolidado conforme MAPA", categoria: "pop", arquivo: "POP-10", novo: true },
 
   // Planilhas por POP
-  { nome: "PL POP 1.1–1.4 — Fornecedores", descricao: "Planilhas de qualificação, avaliação e SIPEAGRO", categoria: "planilha", arquivo: "PL_POP_1" },
-  { nome: "PL POP 2.1–2.4 — Higiene", descricao: "Cronograma, registros de limpeza e sanitização", categoria: "planilha", arquivo: "PL_POP_2" },
-  { nome: "PL POP 3.1–3.3 — Água", descricao: "Controle de cloro, laudos de potabilidade, reservatórios", categoria: "planilha", arquivo: "PL_POP_3" },
-  { nome: "PL POP 4.1–4.2 — Resíduos", descricao: "Controle de resíduos e destino de produtos avariados", categoria: "planilha", arquivo: "PL_POP_4" },
-  { nome: "PL POP 5.1–5.3 — Saúde Pessoal", descricao: "Exames médicos, checklist de adornos, visitantes", categoria: "planilha", arquivo: "PL_POP_5" },
-  { nome: "PL POP 6.1–6.3 — Manutenção/Calibração", descricao: "Registro de manutenções, calibrações e verificações intermediárias", categoria: "planilha", arquivo: "PL_POP_6" },
-  { nome: "PL POP 7.1–7.3 — Pragas/Expurgo", descricao: "Controle de pragas, mapa de iscas e controle de expurgo", categoria: "planilha", arquivo: "PL_POP_7" },
-  { nome: "PL POP 8.1–8.2 — Amostras", descricao: "Registro de retenção de contra-amostras", categoria: "planilha", arquivo: "PL_POP_8" },
-  { nome: "PL POP 9.1–9.6 — Rastreabilidade", descricao: "Rastreabilidade de lotes, testes e registro de recall", categoria: "planilha", arquivo: "PL_POP_9" },
+  { nome: "PL POP 1.1–1.8 — Fornecedores", descricao: "Qualificação, recebimento MP/embalagens, lotes internos e expurgo", categoria: "planilha", arquivo: "PL_POP_1" },
+  { nome: "PL POP 2.1–2.4 — Limpeza", descricao: "Registros de limpeza diária, semanal, mensal e veículos", categoria: "planilha", arquivo: "PL_POP_2" },
+  { nome: "PL POP 3.1 — Higiene Pessoal", descricao: "Checklist de higiene, saúde, adornos, ASOs e visitantes", categoria: "planilha", arquivo: "PL_POP_3" },
+  { nome: "PL POP 4.1–4.3 — Água", descricao: "Controle de cloro, reservatórios e laudos laboratoriais", categoria: "planilha", arquivo: "PL_POP_4" },
+  { nome: "PL POP 5.1–5.2 — Contaminação Cruzada", descricao: "Checklist de prevenção e monitoramento de limpeza", categoria: "planilha", arquivo: "PL_POP_5" },
+  { nome: "PL POP 6.1–6.4 — Manutenção/Calibração", descricao: "Cronograma, calibrações, ordens de serviço e lista de equipamentos", categoria: "planilha", arquivo: "PL_POP_6" },
+  { nome: "PL POP 7.1–7.2 — Pragas", descricao: "Monitoramento semanal e controle mensal de pragas", categoria: "planilha", arquivo: "PL_POP_7" },
+  { nome: "PL POP 8.1 — Resíduos", descricao: "Controle de resíduos e manifestos de transporte", categoria: "planilha", arquivo: "PL_POP_8" },
+  { nome: "PL POP 9.1–9.2 — Rastreabilidade", descricao: "Rastreabilidade de lotes, testes e registro de recall", categoria: "planilha", arquivo: "PL_POP_9" },
 
   // Novos — funcionalidades desenvolvidas no projeto
   { nome: "Planilha — Recebimento de MP", descricao: "Recebimento com certificado de análise, temperatura e odor", categoria: "formulario", arquivo: "Form_Recebimento_MP", novo: true },

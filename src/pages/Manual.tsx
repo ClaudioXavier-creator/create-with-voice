@@ -160,50 +160,65 @@ const sections: ManualSection[] = [
     description:
       "Módulo integrado para POP 02 (Limpeza e Higienização das Instalações/Equipamentos), POP 03 (Higiene e Saúde dos Colaboradores) e POP 04 (Potabilidade da Água), conforme IN 04/2007.",
     features: [
-      { title: "Checklist Pré-Operacional", text: "7 áreas de verificação (pisos, silos, moegas, misturadores, etc.) com registro digital de conformidade antes de cada turno." },
-      { title: "Cronograma de Higienização", text: "Programe limpezas por área, frequência, produto utilizado, concentração e responsável." },
-      { title: "Registros de Limpeza", text: "Registre cada execução de limpeza com executor, horários, conformidade e observações." },
+      { title: "Checklist Pré-Operacional (POP 02)", text: "7 áreas de verificação (pisos, silos, moegas, misturadores, etc.) com registro digital de conformidade antes de cada turno." },
+      { title: "Cronograma de Higienização (POP 02)", text: "Programe limpezas por área, frequência, produto utilizado, concentração e responsável." },
+      { title: "Registros de Limpeza (POP 02)", text: "Registre cada execução de limpeza com executor, horários, conformidade e observações." },
+      { title: "Higiene e Saúde Pessoal (POP 03)", text: "Checklist semanal de 14 itens: uniformes, EPIs, adornos, unhas, barba, ferimentos, comportamento. Controle mensal de ASOs, exames e PCMSO." },
+      { title: "Controle de Visitantes (POP 03)", text: "Registro de visitantes com EPI fornecido, orientação de biosseguridade e áreas visitadas." },
       { title: "Potabilidade da Água (POP 04)", text: "Controle de cloro residual, pH, turbidez e laudos laboratoriais dos pontos de coleta. Registro de higienização de reservatórios." },
     ],
     tips: ["Mantenha os registros de limpeza pré-operacional sempre em dia para auditorias do MAPA."],
   },
   {
-    id: "manutencao-preventiva",
-    title: "Manutenção Preventiva (POP 06)",
-    icon: Wrench,
-    badge: "POPs",
-    description:
-      "Plano de manutenção preventiva de máquinas e equipamentos conforme IN 15/2009, para evitar contaminação cruzada por falha de equipamento.",
-    features: [
-      { title: "Cadastro de Equipamentos", text: "Registre equipamentos com código, descrição, localização e tipo de manutenção (preventiva, corretiva, preditiva)." },
-      { title: "Programação de Manutenções", text: "Agende manutenções com datas programadas, responsáveis e controle de execução." },
-      { title: "Registro de Execução", text: "Documente peças trocadas, custos, tempo de parada e próxima manutenção." },
-      { title: "Calibrações", text: "Controle de calibração de instrumentos com certificados, datas e verificações intermediárias." },
-    ],
-    tips: ["Vincule manutenções aos cronogramas de limpeza para evitar gaps de produção."],
-  },
-  {
-    id: "validacao-limpeza",
-    title: "Validação de Limpeza de Linha (Carryover)",
+    id: "contaminacao-cruzada",
+    title: "Prevenção de Contaminação Cruzada (POP 05)",
     icon: ShieldCheck,
     badge: "POPs",
     description:
-      "Validação da limpeza de linha entre batidas de diferentes produtos para prevenção de contaminação cruzada, conforme IN 04/2007.",
+      "Procedimentos para prevenção da contaminação cruzada no fluxo produtivo, armazenamento e identificação de matérias-primas, conforme IN 04/2007 e IN 15/2009.",
     features: [
-      { title: "Registro de Validação", text: "Registre produto anterior, produto seguinte, linha de produção, tipo de validação (flushing, swab, visual) e resultado." },
-      { title: "Análise de Resíduos", text: "Informe método de análise, resíduo detectado, limite aceitável e se o produto contém medicamento." },
-      { title: "Matriz de Sensibilidade", text: "Configure a matriz indicando quais transições entre produtos requerem flushing obrigatório." },
-      { title: "Controle de Medicamentos", text: "Alerta automático quando a transição envolve produto com medicamento veterinário." },
+      { title: "Checklist Semanal", text: "10 itens de verificação: sequência de produção, flushing, separação de ingredientes, identificação de MPs, armazenamento segregado." },
+      { title: "Monitoramento de Limpeza", text: "Swabs, testes de água de enxágue, inspeção visual pós-limpeza e controle de produtos químicos." },
+      { title: "Validação de Limpeza de Linha", text: "Registre produto anterior/seguinte, tipo de validação (flushing, swab, visual), resíduo detectado e limite aceitável." },
+      { title: "Matriz de Sensibilidade", text: "Configure quais transições entre produtos requerem flushing obrigatório, especialmente quando envolvem medicamentos veterinários." },
     ],
     tips: ["Sempre valide a limpeza ao trocar de produto com medicamento para produto sem medicamento."],
   },
   {
+    id: "manutencao-preventiva",
+    title: "Manutenção e Calibração (POP 06)",
+    icon: Wrench,
+    badge: "POPs",
+    description:
+      "Plano de manutenção preventiva/corretiva de equipamentos e calibração de instrumentos de medição, conforme IN 04/2007 e IN 15/2009.",
+    features: [
+      { title: "Cadastro de Equipamentos", text: "Registre equipamentos com código, descrição, localização e tipo de manutenção (preventiva, corretiva, preditiva)." },
+      { title: "Programação de Manutenções", text: "Agende manutenções com datas programadas, responsáveis e controle de execução." },
+      { title: "Registro de Execução", text: "Documente peças trocadas, custos, tempo de parada e próxima manutenção." },
+      { title: "Calibrações", text: "Controle de calibração de balanças e instrumentos com certificados, datas e verificações intermediárias de balanças." },
+    ],
+    tips: ["Vincule manutenções aos cronogramas de limpeza para evitar gaps de produção."],
+  },
+  {
+    id: "pragas-expurgo",
+    title: "Controle de Pragas e Expurgo (POP 07)",
+    icon: Bug,
+    badge: "POPs",
+    description:
+      "Controle integrado de pragas e procedimentos de expurgo de grãos armazenados, conforme IN 04/2007.",
+    features: [
+      { title: "Monitoramento Semanal", text: "Inspeção de armadilhas, vedações, telas anti-inseto e indícios de pragas (roedores, insetos, pássaros)." },
+      { title: "Aplicações e Laudos", text: "Registro de desinsetização, desratização, laudos da empresa terceirizada e mapa de iscas." },
+      { title: "Controle de Expurgo", text: "Registro de expurgo de grãos com produto químico, dosagem, tempo de exposição e eficácia." },
+    ],
+  },
+  {
     id: "controle-residuos",
-    title: "Controle de Resíduos (POP 05)",
+    title: "Controle de Resíduos e Efluentes (POP 08)",
     icon: Recycle,
     badge: "POPs",
     description:
-      "Gestão de resíduos e subprodutos conforme Decreto 12.031/2024, garantindo o destino adequado de varreduras e produtos condenados.",
+      "Gestão de resíduos sólidos, efluentes e destino de produtos avariados/vencidos, conforme Decreto 12.031/2024 e IN 15/2009.",
     features: [
       { title: "Classificação de Resíduos", text: "Classifique resíduos como Classe I (perigosos) ou Classe II (não perigosos) e controle o destino final." },
       { title: "Descarte de Produtos", text: "Registre produtos descartados com lote, motivo (vencido, contaminado, avariado) e quantidade." },
