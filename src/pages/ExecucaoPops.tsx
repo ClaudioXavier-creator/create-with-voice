@@ -474,7 +474,7 @@ export default function ExecucaoPops() {
                 {activeChecklist && (
                   <div className="p-3 rounded-lg border-2 border-primary/30 bg-primary/5 space-y-2">
                     <p className="text-xs font-semibold text-primary">
-                      {isPOP02 ? "📋 Triagem Diária — Higiene e Saúde do Pessoal (POP-02 / IN 15/2009)" : isPOP03 ? "🧹 Checklist Limpeza Pré-Operacional — Instalações e Equipamentos (POP-03 / IN 04/2007)" : isPOP04 ? "💧 Controle de Potabilidade da Água (POP-04 / IN 04/2007)" : "🚛 Vistoria de Veículo de Transporte (POP-05 / IN 15/2009)"}
+                      {isPOP02 ? "📋 Triagem Diária — Higiene e Saúde do Pessoal (POP-02 / IN 15/2009)" : isPOP03 ? "🧹 Checklist Limpeza Pré-Operacional — Instalações e Equipamentos (POP-03 / IN 04/2007)" : isPOP04 ? "💧 Controle de Potabilidade da Água (POP-04 / IN 04/2007)" : isPOP05 ? "🩺 Higiene e Saúde do Pessoal — Exames Médicos e Adornos (POP-05 / IN 04/2007)" : "🚛 Vistoria de Veículo de Transporte (POP-09 / IN 15/2009)"}
                     </p>
                     <p className="text-xs text-muted-foreground mb-2">Marque cada item como Conforme (✅) ou Não Conforme (❌):</p>
                     <div className="space-y-1.5">
