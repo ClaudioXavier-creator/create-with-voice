@@ -66,6 +66,7 @@ function Tip({ children }: { children: React.ReactNode }) {
 const POP_ICONS: Record<string, React.ElementType> = {
   "POP-01": Users, "POP-02": Droplets, "POP-03": ClipboardCheck, "POP-04": Beaker,
   "POP-05": ShieldCheck, "POP-06": Wrench, "POP-07": Bug, "POP-08": Recycle, "POP-09": Search,
+  "POP-10": FileText,
 };
 
 function PopContent({ codigo }: { codigo: string }) {
