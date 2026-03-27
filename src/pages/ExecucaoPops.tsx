@@ -500,8 +500,8 @@ export default function ExecucaoPops() {
                       <p className="text-xs text-destructive font-semibold mt-2">⚠️ Itens não conformes detectados — registrar como "Não conforme" se necessário.</p>
                     )}
 
-                    {/* POP-02 ASO/Exames fields */}
-                    {isPOP02 && (
+                    {/* POP-02 or POP-05 ASO/Exames fields */}
+                    {(isPOP02 || isPOP05) && (
                       <div className="mt-3 p-3 rounded-lg bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-300 space-y-2">
                         <p className="text-xs font-semibold text-emerald-700 dark:text-emerald-400">🩺 Registro de ASO / Exames Médicos Periódicos (IN 04/2007)</p>
                         <div className="grid grid-cols-3 gap-2">
