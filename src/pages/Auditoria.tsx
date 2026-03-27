@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { ClipboardCheck, CheckCircle2, XCircle, Link2, FileText, Users, Plus, Trash2, ShieldAlert } from "lucide-react";
+import { ClipboardCheck, CheckCircle2, XCircle, Link2, FileText, Users, Plus, Trash2, ShieldAlert, FileCheck } from "lucide-react";
+import DeclaracaoVisitante from "@/components/visitantes/DeclaracaoVisitante";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -103,6 +104,7 @@ export default function Auditoria() {
         <TabsList>
           <TabsTrigger value="checklist"><ClipboardCheck className="w-4 h-4 mr-1" />Checklist BPF</TabsTrigger>
           <TabsTrigger value="visitantes"><Users className="w-4 h-4 mr-1" />Controle de Visitantes {semOrientacao > 0 && <Badge variant="destructive" className="ml-1 text-[10px] px-1">{semOrientacao}</Badge>}</TabsTrigger>
+          <TabsTrigger value="declaracao"><FileCheck className="w-4 h-4 mr-1" />Declaração Visitante</TabsTrigger>
         </TabsList>
 
         {/* ── CHECKLIST ── */}
@@ -265,6 +267,11 @@ export default function Auditoria() {
               </Table>
             </Card>
           )}
+        </TabsContent>
+
+        {/* ── DECLARAÇÃO VISITANTE ── */}
+        <TabsContent value="declaracao">
+          <DeclaracaoVisitante />
         </TabsContent>
       </Tabs>
     </>
