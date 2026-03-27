@@ -91,6 +91,36 @@ export default function ManutencaoPreventiva() {
     return "outline";
   };
 
+  const addCalibracao = useMutation({
+    mutationFn: async () => {
+      const payload: any = { ...calibForm, user_id: user!.id };
+      if (!payload.proxima_calibracao) delete payload.proxima_calibracao;
+      if (!payload.proxima_verificacao_intermediaria) delete payload.proxima_verificacao_intermediaria;
+      if (!payload.resultado_verificacao) delete payload.resultado_verificacao;
+      const { error } = await supabase.from("calibracoes").insert(payload);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["calibracoes"] });
+      toast.success("Calibração registrada");
+      setOpenCalib(false);
+      setCalibForm({ equipamento: "", codigo: "", tipo: "balanca", localizacao: "", responsavel: "", data_calibracao: new Date().toISOString().split("T")[0], proxima_calibracao: "", certificado_numero: "", observacoes: "", status: "calibrado", proxima_verificacao_intermediaria: "", verificacao_conforme: true, resultado_verificacao: "" });
+    },
+    onError: () => toast.error("Erro ao salvar calibração"),
+  });
+
+  const deleteCalib = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from("calibracoes").delete().eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ["calibracoes"] }); toast.success("Calibração removida"); },
+  });
+    if (s === "concluida") return "default";
+    if (s === "atrasada") return "destructive";
+    return "outline";
+  };
+
   // Stats from calibracoes table
   const { data: calibracoes = [] } = useQuery({
     queryKey: ["calibracoes"],
