@@ -9,6 +9,7 @@ import {
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
+import EmpresaSelector from "@/components/EmpresaSelector";
 import logoImg from "@/assets/logo.png";
 
 interface NavItem {
