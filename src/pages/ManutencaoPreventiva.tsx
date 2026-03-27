@@ -381,6 +381,7 @@ export default function ManutencaoPreventiva() {
                            verifPendente ? <Badge variant="outline" className="border-yellow-500 text-yellow-700">Verif. Pendente</Badge> :
                            <Badge variant="default">Calibrado</Badge>}
                         </TableCell>
+                        <TableCell><Button variant="ghost" size="icon" onClick={() => deleteCalib.mutate(c.id)}><Trash2 className="w-4 h-4 text-destructive" /></Button></TableCell>
                       </TableRow>
                     );
                   })}
