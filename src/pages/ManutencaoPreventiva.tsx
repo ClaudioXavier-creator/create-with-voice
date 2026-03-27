@@ -116,10 +116,6 @@ export default function ManutencaoPreventiva() {
     },
     onSuccess: () => { qc.invalidateQueries({ queryKey: ["calibracoes"] }); toast.success("Calibração removida"); },
   });
-    if (s === "concluida") return "default";
-    if (s === "atrasada") return "destructive";
-    return "outline";
-  };
 
   // Stats from calibracoes table
   const { data: calibracoes = [] } = useQuery({
