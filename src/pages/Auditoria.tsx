@@ -104,6 +104,7 @@ export default function Auditoria() {
         <TabsList>
           <TabsTrigger value="checklist"><ClipboardCheck className="w-4 h-4 mr-1" />Checklist BPF</TabsTrigger>
           <TabsTrigger value="visitantes"><Users className="w-4 h-4 mr-1" />Controle de Visitantes {semOrientacao > 0 && <Badge variant="destructive" className="ml-1 text-[10px] px-1">{semOrientacao}</Badge>}</TabsTrigger>
+          <TabsTrigger value="declaracao"><FileCheck className="w-4 h-4 mr-1" />Declaração Visitante</TabsTrigger>
         </TabsList>
 
         {/* ── CHECKLIST ── */}
