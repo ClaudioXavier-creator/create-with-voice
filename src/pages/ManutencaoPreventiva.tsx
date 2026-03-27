@@ -356,8 +356,9 @@ export default function ManutencaoPreventiva() {
                     <TableHead>Código</TableHead>
                     <TableHead>Última Calibração</TableHead>
                     <TableHead>Próxima Calibração</TableHead>
-                    <TableHead>Verif. Intermediária</TableHead>
-                    <TableHead>Status</TableHead>
+                        <TableHead>Verif. Intermediária</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead></TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
