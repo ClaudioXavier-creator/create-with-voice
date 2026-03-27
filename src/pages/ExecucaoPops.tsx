@@ -104,8 +104,28 @@ const POP04_AGUA_ITENS = [
   "Frequência de análise conforme plano de amostragem",
 ];
 
-// Checklist items for POP-05 vehicle transport inspection (IN 15/2009)
-const POP05_VEICULO_ITENS = [
+// Checklist items for POP-05 Higiene e Saúde do Pessoal (IN 04/2007 + IN 15/2009)
+const POP05_HIGIENE_PESSOAL_ITENS = [
+  "Colaborador sem sintomas (febre, diarreia, vômito, lesões cutâneas, icterícia)",
+  "ASO (Atestado de Saúde Ocupacional) válido e dentro da validade",
+  "Exame admissional ou periódico em dia (intervalo ≤ 12 meses)",
+  "Exame de retorno ao trabalho realizado (quando aplicável)",
+  "Uniforme limpo, completo e em bom estado (sem botões, sem bolsos externos)",
+  "Uso adequado de EPIs: touca, luvas, botas, máscara (quando aplicável)",
+  "Ausência de adornos: anéis, relógio, brincos, pulseiras, piercings",
+  "Unhas curtas, limpas e sem esmalte ou unhas postiças",
+  "Barba aparada ou protegida com rede/protetor",
+  "Ausência de ferimentos expostos — curativos impermeáveis aplicados",
+  "Sem uso de perfume, maquiagem ou cosmético com fragrância forte",
+  "Mãos lavadas e higienizadas antes do início das atividades",
+  "Colaborador orientado sobre BPF e manipulação de alimentos para animais",
+  "Certificado de capacitação BPF / manipulação válido (reciclagem anual)",
+  "Registro de triagem diária preenchido pelo responsável do setor",
+  "Colaborador apto conforme laudo médico (sem restrições impeditivas)",
+];
+
+// Checklist items for POP-09 vehicle transport inspection (IN 15/2009)
+const POP09_VEICULO_ITENS = [
   "Carroceria/baú limpo e seco, sem resíduos de cargas anteriores",
   "Ausência de odor estranho ou contaminante no veículo",
   "Lona/cobertura em bom estado (sem rasgos ou furos)",
