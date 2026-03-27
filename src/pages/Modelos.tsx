@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Lock, Unlock, Download, FileText, BookOpen, ClipboardList, Table2 } from "lucide-react";
+import { Lock, Unlock, Download, FileText, BookOpen, ClipboardList, Table2, Shield, Wrench, FlaskConical, Bug, Droplets, Activity, Users, Truck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,51 +10,88 @@ import PageHeader from "@/components/PageHeader";
 interface ModeloDoc {
   nome: string;
   descricao: string;
-  categoria: "manual" | "pop" | "planilha" | "equipamento" | "treinamento";
+  categoria: string;
   arquivo: string;
+  novo?: boolean;
 }
 
 const MODELOS: ModeloDoc[] = [
-  { nome: "Manual BPF", descricao: "Manual de Boas Práticas de Fabricação completo", categoria: "manual", arquivo: "Manual_BPF" },
-  { nome: "POP 01 — Higienização", descricao: "Procedimento operacional padrão de higienização de instalações e equipamentos", categoria: "pop", arquivo: "POP-01" },
-  { nome: "POP 02 — Potabilidade da Água", descricao: "Controle da potabilidade da água de abastecimento", categoria: "pop", arquivo: "POP-02" },
-  { nome: "POP 03 — Higiene Pessoal", descricao: "Higiene e saúde dos colaboradores", categoria: "pop", arquivo: "POP-03" },
-  { nome: "POP 04 — Manejo de Resíduos", descricao: "Manejo e destino de resíduos industriais", categoria: "pop", arquivo: "POP-04" },
-  { nome: "POP 05 — Manutenção", descricao: "Manutenção preventiva e calibração de equipamentos", categoria: "pop", arquivo: "POP-05" },
-  { nome: "POP 06 — Controle de Pragas", descricao: "Prevenção e controle integrado de pragas", categoria: "pop", arquivo: "POP-06" },
-  { nome: "POP 07 — Controle de MP", descricao: "Recebimento e armazenamento de matérias-primas", categoria: "pop", arquivo: "POP-07" },
-  { nome: "POP 08 — Rastreabilidade e Recall", descricao: "Rastreabilidade de produtos e procedimento de recolhimento", categoria: "pop", arquivo: "POP-08" },
-  { nome: "POP 09 — Treinamentos / Educação Sanitária", descricao: "Programa de capacitação e educação sanitária", categoria: "pop", arquivo: "POP-09" },
-  { nome: "POP 10 — PAC Programa de Autocontrole", descricao: "Programa de autocontrole consolidado conforme MAPA", categoria: "pop", arquivo: "POP-10" },
-  { nome: "Planilhas POP 01 (1.1 a 1.4)", descricao: "Planilhas de controle de higienização", categoria: "planilha", arquivo: "Planilhas/PL_POP_1" },
-  { nome: "Planilhas POP 02 (2.1 a 2.3)", descricao: "Planilhas de controle da água", categoria: "planilha", arquivo: "Planilhas/PL_POP_2" },
-  { nome: "Planilhas POP 03 (3.1 a 3.3)", descricao: "Planilhas de higiene pessoal e saúde", categoria: "planilha", arquivo: "Planilhas/PL_POP_3" },
-  { nome: "Planilhas POP 04 (4.1 a 4.2)", descricao: "Planilhas de controle de resíduos", categoria: "planilha", arquivo: "Planilhas/PL_POP_4" },
-  { nome: "Planilhas POP 05 (5.1 a 5.3)", descricao: "Planilhas de manutenção e calibração", categoria: "planilha", arquivo: "Planilhas/PL_POP_5" },
-  { nome: "Planilhas POP 06 (6.1 a 6.3)", descricao: "Planilhas de controle de pragas", categoria: "planilha", arquivo: "Planilhas/PL_POP_6" },
-  { nome: "Planilhas POP 07 (7.1 a 7.2)", descricao: "Planilhas de recebimento de MP", categoria: "planilha", arquivo: "Planilhas/PL_POP_7" },
-  { nome: "Planilhas POP 08 (8.1 a 8.2)", descricao: "Planilhas de rastreabilidade", categoria: "planilha", arquivo: "Planilhas/PL_POP_8" },
-  { nome: "Planilhas POP 09 (9.1 a 9.6)", descricao: "Planilhas de treinamentos e educação sanitária", categoria: "planilha", arquivo: "Planilhas/PL_POP_9" },
-  { nome: "Lista de Equipamentos", descricao: "Inventário completo de equipamentos industriais", categoria: "equipamento", arquivo: "Equipamentos/Lista_Equipamentos" },
-  { nome: "Lista de Balanças", descricao: "Relação de balanças com calibração", categoria: "equipamento", arquivo: "Equipamentos/Lista_Balancas" },
-  { nome: "Cronograma de Treinamentos", descricao: "Calendário anual de capacitações", categoria: "treinamento", arquivo: "Treinamentos/Cronograma" },
-  { nome: "Lista de Presença", descricao: "Modelo de lista de presença para treinamentos", categoria: "treinamento", arquivo: "Treinamentos/Lista_Presenca" },
+  // Manual
+  { nome: "Manual BPF", descricao: "Manual de Boas Práticas de Fabricação completo (IN 04/2007)", categoria: "manual", arquivo: "Manual_BPF" },
+
+  // POPs atualizados conforme estrutura do sistema
+  { nome: "POP 01 — Qualificação de Fornecedores", descricao: "Seleção, avaliação e qualificação de fornecedores de matérias-primas", categoria: "pop", arquivo: "POP-01" },
+  { nome: "POP 02 — Higiene e Sanitização", descricao: "Higienização de instalações, equipamentos e utensílios (IN 04/2007)", categoria: "pop", arquivo: "POP-02" },
+  { nome: "POP 03 — Potabilidade da Água", descricao: "Controle de potabilidade e laudos de análise da água", categoria: "pop", arquivo: "POP-03" },
+  { nome: "POP 04 — Manejo de Resíduos", descricao: "Manejo de resíduos e destino de produtos avariados/vencidos (IN 15/2009)", categoria: "pop", arquivo: "POP-04" },
+  { nome: "POP 05 — Higiene e Saúde Pessoal", descricao: "Exames médicos, monitoramento de adornos, uniformes (IN 04/2007)", categoria: "pop", arquivo: "POP-05" },
+  { nome: "POP 06 — Manutenção e Calibração", descricao: "Manutenção preventiva/corretiva separada de calibração de balanças", categoria: "pop", arquivo: "POP-06" },
+  { nome: "POP 07 — Controle de Pragas e Expurgo", descricao: "Controle integrado de pragas e planilha de controle de expurgo", categoria: "pop", arquivo: "POP-07" },
+  { nome: "POP 08 — Retenção de Amostras", descricao: "Procedimento de coleta e retenção de contra-amostras", categoria: "pop", arquivo: "POP-08" },
+  { nome: "POP 09 — Rastreabilidade e Recall", descricao: "Rastreabilidade de lotes e procedimento de recolhimento", categoria: "pop", arquivo: "POP-09" },
+  { nome: "POP 10 — PAC (Autocontrole)", descricao: "Programa de Autocontrole consolidado conforme MAPA", categoria: "pop", arquivo: "POP-10", novo: true },
+
+  // Planilhas por POP
+  { nome: "PL POP 1.1–1.4 — Fornecedores", descricao: "Planilhas de qualificação, avaliação e SIPEAGRO", categoria: "planilha", arquivo: "PL_POP_1" },
+  { nome: "PL POP 2.1–2.4 — Higiene", descricao: "Cronograma, registros de limpeza e sanitização", categoria: "planilha", arquivo: "PL_POP_2" },
+  { nome: "PL POP 3.1–3.3 — Água", descricao: "Controle de cloro, laudos de potabilidade, reservatórios", categoria: "planilha", arquivo: "PL_POP_3" },
+  { nome: "PL POP 4.1–4.2 — Resíduos", descricao: "Controle de resíduos e destino de produtos avariados", categoria: "planilha", arquivo: "PL_POP_4" },
+  { nome: "PL POP 5.1–5.3 — Saúde Pessoal", descricao: "Exames médicos, checklist de adornos, visitantes", categoria: "planilha", arquivo: "PL_POP_5" },
+  { nome: "PL POP 6.1–6.3 — Manutenção/Calibração", descricao: "Registro de manutenções, calibrações e verificações intermediárias", categoria: "planilha", arquivo: "PL_POP_6" },
+  { nome: "PL POP 7.1–7.3 — Pragas/Expurgo", descricao: "Controle de pragas, mapa de iscas e controle de expurgo", categoria: "planilha", arquivo: "PL_POP_7" },
+  { nome: "PL POP 8.1–8.2 — Amostras", descricao: "Registro de retenção de contra-amostras", categoria: "planilha", arquivo: "PL_POP_8" },
+  { nome: "PL POP 9.1–9.6 — Rastreabilidade", descricao: "Rastreabilidade de lotes, testes e registro de recall", categoria: "planilha", arquivo: "PL_POP_9" },
+
+  // Novos — funcionalidades desenvolvidas no projeto
+  { nome: "Planilha — Recebimento de MP", descricao: "Recebimento com certificado de análise, temperatura e odor", categoria: "formulario", arquivo: "Form_Recebimento_MP", novo: true },
+  { nome: "Planilha — Ordem de Produção", descricao: "OP com fórmula, batidas, retrabalho e sobras", categoria: "formulario", arquivo: "Form_Ordem_Producao", novo: true },
+  { nome: "Planilha — Validação Limpeza de Linha", descricao: "Flushing e sequenciamento para contaminação cruzada (IN 15/2009)", categoria: "formulario", arquivo: "Form_Validacao_Limpeza", novo: true },
+  { nome: "Matriz de Sensibilidade", descricao: "Matriz produto anterior × seguinte para limpeza de linha", categoria: "formulario", arquivo: "Form_Matriz_Sensibilidade", novo: true },
+  { nome: "Controle de Substâncias Indesejáveis", descricao: "Monitoramento de micotoxinas, metais pesados e contaminantes", categoria: "formulario", arquivo: "Form_Substancias", novo: true },
+  { nome: "Análises Laboratoriais", descricao: "Registro de análises físico-químicas e microbiológicas", categoria: "formulario", arquivo: "Form_Analises_Lab", novo: true },
+  { nome: "Reclamações de Qualidade (SAC)", descricao: "Registro de reclamações com análise de causa e recolhimento", categoria: "formulario", arquivo: "Form_Reclamacoes", novo: true },
+  { nome: "Saúde de Manipuladores", descricao: "Exames admissionais, periódicos e demissionais com ASO", categoria: "formulario", arquivo: "Form_Saude_Manipuladores", novo: true },
+  { nome: "Controle de Visitantes", descricao: "Registro de visitantes com EPI e orientação de biosseguridade", categoria: "formulario", arquivo: "Form_Visitantes", novo: true },
+
+  // Equipamentos
+  { nome: "Lista de Equipamentos", descricao: "Inventário completo de equipamentos industriais", categoria: "equipamento", arquivo: "Lista_Equipamentos" },
+  { nome: "Lista de Balanças / Calibração", descricao: "Balanças com certificados e verificação intermediária", categoria: "equipamento", arquivo: "Lista_Balancas" },
+
+  // Auditorias e Gestão
+  { nome: "Checklist de Auditoria BPF", descricao: "Checklist completo conforme Decreto 12.031/2024", categoria: "auditoria", arquivo: "Checklist_Auditoria", novo: true },
+  { nome: "Matriz de Risco (APPCC)", descricao: "Identificação de perigos, severidade e medidas de controle", categoria: "auditoria", arquivo: "Matriz_Risco", novo: true },
+  { nome: "Não Conformidades / Plano de Ação", descricao: "Registro de NC com causa raiz e ações corretivas", categoria: "auditoria", arquivo: "NC_Plano_Acao", novo: true },
+  { nome: "Planejamento Anual BPF", descricao: "Cronograma anual de atividades obrigatórias", categoria: "auditoria", arquivo: "Planejamento_Anual", novo: true },
+
+  // Treinamentos
+  { nome: "Cronograma de Treinamentos", descricao: "Calendário anual de capacitações", categoria: "treinamento", arquivo: "Cronograma_Treinamentos" },
+  { nome: "Lista de Presença", descricao: "Modelo de lista de presença para treinamentos", categoria: "treinamento", arquivo: "Lista_Presenca" },
+
+  // Produtos e Rótulos
+  { nome: "Ficha Técnica de Produto", descricao: "Ficha técnica completa com níveis de garantia", categoria: "produto", arquivo: "Ficha_Tecnica_Produto", novo: true },
+  { nome: "Modelo de Rótulo (Ração/Suplemento/Sal)", descricao: "Rótulo conforme IN 22/2009 e IN 12/2004", categoria: "produto", arquivo: "Modelo_Rotulo", novo: true },
 ];
 
 const categoriaIcons: Record<string, React.ElementType> = {
   manual: BookOpen,
   pop: FileText,
   planilha: Table2,
-  equipamento: ClipboardList,
-  treinamento: ClipboardList,
+  formulario: ClipboardList,
+  equipamento: Wrench,
+  treinamento: Users,
+  auditoria: Shield,
+  produto: FlaskConical,
 };
 
 const categoriaLabels: Record<string, string> = {
   manual: "Manual",
   pop: "POPs",
-  planilha: "Planilhas",
+  planilha: "Planilhas POP",
+  formulario: "Formulários",
   equipamento: "Equipamentos",
   treinamento: "Treinamentos",
+  auditoria: "Auditoria/Gestão",
+  produto: "Produtos/Rótulos",
 };
 
 export default function Modelos() {
@@ -95,39 +132,34 @@ export default function Modelos() {
   };
 
   const modelosFiltrados = filtro === "todos" ? MODELOS : MODELOS.filter(m => m.categoria === filtro);
+  const categorias = ["todos", ...Object.keys(categoriaLabels)];
 
-  const categorias = ["todos", "manual", "pop", "planilha", "equipamento", "treinamento"];
+  const totalNovos = MODELOS.filter(m => m.novo).length;
 
   if (!desbloqueado) {
     return (
       <div className="space-y-6">
-        <PageHeader title="📁 Biblioteca de Modelos" description="Documentos padrão para implantação industrial BPF" />
+        <PageHeader title="📁 Biblioteca de Modelos" description={`${MODELOS.length} documentos padrão para implantação BPF`} />
         <div className="flex items-center justify-center min-h-[400px]">
           <Card className="w-full max-w-md border-primary/30 shadow-lg">
             <CardHeader className="text-center">
               <Lock className="w-16 h-16 mx-auto text-primary/40 mb-4" />
               <CardTitle className="text-xl">Área Restrita</CardTitle>
               <p className="text-sm text-muted-foreground mt-2">
-                Esta biblioteca contém modelos de documentos para implantação BPF.
-                O acesso é exclusivo para clientes do serviço de desenvolvimento.
+                Biblioteca com {MODELOS.length} modelos ({totalNovos} novos) para implantação BPF.
+                Acesso exclusivo para clientes.
               </p>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Input
-                  type="password"
-                  placeholder="Digite a senha de acesso"
-                  value={senha}
-                  onChange={e => setSenha(e.target.value)}
-                  onKeyDown={e => e.key === "Enter" && verificarSenha()}
-                  className="text-center text-lg tracking-wider"
-                />
-              </div>
-              <Button
-                className="w-full"
-                onClick={verificarSenha}
-                disabled={verificando}
-              >
+              <Input
+                type="password"
+                placeholder="Digite a senha de acesso"
+                value={senha}
+                onChange={e => setSenha(e.target.value)}
+                onKeyDown={e => e.key === "Enter" && verificarSenha()}
+                className="text-center text-lg tracking-wider"
+              />
+              <Button className="w-full" onClick={verificarSenha} disabled={verificando}>
                 {verificando ? "Verificando..." : "Desbloquear Acesso"}
               </Button>
               <p className="text-xs text-center text-muted-foreground">
@@ -144,7 +176,7 @@ export default function Modelos() {
     <div className="space-y-6">
       <PageHeader
         title="📁 Biblioteca de Modelos"
-        description="Documentos padrão para implantação industrial BPF — Acesso liberado"
+        description={`${MODELOS.length} documentos — ${totalNovos} novos modelos adicionados`}
       />
 
       <div className="flex items-center gap-2 flex-wrap">
@@ -158,7 +190,7 @@ export default function Modelos() {
             size="sm"
             onClick={() => setFiltro(cat)}
           >
-            {cat === "todos" ? "Todos" : categoriaLabels[cat]}
+            {cat === "todos" ? `Todos (${MODELOS.length})` : categoriaLabels[cat]}
           </Button>
         ))}
       </div>
@@ -167,7 +199,12 @@ export default function Modelos() {
         {modelosFiltrados.map(modelo => {
           const Icon = categoriaIcons[modelo.categoria] || FileText;
           return (
-            <Card key={modelo.arquivo} className="hover:shadow-md transition-shadow border-border/50">
+            <Card key={modelo.arquivo} className="hover:shadow-md transition-shadow border-border/50 relative">
+              {modelo.novo && (
+                <span className="absolute top-2 right-2 text-[10px] font-bold bg-primary text-primary-foreground px-1.5 py-0.5 rounded-full">
+                  NOVO
+                </span>
+              )}
               <CardHeader className="pb-2">
                 <div className="flex items-start gap-3">
                   <div className="p-2 rounded-lg bg-primary/10">
