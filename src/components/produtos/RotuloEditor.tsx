@@ -913,12 +913,23 @@ export default function RotuloEditor({ produtoId, produtoNome }: Props) {
           <Card>
             <CardHeader><CardTitle className="text-sm">Pré-visualização do Rótulo (IN 22 – Layout Horizontal)</CardTitle></CardHeader>
             <CardContent>
-              <div className="flex gap-2 mb-4">
+              <div className="flex gap-2 mb-4 flex-wrap">
                 <Button variant="outline" size="sm" onClick={downloadZPL}>
                   <Download className="w-4 h-4 mr-1" /> ZPL (Zebra)
                 </Button>
                 <Button variant="outline" size="sm" onClick={handlePrint}>
                   <Printer className="w-4 h-4 mr-1" /> Imprimir
+                </Button>
+                <div className="border-l mx-2" />
+                <span className="text-xs text-muted-foreground self-center mr-1">Exemplos:</span>
+                <Button variant="secondary" size="sm" onClick={() => { setRotulo(prev => ({ ...prev, ...EXEMPLO_RACAO.rotulo })); setNiveisObj(EXEMPLO_RACAO.niveis); toast.info("Exemplo: Ração HGM LAC 24 carregado"); }}>
+                  Ração
+                </Button>
+                <Button variant="secondary" size="sm" onClick={() => { setRotulo(prev => ({ ...prev, ...EXEMPLO_PROTEINADO.rotulo })); setNiveisObj(EXEMPLO_PROTEINADO.niveis); toast.info("Exemplo: HGM PROT+ 300 carregado"); }}>
+                  Proteinado
+                </Button>
+                <Button variant="secondary" size="sm" onClick={() => { setRotulo(prev => ({ ...prev, ...EXEMPLO_SAL_MINERAL.rotulo })); setNiveisObj(EXEMPLO_SAL_MINERAL.niveis); toast.info("Exemplo: SAL HGM 60 carregado"); }}>
+                  Sal Mineral
                 </Button>
               </div>
 
