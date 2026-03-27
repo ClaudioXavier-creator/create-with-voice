@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { ClipboardCheck, CheckCircle2, XCircle, Link2, FileText, Users, Plus, Trash2, ShieldAlert } from "lucide-react";
+import { ClipboardCheck, CheckCircle2, XCircle, Link2, FileText, Users, Plus, Trash2, ShieldAlert, FileCheck } from "lucide-react";
+import DeclaracaoVisitante from "@/components/visitantes/DeclaracaoVisitante";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
