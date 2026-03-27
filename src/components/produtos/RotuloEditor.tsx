@@ -96,6 +96,105 @@ const VR_VITAMINAS: { mineral: string; vr: number; unit: string; key: string }[]
   { mineral: "Vitamina E", vr: 350, unit: "UI/dia", key: "vitamina_e" },
 ];
 
+// ──── Example product data from uploaded DOCX models ────
+const EXEMPLO_RACAO: { rotulo: Partial<RotuloData>; niveis: Record<string, any> } = {
+  rotulo: {
+    tipo_rotulo: "racao",
+    nome_comercial: "RAÇÃO HGM LAC 24",
+    classificacao_label: "RAÇÃO PARA VACAS EM LACTAÇÃO",
+    especie_categoria: "BOVINOS – VACAS EM LACTAÇÃO",
+    composicao_ingredientes: "Casca de soja, Milho integral moído (Espécie doadora do gene Agrobacterium thumefaciens, Bacillus thuringiensis, Streptomyces viridochromogenes, Zea mays), Farelo de Algodão (Espécie doadora do gene Agrobacterium thumefaciens, Bacillus thuringiensis, Streptomyces higroscópicos, Streptomyces viridochromogenes, Zea mays), farelo de soja (Espécie doadora do gene Agrobacterium thumefaciens, Arabidopsis thaliana, Bacillus thuringiensis, Streptomyces viridochromogenes), calcário calcitico, cloreto de sódio (sal comum), enxofre ventilado (flor de enxofre), fosfato bicálcico, iodato de cálcio, óxido de magnésio, selenito de sódio, sulfato de cobalto, sulfato de cobre, sulfato de manganês, sulfato de zinco, vitamina A, vitamina D3, vitamina E, BHT (hidróxido de tolueno butilado), monensina sódica.",
+    eventuais_substitutivos: "DDG (Espécie doadora do gene Agrobacterium thumefaciens, Bacillus thuringiensis, Streptomyces viridochromogenes, Zea mays), milheto, sorgo integral moído, carbonato de cálcio, fosfato monobicálcico, iodato de potássio, monóxido de manganês, óxido de zinco, vitamina A/D3.",
+    niveis_garantia_texto: "Umidade (Máx.) 130 g/Kg; Proteína Bruta (Mín.) 240 g/Kg; Extrato Etéreo (Mín.) 35 g/Kg; FDA (Máx.) 120 g/Kg; Matéria Fibrosa (Máx.) 80 g/Kg; Cálcio (Mín.) 8.000 mg/Kg; Cálcio (Máx.) 11 g/Kg; Enxofre (Mín.) 1.600 mg/Kg; Fósforo (Mín.) 4.800 mg/Kg; Cobalto (Mín.) 0,9 mg/Kg; Cobre (Mín.) 28,5 mg/Kg; Iodo (Mín.) 1,2 mg/Kg; Magnésio (Mín.) 4.500 mg/Kg; Manganês (Mín.) 47 mg/Kg; Monensina Sódica 30 mg/Kg; NDT (Mín.) 750 g/Kg; Selênio (Mín.) 0,70 mg/Kg; Sódio (Mín.) 2.100 mg/Kg; Vitamina A (Mín.) 6.600 U.I./Kg; Vitamina D3 (Mín.) 1.500 U.I./Kg; Vitamina E (Mín.) 30 U.I./Kg; Zinco (Mín.) 90 mg/Kg.",
+    indicacoes_uso: "Ração para vacas leiteiras em todos os estágios da lactação.",
+    modo_usar: "A ração já está pronta para o uso, ou seja, não é preciso ser misturada a outras matérias-primas; fornecer 1,0 kg de ração para cada 3 litros de leite produzidos ou de acordo com as recomendações de um técnico responsável.",
+    precaucoes_restricoes: "Este produto contém Ionóforo: Não permitir que cavalos ou outros equídeos tenham acesso a rações contendo Monensina, pois a ingestão pode ser fatal.",
+    armazenamento: "Conservar em local seco e arejado, afastado de piso e paredes e de preferência sobre estrados, evitar presença de insetos e roedores.",
+    peso_liquido: "40 kg",
+    prazo_validade: "6 meses a partir da data de fabricação",
+    razao_social: "Agro Campo EIRELI-M. E.",
+    cnpj: "10.957.552/0001-46",
+    endereco: "AV. CAETANO LUIZ DE SOUZA S/N QDA 8 LT 06 – JARDIM SANTA FÉ – ABADIANIA GO – CEP: 72.940-000",
+    registro_mapa: "",
+    exibir_tabela_consumo: false,
+  },
+  niveis: {},
+};
+
+const EXEMPLO_PROTEINADO: { rotulo: Partial<RotuloData>; niveis: Record<string, any> } = {
+  rotulo: {
+    tipo_rotulo: "suplemento",
+    nome_comercial: "HGM PROT+ 300",
+    classificacao_label: "SUPLEMENTO MINERAL PROTEICO DE PRONTO USO – BOVINOS DE CORTE",
+    especie_categoria: "BOVINOS DE CORTE",
+    composicao_ingredientes: "CALCÁRIO CALCÍTICO, CLORETO DE SÓDIO (SAL COMUM 9,60%), ENXOFRE VENTILADO (FLOR DE ENXOFRE), FARELO DE SOJA, FOSFATO BICÁLCICO, IODATO DE CÁLCIO, MILHO INTEGRAL MOÍDO, ÓXIDO DE MAGNÉSIO, SELENITO DE SÓDIO, SULFATO DE COBALTO, SULFATO DE COBRE, SULFATO DE MANGANÊS, SULFATO DE ZINCO, CAULIM MICRO, URÉIA PECUÁRIA, MONENSINA SÓDICA.",
+    eventuais_substitutivos: "DDG, Farelo de Algodão, casca de soja, milheto, sorgo integral moído, carbonato de cálcio, fosfato monobicálcico, iodato de potássio, monóxido de manganês, óxido de zinco.",
+    niveis_garantia_texto: "Cálcio (Mín.) 20,00 g; Cálcio (Máx.) 40,00 g; Cobalto (Mín.) 21,60 mg; Cobre (Mín.) 374,40 mg; Enxofre (Mín.) 4.176,00 mg; Flúor (Máx.) 120,00 mg; Fósforo (Mín.) 12,490 g; Iodo (Mín.) 24,00 mg; Magnésio (Mín.) 4.720,00 mg; Manganês (Mín.) 355,00 mg; Monensina 200,00 mg; Proteína Bruta (Mín.) 300,00 g; NNP Equiv. Proteína (Máx.) 225 g; NDT (Mín.) 450,00 g; Selênio (Mín.) 6,72 mg; Sódio (Mín.) 79,50 g; Zinco (Mín.) 1.200,00 mg.",
+    indicacoes_uso: "PRODUTO DESTINADO À SUPLEMENTAÇÃO DE MINERAIS E PROTEÍNAS PARA BOVINOS DE CORTE NAS FASES DE CRIA, RECRIA E ENGORDA.",
+    modo_usar: "ADAPTAÇÃO: 1 a 7 dias misturar com sal mineralizado sem uréia em partes iguais. Após 7 dias: servir puro. Fornecer à vontade em cocho coberto. Faixa recomendada: 100 g para cada 100 kg de peso corporal/dia.",
+    precaucoes_restricoes: "CUIDADOS AO USAR PRODUTO COM URÉIA: Servir sempre em cochos cobertos, manter boa disponibilidade de pasto, não fornecer para animais em jejum, famintos e debilitados. RESTRIÇÃO: Não permitir que equídeos tenham acesso a produtos contendo monensina. A ingestão pode ser fatal.",
+    armazenamento: "Conservar em local seco e arejado, afastado de piso e paredes.",
+    peso_liquido: "30 kg",
+    prazo_validade: "6 meses a partir da data de fabricação",
+    razao_social: "Agro Campo EIRELI-M. E.",
+    cnpj: "10.957.552/0001-46",
+    endereco: "AV. CAETANO LUIZ DE SOUZA S/N QDA 8 LT 06 – JARDIM SANTA FÉ – ABADIANIA GO – CEP: 72.940-000",
+    registro_mapa: "",
+    exibir_tabela_consumo: true,
+  },
+  niveis: {
+    calcio: { min: "20.00", max: "40.00", unit: "g/kg" },
+    fosforo: { min: "12.49", unit: "g/kg" },
+    sodio: { min: "79.50", unit: "g/kg" },
+    magnesio: { min: "4.72", unit: "g/kg" },
+    enxofre: { min: "4.176", unit: "g/kg" },
+    cobalto: { min: "21.60", unit: "mg/kg" },
+    cobre: { min: "374.40", unit: "mg/kg" },
+    iodo: { min: "24.00", unit: "mg/kg" },
+    manganes: { min: "355.00", unit: "mg/kg" },
+    selenio: { min: "6.72", unit: "mg/kg" },
+    zinco: { min: "1200.00", unit: "mg/kg" },
+    consumo_pb: { min: "300" },
+    consumo_ndt: { min: "450" },
+  },
+};
+
+const EXEMPLO_SAL_MINERAL: { rotulo: Partial<RotuloData>; niveis: Record<string, any> } = {
+  rotulo: {
+    tipo_rotulo: "sal_mineral",
+    nome_comercial: "SAL HGM 60",
+    classificacao_label: "SUPLEMENTO MINERAL DE PRONTO USO PARA BOVINOS DE CORTE",
+    especie_categoria: "BOVINOS DE CORTE",
+    composicao_ingredientes: "CALCÁRIO CALCÍTICO, CLORETO DE SÓDIO (SAL COMUM), ENXOFRE VENTILADO (FLOR DE ENXOFRE), FOSFATO BICÁLCICO, IODATO DE CÁLCIO, ÓXIDO DE MAGNÉSIO, SULFATO DE ZINCO, SELENITO DE SÓDIO, SULFATO DE COBALTO, SULFATO DE COBRE, SULFATO DE MANGANÊS, CAULIM MICRO.",
+    eventuais_substitutivos: "CARBONATO DE CÁLCIO, IODATO DE POTÁSSIO, MONÓXIDO DE MANGANÊS, ÓXIDO DE ZINCO.",
+    niveis_garantia_texto: "Cálcio (Mín.) 120,00 g/kg; Cálcio (Máx.) 180,00 g/kg; Cobalto (Mín.) 54,00 mg/kg; Cobre (Mín.) 936,00 mg/kg; Enxofre (Mín.) 10,00 g/kg; Flúor (Máx.) 610,00 mg/kg; Fósforo (Mín.) 60,00 g/kg; Iodo (Mín.) 60,00 mg/kg; Magnésio (Mín.) 14,40 g/kg; Manganês (Mín.) 990,00 mg/kg; Selênio (Mín.) 16,80 mg/kg; Sódio (Mín.) 134,00 g/kg; Zinco (Mín.) 3.000,00 mg/kg.",
+    indicacoes_uso: "Suplemento mineral pronto para uso para bovinos de corte.",
+    modo_usar: "Fornecer Sal HGM 60 puro em cochos cobertos, com espaço satisfatório e sem interrupção do fornecimento. Consumo diário mínimo: 70g por 450kg de peso corporal.",
+    precaucoes_restricoes: "Não há.",
+    armazenamento: "Conservar em local seco e arejado, afastado de piso e paredes e de preferência sobre estrados, evitar presença de insetos e roedores.",
+    peso_liquido: "30 kg",
+    prazo_validade: "6 meses a partir da data de fabricação",
+    razao_social: "Agro Campo EIRELI-M. E.",
+    cnpj: "10.957.552/0001-46",
+    endereco: "AV. CAETANO LUIZ DE SOUZA S/N QDA 8 LT 06 – JARDIM SANTA FÉ – ABADIANIA GO – CEP: 72.940-000",
+    registro_mapa: "",
+    exibir_tabela_consumo: true,
+  },
+  niveis: {
+    calcio: { min: "120.00", max: "180.00", unit: "g/kg" },
+    fosforo: { min: "60.00", unit: "g/kg" },
+    sodio: { min: "134.00", unit: "g/kg" },
+    magnesio: { min: "14.40", unit: "g/kg" },
+    enxofre: { min: "10.00", unit: "g/kg" },
+    cobalto: { min: "54.00", unit: "mg/kg" },
+    cobre: { min: "936.00", unit: "mg/kg" },
+    iodo: { min: "60.00", unit: "mg/kg" },
+    manganes: { min: "990.00", unit: "mg/kg" },
+    selenio: { min: "16.80", unit: "mg/kg" },
+    zinco: { min: "3000.00", unit: "mg/kg" },
+  },
+};
+
 function shouldShowConsumptionTable(tipo: string, especie: string): boolean {
   const tiposValidos = ["sal_mineral", "suplemento"];
   const isBovino = especie.toLowerCase().includes("bovin");
@@ -814,12 +913,23 @@ export default function RotuloEditor({ produtoId, produtoNome }: Props) {
           <Card>
             <CardHeader><CardTitle className="text-sm">Pré-visualização do Rótulo (IN 22 – Layout Horizontal)</CardTitle></CardHeader>
             <CardContent>
-              <div className="flex gap-2 mb-4">
+              <div className="flex gap-2 mb-4 flex-wrap">
                 <Button variant="outline" size="sm" onClick={downloadZPL}>
                   <Download className="w-4 h-4 mr-1" /> ZPL (Zebra)
                 </Button>
                 <Button variant="outline" size="sm" onClick={handlePrint}>
                   <Printer className="w-4 h-4 mr-1" /> Imprimir
+                </Button>
+                <div className="border-l mx-2" />
+                <span className="text-xs text-muted-foreground self-center mr-1">Exemplos:</span>
+                <Button variant="secondary" size="sm" onClick={() => { setRotulo(prev => ({ ...prev, ...EXEMPLO_RACAO.rotulo })); setNiveisObj(EXEMPLO_RACAO.niveis); toast.info("Exemplo: Ração HGM LAC 24 carregado"); }}>
+                  Ração
+                </Button>
+                <Button variant="secondary" size="sm" onClick={() => { setRotulo(prev => ({ ...prev, ...EXEMPLO_PROTEINADO.rotulo })); setNiveisObj(EXEMPLO_PROTEINADO.niveis); toast.info("Exemplo: HGM PROT+ 300 carregado"); }}>
+                  Proteinado
+                </Button>
+                <Button variant="secondary" size="sm" onClick={() => { setRotulo(prev => ({ ...prev, ...EXEMPLO_SAL_MINERAL.rotulo })); setNiveisObj(EXEMPLO_SAL_MINERAL.niveis); toast.info("Exemplo: SAL HGM 60 carregado"); }}>
+                  Sal Mineral
                 </Button>
               </div>
 
