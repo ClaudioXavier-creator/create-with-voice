@@ -69,6 +69,34 @@ export default function ControleResiduos() {
     mutationFn: async () => {
       const { error } = await supabase.from("controle_residuos").insert({ ...form, user_id: user!.id });
       if (error) throw error;
+
+      // Auto-register in execucao_pops for discarded products (IN 15/2009)
+      const isProdutoDescartado = ["Produto vencido", "Produto rejeitado/reprovado", "Sobra de produção"].includes(form.tipo_residuo);
+      if (isProdutoDescartado && form.produto_nome) {
+        const motivo = MOTIVOS_DESCARTE.find(m => m.value === form.motivo_descarte)?.label || form.motivo_descarte || "Não informado";
+        const obs = [
+          `[REGISTRO DE DESCARTE — POP-04 / IN 15/2009]`,
+          `Tipo: ${form.tipo_residuo}`,
+          `Produto: ${form.produto_nome} | Lote: ${form.lote_produto || "—"}`,
+          `Motivo: ${motivo}`,
+          `Destino: ${form.destino_final || "—"}`,
+          `Qtd: ${form.quantidade || "—"} ${form.unidade}`,
+          `Empresa coletora: ${form.empresa_coletora || "—"}`,
+          form.manifesto_numero ? `Manifesto: ${form.manifesto_numero}` : "",
+          form.observacoes ? `Obs: ${form.observacoes}` : "",
+        ].filter(Boolean).join("\n");
+
+        await supabase.from("execucao_pops").insert({
+          user_id: user!.id,
+          codigo_pop: "POP-04-DESCARTE",
+          nome_pop: "Registro de Descarte de Produto",
+          executor: form.responsavel || "—",
+          setor: form.origem || "Produção",
+          status: "concluido",
+          observacoes: obs,
+          data_execucao: form.data_coleta,
+        });
+      }
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["controle_residuos"] });

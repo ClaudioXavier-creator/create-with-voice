@@ -974,6 +974,11 @@ export default function HigieneSanitizacao() {
                   <div className="p-3 rounded-lg border bg-muted/30 space-y-3">
                     <p className="text-xs font-semibold">Laudos e Reservatórios</p>
                     <div><Label>Nº Laudo Laboratorial</Label><Input value={aguaForm.laudo_numero} onChange={e => setAguaForm(p => ({ ...p, laudo_numero: e.target.value }))} placeholder="Ex: LAB-2026-0321" /></div>
+                    <div>
+                      <Label>URL do Laudo (PDF / Digitalização)</Label>
+                      <Input value={(aguaForm as any).laudo_url || ""} onChange={e => setAguaForm(p => ({ ...p, laudo_url: e.target.value } as any))} placeholder="https://... ou cole o link do arquivo anexado no módulo Documentos" />
+                      <p className="text-[10px] text-muted-foreground mt-1">Faça upload do PDF no módulo Documentos/Arquivo BPF e cole o link aqui, ou use o bucket de armazenamento.</p>
+                    </div>
                     <div className="flex items-center gap-4">
                       <div className="flex items-center gap-2">
                         <input type="checkbox" checked={aguaForm.laudo_valido} onChange={e => setAguaForm(p => ({ ...p, laudo_valido: e.target.checked }))} className="h-4 w-4" />
