@@ -268,6 +268,11 @@ export default function Auditoria() {
             </Card>
           )}
         </TabsContent>
+
+        {/* ── DECLARAÇÃO VISITANTE ── */}
+        <TabsContent value="declaracao">
+          <DeclaracaoVisitante />
+        </TabsContent>
       </Tabs>
     </>
   );
