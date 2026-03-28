@@ -157,6 +157,41 @@ export default function HigieneSanitizacao() {
     concentracao: "", frequencia: "diario", responsavel: "", horario_previsto: "", observacoes: ""
   });
 
+  // POP-04 Checklist dedicado
+  const CHECKLIST_AGUA: { area: string; itens: string[] }[] = [
+    { area: "Reservatórios", itens: [
+      "Reservatório com tampa e vedação adequada",
+      "Ausência de trincas, rachaduras ou infiltrações",
+      "Limpeza semestral realizada e registrada",
+      "Certificado de limpeza do reservatório em dia",
+      "Ausência de algas, sedimentos ou corpos estranhos",
+    ]},
+    { area: "Pontos de Coleta", itens: [
+      "Torneiras e registros em bom estado",
+      "Sem vazamentos nos pontos de uso",
+      "Identificação dos pontos de coleta conforme planta",
+      "Proteção contra refluxo instalada",
+    ]},
+    { area: "Tratamento", itens: [
+      "Sistema de cloração funcionando",
+      "Dosagem de cloro verificada (0,2–2,0 mg/L)",
+      "Filtros limpos e com manutenção em dia",
+      "Registro de troca de filtros atualizado",
+    ]},
+    { area: "Laudos e Documentação", itens: [
+      "Laudo laboratorial mensal em dia",
+      "Análise microbiológica semestral realizada",
+      "Resultados de coliformes totais e E. coli conformes",
+      "Laudos arquivados e disponíveis para fiscalização",
+      "Outorga de uso da água (se poço artesiano) válida",
+    ]},
+  ];
+
+  const [aguaChecklist, setAguaChecklist] = useState<Record<string, boolean>>({});
+  const [aguaCheckResp, setAguaCheckResp] = useState("");
+  const [aguaCheckData, setAguaCheckData] = useState(new Date().toISOString().split("T")[0]);
+  const [savingAguaCheck, setSavingAguaCheck] = useState(false);
+
   const [regForm, setRegForm] = useState({
     cronograma_id: "", data_execucao: new Date().toISOString().split("T")[0],
     hora_inicio: "", hora_fim: "", executor: "", conforme: true, observacoes: ""
