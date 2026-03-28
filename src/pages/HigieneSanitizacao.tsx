@@ -157,6 +157,41 @@ export default function HigieneSanitizacao() {
     concentracao: "", frequencia: "diario", responsavel: "", horario_previsto: "", observacoes: ""
   });
 
+  // POP-04 Checklist dedicado
+  const CHECKLIST_AGUA: { area: string; itens: string[] }[] = [
+    { area: "Reservatórios", itens: [
+      "Reservatório com tampa e vedação adequada",
+      "Ausência de trincas, rachaduras ou infiltrações",
+      "Limpeza semestral realizada e registrada",
+      "Certificado de limpeza do reservatório em dia",
+      "Ausência de algas, sedimentos ou corpos estranhos",
+    ]},
+    { area: "Pontos de Coleta", itens: [
+      "Torneiras e registros em bom estado",
+      "Sem vazamentos nos pontos de uso",
+      "Identificação dos pontos de coleta conforme planta",
+      "Proteção contra refluxo instalada",
+    ]},
+    { area: "Tratamento", itens: [
+      "Sistema de cloração funcionando",
+      "Dosagem de cloro verificada (0,2–2,0 mg/L)",
+      "Filtros limpos e com manutenção em dia",
+      "Registro de troca de filtros atualizado",
+    ]},
+    { area: "Laudos e Documentação", itens: [
+      "Laudo laboratorial mensal em dia",
+      "Análise microbiológica semestral realizada",
+      "Resultados de coliformes totais e E. coli conformes",
+      "Laudos arquivados e disponíveis para fiscalização",
+      "Outorga de uso da água (se poço artesiano) válida",
+    ]},
+  ];
+
+  const [aguaChecklist, setAguaChecklist] = useState<Record<string, boolean>>({});
+  const [aguaCheckResp, setAguaCheckResp] = useState("");
+  const [aguaCheckData, setAguaCheckData] = useState(new Date().toISOString().split("T")[0]);
+  const [savingAguaCheck, setSavingAguaCheck] = useState(false);
+
   const [regForm, setRegForm] = useState({
     cronograma_id: "", data_execucao: new Date().toISOString().split("T")[0],
     hora_inicio: "", hora_fim: "", executor: "", conforme: true, observacoes: ""
@@ -280,7 +315,8 @@ export default function HigieneSanitizacao() {
 
   const addRegistro = useMutation({
     mutationFn: async () => {
-      const { error } = await supabase.from("registros_limpeza").insert({ ...regForm, user_id: user!.id });
+      const payload = { ...regForm, user_id: user!.id, tipo_limpeza: (regForm as any).tipo_limpeza || "umida" };
+      const { error } = await supabase.from("registros_limpeza").insert(payload as any);
       if (error) throw error;
     },
     onSuccess: () => { qc.invalidateQueries({ queryKey: ["registros_limpeza"] }); toast.success("Registro salvo"); setOpenRegistro(false); },
@@ -433,6 +469,7 @@ export default function HigieneSanitizacao() {
           <TabsTrigger value="cronogramas"><Droplets className="w-4 h-4 mr-1" />Cronogramas</TabsTrigger>
           <TabsTrigger value="registros"><CheckCircle2 className="w-4 h-4 mr-1" />Registros Limpeza</TabsTrigger>
           <TabsTrigger value="agua"><Beaker className="w-4 h-4 mr-1" />Controle de Água (POP-04)</TabsTrigger>
+          <TabsTrigger value="agua_checklist"><ClipboardList className="w-4 h-4 mr-1" />Checklist POP-04</TabsTrigger>
           <TabsTrigger value="laudos"><FileText className="w-4 h-4 mr-1" />Laudos Vinculados</TabsTrigger>
           <TabsTrigger value="planilha"><ClipboardList className="w-4 h-4 mr-1" />Planilha Mensal</TabsTrigger>
         </TabsList>
@@ -878,6 +915,25 @@ export default function HigieneSanitizacao() {
                       <SelectContent>{cronogramas.map((c: any) => <SelectItem key={c.id} value={c.id}>{c.area} — {c.procedimento?.substring(0, 40)}</SelectItem>)}</SelectContent>
                     </Select>
                   </div>
+                  {/* POP-02: Tipo de limpeza — IN 15/2009 */}
+                  <div>
+                    <Label>Tipo de Limpeza (IN 15/2009) *</Label>
+                    <Select value={(regForm as any).tipo_limpeza || "umida"} onValueChange={v => setRegForm(p => ({ ...p, tipo_limpeza: v } as any))}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="seca">🧹 Limpeza Seca (vassouragem, aspiração, ar comprimido)</SelectItem>
+                        <SelectItem value="umida">💧 Limpeza Úmida (lavagem com água e detergente)</SelectItem>
+                        <SelectItem value="sanitizacao">🧴 Sanitização (aplicação de sanitizante)</SelectItem>
+                        <SelectItem value="seca_umida">🔄 Seca + Úmida (combinada)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <p className="text-[10px] text-muted-foreground mt-1">
+                      {(regForm as any).tipo_limpeza === "seca" ? "Indicada para áreas onde umidade é indesejável (silos, elevadores, moegas). Não utilizar água." :
+                       (regForm as any).tipo_limpeza === "sanitizacao" ? "Aplicação de sanitizante após limpeza prévia. Registrar produto e concentração nas observações." :
+                       (regForm as any).tipo_limpeza === "seca_umida" ? "Processo completo: remoção mecânica seca + lavagem + enxágue." :
+                       "Lavagem completa com água, detergente e enxágue final. Verificar secagem antes de retomar produção."}
+                    </p>
+                  </div>
                   <div><Label>Data</Label><Input type="date" value={regForm.data_execucao} onChange={e => setRegForm(p => ({ ...p, data_execucao: e.target.value }))} /></div>
                   <div className="grid grid-cols-2 gap-3">
                     <div><Label>Hora Início</Label><Input value={regForm.hora_inicio} onChange={e => setRegForm(p => ({ ...p, hora_inicio: e.target.value }))} placeholder="06:00" /></div>
@@ -901,7 +957,7 @@ export default function HigieneSanitizacao() {
             <Card>
               <Table>
                 <TableHeader><TableRow>
-                  <TableHead>Data</TableHead><TableHead>Executor</TableHead><TableHead>Horário</TableHead>
+                  <TableHead>Data</TableHead><TableHead>Executor</TableHead><TableHead>Tipo Limpeza</TableHead><TableHead>Horário</TableHead>
                   <TableHead>Conforme</TableHead><TableHead>Observações</TableHead>
                 </TableRow></TableHeader>
                 <TableBody>
@@ -909,6 +965,11 @@ export default function HigieneSanitizacao() {
                     <TableRow key={r.id}>
                       <TableCell>{r.data_execucao}</TableCell>
                       <TableCell>{r.executor}</TableCell>
+                      <TableCell>
+                        <Badge variant="outline" className="text-[10px]">
+                          {r.tipo_limpeza === "seca" ? "🧹 Seca" : r.tipo_limpeza === "sanitizacao" ? "🧴 Sanitização" : r.tipo_limpeza === "seca_umida" ? "🔄 Seca+Úmida" : "💧 Úmida"}
+                        </Badge>
+                      </TableCell>
                       <TableCell>{r.hora_inicio}{r.hora_fim ? ` — ${r.hora_fim}` : ""}</TableCell>
                       <TableCell>{r.conforme ? <CheckCircle2 className="w-4 h-4 text-green-600" /> : <Badge variant="destructive">NC</Badge>}</TableCell>
                       <TableCell className="max-w-[200px] truncate">{r.observacoes}</TableCell>
@@ -1027,6 +1088,103 @@ export default function HigieneSanitizacao() {
               </Table>
             </Card>
           )}
+        </TabsContent>
+
+        {/* ── CHECKLIST DEDICADO POP-04 ── */}
+        <TabsContent value="agua_checklist" className="space-y-4">
+          <Card className="border-blue-500/20 bg-blue-50 dark:bg-blue-900/10">
+            <CardContent className="pt-4">
+              <div className="flex items-start gap-3">
+                <ClipboardList className="w-6 h-6 text-blue-600 mt-0.5" />
+                <div>
+                  <h4 className="font-display font-semibold text-sm">Checklist POP-04 — Potabilidade da Água (IN 04/2007)</h4>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Verificação completa de reservatórios, pontos de coleta, sistema de tratamento e documentação.
+                    Execute este checklist mensalmente e antes de cada auditoria.
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <div className="grid grid-cols-2 gap-3 mb-4">
+            <div><Label>Responsável *</Label><Input value={aguaCheckResp} onChange={e => setAguaCheckResp(e.target.value)} placeholder="Nome do inspetor" /></div>
+            <div><Label>Data</Label><Input type="date" value={aguaCheckData} onChange={e => setAguaCheckData(e.target.value)} /></div>
+          </div>
+
+          <div className="space-y-4">
+            {CHECKLIST_AGUA.map(grupo => (
+              <Card key={grupo.area}>
+                <CardHeader className="py-3">
+                  <CardTitle className="text-sm font-display">{grupo.area}</CardTitle>
+                </CardHeader>
+                <CardContent className="py-0 pb-3">
+                  <div className="space-y-2">
+                    {grupo.itens.map(item => {
+                      const key = `agua__${grupo.area}__${item}`;
+                      const checked = aguaChecklist[key] ?? false;
+                      return (
+                        <div key={key} className="flex items-center justify-between p-2 rounded border bg-background">
+                          <span className="text-sm">{item}</span>
+                          <div className="flex items-center gap-2">
+                            <span className={`text-xs font-semibold ${checked ? "text-primary" : "text-muted-foreground"}`}>
+                              {checked ? "OK" : "—"}
+                            </span>
+                            <Switch checked={checked} onCheckedChange={v => setAguaChecklist(p => ({ ...p, [key]: v }))} />
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          {(() => {
+            const totalItens = CHECKLIST_AGUA.reduce((a, g) => a + g.itens.length, 0);
+            const marcados = Object.values(aguaChecklist).filter(Boolean).length;
+            const todosOk = marcados === totalItens;
+            return (
+              <div className="flex items-center justify-between p-4 rounded-lg border bg-muted/30">
+                <div>
+                  <p className="text-sm font-semibold">{marcados}/{totalItens} itens verificados</p>
+                  <p className="text-xs text-muted-foreground">{todosOk ? "✅ Todos os itens de potabilidade conformes" : "Conclua a verificação de todos os itens"}</p>
+                </div>
+                <Button disabled={!aguaCheckResp || savingAguaCheck} onClick={async () => {
+                  if (!user) return;
+                  setSavingAguaCheck(true);
+                  const ncs = CHECKLIST_AGUA.flatMap(g => g.itens.filter(item => !aguaChecklist[`agua__${g.area}__${item}`]).map(item => `${g.area}: ${item}`));
+                  const obs = [
+                    `[CHECKLIST POP-04 — POTABILIDADE DA ÁGUA / IN 04/2007]`,
+                    `Data: ${aguaCheckData} | Responsável: ${aguaCheckResp}`,
+                    `Itens conformes: ${marcados}/${totalItens}`,
+                    ncs.length > 0 ? `NCs: ${ncs.join("; ")}` : "Todos conformes ✅",
+                  ].join("\n");
+                  const { error } = await supabase.from("execucao_pops").insert({
+                    user_id: user.id,
+                    codigo_pop: "POP-04-CHECKLIST",
+                    nome_pop: "Checklist Potabilidade da Água",
+                    executor: aguaCheckResp,
+                    setor: "Reservatórios / Pontos de Água",
+                    status: todosOk ? "concluido" : "nao_conforme",
+                    observacoes: obs,
+                    data_execucao: aguaCheckData,
+                  });
+                  if (error) toast.error("Erro: " + error.message);
+                  else {
+                    toast.success("Checklist POP-04 salvo!");
+                    qc.invalidateQueries({ queryKey: ["registros_agua"] });
+                    setAguaChecklist({});
+                    setAguaCheckResp("");
+                  }
+                  setSavingAguaCheck(false);
+                }}>
+                  Salvar Checklist POP-04
+                </Button>
+              </div>
+            );
+          })()}
         </TabsContent>
 
         {/* ── LAUDOS VINCULADOS ── */}

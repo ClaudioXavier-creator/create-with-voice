@@ -1415,6 +1415,7 @@ export type Database = {
           produto: string
           quantidade_programada: string | null
           quantidade_sobra: string | null
+          sequencia_producao: number | null
           status: string | null
           tipo_ordem: string
           unidade: string | null
@@ -1439,6 +1440,7 @@ export type Database = {
           produto: string
           quantidade_programada?: string | null
           quantidade_sobra?: string | null
+          sequencia_producao?: number | null
           status?: string | null
           tipo_ordem?: string
           unidade?: string | null
@@ -1463,6 +1465,7 @@ export type Database = {
           produto?: string
           quantidade_programada?: string | null
           quantidade_sobra?: string | null
+          sequencia_producao?: number | null
           status?: string | null
           tipo_ordem?: string
           unidade?: string | null
@@ -1693,6 +1696,10 @@ export type Database = {
       }
       producao: {
         Row: {
+          contraprova_local: string | null
+          contraprova_quantidade: string | null
+          contraprova_retida: boolean | null
+          contraprova_validade: string | null
           created_at: string
           data: string
           empresa_id: string | null
@@ -1705,6 +1712,10 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          contraprova_local?: string | null
+          contraprova_quantidade?: string | null
+          contraprova_retida?: boolean | null
+          contraprova_validade?: string | null
           created_at?: string
           data?: string
           empresa_id?: string | null
@@ -1717,6 +1728,10 @@ export type Database = {
           user_id: string
         }
         Update: {
+          contraprova_local?: string | null
+          contraprova_quantidade?: string | null
+          contraprova_retida?: boolean | null
+          contraprova_validade?: string | null
           created_at?: string
           data?: string
           empresa_id?: string | null
@@ -1958,6 +1973,10 @@ export type Database = {
           certificado_analise_numero: string | null
           certificado_analise_url: string | null
           certificado_analise_valido: boolean | null
+          contraprova_local: string | null
+          contraprova_quantidade: string | null
+          contraprova_retida: boolean | null
+          contraprova_validade: string | null
           created_at: string
           data: string
           empresa_id: string | null
@@ -1980,6 +1999,10 @@ export type Database = {
           certificado_analise_numero?: string | null
           certificado_analise_url?: string | null
           certificado_analise_valido?: boolean | null
+          contraprova_local?: string | null
+          contraprova_quantidade?: string | null
+          contraprova_retida?: boolean | null
+          contraprova_validade?: string | null
           created_at?: string
           data?: string
           empresa_id?: string | null
@@ -2002,6 +2025,10 @@ export type Database = {
           certificado_analise_numero?: string | null
           certificado_analise_url?: string | null
           certificado_analise_valido?: boolean | null
+          contraprova_local?: string | null
+          contraprova_quantidade?: string | null
+          contraprova_retida?: boolean | null
+          contraprova_validade?: string | null
           created_at?: string
           data?: string
           empresa_id?: string | null
@@ -2181,6 +2208,7 @@ export type Database = {
           hora_inicio: string | null
           id: string
           observacoes: string | null
+          tipo_limpeza: string | null
           user_id: string
         }
         Insert: {
@@ -2194,6 +2222,7 @@ export type Database = {
           hora_inicio?: string | null
           id?: string
           observacoes?: string | null
+          tipo_limpeza?: string | null
           user_id: string
         }
         Update: {
@@ -2207,6 +2236,7 @@ export type Database = {
           hora_inicio?: string | null
           id?: string
           observacoes?: string | null
+          tipo_limpeza?: string | null
           user_id?: string
         }
         Relationships: [

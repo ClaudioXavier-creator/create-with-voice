@@ -72,14 +72,29 @@ export default function Producao() {
       ? `[SOBRA/VASSOURA] Qtd: ${qtdSobra || "N/I"} kg | Destino: ${destinoSobra === "reprocesso" ? "Reprocesso" : destinoSobra === "descarte" ? "Descarte (resíduo)" : destinoSobra === "devolucao" ? "Devolução ao silo" : "Outro"} | ${obsSobra}`.trim()
       : "";
     
+    // Contraprova
+    const cpQtd = (document.getElementById("prod-cp-qtd") as HTMLInputElement)?.value || "";
+    const cpLocal = (document.getElementById("prod-cp-local") as HTMLInputElement)?.value || "";
+    const cpVal = (document.getElementById("prod-cp-val") as HTMLInputElement)?.value || "";
+    const cpRetida = !!(cpQtd || cpLocal);
+    
+    let quantidadeFinal = quantidade ? `${quantidade}${obsCompleta ? ` | Sobra: ${qtdSobra || "?"} kg` : ""}` : "";
+    if (cpRetida) {
+      quantidadeFinal += ` | [CONTRAPROVA] ${cpQtd} em ${cpLocal}`;
+    }
+
     const { error } = await supabase.from("producao").insert({
       user_id: user.id,
       produto,
       lote,
       operador,
       tempo_mistura: tempoMistura ? `${tempoMistura} min` : "",
-      quantidade: quantidade ? `${quantidade}${obsCompleta ? ` | Sobra: ${qtdSobra || "?"} kg` : ""}` : "",
-    });
+      quantidade: quantidadeFinal,
+      contraprova_retida: cpRetida,
+      contraprova_local: cpLocal,
+      contraprova_validade: cpVal,
+      contraprova_quantidade: cpQtd,
+    } as any);
     if (error) toast.error("Erro ao salvar");
     else {
       toast.success("Registro salvo!");
@@ -212,6 +227,21 @@ export default function Producao() {
                         </div>
                       </>
                     )}
+                  </div>
+
+                  {/* Retenção de Amostra de Contraprova — IN 17/2017 */}
+                  <div className="p-3 rounded-lg border border-blue-300 bg-blue-50 dark:bg-blue-900/10 space-y-3">
+                    <p className="text-sm font-semibold flex items-center gap-2">
+                      🧪 Retenção de Amostra (Contraprova) — IN 17/2017
+                    </p>
+                    <p className="text-[10px] text-muted-foreground">
+                      Reter amostra testemunha de cada lote produzido pelo prazo de validade do produto + 30 dias para defesa em fiscalizações.
+                    </p>
+                    <div className="grid grid-cols-3 gap-3">
+                      <div><Label>Quantidade retida</Label><Input id="prod-cp-qtd" placeholder="Ex: 500g" /></div>
+                      <div><Label>Local armazenamento</Label><Input id="prod-cp-local" placeholder="Ex: Sala de amostras" /></div>
+                      <div><Label>Validade retenção</Label><Input id="prod-cp-val" placeholder="Ex: Validade +30 dias" /></div>
+                    </div>
                   </div>
 
                   <Button onClick={handleAdd} className="w-full" disabled={saving || !produto}>
