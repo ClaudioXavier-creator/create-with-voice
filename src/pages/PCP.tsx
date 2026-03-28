@@ -433,9 +433,25 @@ export default function PCP() {
 
             return (
               <div className="space-y-2">
+                <p className="text-[10px] text-muted-foreground mb-2">
+                  💡 Defina a sequência para minimizar limpezas entre lotes. Produtos medicados devem ser produzidos por último no dia (IN 04/2007).
+                </p>
                 {sequencia.map(({ ordem, anterior, requerFlushing, tipoLimpeza }, i) => (
                   <div key={ordem.id} className={`flex items-center gap-3 p-3 rounded-lg border ${requerFlushing ? "border-yellow-500 bg-yellow-50 dark:bg-yellow-900/10" : "border-border"}`}>
-                    <div className="text-xs font-bold text-muted-foreground w-6 text-center">{i + 1}</div>
+                    <div className="flex flex-col items-center gap-1">
+                      <div className="text-xs font-bold text-muted-foreground w-6 text-center">{i + 1}</div>
+                      <Input
+                        className="w-12 h-6 text-center text-xs p-0"
+                        type="number"
+                        defaultValue={(ordem as any).sequencia_producao || i + 1}
+                        onBlur={async (e) => {
+                          const val = parseInt(e.target.value) || 0;
+                          await supabase.from("ordens_producao").update({ sequencia_producao: val } as any).eq("id", ordem.id);
+                          fetchData();
+                        }}
+                        title="Ordem de sequência"
+                      />
+                    </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
                         <span className="font-mono text-xs font-bold">{ordem.numero_ordem}</span>
