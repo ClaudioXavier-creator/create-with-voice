@@ -405,7 +405,12 @@ export default function PCP() {
 
             // Check consecutive orders for flushing requirements
             const sequencia: { ordem: OrdemProd; anterior?: OrdemProd; requerFlushing: boolean; tipoLimpeza: string }[] = [];
-            const sortedOrdens = [...programadas].sort((a, b) => a.data_programada.localeCompare(b.data_programada));
+            const sortedOrdens = [...programadas].sort((a, b) => {
+              const seqA = (a as any).sequencia_producao || 0;
+              const seqB = (b as any).sequencia_producao || 0;
+              if (seqA !== seqB) return seqA - seqB;
+              return a.data_programada.localeCompare(b.data_programada);
+            });
 
             sortedOrdens.forEach((ordem, idx) => {
               const anterior = idx > 0 ? sortedOrdens[idx - 1] : undefined;
