@@ -72,14 +72,29 @@ export default function Producao() {
       ? `[SOBRA/VASSOURA] Qtd: ${qtdSobra || "N/I"} kg | Destino: ${destinoSobra === "reprocesso" ? "Reprocesso" : destinoSobra === "descarte" ? "Descarte (resíduo)" : destinoSobra === "devolucao" ? "Devolução ao silo" : "Outro"} | ${obsSobra}`.trim()
       : "";
     
+    // Contraprova
+    const cpQtd = (document.getElementById("prod-cp-qtd") as HTMLInputElement)?.value || "";
+    const cpLocal = (document.getElementById("prod-cp-local") as HTMLInputElement)?.value || "";
+    const cpVal = (document.getElementById("prod-cp-val") as HTMLInputElement)?.value || "";
+    const cpRetida = !!(cpQtd || cpLocal);
+    
+    let quantidadeFinal = quantidade ? `${quantidade}${obsCompleta ? ` | Sobra: ${qtdSobra || "?"} kg` : ""}` : "";
+    if (cpRetida) {
+      quantidadeFinal += ` | [CONTRAPROVA] ${cpQtd} em ${cpLocal}`;
+    }
+
     const { error } = await supabase.from("producao").insert({
       user_id: user.id,
       produto,
       lote,
       operador,
       tempo_mistura: tempoMistura ? `${tempoMistura} min` : "",
-      quantidade: quantidade ? `${quantidade}${obsCompleta ? ` | Sobra: ${qtdSobra || "?"} kg` : ""}` : "",
-    });
+      quantidade: quantidadeFinal,
+      contraprova_retida: cpRetida,
+      contraprova_local: cpLocal,
+      contraprova_validade: cpVal,
+      contraprova_quantidade: cpQtd,
+    } as any);
     if (error) toast.error("Erro ao salvar");
     else {
       toast.success("Registro salvo!");

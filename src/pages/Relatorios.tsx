@@ -329,8 +329,9 @@ export default function Relatorios() {
                 <Button size="sm" variant="outline"><Download className="w-4 h-4 mr-1" /> Exportar Dados</Button>
               </DialogTrigger>
               <DialogContent className="max-w-md">
-                <DialogHeader><DialogTitle>Exportar Relatório CSV</DialogTitle></DialogHeader>
-                <p className="text-sm text-muted-foreground">Selecione os módulos que deseja incluir no relatório exportado.</p>
+                <DialogHeader><DialogTitle>Exportar Relatório — Art. 18 Decreto 12.031/2024</DialogTitle></DialogHeader>
+                <p className="text-sm text-muted-foreground">Selecione os módulos para gerar relatório organizado conforme exigência do MAPA (Art. 18).</p>
+                <p className="text-[10px] text-muted-foreground">O relatório inclui cabeçalho institucional, data/hora de geração e rodapé com referência normativa para apresentação a fiscais do SIF.</p>
                 <div className="flex items-center gap-2 mt-2">
                   <Checkbox
                     checked={selectedModules.length === EXPORT_MODULES.length}
