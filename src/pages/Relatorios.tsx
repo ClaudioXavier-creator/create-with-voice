@@ -200,7 +200,18 @@ export default function Relatorios() {
 
     try {
       const modulesToExport = EXPORT_MODULES.filter(m => selectedModules.includes(m.key));
+      const now = new Date();
+      const dataHora = now.toLocaleString("pt-BR");
+      const dataLabel = now.toISOString().slice(0, 10);
+
+      // Header Art. 18 — Decreto 12.031/2024
       let fullCsv = "";
+      fullCsv += `RELATÓRIO DE REGISTROS — SISTEMA BPF\n`;
+      fullCsv += `Art. 18 do Decreto 12.031/2024 — Disponibilização de registros ao SIF/MAPA\n`;
+      fullCsv += `Data/Hora de Geração: ${dataHora}\n`;
+      fullCsv += `Módulos incluídos: ${modulesToExport.map(m => m.label).join(", ")}\n`;
+      fullCsv += `Total de módulos: ${modulesToExport.length}\n`;
+      fullCsv += `\n`;
 
       for (const mod of modulesToExport) {
         const { data, error } = await supabase
@@ -217,9 +228,10 @@ export default function Relatorios() {
         const labels = COLUMN_LABELS[mod.key] || {};
         const columns = Object.keys(labels);
 
-        if (modulesToExport.length > 1) {
-          fullCsv += `\n=== ${mod.label.toUpperCase()} (${rows.length} registros) ===\n`;
-        }
+        fullCsv += `\n========================================\n`;
+        fullCsv += `MÓDULO: ${mod.label.toUpperCase()}\n`;
+        fullCsv += `Total de Registros: ${rows.length}\n`;
+        fullCsv += `========================================\n`;
 
         fullCsv += columns.map(c => escapeCsv(labels[c])).join(",") + "\n";
 
@@ -235,12 +247,19 @@ export default function Relatorios() {
         fullCsv += "\n";
       }
 
-      const now = new Date().toISOString().slice(0, 10);
+      // Footer
+      fullCsv += `\n========================================\n`;
+      fullCsv += `FIM DO RELATÓRIO\n`;
+      fullCsv += `Gerado em: ${dataHora}\n`;
+      fullCsv += `Decreto 12.031/2024 — Art. 18: Os registros devem estar disponíveis ao SIF em formato organizado.\n`;
+      fullCsv += `Este documento é parte integrante do programa de autocontrole (PAC/BPF).\n`;
+      fullCsv += `========================================\n`;
+
       const label = selectedModules.length === 1
         ? EXPORT_MODULES.find(m => m.key === selectedModules[0])?.label.replace(/\s/g, "_") || "modulo"
-        : "completo";
-      downloadCsv(`relatorio_${label}_${now}.csv`, fullCsv);
-      toast.success(`Relatório exportado com ${selectedModules.length} módulo(s)!`);
+        : "MAPA_completo";
+      downloadCsv(`relatorio_${label}_${dataLabel}.csv`, fullCsv);
+      toast.success(`Relatório Art. 18 exportado com ${selectedModules.length} módulo(s)!`);
       setExportOpen(false);
     } catch {
       toast.error("Erro ao exportar relatório");
