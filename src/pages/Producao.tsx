@@ -214,6 +214,21 @@ export default function Producao() {
                     )}
                   </div>
 
+                  {/* Retenção de Amostra de Contraprova — IN 17/2017 */}
+                  <div className="p-3 rounded-lg border border-blue-300 bg-blue-50 dark:bg-blue-900/10 space-y-3">
+                    <p className="text-sm font-semibold flex items-center gap-2">
+                      🧪 Retenção de Amostra (Contraprova) — IN 17/2017
+                    </p>
+                    <p className="text-[10px] text-muted-foreground">
+                      Reter amostra testemunha de cada lote produzido pelo prazo de validade do produto + 30 dias para defesa em fiscalizações.
+                    </p>
+                    <div className="grid grid-cols-3 gap-3">
+                      <div><Label>Quantidade retida</Label><Input id="prod-cp-qtd" placeholder="Ex: 500g" /></div>
+                      <div><Label>Local armazenamento</Label><Input id="prod-cp-local" placeholder="Ex: Sala de amostras" /></div>
+                      <div><Label>Validade retenção</Label><Input id="prod-cp-val" placeholder="Ex: Validade +30 dias" /></div>
+                    </div>
+                  </div>
+
                   <Button onClick={handleAdd} className="w-full" disabled={saving || !produto}>
                     {saving && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
                     Salvar
