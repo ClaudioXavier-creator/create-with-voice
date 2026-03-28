@@ -913,6 +913,25 @@ export default function HigieneSanitizacao() {
                       <SelectContent>{cronogramas.map((c: any) => <SelectItem key={c.id} value={c.id}>{c.area} — {c.procedimento?.substring(0, 40)}</SelectItem>)}</SelectContent>
                     </Select>
                   </div>
+                  {/* POP-02: Tipo de limpeza — IN 15/2009 */}
+                  <div>
+                    <Label>Tipo de Limpeza (IN 15/2009) *</Label>
+                    <Select value={(regForm as any).tipo_limpeza || "umida"} onValueChange={v => setRegForm(p => ({ ...p, tipo_limpeza: v } as any))}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="seca">🧹 Limpeza Seca (vassouragem, aspiração, ar comprimido)</SelectItem>
+                        <SelectItem value="umida">💧 Limpeza Úmida (lavagem com água e detergente)</SelectItem>
+                        <SelectItem value="sanitizacao">🧴 Sanitização (aplicação de sanitizante)</SelectItem>
+                        <SelectItem value="seca_umida">🔄 Seca + Úmida (combinada)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <p className="text-[10px] text-muted-foreground mt-1">
+                      {(regForm as any).tipo_limpeza === "seca" ? "Indicada para áreas onde umidade é indesejável (silos, elevadores, moegas). Não utilizar água." :
+                       (regForm as any).tipo_limpeza === "sanitizacao" ? "Aplicação de sanitizante após limpeza prévia. Registrar produto e concentração nas observações." :
+                       (regForm as any).tipo_limpeza === "seca_umida" ? "Processo completo: remoção mecânica seca + lavagem + enxágue." :
+                       "Lavagem completa com água, detergente e enxágue final. Verificar secagem antes de retomar produção."}
+                    </p>
+                  </div>
                   <div><Label>Data</Label><Input type="date" value={regForm.data_execucao} onChange={e => setRegForm(p => ({ ...p, data_execucao: e.target.value }))} /></div>
                   <div className="grid grid-cols-2 gap-3">
                     <div><Label>Hora Início</Label><Input value={regForm.hora_inicio} onChange={e => setRegForm(p => ({ ...p, hora_inicio: e.target.value }))} placeholder="06:00" /></div>
