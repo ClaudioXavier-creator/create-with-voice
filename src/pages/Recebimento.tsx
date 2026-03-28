@@ -406,6 +406,25 @@ export default function Recebimento() {
                      )}
                    </div>
 
+                   {/* Retenção de Amostra de Contraprova — IN 17/2017 */}
+                   <div className="p-3 rounded-lg border bg-muted/20 space-y-3">
+                     <p className="text-sm font-semibold flex items-center gap-2">
+                       <ShieldAlert className="w-4 h-4" /> Retenção de Amostra (Contraprova) — IN 17/2017
+                     </p>
+                     <p className="text-[10px] text-muted-foreground">
+                       Obrigatório reter amostras testemunha para defesa em casos de fiscalização do MAPA.
+                     </p>
+                     <div className="flex items-center gap-3">
+                       <Switch checked={(window as any).__cpRetida ?? false} onCheckedChange={v => { (window as any).__cpRetida = v; setObservacoes(prev => prev); }} />
+                       <Label className="text-sm">Amostra de contraprova retida</Label>
+                     </div>
+                     <div className="grid grid-cols-3 gap-3">
+                       <div><Label>Quantidade retida</Label><Input id="cp-qtd" placeholder="Ex: 500g" /></div>
+                       <div><Label>Local armazenamento</Label><Input id="cp-local" placeholder="Ex: Sala de amostras" /></div>
+                       <div><Label>Validade da retenção</Label><Input id="cp-val" placeholder="Ex: 6 meses" /></div>
+                     </div>
+                   </div>
+
                   <div className="flex items-center gap-3">
                     <Switch checked={aprovado} onCheckedChange={setAprovado} />
                     <Label className="text-sm font-medium">Matéria-prima aprovada</Label>
