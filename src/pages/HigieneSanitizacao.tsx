@@ -956,7 +956,7 @@ export default function HigieneSanitizacao() {
             <Card>
               <Table>
                 <TableHeader><TableRow>
-                  <TableHead>Data</TableHead><TableHead>Executor</TableHead><TableHead>Horário</TableHead>
+                  <TableHead>Data</TableHead><TableHead>Executor</TableHead><TableHead>Tipo Limpeza</TableHead><TableHead>Horário</TableHead>
                   <TableHead>Conforme</TableHead><TableHead>Observações</TableHead>
                 </TableRow></TableHeader>
                 <TableBody>
@@ -964,6 +964,11 @@ export default function HigieneSanitizacao() {
                     <TableRow key={r.id}>
                       <TableCell>{r.data_execucao}</TableCell>
                       <TableCell>{r.executor}</TableCell>
+                      <TableCell>
+                        <Badge variant="outline" className="text-[10px]">
+                          {r.tipo_limpeza === "seca" ? "🧹 Seca" : r.tipo_limpeza === "sanitizacao" ? "🧴 Sanitização" : r.tipo_limpeza === "seca_umida" ? "🔄 Seca+Úmida" : "💧 Úmida"}
+                        </Badge>
+                      </TableCell>
                       <TableCell>{r.hora_inicio}{r.hora_fim ? ` — ${r.hora_fim}` : ""}</TableCell>
                       <TableCell>{r.conforme ? <CheckCircle2 className="w-4 h-4 text-green-600" /> : <Badge variant="destructive">NC</Badge>}</TableCell>
                       <TableCell className="max-w-[200px] truncate">{r.observacoes}</TableCell>
