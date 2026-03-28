@@ -1090,6 +1090,103 @@ export default function HigieneSanitizacao() {
           )}
         </TabsContent>
 
+        {/* ── CHECKLIST DEDICADO POP-04 ── */}
+        <TabsContent value="agua_checklist" className="space-y-4">
+          <Card className="border-blue-500/20 bg-blue-50 dark:bg-blue-900/10">
+            <CardContent className="pt-4">
+              <div className="flex items-start gap-3">
+                <ClipboardList className="w-6 h-6 text-blue-600 mt-0.5" />
+                <div>
+                  <h4 className="font-display font-semibold text-sm">Checklist POP-04 — Potabilidade da Água (IN 04/2007)</h4>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Verificação completa de reservatórios, pontos de coleta, sistema de tratamento e documentação.
+                    Execute este checklist mensalmente e antes de cada auditoria.
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <div className="grid grid-cols-2 gap-3 mb-4">
+            <div><Label>Responsável *</Label><Input value={aguaCheckResp} onChange={e => setAguaCheckResp(e.target.value)} placeholder="Nome do inspetor" /></div>
+            <div><Label>Data</Label><Input type="date" value={aguaCheckData} onChange={e => setAguaCheckData(e.target.value)} /></div>
+          </div>
+
+          <div className="space-y-4">
+            {CHECKLIST_AGUA.map(grupo => (
+              <Card key={grupo.area}>
+                <CardHeader className="py-3">
+                  <CardTitle className="text-sm font-display">{grupo.area}</CardTitle>
+                </CardHeader>
+                <CardContent className="py-0 pb-3">
+                  <div className="space-y-2">
+                    {grupo.itens.map(item => {
+                      const key = `agua__${grupo.area}__${item}`;
+                      const checked = aguaChecklist[key] ?? false;
+                      return (
+                        <div key={key} className="flex items-center justify-between p-2 rounded border bg-background">
+                          <span className="text-sm">{item}</span>
+                          <div className="flex items-center gap-2">
+                            <span className={`text-xs font-semibold ${checked ? "text-primary" : "text-muted-foreground"}`}>
+                              {checked ? "OK" : "—"}
+                            </span>
+                            <Switch checked={checked} onCheckedChange={v => setAguaChecklist(p => ({ ...p, [key]: v }))} />
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          {(() => {
+            const totalItens = CHECKLIST_AGUA.reduce((a, g) => a + g.itens.length, 0);
+            const marcados = Object.values(aguaChecklist).filter(Boolean).length;
+            const todosOk = marcados === totalItens;
+            return (
+              <div className="flex items-center justify-between p-4 rounded-lg border bg-muted/30">
+                <div>
+                  <p className="text-sm font-semibold">{marcados}/{totalItens} itens verificados</p>
+                  <p className="text-xs text-muted-foreground">{todosOk ? "✅ Todos os itens de potabilidade conformes" : "Conclua a verificação de todos os itens"}</p>
+                </div>
+                <Button disabled={!aguaCheckResp || savingAguaCheck} onClick={async () => {
+                  if (!user) return;
+                  setSavingAguaCheck(true);
+                  const ncs = CHECKLIST_AGUA.flatMap(g => g.itens.filter(item => !aguaChecklist[`agua__${g.area}__${item}`]).map(item => `${g.area}: ${item}`));
+                  const obs = [
+                    `[CHECKLIST POP-04 — POTABILIDADE DA ÁGUA / IN 04/2007]`,
+                    `Data: ${aguaCheckData} | Responsável: ${aguaCheckResp}`,
+                    `Itens conformes: ${marcados}/${totalItens}`,
+                    ncs.length > 0 ? `NCs: ${ncs.join("; ")}` : "Todos conformes ✅",
+                  ].join("\n");
+                  const { error } = await supabase.from("execucao_pops").insert({
+                    user_id: user.id,
+                    codigo_pop: "POP-04-CHECKLIST",
+                    nome_pop: "Checklist Potabilidade da Água",
+                    executor: aguaCheckResp,
+                    setor: "Reservatórios / Pontos de Água",
+                    status: todosOk ? "concluido" : "nao_conforme",
+                    observacoes: obs,
+                    data_execucao: aguaCheckData,
+                  });
+                  if (error) toast.error("Erro: " + error.message);
+                  else {
+                    toast.success("Checklist POP-04 salvo!");
+                    qc.invalidateQueries({ queryKey: ["registros_agua"] });
+                    setAguaChecklist({});
+                    setAguaCheckResp("");
+                  }
+                  setSavingAguaCheck(false);
+                }}>
+                  Salvar Checklist POP-04
+                </Button>
+              </div>
+            );
+          })()}
+        </TabsContent>
+
         {/* ── LAUDOS VINCULADOS ── */}
         <TabsContent value="laudos" className="space-y-4">
           <Card className="border-blue-500/20 bg-blue-50 dark:bg-blue-900/10">

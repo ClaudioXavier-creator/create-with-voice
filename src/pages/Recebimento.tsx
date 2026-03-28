@@ -128,6 +128,16 @@ export default function Recebimento() {
       obsCompleta = (obsCompleta ? obsCompleta + "\n\n" : "") + segregObs;
     }
 
+    // Contraprova
+    const cpQtd = (document.getElementById("cp-qtd") as HTMLInputElement)?.value || "";
+    const cpLocal = (document.getElementById("cp-local") as HTMLInputElement)?.value || "";
+    const cpVal = (document.getElementById("cp-val") as HTMLInputElement)?.value || "";
+    const cpRetida = !!(cpQtd || cpLocal);
+    if (cpRetida) {
+      const cpObs = `[CONTRAPROVA — IN 17/2017]\nQuantidade: ${cpQtd || "N/I"} | Local: ${cpLocal || "N/I"} | Validade retenção: ${cpVal || "N/I"}`;
+      obsCompleta = (obsCompleta ? obsCompleta + "\n\n" : "") + cpObs;
+    }
+
     const { error } = await supabase.from("recebimento_mp").insert({
       user_id: user.id,
       fornecedor,
@@ -145,6 +155,10 @@ export default function Recebimento() {
       unidade: unidade || null,
       temperatura: temperatura || null,
       observacoes: obsCompleta || null,
+      contraprova_retida: cpRetida,
+      contraprova_local: cpLocal,
+      contraprova_validade: cpVal,
+      contraprova_quantidade: cpQtd,
     } as any);
     if (error) toast.error("Erro: " + error.message);
     else {
