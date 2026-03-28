@@ -315,7 +315,8 @@ export default function HigieneSanitizacao() {
 
   const addRegistro = useMutation({
     mutationFn: async () => {
-      const { error } = await supabase.from("registros_limpeza").insert({ ...regForm, user_id: user!.id });
+      const payload = { ...regForm, user_id: user!.id, tipo_limpeza: (regForm as any).tipo_limpeza || "umida" };
+      const { error } = await supabase.from("registros_limpeza").insert(payload as any);
       if (error) throw error;
     },
     onSuccess: () => { qc.invalidateQueries({ queryKey: ["registros_limpeza"] }); toast.success("Registro salvo"); setOpenRegistro(false); },
