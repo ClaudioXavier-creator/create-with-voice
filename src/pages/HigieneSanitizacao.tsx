@@ -190,6 +190,7 @@ export default function HigieneSanitizacao() {
   const [supProdQuimico, setSupProdQuimico] = useState("");
   const [supConcentracao, setSupConcentracao] = useState("");
   const [supObs, setSupObs] = useState("");
+  const [savingSup, setSavingSup] = useState(false);
 
   // Silos & Transportadores state
   const [silosChecklist, setSilosChecklist] = useState<Record<string, boolean>>({});
