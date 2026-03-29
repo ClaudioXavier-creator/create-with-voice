@@ -55,7 +55,15 @@ export default function ManutencaoPreventiva() {
     observacoes: "", status: "programada"
   });
 
-  const [calibForm, setCalibForm] = useState({
+  const [trocaForm, setTrocaForm] = useState({
+    equipamento: "", codigo_equipamento: "", tipo: "preventiva" as string,
+    descricao: "", responsavel: "", pecas_trocadas: "",
+    data_programada: new Date().toISOString().split("T")[0],
+    data_execucao: "", proxima_manutencao: "", custo: "",
+    observacoes: "", status: "programada"
+  });
+  const [openTroca, setOpenTroca] = useState(false);
+  const [equipSelecionado, setEquipSelecionado] = useState("");
     equipamento: "", codigo: "", tipo: "balanca", localizacao: "", responsavel: "",
     data_calibracao: new Date().toISOString().split("T")[0], proxima_calibracao: "",
     certificado_numero: "", observacoes: "", status: "calibrado",
