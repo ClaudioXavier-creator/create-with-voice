@@ -190,7 +190,15 @@ export default function HigieneSanitizacao() {
   const [supProdQuimico, setSupProdQuimico] = useState("");
   const [supConcentracao, setSupConcentracao] = useState("");
   const [supObs, setSupObs] = useState("");
-  const [savingSup, setSavingSup] = useState(false);
+
+  // Silos & Transportadores state
+  const [silosChecklist, setSilosChecklist] = useState<Record<string, boolean>>({});
+  const [silosResp, setSilosResp] = useState("");
+  const [silosData, setSilosData] = useState(new Date().toISOString().split("T")[0]);
+  const [silosEquipamento, setSilosEquipamento] = useState("");
+  const [silosProdAnterior, setSilosProdAnterior] = useState("");
+  const [silosObs, setSilosObs] = useState("");
+  const [savingSilos, setSavingSilos] = useState(false);
 
   const [form, setForm] = useState({
     area: "", equipamento: "", procedimento: "", produto_utilizado: "",
