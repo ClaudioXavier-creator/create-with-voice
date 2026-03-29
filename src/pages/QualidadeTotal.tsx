@@ -291,8 +291,16 @@ export default function QualidadeTotal() {
       <PageHeader
         icon={ClipboardList}
         title="Qualidade Total – Relatório Técnico"
-        description="Reclamações de clientes, análise técnica, plano de ação e recolhimento de produtos. Ref.: POP-008"
+        description="Reclamações, contraprovas, análise técnica e recolhimento de produtos. Ref.: POP-008 / IN 04/2007"
       />
+
+      <Tabs value={mainTab} onValueChange={setMainTab}>
+        <TabsList>
+          <TabsTrigger value="reclamacoes"><ClipboardList className="w-4 h-4 mr-1" />Reclamações</TabsTrigger>
+          <TabsTrigger value="contraprova"><ShieldCheck className="w-4 h-4 mr-1" />Contraprova (IN 04/2007)</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="reclamacoes" className="space-y-6">
 
       {/* KPIs */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
