@@ -12,9 +12,22 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Plus, Wrench, Trash2, AlertTriangle, Scale } from "lucide-react";
+import { Plus, Wrench, Trash2, AlertTriangle, Scale, Cog, Calendar } from "lucide-react";
 import PageHeader from "@/components/PageHeader";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
+const EQUIPAMENTOS_CRITICOS = [
+  { nome: "Moinho de Martelos", codigo: "MM", pecas: ["Martelos", "Peneiras", "Rolamentos", "Correias"] },
+  { nome: "Misturador Horizontal", codigo: "MH", pecas: ["Pás/Ribbons", "Rolamentos", "Retentores", "Correias", "Porta de descarga"] },
+  { nome: "Misturador Vertical", codigo: "MV", pecas: ["Rosca helicoidal", "Rolamentos", "Retentores"] },
+  { nome: "Peletizadora", codigo: "PL", pecas: ["Matriz", "Rolos", "Rolamentos", "Facas de corte", "Correias"] },
+  { nome: "Extrusora", codigo: "EX", pecas: ["Rosca", "Camisas", "Matriz", "Facas", "Rolamentos"] },
+  { nome: "Ensacadeira", codigo: "EN", pecas: ["Bicos dosadores", "Esteira", "Seladora", "Correias"] },
+  { nome: "Transportador Helicoidal", codigo: "TH", pecas: ["Helicoide", "Rolamentos", "Mancais"] },
+  { nome: "Elevador de Canecas", codigo: "EC", pecas: ["Canecas", "Correia/Corrente", "Rolamentos", "Tambor"] },
+  { nome: "Dosador/Balança", codigo: "DB", pecas: ["Célula de carga", "Comportas", "Atuadores"] },
+  { nome: "Secador/Resfriador", codigo: "SR", pecas: ["Telas", "Ventiladores", "Rolamentos", "Correias"] },
+];
 
 const TIPOS = [
   { value: "preventiva", label: "Preventiva" },
