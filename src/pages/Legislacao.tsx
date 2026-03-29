@@ -823,6 +823,127 @@ export default function Legislacao() {
             </CardContent>
           </Card>
         </TabsContent>
+
+        {/* ──── Tab: IN 17/2017 — Rotulagem e Níveis de Garantia ──── */}
+        <TabsContent value="rotulagem" className="space-y-4">
+          <Card className="border-primary/20 bg-primary/5">
+            <CardContent className="pt-4">
+              <div className="flex items-start gap-3">
+                <FileText className="w-6 h-6 text-primary mt-0.5 shrink-0" />
+                <div>
+                  <h4 className="font-display font-semibold text-sm">IN 17/2017 — Rotulagem e Níveis de Garantia para Fabricantes</h4>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    A Instrução Normativa nº 17/2017 do MAPA estabelece as diretrizes de rotulagem para produtos destinados à alimentação animal,
+                    complementando a IN 22/2009 e IN 12/2004 com requisitos específicos para fabricantes.
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <div className="grid md:grid-cols-2 gap-4">
+            <Card>
+              <CardHeader><CardTitle className="font-display text-sm">📋 Requisitos de Rotulagem (IN 17/2017)</CardTitle></CardHeader>
+              <CardContent className="space-y-2 text-sm">
+                {[
+                  "Nome comercial do produto em destaque",
+                  "Classificação (ração, suplemento, premix, núcleo, aditivo)",
+                  "Espécie e categoria animal de destino",
+                  "Composição básica com ingredientes em ordem decrescente",
+                  "Níveis de garantia com unidades padronizadas (g/kg, mg/kg, UI/kg)",
+                  "Indicações de uso e modo de emprego",
+                  "Precauções e restrições de uso",
+                  "Condições de armazenamento",
+                  "Prazo de validade e identificação do lote",
+                  "Registro no MAPA e número SIPEAGRO",
+                  "Dados do fabricante: razão social, CNPJ e endereço",
+                  "Identificação do Responsável Técnico e CRMV",
+                  "Canal SAC (telefone, e-mail ou site)",
+                  "Eventuais substitutivos (quando aplicável)",
+                ].map((item, i) => (
+                  <div key={i} className="flex items-start gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+                    <span>{item}</span>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader><CardTitle className="font-display text-sm">📊 Níveis de Garantia — Diretrizes</CardTitle></CardHeader>
+              <CardContent className="space-y-2 text-sm">
+                {[
+                  "Declarar parâmetros mínimos e máximos conforme registro",
+                  "Utilizar unidades do Sistema Internacional (g/kg, mg/kg, UI/kg)",
+                  "Indicar \"(Mín.)\" ou \"(Máx.)\" conforme aplicável",
+                  "Umidade máxima sempre declarada para produtos secos",
+                  "Proteína bruta, extrato etéreo e matéria fibrosa obrigatórios",
+                  "Matéria mineral (cinzas) quando aplicável ao tipo de produto",
+                  "Cálcio e fósforo obrigatórios em suplementos minerais",
+                  "Vitaminas em UI/kg para A, D, E; mg/kg para demais",
+                  "Microminerais em mg/kg (Cu, Zn, Mn, Se, I, Co, Fe)",
+                  "NNP (equivalente proteico) quando presente na formulação",
+                  "Valores devem ser consistentes com o laudo de análise",
+                  "Tolerâncias analíticas conforme IN 12/2004",
+                ].map((item, i) => (
+                  <div key={i} className="flex items-start gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+                    <span>{item}</span>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+          </div>
+
+          <Card>
+            <CardHeader><CardTitle className="font-display text-sm">⚠️ Proibições e Alertas (IN 17/2017)</CardTitle></CardHeader>
+            <CardContent>
+              <div className="grid md:grid-cols-2 gap-4 text-sm">
+                <div className="space-y-2">
+                  <h5 className="font-semibold text-destructive">Proibido no Rótulo:</h5>
+                  {[
+                    "Alegações terapêuticas ou medicinais não autorizadas",
+                    "Informações falsas, enganosas ou que induzam a erro",
+                    "Comparação depreciativa com produtos concorrentes",
+                    "Imagens que não correspondam ao produto real",
+                    "Omissão de ingredientes de origem animal (IN 15/2009)",
+                  ].map((item, i) => (
+                    <div key={i} className="flex items-start gap-2">
+                      <AlertTriangle className="w-4 h-4 text-destructive mt-0.5 shrink-0" />
+                      <span>{item}</span>
+                    </div>
+                  ))}
+                </div>
+                <div className="space-y-2">
+                  <h5 className="font-semibold text-primary">Obrigatório para Medicamentosas:</h5>
+                  {[
+                    "Declarar princípio ativo e dosagem no rótulo",
+                    "Período de carência claramente informado",
+                    "Frase: \"VENDA SOB PRESCRIÇÃO DE MÉDICO VETERINÁRIO\"",
+                    "Identificação do medicamento veterinário utilizado",
+                    "Espécie e fase de produção obrigatórias",
+                  ].map((item, i) => (
+                    <div key={i} className="flex items-start gap-2">
+                      <Info className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+                      <span>{item}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-muted/30">
+            <CardContent className="pt-4">
+              <p className="text-xs text-muted-foreground">
+                <strong>Referência cruzada:</strong> As diretrizes de rotulagem da IN 17/2017 estão integradas ao módulo de
+                <strong> Produtos → Editor de Rótulos</strong>, que automatiza a conformidade com campos obrigatórios, níveis de garantia
+                e geração de etiquetas ZPL. A tabela de valores de referência de consumo segue a IN 12/2004.
+              </p>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
       </Tabs>
 
       {/* ──── Detail Dialog (shared) ──── */}
