@@ -672,6 +672,7 @@ export default function PCP() {
                             <TabsList>
                               <TabsTrigger value="formula"><FlaskConical className="w-3 h-3 mr-1" /> Fórmula ({itens.length})</TabsTrigger>
                               <TabsTrigger value="batidas"><Factory className="w-3 h-3 mr-1" /> Batidas ({bats.length})</TabsTrigger>
+                              <TabsTrigger value="flush"><Droplets className="w-3 h-3 mr-1" /> Flush/Limpeza</TabsTrigger>
                               <TabsTrigger value="carryover"><TestTube className="w-3 h-3 mr-1" /> Carry-over</TabsTrigger>
                             </TabsList>
                             <div className="flex gap-2">
