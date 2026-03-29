@@ -191,10 +191,11 @@ export default function ManutencaoPreventiva() {
     <div className="space-y-6">
       <PageHeader title="POP 06 — Manutenção Preventiva e Calibração" description="Planos de manutenção de máquinas (moinhos, misturadores) e instrumentos — IN 04/2007" />
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card><CardContent className="pt-6 text-center"><p className="text-3xl font-bold text-primary">{manutencoes.length}</p><p className="text-sm text-muted-foreground">Total Manutenções</p></CardContent></Card>
-        <Card><CardContent className="pt-6 text-center"><p className="text-3xl font-bold text-yellow-600">{manutencoes.filter((m: any) => m.status === "programada").length}</p><p className="text-sm text-muted-foreground">Programadas</p></CardContent></Card>
-        <Card><CardContent className="pt-6 text-center"><p className="text-3xl font-bold text-green-600">{calibracoes.length}</p><p className="text-sm text-muted-foreground">Equipamentos Calibrados</p></CardContent></Card>
+        <Card><CardContent className="pt-6 text-center"><p className="text-3xl font-bold text-accent-foreground">{trocasPecas.length}</p><p className="text-sm text-muted-foreground">Trocas de Peças</p></CardContent></Card>
+        <Card><CardContent className="pt-6 text-center"><p className="text-3xl font-bold text-muted-foreground">{manutencoes.filter((m: any) => m.status === "programada").length}</p><p className="text-sm text-muted-foreground">Programadas</p></CardContent></Card>
+        <Card><CardContent className="pt-6 text-center"><p className="text-3xl font-bold text-primary">{calibracoes.length}</p><p className="text-sm text-muted-foreground">Equipamentos Calibrados</p></CardContent></Card>
       </div>
 
       {/* Alertas de Verificação Intermediária */}
