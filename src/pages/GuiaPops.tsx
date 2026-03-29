@@ -2,7 +2,7 @@ import { useState } from "react";
 import {
   HelpCircle, ChevronDown, ChevronRight, BookOpen, FileText, Droplets, Users,
   ShieldCheck, Wrench, Bug, Recycle, Search, Beaker, ClipboardCheck,
-  Upload
+  Upload, ListChecks, Hammer, ShieldAlert, Clock, Package
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -11,6 +11,7 @@ import PageHeader from "@/components/PageHeader";
 import { cn } from "@/lib/utils";
 import { POP_TEXTOS } from "@/config/popTextos";
 import { POPS_CONFIG } from "@/config/popsConfig";
+import { INSTRUCOES_TRABALHO } from "@/config/instrucoesTrabalho";
 
 interface GuiaSection {
   id: string;
@@ -123,6 +124,95 @@ function PopContent({ codigo }: { codigo: string }) {
           <ul className="space-y-1">{config.anexos.map((anexo, i) => <li key={i} className="text-sm text-muted-foreground flex gap-2"><span className="text-primary">📋</span> {anexo}</li>)}</ul>
         </div>
       )}
+
+      {/* ── Instruções de Trabalho (ITs) ── */}
+      {(() => {
+        const its = INSTRUCOES_TRABALHO.filter(it => it.popCodigo === codigo);
+        if (its.length === 0) return null;
+        return (
+          <div>
+            <h4 className="text-sm font-semibold mb-3 flex items-center gap-2">
+              <ListChecks className="w-4 h-4 text-primary" />
+              10. Instruções de Trabalho (ITs)
+              <Badge variant="secondary" className="text-xs">{its.length} IT(s)</Badge>
+            </h4>
+            <div className="space-y-4">
+              {its.map((it) => (
+                <div key={it.id} className="border rounded-lg p-4 bg-muted/20 space-y-3">
+                  <div className="flex items-start justify-between gap-2">
+                    <div>
+                      <p className="font-semibold text-sm flex items-center gap-2">
+                        <Badge className="bg-primary/20 text-primary text-xs">{it.id}</Badge>
+                        {it.titulo}
+                      </p>
+                      <p className="text-xs text-muted-foreground mt-1">{it.objetivo}</p>
+                    </div>
+                    <Badge variant="outline" className="text-[10px] shrink-0 flex items-center gap-1">
+                      <Clock className="w-3 h-3" />{it.frequencia}
+                    </Badge>
+                  </div>
+
+                  <div className="grid md:grid-cols-2 gap-3">
+                    {it.materiais.length > 0 && (
+                      <div>
+                        <p className="text-xs font-semibold flex items-center gap-1 mb-1">
+                          <Package className="w-3 h-3 text-primary" /> Materiais
+                        </p>
+                        <ul className="space-y-0.5">
+                          {it.materiais.map((m, i) => (
+                            <li key={i} className="text-xs text-muted-foreground flex gap-1"><span className="text-primary">•</span>{m}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                    {it.epis.length > 0 && (
+                      <div>
+                        <p className="text-xs font-semibold flex items-center gap-1 mb-1">
+                          <ShieldAlert className="w-3 h-3 text-destructive" /> EPIs Necessários
+                        </p>
+                        <ul className="space-y-0.5">
+                          {it.epis.map((e, i) => (
+                            <li key={i} className="text-xs text-muted-foreground flex gap-1"><span className="text-destructive">•</span>{e}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+
+                  <div>
+                    <p className="text-xs font-semibold mb-1">Passo a Passo:</p>
+                    <div className="space-y-1.5">
+                      {it.passos.map((p, i) => (
+                        <div key={i} className="flex gap-2 items-start text-xs">
+                          <span className="flex items-center justify-center w-5 h-5 rounded-full bg-primary text-primary-foreground text-[10px] font-bold shrink-0 mt-0.5">{i + 1}</span>
+                          <span className="text-muted-foreground">{p}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <p className="text-xs font-semibold mb-1 flex items-center gap-1">
+                      <Hammer className="w-3 h-3 text-primary" /> Critérios de Aceitação:
+                    </p>
+                    <ul className="space-y-0.5">
+                      {it.criteriosAceitacao.map((c, i) => (
+                        <li key={i} className="text-xs text-muted-foreground flex gap-1"><span className="text-primary">✓</span>{c}</li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  {it.registroVinculado && (
+                    <div className="text-xs text-muted-foreground bg-muted/50 rounded px-2 py-1 flex items-center gap-1">
+                      <FileText className="w-3 h-3" /> Registro vinculado: <span className="font-medium">{it.registroVinculado}</span>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+      })()}
     </div>
   );
 }
