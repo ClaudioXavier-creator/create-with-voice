@@ -108,7 +108,27 @@ export default function ManutencaoPreventiva() {
     onSuccess: () => { qc.invalidateQueries({ queryKey: ["manutencoes"] }); toast.success("Removido"); },
   });
 
-  const statusColor = (s: string) => {
+  const addTrocaPecas = useMutation({
+    mutationFn: async () => {
+      const payload: any = { ...trocaForm, user_id: user!.id };
+      if (!payload.data_execucao) delete payload.data_execucao;
+      if (!payload.proxima_manutencao) delete payload.proxima_manutencao;
+      payload.descricao = `[TROCA DE PEÇAS] ${payload.descricao}`;
+      const { error } = await supabase.from("manutencoes").insert(payload);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["manutencoes"] });
+      toast.success("Troca de peças registrada");
+      setOpenTroca(false);
+      setTrocaForm({ equipamento: "", codigo_equipamento: "", tipo: "preventiva", descricao: "", responsavel: "", pecas_trocadas: "", data_programada: new Date().toISOString().split("T")[0], data_execucao: "", proxima_manutencao: "", custo: "", observacoes: "", status: "programada" });
+      setEquipSelecionado("");
+    },
+    onError: () => toast.error("Erro ao salvar"),
+  });
+
+  const trocasPecas = manutencoes.filter((m: any) => m.pecas_trocadas && m.pecas_trocadas.trim() !== "");
+
     if (s === "concluida") return "default";
     if (s === "atrasada") return "destructive";
     return "outline";
