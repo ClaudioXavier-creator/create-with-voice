@@ -553,7 +553,7 @@ export default function ManutencaoPreventiva() {
                       <TableCell>{m.data_programada}</TableCell>
                       <TableCell>{m.data_execucao || "—"}</TableCell>
                       <TableCell>{m.proxima_manutencao || <span className="text-destructive text-xs">Não definida</span>}</TableCell>
-                      <TableCell><Badge variant={statusColor(m.status)}>{STATUS_LIST.find(s => s.value === m.status)?.label || m.status}</Badge></TableCell>
+                      <TableCell><Badge variant={statusVariant(m.status)}>{STATUS_LIST.find(s => s.value === m.status)?.label || m.status}</Badge></TableCell>
                       <TableCell><Button variant="ghost" size="icon" onClick={() => deleteManut.mutate(m.id)}><Trash2 className="w-4 h-4 text-destructive" /></Button></TableCell>
                     </TableRow>
                   ))}
