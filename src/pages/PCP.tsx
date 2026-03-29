@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { ClipboardList, Plus, Loader2, ChevronDown, ChevronUp, Clock, CheckCircle2, AlertTriangle, Factory, FlaskConical, ArrowRightLeft, ShieldAlert, TestTube, Shield } from "lucide-react";
+import { ClipboardList, Plus, Loader2, ChevronDown, ChevronUp, Clock, CheckCircle2, AlertTriangle, Factory, FlaskConical, ArrowRightLeft, ShieldAlert, TestTube, Shield, Droplets } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
@@ -142,21 +142,37 @@ export default function PCP() {
   const [coConforme, setCoConforme] = useState(true);
   const [coObs, setCoObs] = useState("");
   const [carryoverRecords, setCarryoverRecords] = useState<any[]>([]);
+  const [flushRecords, setFlushRecords] = useState<any[]>([]);
+
+  // Flush order state
+  const [flushOpen, setFlushOpen] = useState(false);
+  const [flushOrdemId, setFlushOrdemId] = useState("");
+  const [flushData, setFlushData] = useState(new Date().toISOString().split("T")[0]);
+  const [flushResp, setFlushResp] = useState("");
+  const [flushTipo, setFlushTipo] = useState("flushing");
+  const [flushMaterialInerte, setFlushMaterialInerte] = useState("");
+  const [flushVolume, setFlushVolume] = useState("");
+  const [flushDestino, setFlushDestino] = useState("");
+  const [flushProdAnterior, setFlushProdAnterior] = useState("");
+  const [flushProdSeguinte, setFlushProdSeguinte] = useState("");
+  const [flushObs, setFlushObs] = useState("");
 
   const fetchData = async () => {
     if (!user) return;
-    const [ordensRes, itensRes, batidasRes, matrizRes, coRes] = await Promise.all([
+    const [ordensRes, itensRes, batidasRes, matrizRes, coRes, flushRes] = await Promise.all([
       supabase.from("ordens_producao").select("*").order("data_programada", { ascending: false }),
       supabase.from("formula_itens").select("*").order("created_at"),
       supabase.from("batidas_producao").select("*").order("numero_batida"),
       supabase.from("matriz_sensibilidade").select("*").order("produto_anterior"),
       supabase.from("execucao_pops").select("*").eq("codigo_pop", "POP-CARRYOVER").order("data_execucao", { ascending: false }).limit(100),
+      supabase.from("execucao_pops").select("*").eq("codigo_pop", "POP-FLUSH").order("data_execucao", { ascending: false }).limit(100),
     ]);
     if (ordensRes.data) setOrdens(ordensRes.data as unknown as OrdemProd[]);
     if (itensRes.data) setFormulaItens(itensRes.data as unknown as FormulaItem[]);
     if (batidasRes.data) setBatidas(batidasRes.data as unknown as Batida[]);
     if (matrizRes.data) setMatrizSensibilidade(matrizRes.data);
     if (coRes.data) setCarryoverRecords(coRes.data);
+    if (flushRes.data) setFlushRecords(flushRes.data);
     setLoading(false);
   };
 
@@ -656,6 +672,7 @@ export default function PCP() {
                             <TabsList>
                               <TabsTrigger value="formula"><FlaskConical className="w-3 h-3 mr-1" /> Fórmula ({itens.length})</TabsTrigger>
                               <TabsTrigger value="batidas"><Factory className="w-3 h-3 mr-1" /> Batidas ({bats.length})</TabsTrigger>
+                              <TabsTrigger value="flush"><Droplets className="w-3 h-3 mr-1" /> Flush/Limpeza</TabsTrigger>
                               <TabsTrigger value="carryover"><TestTube className="w-3 h-3 mr-1" /> Carry-over</TabsTrigger>
                             </TabsList>
                             <div className="flex gap-2">
@@ -745,6 +762,46 @@ export default function PCP() {
                               )}
                               <Button size="sm" variant="outline" onClick={() => openAddBatida(o.id)}>
                                 <Plus className="w-3 h-3 mr-1" /> Registrar Batida
+                              </Button>
+                            </div>
+                          </TabsContent>
+
+                          {/* ── FLUSH / LIMPEZA TAB ── */}
+                          <TabsContent value="flush">
+                            <div className="space-y-3">
+                              <div className="p-3 rounded-lg border border-blue-500/20 bg-blue-50 dark:bg-blue-900/10">
+                                <p className="text-xs font-semibold text-blue-700 flex items-center gap-1"><Droplets className="w-4 h-4" /> Ordem de Limpeza (Flush) — IN 15/2009</p>
+                                <p className="text-[10px] text-muted-foreground mt-1">Registro obrigatório de limpeza entre batidas de fórmulas diferentes para prevenir contaminação cruzada.</p>
+                              </div>
+                              {(() => {
+                                const ordemFlush = flushRecords.filter((f: any) => f.checklist_auditoria_ref === o.id);
+                                return ordemFlush.length > 0 ? (
+                                  <Table>
+                                    <TableHeader><TableRow>
+                                      <TableHead>Data</TableHead><TableHead>Executor</TableHead><TableHead>Status</TableHead><TableHead>Detalhes</TableHead>
+                                    </TableRow></TableHeader>
+                                    <TableBody>
+                                      {ordemFlush.map((f: any) => (
+                                        <TableRow key={f.id}>
+                                          <TableCell>{f.data_execucao}</TableCell>
+                                          <TableCell>{f.executor}</TableCell>
+                                          <TableCell>{f.status === "concluido" ? <Badge className="bg-primary/20 text-primary text-[10px]">OK</Badge> : <Badge variant="destructive" className="text-[10px]">NC</Badge>}</TableCell>
+                                          <TableCell className="text-xs max-w-[300px] whitespace-pre-line">{f.observacoes}</TableCell>
+                                        </TableRow>
+                                      ))}
+                                    </TableBody>
+                                  </Table>
+                                ) : <p className="text-xs text-muted-foreground text-center py-3">Nenhuma ordem de flush registrada para esta OP.</p>;
+                              })()}
+                              <Button size="sm" onClick={() => {
+                                setFlushOrdemId(o.id);
+                                setFlushProdSeguinte(o.produto);
+                                const sorted = [...ordens].sort((a, b) => a.data_programada.localeCompare(b.data_programada));
+                                const idx = sorted.findIndex(x => x.id === o.id);
+                                if (idx > 0) setFlushProdAnterior(sorted[idx - 1].produto);
+                                setFlushOpen(true);
+                              }}>
+                                <Plus className="w-3 h-3 mr-1" /> Registrar Flush/Limpeza
                               </Button>
                             </div>
                           </TabsContent>
@@ -1054,6 +1111,78 @@ export default function PCP() {
             <Button onClick={handleAddCarryover} className="w-full" disabled={saving || !coResponsavel}>
               {saving && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
               Registrar Teste de Carry-over
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+      {/* ── FLUSH ORDER DIALOG ── */}
+      <Dialog open={flushOpen} onOpenChange={setFlushOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader><DialogTitle className="flex items-center gap-2"><Droplets className="w-5 h-5 text-blue-600" /> Ordem de Limpeza (Flush) — IN 15/2009</DialogTitle></DialogHeader>
+          <div className="space-y-3 max-h-[65vh] overflow-y-auto pr-2">
+            <div className="grid grid-cols-2 gap-3">
+              <div><Label>Data</Label><Input type="date" value={flushData} onChange={e => setFlushData(e.target.value)} /></div>
+              <div><Label>Responsável *</Label><Input value={flushResp} onChange={e => setFlushResp(e.target.value)} placeholder="Nome do executor" /></div>
+            </div>
+            <div>
+              <Label>Tipo de Limpeza</Label>
+              <Select value={flushTipo} onValueChange={setFlushTipo}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="vassouragem">Vassouragem (limpeza seca)</SelectItem>
+                  <SelectItem value="flushing">Flushing (material inerte)</SelectItem>
+                  <SelectItem value="lavagem">Lavagem completa</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            {flushTipo === "flushing" && (
+              <div className="grid grid-cols-2 gap-3">
+                <div><Label>Material Inerte</Label><Input value={flushMaterialInerte} onChange={e => setFlushMaterialInerte(e.target.value)} placeholder="Ex: Milho moído" /></div>
+                <div><Label>Volume (kg)</Label><Input value={flushVolume} onChange={e => setFlushVolume(e.target.value)} placeholder="≥ 50% capacidade" /></div>
+              </div>
+            )}
+            <div><Label>Destino do Material de Flush</Label><Input value={flushDestino} onChange={e => setFlushDestino(e.target.value)} placeholder="Ex: Descarte / Reprocesso" /></div>
+            <div className="grid grid-cols-2 gap-3">
+              <div><Label>Produto Anterior</Label><Input value={flushProdAnterior} onChange={e => setFlushProdAnterior(e.target.value)} /></div>
+              <div><Label>Produto Seguinte</Label><Input value={flushProdSeguinte} onChange={e => setFlushProdSeguinte(e.target.value)} /></div>
+            </div>
+            <div><Label>Observações</Label><Textarea value={flushObs} onChange={e => setFlushObs(e.target.value)} placeholder="Detalhes adicionais..." /></div>
+            <Button className="w-full" disabled={saving || !flushResp} onClick={async () => {
+              if (!user) return;
+              setSaving(true);
+              const obs = [
+                `[ORDEM DE LIMPEZA (FLUSH) — IN 15/2009]`,
+                `Data: ${flushData} | Responsável: ${flushResp}`,
+                `Tipo: ${flushTipo === "vassouragem" ? "Vassouragem" : flushTipo === "flushing" ? "Flushing" : "Lavagem completa"}`,
+                flushTipo === "flushing" ? `Material inerte: ${flushMaterialInerte || "—"} | Volume: ${flushVolume || "—"} kg` : "",
+                `Destino: ${flushDestino || "—"}`,
+                `Produto anterior: ${flushProdAnterior || "—"}`,
+                `Produto seguinte: ${flushProdSeguinte || "—"}`,
+                flushObs ? `Obs: ${flushObs}` : "",
+              ].filter(Boolean).join("\n");
+              const { error } = await supabase.from("execucao_pops").insert({
+                user_id: user.id,
+                codigo_pop: "POP-FLUSH",
+                nome_pop: "Ordem de Limpeza (Flush) entre Fórmulas",
+                executor: flushResp,
+                setor: flushProdAnterior && flushProdSeguinte ? `${flushProdAnterior} → ${flushProdSeguinte}` : "PCP",
+                status: "concluido",
+                observacoes: obs,
+                data_execucao: flushData,
+                checklist_auditoria_ref: flushOrdemId,
+              });
+              if (error) toast.error("Erro: " + error.message);
+              else {
+                toast.success("Ordem de flush registrada!");
+                setFlushOpen(false);
+                setFlushResp(""); setFlushTipo("flushing"); setFlushMaterialInerte(""); setFlushVolume("");
+                setFlushDestino(""); setFlushProdAnterior(""); setFlushProdSeguinte(""); setFlushObs("");
+                fetchData();
+              }
+              setSaving(false);
+            }}>
+              {saving && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+              Registrar Ordem de Flush
             </Button>
           </div>
         </DialogContent>

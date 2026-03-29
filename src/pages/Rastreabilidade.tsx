@@ -397,7 +397,7 @@ export default function Rastreabilidade() {
     toast.success("Histórico exportado para CSV!");
   };
 
-  const exportBalancoMassa = () => {
+  const exportBalancoMassa = async () => {
     // Group by lote_produto for mass balance
     const lotes = new Map<string, { produto: string; materias: { mp: string; lote: string; fornecedor: string; qtd: string }[]; vendas: { cliente: string; qtd: string; nf: string; data: string }[] }>();
     
@@ -453,6 +453,21 @@ export default function Rastreabilidade() {
     link.download = `balanco_massa_${new Date().toISOString().split("T")[0]}.csv`;
     link.click();
     toast.success("Balanço de massa exportado para fiscalização!");
+
+    // Auto-save report to relatorios table (Decreto 12.031/2024)
+    if (user) {
+      const dataGeracao = new Date().toISOString().split("T")[0];
+      await supabase.from("relatorios").insert({
+        user_id: user.id,
+        titulo: `Balanço de Massa — ${dataGeracao}`,
+        tipo: "digital",
+        modulo: "rastreabilidade",
+        descricao: `Relatório automático de balanço de massa com ${lotes.size} lotes rastreados. Gerado conforme Art. 18 do Decreto 12.031/2024.`,
+        data_geracao: dataGeracao,
+        status: "ativo",
+      });
+      toast.info("Relatório salvo automaticamente no módulo de Relatórios (Decreto 12.031/2024)");
+    }
   };
 
   return (
