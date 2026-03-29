@@ -70,6 +70,30 @@ const MODELOS: ModeloDoc[] = [
   // Produtos e Rótulos
   { nome: "Ficha Técnica de Produto", descricao: "Ficha técnica completa com níveis de garantia", categoria: "produto", arquivo: "Ficha_Tecnica_Produto", novo: true },
   { nome: "Modelo de Rótulo (Ração/Suplemento/Sal)", descricao: "Rótulo conforme IN 22/2009 e IN 12/2004", categoria: "produto", arquivo: "Modelo_Rotulo", novo: true },
+
+  // Instruções de Trabalho (ITs)
+  { nome: "IT-01-01 — Avaliação e Qualificação de Fornecedor", descricao: "Qualificação inicial com SIPEAGRO, documentação e nota de avaliação", categoria: "instrucao", arquivo: "IT-01-01", novo: true },
+  { nome: "IT-01-02 — Recebimento de MP a Granel", descricao: "Inspeção de grãos: umidade, odor, insetos e contraprova", categoria: "instrucao", arquivo: "IT-01-02", novo: true },
+  { nome: "IT-01-03 — Recebimento de MP Ensacada", descricao: "Inspeção de ensacados: embalagem, rótulo, peso e certificado", categoria: "instrucao", arquivo: "IT-01-03", novo: true },
+  { nome: "IT-02-01 — Limpeza a Seco de Produção", descricao: "Varrição e aspiração de áreas produtivas por turno", categoria: "instrucao", arquivo: "IT-02-01", novo: true },
+  { nome: "IT-02-02 — Limpeza Úmida e Sanitização", descricao: "Lavagem e sanitização de áreas de apoio com hipoclorito", categoria: "instrucao", arquivo: "IT-02-02", novo: true },
+  { nome: "IT-02-03 — Limpeza de Silos e Transportadores", descricao: "Higienização de silos e linhas de transporte (IN 15/2009)", categoria: "instrucao", arquivo: "IT-02-03", novo: true },
+  { nome: "IT-03-01 — Higiene Pessoal na Entrada", descricao: "Procedimento de entrada com lavagem de mãos, EPI e pedilúvio", categoria: "instrucao", arquivo: "IT-03-01", novo: true },
+  { nome: "IT-03-02 — Controle de ASOs", descricao: "Gerenciamento de exames médicos e validade dos ASOs", categoria: "instrucao", arquivo: "IT-03-02", novo: true },
+  { nome: "IT-04-01 — Coleta de Amostras de Água", descricao: "Coleta em pontos estratégicos para análise de potabilidade", categoria: "instrucao", arquivo: "IT-04-01", novo: true },
+  { nome: "IT-04-02 — Higienização de Reservatórios", descricao: "Limpeza e sanitização de caixas d'água semestralmente", categoria: "instrucao", arquivo: "IT-04-02", novo: true },
+  { nome: "IT-05-01 — Sequenciamento e Flushing", descricao: "Ordem de produção e flushing para prevenção de carry-over (IN 15/2009)", categoria: "instrucao", arquivo: "IT-05-01", novo: true },
+  { nome: "IT-05-02 — Teste de Carry-Over", descricao: "Análise laboratorial de arraste de medicamentos pós-flushing", categoria: "instrucao", arquivo: "IT-05-02", novo: true },
+  { nome: "IT-06-01 — Manutenção Preventiva", descricao: "Manutenção de moinhos, misturadores e peletizadoras", categoria: "instrucao", arquivo: "IT-06-01", novo: true },
+  { nome: "IT-06-02 — Verificação de Balanças", descricao: "Verificação intermediária com pesos padrão certificados", categoria: "instrucao", arquivo: "IT-06-02", novo: true },
+  { nome: "IT-07-01 — Monitoramento de Pragas", descricao: "Inspeção semanal de armadilhas, iscas e barreiras físicas", categoria: "instrucao", arquivo: "IT-07-01", novo: true },
+  { nome: "IT-07-02 — Barreiras Físicas Anti-Pragas", descricao: "Inspeção e manutenção de telas, vedações e ralos", categoria: "instrucao", arquivo: "IT-07-02", novo: true },
+  { nome: "IT-08-01 — Segregação e Coleta de Resíduos", descricao: "Classificação, acondicionamento e destinação de resíduos", categoria: "instrucao", arquivo: "IT-08-01", novo: true },
+  { nome: "IT-08-02 — Descarte de Produtos NC", descricao: "Descarte de produtos vencidos, contaminados ou avariados", categoria: "instrucao", arquivo: "IT-08-02", novo: true },
+  { nome: "IT-09-01 — Rastreabilidade de Lote", descricao: "Rastreio bidirecional: MP → Produto → Cliente", categoria: "instrucao", arquivo: "IT-09-01", novo: true },
+  { nome: "IT-09-02 — Procedimento de Recall", descricao: "Recolhimento de produto com comunicação e rastreio (Decreto 12.031/2024)", categoria: "instrucao", arquivo: "IT-09-02", novo: true },
+  { nome: "IT-10-01 — Auditoria Interna BPF", descricao: "Execução de auditoria semestral com checklist e relatório", categoria: "instrucao", arquivo: "IT-10-01", novo: true },
+  { nome: "IT-10-02 — Análise de Indicadores", descricao: "Monitoramento mensal de KPIs e apresentação à direção", categoria: "instrucao", arquivo: "IT-10-02", novo: true },
 ];
 
 const categoriaIcons: Record<string, React.ElementType> = {
