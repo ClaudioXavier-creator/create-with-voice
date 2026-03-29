@@ -64,6 +64,8 @@ export default function ManutencaoPreventiva() {
   });
   const [openTroca, setOpenTroca] = useState(false);
   const [equipSelecionado, setEquipSelecionado] = useState("");
+
+  const [calibForm, setCalibForm] = useState({
     equipamento: "", codigo: "", tipo: "balanca", localizacao: "", responsavel: "",
     data_calibracao: new Date().toISOString().split("T")[0], proxima_calibracao: "",
     certificado_numero: "", observacoes: "", status: "calibrado",
