@@ -446,6 +446,10 @@ export default function Legislacao() {
             <Sparkles className="w-4 h-4 mr-1" />
             Resumo IA
           </TabsTrigger>
+          <TabsTrigger value="rotulagem">
+            <FileText className="w-4 h-4 mr-1" />
+            IN 17/2017
+          </TabsTrigger>
         </TabsList>
 
         {/* ──── Tab: Biblioteca de Normas ──── */}
