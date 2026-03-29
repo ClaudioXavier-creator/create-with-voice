@@ -105,6 +105,7 @@ const categoriaIcons: Record<string, React.ElementType> = {
   treinamento: Users,
   auditoria: Shield,
   produto: FlaskConical,
+  instrucao: ClipboardList,
 };
 
 const categoriaLabels: Record<string, string> = {
@@ -116,6 +117,7 @@ const categoriaLabels: Record<string, string> = {
   treinamento: "Treinamentos",
   auditoria: "Auditoria/Gestão",
   produto: "Produtos/Rótulos",
+  instrucao: "Instruções de Trabalho",
 };
 
 export default function Modelos() {

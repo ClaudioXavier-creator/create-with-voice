@@ -439,6 +439,25 @@ const sections: ManualSection[] = [
     ],
   },
   {
+    id: "instrucoes-trabalho",
+    title: "Instruções de Trabalho (ITs)",
+    icon: FileCheck,
+    badge: "POPs",
+    description:
+      "22 Instruções de Trabalho detalhadas cobrindo todos os 10 POPs obrigatórios. Cada IT fornece passo a passo operacional completo para o chão de fábrica.",
+    features: [
+      { title: "Cobertura Completa", text: "ITs para todos os 10 POPs: desde qualificação de fornecedores (IT-01) até auditoria interna e análise de indicadores (IT-10)." },
+      { title: "Estrutura Padronizada", text: "Cada IT contém: objetivo, materiais necessários, EPIs obrigatórios, passo a passo numerado, critérios de aceitação, frequência e registro vinculado." },
+      { title: "Acesso pelo Guia de POPs", text: "As ITs estão integradas ao Guia dos POPs (/guia-pops), dentro de cada POP na seção '10. Instruções de Trabalho'." },
+      { title: "Modelos para Download", text: "Todas as 22 ITs estão disponíveis como modelos na Biblioteca de Modelos (/modelos) na categoria 'Instruções de Trabalho'." },
+      { title: "Vinculação com Execução", text: "Cada IT indica o registro vinculado (planilha de controle) onde a execução deve ser documentada." },
+    ],
+    tips: [
+      "Treine os operadores nas ITs específicas de suas funções antes de permitir a execução.",
+      "As ITs devem ser revisadas junto com os POPs (anualmente ou após mudança de processo).",
+    ],
+  },
+  {
     id: "legislacao",
     title: "Legislação & IA",
     icon: Scale,
