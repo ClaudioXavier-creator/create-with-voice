@@ -54,12 +54,19 @@ const CHECKLIST_DECRETO_12031: ChecklistItem[] = [
   { id: "d29b", area: "5. Contaminação Cruzada (Art. 10-XII) — ⚠️ RISCO ALTO", item: "Teste de carry-over (arraste) realizado e conforme", conforme: null, observacao: "", popVinculado: "POP-005" },
   { id: "d29c", area: "5. Contaminação Cruzada (Art. 10-XII) — ⚠️ RISCO ALTO", item: "Ingredientes de origem animal segregados de rações para ruminantes (IN 15/2009)", conforme: null, observacao: "", popVinculado: "POP-005" },
 
-  // ── 6. RECEBIMENTO E ARMAZENAMENTO (Art. 38-39) ──
-  { id: "d30", area: "6. Recebimento e Armazenamento (Art. 38-39)", item: "Controle de recepção com indicação de procedência (Art. 39-XIII)", conforme: null, observacao: "", popVinculado: "POP-003" },
-  { id: "d31", area: "6. Recebimento e Armazenamento (Art. 38-39)", item: "MP armazenadas em condições adequadas (Art. 38)", conforme: null, observacao: "", popVinculado: "" },
-  { id: "d32", area: "6. Recebimento e Armazenamento (Art. 38-39)", item: "Sistema FIFO implementado", conforme: null, observacao: "", popVinculado: "" },
-  { id: "d33", area: "6. Recebimento e Armazenamento (Art. 38-39)", item: "Produtos identificados e afastados das paredes", conforme: null, observacao: "", popVinculado: "" },
-  { id: "d34", area: "6. Recebimento e Armazenamento (Art. 38-39)", item: "Produtos vencidos segregados e identificados (Art. 55)", conforme: null, observacao: "", popVinculado: "" },
+  // ── 6. RECEBIMENTO E ARMAZENAMENTO (Art. 38-39, IN 15/2009) ──
+  { id: "d30", area: "6. Recebimento e Armazenamento (Art. 38-39, IN 15/2009)", item: "Controle de recepção com indicação de procedência (Art. 39-XIII)", conforme: null, observacao: "", popVinculado: "POP-003" },
+  { id: "d31", area: "6. Recebimento e Armazenamento (Art. 38-39, IN 15/2009)", item: "MP armazenadas em condições adequadas (Art. 38)", conforme: null, observacao: "", popVinculado: "" },
+  { id: "d32", area: "6. Recebimento e Armazenamento (Art. 38-39, IN 15/2009)", item: "Sistema FIFO implementado", conforme: null, observacao: "", popVinculado: "" },
+  { id: "d33", area: "6. Recebimento e Armazenamento (Art. 38-39, IN 15/2009)", item: "Produtos identificados e afastados das paredes", conforme: null, observacao: "", popVinculado: "" },
+  { id: "d34", area: "6. Recebimento e Armazenamento (Art. 38-39, IN 15/2009)", item: "Produtos vencidos segregados e identificados (Art. 55)", conforme: null, observacao: "", popVinculado: "" },
+  { id: "d34b", area: "6. Recebimento e Armazenamento (Art. 38-39, IN 15/2009)", item: "Separação física entre insumos de origem animal e vegetal (IN 15/2009)", conforme: null, observacao: "", popVinculado: "POP-005" },
+  { id: "d34c", area: "6. Recebimento e Armazenamento (Art. 38-39, IN 15/2009)", item: "Produtos acabados armazenados em local exclusivo, limpo e seco", conforme: null, observacao: "", popVinculado: "" },
+  { id: "d34d", area: "6. Recebimento e Armazenamento (Art. 38-39, IN 15/2009)", item: "Separação física entre MP, PA e materiais de embalagem (IN 15/2009)", conforme: null, observacao: "", popVinculado: "" },
+  { id: "d34e", area: "6. Recebimento e Armazenamento (Art. 38-39, IN 15/2009)", item: "Rações medicamentosas armazenadas separadamente das demais (IN 15/2009)", conforme: null, observacao: "", popVinculado: "POP-005" },
+  { id: "d34f", area: "6. Recebimento e Armazenamento (Art. 38-39, IN 15/2009)", item: "Aditivos e premixes armazenados em área segregada e identificada", conforme: null, observacao: "", popVinculado: "" },
+  { id: "d34g", area: "6. Recebimento e Armazenamento (Art. 38-39, IN 15/2009)", item: "Controle de temperatura/umidade no armazém de PA quando aplicável", conforme: null, observacao: "", popVinculado: "" },
+  { id: "d34h", area: "6. Recebimento e Armazenamento (Art. 38-39, IN 15/2009)", item: "Produtos devolvidos/recolhidos segregados e identificados", conforme: null, observacao: "", popVinculado: "" },
 
   // ── 7. PRODUÇÃO E PROCESSO (Art. 39, 57) ──
   { id: "d35", area: "7. Produção e Processo (Art. 39, 57)", item: "Registros de fabricação preenchidos (Art. 39-XIII)", conforme: null, observacao: "", popVinculado: "POP-004" },
