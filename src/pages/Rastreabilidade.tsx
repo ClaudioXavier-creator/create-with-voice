@@ -397,7 +397,7 @@ export default function Rastreabilidade() {
     toast.success("Histórico exportado para CSV!");
   };
 
-  const exportBalancoMassa = () => {
+  const exportBalancoMassa = async () => {
     // Group by lote_produto for mass balance
     const lotes = new Map<string, { produto: string; materias: { mp: string; lote: string; fornecedor: string; qtd: string }[]; vendas: { cliente: string; qtd: string; nf: string; data: string }[] }>();
     
