@@ -1114,6 +1114,77 @@ export default function PCP() {
             </Button>
           </div>
         </DialogContent>
+      {/* ── FLUSH ORDER DIALOG ── */}
+      <Dialog open={flushOpen} onOpenChange={setFlushOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader><DialogTitle className="flex items-center gap-2"><Droplets className="w-5 h-5 text-blue-600" /> Ordem de Limpeza (Flush) — IN 15/2009</DialogTitle></DialogHeader>
+          <div className="space-y-3 max-h-[65vh] overflow-y-auto pr-2">
+            <div className="grid grid-cols-2 gap-3">
+              <div><Label>Data</Label><Input type="date" value={flushData} onChange={e => setFlushData(e.target.value)} /></div>
+              <div><Label>Responsável *</Label><Input value={flushResp} onChange={e => setFlushResp(e.target.value)} placeholder="Nome do executor" /></div>
+            </div>
+            <div>
+              <Label>Tipo de Limpeza</Label>
+              <Select value={flushTipo} onValueChange={setFlushTipo}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="vassouragem">Vassouragem (limpeza seca)</SelectItem>
+                  <SelectItem value="flushing">Flushing (material inerte)</SelectItem>
+                  <SelectItem value="lavagem">Lavagem completa</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            {flushTipo === "flushing" && (
+              <div className="grid grid-cols-2 gap-3">
+                <div><Label>Material Inerte</Label><Input value={flushMaterialInerte} onChange={e => setFlushMaterialInerte(e.target.value)} placeholder="Ex: Milho moído" /></div>
+                <div><Label>Volume (kg)</Label><Input value={flushVolume} onChange={e => setFlushVolume(e.target.value)} placeholder="≥ 50% capacidade" /></div>
+              </div>
+            )}
+            <div><Label>Destino do Material de Flush</Label><Input value={flushDestino} onChange={e => setFlushDestino(e.target.value)} placeholder="Ex: Descarte / Reprocesso" /></div>
+            <div className="grid grid-cols-2 gap-3">
+              <div><Label>Produto Anterior</Label><Input value={flushProdAnterior} onChange={e => setFlushProdAnterior(e.target.value)} /></div>
+              <div><Label>Produto Seguinte</Label><Input value={flushProdSeguinte} onChange={e => setFlushProdSeguinte(e.target.value)} /></div>
+            </div>
+            <div><Label>Observações</Label><Textarea value={flushObs} onChange={e => setFlushObs(e.target.value)} placeholder="Detalhes adicionais..." /></div>
+            <Button className="w-full" disabled={saving || !flushResp} onClick={async () => {
+              if (!user) return;
+              setSaving(true);
+              const obs = [
+                `[ORDEM DE LIMPEZA (FLUSH) — IN 15/2009]`,
+                `Data: ${flushData} | Responsável: ${flushResp}`,
+                `Tipo: ${flushTipo === "vassouragem" ? "Vassouragem" : flushTipo === "flushing" ? "Flushing" : "Lavagem completa"}`,
+                flushTipo === "flushing" ? `Material inerte: ${flushMaterialInerte || "—"} | Volume: ${flushVolume || "—"} kg` : "",
+                `Destino: ${flushDestino || "—"}`,
+                `Produto anterior: ${flushProdAnterior || "—"}`,
+                `Produto seguinte: ${flushProdSeguinte || "—"}`,
+                flushObs ? `Obs: ${flushObs}` : "",
+              ].filter(Boolean).join("\n");
+              const { error } = await supabase.from("execucao_pops").insert({
+                user_id: user.id,
+                codigo_pop: "POP-FLUSH",
+                nome_pop: "Ordem de Limpeza (Flush) entre Fórmulas",
+                executor: flushResp,
+                setor: flushProdAnterior && flushProdSeguinte ? `${flushProdAnterior} → ${flushProdSeguinte}` : "PCP",
+                status: "concluido",
+                observacoes: obs,
+                data_execucao: flushData,
+                checklist_auditoria_ref: flushOrdemId,
+              });
+              if (error) toast.error("Erro: " + error.message);
+              else {
+                toast.success("Ordem de flush registrada!");
+                setFlushOpen(false);
+                setFlushResp(""); setFlushTipo("flushing"); setFlushMaterialInerte(""); setFlushVolume("");
+                setFlushDestino(""); setFlushProdAnterior(""); setFlushProdSeguinte(""); setFlushObs("");
+                fetchData();
+              }
+              setSaving(false);
+            }}>
+              {saving && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+              Registrar Ordem de Flush
+            </Button>
+          </div>
+        </DialogContent>
       </Dialog>
     </>
   );
