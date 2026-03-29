@@ -129,6 +129,7 @@ export default function ManutencaoPreventiva() {
 
   const trocasPecas = manutencoes.filter((m: any) => m.pecas_trocadas && m.pecas_trocadas.trim() !== "");
 
+  const statusVariant = (s: string) => {
     if (s === "concluida") return "default";
     if (s === "atrasada") return "destructive";
     return "outline";
