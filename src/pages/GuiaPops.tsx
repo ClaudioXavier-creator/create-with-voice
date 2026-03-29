@@ -2,7 +2,7 @@ import { useState } from "react";
 import {
   HelpCircle, ChevronDown, ChevronRight, BookOpen, FileText, Droplets, Users,
   ShieldCheck, Wrench, Bug, Recycle, Search, Beaker, ClipboardCheck,
-  Upload
+  Upload, ListChecks, Hammer, ShieldAlert, Clock, Package
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -11,6 +11,7 @@ import PageHeader from "@/components/PageHeader";
 import { cn } from "@/lib/utils";
 import { POP_TEXTOS } from "@/config/popTextos";
 import { POPS_CONFIG } from "@/config/popsConfig";
+import { INSTRUCOES_TRABALHO } from "@/config/instrucoesTrabalho";
 
 interface GuiaSection {
   id: string;
