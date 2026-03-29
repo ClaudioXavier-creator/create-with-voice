@@ -87,6 +87,46 @@ const CHECKLIST_LIBERACAO_LINHA: { area: string; itens: string[] }[] = [
   ]},
 ];
 
+// ── CHECKLIST SILOS & TRANSPORTADORES (POP-03 / IN 15/2009 — Arraste de Medicamentos) ──
+const CHECKLIST_SILOS_TRANSPORT: { area: string; itens: string[] }[] = [
+  { area: "Silos de Matéria-Prima", itens: [
+    "Silo vazio antes da troca de ingrediente",
+    "Limpeza interna realizada (raspagem/aspiração)",
+    "Ausência de crostas ou material aderido nas paredes",
+    "Bocal de carga e descarga limpos",
+    "Registro de limpeza do silo atualizado",
+    "Vedação da tampa e escotilha íntegras",
+  ]},
+  { area: "Silos de Produto Acabado", itens: [
+    "Silo completamente vazio antes do novo lote",
+    "Inspeção visual — sem resíduo de lote anterior",
+    "Limpeza registrada conforme cronograma",
+    "Ausência de contaminação por medicamentos/aditivos",
+  ]},
+  { area: "Transportadores e Elevadores", itens: [
+    "Rosca transportadora limpa e inspecionada",
+    "Elevador de canecas sem acúmulo de material",
+    "Calhas e tubulações sem obstrução",
+    "Redler/corrente transportadora limpo",
+    "Pontos de conexão entre equipamentos verificados",
+    "Registro de flushing do transportador (se aplicável)",
+  ]},
+  { area: "Prevenção de Arraste — IN 15/2009", itens: [
+    "Verificação de resíduo de medicamento no silo/transportador",
+    "Flushing com inerte realizado após produto medicado",
+    "Volume de flushing ≥ 50% da capacidade do equipamento",
+    "Destino do material de flushing registrado (resíduo/reprocesso)",
+    "Tempo de espera respeitado antes do próximo produto (se aplicável)",
+    "Carry-over dentro do limite aceitável (< 1% ionóforos, < 3% medicados)",
+  ]},
+  { area: "Documentação e Rastreabilidade", itens: [
+    "Cronograma de limpeza de silos atualizado",
+    "Frequência de limpeza conforme classificação do ingrediente",
+    "Registro de sequência silo → produto mantido para rastreabilidade",
+    "Laudos de análise de arraste arquivados (quando aplicável)",
+  ]},
+];
+
 // ── CHECKLIST MONITORAMENTO DE SUPERFÍCIES (POP-02/03 / IN 04/2007) ──
 const CHECKLIST_SUPERFICIES: { area: string; itens: string[] }[] = [
   { area: "Superfícies de Contato Direto", itens: [
