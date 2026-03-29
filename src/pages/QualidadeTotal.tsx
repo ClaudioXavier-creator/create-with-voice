@@ -125,9 +125,14 @@ export default function QualidadeTotal() {
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [form, setForm] = useState(emptyForm);
   const [activeTab, setActiveTab] = useState("identificacao");
+  const [mainTab, setMainTab] = useState("reclamacoes");
+
+  // Contraprova state
+  const [contraprovasReceb, setContraprovasReceb] = useState<any[]>([]);
+  const [contraprovasProd, setContraprovasProd] = useState<any[]>([]);
 
   useEffect(() => {
-    if (user) fetchData();
+    if (user) { fetchData(); fetchContraprovas(); }
   }, [user]);
 
   async function fetchData() {
@@ -137,6 +142,15 @@ export default function QualidadeTotal() {
       .order("data_reclamacao", { ascending: false });
     if (!error && data) setReclamacoes(data as any);
     setLoading(false);
+  }
+
+  async function fetchContraprovas() {
+    const [recebRes, prodRes] = await Promise.all([
+      supabase.from("recebimento_mp").select("*").eq("contraprova_retida", true).order("data", { ascending: false }),
+      supabase.from("producao").select("*").eq("contraprova_retida", true).order("data", { ascending: false }),
+    ]);
+    if (recebRes.data) setContraprovasReceb(recebRes.data);
+    if (prodRes.data) setContraprovasProd(prodRes.data);
   }
 
   function openNew() {
