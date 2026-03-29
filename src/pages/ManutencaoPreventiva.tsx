@@ -431,6 +431,155 @@ export default function ManutencaoPreventiva() {
           )}
         </TabsContent>
 
+        {/* ── TROCA DE PEÇAS ── */}
+        <TabsContent value="trocas" className="space-y-4">
+          <Card className="border-accent/20 bg-accent/5">
+            <CardContent className="pt-4">
+              <div className="flex items-center gap-2 mb-2">
+                <Cog className="w-4 h-4 text-primary" />
+                <h3 className="font-semibold text-sm">Cronograma de Trocas de Peças — POP 05 / IN 04/2007</h3>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Controle de substituição programada de peças em equipamentos críticos (moinhos, misturadores, peletizadoras).
+                A troca preventiva de peças reduz paradas não planejadas e previne contaminação cruzada por desgaste.
+              </p>
+            </CardContent>
+          </Card>
+
+          <div className="flex justify-between items-center gap-4 flex-wrap">
+            <p className="text-xs text-muted-foreground">{trocasPecas.length} registro(s) de troca de peças</p>
+            <Dialog open={openTroca} onOpenChange={setOpenTroca}>
+              <DialogTrigger asChild><Button><Plus className="w-4 h-4 mr-2" />Nova Troca de Peças</Button></DialogTrigger>
+              <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+                <DialogHeader><DialogTitle>Registrar Troca de Peças</DialogTitle></DialogHeader>
+                <div className="grid gap-3">
+                  <div>
+                    <Label>Equipamento Crítico</Label>
+                    <Select value={equipSelecionado} onValueChange={v => {
+                      setEquipSelecionado(v);
+                      const eq = EQUIPAMENTOS_CRITICOS.find(e => e.nome === v);
+                      if (eq) {
+                        setTrocaForm(p => ({ ...p, equipamento: eq.nome, codigo_equipamento: eq.codigo + "-" }));
+                      }
+                    }}>
+                      <SelectTrigger><SelectValue placeholder="Selecionar equipamento..." /></SelectTrigger>
+                      <SelectContent>
+                        {EQUIPAMENTOS_CRITICOS.map(eq => (
+                          <SelectItem key={eq.nome} value={eq.nome}>{eq.nome} ({eq.codigo})</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div><Label>Equipamento *</Label><Input value={trocaForm.equipamento} onChange={e => setTrocaForm(p => ({ ...p, equipamento: e.target.value }))} /></div>
+                    <div><Label>Código</Label><Input value={trocaForm.codigo_equipamento} onChange={e => setTrocaForm(p => ({ ...p, codigo_equipamento: e.target.value }))} /></div>
+                  </div>
+                  {equipSelecionado && (() => {
+                    const eq = EQUIPAMENTOS_CRITICOS.find(e => e.nome === equipSelecionado);
+                    if (!eq) return null;
+                    return (
+                      <div className="p-3 rounded-lg border bg-muted/30">
+                        <Label className="text-xs font-semibold">Peças Sugeridas para {eq.nome}:</Label>
+                        <div className="flex flex-wrap gap-1 mt-2">
+                          {eq.pecas.map(p => (
+                            <Badge key={p} variant="outline" className="cursor-pointer text-xs hover:bg-primary/10" onClick={() => {
+                              const current = trocaForm.pecas_trocadas;
+                              if (!current.includes(p)) {
+                                setTrocaForm(prev => ({ ...prev, pecas_trocadas: current ? `${current}, ${p}` : p }));
+                              }
+                            }}>{p}</Badge>
+                          ))}
+                        </div>
+                        <p className="text-[10px] text-muted-foreground mt-1">Clique nas peças para adicioná-las</p>
+                      </div>
+                    );
+                  })()}
+                  <div><Label>Peças Trocadas *</Label><Textarea value={trocaForm.pecas_trocadas} onChange={e => setTrocaForm(p => ({ ...p, pecas_trocadas: e.target.value }))} placeholder="Ex: Martelos, Peneiras, Rolamentos" /></div>
+                  <div><Label>Descrição do Serviço *</Label><Textarea value={trocaForm.descricao} onChange={e => setTrocaForm(p => ({ ...p, descricao: e.target.value }))} placeholder="Descreva a troca realizada ou programada" /></div>
+                  <div><Label>Responsável</Label><Input value={trocaForm.responsavel} onChange={e => setTrocaForm(p => ({ ...p, responsavel: e.target.value }))} /></div>
+                  <div className="grid grid-cols-3 gap-3">
+                    <div><Label>Data Programada</Label><Input type="date" value={trocaForm.data_programada} onChange={e => setTrocaForm(p => ({ ...p, data_programada: e.target.value }))} /></div>
+                    <div><Label>Data Execução</Label><Input type="date" value={trocaForm.data_execucao} onChange={e => setTrocaForm(p => ({ ...p, data_execucao: e.target.value }))} /></div>
+                    <div><Label>Próxima Troca</Label><Input type="date" value={trocaForm.proxima_manutencao} onChange={e => setTrocaForm(p => ({ ...p, proxima_manutencao: e.target.value }))} /></div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div><Label>Custo (R$)</Label><Input value={trocaForm.custo} onChange={e => setTrocaForm(p => ({ ...p, custo: e.target.value }))} /></div>
+                    <div>
+                      <Label>Status</Label>
+                      <Select value={trocaForm.status} onValueChange={v => setTrocaForm(p => ({ ...p, status: v }))}>
+                        <SelectTrigger><SelectValue /></SelectTrigger>
+                        <SelectContent>{STATUS_LIST.map(s => <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>)}</SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                  <div><Label>Observações</Label><Textarea value={trocaForm.observacoes} onChange={e => setTrocaForm(p => ({ ...p, observacoes: e.target.value }))} /></div>
+                  <Button onClick={() => addTrocaPecas.mutate()} disabled={!trocaForm.equipamento || !trocaForm.pecas_trocadas}>Salvar Troca</Button>
+                </div>
+              </DialogContent>
+            </Dialog>
+          </div>
+
+          {trocasPecas.length === 0 ? (
+            <Card><CardContent className="py-12 text-center text-muted-foreground"><Cog className="w-12 h-12 mx-auto mb-3 opacity-40" /><p>Nenhuma troca de peças registrada</p><p className="text-xs mt-1">Registre a substituição de peças em equipamentos críticos</p></CardContent></Card>
+          ) : (
+            <Card>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Equipamento</TableHead>
+                    <TableHead>Código</TableHead>
+                    <TableHead>Peças Trocadas</TableHead>
+                    <TableHead>Data Prog.</TableHead>
+                    <TableHead>Data Exec.</TableHead>
+                    <TableHead>Próxima Troca</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead></TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {trocasPecas.map((m: any) => (
+                    <TableRow key={m.id}>
+                      <TableCell className="font-medium">{m.equipamento}</TableCell>
+                      <TableCell>{m.codigo_equipamento || "—"}</TableCell>
+                      <TableCell className="max-w-[200px]">
+                        <div className="flex flex-wrap gap-1">
+                          {m.pecas_trocadas.split(",").map((p: string, i: number) => (
+                            <Badge key={i} variant="secondary" className="text-[10px]">{p.trim()}</Badge>
+                          ))}
+                        </div>
+                      </TableCell>
+                      <TableCell>{m.data_programada}</TableCell>
+                      <TableCell>{m.data_execucao || "—"}</TableCell>
+                      <TableCell>{m.proxima_manutencao || <span className="text-destructive text-xs">Não definida</span>}</TableCell>
+                      <TableCell><Badge variant={statusColor(m.status)}>{STATUS_LIST.find(s => s.value === m.status)?.label || m.status}</Badge></TableCell>
+                      <TableCell><Button variant="ghost" size="icon" onClick={() => deleteManut.mutate(m.id)}><Trash2 className="w-4 h-4 text-destructive" /></Button></TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </Card>
+          )}
+
+          {/* Referência de peças por equipamento */}
+          <Card>
+            <CardHeader className="py-3">
+              <CardTitle className="text-sm flex items-center gap-2"><Calendar className="w-4 h-4" /> Guia de Peças por Equipamento Crítico</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {EQUIPAMENTOS_CRITICOS.map(eq => (
+                  <div key={eq.nome} className="p-3 rounded-lg border bg-muted/20">
+                    <p className="font-semibold text-sm">{eq.nome} <span className="text-muted-foreground font-normal">({eq.codigo})</span></p>
+                    <div className="flex flex-wrap gap-1 mt-2">
+                      {eq.pecas.map(p => <Badge key={p} variant="outline" className="text-[10px]">{p}</Badge>)}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
         {/* ── CRONOGRAMA ── */}
         <TabsContent value="cronograma" className="space-y-4">
           <Card className="border-accent/20 bg-accent/5">
