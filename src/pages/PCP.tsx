@@ -1114,6 +1114,7 @@ export default function PCP() {
             </Button>
           </div>
         </DialogContent>
+      </Dialog>
       {/* ── FLUSH ORDER DIALOG ── */}
       <Dialog open={flushOpen} onOpenChange={setFlushOpen}>
         <DialogContent className="max-w-md">
