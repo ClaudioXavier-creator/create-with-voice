@@ -855,6 +855,131 @@ export default function HigieneSanitizacao() {
           )}
         </TabsContent>
 
+        {/* ── SILOS & TRANSPORTADORES (POP-03 / IN 15/2009) ── */}
+        <TabsContent value="silos" className="space-y-4">
+          <Card className="border-amber-500/20 bg-amber-50 dark:bg-amber-900/10">
+            <CardContent className="pt-4">
+              <div className="flex items-start gap-3">
+                <Container className="w-6 h-6 text-amber-600 mt-0.5" />
+                <div>
+                  <h4 className="font-display font-semibold text-sm">Limpeza de Silos & Transportadores — POP-03 (IN 15/2009)</h4>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Cronograma e checklist dedicado à higienização de silos e linhagens de transporte para prevenir o arraste
+                    de medicamentos e aditivos entre lotes. Obrigatório conforme IN 15/2009, Art. 38 do Decreto 12.031/2024.
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-4">
+            <div><Label>Responsável *</Label><Input value={silosResp} onChange={e => setSilosResp(e.target.value)} placeholder="Nome do executor" /></div>
+            <div><Label>Data</Label><Input type="date" value={silosData} onChange={e => setSilosData(e.target.value)} /></div>
+            <div>
+              <Label>Equipamento / Silo</Label>
+              <Select value={silosEquipamento} onValueChange={setSilosEquipamento}>
+                <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Silo 01">Silo 01</SelectItem>
+                  <SelectItem value="Silo 02">Silo 02</SelectItem>
+                  <SelectItem value="Silo 03">Silo 03</SelectItem>
+                  <SelectItem value="Silo 04">Silo 04</SelectItem>
+                  <SelectItem value="Silo 05">Silo 05</SelectItem>
+                  <SelectItem value="Rosca Transportadora">Rosca Transportadora</SelectItem>
+                  <SelectItem value="Elevador de Canecas">Elevador de Canecas</SelectItem>
+                  <SelectItem value="Redler">Redler</SelectItem>
+                  <SelectItem value="Transportador Pneumático">Transportador Pneumático</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-3 mb-4">
+            <div><Label>Produto anterior no equipamento</Label><Input value={silosProdAnterior} onChange={e => setSilosProdAnterior(e.target.value)} placeholder="Ex: Ração Medicada Frangos" /></div>
+            <div><Label>Observações</Label><Input value={silosObs} onChange={e => setSilosObs(e.target.value)} placeholder="Detalhes da limpeza..." /></div>
+          </div>
+
+          <div className="space-y-4">
+            {CHECKLIST_SILOS_TRANSPORT.map(grupo => (
+              <Card key={grupo.area}>
+                <CardHeader className="py-3">
+                  <CardTitle className="text-sm font-display">{grupo.area}</CardTitle>
+                </CardHeader>
+                <CardContent className="py-0 pb-3">
+                  <div className="space-y-2">
+                    {grupo.itens.map(item => {
+                      const key = `${grupo.area}__${item}`;
+                      const checked = silosChecklist[key] ?? false;
+                      return (
+                        <div key={key} className="flex items-center justify-between p-2 rounded border bg-background">
+                          <span className="text-sm">{item}</span>
+                          <div className="flex items-center gap-2">
+                            <span className={`text-xs font-semibold ${checked ? "text-primary" : "text-muted-foreground"}`}>
+                              {checked ? "OK" : "—"}
+                            </span>
+                            <Switch checked={checked} onCheckedChange={v => setSilosChecklist(p => ({ ...p, [key]: v }))} />
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          {(() => {
+            const totalItens = CHECKLIST_SILOS_TRANSPORT.reduce((acc, g) => acc + g.itens.length, 0);
+            const marcados = Object.values(silosChecklist).filter(Boolean).length;
+            const todosOk = marcados === totalItens;
+            return (
+              <div className="flex items-center justify-between p-4 rounded-lg border bg-muted/30">
+                <div>
+                  <p className="text-sm font-semibold">{marcados}/{totalItens} itens verificados</p>
+                  <p className="text-xs text-muted-foreground">{todosOk ? "✅ Todos os itens conformes — Equipamento liberado" : "Conclua todos os itens para liberar"}</p>
+                </div>
+                <Button
+                  disabled={!silosResp || !silosEquipamento || savingSilos}
+                  onClick={async () => {
+                    if (!user) return;
+                    setSavingSilos(true);
+                    const ncs = CHECKLIST_SILOS_TRANSPORT.flatMap(g => g.itens.filter(item => !silosChecklist[`${g.area}__${item}`]).map(item => `${g.area}: ${item}`));
+                    const obs = [
+                      `[LIMPEZA SILOS & TRANSPORTADORES — POP-03 / IN 15/2009]`,
+                      `Data: ${silosData} | Equipamento: ${silosEquipamento}`,
+                      `Produto anterior: ${silosProdAnterior || "—"}`,
+                      `Itens conformes: ${marcados}/${totalItens}`,
+                      ncs.length > 0 ? `NCs: ${ncs.join("; ")}` : "Todos conformes ✅",
+                      silosObs ? `Obs: ${silosObs}` : "",
+                    ].filter(Boolean).join("\n");
+                    const { error } = await supabase.from("execucao_pops").insert({
+                      user_id: user.id,
+                      codigo_pop: "POP-03-SILOS",
+                      nome_pop: "Limpeza de Silos & Transportadores",
+                      executor: silosResp,
+                      setor: silosEquipamento,
+                      status: todosOk ? "concluido" : "nao_conforme",
+                      observacoes: obs,
+                      data_execucao: silosData,
+                    });
+                    if (error) toast.error("Erro ao salvar: " + error.message);
+                    else {
+                      toast.success("Checklist de silos & transportadores salvo!");
+                      setSilosChecklist({});
+                      setSilosResp("");
+                      setSilosEquipamento("");
+                      setSilosProdAnterior("");
+                      setSilosObs("");
+                    }
+                    setSavingSilos(false);
+                  }}
+                >
+                  Salvar Checklist
+                </Button>
+              </div>
+            );
+          })()}
+        </TabsContent>
+
         {/* ── CRONOGRAMAS ── */}
         <TabsContent value="cronogramas" className="space-y-4">
           <div className="flex justify-end">
