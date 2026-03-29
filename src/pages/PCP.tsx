@@ -142,6 +142,20 @@ export default function PCP() {
   const [coConforme, setCoConforme] = useState(true);
   const [coObs, setCoObs] = useState("");
   const [carryoverRecords, setCarryoverRecords] = useState<any[]>([]);
+  const [flushRecords, setFlushRecords] = useState<any[]>([]);
+
+  // Flush order state
+  const [flushOpen, setFlushOpen] = useState(false);
+  const [flushOrdemId, setFlushOrdemId] = useState("");
+  const [flushData, setFlushData] = useState(new Date().toISOString().split("T")[0]);
+  const [flushResp, setFlushResp] = useState("");
+  const [flushTipo, setFlushTipo] = useState("flushing");
+  const [flushMaterialInerte, setFlushMaterialInerte] = useState("");
+  const [flushVolume, setFlushVolume] = useState("");
+  const [flushDestino, setFlushDestino] = useState("");
+  const [flushProdAnterior, setFlushProdAnterior] = useState("");
+  const [flushProdSeguinte, setFlushProdSeguinte] = useState("");
+  const [flushObs, setFlushObs] = useState("");
 
   const fetchData = async () => {
     if (!user) return;
