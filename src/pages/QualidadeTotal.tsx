@@ -582,6 +582,182 @@ export default function QualidadeTotal() {
           </div>
         </DialogContent>
       </Dialog>
+      </TabsContent>
+
+      {/* ── CONTRAPROVA — IN 04/2007 ── */}
+      <TabsContent value="contraprova" className="space-y-6">
+        <Card className="border-primary/20 bg-primary/5">
+          <CardContent className="pt-4">
+            <div className="flex items-start gap-3">
+              <ShieldCheck className="w-6 h-6 text-primary mt-0.5" />
+              <div>
+                <h4 className="font-display font-semibold text-sm">Amostras de Contraprova (Retenção) — IN 04/2007</h4>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Controle de amostras de retenção com validade de 6 meses. Registros do Recebimento de MP e Produção com contraprova retida.
+                  Essencial para defesa em fiscalizações conforme IN 17/2017.
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* KPIs Contraprova */}
+        {(() => {
+          const hoje = new Date();
+          const totalReceb = contraprovasReceb.length;
+          const totalProd = contraprovasProd.length;
+          const vencidasReceb = contraprovasReceb.filter(r => r.contraprova_validade && isBefore(new Date(r.contraprova_validade), hoje)).length;
+          const vencidasProd = contraprovasProd.filter(r => r.contraprova_validade && isBefore(new Date(r.contraprova_validade), hoje)).length;
+          const aVencerReceb = contraprovasReceb.filter(r => {
+            if (!r.contraprova_validade) return false;
+            const valDate = new Date(r.contraprova_validade);
+            return !isBefore(valDate, hoje) && differenceInDays(valDate, hoje) <= 30;
+          }).length;
+          const aVencerProd = contraprovasProd.filter(r => {
+            if (!r.contraprova_validade) return false;
+            const valDate = new Date(r.contraprova_validade);
+            return !isBefore(valDate, hoje) && differenceInDays(valDate, hoje) <= 30;
+          }).length;
+
+          return (
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              <Card><CardContent className="pt-4 text-center">
+                <p className="text-2xl font-bold text-primary">{totalReceb}</p>
+                <p className="text-xs text-muted-foreground">Contraprovas MP</p>
+              </CardContent></Card>
+              <Card><CardContent className="pt-4 text-center">
+                <p className="text-2xl font-bold text-primary">{totalProd}</p>
+                <p className="text-xs text-muted-foreground">Contraprovas PA</p>
+              </CardContent></Card>
+              <Card><CardContent className="pt-4 text-center">
+                <p className="text-2xl font-bold text-yellow-600">{aVencerReceb + aVencerProd}</p>
+                <p className="text-xs text-muted-foreground">A vencer (30 dias)</p>
+              </CardContent></Card>
+              <Card><CardContent className="pt-4 text-center">
+                <p className="text-2xl font-bold text-destructive">{vencidasReceb + vencidasProd}</p>
+                <p className="text-xs text-muted-foreground">Vencidas</p>
+              </CardContent></Card>
+            </div>
+          );
+        })()}
+
+        {/* Contraprovas MP */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-sm font-display flex items-center gap-2">
+              <Package className="w-4 h-4" /> Contraprovas — Recebimento de Matéria-Prima
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {contraprovasReceb.length === 0 ? (
+              <p className="text-center text-muted-foreground py-6 text-sm">Nenhuma contraprova de MP registrada. Registre no módulo de Recebimento.</p>
+            ) : (
+              <Table>
+                <TableHeader><TableRow>
+                  <TableHead>Data</TableHead>
+                  <TableHead>Matéria-Prima</TableHead>
+                  <TableHead>Lote</TableHead>
+                  <TableHead>Fornecedor</TableHead>
+                  <TableHead>Quantidade</TableHead>
+                  <TableHead>Local</TableHead>
+                  <TableHead>Validade</TableHead>
+                  <TableHead>Status</TableHead>
+                </TableRow></TableHeader>
+                <TableBody>
+                  {contraprovasReceb.map((r: any) => {
+                    const hoje = new Date();
+                    const valDate = r.contraprova_validade ? new Date(r.contraprova_validade) : null;
+                    const vencida = valDate && isBefore(valDate, hoje);
+                    const aVencer = valDate && !vencida && differenceInDays(valDate, hoje) <= 30;
+                    return (
+                      <TableRow key={r.id}>
+                        <TableCell>{r.data}</TableCell>
+                        <TableCell className="font-medium">{r.materia_prima}</TableCell>
+                        <TableCell className="font-mono text-xs">{r.lote || "—"}</TableCell>
+                        <TableCell className="text-xs">{r.fornecedor}</TableCell>
+                        <TableCell>{r.contraprova_quantidade || "—"}</TableCell>
+                        <TableCell>{r.contraprova_local || "—"}</TableCell>
+                        <TableCell>{r.contraprova_validade || "—"}</TableCell>
+                        <TableCell>
+                          {vencida ? <Badge variant="destructive" className="text-[10px]">Vencida</Badge> :
+                           aVencer ? <Badge className="bg-yellow-500/20 text-yellow-700 text-[10px]">A vencer</Badge> :
+                           <Badge className="bg-primary/20 text-primary text-[10px]">Válida</Badge>}
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Contraprovas PA */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-sm font-display flex items-center gap-2">
+              <CheckCircle2 className="w-4 h-4" /> Contraprovas — Produto Acabado
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {contraprovasProd.length === 0 ? (
+              <p className="text-center text-muted-foreground py-6 text-sm">Nenhuma contraprova de PA registrada. Registre no módulo de Produção.</p>
+            ) : (
+              <Table>
+                <TableHeader><TableRow>
+                  <TableHead>Data</TableHead>
+                  <TableHead>Produto</TableHead>
+                  <TableHead>Lote</TableHead>
+                  <TableHead>Quantidade</TableHead>
+                  <TableHead>Local</TableHead>
+                  <TableHead>Validade</TableHead>
+                  <TableHead>Status</TableHead>
+                </TableRow></TableHeader>
+                <TableBody>
+                  {contraprovasProd.map((r: any) => {
+                    const hoje = new Date();
+                    const valDate = r.contraprova_validade ? new Date(r.contraprova_validade) : null;
+                    const vencida = valDate && isBefore(valDate, hoje);
+                    const aVencer = valDate && !vencida && differenceInDays(valDate, hoje) <= 30;
+                    return (
+                      <TableRow key={r.id}>
+                        <TableCell>{r.data}</TableCell>
+                        <TableCell className="font-medium">{r.produto}</TableCell>
+                        <TableCell className="font-mono text-xs">{r.lote || "—"}</TableCell>
+                        <TableCell>{r.contraprova_quantidade || "—"}</TableCell>
+                        <TableCell>{r.contraprova_local || "—"}</TableCell>
+                        <TableCell>{r.contraprova_validade || "—"}</TableCell>
+                        <TableCell>
+                          {vencida ? <Badge variant="destructive" className="text-[10px]">Vencida</Badge> :
+                           aVencer ? <Badge className="bg-yellow-500/20 text-yellow-700 text-[10px]">A vencer</Badge> :
+                           <Badge className="bg-primary/20 text-primary text-[10px]">Válida</Badge>}
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            )}
+          </CardContent>
+        </Card>
+
+        <Card className="border-muted">
+          <CardContent className="pt-4">
+            <div className="flex items-start gap-3">
+              <Calendar className="w-5 h-5 text-muted-foreground mt-0.5" />
+              <div>
+                <h4 className="font-semibold text-sm">Regra de Validade — 6 meses (padrão de mercado)</h4>
+                <p className="text-xs text-muted-foreground mt-1">
+                  As amostras de contraprova (testemunha) devem ser retidas pelo prazo mínimo de 6 meses ou pelo prazo de validade do produto,
+                  o que for maior. As amostras vencidas devem ser descartadas conforme POP-08 (Controle de Resíduos). IN 04/2007, IN 17/2017.
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </TabsContent>
+
+      </Tabs>
     </div>
   );
 }
