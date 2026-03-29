@@ -766,6 +766,46 @@ export default function PCP() {
                             </div>
                           </TabsContent>
 
+                          {/* ── FLUSH / LIMPEZA TAB ── */}
+                          <TabsContent value="flush">
+                            <div className="space-y-3">
+                              <div className="p-3 rounded-lg border border-blue-500/20 bg-blue-50 dark:bg-blue-900/10">
+                                <p className="text-xs font-semibold text-blue-700 flex items-center gap-1"><Droplets className="w-4 h-4" /> Ordem de Limpeza (Flush) — IN 15/2009</p>
+                                <p className="text-[10px] text-muted-foreground mt-1">Registro obrigatório de limpeza entre batidas de fórmulas diferentes para prevenir contaminação cruzada.</p>
+                              </div>
+                              {(() => {
+                                const ordemFlush = flushRecords.filter((f: any) => f.checklist_auditoria_ref === o.id);
+                                return ordemFlush.length > 0 ? (
+                                  <Table>
+                                    <TableHeader><TableRow>
+                                      <TableHead>Data</TableHead><TableHead>Executor</TableHead><TableHead>Status</TableHead><TableHead>Detalhes</TableHead>
+                                    </TableRow></TableHeader>
+                                    <TableBody>
+                                      {ordemFlush.map((f: any) => (
+                                        <TableRow key={f.id}>
+                                          <TableCell>{f.data_execucao}</TableCell>
+                                          <TableCell>{f.executor}</TableCell>
+                                          <TableCell>{f.status === "concluido" ? <Badge className="bg-primary/20 text-primary text-[10px]">OK</Badge> : <Badge variant="destructive" className="text-[10px]">NC</Badge>}</TableCell>
+                                          <TableCell className="text-xs max-w-[300px] whitespace-pre-line">{f.observacoes}</TableCell>
+                                        </TableRow>
+                                      ))}
+                                    </TableBody>
+                                  </Table>
+                                ) : <p className="text-xs text-muted-foreground text-center py-3">Nenhuma ordem de flush registrada para esta OP.</p>;
+                              })()}
+                              <Button size="sm" onClick={() => {
+                                setFlushOrdemId(o.id);
+                                setFlushProdSeguinte(o.produto);
+                                const sorted = [...ordens].sort((a, b) => a.data_programada.localeCompare(b.data_programada));
+                                const idx = sorted.findIndex(x => x.id === o.id);
+                                if (idx > 0) setFlushProdAnterior(sorted[idx - 1].produto);
+                                setFlushOpen(true);
+                              }}>
+                                <Plus className="w-3 h-3 mr-1" /> Registrar Flush/Limpeza
+                              </Button>
+                            </div>
+                          </TabsContent>
+
                           {/* ── CARRY-OVER TAB ── */}
                           <TabsContent value="carryover">
                             <div className="space-y-3">
