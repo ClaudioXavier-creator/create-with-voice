@@ -409,6 +409,7 @@ export default function Rastreabilidade() {
       especie_destino: especieDestino || null,
       contem_origem_animal: contemOrigemAnimal,
       tipo_origem_animal: tipoOrigemAnimal || null,
+      sif_dipoa: sifDipoa || null,
     } as any);
     if (error) toast.error("Erro ao salvar");
     else { toast.success("Registro salvo!"); setOpen(false); resetForm(); fetchData(); }
