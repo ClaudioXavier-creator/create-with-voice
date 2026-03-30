@@ -450,6 +450,10 @@ export default function Legislacao() {
             <FileText className="w-4 h-4 mr-1" />
             IN 17/2017
           </TabsTrigger>
+          <TabsTrigger value="substancias">
+            <ShieldAlert className="w-4 h-4 mr-1" />
+            Substâncias Proibidas
+          </TabsTrigger>
         </TabsList>
 
         {/* ──── Tab: Biblioteca de Normas ──── */}
