@@ -397,7 +397,47 @@ export default function HigieneSanitizacao() {
     },
   });
 
-  // Histórico de Monitoramento de Superfícies
+  // ASO / Saúde dos manipuladores
+  const { data: saudeManipuladores = [] } = useQuery({
+    queryKey: ["saude_manipuladores_higiene"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("saude_manipuladores").select("*").order("data_validade", { ascending: true });
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  // Histórico de sintomas diários
+  const { data: historicoSintomas = [] } = useQuery({
+    queryKey: ["historico_sintomas"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("execucao_pops").select("*")
+        .eq("codigo_pop", "POP-03-SINTOMAS").order("data_execucao", { ascending: false }).limit(50);
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  // Archive counts for 2-year retention
+  const { data: archiveCounts } = useQuery({
+    queryKey: ["archive_counts"],
+    queryFn: async () => {
+      const twoYearsAgo = new Date();
+      twoYearsAgo.setFullYear(twoYearsAgo.getFullYear() - 2);
+      const cutoff = twoYearsAgo.toISOString();
+      const [pops, limpeza, agua, residuos, calibr, nc] = await Promise.all([
+        supabase.from("execucao_pops").select("id", { count: "exact", head: true }).gte("created_at", cutoff),
+        supabase.from("registros_limpeza").select("id", { count: "exact", head: true }).gte("created_at", cutoff),
+        supabase.from("analises_laboratorio").select("id", { count: "exact", head: true }).gte("created_at", cutoff),
+        supabase.from("controle_residuos").select("id", { count: "exact", head: true }).gte("created_at", cutoff),
+        supabase.from("calibracoes").select("id", { count: "exact", head: true }).gte("created_at", cutoff),
+        supabase.from("nao_conformidades").select("id", { count: "exact", head: true }).gte("created_at", cutoff),
+      ]);
+      return { pops: pops.count || 0, limpeza: limpeza.count || 0, agua: agua.count || 0, residuos: residuos.count || 0, calibracoes: calibr.count || 0, nc: nc.count || 0 };
+    },
+  });
+
+
   const { data: historicoSup = [] } = useQuery({
     queryKey: ["historico_sup"],
     queryFn: async () => {
