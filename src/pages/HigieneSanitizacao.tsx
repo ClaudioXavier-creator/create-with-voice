@@ -159,6 +159,67 @@ const CHECKLIST_SUPERFICIES: { area: string; itens: string[] }[] = [
   ]},
 ];
 
+// ── CHECKLIST HIGIENE PESSOAL (POP-03 / IN 04/2007) ──
+const CHECKLIST_HIGIENE_PESSOAL: { area: string; itens: string[] }[] = [
+  { area: "Uniformes e EPIs", itens: [
+    "Uniforme limpo e em bom estado de conservação",
+    "Calçados fechados e limpos (botas ou sapatos de segurança)",
+    "Uso de touca/gorro cobrindo todo o cabelo",
+    "Uso de máscara descartável (quando aplicável)",
+    "Luvas descartáveis (manipulação de premix/micro-ingredientes)",
+    "Protetor auricular disponível e em uso (áreas de ruído)",
+    "Óculos de proteção em áreas de risco (moagem, dosagem)",
+  ]},
+  { area: "Higiene Pessoal", itens: [
+    "Mãos limpas e unhas curtas/sem esmalte",
+    "Lavagem das mãos realizada antes de iniciar atividades",
+    "Ausência de barba (ou uso de protetor de barba)",
+    "Ausência de adornos (anéis, brincos, relógio, pulseiras)",
+    "Ausência de maquiagem/perfumes/cosméticos fortes",
+    "Cabelos totalmente cobertos pela touca",
+  ]},
+  { area: "Saúde do Trabalhador", itens: [
+    "ASO (Atestado de Saúde Ocupacional) dentro da validade",
+    "Exame admissional/periódico em dia",
+    "Ausência de lesões cutâneas expostas (feridas, abscessos)",
+    "Ausência de sintomas de doença infectocontagiosa",
+    "Colaborador apto para a função (sem restrições médicas)",
+  ]},
+  { area: "Comportamento e Boas Práticas", itens: [
+    "Proibido comer, beber ou fumar na área de produção",
+    "Proibido guardar alimentos nos armários da produção",
+    "Proibido uso de celular na área produtiva",
+    "Lavagem de mãos após uso do banheiro verificada",
+    "Treinamento de BPF/Higiene atualizado (anual mínimo)",
+  ]},
+];
+
+// ── CHECKLIST HIGIENIZAÇÃO DE RESERVATÓRIO (POP-04 / IN 04/2007) ──
+const CHECKLIST_RESERVATORIO: { area: string; itens: string[] }[] = [
+  { area: "Preparação", itens: [
+    "Reservatório completamente esvaziado",
+    "Registro fotográfico do estado antes da limpeza",
+    "Equipamentos de limpeza preparados e higienizados",
+    "EPI do executor conferido (luvas, botas, máscara)",
+  ]},
+  { area: "Execução da Limpeza", itens: [
+    "Remoção mecânica de sedimentos e incrustações",
+    "Lavagem com água sob pressão das paredes e fundo",
+    "Aplicação de solução clorada (200 ppm) em toda superfície",
+    "Tempo de contato da solução desinfetante respeitado (≥ 30 min)",
+    "Enxágue completo com água potável",
+    "Drenagem total da água de enxágue",
+  ]},
+  { area: "Pós-Limpeza", itens: [
+    "Inspeção visual final — ausência de resíduos e biofilme",
+    "Vedação e tampas reinstaladas corretamente",
+    "Reservatório reabastecido com água potável",
+    "Dosagem de cloro ajustada após reabastecimento",
+    "Registro fotográfico do estado após a limpeza",
+    "Certificado de limpeza emitido e arquivado",
+  ]},
+];
+
 export default function HigieneSanitizacao() {
   const { user } = useAuth();
   const qc = useQueryClient();
