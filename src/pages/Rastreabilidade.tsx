@@ -1571,14 +1571,22 @@ export default function Rastreabilidade() {
                                 : <span className="text-xs text-muted-foreground">—</span>}
                               </TableCell>
                               <TableCell>
-                                {r.recall_ativo ? <Badge variant="destructive" className="text-xs">{r.recall_status === "concluido" ? "Concluído" : r.recall_status === "em_andamento" ? "Em andamento" : "Iniciado"}</Badge>
-                                : <span className="text-xs text-muted-foreground">—</span>}
+                                {r.recall_ativo ? (
+                                  <Badge variant={r.recall_status === "concluido" ? "outline" : "destructive"} className={`text-xs ${r.recall_status === "concluido" ? "border-green-600 text-green-700" : ""}`}>
+                                    {r.recall_status === "concluido" ? "✅ Encerrado" : r.recall_status === "em_andamento" ? "Em andamento" : "Iniciado"}
+                                  </Badge>
+                                ) : <span className="text-xs text-muted-foreground">—</span>}
                               </TableCell>
                               <TableCell>
                                 <div className="flex gap-1">
                                   {!r.recall_ativo && r.cliente_destino && (
                                     <Button variant="ghost" size="sm" className="text-destructive text-xs" onClick={() => { setSelectedId(r.id); setRecallOpen(true); }}>
                                       <AlertTriangle className="w-3 h-3 mr-1" /> Recall
+                                    </Button>
+                                  )}
+                                  {r.recall_ativo && r.recall_status !== "concluido" && (
+                                    <Button variant="ghost" size="sm" className="text-green-700 text-xs" onClick={() => { setSelectedId(r.id); setRecallStatus("concluido"); setRecallMotivo(r.recall_motivo || ""); setRecallData(r.recall_data || ""); setRecallOpen(true); }}>
+                                      ✅ Encerrar
                                     </Button>
                                   )}
                                   {r.cliente_destino && <Button variant="ghost" size="sm" className="text-xs" onClick={() => openVenda(r.id)}>Editar venda</Button>}

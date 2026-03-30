@@ -988,6 +988,14 @@ export default function PCP() {
                       <p className="text-[10px] text-muted-foreground">Recomenda-se flushing entre batidas para prevenir contaminação cruzada.</p>
                     </div>
                   )}
+                  {/* Alerta Ractopamina Free */}
+                  <div className="p-2 rounded bg-green-50 dark:bg-green-900/10 border border-green-500/30 mb-3">
+                    <p className="text-xs text-green-700 font-semibold flex items-center gap-1">🛡️ Programa Ractopamina Free</p>
+                    <p className="text-[10px] text-muted-foreground">
+                      Confirme que nenhum ingrediente desta fórmula contém Ractopamina. 
+                      Flushing obrigatório caso a linha tenha processado produto com ractopamina anteriormente.
+                    </p>
+                  </div>
                   <p className="text-xs text-muted-foreground mb-3">Obrigatório confirmar a limpeza da linha antes de iniciar nova batida para prevenir contaminação cruzada.</p>
                   <div className="grid grid-cols-3 gap-2 mb-2">
                     <div>
