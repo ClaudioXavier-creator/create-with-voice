@@ -596,6 +596,7 @@ export default function HigieneSanitizacao() {
           <TabsTrigger value="superficies"><FlaskConical className="w-4 h-4 mr-1" />Superfícies</TabsTrigger>
           <TabsTrigger value="silos"><Container className="w-4 h-4 mr-1" />Silos & Transportadores</TabsTrigger>
           <TabsTrigger value="higiene_pessoal"><UserCheck className="w-4 h-4 mr-1" />Higiene Pessoal (POP-03)</TabsTrigger>
+          <TabsTrigger value="saude_sintomas"><HeartPulse className="w-4 h-4 mr-1" />Saúde & Sintomas</TabsTrigger>
           <TabsTrigger value="reservatorio"><Droplet className="w-4 h-4 mr-1" />Limpeza Reservatório</TabsTrigger>
           <TabsTrigger value="cronogramas"><Droplets className="w-4 h-4 mr-1" />Cronogramas</TabsTrigger>
           <TabsTrigger value="registros"><CheckCircle2 className="w-4 h-4 mr-1" />Registros Limpeza</TabsTrigger>
@@ -603,6 +604,7 @@ export default function HigieneSanitizacao() {
           <TabsTrigger value="agua_checklist"><ClipboardList className="w-4 h-4 mr-1" />Checklist POP-04</TabsTrigger>
           <TabsTrigger value="laudos"><FileText className="w-4 h-4 mr-1" />Laudos Vinculados</TabsTrigger>
           <TabsTrigger value="planilha"><ClipboardList className="w-4 h-4 mr-1" />Planilha Mensal</TabsTrigger>
+          <TabsTrigger value="arquivo"><Archive className="w-4 h-4 mr-1" />Arquivo 2 Anos</TabsTrigger>
         </TabsList>
 
         {/* ── CHECKLIST PRÉ-OPERACIONAL ── */}
