@@ -633,6 +633,136 @@ export default function Rastreabilidade() {
         </CardContent>
       </Card>
 
+      {/* ══════════ SEGREGAÇÃO POR ESPÉCIE — IN 34/2008 / IN 15/2009 ══════════ */}
+      <Card className="mb-6 border-orange-500/20">
+        <CardHeader className="pb-2">
+          <CardTitle className="font-display text-sm flex items-center gap-2">
+            <ShieldAlert className="w-5 h-5 text-orange-600" /> Segregação por Espécie — IN 34/2008 / IN 15/2009
+          </CardTitle>
+          <p className="text-xs text-muted-foreground">Controle de restrições de subprodutos de origem animal por espécie destino, prevenção de EEB e contaminação cruzada.</p>
+        </CardHeader>
+        <CardContent>
+          {(() => {
+            const porEspecie = new Map<string, { total: number; comOrigemAnimal: number; alertas: string[]; lotes: Set<string> }>();
+            registros.forEach(r => {
+              const esp = (r as any).especie_destino || "não_informada";
+              if (!porEspecie.has(esp)) porEspecie.set(esp, { total: 0, comOrigemAnimal: 0, alertas: [], lotes: new Set() });
+              const entry = porEspecie.get(esp)!;
+              entry.total++;
+              if (r.lote_produto) entry.lotes.add(r.lote_produto);
+              if ((r as any).contem_origem_animal) {
+                entry.comOrigemAnimal++;
+                const tipo = (r as any).tipo_origem_animal || "";
+                if (esp === "bovinos" && ["farinha_carne_ossos", "farinha_sangue", "sebo_gordura"].includes(tipo)) {
+                  const alerta = `⛔ PROIBIDO: ${tipo.replace(/_/g, " ")} para bovinos (IN 34/2008 - Prevenção EEB)`;
+                  if (!entry.alertas.includes(alerta)) entry.alertas.push(alerta);
+                }
+                if (esp === "bovinos" && tipo === "farinha_penas") {
+                  const alerta = "⚠️ Farinha de penas para bovinos: verificar conformidade e flushing obrigatório";
+                  if (!entry.alertas.includes(alerta)) entry.alertas.push(alerta);
+                }
+                if (esp === "equinos" && ["farinha_carne_ossos", "farinha_sangue"].includes(tipo)) {
+                  const alerta = `⚠️ ${tipo.replace(/_/g, " ")} para equinos: verificar restrição IN 34/2008`;
+                  if (!entry.alertas.includes(alerta)) entry.alertas.push(alerta);
+                }
+                if ((esp === "caprinos_ovinos") && ["farinha_carne_ossos", "farinha_sangue"].includes(tipo)) {
+                  const alerta = `⛔ PROIBIDO: ${tipo.replace(/_/g, " ")} para caprinos/ovinos (ruminantes — IN 34/2008)`;
+                  if (!entry.alertas.includes(alerta)) entry.alertas.push(alerta);
+                }
+              }
+            });
+
+            const especieLabels: Record<string, string> = {
+              bovinos: "🐄 Bovinos", suinos: "🐖 Suínos", aves: "🐔 Aves", equinos: "🐴 Equinos",
+              caprinos_ovinos: "🐑 Caprinos/Ovinos", peixes: "🐟 Peixes", pets: "🐕 Pets", multiespecie: "📦 Multiespécie", não_informada: "❓ Não informada",
+            };
+
+            const totalAlertas = Array.from(porEspecie.values()).reduce((sum, e) => sum + e.alertas.length, 0);
+
+            // Check cross-contamination risk: same lot used for multiple species with different restrictions
+            const crossContamAlerts: string[] = [];
+            const lotesUsados = new Map<string, Set<string>>();
+            registros.forEach(r => {
+              if (r.lote_produto && (r as any).especie_destino) {
+                if (!lotesUsados.has(r.lote_produto)) lotesUsados.set(r.lote_produto, new Set());
+                lotesUsados.get(r.lote_produto)!.add((r as any).especie_destino);
+              }
+            });
+            lotesUsados.forEach((especies, lote) => {
+              if (especies.size > 1 && (especies.has("bovinos") || especies.has("caprinos_ovinos"))) {
+                crossContamAlerts.push(`Lote ${lote}: usado para ${Array.from(especies).join(", ")} — risco de contaminação cruzada entre ruminantes e não-ruminantes`);
+              }
+            });
+
+            if (porEspecie.size === 0 || (porEspecie.size === 1 && porEspecie.has("não_informada"))) {
+              return (
+                <div className="text-center py-4 text-muted-foreground text-xs">
+                  <p>Informe a espécie destino nos registros para ativar o controle de segregação.</p>
+                </div>
+              );
+            }
+
+            return (
+              <div className="space-y-3">
+                <div className="grid grid-cols-3 gap-3">
+                  <div className="text-center p-2 rounded-lg bg-muted/30 border">
+                    <p className="text-lg font-bold font-display">{porEspecie.size}</p>
+                    <p className="text-[10px] text-muted-foreground">Espécies atendidas</p>
+                  </div>
+                  <div className="text-center p-2 rounded-lg bg-orange-500/5 border border-orange-500/20">
+                    <p className="text-lg font-bold font-display text-orange-700">
+                      {Array.from(porEspecie.values()).reduce((sum, e) => sum + e.comOrigemAnimal, 0)}
+                    </p>
+                    <p className="text-[10px] text-muted-foreground">Com origem animal</p>
+                  </div>
+                  <div className={`text-center p-2 rounded-lg border ${totalAlertas > 0 ? "bg-destructive/5 border-destructive/20" : "bg-primary/5 border-primary/20"}`}>
+                    <p className={`text-lg font-bold font-display ${totalAlertas > 0 ? "text-destructive" : "text-primary"}`}>{totalAlertas}</p>
+                    <p className="text-[10px] text-muted-foreground">Alertas de restrição</p>
+                  </div>
+                </div>
+
+                {/* Cross-contamination alerts */}
+                {crossContamAlerts.length > 0 && (
+                  <div className="p-3 rounded-lg border-2 border-destructive bg-destructive/5 space-y-1">
+                    <p className="text-xs font-bold text-destructive flex items-center gap-1"><AlertTriangle className="w-4 h-4" /> Risco de Contaminação Cruzada entre Espécies</p>
+                    {crossContamAlerts.map((a, i) => <p key={i} className="text-xs text-destructive/80">{a}</p>)}
+                  </div>
+                )}
+
+                {/* Species breakdown */}
+                <div className="space-y-2">
+                  {Array.from(porEspecie.entries())
+                    .sort((a, b) => b[1].alertas.length - a[1].alertas.length || b[1].total - a[1].total)
+                    .map(([esp, data]) => (
+                    <div key={esp} className={`p-3 rounded-lg border ${data.alertas.length > 0 ? "border-destructive/30 bg-destructive/5" : "bg-background"}`}>
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="text-sm font-semibold">{especieLabels[esp] || esp}</span>
+                        <div className="flex items-center gap-2">
+                          <Badge variant="outline" className="text-[10px]">{data.total} reg. / {data.lotes.size} lotes</Badge>
+                          {data.comOrigemAnimal > 0 && (
+                            <Badge className="bg-orange-500/20 text-orange-700 text-[10px]">{data.comOrigemAnimal} c/ origem animal</Badge>
+                          )}
+                        </div>
+                      </div>
+                      {data.alertas.map((alerta, i) => (
+                        <p key={i} className="text-xs text-destructive font-medium mt-1">{alerta}</p>
+                      ))}
+                    </div>
+                  ))}
+                </div>
+
+                <div className="p-3 rounded-lg border bg-muted/30 text-xs space-y-1">
+                  <p className="font-semibold">📋 Referências — Segregação por Espécie</p>
+                  <p className="text-muted-foreground">• <strong>IN 34/2008:</strong> Proíbe proteína e gordura de mamíferos na alimentação de ruminantes (prevenção EEB/BSE).</p>
+                  <p className="text-muted-foreground">• <strong>IN 15/2009, Art. 16:</strong> Fábricas com múltiplas espécies devem segregar linhas ou documentar flushing entre lotes.</p>
+                  <p className="text-muted-foreground">• <strong>Decreto 12.031/2024:</strong> Fiscalização prioriza estabelecimentos com múltiplas espécies e uso de subprodutos animais.</p>
+                </div>
+              </div>
+            );
+          })()}
+        </CardContent>
+      </Card>
+
       {/* ══════════ MELHORIA 4: ALERTAS DE CONTRAPROVA VENCIDA ══════════ */}
       {(contraprovosVencidas.length > 0 || contraprovosProximasVencer.length > 0) && (
         <Card className="mb-6 border-destructive/30 bg-destructive/5">

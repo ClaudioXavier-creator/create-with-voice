@@ -156,6 +156,13 @@ export default function PCP() {
   const [flushProdAnterior, setFlushProdAnterior] = useState("");
   const [flushProdSeguinte, setFlushProdSeguinte] = useState("");
   const [flushObs, setFlushObs] = useState("");
+  // Checklist de Validação de Limpeza de Linha
+  const [flushChecklist, setFlushChecklist] = useState<Record<string, boolean>>({});
+  const [flushHoraInicio, setFlushHoraInicio] = useState("");
+  const [flushHoraFim, setFlushHoraFim] = useState("");
+  const [flushTemperaturaAgua, setFlushTemperaturaAgua] = useState("");
+  const [flushInspecaoVisual, setFlushInspecaoVisual] = useState("aprovado");
+  const [flushEquipVerificado, setFlushEquipVerificado] = useState<string[]>([]);
 
   const fetchData = async () => {
     if (!user) return;
@@ -1115,14 +1122,19 @@ export default function PCP() {
           </div>
         </DialogContent>
       </Dialog>
-      {/* ── FLUSH ORDER DIALOG ── */}
+      {/* ── FLUSH ORDER DIALOG — VALIDAÇÃO DE LIMPEZA DE LINHA ── */}
       <Dialog open={flushOpen} onOpenChange={setFlushOpen}>
-        <DialogContent className="max-w-md">
-          <DialogHeader><DialogTitle className="flex items-center gap-2"><Droplets className="w-5 h-5 text-blue-600" /> Ordem de Limpeza (Flush) — IN 15/2009</DialogTitle></DialogHeader>
-          <div className="space-y-3 max-h-[65vh] overflow-y-auto pr-2">
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader><DialogTitle className="flex items-center gap-2"><Droplets className="w-5 h-5 text-blue-600" /> Validação de Limpeza de Linha — IN 15/2009</DialogTitle></DialogHeader>
+          <div className="space-y-3 pr-2">
+            {/* Informações Básicas */}
             <div className="grid grid-cols-2 gap-3">
               <div><Label>Data</Label><Input type="date" value={flushData} onChange={e => setFlushData(e.target.value)} /></div>
               <div><Label>Responsável *</Label><Input value={flushResp} onChange={e => setFlushResp(e.target.value)} placeholder="Nome do executor" /></div>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div><Label>Hora Início</Label><Input type="time" value={flushHoraInicio} onChange={e => setFlushHoraInicio(e.target.value)} /></div>
+              <div><Label>Hora Fim</Label><Input type="time" value={flushHoraFim} onChange={e => setFlushHoraFim(e.target.value)} /></div>
             </div>
             <div>
               <Label>Tipo de Limpeza</Label>
@@ -1131,58 +1143,155 @@ export default function PCP() {
                 <SelectContent>
                   <SelectItem value="vassouragem">Vassouragem (limpeza seca)</SelectItem>
                   <SelectItem value="flushing">Flushing (material inerte)</SelectItem>
-                  <SelectItem value="lavagem">Lavagem completa</SelectItem>
+                  <SelectItem value="lavagem">Lavagem completa (água + detergente)</SelectItem>
+                  <SelectItem value="sanitizacao">Sanitização (lavagem + sanitizante)</SelectItem>
                 </SelectContent>
               </Select>
             </div>
-            {flushTipo === "flushing" && (
-              <div className="grid grid-cols-2 gap-3">
+            {(flushTipo === "flushing") && (
+              <div className="grid grid-cols-3 gap-3">
                 <div><Label>Material Inerte</Label><Input value={flushMaterialInerte} onChange={e => setFlushMaterialInerte(e.target.value)} placeholder="Ex: Milho moído" /></div>
                 <div><Label>Volume (kg)</Label><Input value={flushVolume} onChange={e => setFlushVolume(e.target.value)} placeholder="≥ 50% capacidade" /></div>
+                <div><Label>Destino do Flush</Label><Input value={flushDestino} onChange={e => setFlushDestino(e.target.value)} placeholder="Ex: Descarte" /></div>
               </div>
             )}
-            <div><Label>Destino do Material de Flush</Label><Input value={flushDestino} onChange={e => setFlushDestino(e.target.value)} placeholder="Ex: Descarte / Reprocesso" /></div>
+            {(flushTipo === "lavagem" || flushTipo === "sanitizacao") && (
+              <div>
+                <Label>Temperatura da Água (°C)</Label>
+                <Input value={flushTemperaturaAgua} onChange={e => setFlushTemperaturaAgua(e.target.value)} placeholder="Ex: 60" />
+              </div>
+            )}
             <div className="grid grid-cols-2 gap-3">
               <div><Label>Produto Anterior</Label><Input value={flushProdAnterior} onChange={e => setFlushProdAnterior(e.target.value)} /></div>
               <div><Label>Produto Seguinte</Label><Input value={flushProdSeguinte} onChange={e => setFlushProdSeguinte(e.target.value)} /></div>
             </div>
-            <div><Label>Observações</Label><Textarea value={flushObs} onChange={e => setFlushObs(e.target.value)} placeholder="Detalhes adicionais..." /></div>
-            <Button className="w-full" disabled={saving || !flushResp} onClick={async () => {
+
+            {/* ── CHECKLIST DE VALIDAÇÃO — IN 15/2009 ── */}
+            <div className="p-3 rounded-lg border-2 border-blue-500/30 bg-blue-50 dark:bg-blue-900/10 space-y-2">
+              <p className="text-xs font-bold text-blue-700 dark:text-blue-400 flex items-center gap-1">
+                <CheckCircle2 className="w-4 h-4" /> Checklist de Validação de Limpeza — IN 15/2009
+              </p>
+              <p className="text-[10px] text-muted-foreground">Todos os itens devem ser verificados antes da liberação da linha.</p>
+              {[
+                { id: "residuo_visivel", label: "Ausência de resíduo visível na linha de produção (misturador, rosca, elevador)" },
+                { id: "silo_inspecao", label: "Inspeção dos silos de dosagem: sem acúmulo de produto anterior" },
+                { id: "transportador_limpo", label: "Transportadores e roscas sem fim: limpos e sem obstruções" },
+                { id: "peneira_limpa", label: "Peneiras e grelhas: sem acúmulo de material" },
+                { id: "peletizadora_limpa", label: "Peletizadora/extrusora: sem resíduos da batelada anterior (se aplicável)" },
+                { id: "balanca_zerada", label: "Balança de dosagem zerada e calibrada" },
+                { id: "produto_anterior_retirado", label: "Todo produto anterior foi retirado e destinado corretamente" },
+                { id: "etiquetas_identificadas", label: "Etiquetas e identificações do produto anterior removidas" },
+                { id: "area_externa_limpa", label: "Área externa ao misturador: limpa e organizada" },
+                { id: "documentacao_anterior", label: "Documentação da batida anterior foi encerrada e arquivada" },
+              ].map(item => (
+                <div key={item.id} className="flex items-start gap-2 p-1.5 rounded hover:bg-background/50">
+                  <input
+                    type="checkbox"
+                    checked={flushChecklist[item.id] || false}
+                    onChange={e => setFlushChecklist(prev => ({ ...prev, [item.id]: e.target.checked }))}
+                    className="h-4 w-4 mt-0.5"
+                  />
+                  <Label className="text-xs leading-tight cursor-pointer">{item.label}</Label>
+                </div>
+              ))}
+            </div>
+
+            {/* Equipamentos Verificados */}
+            <div className="p-3 rounded-lg border bg-muted/30 space-y-2">
+              <p className="text-xs font-semibold">Equipamentos Verificados</p>
+              <div className="grid grid-cols-2 gap-1">
+                {["Misturador", "Rosca transportadora", "Elevador de canecas", "Silo de dosagem", "Moinho", "Peletizadora", "Resfriador", "Ensacadeira"].map(eq => (
+                  <div key={eq} className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      checked={flushEquipVerificado.includes(eq)}
+                      onChange={e => {
+                        if (e.target.checked) setFlushEquipVerificado(prev => [...prev, eq]);
+                        else setFlushEquipVerificado(prev => prev.filter(x => x !== eq));
+                      }}
+                      className="h-3 w-3"
+                    />
+                    <span className="text-xs">{eq}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Inspeção Visual */}
+            <div>
+              <Label>Resultado da Inspeção Visual</Label>
+              <Select value={flushInspecaoVisual} onValueChange={setFlushInspecaoVisual}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="aprovado">✅ Aprovado — Linha liberada para produção</SelectItem>
+                  <SelectItem value="aprovado_restricao">⚠️ Aprovado com restrição</SelectItem>
+                  <SelectItem value="reprovado">❌ Reprovado — Requer nova limpeza</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div><Label>Observações</Label><Textarea value={flushObs} onChange={e => setFlushObs(e.target.value)} placeholder="Detalhes adicionais, não conformidades encontradas..." /></div>
+
+            {/* Resumo de validação */}
+            {(() => {
+              const checkCount = Object.values(flushChecklist).filter(Boolean).length;
+              const totalCheck = 10;
+              const allChecked = checkCount === totalCheck;
+              const aprovado = flushInspecaoVisual === "aprovado" || flushInspecaoVisual === "aprovado_restricao";
+              return (
+                <div className={`p-3 rounded-lg border-2 ${allChecked && aprovado ? "border-green-500 bg-green-50 dark:bg-green-900/10" : "border-yellow-500 bg-yellow-50 dark:bg-yellow-900/10"}`}>
+                  <div className="flex items-center justify-between">
+                    <p className="text-xs font-semibold">{allChecked && aprovado ? "✅ Validação completa — Linha liberada" : `⚠️ Validação pendente (${checkCount}/${totalCheck} itens)`}</p>
+                    {flushEquipVerificado.length > 0 && <Badge variant="outline" className="text-[10px]">{flushEquipVerificado.length} equip. verificados</Badge>}
+                  </div>
+                </div>
+              );
+            })()}
+
+            <Button className="w-full" disabled={saving || !flushResp || flushInspecaoVisual === "reprovado"} onClick={async () => {
               if (!user) return;
               setSaving(true);
+              const checkCount = Object.values(flushChecklist).filter(Boolean).length;
+              const checkedItems = Object.entries(flushChecklist).filter(([, v]) => v).map(([k]) => k);
               const obs = [
-                `[ORDEM DE LIMPEZA (FLUSH) — IN 15/2009]`,
-                `Data: ${flushData} | Responsável: ${flushResp}`,
-                `Tipo: ${flushTipo === "vassouragem" ? "Vassouragem" : flushTipo === "flushing" ? "Flushing" : "Lavagem completa"}`,
-                flushTipo === "flushing" ? `Material inerte: ${flushMaterialInerte || "—"} | Volume: ${flushVolume || "—"} kg` : "",
-                `Destino: ${flushDestino || "—"}`,
-                `Produto anterior: ${flushProdAnterior || "—"}`,
-                `Produto seguinte: ${flushProdSeguinte || "—"}`,
+                `[VALIDAÇÃO DE LIMPEZA DE LINHA — IN 15/2009]`,
+                `Data: ${flushData} | Início: ${flushHoraInicio || "—"} | Fim: ${flushHoraFim || "—"}`,
+                `Responsável: ${flushResp}`,
+                `Tipo: ${flushTipo === "vassouragem" ? "Vassouragem" : flushTipo === "flushing" ? "Flushing" : flushTipo === "lavagem" ? "Lavagem completa" : "Sanitização"}`,
+                flushTipo === "flushing" ? `Material inerte: ${flushMaterialInerte || "—"} | Volume: ${flushVolume || "—"} kg | Destino: ${flushDestino || "—"}` : "",
+                (flushTipo === "lavagem" || flushTipo === "sanitizacao") && flushTemperaturaAgua ? `Temperatura da água: ${flushTemperaturaAgua}°C` : "",
+                `Produto anterior: ${flushProdAnterior || "—"} → Produto seguinte: ${flushProdSeguinte || "—"}`,
+                `Checklist: ${checkCount}/10 itens conformes`,
+                `Itens verificados: ${checkedItems.join(", ")}`,
+                `Equipamentos: ${flushEquipVerificado.join(", ") || "—"}`,
+                `Inspeção visual: ${flushInspecaoVisual === "aprovado" ? "APROVADO" : flushInspecaoVisual === "aprovado_restricao" ? "APROVADO COM RESTRIÇÃO" : "REPROVADO"}`,
                 flushObs ? `Obs: ${flushObs}` : "",
               ].filter(Boolean).join("\n");
               const { error } = await supabase.from("execucao_pops").insert({
                 user_id: user.id,
                 codigo_pop: "POP-FLUSH",
-                nome_pop: "Ordem de Limpeza (Flush) entre Fórmulas",
+                nome_pop: "Validação de Limpeza de Linha (Flush)",
                 executor: flushResp,
                 setor: flushProdAnterior && flushProdSeguinte ? `${flushProdAnterior} → ${flushProdSeguinte}` : "PCP",
-                status: "concluido",
+                status: flushInspecaoVisual === "aprovado" ? "concluido" : "nao_conforme",
                 observacoes: obs,
                 data_execucao: flushData,
                 checklist_auditoria_ref: flushOrdemId,
               });
               if (error) toast.error("Erro: " + error.message);
               else {
-                toast.success("Ordem de flush registrada!");
+                toast.success("Validação de limpeza de linha registrada!");
                 setFlushOpen(false);
                 setFlushResp(""); setFlushTipo("flushing"); setFlushMaterialInerte(""); setFlushVolume("");
                 setFlushDestino(""); setFlushProdAnterior(""); setFlushProdSeguinte(""); setFlushObs("");
+                setFlushChecklist({}); setFlushHoraInicio(""); setFlushHoraFim(""); setFlushTemperaturaAgua("");
+                setFlushInspecaoVisual("aprovado"); setFlushEquipVerificado([]);
                 fetchData();
               }
               setSaving(false);
             }}>
               {saving && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-              Registrar Ordem de Flush
+              {flushInspecaoVisual === "reprovado" ? "❌ Linha reprovada — refazer limpeza" : "Registrar Validação de Limpeza"}
             </Button>
           </div>
         </DialogContent>
