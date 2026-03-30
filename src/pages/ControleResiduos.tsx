@@ -337,6 +337,110 @@ export default function ControleResiduos() {
             </Card>
           )}
         </TabsContent>
+
+        {/* ── PGRS — Plano de Gerenciamento de Resíduos Sólidos ── */}
+        <TabsContent value="pgrs" className="space-y-4">
+          <Card className="border-primary/20 bg-primary/5">
+            <CardContent className="pt-4">
+              <div className="flex items-start gap-3">
+                <ShieldAlert className="w-6 h-6 text-primary mt-0.5" />
+                <div>
+                  <h4 className="font-display font-semibold text-sm">PGRS — Plano de Gerenciamento de Resíduos Sólidos</h4>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Conforme POP 05 (IN 04/2007) e critérios ambientais do MAPA, o estabelecimento deve manter um PGRS
+                    atualizado, contemplando: classificação dos resíduos, segregação na origem, acondicionamento, transporte e
+                    destinação final licenciada.
+                  </p>
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    <Badge variant="outline" className="text-[10px]">ABNT NBR 10.004</Badge>
+                    <Badge variant="outline" className="text-[10px]">Resolução CONAMA 313/2002</Badge>
+                    <Badge variant="outline" className="text-[10px]">IN 04/2007 — POP 05</Badge>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Dashboard PGRS */}
+          {(() => {
+            const organicos = residuos.filter((r: any) => r.tipo_residuo === "Orgânico" || r.tipo_residuo === "Pó/Varredura");
+            const embalagens = residuos.filter((r: any) => r.tipo_residuo?.includes("Embalagens"));
+            const perigosos = residuos.filter((r: any) => r.classificacao === "classe_I");
+            const descartes = residuos.filter((r: any) => ["Produto vencido", "Produto rejeitado/reprovado", "Sobra de produção"].includes(r.tipo_residuo));
+            const semManifesto = residuos.filter((r: any) => !r.manifesto_numero && r.classificacao === "classe_I");
+            const semLicenca = residuos.filter((r: any) => !r.licenca_ambiental && r.empresa_coletora);
+
+            return (
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                  <Card><CardContent className="pt-4 text-center">
+                    <p className="text-2xl font-bold font-display">{organicos.length}</p>
+                    <p className="text-[10px] text-muted-foreground">Orgânicos / Pó</p>
+                  </CardContent></Card>
+                  <Card><CardContent className="pt-4 text-center">
+                    <p className="text-2xl font-bold font-display text-primary">{embalagens.length}</p>
+                    <p className="text-[10px] text-muted-foreground">Embalagens</p>
+                  </CardContent></Card>
+                  <Card><CardContent className="pt-4 text-center">
+                    <p className="text-2xl font-bold font-display text-destructive">{perigosos.length}</p>
+                    <p className="text-[10px] text-muted-foreground">Classe I (Perigosos)</p>
+                  </CardContent></Card>
+                  <Card><CardContent className="pt-4 text-center">
+                    <p className="text-2xl font-bold font-display">{descartes.length}</p>
+                    <p className="text-[10px] text-muted-foreground">Descartes de Produto</p>
+                  </CardContent></Card>
+                </div>
+
+                {/* Alertas de conformidade ambiental */}
+                {(semManifesto.length > 0 || semLicenca.length > 0) && (
+                  <Card className="border-destructive/30 bg-destructive/5">
+                    <CardContent className="pt-4">
+                      <div className="flex items-center gap-2 mb-3">
+                        <ShieldAlert className="w-5 h-5 text-destructive" />
+                        <h3 className="font-semibold text-sm text-destructive">Pendências Ambientais</h3>
+                      </div>
+                      {semManifesto.length > 0 && (
+                        <p className="text-xs text-destructive mb-1">
+                          ⚠️ {semManifesto.length} resíduo(s) Classe I <strong>sem manifesto de transporte</strong> — obrigatório conforme CONAMA.
+                        </p>
+                      )}
+                      {semLicenca.length > 0 && (
+                        <p className="text-xs text-destructive">
+                          ⚠️ {semLicenca.length} registro(s) com empresa coletora <strong>sem licença ambiental informada</strong>.
+                        </p>
+                      )}
+                    </CardContent>
+                  </Card>
+                )}
+
+                {/* Checklist PGRS */}
+                <Card>
+                  <CardContent className="pt-4">
+                    <h4 className="font-semibold text-sm mb-3">Checklist de Conformidade — PGRS / POP 05</h4>
+                    <div className="space-y-2">
+                      {[
+                        { item: "Resíduos classificados conforme ABNT NBR 10.004", ok: residuos.length > 0 },
+                        { item: "Segregação por classe na origem (coletores identificados)", ok: true },
+                        { item: "Empresa coletora licenciada para transporte de resíduos", ok: comLicenca > 0 || residuos.length === 0 },
+                        { item: "Manifesto de Transporte de Resíduos (MTR) para Classe I", ok: semManifesto.length === 0 },
+                        { item: "Controle de efluentes com parâmetros (pH, DBO, DQO)", ok: efluentes.length === 0 || efluentes.some((e: any) => e.observacoes?.includes("pH")) },
+                        { item: "Registros de descarte de produtos (vencidos/reprovados) integrados ao POP", ok: descartes.length === 0 || descartes.every((d: any) => d.motivo_descarte) },
+                        { item: "Frequência de coleta definida para cada tipo de resíduo", ok: residuos.every((r: any) => r.frequencia_coleta) },
+                        { item: "Área de armazenamento temporário identificada e coberta", ok: true },
+                      ].map((c, i) => (
+                        <div key={i} className="flex items-center gap-2 p-2 rounded border bg-background">
+                          <span className={`text-sm ${c.ok ? "text-primary" : "text-destructive"}`}>{c.ok ? "✅" : "❌"}</span>
+                          <span className="text-xs flex-1">{c.item}</span>
+                          <Badge variant={c.ok ? "default" : "destructive"} className="text-[10px]">{c.ok ? "OK" : "Pendente"}</Badge>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            );
+          })()}
+        </TabsContent>
       </Tabs>
     </div>
   );
