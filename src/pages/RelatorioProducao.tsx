@@ -97,10 +97,11 @@ export default function RelatorioProducao() {
   // Load empresa info
   useEffect(() => {
     if (!user) return;
-    supabase.from("empresas").select("nome, cnpj").limit(1).then(({ data }) => {
+    supabase.from("empresas").select("nome, cnpj, registro_mapa").limit(1).then(({ data }) => {
       if (data && data.length > 0) {
         setEmpresaNome(data[0].nome || "");
         setEmpresaCnpj(data[0].cnpj || "");
+        setEmpresaRegistroSipeagro((data[0] as any).registro_mapa || "");
       }
     });
   }, [user]);
