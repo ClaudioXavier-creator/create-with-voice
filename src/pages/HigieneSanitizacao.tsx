@@ -302,6 +302,23 @@ export default function HigieneSanitizacao() {
   const [aguaCheckData, setAguaCheckData] = useState(new Date().toISOString().split("T")[0]);
   const [savingAguaCheck, setSavingAguaCheck] = useState(false);
 
+  // POP-03 Higiene Pessoal state
+  const [higPesChecklist, setHigPesChecklist] = useState<Record<string, boolean>>({});
+  const [higPesResp, setHigPesResp] = useState("");
+  const [higPesData, setHigPesData] = useState(new Date().toISOString().split("T")[0]);
+  const [higPesTurno, setHigPesTurno] = useState("");
+  const [savingHigPes, setSavingHigPes] = useState(false);
+
+  // Higienização de Reservatório state
+  const [resChecklist, setResChecklist] = useState<Record<string, boolean>>({});
+  const [resResp, setResResp] = useState("");
+  const [resData, setResData] = useState(new Date().toISOString().split("T")[0]);
+  const [resIdentificacao, setResIdentificacao] = useState("");
+  const [resCapacidade, setResCapacidade] = useState("");
+  const [resEmpresa, setResEmpresa] = useState("");
+  const [resObs, setResObs] = useState("");
+  const [savingRes, setSavingRes] = useState(false);
+
   const [regForm, setRegForm] = useState({
     cronograma_id: "", data_execucao: new Date().toISOString().split("T")[0],
     hora_inicio: "", hora_fim: "", executor: "", conforme: true, observacoes: ""
