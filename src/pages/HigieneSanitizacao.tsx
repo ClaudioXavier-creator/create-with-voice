@@ -1060,6 +1060,168 @@ export default function HigieneSanitizacao() {
           })()}
         </TabsContent>
 
+        {/* ── HIGIENE PESSOAL (POP-03 / IN 04/2007) ── */}
+        <TabsContent value="higiene_pessoal" className="space-y-4">
+          <Card className="border-teal-500/20 bg-teal-50 dark:bg-teal-900/10">
+            <CardContent className="pt-4">
+              <div className="flex items-start gap-3">
+                <UserCheck className="w-6 h-6 text-teal-600 mt-0.5" />
+                <div>
+                  <h4 className="font-display font-semibold text-sm">Checklist de Higiene e Saúde do Pessoal — POP-03 (IN 04/2007)</h4>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Verificação obrigatória de uniformes, EPIs, higiene pessoal, saúde ocupacional e comportamento
+                    dos colaboradores conforme Art. 2º da IN 04/2007 e requisitos de BPF.
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-4">
+            <div><Label>Responsável *</Label><Input value={higPesResp} onChange={e => setHigPesResp(e.target.value)} placeholder="Nome do inspetor" /></div>
+            <div><Label>Data</Label><Input type="date" value={higPesData} onChange={e => setHigPesData(e.target.value)} /></div>
+            <div>
+              <Label>Turno</Label>
+              <Select value={higPesTurno} onValueChange={setHigPesTurno}>
+                <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Turno 1 (Manhã)">Turno 1 (Manhã)</SelectItem>
+                  <SelectItem value="Turno 2 (Tarde)">Turno 2 (Tarde)</SelectItem>
+                  <SelectItem value="Turno 3 (Noite)">Turno 3 (Noite)</SelectItem>
+                  <SelectItem value="Turno Único">Turno Único</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            {CHECKLIST_HIGIENE_PESSOAL.map(grupo => (
+              <Card key={grupo.area}>
+                <CardHeader className="py-3"><CardTitle className="text-sm font-display">{grupo.area}</CardTitle></CardHeader>
+                <CardContent className="py-0 pb-3">
+                  <div className="space-y-2">
+                    {grupo.itens.map(item => {
+                      const key = `higpes__${grupo.area}__${item}`;
+                      const checked = higPesChecklist[key] ?? false;
+                      return (
+                        <div key={key} className="flex items-center justify-between p-2 rounded border bg-background">
+                          <span className="text-sm">{item}</span>
+                          <div className="flex items-center gap-2">
+                            <span className={`text-xs font-semibold ${checked ? "text-primary" : "text-muted-foreground"}`}>{checked ? "OK" : "—"}</span>
+                            <Switch checked={checked} onCheckedChange={v => setHigPesChecklist(p => ({ ...p, [key]: v }))} />
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          {(() => {
+            const totalItens = CHECKLIST_HIGIENE_PESSOAL.reduce((a, g) => a + g.itens.length, 0);
+            const marcados = Object.values(higPesChecklist).filter(Boolean).length;
+            const todosOk = marcados === totalItens;
+            return (
+              <div className="flex items-center justify-between p-4 rounded-lg border bg-muted/30">
+                <div>
+                  <p className="text-sm font-semibold">{marcados}/{totalItens} itens verificados</p>
+                  <p className="text-xs text-muted-foreground">{todosOk ? "✅ Todos conformes — Higiene pessoal OK" : "Conclua todos os itens"}</p>
+                </div>
+                <Button disabled={!higPesResp || savingHigPes} onClick={async () => {
+                  if (!user) return;
+                  setSavingHigPes(true);
+                  const ncs = CHECKLIST_HIGIENE_PESSOAL.flatMap(g => g.itens.filter(item => !higPesChecklist[`higpes__${g.area}__${item}`]).map(item => `${g.area}: ${item}`));
+                  const obs = [`[CHECKLIST HIGIENE PESSOAL — POP-03 / IN 04/2007]`, `Data: ${higPesData} | Turno: ${higPesTurno || "—"}`, `Itens conformes: ${marcados}/${totalItens}`, ncs.length > 0 ? `NCs: ${ncs.join("; ")}` : "Todos conformes ✅"].join("\n");
+                  const { error } = await supabase.from("execucao_pops").insert({ user_id: user.id, codigo_pop: "POP-03-HIGIENE", nome_pop: "Checklist Higiene e Saúde Pessoal", executor: higPesResp, setor: higPesTurno || "Produção", status: todosOk ? "concluido" : "nao_conforme", observacoes: obs, data_execucao: higPesData });
+                  if (error) toast.error("Erro: " + error.message);
+                  else { toast.success("Checklist POP-03 Higiene Pessoal salvo!"); setHigPesChecklist({}); setHigPesResp(""); setHigPesTurno(""); }
+                  setSavingHigPes(false);
+                }}>Salvar Checklist POP-03</Button>
+              </div>
+            );
+          })()}
+        </TabsContent>
+
+        {/* ── LIMPEZA DE RESERVATÓRIO (POP-04) ── */}
+        <TabsContent value="reservatorio" className="space-y-4">
+          <Card className="border-blue-500/20 bg-blue-50 dark:bg-blue-900/10">
+            <CardContent className="pt-4">
+              <div className="flex items-start gap-3">
+                <Droplet className="w-6 h-6 text-blue-600 mt-0.5" />
+                <div>
+                  <h4 className="font-display font-semibold text-sm">Registro de Higienização de Reservatório — POP-04 (IN 04/2007)</h4>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Limpeza semestral obrigatória de caixas d'água e reservatórios. Registre cada etapa do processo,
+                    emita o certificado e arquive para fiscalização (Decreto 12.031/2024).
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+            <div><Label>Responsável *</Label><Input value={resResp} onChange={e => setResResp(e.target.value)} placeholder="Executor" /></div>
+            <div><Label>Data</Label><Input type="date" value={resData} onChange={e => setResData(e.target.value)} /></div>
+            <div><Label>Identificação do Reservatório *</Label><Input value={resIdentificacao} onChange={e => setResIdentificacao(e.target.value)} placeholder="Ex: Caixa d'água 01 — 5.000L" /></div>
+            <div><Label>Capacidade (L)</Label><Input value={resCapacidade} onChange={e => setResCapacidade(e.target.value)} placeholder="Ex: 5000" /></div>
+          </div>
+          <div className="grid grid-cols-2 gap-3 mb-4">
+            <div><Label>Empresa Executora (se terceirizada)</Label><Input value={resEmpresa} onChange={e => setResEmpresa(e.target.value)} placeholder="Nome da empresa ou 'Equipe interna'" /></div>
+            <div><Label>Observações</Label><Input value={resObs} onChange={e => setResObs(e.target.value)} placeholder="Detalhes adicionais" /></div>
+          </div>
+
+          <div className="space-y-4">
+            {CHECKLIST_RESERVATORIO.map(grupo => (
+              <Card key={grupo.area}>
+                <CardHeader className="py-3"><CardTitle className="text-sm font-display">{grupo.area}</CardTitle></CardHeader>
+                <CardContent className="py-0 pb-3">
+                  <div className="space-y-2">
+                    {grupo.itens.map(item => {
+                      const key = `res__${grupo.area}__${item}`;
+                      const checked = resChecklist[key] ?? false;
+                      return (
+                        <div key={key} className="flex items-center justify-between p-2 rounded border bg-background">
+                          <span className="text-sm">{item}</span>
+                          <div className="flex items-center gap-2">
+                            <span className={`text-xs font-semibold ${checked ? "text-primary" : "text-muted-foreground"}`}>{checked ? "OK" : "—"}</span>
+                            <Switch checked={checked} onCheckedChange={v => setResChecklist(p => ({ ...p, [key]: v }))} />
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          {(() => {
+            const totalItens = CHECKLIST_RESERVATORIO.reduce((a, g) => a + g.itens.length, 0);
+            const marcados = Object.values(resChecklist).filter(Boolean).length;
+            const todosOk = marcados === totalItens;
+            return (
+              <div className="flex items-center justify-between p-4 rounded-lg border bg-muted/30">
+                <div>
+                  <p className="text-sm font-semibold">{marcados}/{totalItens} itens verificados</p>
+                  <p className="text-xs text-muted-foreground">{todosOk ? "✅ Higienização do reservatório completa" : "Conclua todos os itens"}</p>
+                </div>
+                <Button disabled={!resResp || !resIdentificacao || savingRes} onClick={async () => {
+                  if (!user) return;
+                  setSavingRes(true);
+                  const ncs = CHECKLIST_RESERVATORIO.flatMap(g => g.itens.filter(item => !resChecklist[`res__${g.area}__${item}`]).map(item => `${g.area}: ${item}`));
+                  const obs = [`[HIGIENIZAÇÃO DE RESERVATÓRIO — POP-04 / IN 04/2007]`, `Data: ${resData} | Reservatório: ${resIdentificacao} (${resCapacidade || "—"}L)`, `Empresa: ${resEmpresa || "Equipe interna"}`, `Itens conformes: ${marcados}/${totalItens}`, ncs.length > 0 ? `NCs: ${ncs.join("; ")}` : "Todos conformes ✅", resObs ? `Obs: ${resObs}` : ""].filter(Boolean).join("\n");
+                  const { error } = await supabase.from("execucao_pops").insert({ user_id: user.id, codigo_pop: "POP-04-RESERVATORIO", nome_pop: "Higienização de Reservatório de Água", executor: resResp, setor: resIdentificacao, status: todosOk ? "concluido" : "nao_conforme", observacoes: obs, data_execucao: resData });
+                  if (error) toast.error("Erro: " + error.message);
+                  else { toast.success("Registro de higienização do reservatório salvo!"); qc.invalidateQueries({ queryKey: ["registros_agua"] }); setResChecklist({}); setResResp(""); setResIdentificacao(""); setResCapacidade(""); setResEmpresa(""); setResObs(""); }
+                  setSavingRes(false);
+                }}>Salvar Higienização</Button>
+              </div>
+            );
+          })()}
+        </TabsContent>
+
         {/* ── CRONOGRAMAS ── */}
         <TabsContent value="cronogramas" className="space-y-4">
           <div className="flex justify-end">
