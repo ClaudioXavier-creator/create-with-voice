@@ -38,6 +38,7 @@ import PlanejamentoAnual from "./pages/PlanejamentoAnual";
 import QualidadeTotal from "./pages/QualidadeTotal";
 import SalaAuditor from "./pages/SalaAuditor";
 import RelatorioProducao from "./pages/RelatorioProducao";
+import ArmazenamentoTransporte from "./pages/ArmazenamentoTransporte";
 import Auth from "./pages/Auth";
 import AtivarLicenca from "./pages/AtivarLicenca";
 import Modelos from "./pages/Modelos";
@@ -132,6 +133,7 @@ const AppRoutes = () => {
                   <Route path="/qualidade-total" element={<QualidadeTotal />} />
                   <Route path="/sala-auditor" element={<SalaAuditor />} />
                   <Route path="/relatorio-producao" element={<RelatorioProducao />} />
+                  <Route path="/armazenamento-transporte" element={<ArmazenamentoTransporte />} />
                   <Route path="/modelos" element={<Modelos />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>

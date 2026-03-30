@@ -390,12 +390,38 @@ export default function ControleResiduos() {
               <div className="flex items-start gap-3">
                 <Droplets className="w-6 h-6 text-blue-600 mt-0.5" />
                 <div>
-                  <h4 className="font-semibold text-sm">Controle de Efluentes — POP 05 (IN 04/2007 / IN 15/2009)</h4>
+                  <h4 className="font-semibold text-sm">Controle de Efluentes — POP 05 (IN 04/2007 / IN 15/2009 / Decreto 12.031/2024)</h4>
                   <p className="text-xs text-muted-foreground mt-1">
                     Registros de efluentes líquidos, industriais e água de lavagem com tipo de tratamento.
-                    Parâmetros obrigatórios: pH, DBO, DQO (registrar nas observações).
+                    Parâmetros obrigatórios: pH, DBO, DQO, Sólidos Suspensos.
                   </p>
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    <Badge variant="outline" className="text-[10px]">Resolução CONAMA 430/2011</Badge>
+                    <Badge variant="outline" className="text-[10px]">IN 04/2007 — POP 05</Badge>
+                    <Badge variant="outline" className="text-[10px]">Decreto 12.031/2024</Badge>
+                  </div>
                 </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Parâmetros de referência */}
+          <Card>
+            <CardContent className="pt-4">
+              <h4 className="font-semibold text-sm mb-3">Parâmetros de Referência — CONAMA 430/2011</h4>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                {[
+                  { param: "pH", faixa: "5,0 – 9,0", unidade: "" },
+                  { param: "DBO₅", faixa: "≤ 120 mg/L", unidade: "ou remoção ≥ 60%" },
+                  { param: "DQO", faixa: "≤ 450 mg/L", unidade: "referência" },
+                  { param: "Sólidos Susp.", faixa: "≤ 150 mg/L", unidade: "CONAMA" },
+                ].map(p => (
+                  <div key={p.param} className="p-2 rounded border bg-background text-center">
+                    <p className="text-xs font-semibold text-primary">{p.param}</p>
+                    <p className="text-sm font-bold">{p.faixa}</p>
+                    <p className="text-[10px] text-muted-foreground">{p.unidade}</p>
+                  </div>
+                ))}
               </div>
             </CardContent>
           </Card>

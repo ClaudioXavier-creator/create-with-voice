@@ -84,6 +84,7 @@ export default function RelatorioProducao() {
   const [loading, setLoading] = useState(true);
   const [empresaNome, setEmpresaNome] = useState("");
   const [empresaCnpj, setEmpresaCnpj] = useState("");
+  const [empresaRegistroSipeagro, setEmpresaRegistroSipeagro] = useState("");
 
   // Values per tab per item
   const [valores, setValores] = useState<ValoresMap>({
@@ -200,8 +201,12 @@ export default function RelatorioProducao() {
 
   const exportCsv = () => {
     const mesLabel = MESES[Number(mes) - 1];
-    let csv = `Lançamento de Alimentação Animal - ${mesLabel}/${ano}\n`;
-    csv += `${empresaNome} - ${empresaCnpj}\n\n`;
+    let csv = `SIPEAGRO — Lançamento de Alimentação Animal\n`;
+    csv += `Período: ${mesLabel}/${ano}\n`;
+    csv += `Estabelecimento: ${empresaNome}\n`;
+    csv += `CNPJ: ${empresaCnpj}\n`;
+    csv += `Registro SIPEAGRO/MAPA: ${empresaRegistroSipeagro || "N/I"}\n`;
+    csv += `Conforme IN 17/2017 — Art. 55\n\n`;
 
     for (const tab of Object.keys(TAB_LABELS) as AtividadeTab[]) {
       const total = getTotal(tab);
@@ -213,6 +218,9 @@ export default function RelatorioProducao() {
       }
       csv += `Total,${total > 0 ? total.toFixed(2).replace(".", ",") : "0,00"}\n`;
     }
+
+    csv += `\n--- Relatório gerado conforme modelo SIPEAGRO (IN 17/2017) ---\n`;
+    csv += `Data de geração: ${new Date().toLocaleString("pt-BR")}\n`;
 
     const BOM = "\uFEFF";
     const blob = new Blob([BOM + csv], { type: "text/csv;charset=utf-8;" });
@@ -289,9 +297,27 @@ export default function RelatorioProducao() {
     <>
       <PageHeader
         icon={BarChart3}
-        title="Relatório Mensal de Produção"
-        description="Lançamento mensal conforme formulário MAPA — Produção, Importação, Exportação e Fracionamento"
+        title="Relatório Mensal de Produção — SIPEAGRO"
+        description="Lançamento mensal conforme formulário MAPA/SIPEAGRO (IN 17/2017) — Produção, Importação, Exportação e Fracionamento"
       />
+
+      {/* SIPEAGRO Header Info */}
+      <Card className="mb-4 border-primary/20 bg-primary/5">
+        <CardContent className="pt-4">
+          <div className="flex items-start gap-3">
+            <Building2 className="w-6 h-6 text-primary mt-0.5" />
+            <div>
+              <h4 className="font-semibold text-sm">Dados do Estabelecimento — SIPEAGRO</h4>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mt-2 text-xs">
+                <div><span className="text-muted-foreground">Razão Social:</span> <strong>{empresaNome || "—"}</strong></div>
+                <div><span className="text-muted-foreground">CNPJ:</span> <strong>{empresaCnpj || "—"}</strong></div>
+                <div><span className="text-muted-foreground">Registro SIPEAGRO:</span> <strong>{empresaRegistroSipeagro || "N/I"}</strong></div>
+                <div><span className="text-muted-foreground">Base Legal:</span> <strong>IN 17/2017 — Art. 55</strong></div>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Filters */}
       <div className="flex flex-wrap gap-3 mb-6 items-end">
