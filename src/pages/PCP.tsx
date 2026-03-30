@@ -156,6 +156,13 @@ export default function PCP() {
   const [flushProdAnterior, setFlushProdAnterior] = useState("");
   const [flushProdSeguinte, setFlushProdSeguinte] = useState("");
   const [flushObs, setFlushObs] = useState("");
+  // Checklist de Validação de Limpeza de Linha
+  const [flushChecklist, setFlushChecklist] = useState<Record<string, boolean>>({});
+  const [flushHoraInicio, setFlushHoraInicio] = useState("");
+  const [flushHoraFim, setFlushHoraFim] = useState("");
+  const [flushTemperaturaAgua, setFlushTemperaturaAgua] = useState("");
+  const [flushInspecaoVisual, setFlushInspecaoVisual] = useState("aprovado");
+  const [flushEquipVerificado, setFlushEquipVerificado] = useState<string[]>([]);
 
   const fetchData = async () => {
     if (!user) return;
