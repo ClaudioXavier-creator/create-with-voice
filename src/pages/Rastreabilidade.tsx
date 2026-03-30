@@ -765,6 +765,16 @@ export default function Rastreabilidade() {
                               <div className="flex-shrink-0 p-2 rounded bg-accent/10 border border-accent/20 text-xs text-center min-w-[140px]">
                                 <p className="font-medium">{mp.mp}</p>
                                 <Badge variant="outline" className="font-mono text-[10px] mt-1">{mp.lote}</Badge>
+                                {mp.certificado_numero && (
+                                  <div className="mt-1">
+                                    <Badge className={`text-[10px] ${mp.certificado_valido ? "bg-primary/20 text-primary" : mp.certificado_valido === false ? "bg-destructive/20 text-destructive" : "bg-muted text-muted-foreground"}`}>
+                                      📄 CA: {mp.certificado_numero} {mp.certificado_valido ? "✓" : mp.certificado_valido === false ? "✗" : ""}
+                                    </Badge>
+                                  </div>
+                                )}
+                                {!mp.certificado_numero && (
+                                  <p className="text-[10px] text-yellow-600 mt-1">⚠ Sem CA</p>
+                                )}
                               </div>
                               <ChevronRight className="w-4 h-4 text-muted-foreground flex-shrink-0" />
                               <div className="flex-1 h-px bg-accent/30" />
