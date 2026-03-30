@@ -384,6 +384,7 @@ export default function ControleResiduos() {
         </TabsContent>
 
 
+        <TabsContent value="efluentes" className="space-y-4">
           <Card className="border-blue-400/20 bg-blue-50 dark:bg-blue-900/10">
             <CardContent className="pt-4">
               <div className="flex items-start gap-3">
