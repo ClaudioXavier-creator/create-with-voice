@@ -71,6 +71,7 @@ export default function Rastreabilidade() {
   const [especieDestino, setEspecieDestino] = useState("");
   const [contemOrigemAnimal, setContemOrigemAnimal] = useState(false);
   const [tipoOrigemAnimal, setTipoOrigemAnimal] = useState("");
+  const [sifDipoa, setSifDipoa] = useState("");
   const [recallMotivo, setRecallMotivo] = useState("");
   const [recallData, setRecallData] = useState("");
   const [recallStatus, setRecallStatus] = useState("iniciado");
