@@ -320,6 +320,19 @@ export default function HigieneSanitizacao() {
   const [resObs, setResObs] = useState("");
   const [savingRes, setSavingRes] = useState(false);
 
+  // Saúde & Sintomas state
+  const SINTOMAS_DIARIOS = [
+    "Febre ou calafrios", "Tosse persistente", "Diarreia ou vômito", "Dor de garganta",
+    "Lesões cutâneas (feridas, abscessos)", "Secreção ocular ou nasal", "Icterícia (pele/olhos amarelados)",
+    "Dor abdominal intensa", "Infecção de ouvido", "Outros sintomas infectocontagiosos"
+  ];
+  const [sintomaChecklist, setSintomaChecklist] = useState<Record<string, boolean>>({});
+  const [sintomaFuncionario, setSintomaFuncionario] = useState("");
+  const [sintomaData, setSintomaData] = useState(new Date().toISOString().split("T")[0]);
+  const [sintomaObs, setSintomaObs] = useState("");
+  const [sintomaApto, setSintomaApto] = useState(true);
+  const [savingSintoma, setSavingSintoma] = useState(false);
+
   const [regForm, setRegForm] = useState({
     cronograma_id: "", data_execucao: new Date().toISOString().split("T")[0],
     hora_inicio: "", hora_fim: "", executor: "", conforme: true, observacoes: ""
