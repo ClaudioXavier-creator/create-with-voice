@@ -458,6 +458,65 @@ const sections: ManualSection[] = [
     ],
   },
   {
+    id: "potabilidade-agua",
+    title: "Potabilidade da Água (POP 04)",
+    icon: Droplets,
+    badge: "POPs",
+    description:
+      "Módulo dedicado ao controle de potabilidade da água, monitoramento de cloro residual, pH, coliformes e higienização de reservatórios conforme IN 04/2007 e Portaria GM/MS 888/2021.",
+    features: [
+      { title: "Dashboard de Indicadores", text: "Visão rápida dos parâmetros atuais: cloro residual, pH, turbidez e coliformes, com indicação visual de conformidade." },
+      { title: "Pontos de Coleta", text: "Mapeamento dos pontos de coleta de água (entrada, produção, bebedouro, lavagem) com monitoramento diário de cloro e pH." },
+      { title: "Laudos Laboratoriais", text: "Registro de análises microbiológicas e físico-químicas com upload de laudos em PDF e controle de conformidade." },
+      { title: "Higienização de Reservatórios", text: "Checklist de 16 itens para limpeza semestral de caixas d'água com registro de executor, data e observações." },
+      { title: "Alertas Automáticos", text: "Sistema alerta quando cloro residual está fora da faixa (0,2–2,0 mg/L) ou laudos estão vencidos." },
+    ],
+    tips: [
+      "A higienização de reservatórios deve ser feita semestralmente por empresa especializada.",
+      "Mantenha os laudos laboratoriais arquivados por no mínimo 2 anos.",
+      "O kit DPD é utilizado para medição rápida de cloro residual nos pontos de coleta.",
+    ],
+  },
+  {
+    id: "saude-pessoal",
+    title: "Saúde dos Manipuladores / ASO",
+    icon: UserCheck,
+    badge: "POPs",
+    description:
+      "Gestão completa de Atestados de Saúde Ocupacional (ASO), exames laboratoriais e monitoramento de saúde dos manipuladores conforme POP 03 (IN 04/2007) e NR-7.",
+    features: [
+      { title: "Cadastro de Colaboradores", text: "Registre nome, cargo, data de admissão e tipo de exame (admissional, periódico, demissional, retorno ao trabalho)." },
+      { title: "Controle de ASO", text: "Acompanhe a validade dos ASOs com alertas automáticos para exames vencidos ou a vencer em 30 dias." },
+      { title: "Exames Laboratoriais", text: "Registre coprocultura, hemograma, VDRL e outros exames com datas e resultados." },
+      { title: "Dashboard de Conformidade", text: "Visualize rapidamente: total de colaboradores, ASOs válidos/vencidos e próximos vencimentos." },
+      { title: "Histórico por Colaborador", text: "Consulte o histórico completo de exames e ASOs de cada manipulador para auditorias." },
+    ],
+    tips: [
+      "Colaboradores com ASO vencido devem ser afastados das atividades até regularização.",
+      "Exames periódicos devem seguir a periodicidade do PCMSO (geralmente anual).",
+      "Mantenha cópia do ASO arquivada na pasta do colaborador e no sistema digital.",
+    ],
+  },
+  {
+    id: "controle-visitantes",
+    title: "Controle de Visitantes",
+    icon: Users,
+    badge: "POPs",
+    description:
+      "Registro e controle de acesso de visitantes às instalações, com orientação de biosseguridade e fornecimento de EPIs conforme IN 15/2009.",
+    features: [
+      { title: "Registro de Visitantes", text: "Cadastre nome, empresa, documento, motivo da visita, áreas visitadas e horários de entrada/saída." },
+      { title: "Orientação de Biosseguridade", text: "Registre se o visitante recebeu orientação sobre normas de conduta e biosseguridade." },
+      { title: "Fornecimento de EPIs", text: "Controle se foram fornecidos EPIs (touca, avental descartável, propés) ao visitante." },
+      { title: "Acompanhante", text: "Registre o funcionário responsável por acompanhar o visitante durante toda a visita." },
+      { title: "Declaração do Visitante", text: "Gere termo de responsabilidade com as normas e restrições, para assinatura do visitante." },
+    ],
+    tips: [
+      "Visitantes com sintomas de enfermidades transmissíveis não devem acessar as instalações.",
+      "A declaração de visitante deve ser arquivada por no mínimo 2 anos.",
+    ],
+  },
+  {
     id: "legislacao",
     title: "Legislação & IA",
     icon: Scale,

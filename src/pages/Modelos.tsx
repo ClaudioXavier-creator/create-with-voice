@@ -53,6 +53,14 @@ const MODELOS: ModeloDoc[] = [
   { nome: "Saúde de Manipuladores", descricao: "Exames admissionais, periódicos e demissionais com ASO", categoria: "formulario", arquivo: "Form_Saude_Manipuladores", novo: true },
   { nome: "Controle de Visitantes", descricao: "Registro de visitantes com EPI e orientação de biosseguridade", categoria: "formulario", arquivo: "Form_Visitantes", novo: true },
 
+  // Potabilidade da Água (POP 04)
+  { nome: "Planilha — Controle Diário de Cloro/pH", descricao: "Registro diário de cloro residual e pH por ponto de coleta (POP 04)", categoria: "formulario", arquivo: "Form_Cloro_Diario", novo: true },
+  { nome: "Planilha — Higienização de Reservatório", descricao: "Checklist de 16 itens para limpeza semestral de caixas d'água", categoria: "formulario", arquivo: "Form_Higienizacao_Reservatorio", novo: true },
+
+  // Saúde Pessoal (POP 03 - ASO)
+  { nome: "Planilha — Controle de ASOs", descricao: "Cadastro de colaboradores com datas de ASO, vencimento e tipo de exame", categoria: "formulario", arquivo: "Form_Controle_ASO", novo: true },
+  { nome: "Planilha — Monitoramento Diário de Saúde", descricao: "Checklist diário de sintomas, uniformes e condições de saúde dos manipuladores", categoria: "formulario", arquivo: "Form_Monitoramento_Saude", novo: true },
+
   // Equipamentos
   { nome: "Lista de Equipamentos", descricao: "Inventário completo de equipamentos industriais", categoria: "equipamento", arquivo: "Lista_Equipamentos" },
   { nome: "Lista de Balanças / Calibração", descricao: "Balanças com certificados e verificação intermediária", categoria: "equipamento", arquivo: "Lista_Balancas" },
