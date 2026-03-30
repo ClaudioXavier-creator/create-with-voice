@@ -746,6 +746,7 @@ export default function HigieneSanitizacao() {
                       `Data: ${preOpData} | Turno: ${preOpSetor}`,
                       `Itens conformes: ${marcados}/${totalItens}`,
                       ncs.length > 0 ? `NCs: ${ncs.join("; ")}` : "Todos conformes",
+                      `[ASSINATURA DIGITAL: ${preOpResponsavel} — ${new Date().toLocaleString("pt-BR")} — MP 2.200-2/2001]`,
                     ].join("\n");
                     const { error } = await supabase.from("execucao_pops").insert({
                       user_id: user.id,
