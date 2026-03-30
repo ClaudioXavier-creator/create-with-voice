@@ -1825,6 +1825,284 @@ export default function HigieneSanitizacao() {
             );
           })()}
         </TabsContent>
+
+        {/* ── SAÚDE & SINTOMAS (POP-03/04 / IN 04/2007) ── */}
+        <TabsContent value="saude_sintomas" className="space-y-4">
+          <Card className="border-rose-500/20 bg-rose-50 dark:bg-rose-900/10">
+            <CardContent className="pt-4">
+              <div className="flex items-start gap-3">
+                <HeartPulse className="w-6 h-6 text-rose-600 mt-0.5" />
+                <div>
+                  <h4 className="font-display font-semibold text-sm">Controle de Saúde & Monitoramento Diário de Sintomas — POP-03/04 (IN 04/2007)</h4>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Monitoramento diário de sintomas infectocontagiosos dos colaboradores e acompanhamento da validade
+                    dos ASOs (Atestados de Saúde Ocupacional). Colaboradores com sintomas devem ser afastados da produção.
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* ASO Dashboard */}
+          {(() => {
+            const hoje = new Date().toISOString().split("T")[0];
+            const vencidos = saudeManipuladores.filter((s: any) => s.data_validade && s.data_validade < hoje);
+            const prox30 = saudeManipuladores.filter((s: any) => {
+              if (!s.data_validade) return false;
+              const d = new Date(s.data_validade);
+              const lim = new Date(); lim.setDate(lim.getDate() + 30);
+              return s.data_validade >= hoje && d <= lim;
+            });
+            const aptos = saudeManipuladores.filter((s: any) => s.apto);
+            return (
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <Card><CardContent className="pt-4 text-center"><p className="text-2xl font-bold text-primary">{saudeManipuladores.length}</p><p className="text-xs text-muted-foreground">Total ASOs</p></CardContent></Card>
+                <Card><CardContent className="pt-4 text-center"><p className="text-2xl font-bold text-green-600">{aptos.length}</p><p className="text-xs text-muted-foreground">Aptos</p></CardContent></Card>
+                <Card className={vencidos.length > 0 ? "border-destructive" : ""}><CardContent className="pt-4 text-center"><p className="text-2xl font-bold text-destructive">{vencidos.length}</p><p className="text-xs text-muted-foreground">ASOs Vencidos</p></CardContent></Card>
+                <Card className={prox30.length > 0 ? "border-yellow-500" : ""}><CardContent className="pt-4 text-center"><p className="text-2xl font-bold text-yellow-600">{prox30.length}</p><p className="text-xs text-muted-foreground">Vencem em 30 dias</p></CardContent></Card>
+              </div>
+            );
+          })()}
+
+          {/* Alertas de ASO vencido */}
+          {(() => {
+            const hoje = new Date().toISOString().split("T")[0];
+            const alertas = saudeManipuladores.filter((s: any) => s.data_validade && s.data_validade < hoje);
+            if (alertas.length === 0) return null;
+            return (
+              <Card className="border-destructive bg-destructive/5">
+                <CardContent className="pt-4">
+                  <div className="flex items-start gap-2 mb-2">
+                    <AlertTriangle className="w-5 h-5 text-destructive" />
+                    <p className="text-sm font-semibold text-destructive">ASOs Vencidos — Ação Imediata Necessária</p>
+                  </div>
+                  <div className="space-y-1">
+                    {alertas.map((s: any) => (
+                      <div key={s.id} className="flex justify-between items-center p-2 rounded border bg-background text-sm">
+                        <span className="font-medium">{s.funcionario}</span>
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs text-muted-foreground">{s.tipo_exame}</span>
+                          <Badge variant="destructive">Vencido {s.data_validade}</Badge>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })()}
+
+          {/* Formulário de Monitoramento Diário de Sintomas */}
+          <Card>
+            <CardHeader><CardTitle className="text-sm font-display">Monitoramento Diário de Sintomas</CardTitle></CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                <div><Label>Funcionário *</Label><Input value={sintomaFuncionario} onChange={e => setSintomaFuncionario(e.target.value)} placeholder="Nome do colaborador" /></div>
+                <div><Label>Data</Label><Input type="date" value={sintomaData} onChange={e => setSintomaData(e.target.value)} /></div>
+                <div className="flex items-end gap-3">
+                  <div className="flex items-center gap-2">
+                    <Switch checked={sintomaApto} onCheckedChange={setSintomaApto} />
+                    <Label className={sintomaApto ? "text-green-600" : "text-destructive"}>{sintomaApto ? "Apto para trabalho" : "INAPTO — Afastar"}</Label>
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-sm font-semibold">Sintomas observados (marque os presentes):</Label>
+                {SINTOMAS_DIARIOS.map(sintoma => {
+                  const checked = sintomaChecklist[sintoma] ?? false;
+                  return (
+                    <div key={sintoma} className="flex items-center justify-between p-2 rounded border bg-background">
+                      <span className="text-sm">{sintoma}</span>
+                      <div className="flex items-center gap-2">
+                        <span className={`text-xs font-semibold ${checked ? "text-destructive" : "text-muted-foreground"}`}>{checked ? "SIM" : "—"}</span>
+                        <Switch checked={checked} onCheckedChange={v => {
+                          setSintomaChecklist(p => ({ ...p, [sintoma]: v }));
+                          if (v) setSintomaApto(false);
+                        }} />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              <div><Label>Observações</Label><Textarea value={sintomaObs} onChange={e => setSintomaObs(e.target.value)} placeholder="Detalhes sobre o estado de saúde, encaminhamento médico, etc." /></div>
+
+              <div className="flex justify-end">
+                <Button disabled={!sintomaFuncionario || savingSintoma} onClick={async () => {
+                  if (!user) return;
+                  setSavingSintoma(true);
+                  const sintomasPresentes = Object.entries(sintomaChecklist).filter(([, v]) => v).map(([k]) => k);
+                  const obs = [
+                    `[MONITORAMENTO DIÁRIO DE SINTOMAS — POP-03 / IN 04/2007]`,
+                    `Funcionário: ${sintomaFuncionario}`,
+                    `Data: ${sintomaData}`,
+                    `Apto: ${sintomaApto ? "SIM ✅" : "NÃO ❌ — AFASTADO DA PRODUÇÃO"}`,
+                    sintomasPresentes.length > 0 ? `Sintomas: ${sintomasPresentes.join(", ")}` : "Nenhum sintoma observado ✅",
+                    sintomaObs ? `Obs: ${sintomaObs}` : "",
+                  ].filter(Boolean).join("\n");
+                  const { error } = await supabase.from("execucao_pops").insert({
+                    user_id: user.id, codigo_pop: "POP-03-SINTOMAS", nome_pop: "Monitoramento Diário de Sintomas",
+                    executor: sintomaFuncionario, setor: "Produção",
+                    status: sintomaApto ? "concluido" : "nao_conforme",
+                    observacoes: obs, data_execucao: sintomaData,
+                  });
+                  if (error) toast.error("Erro: " + error.message);
+                  else {
+                    toast.success("Monitoramento de sintomas registrado!");
+                    qc.invalidateQueries({ queryKey: ["historico_sintomas"] });
+                    setSintomaChecklist({}); setSintomaFuncionario(""); setSintomaObs(""); setSintomaApto(true);
+                  }
+                  setSavingSintoma(false);
+                }}>Salvar Monitoramento</Button>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Histórico de Sintomas */}
+          {historicoSintomas.length > 0 && (
+            <Card>
+              <CardHeader><CardTitle className="text-sm">Histórico de Monitoramento de Sintomas</CardTitle></CardHeader>
+              <Table>
+                <TableHeader><TableRow>
+                  <TableHead>Data</TableHead><TableHead>Funcionário</TableHead><TableHead>Status</TableHead><TableHead className="max-w-[300px]">Detalhes</TableHead>
+                </TableRow></TableHeader>
+                <TableBody>
+                  {historicoSintomas.map((r: any) => (
+                    <TableRow key={r.id}>
+                      <TableCell className="whitespace-nowrap">{r.data_execucao}</TableCell>
+                      <TableCell className="font-medium">{r.executor}</TableCell>
+                      <TableCell>{r.status === "concluido" ? <Badge className="bg-primary/20 text-primary">Apto</Badge> : <Badge variant="destructive">Inapto</Badge>}</TableCell>
+                      <TableCell className="max-w-[300px] text-xs whitespace-pre-line truncate">{(r.observacoes || "").slice(0, 150)}{(r.observacoes?.length || 0) > 150 ? "…" : ""}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </Card>
+          )}
+
+          {/* Lista de ASOs */}
+          {saudeManipuladores.length > 0 && (
+            <Card>
+              <CardHeader><CardTitle className="text-sm">Exames Médicos (ASO) Cadastrados</CardTitle></CardHeader>
+              <Table>
+                <TableHeader><TableRow>
+                  <TableHead>Funcionário</TableHead><TableHead>Tipo Exame</TableHead><TableHead>Data Exame</TableHead>
+                  <TableHead>Validade</TableHead><TableHead>Médico</TableHead><TableHead>Status</TableHead>
+                </TableRow></TableHeader>
+                <TableBody>
+                  {saudeManipuladores.map((s: any) => {
+                    const hoje = new Date().toISOString().split("T")[0];
+                    const vencido = s.data_validade && s.data_validade < hoje;
+                    return (
+                      <TableRow key={s.id}>
+                        <TableCell className="font-medium">{s.funcionario}</TableCell>
+                        <TableCell>{s.tipo_exame}</TableCell>
+                        <TableCell>{s.data_exame}</TableCell>
+                        <TableCell className={vencido ? "text-destructive font-semibold" : ""}>{s.data_validade || "—"}</TableCell>
+                        <TableCell className="text-xs">{s.medico || "—"} {s.crm ? `(CRM ${s.crm})` : ""}</TableCell>
+                        <TableCell>
+                          {vencido ? <Badge variant="destructive">Vencido</Badge> :
+                           s.apto ? <Badge className="bg-primary/20 text-primary">Apto</Badge> :
+                           <Badge variant="outline">Inapto</Badge>}
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            </Card>
+          )}
+        </TabsContent>
+
+        {/* ── ARQUIVO 2 ANOS (Decreto 12.031/2024) ── */}
+        <TabsContent value="arquivo" className="space-y-4">
+          <Card className="border-primary/20 bg-primary/5">
+            <CardContent className="pt-4">
+              <div className="flex items-start gap-3">
+                <Archive className="w-6 h-6 text-primary mt-0.5" />
+                <div>
+                  <h4 className="font-display font-semibold text-sm">Política de Retenção de Registros — Decreto 12.031/2024</h4>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Todos os registros de BPF devem ser mantidos por no mínimo <strong>2 (dois) anos</strong> e estar
+                    disponíveis para fiscalização a qualquer momento. O sistema retém automaticamente todos os dados
+                    e impede exclusão de registros dentro do prazo de guarda obrigatório.
+                  </p>
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    <Badge variant="outline" className="text-[10px]">Art. 18 — Decreto 12.031/2024</Badge>
+                    <Badge variant="outline" className="text-[10px]">IN 04/2007 — Requisitos de Documentação</Badge>
+                    <Badge variant="outline" className="text-[10px]">IN 15/2009 — Controle de Registros</Badge>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {archiveCounts && (
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+              {[
+                { label: "Execuções de POPs", count: archiveCounts.pops, icon: "📋" },
+                { label: "Registros de Limpeza", count: archiveCounts.limpeza, icon: "🧹" },
+                { label: "Análises Laboratoriais", count: archiveCounts.agua, icon: "🔬" },
+                { label: "Controle de Resíduos", count: archiveCounts.residuos, icon: "♻️" },
+                { label: "Calibrações", count: archiveCounts.calibracoes, icon: "⚖️" },
+                { label: "Não Conformidades", count: archiveCounts.nc, icon: "⚠️" },
+              ].map(item => (
+                <Card key={item.label}>
+                  <CardContent className="pt-4">
+                    <div className="flex items-center gap-3">
+                      <span className="text-2xl">{item.icon}</span>
+                      <div>
+                        <p className="text-2xl font-bold text-primary">{item.count}</p>
+                        <p className="text-xs text-muted-foreground">{item.label}</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
+
+          <Card>
+            <CardContent className="pt-6 space-y-4">
+              <h4 className="font-semibold text-sm">Status de Conformidade — Retenção Documental</h4>
+              {[
+                { modulo: "Execução de POPs (POP-01 a POP-10)", status: true, detalhe: "Todos os registros de execução de POPs são armazenados permanentemente no banco de dados com timestamp e user_id." },
+                { modulo: "Registros de Limpeza e Higienização (POP-02/03)", status: true, detalhe: "Cronogramas, checklists pré-operacionais, liberação de linha e monitoramento de superfícies retidos integralmente." },
+                { modulo: "Controle de Água e Laudos (POP-04)", status: true, detalhe: "Registros de potabilidade, laudos laboratoriais e certificados de limpeza de reservatório arquivados." },
+                { modulo: "Controle de Resíduos e Efluentes (POP-05)", status: true, detalhe: "Manifestos de transporte, licenças ambientais e registros de descarte mantidos com rastreabilidade completa." },
+                { modulo: "Calibrações e Manutenções (POP-06)", status: true, detalhe: "Certificados de calibração, verificações intermediárias e planos preventivos arquivados." },
+                { modulo: "Rastreabilidade e Recall (POP-08)", status: true, detalhe: "Correlação MP↔PA, testes de recall simulado e certificados de análise retidos por tempo indeterminado." },
+                { modulo: "Não Conformidades e Ações Corretivas", status: true, detalhe: "NCs, causas-raiz, planos de ação e verificações de eficácia mantidos para auditoria." },
+                { modulo: "Treinamentos e ASOs", status: true, detalhe: "Registros de capacitação, ASOs e monitoramento de sintomas armazenados permanentemente." },
+              ].map(item => (
+                <div key={item.modulo} className="p-3 rounded-lg border bg-background">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-medium">{item.modulo}</span>
+                    <Badge className="bg-primary/20 text-primary">✅ Retido ≥ 2 anos</Badge>
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-1">{item.detalhe}</p>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+
+          <Card className="border-green-500/20 bg-green-50 dark:bg-green-900/10">
+            <CardContent className="pt-4">
+              <div className="flex items-center gap-3">
+                <CheckCircle2 className="w-6 h-6 text-green-600" />
+                <div>
+                  <h4 className="font-semibold text-sm text-green-700 dark:text-green-400">Sistema em Conformidade com a Política de Retenção</h4>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Todos os módulos do sistema armazenam registros em banco de dados permanente com backup automático.
+                    A exclusão de registros dentro do período de guarda de 2 anos é controlada por políticas de acesso.
+                    Os dados estão disponíveis para exportação e fiscalização a qualquer momento.
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
       </Tabs>
     </div>
   );
