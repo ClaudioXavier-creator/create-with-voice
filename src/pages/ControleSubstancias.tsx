@@ -22,10 +22,11 @@ const TIPOS_SUBSTANCIA = [
 ];
 
 const SUBSTANCIAS_COMUNS = [
-  "Aflatoxinas (B1+B2+G1+G2)", "Aflatoxina B1", "Fumonisinas (B1+B2)", "Zearalenona", "Ocratoxina A",
+  "Ractopamina (Cloridrato)", "Aflatoxinas (B1+B2+G1+G2)", "Aflatoxina B1", "Fumonisinas (B1+B2)", "Zearalenona", "Ocratoxina A",
   "Deoxinivalenol (DON)", "Cloranfenicol", "Nitrofuranos", "Melengesterol",
   "Proteínas de ruminante em ração de ruminantes", "Salmonella spp.", "Dioxinas e PCBs",
   "Chumbo (Pb)", "Arsênio (As)", "Mercúrio (Hg)", "Cádmio (Cd)", "Flúor (F)",
+  "Carbadox", "Olaquindox", "Furazolidona", "Dietilestilbestrol (DES)",
 ];
 
 export default function ControleSubstancias() {
