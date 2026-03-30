@@ -246,8 +246,9 @@ export default function ManutencaoPreventiva() {
       )}
 
       <Tabs defaultValue="manutencoes">
-        <TabsList>
+        <TabsList className="flex-wrap">
           <TabsTrigger value="manutencoes">Manutenções ({manutencoes.length})</TabsTrigger>
+          <TabsTrigger value="plano_preventivo">📋 Plano Preventivo</TabsTrigger>
           <TabsTrigger value="trocas">Troca de Peças ({trocasPecas.length})</TabsTrigger>
           <TabsTrigger value="calibracoes">Calibrações ({calibracoes.length})</TabsTrigger>
           <TabsTrigger value="cronograma">Cronograma</TabsTrigger>
