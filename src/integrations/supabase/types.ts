@@ -1908,6 +1908,7 @@ export type Database = {
           recall_data: string | null
           recall_motivo: string | null
           recall_status: string | null
+          sif_dipoa: string | null
           tipo_origem_animal: string | null
           user_id: string
         }
@@ -1931,6 +1932,7 @@ export type Database = {
           recall_data?: string | null
           recall_motivo?: string | null
           recall_status?: string | null
+          sif_dipoa?: string | null
           tipo_origem_animal?: string | null
           user_id: string
         }
@@ -1954,6 +1956,7 @@ export type Database = {
           recall_data?: string | null
           recall_motivo?: string | null
           recall_status?: string | null
+          sif_dipoa?: string | null
           tipo_origem_animal?: string | null
           user_id?: string
         }
