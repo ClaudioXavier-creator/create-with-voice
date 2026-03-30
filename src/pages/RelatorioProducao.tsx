@@ -202,8 +202,12 @@ export default function RelatorioProducao() {
 
   const exportCsv = () => {
     const mesLabel = MESES[Number(mes) - 1];
-    let csv = `Lançamento de Alimentação Animal - ${mesLabel}/${ano}\n`;
-    csv += `${empresaNome} - ${empresaCnpj}\n\n`;
+    let csv = `SIPEAGRO — Lançamento de Alimentação Animal\n`;
+    csv += `Período: ${mesLabel}/${ano}\n`;
+    csv += `Estabelecimento: ${empresaNome}\n`;
+    csv += `CNPJ: ${empresaCnpj}\n`;
+    csv += `Registro SIPEAGRO/MAPA: ${empresaRegistroSipeagro || "N/I"}\n`;
+    csv += `Conforme IN 17/2017 — Art. 55\n\n`;
 
     for (const tab of Object.keys(TAB_LABELS) as AtividadeTab[]) {
       const total = getTotal(tab);
@@ -215,6 +219,9 @@ export default function RelatorioProducao() {
       }
       csv += `Total,${total > 0 ? total.toFixed(2).replace(".", ",") : "0,00"}\n`;
     }
+
+    csv += `\n--- Relatório gerado conforme modelo SIPEAGRO (IN 17/2017) ---\n`;
+    csv += `Data de geração: ${new Date().toLocaleString("pt-BR")}\n`;
 
     const BOM = "\uFEFF";
     const blob = new Blob([BOM + csv], { type: "text/csv;charset=utf-8;" });
