@@ -14,7 +14,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Switch } from "@/components/ui/switch";
-import { Plus, Droplets, CheckCircle2, Clock, Trash2, Beaker, FileText, ClipboardList, Download, ShieldCheck, Layers, FlaskConical, Container } from "lucide-react";
+import { Plus, Droplets, CheckCircle2, Clock, Trash2, Beaker, FileText, ClipboardList, Download, ShieldCheck, Layers, FlaskConical, Container, UserCheck, Droplet } from "lucide-react";
 import PageHeader from "@/components/PageHeader";
 
 const AREAS = ["Recepção de MP", "Mistura", "Ensaque", "Expedição", "Almoxarifado", "Laboratório", "Banheiros", "Refeitório", "Área Externa",
@@ -159,6 +159,67 @@ const CHECKLIST_SUPERFICIES: { area: string; itens: string[] }[] = [
   ]},
 ];
 
+// ── CHECKLIST HIGIENE PESSOAL (POP-03 / IN 04/2007) ──
+const CHECKLIST_HIGIENE_PESSOAL: { area: string; itens: string[] }[] = [
+  { area: "Uniformes e EPIs", itens: [
+    "Uniforme limpo e em bom estado de conservação",
+    "Calçados fechados e limpos (botas ou sapatos de segurança)",
+    "Uso de touca/gorro cobrindo todo o cabelo",
+    "Uso de máscara descartável (quando aplicável)",
+    "Luvas descartáveis (manipulação de premix/micro-ingredientes)",
+    "Protetor auricular disponível e em uso (áreas de ruído)",
+    "Óculos de proteção em áreas de risco (moagem, dosagem)",
+  ]},
+  { area: "Higiene Pessoal", itens: [
+    "Mãos limpas e unhas curtas/sem esmalte",
+    "Lavagem das mãos realizada antes de iniciar atividades",
+    "Ausência de barba (ou uso de protetor de barba)",
+    "Ausência de adornos (anéis, brincos, relógio, pulseiras)",
+    "Ausência de maquiagem/perfumes/cosméticos fortes",
+    "Cabelos totalmente cobertos pela touca",
+  ]},
+  { area: "Saúde do Trabalhador", itens: [
+    "ASO (Atestado de Saúde Ocupacional) dentro da validade",
+    "Exame admissional/periódico em dia",
+    "Ausência de lesões cutâneas expostas (feridas, abscessos)",
+    "Ausência de sintomas de doença infectocontagiosa",
+    "Colaborador apto para a função (sem restrições médicas)",
+  ]},
+  { area: "Comportamento e Boas Práticas", itens: [
+    "Proibido comer, beber ou fumar na área de produção",
+    "Proibido guardar alimentos nos armários da produção",
+    "Proibido uso de celular na área produtiva",
+    "Lavagem de mãos após uso do banheiro verificada",
+    "Treinamento de BPF/Higiene atualizado (anual mínimo)",
+  ]},
+];
+
+// ── CHECKLIST HIGIENIZAÇÃO DE RESERVATÓRIO (POP-04 / IN 04/2007) ──
+const CHECKLIST_RESERVATORIO: { area: string; itens: string[] }[] = [
+  { area: "Preparação", itens: [
+    "Reservatório completamente esvaziado",
+    "Registro fotográfico do estado antes da limpeza",
+    "Equipamentos de limpeza preparados e higienizados",
+    "EPI do executor conferido (luvas, botas, máscara)",
+  ]},
+  { area: "Execução da Limpeza", itens: [
+    "Remoção mecânica de sedimentos e incrustações",
+    "Lavagem com água sob pressão das paredes e fundo",
+    "Aplicação de solução clorada (200 ppm) em toda superfície",
+    "Tempo de contato da solução desinfetante respeitado (≥ 30 min)",
+    "Enxágue completo com água potável",
+    "Drenagem total da água de enxágue",
+  ]},
+  { area: "Pós-Limpeza", itens: [
+    "Inspeção visual final — ausência de resíduos e biofilme",
+    "Vedação e tampas reinstaladas corretamente",
+    "Reservatório reabastecido com água potável",
+    "Dosagem de cloro ajustada após reabastecimento",
+    "Registro fotográfico do estado após a limpeza",
+    "Certificado de limpeza emitido e arquivado",
+  ]},
+];
+
 export default function HigieneSanitizacao() {
   const { user } = useAuth();
   const qc = useQueryClient();
@@ -240,6 +301,23 @@ export default function HigieneSanitizacao() {
   const [aguaCheckResp, setAguaCheckResp] = useState("");
   const [aguaCheckData, setAguaCheckData] = useState(new Date().toISOString().split("T")[0]);
   const [savingAguaCheck, setSavingAguaCheck] = useState(false);
+
+  // POP-03 Higiene Pessoal state
+  const [higPesChecklist, setHigPesChecklist] = useState<Record<string, boolean>>({});
+  const [higPesResp, setHigPesResp] = useState("");
+  const [higPesData, setHigPesData] = useState(new Date().toISOString().split("T")[0]);
+  const [higPesTurno, setHigPesTurno] = useState("");
+  const [savingHigPes, setSavingHigPes] = useState(false);
+
+  // Higienização de Reservatório state
+  const [resChecklist, setResChecklist] = useState<Record<string, boolean>>({});
+  const [resResp, setResResp] = useState("");
+  const [resData, setResData] = useState(new Date().toISOString().split("T")[0]);
+  const [resIdentificacao, setResIdentificacao] = useState("");
+  const [resCapacidade, setResCapacidade] = useState("");
+  const [resEmpresa, setResEmpresa] = useState("");
+  const [resObs, setResObs] = useState("");
+  const [savingRes, setSavingRes] = useState(false);
 
   const [regForm, setRegForm] = useState({
     cronograma_id: "", data_execucao: new Date().toISOString().split("T")[0],
@@ -516,6 +594,8 @@ export default function HigieneSanitizacao() {
           <TabsTrigger value="liberacao"><Layers className="w-4 h-4 mr-1" />Liberação de Linha</TabsTrigger>
           <TabsTrigger value="superficies"><FlaskConical className="w-4 h-4 mr-1" />Superfícies</TabsTrigger>
           <TabsTrigger value="silos"><Container className="w-4 h-4 mr-1" />Silos & Transportadores</TabsTrigger>
+          <TabsTrigger value="higiene_pessoal"><UserCheck className="w-4 h-4 mr-1" />Higiene Pessoal (POP-03)</TabsTrigger>
+          <TabsTrigger value="reservatorio"><Droplet className="w-4 h-4 mr-1" />Limpeza Reservatório</TabsTrigger>
           <TabsTrigger value="cronogramas"><Droplets className="w-4 h-4 mr-1" />Cronogramas</TabsTrigger>
           <TabsTrigger value="registros"><CheckCircle2 className="w-4 h-4 mr-1" />Registros Limpeza</TabsTrigger>
           <TabsTrigger value="agua"><Beaker className="w-4 h-4 mr-1" />Controle de Água (POP-04)</TabsTrigger>
@@ -975,6 +1055,168 @@ export default function HigieneSanitizacao() {
                 >
                   Salvar Checklist
                 </Button>
+              </div>
+            );
+          })()}
+        </TabsContent>
+
+        {/* ── HIGIENE PESSOAL (POP-03 / IN 04/2007) ── */}
+        <TabsContent value="higiene_pessoal" className="space-y-4">
+          <Card className="border-teal-500/20 bg-teal-50 dark:bg-teal-900/10">
+            <CardContent className="pt-4">
+              <div className="flex items-start gap-3">
+                <UserCheck className="w-6 h-6 text-teal-600 mt-0.5" />
+                <div>
+                  <h4 className="font-display font-semibold text-sm">Checklist de Higiene e Saúde do Pessoal — POP-03 (IN 04/2007)</h4>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Verificação obrigatória de uniformes, EPIs, higiene pessoal, saúde ocupacional e comportamento
+                    dos colaboradores conforme Art. 2º da IN 04/2007 e requisitos de BPF.
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-4">
+            <div><Label>Responsável *</Label><Input value={higPesResp} onChange={e => setHigPesResp(e.target.value)} placeholder="Nome do inspetor" /></div>
+            <div><Label>Data</Label><Input type="date" value={higPesData} onChange={e => setHigPesData(e.target.value)} /></div>
+            <div>
+              <Label>Turno</Label>
+              <Select value={higPesTurno} onValueChange={setHigPesTurno}>
+                <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Turno 1 (Manhã)">Turno 1 (Manhã)</SelectItem>
+                  <SelectItem value="Turno 2 (Tarde)">Turno 2 (Tarde)</SelectItem>
+                  <SelectItem value="Turno 3 (Noite)">Turno 3 (Noite)</SelectItem>
+                  <SelectItem value="Turno Único">Turno Único</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            {CHECKLIST_HIGIENE_PESSOAL.map(grupo => (
+              <Card key={grupo.area}>
+                <CardHeader className="py-3"><CardTitle className="text-sm font-display">{grupo.area}</CardTitle></CardHeader>
+                <CardContent className="py-0 pb-3">
+                  <div className="space-y-2">
+                    {grupo.itens.map(item => {
+                      const key = `higpes__${grupo.area}__${item}`;
+                      const checked = higPesChecklist[key] ?? false;
+                      return (
+                        <div key={key} className="flex items-center justify-between p-2 rounded border bg-background">
+                          <span className="text-sm">{item}</span>
+                          <div className="flex items-center gap-2">
+                            <span className={`text-xs font-semibold ${checked ? "text-primary" : "text-muted-foreground"}`}>{checked ? "OK" : "—"}</span>
+                            <Switch checked={checked} onCheckedChange={v => setHigPesChecklist(p => ({ ...p, [key]: v }))} />
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          {(() => {
+            const totalItens = CHECKLIST_HIGIENE_PESSOAL.reduce((a, g) => a + g.itens.length, 0);
+            const marcados = Object.values(higPesChecklist).filter(Boolean).length;
+            const todosOk = marcados === totalItens;
+            return (
+              <div className="flex items-center justify-between p-4 rounded-lg border bg-muted/30">
+                <div>
+                  <p className="text-sm font-semibold">{marcados}/{totalItens} itens verificados</p>
+                  <p className="text-xs text-muted-foreground">{todosOk ? "✅ Todos conformes — Higiene pessoal OK" : "Conclua todos os itens"}</p>
+                </div>
+                <Button disabled={!higPesResp || savingHigPes} onClick={async () => {
+                  if (!user) return;
+                  setSavingHigPes(true);
+                  const ncs = CHECKLIST_HIGIENE_PESSOAL.flatMap(g => g.itens.filter(item => !higPesChecklist[`higpes__${g.area}__${item}`]).map(item => `${g.area}: ${item}`));
+                  const obs = [`[CHECKLIST HIGIENE PESSOAL — POP-03 / IN 04/2007]`, `Data: ${higPesData} | Turno: ${higPesTurno || "—"}`, `Itens conformes: ${marcados}/${totalItens}`, ncs.length > 0 ? `NCs: ${ncs.join("; ")}` : "Todos conformes ✅"].join("\n");
+                  const { error } = await supabase.from("execucao_pops").insert({ user_id: user.id, codigo_pop: "POP-03-HIGIENE", nome_pop: "Checklist Higiene e Saúde Pessoal", executor: higPesResp, setor: higPesTurno || "Produção", status: todosOk ? "concluido" : "nao_conforme", observacoes: obs, data_execucao: higPesData });
+                  if (error) toast.error("Erro: " + error.message);
+                  else { toast.success("Checklist POP-03 Higiene Pessoal salvo!"); setHigPesChecklist({}); setHigPesResp(""); setHigPesTurno(""); }
+                  setSavingHigPes(false);
+                }}>Salvar Checklist POP-03</Button>
+              </div>
+            );
+          })()}
+        </TabsContent>
+
+        {/* ── LIMPEZA DE RESERVATÓRIO (POP-04) ── */}
+        <TabsContent value="reservatorio" className="space-y-4">
+          <Card className="border-blue-500/20 bg-blue-50 dark:bg-blue-900/10">
+            <CardContent className="pt-4">
+              <div className="flex items-start gap-3">
+                <Droplet className="w-6 h-6 text-blue-600 mt-0.5" />
+                <div>
+                  <h4 className="font-display font-semibold text-sm">Registro de Higienização de Reservatório — POP-04 (IN 04/2007)</h4>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Limpeza semestral obrigatória de caixas d'água e reservatórios. Registre cada etapa do processo,
+                    emita o certificado e arquive para fiscalização (Decreto 12.031/2024).
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+            <div><Label>Responsável *</Label><Input value={resResp} onChange={e => setResResp(e.target.value)} placeholder="Executor" /></div>
+            <div><Label>Data</Label><Input type="date" value={resData} onChange={e => setResData(e.target.value)} /></div>
+            <div><Label>Identificação do Reservatório *</Label><Input value={resIdentificacao} onChange={e => setResIdentificacao(e.target.value)} placeholder="Ex: Caixa d'água 01 — 5.000L" /></div>
+            <div><Label>Capacidade (L)</Label><Input value={resCapacidade} onChange={e => setResCapacidade(e.target.value)} placeholder="Ex: 5000" /></div>
+          </div>
+          <div className="grid grid-cols-2 gap-3 mb-4">
+            <div><Label>Empresa Executora (se terceirizada)</Label><Input value={resEmpresa} onChange={e => setResEmpresa(e.target.value)} placeholder="Nome da empresa ou 'Equipe interna'" /></div>
+            <div><Label>Observações</Label><Input value={resObs} onChange={e => setResObs(e.target.value)} placeholder="Detalhes adicionais" /></div>
+          </div>
+
+          <div className="space-y-4">
+            {CHECKLIST_RESERVATORIO.map(grupo => (
+              <Card key={grupo.area}>
+                <CardHeader className="py-3"><CardTitle className="text-sm font-display">{grupo.area}</CardTitle></CardHeader>
+                <CardContent className="py-0 pb-3">
+                  <div className="space-y-2">
+                    {grupo.itens.map(item => {
+                      const key = `res__${grupo.area}__${item}`;
+                      const checked = resChecklist[key] ?? false;
+                      return (
+                        <div key={key} className="flex items-center justify-between p-2 rounded border bg-background">
+                          <span className="text-sm">{item}</span>
+                          <div className="flex items-center gap-2">
+                            <span className={`text-xs font-semibold ${checked ? "text-primary" : "text-muted-foreground"}`}>{checked ? "OK" : "—"}</span>
+                            <Switch checked={checked} onCheckedChange={v => setResChecklist(p => ({ ...p, [key]: v }))} />
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          {(() => {
+            const totalItens = CHECKLIST_RESERVATORIO.reduce((a, g) => a + g.itens.length, 0);
+            const marcados = Object.values(resChecklist).filter(Boolean).length;
+            const todosOk = marcados === totalItens;
+            return (
+              <div className="flex items-center justify-between p-4 rounded-lg border bg-muted/30">
+                <div>
+                  <p className="text-sm font-semibold">{marcados}/{totalItens} itens verificados</p>
+                  <p className="text-xs text-muted-foreground">{todosOk ? "✅ Higienização do reservatório completa" : "Conclua todos os itens"}</p>
+                </div>
+                <Button disabled={!resResp || !resIdentificacao || savingRes} onClick={async () => {
+                  if (!user) return;
+                  setSavingRes(true);
+                  const ncs = CHECKLIST_RESERVATORIO.flatMap(g => g.itens.filter(item => !resChecklist[`res__${g.area}__${item}`]).map(item => `${g.area}: ${item}`));
+                  const obs = [`[HIGIENIZAÇÃO DE RESERVATÓRIO — POP-04 / IN 04/2007]`, `Data: ${resData} | Reservatório: ${resIdentificacao} (${resCapacidade || "—"}L)`, `Empresa: ${resEmpresa || "Equipe interna"}`, `Itens conformes: ${marcados}/${totalItens}`, ncs.length > 0 ? `NCs: ${ncs.join("; ")}` : "Todos conformes ✅", resObs ? `Obs: ${resObs}` : ""].filter(Boolean).join("\n");
+                  const { error } = await supabase.from("execucao_pops").insert({ user_id: user.id, codigo_pop: "POP-04-RESERVATORIO", nome_pop: "Higienização de Reservatório de Água", executor: resResp, setor: resIdentificacao, status: todosOk ? "concluido" : "nao_conforme", observacoes: obs, data_execucao: resData });
+                  if (error) toast.error("Erro: " + error.message);
+                  else { toast.success("Registro de higienização do reservatório salvo!"); qc.invalidateQueries({ queryKey: ["registros_agua"] }); setResChecklist({}); setResResp(""); setResIdentificacao(""); setResCapacidade(""); setResEmpresa(""); setResObs(""); }
+                  setSavingRes(false);
+                }}>Salvar Higienização</Button>
               </div>
             );
           })()}

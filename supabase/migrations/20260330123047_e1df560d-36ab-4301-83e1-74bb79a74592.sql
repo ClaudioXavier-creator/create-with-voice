@@ -1,0 +1,1 @@
+ALTER TABLE public.rastreabilidade ADD COLUMN IF NOT EXISTS sif_dipoa TEXT DEFAULT '';

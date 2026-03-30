@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Scale, Sparkles, Loader2, RefreshCw, Bell, BookOpen, CheckCircle2, AlertTriangle, Info, Eye, Search, Upload, FileText, Trash2, ExternalLink, Plus, X, FolderOpen, Globe, Filter, Save } from "lucide-react";
+import { Scale, Sparkles, Loader2, RefreshCw, Bell, BookOpen, CheckCircle2, AlertTriangle, Info, Eye, Search, Upload, FileText, Trash2, ExternalLink, Plus, X, FolderOpen, Globe, Filter, Save, ShieldAlert, Ban } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -449,6 +449,10 @@ export default function Legislacao() {
           <TabsTrigger value="rotulagem">
             <FileText className="w-4 h-4 mr-1" />
             IN 17/2017
+          </TabsTrigger>
+          <TabsTrigger value="substancias">
+            <ShieldAlert className="w-4 h-4 mr-1" />
+            Substâncias Proibidas
           </TabsTrigger>
         </TabsList>
 
@@ -942,6 +946,139 @@ export default function Legislacao() {
               </p>
             </CardContent>
           </Card>
+        </TabsContent>
+
+        {/* ──── Tab: Substâncias Proibidas / Restritas ──── */}
+        <TabsContent value="substancias">
+          <div className="space-y-6">
+            <Card className="border-destructive/30 bg-destructive/5">
+              <CardContent className="pt-4">
+                <div className="flex items-start gap-3">
+                  <ShieldAlert className="w-6 h-6 text-destructive mt-0.5" />
+                  <div>
+                    <h4 className="font-display font-semibold text-sm">Mapeamento de Substâncias Proibidas e com Limite de Uso</h4>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Referência normativa: Decreto 12.031/2024, IN 15/2009, IN 13/2004, IN 65/2006, IN 14/2012.
+                      Lista atualizada conforme publicações do MAPA/SDA.
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader><CardTitle className="font-display text-sm flex items-center gap-2"><Ban className="w-5 h-5 text-destructive" /> Substâncias PROIBIDAS em Alimentação Animal</CardTitle></CardHeader>
+              <CardContent>
+                <Table>
+                  <TableHeader><TableRow><TableHead>Substância / Grupo</TableHead><TableHead>Norma</TableHead><TableHead>Espécies</TableHead><TableHead>Observação</TableHead></TableRow></TableHeader>
+                  <TableBody>
+                    {[
+                      { substancia: "Proteínas e gorduras de ruminantes", norma: "IN 08/2004, IN 15/2009", especies: "Ruminantes", obs: "Prevenção de EEB (Encefalopatia Espongiforme Bovina)" },
+                      { substancia: "Cloranfenicol", norma: "IN 09/2003", especies: "Todas", obs: "Proibido como aditivo ou promotor de crescimento" },
+                      { substancia: "Nitrofuranos e seus derivados", norma: "IN 09/2003", especies: "Todas", obs: "Proibido — resíduo cancerígeno" },
+                      { substancia: "Dietilestilbestrol (DES)", norma: "Portaria 51/1991", especies: "Todas", obs: "Hormônio proibido como promotor" },
+                      { substancia: "Clenbuterol", norma: "IN 17/2004", especies: "Todas", obs: "Beta-agonista proibido como promotor de crescimento" },
+                      { substancia: "Olaquindox", norma: "IN 11/2004", especies: "Todas", obs: "Proibido como promotor de crescimento (desde 2005)" },
+                      { substancia: "Carbadox", norma: "IN 35/2005", especies: "Todas", obs: "Proibido — potencial cancerígeno" },
+                      { substancia: "Avoparcina", norma: "Portaria 448/1998", especies: "Todas", obs: "Proibido como promotor — resistência a vancomicina" },
+                      { substancia: "Espiramicina e Eritromicina", norma: "IN 14/2012", especies: "Aves e Suínos", obs: "Proibidos como aditivos melhoradores de desempenho" },
+                      { substancia: "Colistina (uso como promotor)", norma: "IN 45/2016", especies: "Todas", obs: "Proibida como aditivo zootécnico (último recurso humano)" },
+                      { substancia: "Tilosina e Lincomicina (promotor)", norma: "IN 01/2020", especies: "Todas", obs: "Proibidos como aditivos melhoradores de desempenho" },
+                      { substancia: "Bacitracina de Zinco (promotor)", norma: "IN 01/2020", especies: "Todas", obs: "Proibida como aditivo melhorador de desempenho" },
+                      { substancia: "Virginiamicina (promotor)", norma: "IN 01/2020", especies: "Todas", obs: "Proibida como aditivo melhorador de desempenho" },
+                    ].map((s, i) => (
+                      <TableRow key={i}>
+                        <TableCell className="font-medium text-sm">{s.substancia}</TableCell>
+                        <TableCell><Badge variant="outline" className="text-[10px] font-mono">{s.norma}</Badge></TableCell>
+                        <TableCell className="text-xs">{s.especies}</TableCell>
+                        <TableCell className="text-xs text-muted-foreground max-w-[250px]">{s.obs}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader><CardTitle className="font-display text-sm flex items-center gap-2"><AlertTriangle className="w-5 h-5 text-yellow-600" /> Substâncias com LIMITE DE USO (Monitoramento obrigatório)</CardTitle></CardHeader>
+              <CardContent>
+                <Table>
+                  <TableHeader><TableRow><TableHead>Substância</TableHead><TableHead>Limite</TableHead><TableHead>Norma</TableHead><TableHead>Espécies</TableHead><TableHead>Ação BPF</TableHead></TableRow></TableHeader>
+                  <TableBody>
+                    {[
+                      { substancia: "Ionóforos (Monensina, Salinomicina, Lasalocida)", limite: "Carry-over < 1%", norma: "IN 15/2009", especies: "Bovinos, Aves", acao: "Sequenciamento + flushing obrigatório" },
+                      { substancia: "Medicamentos veterinários em ração", limite: "Carry-over < 3%", norma: "IN 15/2009", especies: "Todas", acao: "Limpeza de linha + teste de arraste" },
+                      { substancia: "Aflatoxina B1 (Micotoxina)", limite: "≤ 20 ppb (μg/kg)", norma: "RDC 07/2011", especies: "Bovinos leiteiros, Suínos jovens", acao: "Análise de recebimento + contraprova" },
+                      { substancia: "Aflatoxinas totais", limite: "≤ 50 ppb (μg/kg)", norma: "IN 13/2004, RDC 07/2011", especies: "Todas (ração animal geral)", acao: "Monitoramento de MP (milho, amendoim, algodão)" },
+                      { substancia: "Deoxinivalenol (DON)", limite: "≤ 5.000 ppb", norma: "RDC 07/2011", especies: "Suínos (mais sensíveis)", acao: "Controle de recebimento de trigo/milho" },
+                      { substancia: "Fumonisinas (FB1 + FB2)", limite: "≤ 5.000 ppb", norma: "RDC 07/2011", especies: "Equinos (leucoencefalomalácia)", acao: "Análise de milho e subprodutos" },
+                      { substancia: "Zearalenona", limite: "≤ 1.000 ppb", norma: "Referência internacional", especies: "Suínos reprodução", acao: "Monitoramento de milho e subprodutos" },
+                      { substancia: "Cobre (CuSO₄)", limite: "≤ 250 mg/kg (suínos), ≤ 35 mg/kg (ovinos)", norma: "IN 13/2004", especies: "Suínos, Ovinos", acao: "Controle na formulação — tóxico para ovinos" },
+                      { substancia: "Zinco (ZnO)", limite: "≤ 2.500 mg/kg (suínos desmame, 14 dias)", norma: "Prática regulatória", especies: "Suínos", acao: "Uso terapêutico temporário — registrar duração" },
+                      { substancia: "Selênio", limite: "≤ 0,3 mg/kg na dieta final", norma: "IN 13/2004", especies: "Todas", acao: "Controle de dosagem — margem tóxica estreita" },
+                      { substancia: "Ureia (NNP)", limite: "Máx. 30% eq. proteico", norma: "Prática regulatória", especies: "Ruminantes exclusivo", acao: "PROIBIDO para monogástricos — controle de formulação" },
+                    ].map((s, i) => (
+                      <TableRow key={i}>
+                        <TableCell className="font-medium text-sm">{s.substancia}</TableCell>
+                        <TableCell className="font-mono text-xs">{s.limite}</TableCell>
+                        <TableCell><Badge variant="outline" className="text-[10px] font-mono">{s.norma}</Badge></TableCell>
+                        <TableCell className="text-xs">{s.especies}</TableCell>
+                        <TableCell className="text-xs text-muted-foreground max-w-[200px]">{s.acao}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader><CardTitle className="font-display text-sm flex items-center gap-2"><Info className="w-5 h-5 text-primary" /> Aditivos com Restrição por Espécie</CardTitle></CardHeader>
+              <CardContent>
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <h5 className="text-sm font-semibold text-destructive">Proibidos para Ruminantes:</h5>
+                    {[
+                      "Proteínas e gorduras de mamíferos (Prevenção EEB)",
+                      "Farinha de carne e ossos de ruminantes",
+                      "Cama de aviário como ingrediente",
+                      "Resíduos de alimentação humana com proteína animal",
+                    ].map((item, i) => (
+                      <div key={i} className="flex items-start gap-2 text-sm">
+                        <Ban className="w-4 h-4 text-destructive mt-0.5 shrink-0" />
+                        <span>{item}</span>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="space-y-2">
+                    <h5 className="text-sm font-semibold text-primary">Ionóforos — Restrições Críticas:</h5>
+                    {[
+                      "Monensina: TÓXICO para equinos (dose letal ≈ 2-3 mg/kg PV)",
+                      "Salinomicina: NÃO usar com tiamulina (interação letal)",
+                      "Lasalocida: Cuidado com mistura com outros ionóforos",
+                      "Narasina: Tóxico para perus e coelhos",
+                      "Sequenciamento: Nunca produzir ração equina após ionóforos sem flushing",
+                    ].map((item, i) => (
+                      <div key={i} className="flex items-start gap-2 text-sm">
+                        <AlertTriangle className="w-4 h-4 text-yellow-600 mt-0.5 shrink-0" />
+                        <span>{item}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-muted/30">
+              <CardContent className="pt-4">
+                <p className="text-xs text-muted-foreground">
+                  <strong>⚡ Integração com o sistema:</strong> Estas listas de substâncias proibidas e com limite de uso estão integradas aos módulos de
+                  <strong> Controle de Substâncias</strong>, <strong>PCP (Sequenciamento e Carry-over)</strong>, <strong>Validação de Limpeza de Linha</strong> e
+                  <strong> Rastreabilidade</strong>. O sistema alerta automaticamente ao registrar ingredientes de origem animal e monitora os limites de carry-over
+                  conforme IN 15/2009. Mantenha esta lista atualizada conforme novas publicações do MAPA/SDA.
+                </p>
+              </CardContent>
+            </Card>
+          </div>
         </TabsContent>
 
       </Tabs>
