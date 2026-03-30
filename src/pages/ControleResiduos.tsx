@@ -13,7 +13,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Plus, Trash2, Recycle, ShieldAlert, Droplets } from "lucide-react";
+import { Plus, Trash2, Recycle, ShieldAlert, Droplets, PackageX, AlertTriangle } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
 import PageHeader from "@/components/PageHeader";
 
 const TIPOS_RESIDUO = ["Orgânico", "Pó/Varredura", "Embalagens plásticas", "Embalagens papel/papelão", "Efluente líquido", "Efluente industrial", "Água de lavagem", "Óleo lubrificante", "Resíduo químico", "Produto vencido", "Produto rejeitado/reprovado", "Sobra de produção", "Outro"];
@@ -244,6 +245,7 @@ export default function ControleResiduos() {
       <Tabs defaultValue="registros" className="space-y-4">
         <TabsList className="flex-wrap">
           <TabsTrigger value="registros"><Recycle className="w-4 h-4 mr-1" />Registros</TabsTrigger>
+          <TabsTrigger value="descartes"><PackageX className="w-4 h-4 mr-1" />Descartes Produto</TabsTrigger>
           <TabsTrigger value="efluentes"><Droplets className="w-4 h-4 mr-1" />Efluentes ({efluentes.length})</TabsTrigger>
           <TabsTrigger value="pgrs">📋 PGRS</TabsTrigger>
         </TabsList>
@@ -284,6 +286,103 @@ export default function ControleResiduos() {
             </Card>
           )}
         </TabsContent>
+
+        {/* ── DESCARTES DE PRODUTO (Vencidos, Avariados, Reprovados) ── */}
+        <TabsContent value="descartes" className="space-y-4">
+          <Card className="border-yellow-500/20 bg-yellow-50 dark:bg-yellow-900/10">
+            <CardContent className="pt-4">
+              <div className="flex items-start gap-3">
+                <PackageX className="w-6 h-6 text-yellow-600 mt-0.5" />
+                <div>
+                  <h4 className="font-display font-semibold text-sm">Controle de Descarte de Produtos — POP 05 (IN 04/2007)</h4>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Registro obrigatório de produtos vencidos, avariados, rejeitados ou reprovados em análise.
+                    Cada descarte deve conter: identificação do produto, lote, motivo, destino e responsável.
+                    O registro é automaticamente vinculado à execução do POP-04 (Descarte).
+                  </p>
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    <Badge variant="outline" className="text-[10px]">IN 04/2007 POP-05</Badge>
+                    <Badge variant="outline" className="text-[10px]">IN 15/2009 Cap. IV</Badge>
+                    <Badge variant="outline" className="text-[10px]">Decreto 12.031/2024</Badge>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {(() => {
+            const descartes = residuos.filter((r: any) => ["Produto vencido", "Produto rejeitado/reprovado", "Sobra de produção"].includes(r.tipo_residuo));
+            const vencidos = descartes.filter((r: any) => r.motivo_descarte === "vencido");
+            const reprovados = descartes.filter((r: any) => r.motivo_descarte === "reprovado_analise" || r.motivo_descarte === "rejeitado_recebimento");
+            const contaminados = descartes.filter((r: any) => r.motivo_descarte === "contaminado");
+            const semMotivo = descartes.filter((r: any) => !r.motivo_descarte);
+
+            return (
+              <>
+                <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+                  <Card><CardContent className="pt-4 text-center"><p className="text-2xl font-bold">{descartes.length}</p><p className="text-[10px] text-muted-foreground">Total Descartes</p></CardContent></Card>
+                  <Card><CardContent className="pt-4 text-center"><p className="text-2xl font-bold text-yellow-600">{vencidos.length}</p><p className="text-[10px] text-muted-foreground">Vencidos</p></CardContent></Card>
+                  <Card><CardContent className="pt-4 text-center"><p className="text-2xl font-bold text-destructive">{reprovados.length}</p><p className="text-[10px] text-muted-foreground">Reprovados/Rejeitados</p></CardContent></Card>
+                  <Card><CardContent className="pt-4 text-center"><p className="text-2xl font-bold text-orange-600">{contaminados.length}</p><p className="text-[10px] text-muted-foreground">Contaminados</p></CardContent></Card>
+                  <Card className={semMotivo.length > 0 ? "border-destructive" : ""}><CardContent className="pt-4 text-center"><p className="text-2xl font-bold text-destructive">{semMotivo.length}</p><p className="text-[10px] text-muted-foreground">Sem Motivo</p></CardContent></Card>
+                </div>
+
+                {semMotivo.length > 0 && (
+                  <Card className="border-destructive/30 bg-destructive/5">
+                    <CardContent className="pt-4">
+                      <div className="flex items-center gap-2">
+                        <AlertTriangle className="w-5 h-5 text-destructive" />
+                        <p className="text-sm font-semibold text-destructive">{semMotivo.length} descarte(s) sem motivo registrado — preencha para conformidade com IN 04/2007.</p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+
+                {descartes.length === 0 ? (
+                  <Card><CardContent className="py-12 text-center text-muted-foreground">
+                    <PackageX className="w-12 h-12 mx-auto mb-3 opacity-40" />
+                    <p>Nenhum descarte de produto registrado</p>
+                    <p className="text-xs mt-1">Use "Novo Registro" e selecione "Produto vencido", "Produto rejeitado/reprovado" ou "Sobra de produção".</p>
+                  </CardContent></Card>
+                ) : (
+                  <Card>
+                    <Table>
+                      <TableHeader><TableRow>
+                        <TableHead>Data</TableHead>
+                        <TableHead>Produto</TableHead>
+                        <TableHead>Lote</TableHead>
+                        <TableHead>Motivo</TableHead>
+                        <TableHead>Qtd</TableHead>
+                        <TableHead>Destino</TableHead>
+                        <TableHead>Responsável</TableHead>
+                        <TableHead>Manifesto</TableHead>
+                      </TableRow></TableHeader>
+                      <TableBody>
+                        {descartes.map((r: any) => (
+                          <TableRow key={r.id}>
+                            <TableCell className="whitespace-nowrap">{r.data_coleta}</TableCell>
+                            <TableCell className="font-medium">{r.produto_nome || r.tipo_residuo}</TableCell>
+                            <TableCell className="font-mono text-xs">{r.lote_produto || "—"}</TableCell>
+                            <TableCell>
+                              <Badge variant={r.motivo_descarte === "vencido" ? "outline" : r.motivo_descarte === "contaminado" ? "destructive" : "secondary"} className="text-[10px]">
+                                {MOTIVOS_DESCARTE.find(m => m.value === r.motivo_descarte)?.label || r.motivo_descarte || "Não informado"}
+                              </Badge>
+                            </TableCell>
+                            <TableCell>{r.quantidade} {r.unidade}</TableCell>
+                            <TableCell>{r.destino_final || "—"}</TableCell>
+                            <TableCell>{r.responsavel || "—"}</TableCell>
+                            <TableCell className="font-mono text-xs">{r.manifesto_numero || "—"}</TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </Card>
+                )}
+              </>
+            );
+          })()}
+        </TabsContent>
+
 
         <TabsContent value="efluentes" className="space-y-4">
           <Card className="border-blue-400/20 bg-blue-50 dark:bg-blue-900/10">
