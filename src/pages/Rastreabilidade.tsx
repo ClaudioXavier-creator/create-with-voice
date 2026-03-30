@@ -128,6 +128,7 @@ export default function Rastreabilidade() {
     setEspecieDestino(""); setContemOrigemAnimal(false); setTipoOrigemAnimal("");
     setTempoMistura(""); setTesteHomogeneidade("");
     setContraprovaColetada(false); setContraprovaLocal(""); setContraprovaValidade("");
+    setSifDipoa("");
   };
 
   const fetchData = async () => {
