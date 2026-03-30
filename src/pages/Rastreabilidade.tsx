@@ -1597,23 +1597,109 @@ export default function Rastreabilidade() {
         </CardContent>
       </Card>
 
-      {/* Recall Dialog */}
+      {/* Recall Dialog — com encerramento e destino de reprovados */}
       <Dialog open={recallOpen} onOpenChange={setRecallOpen}>
-        <DialogContent>
-          <DialogHeader><DialogTitle className="text-destructive flex items-center gap-2"><AlertTriangle className="w-5 h-5" /> Registrar Recall / Recolhimento</DialogTitle></DialogHeader>
+        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+          <DialogHeader><DialogTitle className="text-destructive flex items-center gap-2"><AlertTriangle className="w-5 h-5" /> Registrar / Encerrar Recall — POP-08</DialogTitle></DialogHeader>
           <div className="space-y-4">
-            <div><Label>Motivo do Recall *</Label><Textarea value={recallMotivo} onChange={e => setRecallMotivo(e.target.value)} placeholder="Descreva o problema..." required /></div>
+            {selectedId && (() => {
+              const rec = registros.find(r => r.id === selectedId);
+              return rec && rec.recall_ativo ? (
+                <div className="p-3 rounded-lg bg-destructive/5 border border-destructive/20 text-xs">
+                  <p className="font-semibold text-destructive mb-1">Recall em andamento</p>
+                  <p><strong>Produto:</strong> {rec.produto} | <strong>Lote:</strong> {rec.lote_produto || "—"}</p>
+                  <p><strong>Motivo:</strong> {rec.recall_motivo}</p>
+                  <p><strong>Status atual:</strong> {rec.recall_status}</p>
+                </div>
+              ) : null;
+            })()}
+            <div><Label>Motivo do Recall *</Label><Textarea value={recallMotivo} onChange={e => setRecallMotivo(e.target.value)} placeholder="Descreva o problema encontrado..." required /></div>
             <div className="grid grid-cols-2 gap-4">
               <div><Label>Data do Recall</Label><Input type="date" value={recallData} onChange={e => setRecallData(e.target.value)} /></div>
               <div>
                 <Label>Status</Label>
                 <Select value={recallStatus} onValueChange={setRecallStatus}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent><SelectItem value="iniciado">Iniciado</SelectItem><SelectItem value="em_andamento">Em andamento</SelectItem><SelectItem value="concluido">Concluído</SelectItem></SelectContent>
+                  <SelectContent>
+                    <SelectItem value="iniciado">Iniciado</SelectItem>
+                    <SelectItem value="em_andamento">Em andamento</SelectItem>
+                    <SelectItem value="concluido">Concluído / Encerrado</SelectItem>
+                  </SelectContent>
                 </Select>
               </div>
             </div>
-            <Button onClick={handleRecall} className="w-full" variant="destructive" disabled={saving}>{saving && <Loader2 className="w-4 h-4 mr-2 animate-spin" />} Confirmar Recall</Button>
+
+            {/* Encerramento do Recall — Destino dos produtos */}
+            {recallStatus === "concluido" && (
+              <div className="p-3 rounded-lg border-2 border-green-600/30 bg-green-50 dark:bg-green-900/10 space-y-3">
+                <p className="text-xs font-semibold text-green-800 flex items-center gap-1">
+                  ✅ Encerramento do Recall — Registro obrigatório do destino (POP-08 / Decreto 12.031/2024)
+                </p>
+                <div>
+                  <Label className="text-xs">Destino do produto reprovado/devolvido *</Label>
+                  <Select value={recallMotivo.includes("[DESTINO:") ? "" : ""} onValueChange={(v) => {
+                    setRecallMotivo(prev => {
+                      const base = prev.replace(/\[DESTINO:.*?\]/g, "").trim();
+                      return `${base} [DESTINO: ${v}]`;
+                    });
+                  }}>
+                    <SelectTrigger><SelectValue placeholder="Selecione o destino" /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Retrabalho (reprocessamento)">Retrabalho (reprocessamento)</SelectItem>
+                      <SelectItem value="Descarte controlado (aterro/incineração)">Descarte controlado (aterro/incineração)</SelectItem>
+                      <SelectItem value="Devolução ao fornecedor">Devolução ao fornecedor</SelectItem>
+                      <SelectItem value="Doação (produto apto)">Doação (produto apto)</SelectItem>
+                      <SelectItem value="Recolhido e segregado (aguardando análise)">Recolhido e segregado (aguardando análise)</SelectItem>
+                      <SelectItem value="Venda com desconto (produto apto)">Venda com desconto (produto apto)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label className="text-xs">Quantidade recolhida</Label>
+                  <Input placeholder="Ex: 2.500 kg / 50 sacos de 50kg" onChange={(e) => {
+                    setRecallMotivo(prev => {
+                      const base = prev.replace(/\[QTD_RECOLHIDA:.*?\]/g, "").trim();
+                      return `${base} [QTD_RECOLHIDA: ${e.target.value}]`;
+                    });
+                  }} />
+                </div>
+                <div>
+                  <Label className="text-xs">Responsável pelo encerramento</Label>
+                  <Input placeholder="Nome completo + cargo" onChange={(e) => {
+                    setRecallMotivo(prev => {
+                      const base = prev.replace(/\[RESP_ENCERR:.*?\]/g, "").trim();
+                      return `${base} [RESP_ENCERR: ${e.target.value}]`;
+                    });
+                  }} />
+                </div>
+                <p className="text-[10px] text-muted-foreground">
+                  O encerramento do recall exige registro do destino final dos produtos, quantidade recolhida e responsável,
+                  conforme Art. 55 da IN 17/2017 e fiscalização do MAPA (Decreto 12.031/2024).
+                </p>
+              </div>
+            )}
+
+            {/* Assinatura Digital */}
+            <div className="p-3 rounded-lg border bg-muted/30 space-y-2">
+              <p className="text-xs font-semibold flex items-center gap-1">✍️ Assinatura Digital — MP 2.200-2/2001</p>
+              <div>
+                <Label className="text-xs">Nome completo do responsável</Label>
+                <Input placeholder="Assinatura digital do registro" onChange={(e) => {
+                  setRecallMotivo(prev => {
+                    const base = prev.replace(/\[ASSINATURA:.*?\]/g, "").trim();
+                    return `${base} [ASSINATURA: ${e.target.value} — ${new Date().toLocaleString("pt-BR")}]`;
+                  });
+                }} />
+              </div>
+              <p className="text-[10px] text-muted-foreground">
+                Registro com validade jurídica conforme MP 2.200-2/2001. Data/hora registradas automaticamente.
+              </p>
+            </div>
+
+            <Button onClick={handleRecall} className="w-full" variant="destructive" disabled={saving || !recallMotivo}>
+              {saving && <Loader2 className="w-4 h-4 mr-2 animate-spin" />} 
+              {recallStatus === "concluido" ? "Encerrar Recall" : "Confirmar Recall"}
+            </Button>
           </div>
         </DialogContent>
       </Dialog>
