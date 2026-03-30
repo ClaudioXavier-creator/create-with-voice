@@ -1209,16 +1209,23 @@ export default function Rastreabilidade() {
                       <Label>Matéria-prima contém ingrediente de origem animal</Label>
                     </div>
                     {contemOrigemAnimal && (
-                      <div>
-                        <Label>Tipo de Origem Animal</Label>
-                        <Select value={tipoOrigemAnimal} onValueChange={setTipoOrigemAnimal}>
-                          <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="farinha_carne_ossos">Farinha de Carne e Ossos</SelectItem><SelectItem value="farinha_penas">Farinha de Penas</SelectItem>
-                            <SelectItem value="farinha_sangue">Farinha de Sangue</SelectItem><SelectItem value="farinha_peixe">Farinha de Peixe</SelectItem>
-                            <SelectItem value="sebo_gordura">Sebo / Gordura Animal</SelectItem><SelectItem value="outro">Outro</SelectItem>
-                          </SelectContent>
-                        </Select>
+                      <div className="space-y-3">
+                        <div>
+                          <Label>Tipo de Origem Animal</Label>
+                          <Select value={tipoOrigemAnimal} onValueChange={setTipoOrigemAnimal}>
+                            <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="farinha_carne_ossos">Farinha de Carne e Ossos</SelectItem><SelectItem value="farinha_penas">Farinha de Penas</SelectItem>
+                              <SelectItem value="farinha_sangue">Farinha de Sangue</SelectItem><SelectItem value="farinha_peixe">Farinha de Peixe</SelectItem>
+                              <SelectItem value="sebo_gordura">Sebo / Gordura Animal</SelectItem><SelectItem value="outro">Outro</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div>
+                          <Label>Nº SIF/DIPOA do Ingrediente (IN 17/2017) *</Label>
+                          <Input value={sifDipoa} onChange={e => setSifDipoa(e.target.value)} placeholder="Ex: SIF 0001 / DIPOA 12345" />
+                          <p className="text-[10px] text-muted-foreground mt-1">Obrigatório para ingredientes de origem animal — IN 17/2017, Art. 18 e IN 15/2009.</p>
+                        </div>
                         {especieDestino === "bovinos" && <p className="text-xs text-destructive mt-2 font-semibold">⚠️ ATENÇÃO: Uso de farinha de carne/ossos de ruminantes é PROIBIDO para bovinos (Prevenção EEB)</p>}
                       </div>
                     )}
