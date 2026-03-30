@@ -109,7 +109,7 @@ export default function SaudePessoal() {
     <div className="space-y-6">
       <PageHeader
         title="Saúde do Pessoal"
-        subtitle="POP-03 — Registro de ASO e exames médicos conforme IN 04/2007 e NR-7"
+        description="POP-03 — Registro de ASO e exames médicos conforme IN 04/2007 e NR-7"
       />
 
       {/* KPIs */}

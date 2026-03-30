@@ -74,6 +74,7 @@ const NAV_ENTRIES: NavEntry[] = [
     items: [
       { path: "/pragas", label: "Controle de Pragas", icon: Bug },
       { path: "/treinamentos", label: "Treinamentos", icon: GraduationCap },
+      { path: "/visitantes", label: "Controle Visitantes", icon: Users },
     ],
   },
   {
