@@ -242,9 +242,10 @@ export default function ControleResiduos() {
       </div>
 
       <Tabs defaultValue="registros" className="space-y-4">
-        <TabsList>
+        <TabsList className="flex-wrap">
           <TabsTrigger value="registros"><Recycle className="w-4 h-4 mr-1" />Registros</TabsTrigger>
           <TabsTrigger value="efluentes"><Droplets className="w-4 h-4 mr-1" />Efluentes ({efluentes.length})</TabsTrigger>
+          <TabsTrigger value="pgrs">📋 PGRS</TabsTrigger>
         </TabsList>
 
         <TabsContent value="registros" className="space-y-4">
