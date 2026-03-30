@@ -613,6 +613,7 @@ export default function HigieneSanitizacao() {
       `Itens conformes: ${marcados}/${totalItens}`,
       ncs.length > 0 ? `NCs: ${ncs.join("; ")}` : "Todas as superfícies conformes ✅",
       supObs ? `Obs: ${supObs}` : "",
+      `[ASSINATURA DIGITAL: ${supResp} — ${new Date().toLocaleString("pt-BR")} — MP 2.200-2/2001]`,
     ].filter(Boolean).join("\n");
 
     const { error } = await supabase.from("execucao_pops").insert({
