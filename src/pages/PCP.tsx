@@ -830,26 +830,32 @@ export default function PCP() {
                               </div>
 
                               {/* Limites de referência IN 15/2009 */}
-                              <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
-                                <div className="p-2 rounded border bg-background text-center">
-                                  <p className="text-xs font-bold text-orange-700">Ionóforos</p>
-                                  <p className="text-lg font-bold text-orange-600">{"<"} 1%</p>
-                                  <p className="text-[10px] text-muted-foreground">da dose terapêutica</p>
-                                  <p className="text-[9px] text-muted-foreground mt-1">Monensina, Salinomicina, Lasalocida</p>
-                                </div>
-                                <div className="p-2 rounded border bg-background text-center">
-                                  <p className="text-xs font-bold text-destructive">Medicados</p>
-                                  <p className="text-lg font-bold text-destructive">{"<"} 3%</p>
-                                  <p className="text-[10px] text-muted-foreground">da dose terapêutica</p>
-                                  <p className="text-[9px] text-muted-foreground mt-1">Antibióticos, Coccidiostáticos, Promotores</p>
-                                </div>
-                                <div className="p-2 rounded border bg-background text-center">
-                                  <p className="text-xs font-bold text-yellow-700">Micotoxinas</p>
-                                  <p className="text-lg font-bold text-yellow-600">Limite legal</p>
-                                  <p className="text-[10px] text-muted-foreground">Aflatoxina: ≤ 20 ppb</p>
-                                  <p className="text-[9px] text-muted-foreground mt-1">DON, Fumonisina, Zearalenona</p>
-                                </div>
-                              </div>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                                 <div className="p-2 rounded border bg-background text-center">
+                                   <p className="text-xs font-bold text-orange-700">Ionóforos</p>
+                                   <p className="text-lg font-bold text-orange-600">{"<"} 1%</p>
+                                   <p className="text-[10px] text-muted-foreground">da dose terapêutica</p>
+                                   <p className="text-[9px] text-muted-foreground mt-1">Monensina, Salinomicina, Lasalocida</p>
+                                 </div>
+                                 <div className="p-2 rounded border bg-background text-center">
+                                   <p className="text-xs font-bold text-destructive">Medicados</p>
+                                   <p className="text-lg font-bold text-destructive">{"<"} 3%</p>
+                                   <p className="text-[10px] text-muted-foreground">da dose terapêutica</p>
+                                   <p className="text-[9px] text-muted-foreground mt-1">Antibióticos, Coccidiostáticos, Promotores</p>
+                                 </div>
+                                 <div className="p-2 rounded border bg-background text-center">
+                                   <p className="text-xs font-bold text-yellow-700">Micotoxinas</p>
+                                   <p className="text-lg font-bold text-yellow-600">Limite legal</p>
+                                   <p className="text-[10px] text-muted-foreground">Aflatoxina: ≤ 20 ppb</p>
+                                   <p className="text-[9px] text-muted-foreground mt-1">DON, Fumonisina, Zearalenona</p>
+                                 </div>
+                                 <div className="p-2 rounded border-2 border-green-600/40 bg-green-50 dark:bg-green-900/10 text-center">
+                                   <p className="text-xs font-bold text-green-700">Ractopamina</p>
+                                   <p className="text-lg font-bold text-green-700">ND</p>
+                                   <p className="text-[10px] text-muted-foreground">Não Detectado</p>
+                                   <p className="text-[9px] text-green-600 mt-1">Programa Ractopamina Free</p>
+                                 </div>
+                               </div>
 
                               {/* Testes de carry-over desta ordem */}
                               {(() => {
