@@ -39,6 +39,9 @@ import QualidadeTotal from "./pages/QualidadeTotal";
 import SalaAuditor from "./pages/SalaAuditor";
 import RelatorioProducao from "./pages/RelatorioProducao";
 import ArmazenamentoTransporte from "./pages/ArmazenamentoTransporte";
+import PotabilidadeAgua from "./pages/PotabilidadeAgua";
+import SaudePessoal from "./pages/SaudePessoal";
+import ControleVisitantes from "./pages/ControleVisitantes";
 import Auth from "./pages/Auth";
 import AtivarLicenca from "./pages/AtivarLicenca";
 import Modelos from "./pages/Modelos";
@@ -134,6 +137,9 @@ const AppRoutes = () => {
                   <Route path="/sala-auditor" element={<SalaAuditor />} />
                   <Route path="/relatorio-producao" element={<RelatorioProducao />} />
                   <Route path="/armazenamento-transporte" element={<ArmazenamentoTransporte />} />
+                  <Route path="/potabilidade-agua" element={<PotabilidadeAgua />} />
+                  <Route path="/saude-pessoal" element={<SaudePessoal />} />
+                  <Route path="/visitantes" element={<ControleVisitantes />} />
                   <Route path="/modelos" element={<Modelos />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
