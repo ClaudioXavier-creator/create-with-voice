@@ -342,6 +342,7 @@ export default function PCP() {
       coResultado ? `Resultado encontrado: ${coResultado} ${coUnidade}` : "",
       `Conforme: ${coConforme ? "SIM ✅" : "NÃO ❌"}`,
       coObs ? `Obs: ${coObs}` : "",
+      `[ASSINATURA DIGITAL: ${coResponsavel} — ${new Date().toLocaleString("pt-BR")} — MP 2.200-2/2001]`,
     ].filter(Boolean).join("\n");
 
     const { error } = await supabase.from("execucao_pops").insert({
