@@ -342,6 +342,7 @@ export default function PCP() {
       coResultado ? `Resultado encontrado: ${coResultado} ${coUnidade}` : "",
       `Conforme: ${coConforme ? "SIM ✅" : "NÃO ❌"}`,
       coObs ? `Obs: ${coObs}` : "",
+      `[ASSINATURA DIGITAL: ${coResponsavel} — ${new Date().toLocaleString("pt-BR")} — MP 2.200-2/2001]`,
     ].filter(Boolean).join("\n");
 
     const { error } = await supabase.from("execucao_pops").insert({
@@ -830,26 +831,32 @@ export default function PCP() {
                               </div>
 
                               {/* Limites de referência IN 15/2009 */}
-                              <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
-                                <div className="p-2 rounded border bg-background text-center">
-                                  <p className="text-xs font-bold text-orange-700">Ionóforos</p>
-                                  <p className="text-lg font-bold text-orange-600">{"<"} 1%</p>
-                                  <p className="text-[10px] text-muted-foreground">da dose terapêutica</p>
-                                  <p className="text-[9px] text-muted-foreground mt-1">Monensina, Salinomicina, Lasalocida</p>
-                                </div>
-                                <div className="p-2 rounded border bg-background text-center">
-                                  <p className="text-xs font-bold text-destructive">Medicados</p>
-                                  <p className="text-lg font-bold text-destructive">{"<"} 3%</p>
-                                  <p className="text-[10px] text-muted-foreground">da dose terapêutica</p>
-                                  <p className="text-[9px] text-muted-foreground mt-1">Antibióticos, Coccidiostáticos, Promotores</p>
-                                </div>
-                                <div className="p-2 rounded border bg-background text-center">
-                                  <p className="text-xs font-bold text-yellow-700">Micotoxinas</p>
-                                  <p className="text-lg font-bold text-yellow-600">Limite legal</p>
-                                  <p className="text-[10px] text-muted-foreground">Aflatoxina: ≤ 20 ppb</p>
-                                  <p className="text-[9px] text-muted-foreground mt-1">DON, Fumonisina, Zearalenona</p>
-                                </div>
-                              </div>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                                 <div className="p-2 rounded border bg-background text-center">
+                                   <p className="text-xs font-bold text-orange-700">Ionóforos</p>
+                                   <p className="text-lg font-bold text-orange-600">{"<"} 1%</p>
+                                   <p className="text-[10px] text-muted-foreground">da dose terapêutica</p>
+                                   <p className="text-[9px] text-muted-foreground mt-1">Monensina, Salinomicina, Lasalocida</p>
+                                 </div>
+                                 <div className="p-2 rounded border bg-background text-center">
+                                   <p className="text-xs font-bold text-destructive">Medicados</p>
+                                   <p className="text-lg font-bold text-destructive">{"<"} 3%</p>
+                                   <p className="text-[10px] text-muted-foreground">da dose terapêutica</p>
+                                   <p className="text-[9px] text-muted-foreground mt-1">Antibióticos, Coccidiostáticos, Promotores</p>
+                                 </div>
+                                 <div className="p-2 rounded border bg-background text-center">
+                                   <p className="text-xs font-bold text-yellow-700">Micotoxinas</p>
+                                   <p className="text-lg font-bold text-yellow-600">Limite legal</p>
+                                   <p className="text-[10px] text-muted-foreground">Aflatoxina: ≤ 20 ppb</p>
+                                   <p className="text-[9px] text-muted-foreground mt-1">DON, Fumonisina, Zearalenona</p>
+                                 </div>
+                                 <div className="p-2 rounded border-2 border-green-600/40 bg-green-50 dark:bg-green-900/10 text-center">
+                                   <p className="text-xs font-bold text-green-700">Ractopamina</p>
+                                   <p className="text-lg font-bold text-green-700">ND</p>
+                                   <p className="text-[10px] text-muted-foreground">Não Detectado</p>
+                                   <p className="text-[9px] text-green-600 mt-1">Programa Ractopamina Free</p>
+                                 </div>
+                               </div>
 
                               {/* Testes de carry-over desta ordem */}
                               {(() => {
@@ -982,6 +989,14 @@ export default function PCP() {
                       <p className="text-[10px] text-muted-foreground">Recomenda-se flushing entre batidas para prevenir contaminação cruzada.</p>
                     </div>
                   )}
+                  {/* Alerta Ractopamina Free */}
+                  <div className="p-2 rounded bg-green-50 dark:bg-green-900/10 border border-green-500/30 mb-3">
+                    <p className="text-xs text-green-700 font-semibold flex items-center gap-1">🛡️ Programa Ractopamina Free</p>
+                    <p className="text-[10px] text-muted-foreground">
+                      Confirme que nenhum ingrediente desta fórmula contém Ractopamina. 
+                      Flushing obrigatório caso a linha tenha processado produto com ractopamina anteriormente.
+                    </p>
+                  </div>
                   <p className="text-xs text-muted-foreground mb-3">Obrigatório confirmar a limpeza da linha antes de iniciar nova batida para prevenir contaminação cruzada.</p>
                   <div className="grid grid-cols-3 gap-2 mb-2">
                     <div>

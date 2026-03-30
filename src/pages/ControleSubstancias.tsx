@@ -22,10 +22,11 @@ const TIPOS_SUBSTANCIA = [
 ];
 
 const SUBSTANCIAS_COMUNS = [
-  "Aflatoxinas (B1+B2+G1+G2)", "Aflatoxina B1", "Fumonisinas (B1+B2)", "Zearalenona", "Ocratoxina A",
+  "Ractopamina (Cloridrato)", "Aflatoxinas (B1+B2+G1+G2)", "Aflatoxina B1", "Fumonisinas (B1+B2)", "Zearalenona", "Ocratoxina A",
   "Deoxinivalenol (DON)", "Cloranfenicol", "Nitrofuranos", "Melengesterol",
   "Proteínas de ruminante em ração de ruminantes", "Salmonella spp.", "Dioxinas e PCBs",
   "Chumbo (Pb)", "Arsênio (As)", "Mercúrio (Hg)", "Cádmio (Cd)", "Flúor (F)",
+  "Carbadox", "Olaquindox", "Furazolidona", "Dietilestilbestrol (DES)",
 ];
 
 export default function ControleSubstancias() {
@@ -72,7 +73,55 @@ export default function ControleSubstancias() {
 
   return (
     <div className="space-y-6">
-      <PageHeader title="Substâncias Proibidas e Indesejáveis" description="Controle conforme Anexos da IN 15/2009 — MAPA" />
+      <PageHeader title="Substâncias Proibidas e Indesejáveis" description="Controle conforme Anexos da IN 15/2009 — MAPA | Programa Ractopamina Free" />
+
+      {/* ── CERTIFICAÇÃO RACTOPAMINA FREE ── */}
+      <Card className="border-green-600/30 bg-green-50 dark:bg-green-900/10">
+        <CardContent className="pt-4">
+          <div className="flex items-start gap-3">
+            <ShieldAlert className="w-6 h-6 text-green-700 mt-0.5" />
+            <div className="flex-1">
+              <h4 className="font-semibold text-sm text-green-800 dark:text-green-300">🛡️ Programa Ractopamina Free — Exportação</h4>
+              <p className="text-xs text-muted-foreground mt-1">
+                A Ractopamina é <strong>proibida</strong> em diversos mercados (UE, Rússia, China). Para atender exigências de exportação,
+                todos os lotes devem ser monitorados com análise laboratorial (HPLC/LC-MS/MS) e resultado <strong>ND (não detectado)</strong>.
+              </p>
+              {(() => {
+                const ractRecords = registros.filter((r: any) => 
+                  r.substancia?.toLowerCase().includes("ractopamina")
+                );
+                const ractConformes = ractRecords.filter((r: any) => r.conforme);
+                const ractNC = ractRecords.filter((r: any) => !r.conforme);
+                const ultimaAnalise = ractRecords.length > 0 ? ractRecords[0].data_analise : null;
+                return (
+                  <div className="grid grid-cols-4 gap-3 mt-3">
+                    <div className="text-center p-2 rounded bg-background border">
+                      <p className="text-lg font-bold">{ractRecords.length}</p>
+                      <p className="text-[10px] text-muted-foreground">Análises Ractopamina</p>
+                    </div>
+                    <div className="text-center p-2 rounded bg-green-100 dark:bg-green-900/20 border border-green-300">
+                      <p className="text-lg font-bold text-green-700">{ractConformes.length}</p>
+                      <p className="text-[10px] text-muted-foreground">ND (Conformes)</p>
+                    </div>
+                    <div className="text-center p-2 rounded bg-background border border-destructive/20">
+                      <p className={`text-lg font-bold ${ractNC.length > 0 ? "text-destructive" : "text-muted-foreground"}`}>{ractNC.length}</p>
+                      <p className="text-[10px] text-muted-foreground">Detectadas (NC)</p>
+                    </div>
+                    <div className="text-center p-2 rounded bg-background border">
+                      <p className="text-xs font-mono font-bold">{ultimaAnalise || "—"}</p>
+                      <p className="text-[10px] text-muted-foreground">Última análise</p>
+                    </div>
+                  </div>
+                );
+              })()}
+              <p className="text-[10px] text-muted-foreground mt-2">
+                📋 Ref.: IN 55/2020 (MAPA) — Plano Nacional de Controle de Resíduos e Contaminantes (PNCRC). 
+                Limite: <strong>ND (Não Detectado)</strong> | Método: HPLC ou LC-MS/MS.
+              </p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card><CardContent className="pt-6 text-center"><p className="text-3xl font-bold text-primary">{registros.length}</p><p className="text-sm text-muted-foreground">Total Análises</p></CardContent></Card>
