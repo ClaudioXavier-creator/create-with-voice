@@ -563,7 +563,19 @@ export default function Rastreabilidade() {
 
     const produtoNome = recs[0].produto;
     const mps = recs
-      .map(r => ({ mp: r.materia_prima, lote: r.lote_mp || "—", fornecedor: r.fornecedor || "—" }))
+      .map(r => {
+        // Buscar certificado de análise do recebimento correspondente
+        const recebimento = recebimentos.find((rec: any) =>
+          rec.materia_prima === r.materia_prima && rec.lote === (r.lote_mp || "")
+        );
+        return {
+          mp: r.materia_prima,
+          lote: r.lote_mp || "—",
+          fornecedor: r.fornecedor || "—",
+          certificado_numero: recebimento?.certificado_analise_numero || null,
+          certificado_valido: recebimento?.certificado_analise_valido ?? null,
+        };
+      })
       .filter((m, i, arr) => arr.findIndex(x => x.mp === m.mp && x.lote === m.lote) === i);
     const clientes = recs
       .filter(r => r.cliente_destino)
@@ -574,7 +586,7 @@ export default function Rastreabilidade() {
     const analises = analisesLab.filter(a => a.lote === arvoreLote);
 
     return { produto: produtoNome, lote: arvoreLote, mps, clientes, analises };
-  }, [arvoreLote, registros, analisesLab]);
+  }, [arvoreLote, registros, analisesLab, recebimentos]);
 
   return (
     <>
