@@ -298,9 +298,27 @@ export default function RelatorioProducao() {
     <>
       <PageHeader
         icon={BarChart3}
-        title="Relatório Mensal de Produção"
-        description="Lançamento mensal conforme formulário MAPA — Produção, Importação, Exportação e Fracionamento"
+        title="Relatório Mensal de Produção — SIPEAGRO"
+        description="Lançamento mensal conforme formulário MAPA/SIPEAGRO (IN 17/2017) — Produção, Importação, Exportação e Fracionamento"
       />
+
+      {/* SIPEAGRO Header Info */}
+      <Card className="mb-4 border-primary/20 bg-primary/5">
+        <CardContent className="pt-4">
+          <div className="flex items-start gap-3">
+            <Building2 className="w-6 h-6 text-primary mt-0.5" />
+            <div>
+              <h4 className="font-semibold text-sm">Dados do Estabelecimento — SIPEAGRO</h4>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mt-2 text-xs">
+                <div><span className="text-muted-foreground">Razão Social:</span> <strong>{empresaNome || "—"}</strong></div>
+                <div><span className="text-muted-foreground">CNPJ:</span> <strong>{empresaCnpj || "—"}</strong></div>
+                <div><span className="text-muted-foreground">Registro SIPEAGRO:</span> <strong>{empresaRegistroSipeagro || "N/I"}</strong></div>
+                <div><span className="text-muted-foreground">Base Legal:</span> <strong>IN 17/2017 — Art. 55</strong></div>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Filters */}
       <div className="flex flex-wrap gap-3 mb-6 items-end">
