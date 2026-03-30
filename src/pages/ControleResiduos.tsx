@@ -13,7 +13,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Plus, Trash2, Recycle, ShieldAlert, Droplets } from "lucide-react";
+import { Plus, Trash2, Recycle, ShieldAlert, Droplets, PackageX, AlertTriangle } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
 import PageHeader from "@/components/PageHeader";
 
 const TIPOS_RESIDUO = ["Orgânico", "Pó/Varredura", "Embalagens plásticas", "Embalagens papel/papelão", "Efluente líquido", "Efluente industrial", "Água de lavagem", "Óleo lubrificante", "Resíduo químico", "Produto vencido", "Produto rejeitado/reprovado", "Sobra de produção", "Outro"];
