@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Scale, Sparkles, Loader2, RefreshCw, Bell, BookOpen, CheckCircle2, AlertTriangle, Info, Eye, Search, Upload, FileText, Trash2, ExternalLink, Plus, X, FolderOpen, Globe, Filter, Save } from "lucide-react";
+import { Scale, Sparkles, Loader2, RefreshCw, Bell, BookOpen, CheckCircle2, AlertTriangle, Info, Eye, Search, Upload, FileText, Trash2, ExternalLink, Plus, X, FolderOpen, Globe, Filter, Save, ShieldAlert, Ban } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
