@@ -563,7 +563,19 @@ export default function Rastreabilidade() {
 
     const produtoNome = recs[0].produto;
     const mps = recs
-      .map(r => ({ mp: r.materia_prima, lote: r.lote_mp || "—", fornecedor: r.fornecedor || "—" }))
+      .map(r => {
+        // Buscar certificado de análise do recebimento correspondente
+        const recebimento = recebimentos.find((rec: any) =>
+          rec.materia_prima === r.materia_prima && rec.lote === (r.lote_mp || "")
+        );
+        return {
+          mp: r.materia_prima,
+          lote: r.lote_mp || "—",
+          fornecedor: r.fornecedor || "—",
+          certificado_numero: recebimento?.certificado_analise_numero || null,
+          certificado_valido: recebimento?.certificado_analise_valido ?? null,
+        };
+      })
       .filter((m, i, arr) => arr.findIndex(x => x.mp === m.mp && x.lote === m.lote) === i);
     const clientes = recs
       .filter(r => r.cliente_destino)
@@ -574,7 +586,7 @@ export default function Rastreabilidade() {
     const analises = analisesLab.filter(a => a.lote === arvoreLote);
 
     return { produto: produtoNome, lote: arvoreLote, mps, clientes, analises };
-  }, [arvoreLote, registros, analisesLab]);
+  }, [arvoreLote, registros, analisesLab, recebimentos]);
 
   return (
     <>
@@ -753,6 +765,16 @@ export default function Rastreabilidade() {
                               <div className="flex-shrink-0 p-2 rounded bg-accent/10 border border-accent/20 text-xs text-center min-w-[140px]">
                                 <p className="font-medium">{mp.mp}</p>
                                 <Badge variant="outline" className="font-mono text-[10px] mt-1">{mp.lote}</Badge>
+                                {mp.certificado_numero && (
+                                  <div className="mt-1">
+                                    <Badge className={`text-[10px] ${mp.certificado_valido ? "bg-primary/20 text-primary" : mp.certificado_valido === false ? "bg-destructive/20 text-destructive" : "bg-muted text-muted-foreground"}`}>
+                                      📄 CA: {mp.certificado_numero} {mp.certificado_valido ? "✓" : mp.certificado_valido === false ? "✗" : ""}
+                                    </Badge>
+                                  </div>
+                                )}
+                                {!mp.certificado_numero && (
+                                  <p className="text-[10px] text-yellow-600 mt-1">⚠ Sem CA</p>
+                                )}
                               </div>
                               <ChevronRight className="w-4 h-4 text-muted-foreground flex-shrink-0" />
                               <div className="flex-1 h-px bg-accent/30" />
@@ -1063,6 +1085,93 @@ export default function Rastreabilidade() {
                   </TableBody>
                 </Table>
                 {lotes.size > 20 && <p className="text-xs text-muted-foreground text-center mt-2">Mostrando 20 de {lotes.size} lotes.</p>}
+              </>
+            );
+          })()}
+        </CardContent>
+      </Card>
+
+      {/* Correlação Lote PA ↔ Certificado de Análise da MP — Decreto 12.031/2024 */}
+      <Card className="mb-6 border-primary/20">
+        <CardHeader>
+          <CardTitle className="font-display text-sm flex items-center gap-2">
+            📄 Correlação Lote PA ↔ Certificado de Análise MP — Decreto 12.031/2024
+          </CardTitle>
+          <p className="text-xs text-muted-foreground mt-1">
+            Vinculação imediata entre o lote do Produto Acabado e o certificado de análise da Matéria-Prima recebida, para auditorias baseadas em risco.
+          </p>
+        </CardHeader>
+        <CardContent>
+          {(() => {
+            const correlacoes: { lotePA: string; produto: string; mp: string; loteMP: string; fornecedor: string; certNumero: string | null; certValido: boolean | null }[] = [];
+            registros.forEach(r => {
+              const rec = recebimentos.find((rb: any) => rb.materia_prima === r.materia_prima && rb.lote === (r.lote_mp || ""));
+              correlacoes.push({
+                lotePA: r.lote_produto || "—",
+                produto: r.produto,
+                mp: r.materia_prima,
+                loteMP: r.lote_mp || "—",
+                fornecedor: r.fornecedor || "—",
+                certNumero: rec?.certificado_analise_numero || null,
+                certValido: rec?.certificado_analise_valido ?? null,
+              });
+            });
+            // Deduplicate
+            const unique = correlacoes.filter((c, i, arr) =>
+              arr.findIndex(x => x.lotePA === c.lotePA && x.mp === c.mp && x.loteMP === c.loteMP) === i
+            );
+            const comCert = unique.filter(c => c.certNumero);
+            const semCert = unique.filter(c => !c.certNumero);
+
+            if (unique.length === 0) return (
+              <div className="text-center py-6 text-muted-foreground">
+                <p className="text-sm">Nenhuma correlação disponível.</p>
+                <p className="text-xs mt-1">Cadastre registros de rastreabilidade e recebimento de MP com certificados.</p>
+              </div>
+            );
+
+            return (
+              <>
+                <div className="grid grid-cols-3 gap-3 mb-4">
+                  <div className="text-center p-2 rounded-lg bg-primary/5 border border-primary/20">
+                    <p className="text-lg font-bold font-display text-primary">{comCert.length}</p>
+                    <p className="text-[10px] text-muted-foreground">Com Certificado</p>
+                  </div>
+                  <div className="text-center p-2 rounded-lg bg-yellow-500/5 border border-yellow-500/20">
+                    <p className="text-lg font-bold font-display text-yellow-700">{semCert.length}</p>
+                    <p className="text-[10px] text-muted-foreground">Sem Certificado</p>
+                  </div>
+                  <div className="text-center p-2 rounded-lg bg-muted/30 border">
+                    <p className="text-lg font-bold font-display">{unique.length > 0 ? Math.round((comCert.length / unique.length) * 100) : 0}%</p>
+                    <p className="text-[10px] text-muted-foreground">Cobertura CA</p>
+                  </div>
+                </div>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Lote PA</TableHead><TableHead>Produto</TableHead><TableHead>MP</TableHead><TableHead>Lote MP</TableHead><TableHead>Fornecedor</TableHead><TableHead>Certificado Análise</TableHead><TableHead>Válido</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {unique.slice(0, 20).map((c, i) => (
+                      <TableRow key={i} className={!c.certNumero ? "bg-yellow-500/5" : ""}>
+                        <TableCell className="font-mono text-xs font-bold">{c.lotePA}</TableCell>
+                        <TableCell className="text-sm">{c.produto}</TableCell>
+                        <TableCell className="text-sm">{c.mp}</TableCell>
+                        <TableCell className="font-mono text-xs">{c.loteMP}</TableCell>
+                        <TableCell className="text-xs">{c.fornecedor}</TableCell>
+                        <TableCell className="font-mono text-xs">{c.certNumero || <span className="text-yellow-600">⚠ Ausente</span>}</TableCell>
+                        <TableCell>
+                          {c.certValido === true ? <Badge className="bg-primary/20 text-primary text-[10px]">✓ Válido</Badge> :
+                           c.certValido === false ? <Badge variant="destructive" className="text-[10px]">✗ Inválido</Badge> :
+                           c.certNumero ? <Badge variant="outline" className="text-[10px]">N/A</Badge> :
+                           <span className="text-xs text-muted-foreground">—</span>}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+                {unique.length > 20 && <p className="text-xs text-muted-foreground text-center mt-2">Mostrando 20 de {unique.length} correlações.</p>}
               </>
             );
           })()}

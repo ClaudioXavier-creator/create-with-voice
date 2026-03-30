@@ -190,7 +190,7 @@ export default function ManutencaoPreventiva() {
 
   return (
     <div className="space-y-6">
-      <PageHeader title="POP 06 — Manutenção Preventiva e Calibração" description="Planos de manutenção de máquinas (moinhos, misturadores) e instrumentos — IN 04/2007" />
+      <PageHeader title="POP 06 — Manutenção Preventiva e Calibração" description="Plano de manutenção de máquinas conforme IN 15/2009 — Calibração e verificação intermediária — IN 04/2007" />
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card><CardContent className="pt-6 text-center"><p className="text-3xl font-bold text-primary">{manutencoes.length}</p><p className="text-sm text-muted-foreground">Total Manutenções</p></CardContent></Card>
@@ -246,8 +246,9 @@ export default function ManutencaoPreventiva() {
       )}
 
       <Tabs defaultValue="manutencoes">
-        <TabsList>
+        <TabsList className="flex-wrap">
           <TabsTrigger value="manutencoes">Manutenções ({manutencoes.length})</TabsTrigger>
+          <TabsTrigger value="plano_preventivo">📋 Plano Preventivo</TabsTrigger>
           <TabsTrigger value="trocas">Troca de Peças ({trocasPecas.length})</TabsTrigger>
           <TabsTrigger value="calibracoes">Calibrações ({calibracoes.length})</TabsTrigger>
           <TabsTrigger value="cronograma">Cronograma</TabsTrigger>
@@ -431,6 +432,122 @@ export default function ManutencaoPreventiva() {
               </Table>
             </Card>
           )}
+        </TabsContent>
+
+        {/* ── PLANO DE MANUTENÇÃO PREVENTIVA — IN 15/2009 ── */}
+        <TabsContent value="plano_preventivo" className="space-y-4">
+          <Card className="border-primary/20 bg-primary/5">
+            <CardContent className="pt-4">
+              <div className="flex items-start gap-3">
+                <Calendar className="w-6 h-6 text-primary mt-0.5" />
+                <div>
+                  <h4 className="font-display font-semibold text-sm">Plano de Manutenção Preventiva — IN 15/2009</h4>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    A IN 15/2009 exige plano formal de manutenção preventiva das máquinas e equipamentos utilizados na produção
+                    de alimentação animal, com frequências definidas, para prevenir contaminação cruzada por desgaste de peças,
+                    acúmulo de resíduos e falhas operacionais.
+                  </p>
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    <Badge variant="outline" className="text-[10px]">IN 15/2009 Art. 4º §2</Badge>
+                    <Badge variant="outline" className="text-[10px]">IN 04/2007 — POP 06</Badge>
+                    <Badge variant="outline" className="text-[10px]">Decreto 12.031/2024</Badge>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Plano por equipamento crítico */}
+          <Card>
+            <CardContent className="pt-4">
+              <h4 className="font-semibold text-sm mb-4">Plano Preventivo por Equipamento Crítico</h4>
+              <div className="space-y-3">
+                {EQUIPAMENTOS_CRITICOS.map(eq => {
+                  const manutsEquip = manutencoes.filter((m: any) =>
+                    m.equipamento?.toLowerCase().includes(eq.nome.toLowerCase()) ||
+                    m.codigo_equipamento?.startsWith(eq.codigo)
+                  );
+                  const preventivas = manutsEquip.filter((m: any) => m.tipo === "preventiva");
+                  const ultimaExec = manutsEquip
+                    .filter((m: any) => m.data_execucao)
+                    .sort((a: any, b: any) => b.data_execucao.localeCompare(a.data_execucao))[0];
+                  const proximaManut = manutsEquip
+                    .filter((m: any) => m.proxima_manutencao && m.proxima_manutencao >= today)
+                    .sort((a: any, b: any) => a.proxima_manutencao.localeCompare(b.proxima_manutencao))[0];
+                  const atrasada = manutsEquip.some((m: any) => m.status === "programada" && m.data_programada && m.data_programada < today);
+                  const trocasEquip = manutsEquip.filter((m: any) => m.pecas_trocadas && m.pecas_trocadas.trim());
+
+                  return (
+                    <div key={eq.nome} className={`p-4 rounded-lg border ${atrasada ? "border-destructive/40 bg-destructive/5" : "bg-muted/20"}`}>
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center gap-2">
+                          <Cog className="w-4 h-4 text-primary" />
+                          <span className="font-semibold text-sm">{eq.nome}</span>
+                          <Badge variant="outline" className="font-mono text-[10px]">{eq.codigo}</Badge>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          {atrasada && <Badge variant="destructive" className="text-[10px]">Atrasada</Badge>}
+                          {!atrasada && proximaManut && <Badge variant="outline" className="text-[10px]">Próxima: {proximaManut.proxima_manutencao}</Badge>}
+                          {!proximaManut && !atrasada && <Badge variant="outline" className="text-[10px] border-yellow-500 text-yellow-700">Sem programação</Badge>}
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-2 md:grid-cols-5 gap-2 text-xs">
+                        <div className="p-2 rounded bg-background border text-center">
+                          <p className="font-bold">{manutsEquip.length}</p>
+                          <p className="text-[10px] text-muted-foreground">Total registros</p>
+                        </div>
+                        <div className="p-2 rounded bg-background border text-center">
+                          <p className="font-bold text-primary">{preventivas.length}</p>
+                          <p className="text-[10px] text-muted-foreground">Preventivas</p>
+                        </div>
+                        <div className="p-2 rounded bg-background border text-center">
+                          <p className="font-bold">{trocasEquip.length}</p>
+                          <p className="text-[10px] text-muted-foreground">Trocas peças</p>
+                        </div>
+                        <div className="p-2 rounded bg-background border text-center">
+                          <p className="font-bold">{ultimaExec?.data_execucao || "—"}</p>
+                          <p className="text-[10px] text-muted-foreground">Última execução</p>
+                        </div>
+                        <div className="p-2 rounded bg-background border text-center">
+                          <p className="font-bold">{proximaManut?.proxima_manutencao || "—"}</p>
+                          <p className="text-[10px] text-muted-foreground">Próxima</p>
+                        </div>
+                      </div>
+                      <div className="flex flex-wrap gap-1 mt-2">
+                        {eq.pecas.map(p => {
+                          const trocou = trocasEquip.some((t: any) => t.pecas_trocadas?.includes(p));
+                          return <Badge key={p} variant={trocou ? "default" : "outline"} className={`text-[10px] ${trocou ? "" : "opacity-60"}`}>{p} {trocou ? "✓" : ""}</Badge>;
+                        })}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Resumo de conformidade IN 15/2009 */}
+          <Card>
+            <CardContent className="pt-4">
+              <h4 className="font-semibold text-sm mb-3">Conformidade do Plano Preventivo — IN 15/2009</h4>
+              <div className="space-y-2">
+                {[
+                  { item: "Todos os equipamentos críticos possuem manutenção preventiva registrada", ok: EQUIPAMENTOS_CRITICOS.every(eq => manutencoes.some((m: any) => m.equipamento?.toLowerCase().includes(eq.nome.toLowerCase()) || m.codigo_equipamento?.startsWith(eq.codigo))) },
+                  { item: "Nenhuma manutenção preventiva atrasada", ok: !manutencoes.some((m: any) => m.status === "programada" && m.data_programada && m.data_programada < today) },
+                  { item: "Troca de peças programada para equipamentos com desgaste", ok: trocasPecas.length > 0 || manutencoes.length === 0 },
+                  { item: "Calibrações de balanças/instrumentos em dia", ok: calibracoesVencidas.length === 0 },
+                  { item: "Verificações intermediárias realizadas conforme IN 04/2007", ok: calibracoesComAlerta.length === 0 },
+                  { item: "Cronograma de próximos 90 dias definido", ok: manutencoes.some((m: any) => m.proxima_manutencao && m.proxima_manutencao >= today) || manutencoes.length === 0 },
+                ].map((c, i) => (
+                  <div key={i} className="flex items-center gap-2 p-2 rounded border bg-background">
+                    <span className={`text-sm ${c.ok ? "text-primary" : "text-destructive"}`}>{c.ok ? "✅" : "❌"}</span>
+                    <span className="text-xs flex-1">{c.item}</span>
+                    <Badge variant={c.ok ? "default" : "destructive"} className="text-[10px]">{c.ok ? "Conforme" : "Pendente"}</Badge>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
         </TabsContent>
 
         {/* ── TROCA DE PEÇAS ── */}
