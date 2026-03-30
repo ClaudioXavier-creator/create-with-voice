@@ -84,6 +84,7 @@ export default function RelatorioProducao() {
   const [loading, setLoading] = useState(true);
   const [empresaNome, setEmpresaNome] = useState("");
   const [empresaCnpj, setEmpresaCnpj] = useState("");
+  const [empresaRegistroSipeagro, setEmpresaRegistroSipeagro] = useState("");
 
   // Values per tab per item
   const [valores, setValores] = useState<ValoresMap>({
