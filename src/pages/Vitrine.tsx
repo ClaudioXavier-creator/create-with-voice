@@ -176,14 +176,14 @@ export default function Vitrine() {
 
         {/* CTA */}
         <div className="mt-12 text-center">
-          <h3 className="text-xl font-bold font-display text-foreground mb-3">Pronto para começar?</h3>
-          <p className="text-muted-foreground mb-6">Acesse o sistema com suas credenciais ou solicite uma licença.</p>
-          <Link to="/auth">
+          <h3 className="text-xl font-bold font-display text-foreground mb-3">Experimente grátis por 7 dias!</h3>
+          <p className="text-muted-foreground mb-6">Crie sua conta e tenha acesso completo ao NutriCRM durante o período trial.</p>
+          <a href="https://nutricrm.onrender.com/register" target="_blank" rel="noopener noreferrer">
             <Button size="lg" className="gap-2">
-              <Lock className="h-4 w-4" />
-              Entrar no Sistema
+              <Sparkles className="h-4 w-4" />
+              Começar Trial Grátis
             </Button>
-          </Link>
+          </a>
         </div>
       </main>
 
