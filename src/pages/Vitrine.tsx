@@ -9,6 +9,7 @@ import {
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import logoBpfConsult from "@/assets/logo-bpf-consult.png";
 
 const produtos = [
   {
