@@ -54,6 +54,7 @@ export default function Vitrine() {
       <header className="relative overflow-hidden border-b border-border">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-accent/10" />
         <div className="relative max-w-6xl mx-auto px-4 py-16 sm:py-24 text-center">
+          <img src={logoBpfConsult} alt="BPF_Consult Logo" className="mx-auto w-28 h-28 sm:w-36 sm:h-36 mb-6 object-contain" />
           <Badge variant="secondary" className="mb-4 text-xs tracking-wider uppercase">
             Consultoria & Sistemas para Nutrição Animal
           </Badge>
