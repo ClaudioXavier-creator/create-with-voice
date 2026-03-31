@@ -31,7 +31,7 @@ function isGroup(entry: NavEntry): entry is NavGroup {
 }
 
 const NAV_ENTRIES: NavEntry[] = [
-  { path: "/", label: "Dashboard", icon: LayoutDashboard },
+  { path: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { path: "/cadastro", label: "Cadastro", icon: Building2 },
   {
     label: "Qualidade",
