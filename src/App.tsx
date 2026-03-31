@@ -103,6 +103,9 @@ const AppRoutes = () => {
       <Route path="/" element={session ? <Navigate to="/dashboard" replace /> : <Vitrine />} />
       <Route path="/auth" element={session ? <Navigate to="/dashboard" replace /> : <Auth />} />
       <Route path="/instalar" element={<Instalar />} />
+      <Route path="/nutricrm" element={<NutriCRMPage />} />
+      <Route path="/feedbpf" element={<FeedBPFPage />} />
+      <Route path="/audits-bpf" element={<AuditsBPFPage />} />
       <Route
         path="/*"
         element={
