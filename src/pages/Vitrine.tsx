@@ -17,6 +17,9 @@ const produtos = [
     gradient: "from-[hsl(200,80%,45%)] to-[hsl(210,90%,30%)]",
     bgCard: "bg-gradient-to-br from-sky-50 to-blue-50 dark:from-sky-950/30 dark:to-blue-950/30",
     borderColor: "border-sky-200 dark:border-sky-800",
+    trial: "7 dias grátis",
+    trialLink: "/auth",
+    preco: "A partir de R$ 497/mês",
   },
   {
     nome: "Audits_BPF",
@@ -27,6 +30,9 @@ const produtos = [
     gradient: "from-[hsl(140,60%,35%)] to-[hsl(160,70%,25%)]",
     bgCard: "bg-gradient-to-br from-emerald-50 to-green-50 dark:from-emerald-950/30 dark:to-green-950/30",
     borderColor: "border-emerald-200 dark:border-emerald-800",
+    trial: "7 dias grátis",
+    trialLink: "/auth",
+    preco: "A partir de R$ 197/mês",
   },
   {
     nome: "NutriCRM",
@@ -37,6 +43,10 @@ const produtos = [
     gradient: "from-[hsl(30,80%,45%)] to-[hsl(20,70%,35%)]",
     bgCard: "bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-950/30 dark:to-orange-950/30",
     borderColor: "border-amber-200 dark:border-amber-800",
+    trial: "7 dias grátis",
+    trialLink: "https://nutricrm.onrender.com/register",
+    preco: "A partir de R$ 97/mês",
+    external: true,
   },
 ];
 
