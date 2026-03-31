@@ -47,6 +47,9 @@ import Auth from "./pages/Auth";
 import AtivarLicenca from "./pages/AtivarLicenca";
 import Modelos from "./pages/Modelos";
 import Instalar from "./pages/Instalar";
+import NutriCRMPage from "./pages/NutriCRMPage";
+import FeedBPFPage from "./pages/FeedBPFPage";
+import AuditsBPFPage from "./pages/AuditsBPFPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -100,6 +103,9 @@ const AppRoutes = () => {
       <Route path="/" element={session ? <Navigate to="/dashboard" replace /> : <Vitrine />} />
       <Route path="/auth" element={session ? <Navigate to="/dashboard" replace /> : <Auth />} />
       <Route path="/instalar" element={<Instalar />} />
+      <Route path="/nutricrm" element={<NutriCRMPage />} />
+      <Route path="/feedbpf" element={<FeedBPFPage />} />
+      <Route path="/audits-bpf" element={<AuditsBPFPage />} />
       <Route
         path="/*"
         element={

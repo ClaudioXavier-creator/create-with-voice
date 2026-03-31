@@ -4,66 +4,46 @@ import {
   Users, Factory, CalendarClock, GitBranch, Bug, GraduationCap, Activity, 
   BarChart3, FileBarChart, Scale, Truck, Droplets, HeartPulse, UserCheck,
   ShieldCheck, Beaker, Wrench, Trash2, FlaskConical, Sparkles, CalendarRange,
-  Award, Briefcase, BookOpen, FileSpreadsheet, Lock
+  Award, Briefcase, BookOpen, FileSpreadsheet, Lock, ArrowRight
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
-const categorias = [
+const produtos = [
   {
-    titulo: "Qualidade",
+    nome: "FeedBPF",
+    desc: "Plataforma completa de Boas Práticas de Fabricação para nutrição animal, em conformidade com IN 04/2007 e Decreto 12.031/2024.",
+    link: "/feedbpf",
     cor: "border-primary/30 bg-primary/5",
-    modulos: [
-      { nome: "Manual BPF / POPs", desc: "Manual de Boas Práticas e Procedimentos Operacionais Padrão completos conforme IN 04/2007.", icon: BookOpen },
-      { nome: "Guia de POPs", desc: "Todos os POPs com Instruções de Trabalho (ITs) detalhadas para cada procedimento.", icon: FileText },
-      { nome: "Planilhas de POPs", desc: "Planilhas digitais de monitoramento mensal com assinatura do RT e supervisor.", icon: FileSpreadsheet },
-      { nome: "Auditoria Interna", desc: "Checklist completo baseado no Decreto 12.031/2024 com cálculo automático de conformidade.", icon: ClipboardCheck },
-      { nome: "Sala do Auditor", desc: "Área exclusiva para auditores do MAPA com visão consolidada de todos os registros.", icon: Briefcase },
-      { nome: "Não Conformidades", desc: "Registro, análise de causa raiz e planos de ação corretiva/preventiva.", icon: AlertTriangle },
-      { nome: "Qualidade Total", desc: "Reclamações de clientes, Recall e recolhimento conforme POP 08.", icon: Award },
-    ],
   },
   {
-    titulo: "Operacional",
+    nome: "Audits_BPF",
+    desc: "Sistema de auditoria interna com checklist completo baseado no Decreto 12.031/2024 e sala exclusiva do auditor.",
+    link: "/audits-bpf",
     cor: "border-accent/30 bg-accent/5",
-    modulos: [
-      { nome: "Recebimento de MP", desc: "Controle de recebimento com análise sensorial, temperatura, contraprova e certificados.", icon: PackageSearch },
-      { nome: "Fornecedores", desc: "Qualificação, avaliação periódica e verificação SIPEAGRO de fornecedores.", icon: Users },
-      { nome: "Produção", desc: "Registro de produção com lote, operador, contraprova e tempo de mistura.", icon: Factory },
-      { nome: "PCP", desc: "Ordens de produção, batidas, fórmulas, carryover e validação de limpeza de linha.", icon: CalendarClock },
-      { nome: "Rastreabilidade", desc: "Rastreamento completo MP→Produto→Cliente com controle de Recall.", icon: GitBranch },
-      { nome: "Produtos & Rótulos", desc: "Ficha técnica, níveis de garantia e editor de rótulos conforme MAPA.", icon: Sparkles },
-      { nome: "Expedição & Transporte", desc: "Inspeção de veículos e armazenamento conforme IN 15/2009.", icon: Truck },
-    ],
   },
   {
-    titulo: "Controles",
+    nome: "NutriCRM",
+    desc: "CRM especializado para profissionais de nutrição animal. Gestão de clientes, visitas e acompanhamentos.",
+    link: "/nutricrm",
     cor: "border-secondary/30 bg-secondary/5",
-    modulos: [
-      { nome: "Controle de Pragas", desc: "Monitoramento de pragas, armadilhas e expurgo com laudos da empresa controladora.", icon: Bug },
-      { nome: "Treinamentos", desc: "Gestão de treinamentos obrigatórios com controle de validade e certificados.", icon: GraduationCap },
-      { nome: "Saúde Pessoal / ASO", desc: "Controle de exames ocupacionais (Coprocultura, VDRL, Hemograma) e validade de ASOs.", icon: HeartPulse },
-      { nome: "Potabilidade da Água", desc: "Cloro residual diário, análises microbiológicas e higienização de reservatórios.", icon: Droplets },
-      { nome: "Controle de Visitantes", desc: "Registro de visitantes com orientação de biosseguridade e declaração.", icon: UserCheck },
-      { nome: "Higiene & Sanitização", desc: "Cronogramas de limpeza pesada e concorrente com registros de execução.", icon: ShieldCheck },
-      { nome: "Substâncias Controladas", desc: "Monitoramento de ractopamina, aflatoxinas, metais pesados e dioxinas.", icon: FlaskConical },
-    ],
   },
-  {
-    titulo: "Gestão",
-    cor: "border-muted/30 bg-muted/5",
-    modulos: [
-      { nome: "Indicadores", desc: "Dashboard com KPIs de conformidade, NCs, auditorias e treinamentos.", icon: Activity },
-      { nome: "Relatórios", desc: "Geração de relatórios por módulo com exportação em CSV e PDF.", icon: FileBarChart },
-      { nome: "Legislação & IA", desc: "Consulta inteligente de normas do MAPA, ANVISA e legislação vigente.", icon: Scale },
-      { nome: "Análises Laboratoriais", desc: "Registro de laudos, métodos analíticos e conformidade de resultados.", icon: Beaker },
-      { nome: "Manutenção Preventiva", desc: "Equipamentos, calibrações e cronograma de manutenção preventiva/corretiva.", icon: Wrench },
-      { nome: "Controle de Resíduos", desc: "Classificação, destinação e manifestos de transporte de resíduos.", icon: Trash2 },
-      { nome: "Planejamento Anual", desc: "Cronograma anual de atividades BPF com alertas de vencimento.", icon: CalendarRange },
-      { nome: "Matriz de Risco", desc: "Identificação de perigos, avaliação de severidade e probabilidade (APPCC).", icon: BarChart3 },
-    ],
-  },
+];
+
+const destaques = [
+  { icon: BookOpen, label: "Manual BPF & POPs" },
+  { icon: ClipboardCheck, label: "Auditoria Interna" },
+  { icon: Factory, label: "Produção & PCP" },
+  { icon: GitBranch, label: "Rastreabilidade" },
+  { icon: Beaker, label: "Análises Laboratoriais" },
+  { icon: ShieldCheck, label: "Higiene & Sanitização" },
+  { icon: Bug, label: "Controle de Pragas" },
+  { icon: GraduationCap, label: "Treinamentos" },
+  { icon: Wrench, label: "Manutenção Preventiva" },
+  { icon: BarChart3, label: "Matriz de Risco (APPCC)" },
+  { icon: CalendarRange, label: "Planejamento Anual" },
+  { icon: Activity, label: "Indicadores & Relatórios" },
 ];
 
 export default function Vitrine() {
@@ -74,14 +54,13 @@ export default function Vitrine() {
         <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-accent/10" />
         <div className="relative max-w-6xl mx-auto px-4 py-16 sm:py-24 text-center">
           <Badge variant="secondary" className="mb-4 text-xs tracking-wider uppercase">
-            Sistema de Gestão de Qualidade
+            Consultoria & Sistemas para Nutrição Animal
           </Badge>
           <h1 className="text-4xl sm:text-5xl font-bold font-display text-foreground mb-4 tracking-tight">
-            Feed<span className="text-primary">BPF</span>
+            BPF_<span className="text-primary">Consult</span>
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-8">
-            Plataforma completa de Boas Práticas de Fabricação para nutrição animal, 
-            em conformidade com IN 04/2007 e Decreto 12.031/2024.
+            Soluções completas em Boas Práticas de Fabricação, auditoria e gestão para a indústria de nutrição animal.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Link to="/auth">
@@ -94,102 +73,51 @@ export default function Vitrine() {
         </div>
       </header>
 
-      {/* Módulos */}
       <main className="max-w-6xl mx-auto px-4 py-12">
-        <div className="text-center mb-12">
-          <h2 className="text-2xl font-bold font-display text-foreground mb-2">Funcionalidades</h2>
-          <p className="text-muted-foreground">Conheça todos os módulos disponíveis no sistema</p>
+        {/* Nossos Programas */}
+        <div className="text-center mb-10">
+          <h2 className="text-2xl font-bold font-display text-foreground mb-2">Nossos Programas</h2>
+          <p className="text-muted-foreground">Conheça as soluções da BPF_Consult</p>
         </div>
 
-        <div className="space-y-12">
-          {categorias.map((cat) => (
-            <section key={cat.titulo}>
-              <h3 className="text-xl font-semibold font-display text-foreground mb-4 flex items-center gap-2">
-                <span className="h-1 w-6 rounded-full bg-primary inline-block" />
-                {cat.titulo}
-              </h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {cat.modulos.map((mod) => (
-                  <Card key={mod.nome} className={`${cat.cor} transition-all hover:shadow-md`}>
-                    <CardContent className="flex gap-4 p-5">
-                      <div className="flex items-center justify-center h-10 w-10 shrink-0 rounded-lg bg-background border border-border">
-                        <mod.icon className="h-5 w-5 text-primary" />
-                      </div>
-                      <div>
-                        <p className="font-semibold text-sm text-foreground">{mod.nome}</p>
-                        <p className="text-xs text-muted-foreground mt-1 leading-relaxed">{mod.desc}</p>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </section>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-16">
+          {produtos.map((p) => (
+            <Link key={p.nome} to={p.link}>
+              <Card className={`${p.cor} transition-all hover:shadow-lg hover:-translate-y-1 h-full`}>
+                <CardContent className="p-6 space-y-4">
+                  <h3 className="text-xl font-bold font-display text-foreground">{p.nome}</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">{p.desc}</p>
+                  <div className="flex items-center gap-1 text-primary text-sm font-medium">
+                    Ver planos e detalhes <ArrowRight className="h-4 w-4" />
+                  </div>
+                </CardContent>
+              </Card>
+            </Link>
           ))}
         </div>
 
-        {/* Pricing */}
-        <div className="mt-16 border-t border-border pt-12">
+        {/* Funcionalidades em destaque */}
+        <div className="border-t border-border pt-12">
           <div className="text-center mb-8">
-            <h2 className="text-2xl font-bold font-display text-foreground mb-2">Planos NutriCRM</h2>
-            <p className="text-muted-foreground">Escolha o plano ideal para sua empresa</p>
+            <h2 className="text-2xl font-bold font-display text-foreground mb-2">Funcionalidades em Destaque</h2>
+            <p className="text-muted-foreground">Principais módulos disponíveis em nossos programas</p>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-4xl mx-auto">
-            {/* Mensal */}
-            <Card className="border-border hover:shadow-md transition-all">
-              <CardContent className="p-6 text-center space-y-3">
-                <p className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Mensal</p>
-                <div>
-                  <span className="text-3xl font-bold text-foreground">R$ 97</span>
-                  <span className="text-muted-foreground">/mês</span>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+            {destaques.map((d) => (
+              <div key={d.label} className="flex items-center gap-3 p-3 rounded-lg border border-border bg-card">
+                <div className="flex items-center justify-center h-9 w-9 shrink-0 rounded-lg bg-primary/10">
+                  <d.icon className="h-4 w-4 text-primary" />
                 </div>
-                <p className="text-xs text-muted-foreground">Sem compromisso de fidelidade</p>
-              </CardContent>
-            </Card>
-            {/* Semestral */}
-            <Card className="border-primary/50 bg-primary/5 hover:shadow-md transition-all relative">
-              <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground text-xs">
-                14% OFF
-              </Badge>
-              <CardContent className="p-6 text-center space-y-3">
-                <p className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Semestral</p>
-                <div>
-                  <span className="text-3xl font-bold text-foreground">R$ 497</span>
-                </div>
-                <p className="text-xs text-muted-foreground">≈ R$ 83/mês</p>
-              </CardContent>
-            </Card>
-            {/* Anual */}
-            <Card className="border-primary/50 bg-primary/5 hover:shadow-md transition-all relative">
-              <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground text-xs">
-                23% OFF
-              </Badge>
-              <CardContent className="p-6 text-center space-y-3">
-                <p className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Anual</p>
-                <div>
-                  <span className="text-3xl font-bold text-foreground">R$ 897</span>
-                </div>
-                <p className="text-xs text-muted-foreground">≈ R$ 75/mês</p>
-              </CardContent>
-            </Card>
+                <span className="text-sm font-medium text-foreground">{d.label}</span>
+              </div>
+            ))}
           </div>
-        </div>
-
-        {/* CTA */}
-        <div className="mt-12 text-center">
-          <h3 className="text-xl font-bold font-display text-foreground mb-3">Experimente grátis por 7 dias!</h3>
-          <p className="text-muted-foreground mb-6">Crie sua conta e tenha acesso completo ao NutriCRM durante o período trial.</p>
-          <a href="https://nutricrm.onrender.com/register" target="_blank" rel="noopener noreferrer">
-            <Button size="lg" className="gap-2">
-              <Sparkles className="h-4 w-4" />
-              Começar Trial Grátis
-            </Button>
-          </a>
         </div>
       </main>
 
       {/* Footer */}
       <footer className="border-t border-border py-6 text-center text-xs text-muted-foreground">
-        <p>FeedBPF © {new Date().getFullYear()} — Sistema de Gestão de BPF para Nutrição Animal</p>
+        <p>BPF_Consult © {new Date().getFullYear()} — Soluções em BPF para Nutrição Animal</p>
       </footer>
     </div>
   );
