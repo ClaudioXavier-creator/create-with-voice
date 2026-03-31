@@ -127,8 +127,55 @@ export default function Vitrine() {
           ))}
         </div>
 
+        {/* Pricing */}
+        <div className="mt-16 border-t border-border pt-12">
+          <div className="text-center mb-8">
+            <h2 className="text-2xl font-bold font-display text-foreground mb-2">Planos NutriCRM</h2>
+            <p className="text-muted-foreground">Escolha o plano ideal para sua empresa</p>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-4xl mx-auto">
+            {/* Mensal */}
+            <Card className="border-border hover:shadow-md transition-all">
+              <CardContent className="p-6 text-center space-y-3">
+                <p className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Mensal</p>
+                <div>
+                  <span className="text-3xl font-bold text-foreground">R$ 97</span>
+                  <span className="text-muted-foreground">/mês</span>
+                </div>
+                <p className="text-xs text-muted-foreground">Sem compromisso de fidelidade</p>
+              </CardContent>
+            </Card>
+            {/* Semestral */}
+            <Card className="border-primary/50 bg-primary/5 hover:shadow-md transition-all relative">
+              <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground text-xs">
+                14% OFF
+              </Badge>
+              <CardContent className="p-6 text-center space-y-3">
+                <p className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Semestral</p>
+                <div>
+                  <span className="text-3xl font-bold text-foreground">R$ 497</span>
+                </div>
+                <p className="text-xs text-muted-foreground">≈ R$ 83/mês</p>
+              </CardContent>
+            </Card>
+            {/* Anual */}
+            <Card className="border-primary/50 bg-primary/5 hover:shadow-md transition-all relative">
+              <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground text-xs">
+                23% OFF
+              </Badge>
+              <CardContent className="p-6 text-center space-y-3">
+                <p className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Anual</p>
+                <div>
+                  <span className="text-3xl font-bold text-foreground">R$ 897</span>
+                </div>
+                <p className="text-xs text-muted-foreground">≈ R$ 75/mês</p>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+
         {/* CTA */}
-        <div className="mt-16 text-center border-t border-border pt-12">
+        <div className="mt-12 text-center">
           <h3 className="text-xl font-bold font-display text-foreground mb-3">Pronto para começar?</h3>
           <p className="text-muted-foreground mb-6">Acesse o sistema com suas credenciais ou solicite uma licença.</p>
           <Link to="/auth">
