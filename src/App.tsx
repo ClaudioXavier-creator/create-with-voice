@@ -97,7 +97,8 @@ const AppRoutes = () => {
 
   return (
     <Routes>
-      <Route path="/auth" element={session ? <Navigate to="/" replace /> : <Auth />} />
+      <Route path="/" element={session ? <Navigate to="/dashboard" replace /> : <Vitrine />} />
+      <Route path="/auth" element={session ? <Navigate to="/dashboard" replace /> : <Auth />} />
       <Route path="/instalar" element={<Instalar />} />
       <Route
         path="/*"
@@ -106,7 +107,7 @@ const AppRoutes = () => {
             <LicenseGate>
               <AppLayout>
                 <Routes>
-                  <Route path="/" element={<Index />} />
+                  <Route path="/dashboard" element={<Index />} />
                   <Route path="/cadastro" element={<Cadastro />} />
                   <Route path="/documentos" element={<Documentos />} />
                   <Route path="/auditoria" element={<Auditoria />} />
