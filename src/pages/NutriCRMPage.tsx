@@ -92,6 +92,27 @@ export default function NutriCRMPage() {
           </div>
         </section>
 
+        {/* Diferenciais */}
+        <section className="mb-20">
+          <div className="text-center mb-10">
+            <Badge variant="outline" className="mb-3 text-xs tracking-widest uppercase px-4 py-1">Diferenciais</Badge>
+            <h2 className="text-3xl font-bold font-display text-foreground mb-2">Por que escolher o NutriCRM?</h2>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 max-w-3xl mx-auto">
+            {diferenciais.map((d) => (
+              <div key={d.title} className="p-6 rounded-xl border border-border bg-card/50 backdrop-blur-sm">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="flex items-center justify-center h-10 w-10 rounded-lg bg-amber-500/10 shrink-0">
+                    <d.icon className="h-5 w-5 text-amber-600 dark:text-amber-400" />
+                  </div>
+                  <h3 className="font-bold text-foreground text-sm">{d.title}</h3>
+                </div>
+                <p className="text-xs text-muted-foreground leading-relaxed">{d.desc}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
         {/* Preços Individuais */}
         <section className="mb-16">
           <div className="text-center mb-10">
