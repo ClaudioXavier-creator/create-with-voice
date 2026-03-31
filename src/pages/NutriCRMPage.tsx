@@ -1,10 +1,11 @@
 import { Link } from "react-router-dom";
-import { ArrowLeft, Sparkles, Users, MapPin, BarChart3, FileText, Target, HeadsetIcon } from "lucide-react";
+import { ArrowLeft, Sparkles, Users, MapPin, BarChart3, FileText, Target, HeadsetIcon, ShieldCheck, Lock } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import logoNutricrm from "@/assets/logo-nutricrm.png";
 import logoBpfConsult from "@/assets/logo-bpf-consult.png";
+import dashboardPreview from "@/assets/nutricrm-dashboard-preview.jpg";
 
 const funcionalidades = [
   { icon: Users, title: "Gestão de Clientes", desc: "Cadastro completo de clientes e prospects com histórico de interações, contratos e dados técnicos." },
@@ -13,6 +14,11 @@ const funcionalidades = [
   { icon: FileText, title: "Relatórios Completos", desc: "Relatórios de visitas, acompanhamento de resultados e exportação para PDF e planilhas." },
   { icon: Target, title: "Pipeline de Vendas", desc: "Funil de vendas com etapas personalizáveis, acompanhamento de negócios e previsão de receita." },
   { icon: HeadsetIcon, title: "Suporte Dedicado", desc: "Suporte técnico especializado em nutrição animal para ajudar na utilização do sistema." },
+];
+
+const diferenciais = [
+  { icon: Lock, title: "Multi-tenant", desc: "Cada representante vê apenas sua própria carteira de clientes — total privacidade entre equipes." },
+  { icon: ShieldCheck, title: "Dados Seguros", desc: "Informações isoladas por usuário com criptografia e backup automático na nuvem." },
 ];
 
 export default function NutriCRMPage() {
@@ -35,13 +41,34 @@ export default function NutriCRMPage() {
               <h1 className="text-4xl sm:text-5xl font-bold font-display text-foreground mb-4 tracking-tight">
                 Nutri<span className="text-primary">CRM</span>
               </h1>
-              <p className="text-lg text-muted-foreground max-w-xl leading-relaxed">
+              <p className="text-lg text-muted-foreground max-w-xl leading-relaxed mb-6">
                 CRM especializado para profissionais de nutrição animal. Gerencie clientes, visitas e acompanhamentos em um só lugar.
               </p>
+              <a href="https://nutricrm.onrender.com/register" target="_blank" rel="noopener noreferrer">
+                <Button size="lg" className="gap-2 shadow-lg shadow-primary/20">
+                  <Sparkles className="h-4 w-4" />
+                  Testar grátis por 7 dias
+                </Button>
+              </a>
+              <p className="text-xs text-muted-foreground mt-2">Sem cartão de crédito • Acesso completo</p>
             </div>
           </div>
         </div>
       </header>
+
+      {/* Preview do Dashboard */}
+      <section className="max-w-5xl mx-auto px-4 -mt-4 mb-12 sm:mb-16">
+        <div className="relative rounded-xl overflow-hidden border border-border shadow-2xl shadow-primary/5">
+          <img
+            src={dashboardPreview}
+            alt="Preview do dashboard NutriCRM com gestão de clientes, calendário de visitas e pipeline de vendas"
+            className="w-full h-auto"
+            width={1280}
+            height={720}
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-background/40 via-transparent to-transparent pointer-events-none" />
+        </div>
+      </section>
 
       <main className="max-w-6xl mx-auto px-4 py-12 sm:py-16">
         <section className="mb-20">
