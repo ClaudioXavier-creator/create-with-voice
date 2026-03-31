@@ -1,10 +1,11 @@
 import { Link } from "react-router-dom";
-import { ArrowLeft, Sparkles, ClipboardCheck, ShieldCheck, FileBarChart, AlertTriangle, BarChart3, History } from "lucide-react";
+import { ArrowLeft, Sparkles, ClipboardCheck, ShieldCheck, FileBarChart, AlertTriangle, BarChart3, History, Scale, Eye } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import logoAuditsBpf from "@/assets/logo-audits-bpf.png";
 import logoBpfConsult from "@/assets/logo-bpf-consult.png";
+import dashboardPreview from "@/assets/auditsbpf-dashboard-preview.jpg";
 
 const funcionalidades = [
   { icon: ClipboardCheck, title: "Checklist Completo", desc: "Checklist de auditoria interna baseado integralmente no Decreto 12.031/2024, com todos os itens exigidos pelo MAPA." },
@@ -13,6 +14,11 @@ const funcionalidades = [
   { icon: FileBarChart, title: "Relatórios Completos", desc: "Relatórios detalhados de auditoria com gráficos, comparativos e exportação em PDF." },
   { icon: AlertTriangle, title: "Planos de Ação", desc: "Registro de não conformidades com plano de ação corretiva e preventiva, prazos e responsáveis." },
   { icon: History, title: "Histórico e Evolução", desc: "Acompanhe a evolução da conformidade ao longo do tempo com gráficos comparativos entre auditorias." },
+];
+
+const diferenciais = [
+  { icon: Scale, title: "Decreto 12.031/2024", desc: "Checklist 100% atualizado com os itens de verificação exigidos pela nova legislação federal." },
+  { icon: Eye, title: "Sala do Auditor", desc: "Área exclusiva onde o fiscal do MAPA acessa todos os documentos e evidências em um só lugar." },
 ];
 
 export default function AuditsBPFPage() {
@@ -35,13 +41,34 @@ export default function AuditsBPFPage() {
               <h1 className="text-4xl sm:text-5xl font-bold font-display text-foreground mb-4 tracking-tight">
                 Audits_<span className="text-primary">BPF</span>
               </h1>
-              <p className="text-lg text-muted-foreground max-w-xl leading-relaxed">
+              <p className="text-lg text-muted-foreground max-w-xl leading-relaxed mb-6">
                 Sistema completo de auditoria interna para BPF em nutrição animal, conforme <strong className="text-foreground">Decreto 12.031/2024</strong>.
               </p>
+              <Link to="/auth">
+                <Button size="lg" className="gap-2 shadow-lg shadow-primary/20">
+                  <Sparkles className="h-4 w-4" />
+                  Testar grátis por 7 dias
+                </Button>
+              </Link>
+              <p className="text-xs text-muted-foreground mt-2">Sem cartão de crédito • Acesso completo</p>
             </div>
           </div>
         </div>
       </header>
+
+      {/* Preview do Dashboard */}
+      <section className="max-w-5xl mx-auto px-4 -mt-4 mb-12 sm:mb-16">
+        <div className="relative rounded-xl overflow-hidden border border-border shadow-2xl shadow-primary/5">
+          <img
+            src={dashboardPreview}
+            alt="Preview do dashboard Audits_BPF com checklist de auditoria, conformidade por área e planos de ação"
+            className="w-full h-auto"
+            width={1280}
+            height={720}
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-background/40 via-transparent to-transparent pointer-events-none" />
+        </div>
+      </section>
 
       <main className="max-w-6xl mx-auto px-4 py-12 sm:py-16">
         <section className="mb-20">
@@ -60,6 +87,27 @@ export default function AuditsBPFPage() {
                   <h3 className="font-bold text-foreground text-sm">{f.title}</h3>
                 </div>
                 <p className="text-xs text-muted-foreground leading-relaxed">{f.desc}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Diferenciais */}
+        <section className="mb-20">
+          <div className="text-center mb-10">
+            <Badge variant="outline" className="mb-3 text-xs tracking-widest uppercase px-4 py-1">Diferenciais</Badge>
+            <h2 className="text-3xl font-bold font-display text-foreground mb-2">Por que escolher o Audits_BPF?</h2>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 max-w-3xl mx-auto">
+            {diferenciais.map((d) => (
+              <div key={d.title} className="p-6 rounded-xl border border-border bg-card/50 backdrop-blur-sm">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="flex items-center justify-center h-10 w-10 rounded-lg bg-emerald-500/10 shrink-0">
+                    <d.icon className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+                  </div>
+                  <h3 className="font-bold text-foreground text-sm">{d.title}</h3>
+                </div>
+                <p className="text-xs text-muted-foreground leading-relaxed">{d.desc}</p>
               </div>
             ))}
           </div>
