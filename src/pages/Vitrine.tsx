@@ -150,7 +150,7 @@ export default function Vitrine() {
                   <p className="text-sm text-muted-foreground leading-relaxed text-center mb-6">{p.desc}</p>
 
                   {/* Destaques */}
-                  <div className="grid grid-cols-2 gap-2 mb-6 flex-1">
+                  <div className="grid grid-cols-2 gap-2 mb-5 flex-1">
                     {p.destaques.map((d) => (
                       <div key={d} className="flex items-center gap-2 text-xs text-foreground/80">
                         <div className="h-1.5 w-1.5 rounded-full bg-primary shrink-0" />
@@ -159,10 +159,32 @@ export default function Vitrine() {
                     ))}
                   </div>
 
-                  {/* CTA */}
-                  <div className="flex items-center justify-center gap-2 text-primary font-semibold text-sm group-hover:gap-3 transition-all">
-                    Ver detalhes, tutorial e preços
-                    <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                  {/* Preço + Trial */}
+                  <div className="text-center mb-4 space-y-1">
+                    <p className="text-xs text-muted-foreground">{p.preco}</p>
+                  </div>
+
+                  {/* CTAs */}
+                  <div className="space-y-2">
+                    {p.external ? (
+                      <a href={p.trialLink} target="_blank" rel="noopener noreferrer" className="block" onClick={(e) => e.stopPropagation()}>
+                        <Button size="sm" className="w-full gap-2 shadow-sm">
+                          <Sparkles className="h-3.5 w-3.5" />
+                          Testar {p.trial}
+                        </Button>
+                      </a>
+                    ) : (
+                      <Link to={p.trialLink} onClick={(e) => e.stopPropagation()}>
+                        <Button size="sm" className="w-full gap-2 shadow-sm">
+                          <Sparkles className="h-3.5 w-3.5" />
+                          Testar {p.trial}
+                        </Button>
+                      </Link>
+                    )}
+                    <div className="flex items-center justify-center gap-2 text-primary font-semibold text-sm group-hover:gap-3 transition-all">
+                      Ver detalhes e preços
+                      <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                    </div>
                   </div>
                 </div>
               </div>
