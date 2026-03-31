@@ -7,6 +7,7 @@ import { AuthProvider, useAuth } from "@/hooks/useAuth";
 import { useLicense } from "@/hooks/useLicense";
 import { EmpresaProvider } from "@/hooks/useEmpresa";
 import AppLayout from "@/components/layout/AppLayout";
+import Vitrine from "./pages/Vitrine";
 import Index from "./pages/Index";
 import Cadastro from "./pages/Cadastro";
 import Documentos from "./pages/Documentos";
@@ -96,7 +97,8 @@ const AppRoutes = () => {
 
   return (
     <Routes>
-      <Route path="/auth" element={session ? <Navigate to="/" replace /> : <Auth />} />
+      <Route path="/" element={session ? <Navigate to="/dashboard" replace /> : <Vitrine />} />
+      <Route path="/auth" element={session ? <Navigate to="/dashboard" replace /> : <Auth />} />
       <Route path="/instalar" element={<Instalar />} />
       <Route
         path="/*"
@@ -105,7 +107,7 @@ const AppRoutes = () => {
             <LicenseGate>
               <AppLayout>
                 <Routes>
-                  <Route path="/" element={<Index />} />
+                  <Route path="/dashboard" element={<Index />} />
                   <Route path="/cadastro" element={<Cadastro />} />
                   <Route path="/documentos" element={<Documentos />} />
                   <Route path="/auditoria" element={<Auditoria />} />
