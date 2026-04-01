@@ -234,6 +234,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           </div>
         </div>
         <SidebarNav currentPath={location.pathname} />
+        <AdminLink currentPath={location.pathname} />
         <div className="px-4 py-3 border-t border-sidebar-border space-y-3">
           <EmpresaSelector />
           <p className="text-xs text-sidebar-foreground/60 truncate">{user?.email}</p>
