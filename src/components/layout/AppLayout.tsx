@@ -12,6 +12,8 @@ import { useAuth } from "@/hooks/useAuth";
 import EmpresaSelector from "@/components/EmpresaSelector";
 import logoImg from "@/assets/logo-feed-bpf.png";
 
+const ADMIN_EMAIL = "claudiolx.nunes@gmail.com";
+
 interface NavItem {
   path: string;
   label: string;
