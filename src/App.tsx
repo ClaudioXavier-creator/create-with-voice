@@ -50,6 +50,7 @@ import Instalar from "./pages/Instalar";
 import NutriCRMPage from "./pages/NutriCRMPage";
 import FeedBPFPage from "./pages/FeedBPFPage";
 import AuditsBPFPage from "./pages/AuditsBPFPage";
+import AdminLicencas from "./pages/AdminLicencas";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -106,6 +107,7 @@ const AppRoutes = () => {
       <Route path="/nutricrm" element={<NutriCRMPage />} />
       <Route path="/feedbpf" element={<FeedBPFPage />} />
       <Route path="/audits-bpf" element={<AuditsBPFPage />} />
+      <Route path="/admin-licencas" element={<ProtectedRoute><AdminLicencas /></ProtectedRoute>} />
       <Route
         path="/*"
         element={
