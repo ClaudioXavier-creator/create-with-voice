@@ -95,6 +95,29 @@ const NAV_ENTRIES: NavEntry[] = [
   { path: "/modelos", label: "📁 Modelos", icon: FileText },
 ];
 
+function AdminLink({ currentPath, onNavigate }: { currentPath: string; onNavigate?: () => void }) {
+  const { user } = useAuth();
+  if (user?.email !== ADMIN_EMAIL) return null;
+  const isActive = currentPath === "/admin-licencas";
+  return (
+    <div className="px-3 pt-2">
+      <Link
+        to="/admin-licencas"
+        onClick={onNavigate}
+        className={cn(
+          "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
+          isActive
+            ? "bg-sidebar-primary text-sidebar-primary-foreground"
+            : "text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+        )}
+      >
+        <ShieldCheck className="w-5 h-5 shrink-0" />
+        Admin Licenças
+      </Link>
+    </div>
+  );
+}
+
 function SidebarNav({ currentPath, onNavigate }: { currentPath: string; onNavigate?: () => void }) {
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>(() => {
     // Auto-open the group that contains the current route
