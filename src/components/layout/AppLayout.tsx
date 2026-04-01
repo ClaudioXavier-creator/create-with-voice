@@ -12,6 +12,8 @@ import { useAuth } from "@/hooks/useAuth";
 import EmpresaSelector from "@/components/EmpresaSelector";
 import logoImg from "@/assets/logo-feed-bpf.png";
 
+const ADMIN_EMAIL = "claudiolx.nunes@gmail.com";
+
 interface NavItem {
   path: string;
   label: string;
@@ -92,6 +94,29 @@ const NAV_ENTRIES: NavEntry[] = [
   { path: "/guia-pops", label: "Guia POPs", icon: ClipboardList },
   { path: "/modelos", label: "📁 Modelos", icon: FileText },
 ];
+
+function AdminLink({ currentPath, onNavigate }: { currentPath: string; onNavigate?: () => void }) {
+  const { user } = useAuth();
+  if (user?.email !== ADMIN_EMAIL) return null;
+  const isActive = currentPath === "/admin-licencas";
+  return (
+    <div className="px-3 pt-2">
+      <Link
+        to="/admin-licencas"
+        onClick={onNavigate}
+        className={cn(
+          "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
+          isActive
+            ? "bg-sidebar-primary text-sidebar-primary-foreground"
+            : "text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+        )}
+      >
+        <ShieldCheck className="w-5 h-5 shrink-0" />
+        Admin Licenças
+      </Link>
+    </div>
+  );
+}
 
 function SidebarNav({ currentPath, onNavigate }: { currentPath: string; onNavigate?: () => void }) {
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>(() => {
@@ -209,6 +234,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           </div>
         </div>
         <SidebarNav currentPath={location.pathname} />
+        <AdminLink currentPath={location.pathname} />
         <div className="px-4 py-3 border-t border-sidebar-border space-y-3">
           <EmpresaSelector />
           <p className="text-xs text-sidebar-foreground/60 truncate">{user?.email}</p>
@@ -240,6 +266,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         <div className="lg:hidden fixed inset-0 z-40 bg-black/50" onClick={() => setMobileOpen(false)}>
           <aside className="w-64 h-full bg-sidebar text-sidebar-foreground pt-16 flex flex-col" onClick={(e) => e.stopPropagation()}>
             <SidebarNav currentPath={location.pathname} onNavigate={() => setMobileOpen(false)} />
+            <AdminLink currentPath={location.pathname} onNavigate={() => setMobileOpen(false)} />
             <div className="px-4 py-3 border-t border-sidebar-border">
               <p className="text-xs text-sidebar-foreground/60 truncate px-3 mb-2">{user?.email}</p>
               <Button
