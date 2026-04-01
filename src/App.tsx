@@ -100,7 +100,7 @@ const AppRoutes = () => {
 
   return (
     <Routes>
-      <Route path="/" element={session ? <Navigate to="/dashboard" replace /> : <Vitrine />} />
+      <Route path="/" element={<Vitrine />} />
       <Route path="/auth" element={session ? <Navigate to="/dashboard" replace /> : <Auth />} />
       <Route path="/instalar" element={<Instalar />} />
       <Route path="/nutricrm" element={<NutriCRMPage />} />
