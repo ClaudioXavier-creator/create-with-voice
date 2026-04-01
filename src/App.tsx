@@ -107,6 +107,7 @@ const AppRoutes = () => {
       <Route path="/nutricrm" element={<NutriCRMPage />} />
       <Route path="/feedbpf" element={<FeedBPFPage />} />
       <Route path="/audits-bpf" element={<AuditsBPFPage />} />
+      <Route path="/admin-licencas" element={<ProtectedRoute><AdminLicencas /></ProtectedRoute>} />
       <Route
         path="/*"
         element={
