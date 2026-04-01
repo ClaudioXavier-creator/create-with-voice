@@ -266,6 +266,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         <div className="lg:hidden fixed inset-0 z-40 bg-black/50" onClick={() => setMobileOpen(false)}>
           <aside className="w-64 h-full bg-sidebar text-sidebar-foreground pt-16 flex flex-col" onClick={(e) => e.stopPropagation()}>
             <SidebarNav currentPath={location.pathname} onNavigate={() => setMobileOpen(false)} />
+            <AdminLink currentPath={location.pathname} onNavigate={() => setMobileOpen(false)} />
             <div className="px-4 py-3 border-t border-sidebar-border">
               <p className="text-xs text-sidebar-foreground/60 truncate px-3 mb-2">{user?.email}</p>
               <Button
