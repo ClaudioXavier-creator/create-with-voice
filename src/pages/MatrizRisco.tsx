@@ -420,14 +420,83 @@ export default function MatrizRisco() {
 
         <TabsContent value="risco">
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between flex-wrap gap-2">
-              <CardTitle className="text-base">Análise de Perigos e Riscos — APPCC</CardTitle>
-              <div className="flex gap-2">
-                <Button size="sm" onClick={addRiskRow}><Plus className="w-4 h-4 mr-1" />Linha</Button>
-                <Button size="sm" onClick={saveRisks}><Save className="w-4 h-4 mr-1" />Salvar</Button>
+            <CardHeader className="space-y-3">
+              <div className="flex flex-row items-center justify-between flex-wrap gap-2">
+                <CardTitle className="text-base">Análise de Perigos e Pontos Críticos de Controle — APPCC</CardTitle>
+                <div className="flex gap-2">
+                  <Button size="sm" onClick={addRiskRow}><Plus className="w-4 h-4 mr-1" />Linha em Branco</Button>
+                  <Button size="sm" onClick={saveRisks}><Save className="w-4 h-4 mr-1" />Salvar</Button>
+                </div>
+              </div>
+              <div className="bg-muted/60 rounded-lg p-4 text-sm space-y-2 border">
+                <p className="font-semibold text-foreground">📋 Como preencher esta Matriz de Risco:</p>
+                <ol className="list-decimal list-inside space-y-1 text-muted-foreground text-xs">
+                  <li><strong>Etapa do Processo:</strong> Selecione a etapa da produção onde o perigo pode ocorrer.</li>
+                  <li><strong>Perigo Identificado:</strong> Descreva o perigo específico (químico, biológico ou físico).</li>
+                  <li><strong>Probabilidade:</strong> Chance de ocorrência — Baixa (raro), Média (pode ocorrer), Alta (frequente).</li>
+                  <li><strong>Severidade:</strong> Impacto se ocorrer — Baixa (menor), Média (moderado), Alta (grave/letal).</li>
+                  <li><strong>Nível de Risco:</strong> Calculado automaticamente (Prob × Sev). Riscos <span className="text-destructive font-bold">Altos</span> exigem ação imediata.</li>
+                  <li><strong>Medidas de Controle:</strong> Ações preventivas para eliminar ou reduzir o perigo a níveis aceitáveis.</li>
+                </ol>
+                <p className="text-xs text-muted-foreground mt-2">
+                  💡 <strong>Dica:</strong> A tabela já vem preenchida com os perigos mais comuns em fábricas de nutrição animal. Revise cada item, ajuste probabilidade e severidade conforme a realidade da sua fábrica, e adicione novos itens se necessário.
+                </p>
+              </div>
+              {/* Quick-add from suggestions */}
+              <div className="flex flex-wrap gap-2 items-center">
+                <span className="text-xs font-medium text-muted-foreground">Adicionar perigos sugeridos por etapa:</span>
+                {ETAPAS_COMUNS.map(etapa => {
+                  const sugCount = PERIGOS_SUGERIDOS[etapa]?.length || 0;
+                  const alreadyHas = risks.some(r => r.etapa_processo === etapa);
+                  return (
+                    <Button
+                      key={etapa}
+                      size="sm"
+                      variant={alreadyHas ? "outline" : "secondary"}
+                      className="h-6 text-[10px] px-2"
+                      onClick={() => {
+                        const sugeridos = PERIGOS_SUGERIDOS[etapa] || [];
+                        const novos = sugeridos
+                          .filter(s => !risks.some(r => r.etapa_processo === etapa && r.perigo_identificado === s.perigo))
+                          .map(s => ({
+                            etapa_processo: etapa,
+                            perigo_identificado: s.perigo,
+                            tipo_perigo: s.tipo,
+                            probabilidade: s.prob,
+                            severidade: s.sev,
+                            nivel_risco: calcRisk(s.prob, s.sev),
+                            medidas_controle: s.medida,
+                          }));
+                        if (novos.length === 0) {
+                          toast.info(`Todos os perigos de "${etapa}" já estão na lista`);
+                          return;
+                        }
+                        setRisks(prev => [...prev, ...novos]);
+                        toast.success(`${novos.length} perigo(s) adicionado(s) para "${etapa}"`);
+                      }}
+                    >
+                      {etapa.split("/")[0].trim().substring(0, 20)} ({sugCount})
+                    </Button>
+                  );
+                })}
               </div>
             </CardHeader>
             <CardContent className="overflow-auto">
+              {/* Summary badges */}
+              <div className="flex flex-wrap gap-3 mb-4 text-xs">
+                <span className="flex items-center gap-1.5 px-2 py-1 rounded bg-destructive/10 text-destructive border border-destructive/20">
+                  <AlertTriangle className="w-3.5 h-3.5" />
+                  Alto: {risks.filter(r => r.nivel_risco === "Alto").length}
+                </span>
+                <span className="flex items-center gap-1.5 px-2 py-1 rounded bg-yellow-100 text-yellow-800 border border-yellow-200 dark:bg-yellow-900/30 dark:text-yellow-300">
+                  Médio: {risks.filter(r => r.nivel_risco === "Médio").length}
+                </span>
+                <span className="flex items-center gap-1.5 px-2 py-1 rounded bg-green-100 text-green-800 border border-green-200 dark:bg-green-900/30 dark:text-green-300">
+                  Baixo: {risks.filter(r => r.nivel_risco === "Baixo").length}
+                </span>
+                <span className="text-muted-foreground ml-2">Total: {risks.length} perigos</span>
+              </div>
+
               {riskLoaded && (
                 <Table>
                   <TableHeader>
@@ -446,7 +515,14 @@ export default function MatrizRisco() {
                     {risks.map((r, idx) => (
                       <TableRow key={idx}>
                         <TableCell>
-                          <Input value={r.etapa_processo} onChange={e => updateRisk(idx, "etapa_processo", e.target.value)} className="text-xs h-8" />
+                          <Select value={r.etapa_processo} onValueChange={v => updateRisk(idx, "etapa_processo", v)}>
+                            <SelectTrigger className="text-xs h-8 w-[160px]"><SelectValue placeholder="Selecione..." /></SelectTrigger>
+                            <SelectContent>
+                              {ETAPAS_COMUNS.map(e => (
+                                <SelectItem key={e} value={e}>{e}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
                         </TableCell>
                         <TableCell>
                           <Input value={r.perigo_identificado} onChange={e => updateRisk(idx, "perigo_identificado", e.target.value)} className="text-xs h-8" />
@@ -499,6 +575,29 @@ export default function MatrizRisco() {
                   </TableBody>
                 </Table>
               )}
+
+              {/* Risk level legend */}
+              <div className="mt-4 p-3 rounded-lg bg-muted/40 border text-xs space-y-1">
+                <p className="font-semibold text-foreground mb-1">Legenda — Cálculo do Nível de Risco (Probabilidade × Severidade):</p>
+                <div className="grid grid-cols-4 gap-1 max-w-md">
+                  <div className="font-medium">P \ S</div>
+                  <div className="font-medium text-center">Baixa</div>
+                  <div className="font-medium text-center">Média</div>
+                  <div className="font-medium text-center">Alta</div>
+                  <div className="font-medium">Baixa</div>
+                  <div className="text-center bg-green-100 dark:bg-green-900/30 rounded px-1">Baixo (1)</div>
+                  <div className="text-center bg-green-100 dark:bg-green-900/30 rounded px-1">Baixo (2)</div>
+                  <div className="text-center bg-yellow-100 dark:bg-yellow-900/30 rounded px-1">Médio (3)</div>
+                  <div className="font-medium">Média</div>
+                  <div className="text-center bg-green-100 dark:bg-green-900/30 rounded px-1">Baixo (2)</div>
+                  <div className="text-center bg-yellow-100 dark:bg-yellow-900/30 rounded px-1">Médio (4)</div>
+                  <div className="text-center bg-destructive/20 rounded px-1 text-destructive">Alto (6)</div>
+                  <div className="font-medium">Alta</div>
+                  <div className="text-center bg-yellow-100 dark:bg-yellow-900/30 rounded px-1">Médio (3)</div>
+                  <div className="text-center bg-destructive/20 rounded px-1 text-destructive">Alto (6)</div>
+                  <div className="text-center bg-destructive/20 rounded px-1 text-destructive font-bold">Alto (9)</div>
+                </div>
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
