@@ -129,7 +129,7 @@ export default function Vitrine() {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {produtos.map((p) => (
-            <Link key={p.nome} to={p.link} className="group">
+            <div key={p.nome} className="group cursor-pointer" onClick={() => navigate(p.link)}>
               <div className={`h-full rounded-2xl border-2 ${p.borderColor} ${p.bgCard} p-1 transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 hover:scale-[1.02]`}>
                 <div className="h-full rounded-xl bg-card/80 backdrop-blur-sm p-6 sm:p-8 flex flex-col">
                   {/* Logo */}
