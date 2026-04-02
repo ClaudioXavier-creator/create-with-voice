@@ -1,7 +1,9 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Mail, Lock, User, Loader2, Building2, Briefcase } from "lucide-react";
 import logoImg from "@/assets/logo.png";
+import logoFeedBpf from "@/assets/logo-feed-bpf.png";
+import logoAuditsBpf from "@/assets/logo-audits-bpf.png";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -9,14 +11,42 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
+const authConfigs = {
+  default: {
+    logo: logoImg,
+    title: "BPF_Consult",
+    subtitle: "Acesse sua plataforma de gestão e conformidade.",
+  },
+  feedbpf: {
+    logo: logoFeedBpf,
+    title: "Feed_BPF",
+    subtitle: "Sistema de Gestão de Boas Práticas de Fabricação",
+  },
+  "audits-bpf": {
+    logo: logoAuditsBpf,
+    title: "Audits_BPF",
+    subtitle: "Sistema de auditoria interna para BPF em nutrição animal",
+  },
+} as const;
+
 export default function Auth() {
-  const [isLogin, setIsLogin] = useState(true);
+  const [searchParams] = useSearchParams();
+  const product = searchParams.get("product") ?? "default";
+  const mode = searchParams.get("mode");
+  const redirectTo = searchParams.get("redirect") || "/dashboard";
+  const authContent = authConfigs[product as keyof typeof authConfigs] ?? authConfigs.default;
+
+  const [isLogin, setIsLogin] = useState(mode !== "signup");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [nome, setNome] = useState("");
   const [tipoUsuario, setTipoUsuario] = useState<"cliente" | "consultoria">("cliente");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    setIsLogin(mode !== "signup");
+  }, [mode]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,7 +57,7 @@ export default function Auth() {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
         toast.success("Login realizado com sucesso!");
-        navigate("/");
+        navigate(redirectTo, { replace: true });
       } else {
         const { error } = await supabase.auth.signUp({
           email,
@@ -52,13 +82,11 @@ export default function Auth() {
       <Card className="w-full max-w-md">
         <CardHeader className="text-center space-y-4 pb-2">
           <div className="flex justify-center">
-            <img src={logoImg} alt="Feed_BPF Logo" className="w-20 h-20 object-contain" />
+            <img src={authContent.logo} alt={`${authContent.title} Logo`} className="w-20 h-20 object-contain" />
           </div>
           <div>
-            <h1 className="font-display text-2xl font-bold">Feed_BPF</h1>
-            <p className="text-sm text-muted-foreground">
-              Sistema de Gestão de Boas Práticas de Fabricação
-            </p>
+            <h1 className="font-display text-2xl font-bold">{authContent.title}</h1>
+            <p className="text-sm text-muted-foreground">{authContent.subtitle}</p>
           </div>
         </CardHeader>
         <CardContent>
