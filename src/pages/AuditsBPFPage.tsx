@@ -22,7 +22,7 @@ const diferenciais = [
 ];
 
 export default function AuditsBPFPage() {
-  const auditsAppAuthLink = "https://friendly-flame-igniter.lovable.app/auth?redirect=%2Fdashboard";
+  const auditsAppAuthLink = "https://friendly-flame-igniter.lovable.app/auth";
   const signupLink = auditsAppAuthLink;
   const loginLink = auditsAppAuthLink;
 

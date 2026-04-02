@@ -31,7 +31,7 @@ const produtos = [
     bgCard: "bg-gradient-to-br from-emerald-50 to-green-50 dark:from-emerald-950/30 dark:to-green-950/30",
     borderColor: "border-emerald-200 dark:border-emerald-800",
     trial: "7 dias grátis",
-    trialLink: "https://friendly-flame-igniter.lovable.app/auth?redirect=%2Fdashboard",
+    trialLink: "https://friendly-flame-igniter.lovable.app/auth",
     preco: "A partir de R$ 197/mês",
     external: true,
   },
