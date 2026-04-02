@@ -189,7 +189,7 @@ export default function Vitrine() {
                   </div>
                 </div>
               </div>
-            </Link>
+            </div>
           ))}
         </div>
       </main>
