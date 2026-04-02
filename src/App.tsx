@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
+import { BrowserRouter, Route, Routes, Navigate, useSearchParams } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -88,6 +88,14 @@ function LicenseGate({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
 
+function AuthRoute() {
+  const { session } = useAuth();
+  const [searchParams] = useSearchParams();
+  const redirectTo = searchParams.get("redirect") || "/dashboard";
+
+  return session ? <Navigate to={redirectTo} replace /> : <Auth />;
+}
+
 const AppRoutes = () => {
   const { session, loading } = useAuth();
 
@@ -102,7 +110,7 @@ const AppRoutes = () => {
   return (
     <Routes>
       <Route path="/" element={<Vitrine />} />
-      <Route path="/auth" element={session ? <Navigate to="/dashboard" replace /> : <Auth />} />
+      <Route path="/auth" element={<AuthRoute />} />
       <Route path="/instalar" element={<Instalar />} />
       <Route path="/nutricrm" element={<NutriCRMPage />} />
       <Route path="/feedbpf" element={<FeedBPFPage />} />

@@ -22,6 +22,9 @@ const diferenciais = [
 ];
 
 export default function AuditsBPFPage() {
+  const signupLink = "/auth?product=audits-bpf&mode=signup&redirect=%2Fauditoria";
+  const loginLink = "/auth?product=audits-bpf&mode=login&redirect=%2Fauditoria";
+
   return (
     <div className="min-h-screen bg-background">
       <header className="relative overflow-hidden">
@@ -45,13 +48,13 @@ export default function AuditsBPFPage() {
                 Sistema completo de auditoria interna para BPF em nutrição animal, conforme <strong className="text-foreground">Decreto 12.031/2024</strong>.
               </p>
               <div className="flex flex-col sm:flex-row gap-3">
-                <Link to="/auth">
+                <Link to={signupLink}>
                   <Button size="lg" className="gap-2 shadow-lg shadow-primary/20">
                     <Sparkles className="h-4 w-4" />
                     Testar grátis por 7 dias
                   </Button>
                 </Link>
-                <Link to="/auth">
+                <Link to={loginLink}>
                   <Button size="lg" variant="outline" className="gap-2">
                     <LogIn className="h-4 w-4" />
                     Já é cadastrado? Acesse o Sistema
@@ -153,7 +156,7 @@ export default function AuditsBPFPage() {
           <div className="mt-12 text-center">
             <h3 className="text-xl font-bold font-display text-foreground mb-3">Experimente grátis por 7 dias!</h3>
             <p className="text-muted-foreground mb-6">Crie sua conta e tenha acesso completo ao Audits_BPF durante o período trial.</p>
-            <Link to="/auth">
+            <Link to={signupLink}>
               <Button size="lg" className="gap-2 shadow-lg shadow-primary/25">
                 <Sparkles className="h-4 w-4" />
                 Começar Trial Grátis
