@@ -58,6 +58,7 @@ const estatisticas = [
 ];
 
 export default function Vitrine() {
+  const navigate = useNavigate();
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
