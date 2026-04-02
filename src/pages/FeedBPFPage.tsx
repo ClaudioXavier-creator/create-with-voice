@@ -52,12 +52,20 @@ export default function FeedBPFPage() {
                 Plataforma completa de Boas Práticas de Fabricação para nutrição animal. 
                 Em conformidade com <strong className="text-foreground">IN 04/2007</strong> e <strong className="text-foreground">Decreto 12.031/2024</strong>.
               </p>
-              <Link to="/auth">
-                <Button size="lg" className="gap-2 shadow-lg shadow-primary/20">
-                  <Sparkles className="h-4 w-4" />
-                  Testar grátis por 7 dias
-                </Button>
-              </Link>
+              <div className="flex flex-col sm:flex-row gap-3">
+                <Link to="/auth">
+                  <Button size="lg" className="gap-2 shadow-lg shadow-primary/20">
+                    <Sparkles className="h-4 w-4" />
+                    Testar grátis por 7 dias
+                  </Button>
+                </Link>
+                <Link to="/auth">
+                  <Button size="lg" variant="outline" className="gap-2">
+                    <LogIn className="h-4 w-4" />
+                    Já é cadastrado? Acesse o Sistema
+                  </Button>
+                </Link>
+              </div>
               <p className="text-xs text-muted-foreground mt-2">Sem cartão de crédito • Acesso completo</p>
             </div>
           </div>
