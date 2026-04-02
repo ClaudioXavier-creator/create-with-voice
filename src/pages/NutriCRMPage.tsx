@@ -44,12 +44,20 @@ export default function NutriCRMPage() {
               <p className="text-lg text-muted-foreground max-w-xl leading-relaxed mb-6">
                 CRM especializado para profissionais de nutrição animal. Gerencie clientes, visitas e acompanhamentos em um só lugar.
               </p>
-              <a href="https://nutricrm.onrender.com/register" target="_blank" rel="noopener noreferrer">
-                <Button size="lg" className="gap-2 shadow-lg shadow-primary/20">
-                  <Sparkles className="h-4 w-4" />
-                  Testar grátis por 7 dias
-                </Button>
-              </a>
+              <div className="flex flex-col sm:flex-row gap-3">
+                <a href="https://nutricrm.onrender.com/register" target="_blank" rel="noopener noreferrer">
+                  <Button size="lg" className="gap-2 shadow-lg shadow-primary/20">
+                    <Sparkles className="h-4 w-4" />
+                    Testar grátis por 7 dias
+                  </Button>
+                </a>
+                <a href="https://nutricrm.onrender.com/login" target="_blank" rel="noopener noreferrer">
+                  <Button size="lg" variant="outline" className="gap-2">
+                    <Lock className="h-4 w-4" />
+                    Já é cadastrado? Acesse o Sistema
+                  </Button>
+                </a>
+              </div>
               <p className="text-xs text-muted-foreground mt-2">Sem cartão de crédito • Acesso completo</p>
             </div>
           </div>
