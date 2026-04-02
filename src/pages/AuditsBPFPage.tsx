@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { ArrowLeft, Sparkles, ClipboardCheck, ShieldCheck, FileBarChart, AlertTriangle, BarChart3, History, Scale, Eye } from "lucide-react";
+import { ArrowLeft, Sparkles, ClipboardCheck, ShieldCheck, FileBarChart, AlertTriangle, BarChart3, History, Scale, Eye, LogIn } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";

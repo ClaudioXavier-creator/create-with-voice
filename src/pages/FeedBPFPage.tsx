@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { ArrowLeft, Check, Sparkles, BookOpen, Factory, GitBranch, ShieldCheck, Beaker, Bug, Wrench, BarChart3, CalendarRange, ClipboardCheck, Droplets, GraduationCap, Activity, Lock, FileCheck } from "lucide-react";
+import { ArrowLeft, Check, Sparkles, BookOpen, Factory, GitBranch, ShieldCheck, Beaker, Bug, Wrench, BarChart3, CalendarRange, ClipboardCheck, Droplets, GraduationCap, Activity, Lock, FileCheck, LogIn } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
