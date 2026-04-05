@@ -60,9 +60,8 @@ const produtos = [
     bgCard: "bg-gradient-to-br from-green-50 to-teal-50 dark:from-green-950/30 dark:to-teal-950/30",
     borderColor: "border-green-200 dark:border-green-800",
     trial: "7 dias grátis",
-    trialLink: "https://agrocrm-gtijlihc.manus.space/",
+    trialLink: "/auth?product=agrogestao&mode=signup&redirect=%2Fdashboard",
     preco: "A partir de R$ 97/mês",
-    external: true,
   },
 ];
 
