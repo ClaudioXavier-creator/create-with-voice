@@ -50,6 +50,7 @@ import Instalar from "./pages/Instalar";
 import NutriCRMPage from "./pages/NutriCRMPage";
 import FeedBPFPage from "./pages/FeedBPFPage";
 import AuditsBPFPage from "./pages/AuditsBPFPage";
+import AgroGestaoCRMPage from "./pages/AgroGestaoCRMPage";
 import AdminLicencas from "./pages/AdminLicencas";
 import NotFound from "./pages/NotFound";
 
