@@ -63,7 +63,6 @@ const produtos = [
     trialLink: "/auth?product=agrogestao&mode=signup&redirect=%2Fdashboard",
     preco: "A partir de R$ 97/mês",
   },
-  },
 ];
 
 const estatisticas = [
