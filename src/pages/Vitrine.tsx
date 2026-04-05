@@ -50,6 +50,20 @@ const produtos = [
     preco: "A partir de R$ 97/mês",
     external: true,
   },
+  {
+    nome: "AgroGestão CRM",
+    logo: logoAgrogestao,
+    desc: "Plataforma de gestão regional de vendas no agronegócio. Controle de clientes, territórios, metas comerciais, visitas a campo e relatórios de desempenho por região.",
+    destaques: ["Gestão Regional", "Carteira de Clientes", "Metas Comerciais", "Visitas a Campo", "Relatórios por Região", "Dashboard de Vendas"],
+    link: "/agrogestao",
+    gradient: "from-[hsl(150,70%,35%)] to-[hsl(170,60%,25%)]",
+    bgCard: "bg-gradient-to-br from-green-50 to-teal-50 dark:from-green-950/30 dark:to-teal-950/30",
+    borderColor: "border-green-200 dark:border-green-800",
+    trial: "7 dias grátis",
+    trialLink: "https://agrocrm-gtijlihc.manus.space/",
+    preco: "A partir de R$ 97/mês",
+    external: true,
+  },
 ];
 
 const estatisticas = [
