@@ -6,6 +6,7 @@ import logoBpfConsult from "@/assets/logo-bpf-consult.png";
 import logoFeedBpf from "@/assets/logo-feed-bpf.png";
 import logoAuditsBpf from "@/assets/logo-audits-bpf.png";
 import logoNutricrm from "@/assets/logo-nutricrm.png";
+import logoAgrogestao from "@/assets/logo-agrogestao.png";
 
 const produtos = [
   {
