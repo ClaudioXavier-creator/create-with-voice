@@ -6,6 +6,7 @@ import logoBpfConsult from "@/assets/logo-bpf-consult.png";
 import logoFeedBpf from "@/assets/logo-feed-bpf.png";
 import logoAuditsBpf from "@/assets/logo-audits-bpf.png";
 import logoNutricrm from "@/assets/logo-nutricrm.png";
+import logoAgrogestao from "@/assets/logo-agrogestao.png";
 
 const produtos = [
   {
@@ -46,6 +47,20 @@ const produtos = [
     borderColor: "border-amber-200 dark:border-amber-800",
     trial: "7 dias grátis",
     trialLink: "https://nutricrm.onrender.com/register",
+    preco: "A partir de R$ 97/mês",
+    external: true,
+  },
+  {
+    nome: "AgroGestão CRM",
+    logo: logoAgrogestao,
+    desc: "Plataforma de gestão regional de vendas no agronegócio. Controle de clientes, territórios, metas comerciais, visitas a campo e relatórios de desempenho por região.",
+    destaques: ["Gestão Regional", "Carteira de Clientes", "Metas Comerciais", "Visitas a Campo", "Relatórios por Região", "Dashboard de Vendas"],
+    link: "/agrogestao",
+    gradient: "from-[hsl(150,70%,35%)] to-[hsl(170,60%,25%)]",
+    bgCard: "bg-gradient-to-br from-green-50 to-teal-50 dark:from-green-950/30 dark:to-teal-950/30",
+    borderColor: "border-green-200 dark:border-green-800",
+    trial: "7 dias grátis",
+    trialLink: "https://agrocrm-gtijlihc.manus.space/",
     preco: "A partir de R$ 97/mês",
     external: true,
   },
@@ -121,7 +136,7 @@ export default function Vitrine() {
             Nossos Programas
           </Badge>
           <h2 className="text-3xl sm:text-4xl font-bold font-display text-foreground mb-3">
-            Três soluções, um ecossistema completo
+            Quatro soluções, um ecossistema completo
           </h2>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
             Clique em cada programa para ver o tutorial completo, funcionalidades e planos de preço.
