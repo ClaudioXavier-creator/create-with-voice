@@ -1,0 +1,371 @@
+import { useState, useEffect, useMemo } from "react";
+import { FolderOpen, Upload, Trash2, Download, FileText, Filter, Loader2, Calendar, Tag } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
+import PageHeader from "@/components/PageHeader";
+import EmpresaSelector from "@/components/EmpresaSelector";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
+import { useEmpresa } from "@/hooks/useEmpresa";
+import { toast } from "sonner";
+
+const TIPOS_DOC = [
+  { value: "pop", label: "POP — Procedimento Operacional Padrão" },
+  { value: "it", label: "IT — Instrução de Trabalho" },
+  { value: "planilha", label: "Planilha Preenchida (escaneada)" },
+  { value: "manual", label: "Manual BPF" },
+  { value: "laudo", label: "Laudo / Certificado" },
+  { value: "outro", label: "Outro Documento" },
+];
+
+const POP_CODIGOS = [
+  "POP-001", "POP-002", "POP-003", "POP-004", "POP-005",
+  "POP-006", "POP-007", "POP-008", "POP-009", "POP-010",
+  "IT-01-01", "IT-01-02", "IT-01-03", "IT-02-01", "IT-02-02", "IT-02-03",
+  "IT-03-01", "IT-03-02", "IT-04-01", "IT-04-02", "IT-05-01", "IT-05-02",
+  "IT-06-01", "IT-06-02", "IT-07-01", "IT-07-02", "IT-08-01", "IT-08-02",
+  "IT-09-01", "IT-09-02", "IT-10-01", "IT-10-02",
+];
+
+interface DocBPF {
+  id: string;
+  empresa_id: string;
+  tipo: string;
+  pop_codigo: string | null;
+  titulo: string;
+  descricao: string | null;
+  arquivo_nome: string;
+  arquivo_path: string;
+  data_documento: string | null;
+  created_at: string;
+}
+
+export default function DocumentosBPF() {
+  const { user } = useAuth();
+  const { empresaId } = useEmpresa();
+  const [docs, setDocs] = useState<DocBPF[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [uploading, setUploading] = useState(false);
+  const [openUpload, setOpenUpload] = useState(false);
+  const [filtroTipo, setFiltroTipo] = useState("todos");
+  const [filtroCodigo, setFiltroCodigo] = useState("todos");
+
+  // Upload form
+  const [tipo, setTipo] = useState("pop");
+  const [popCodigo, setPopCodigo] = useState("");
+  const [titulo, setTitulo] = useState("");
+  const [descricao, setDescricao] = useState("");
+  const [dataDoc, setDataDoc] = useState(new Date().toISOString().split("T")[0]);
+  const [file, setFile] = useState<File | null>(null);
+
+  const fetchDocs = async () => {
+    if (!user || !empresaId) return;
+    const { data } = await supabase
+      .from("documentos_bpf")
+      .select("*")
+      .eq("empresa_id", empresaId)
+      .order("data_documento", { ascending: false });
+    if (data) setDocs(data as unknown as DocBPF[]);
+    setLoading(false);
+  };
+
+  useEffect(() => { setLoading(true); fetchDocs(); }, [user, empresaId]);
+
+  const handleUpload = async () => {
+    if (!file || !titulo || !user || !empresaId) {
+      toast.error("Preencha título e selecione um arquivo");
+      return;
+    }
+    setUploading(true);
+    try {
+      const sanitized = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+      const folder = `${empresaId}/${tipo}/${dataDoc}`;
+      const filePath = `${folder}/${Date.now()}_${sanitized}`;
+
+      const { error: uploadErr } = await supabase.storage
+        .from("feed-bpf")
+        .upload(filePath, file);
+
+      if (uploadErr) {
+        toast.error("Erro no upload: " + uploadErr.message);
+        return;
+      }
+
+      const { error } = await supabase.from("documentos_bpf").insert({
+        user_id: user.id,
+        empresa_id: empresaId,
+        tipo,
+        pop_codigo: popCodigo || null,
+        titulo,
+        descricao,
+        arquivo_nome: file.name,
+        arquivo_path: filePath,
+        data_documento: dataDoc,
+      } as any);
+
+      if (error) {
+        toast.error("Erro ao salvar registro");
+      } else {
+        toast.success("Documento enviado com sucesso!");
+        setOpenUpload(false);
+        resetForm();
+        fetchDocs();
+      }
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleDownload = async (doc: DocBPF) => {
+    const { data, error } = await supabase.storage
+      .from("feed-bpf")
+      .createSignedUrl(doc.arquivo_path, 300);
+    if (error || !data?.signedUrl) {
+      toast.error("Erro ao gerar link de download");
+      return;
+    }
+    window.open(data.signedUrl, "_blank");
+  };
+
+  const handleDelete = async (doc: DocBPF) => {
+    if (!confirm(`Excluir "${doc.titulo}"?`)) return;
+    await supabase.storage.from("feed-bpf").remove([doc.arquivo_path]);
+    const { error } = await supabase.from("documentos_bpf").delete().eq("id", doc.id);
+    if (error) toast.error("Erro ao excluir");
+    else { toast.success("Documento excluído"); fetchDocs(); }
+  };
+
+  const resetForm = () => {
+    setTipo("pop"); setPopCodigo(""); setTitulo(""); setDescricao("");
+    setDataDoc(new Date().toISOString().split("T")[0]); setFile(null);
+  };
+
+  const filtered = useMemo(() => {
+    return docs.filter(d => {
+      if (filtroTipo !== "todos" && d.tipo !== filtroTipo) return false;
+      if (filtroCodigo !== "todos" && d.pop_codigo !== filtroCodigo) return false;
+      return true;
+    });
+  }, [docs, filtroTipo, filtroCodigo]);
+
+  // Group by date
+  const grouped = useMemo(() => {
+    const map: Record<string, DocBPF[]> = {};
+    filtered.forEach(d => {
+      const key = d.data_documento || "sem-data";
+      if (!map[key]) map[key] = [];
+      map[key].push(d);
+    });
+    return Object.entries(map).sort(([a], [b]) => b.localeCompare(a));
+  }, [filtered]);
+
+  const tipoLabel = (t: string) => TIPOS_DOC.find(td => td.value === t)?.label?.split("—")[0]?.trim() || t;
+  const tipoBadgeColor = (t: string) => {
+    switch (t) {
+      case "pop": return "bg-blue-500/15 text-blue-700 border-blue-200";
+      case "it": return "bg-amber-500/15 text-amber-700 border-amber-200";
+      case "planilha": return "bg-green-500/15 text-green-700 border-green-200";
+      case "manual": return "bg-purple-500/15 text-purple-700 border-purple-200";
+      case "laudo": return "bg-red-500/15 text-red-700 border-red-200";
+      default: return "bg-muted text-muted-foreground";
+    }
+  };
+
+  if (!empresaId) {
+    return (
+      <div className="space-y-6">
+        <PageHeader icon={FolderOpen} title="Documentos BPF" description="Selecione uma empresa para gerenciar documentos" />
+        <EmpresaSelector />
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      <PageHeader icon={FolderOpen} title="Documentos BPF — Arquivo Digital" description="POPs, ITs e planilhas preenchidas/escaneadas organizados por tipo e data" />
+      <EmpresaSelector />
+
+      {/* Filters + Upload */}
+      <div className="flex flex-wrap items-end gap-3">
+        <div className="space-y-1">
+          <Label className="text-xs">Tipo</Label>
+          <Select value={filtroTipo} onValueChange={setFiltroTipo}>
+            <SelectTrigger className="w-40"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="todos">Todos</SelectItem>
+              {TIPOS_DOC.map(t => <SelectItem key={t.value} value={t.value}>{t.label.split("—")[0].trim()}</SelectItem>)}
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="space-y-1">
+          <Label className="text-xs">Código POP/IT</Label>
+          <Select value={filtroCodigo} onValueChange={setFiltroCodigo}>
+            <SelectTrigger className="w-36"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="todos">Todos</SelectItem>
+              {POP_CODIGOS.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="flex-1" />
+        <Dialog open={openUpload} onOpenChange={setOpenUpload}>
+          <DialogTrigger asChild>
+            <Button><Upload className="w-4 h-4 mr-2" /> Enviar Documento</Button>
+          </DialogTrigger>
+          <DialogContent className="max-w-lg">
+            <DialogHeader><DialogTitle>Enviar Documento BPF</DialogTitle></DialogHeader>
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <Label>Tipo</Label>
+                  <Select value={tipo} onValueChange={setTipo}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      {TIPOS_DOC.map(t => <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label>Código POP/IT</Label>
+                  <Select value={popCodigo} onValueChange={setPopCodigo}>
+                    <SelectTrigger><SelectValue placeholder="Opcional" /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="">Nenhum</SelectItem>
+                      {POP_CODIGOS.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <div>
+                <Label>Título *</Label>
+                <Input value={titulo} onChange={e => setTitulo(e.target.value)} placeholder="Ex: POP-001 Recebimento MP - Janeiro 2025" />
+              </div>
+              <div>
+                <Label>Descrição</Label>
+                <Input value={descricao} onChange={e => setDescricao(e.target.value)} placeholder="Observações opcionais" />
+              </div>
+              <div>
+                <Label>Data do Documento</Label>
+                <Input type="date" value={dataDoc} onChange={e => setDataDoc(e.target.value)} />
+              </div>
+              <div>
+                <Label>Arquivo (PDF, imagem ou Excel) *</Label>
+                <Input type="file" accept=".pdf,.jpg,.jpeg,.png,.webp,.xlsx,.xls" onChange={e => setFile(e.target.files?.[0] || null)} />
+              </div>
+              <Button className="w-full" onClick={handleUpload} disabled={uploading}>
+                {uploading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+                Enviar
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+      </div>
+
+      {/* Stats */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        {TIPOS_DOC.slice(0, 4).map(t => {
+          const count = docs.filter(d => d.tipo === t.value).length;
+          return (
+            <Card key={t.value} className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => setFiltroTipo(filtroTipo === t.value ? "todos" : t.value)}>
+              <CardContent className="pt-4 pb-3 text-center">
+                <p className="text-2xl font-bold">{count}</p>
+                <p className="text-xs text-muted-foreground">{t.label.split("—")[0].trim()}</p>
+              </CardContent>
+            </Card>
+          );
+        })}
+      </div>
+
+      {/* Document list grouped by date */}
+      {loading ? (
+        <div className="flex justify-center py-12"><Loader2 className="w-8 h-8 animate-spin text-muted-foreground" /></div>
+      ) : filtered.length === 0 ? (
+        <Card>
+          <CardContent className="py-12 text-center">
+            <FolderOpen className="w-12 h-12 mx-auto text-muted-foreground/40 mb-3" />
+            <p className="text-muted-foreground">Nenhum documento encontrado</p>
+            <p className="text-xs text-muted-foreground mt-1">Clique em "Enviar Documento" para adicionar POPs, ITs e planilhas escaneadas</p>
+          </CardContent>
+        </Card>
+      ) : (
+        grouped.map(([date, groupDocs]) => (
+          <Card key={date}>
+            <CardHeader className="py-3">
+              <CardTitle className="text-sm flex items-center gap-2">
+                <Calendar className="w-4 h-4" />
+                {date === "sem-data" ? "Sem data" : new Date(date + "T12:00:00").toLocaleDateString("pt-BR")}
+                <Badge variant="outline" className="ml-2">{groupDocs.length} doc(s)</Badge>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-0">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-20">Tipo</TableHead>
+                    <TableHead className="w-20">Código</TableHead>
+                    <TableHead>Título</TableHead>
+                    <TableHead className="w-40">Arquivo</TableHead>
+                    <TableHead className="w-24">Ações</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {groupDocs.map(d => (
+                    <TableRow key={d.id}>
+                      <TableCell><Badge variant="outline" className={tipoBadgeColor(d.tipo)}>{tipoLabel(d.tipo)}</Badge></TableCell>
+                      <TableCell className="font-mono text-xs">{d.pop_codigo || "—"}</TableCell>
+                      <TableCell>
+                        <p className="text-sm font-medium">{d.titulo}</p>
+                        {d.descricao && <p className="text-xs text-muted-foreground">{d.descricao}</p>}
+                      </TableCell>
+                      <TableCell className="text-xs text-muted-foreground truncate max-w-[140px]">{d.arquivo_nome}</TableCell>
+                      <TableCell>
+                        <div className="flex gap-1">
+                          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleDownload(d)} title="Baixar">
+                            <Download className="w-4 h-4" />
+                          </Button>
+                          <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={() => handleDelete(d)} title="Excluir">
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        ))
+      )}
+
+      {/* Structure info */}
+      <Card className="border-primary/20 bg-primary/5">
+        <CardContent className="pt-4">
+          <h3 className="font-semibold text-sm mb-2">📁 Estrutura de Pastas</h3>
+          <pre className="text-xs text-muted-foreground bg-background/50 p-3 rounded-lg overflow-x-auto">
+{`feed-bpf/
+  └── {empresa_id}/
+      ├── pop/
+      │   ├── 2025-01-15/  ← documentos do dia
+      │   └── 2025-01-20/
+      ├── it/
+      │   └── 2025-01-18/
+      ├── planilha/
+      │   └── 2025-01-22/
+      ├── manual/
+      └── laudo/`}
+          </pre>
+          <p className="text-xs text-muted-foreground mt-2">
+            Cada empresa tem sua pasta isolada. Consultores veem apenas as empresas que gerenciam. 
+            Documentos são organizados por tipo (POP, IT, Planilha) e por data.
+          </p>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
