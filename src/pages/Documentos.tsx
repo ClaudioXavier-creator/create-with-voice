@@ -39,9 +39,23 @@ const TIPOS_EQUIPAMENTO = [
   { value: "outro", label: "Outro" },
 ];
 
+const CATEGORIAS_ARQ = [
+  { value: "pop", label: "POP" },
+  { value: "it", label: "Instrução de Trabalho (IT)" },
+  { value: "planilha", label: "Planilha" },
+  { value: "manual", label: "Manual BPF" },
+  { value: "certificado", label: "Certificado / Laudo" },
+  { value: "outro", label: "Outro" },
+];
+
 interface DocRow {
   id: string; codigo: string; nome: string; versao: string | null;
   data_revisao: string | null; responsavel: string | null; status: string | null;
+}
+
+interface ArquivoBpf {
+  id: string; titulo: string; categoria: string; descricao: string | null;
+  arquivo_nome: string | null; arquivo_url: string | null; created_at: string;
 }
 
 
