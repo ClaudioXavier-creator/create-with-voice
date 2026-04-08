@@ -68,7 +68,7 @@ export default function PopPlanilhaForm({ planilhaId, periodicidade, userId, pop
         .eq("planilha_id", planilhaId),
       supabase
         .from("pop_planilhas")
-        .select("assinatura_executor, assinatura_executor_data, assinatura_supervisor, assinatura_supervisor_data, assinatura_rt, assinatura_rt_crmv, assinatura_rt_data")
+        .select("status, assinatura_executor, assinatura_executor_data, assinatura_supervisor, assinatura_supervisor_data, assinatura_rt, assinatura_rt_crmv, assinatura_rt_data")
         .eq("id", planilhaId)
         .maybeSingle(),
     ]);
