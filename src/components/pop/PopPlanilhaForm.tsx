@@ -196,6 +196,93 @@ export default function PopPlanilhaForm({ planilhaId, periodicidade, userId, pop
     setSaving(false);
   }
 
+  const allSigned = !!(signatures.executorData && signatures.supervisorData && signatures.rtData);
+  const isArchived = planilhaStatus === "arquivada";
+
+  function buildPdfHtml(): string {
+    const areas = periodicidade.areas.map((a) => a.area);
+    const hCells = areas.map((a) => `<th style="border:1px solid #333;padding:4px 6px;background:#d0d0d0;font-size:9px;text-align:center;white-space:nowrap">${a}</th>`).join("");
+    const bRows = periodicidade.periodos.map((periodo, idx) => {
+      const cells = areas.map((a) => {
+        const key = cellKey(periodo, a);
+        const val = grid[key]?.conforme ?? null;
+        const text = val === true ? "C" : val === false ? "NC" : "";
+        const bg = val === true ? "#d4edda" : val === false ? "#f8d7da" : "#fff";
+        return `<td style="border:1px solid #333;padding:3px 6px;text-align:center;font-size:9px;font-weight:bold;background:${bg}">${text}</td>`;
+      }).join("");
+      const resp = getFieldForPeriodo(periodo, "responsavel");
+      const func = getFieldForPeriodo(periodo, "funcao");
+      const obs = getFieldForPeriodo(periodo, "observacoes");
+      const rowBg = idx % 2 === 0 ? "#fff" : "#f9f9f9";
+      return `<tr style="background:${rowBg}"><td style="border:1px solid #333;padding:3px 6px;font-size:9px;font-weight:600;white-space:nowrap">${periodo}</td>${cells}<td style="border:1px solid #333;padding:3px 6px;font-size:9px">${resp}</td><td style="border:1px solid #333;padding:3px 6px;font-size:9px">${func}</td><td style="border:1px solid #333;padding:3px 6px;font-size:9px">${obs}</td></tr>`;
+    }).join("");
+    const fmtD = (d: string | null) => d ? format(new Date(d), "dd/MM/yyyy HH:mm") : "";
+    return `<!DOCTYPE html><html><head><meta charset="utf-8"><title>${popCodigo} - ${periodicidade.label}</title><style>@page{size:A4 landscape;margin:10mm}body{font-family:Arial,sans-serif;font-size:10px;color:#000;margin:0}h2{font-size:13px;text-align:center;margin-bottom:2px}.sub{text-align:center;font-size:10px;color:#555;margin-bottom:10px}table{width:100%;border-collapse:collapse}.legenda{font-size:8px;color:#555;margin-top:8px}.stamp{margin-top:16px;padding:8px;border:2px solid #0a0;background:#efffef;text-align:center;font-size:10px}</style></head><body><h2>${popCodigo||"POP"} — ${popNome||""}</h2><div class="sub">${periodicidade.label} | DOCUMENTO ARQUIVADO</div><table><thead><tr><th style="border:1px solid #333;padding:4px 6px;background:#d0d0d0;font-size:9px;text-align:left;min-width:60px">Período</th>${hCells}<th style="border:1px solid #333;padding:4px 6px;background:#d0d0d0;font-size:9px;text-align:center">Responsável</th><th style="border:1px solid #333;padding:4px 6px;background:#d0d0d0;font-size:9px;text-align:center">Função</th><th style="border:1px solid #333;padding:4px 6px;background:#d0d0d0;font-size:9px;text-align:center">Obs.</th></tr></thead><tbody>${bRows}</tbody></table><p class="legenda">*C = Conforme | NC = Não Conforme</p><div style="margin-top:24px;display:flex;justify-content:space-between;gap:20px"><div style="flex:1;text-align:center"><div style="border-top:1px solid #000;margin-top:50px;padding-top:4px;font-size:9px">Responsável pela Execução<br><strong>${signatures.executor}</strong><br>${fmtD(signatures.executorData)}</div></div><div style="flex:1;text-align:center"><div style="border-top:1px solid #000;margin-top:50px;padding-top:4px;font-size:9px">Verificador / Supervisor<br><strong>${signatures.supervisor}</strong><br>${fmtD(signatures.supervisorData)}</div></div><div style="flex:1;text-align:center"><div style="border-top:1px solid #000;margin-top:50px;padding-top:4px;font-size:9px">Responsável Técnico<br><strong>${signatures.rt}</strong> — CRMV: ${signatures.rtCrmv}<br>${fmtD(signatures.rtData)}</div></div></div><div class="stamp">✅ DOCUMENTO ARQUIVADO DIGITALMENTE — ${new Date().toISOString()} — Conforme IN 04/2007</div></body></html>`;
+  }
+
+  async function archivePlanilha() {
+    if (!allSigned) {
+      toast.error("Todas as assinaturas (Executor, Supervisor e RT) são obrigatórias para arquivar.");
+      return;
+    }
+    setArchiving(true);
+    try {
+      await saveAll();
+      const htmlContent = buildPdfHtml();
+      const blob = new Blob([htmlContent], { type: "text/html" });
+      const now = new Date();
+      const dateStr = format(now, "yyyy-MM-dd");
+      const fileName = `${popCodigo || "POP"}_${periodicidade.key}_${dateStr}.html`;
+      const storagePath = `${empresaId || "geral"}/planilhas_pop/${dateStr}/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("feed-bpf")
+        .upload(storagePath, blob, { upsert: true, contentType: "text/html" });
+
+      if (uploadError) {
+        toast.error("Erro ao fazer upload: " + uploadError.message);
+        setArchiving(false);
+        return;
+      }
+
+      const { error: docError } = await supabase.from("documentos_bpf").insert({
+        user_id: userId,
+        empresa_id: empresaId || "",
+        titulo: `${popCodigo} — ${periodicidade.label}`,
+        descricao: `Planilha arquivada em ${format(now, "dd/MM/yyyy HH:mm")}. Assinaturas: Executor (${signatures.executor}), Supervisor (${signatures.supervisor}), RT (${signatures.rt} — CRMV ${signatures.rtCrmv}).`,
+        tipo: "planilha_pop",
+        pop_codigo: popCodigo || null,
+        arquivo_nome: fileName,
+        arquivo_path: storagePath,
+        data_documento: dateStr,
+      });
+
+      if (docError) {
+        toast.error("Erro ao registrar documento: " + docError.message);
+        setArchiving(false);
+        return;
+      }
+
+      const { error: updateError } = await supabase
+        .from("pop_planilhas")
+        .update({ status: "arquivada" } as any)
+        .eq("id", planilhaId);
+
+      if (updateError) {
+        toast.error("Erro ao atualizar status: " + updateError.message);
+        setArchiving(false);
+        return;
+      }
+
+      setPlanilhaStatus("arquivada");
+      toast.success("✅ Planilha arquivada com sucesso! Documento salvo no Arquivo BPF.");
+    } catch (err) {
+      console.error(err);
+      toast.error("Erro inesperado ao arquivar.");
+    }
+    setArchiving(false);
+  }
+
   function printPlanilha() {
     const areas = periodicidade.areas.map((a) => a.area);
     const headerCells = areas.map((a) => `<th style="border:1px solid #333;padding:4px 6px;background:#d0d0d0;font-size:9px;text-align:center;white-space:nowrap">${a}</th>`).join("");
