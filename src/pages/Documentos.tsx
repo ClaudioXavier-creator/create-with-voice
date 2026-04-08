@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { FileText, Plus, Loader2, Wrench, Gauge, AlertCircle, ExternalLink } from "lucide-react";
+import { FileText, Plus, Loader2, Wrench, Gauge, AlertCircle, ExternalLink, Upload, FolderOpen, Trash2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
@@ -14,6 +14,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import PageHeader from "@/components/PageHeader";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { useEmpresa } from "@/hooks/useEmpresa";
 import { toast } from "sonner";
 
 const POPS_OBRIGATORIOS = [
@@ -38,9 +39,23 @@ const TIPOS_EQUIPAMENTO = [
   { value: "outro", label: "Outro" },
 ];
 
+const CATEGORIAS_ARQ = [
+  { value: "pop", label: "POP" },
+  { value: "it", label: "Instrução de Trabalho (IT)" },
+  { value: "planilha", label: "Planilha" },
+  { value: "manual", label: "Manual BPF" },
+  { value: "certificado", label: "Certificado / Laudo" },
+  { value: "outro", label: "Outro" },
+];
+
 interface DocRow {
   id: string; codigo: string; nome: string; versao: string | null;
   data_revisao: string | null; responsavel: string | null; status: string | null;
+}
+
+interface ArquivoBpf {
+  id: string; titulo: string; categoria: string; descricao: string | null;
+  arquivo_nome: string | null; arquivo_url: string | null; created_at: string;
 }
 
 
@@ -66,9 +81,10 @@ const calibStatusBadge: Record<string, string> = {
 
 export default function Documentos() {
   const { user } = useAuth();
+  const { empresaAtiva } = useEmpresa();
   const navigate = useNavigate();
   const [docs, setDocs] = useState<DocRow[]>([]);
-  
+  const [arquivos, setArquivos] = useState<ArquivoBpf[]>([]);
   const [calibracoes, setCalibracoes] = useState<CalibracaoRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -81,7 +97,15 @@ export default function Documentos() {
   const [popResponsavel, setPopResponsavel] = useState("");
 
 
-  // Calibração form
+  // Arquivo BPF form
+  const [arqOpen, setArqOpen] = useState(false);
+  const [arqTitulo, setArqTitulo] = useState("");
+  const [arqCategoria, setArqCategoria] = useState("pop");
+  const [arqDescricao, setArqDescricao] = useState("");
+  const [arqFile, setArqFile] = useState<File | null>(null);
+  const [arqFilterCat, setArqFilterCat] = useState("todos");
+
+
   const [calOpen, setCalOpen] = useState(false);
   const [calEquipamento, setCalEquipamento] = useState("");
   const [calCodigo, setCalCodigo] = useState("");
@@ -95,12 +119,14 @@ export default function Documentos() {
 
   const fetchData = async () => {
     if (!user) return;
-    const [docsRes, calRes] = await Promise.all([
+    const [docsRes, calRes, arqRes] = await Promise.all([
       supabase.from("documentos").select("*").order("codigo"),
       supabase.from("calibracoes").select("*").order("proxima_calibracao"),
+      supabase.from("arquivos_bpf").select("*").order("created_at", { ascending: false }),
     ]);
     if (docsRes.data) setDocs(docsRes.data);
     if (calRes.data) setCalibracoes(calRes.data as unknown as CalibracaoRow[]);
+    if (arqRes.data) setArquivos(arqRes.data as unknown as ArquivoBpf[]);
     setLoading(false);
   };
 
@@ -137,7 +163,39 @@ export default function Documentos() {
     setSaving(false);
   };
 
-  
+  const handleAddArquivo = async () => {
+    if (!arqTitulo || !arqFile || !user) return;
+    setSaving(true);
+    let arquivo_url = "";
+    let arquivo_nome = arqFile.name;
+    // Upload para storage se disponível
+    const path = `bpf/${empresaAtiva?.id || user.id}/${arqCategoria}/${Date.now()}_${arqFile.name.replace(/[^a-zA-Z0-9._-]/g, "_")}`;
+    const { error: upErr } = await supabase.storage.from("feed-bpf").upload(path, arqFile);
+    if (!upErr) {
+      const { data: urlData } = supabase.storage.from("feed-bpf").getPublicUrl(path);
+      arquivo_url = urlData?.publicUrl || path;
+    }
+    const { error } = await supabase.from("arquivos_bpf").insert({
+      user_id: user.id, titulo: arqTitulo, categoria: arqCategoria, descricao: arqDescricao,
+      arquivo_nome, arquivo_url, empresa_id: empresaAtiva?.id || null,
+    });
+    if (error) toast.error("Erro ao salvar arquivo");
+    else {
+      toast.success("Arquivo BPF salvo!");
+      setArqOpen(false); setArqTitulo(""); setArqCategoria("pop"); setArqDescricao(""); setArqFile(null);
+      fetchData();
+    }
+    setSaving(false);
+  };
+
+  const handleDeleteArquivo = async (id: string) => {
+    const { error } = await supabase.from("arquivos_bpf").delete().eq("id", id);
+    if (error) toast.error("Erro ao excluir");
+    else { toast.success("Arquivo excluído"); fetchData(); }
+  };
+
+  const filteredArquivos = arqFilterCat === "todos" ? arquivos : arquivos.filter(a => a.categoria === arqFilterCat);
+
   const tipoLabel = (tipo: string) => TIPOS_EQUIPAMENTO.find(t => t.value === tipo)?.label || tipo;
 
   const today = new Date().toISOString().split("T")[0];
@@ -149,10 +207,12 @@ export default function Documentos() {
       <PageHeader icon={FileText} title="Documentos, POPs e Calibração" description="POPs obrigatórios, Manual BPF, ITs, arquivos e gestão de calibração" />
 
       <Tabs defaultValue="pops" className="space-y-4">
-        <TabsList>
+        <TabsList className="flex flex-wrap h-auto gap-1 p-1">
           <TabsTrigger value="pops">POPs Obrigatórios</TabsTrigger>
           <TabsTrigger value="registrados">Docs Registrados ({docs.length})</TabsTrigger>
-          
+          <TabsTrigger value="arquivo_bpf" className="flex items-center gap-1">
+            <FolderOpen className="w-4 h-4" /> Arquivo BPF ({arquivos.length})
+          </TabsTrigger>
           <TabsTrigger value="calibracao" className="flex items-center gap-1">
             <Gauge className="w-4 h-4" /> Calibração ({calibracoes.length})
             {calibVencidas.length > 0 && <Badge variant="destructive" className="ml-1 text-[10px] px-1">{calibVencidas.length}</Badge>}
@@ -369,6 +429,88 @@ export default function Documentos() {
                         </TableRow>
                       );
                     })}
+                  </TableBody>
+                </Table>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Tab: Arquivo BPF */}
+        <TabsContent value="arquivo_bpf">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between flex-wrap gap-2">
+              <div>
+                <CardTitle className="font-display">Arquivo BPF — POPs, ITs e Documentos</CardTitle>
+                <p className="text-xs text-muted-foreground mt-1">Upload e organização de documentos físicos escaneados, ITs associadas aos POPs e demais arquivos</p>
+              </div>
+              <div className="flex items-center gap-2">
+                <Select value={arqFilterCat} onValueChange={setArqFilterCat}>
+                  <SelectTrigger className="w-44 h-8 text-xs"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="todos">Todos</SelectItem>
+                    {CATEGORIAS_ARQ.map(c => <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+                <Dialog open={arqOpen} onOpenChange={setArqOpen}>
+                  <DialogTrigger asChild><Button size="sm"><Upload className="w-4 h-4 mr-1" /> Enviar Arquivo</Button></DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader><DialogTitle>Enviar Arquivo BPF</DialogTitle></DialogHeader>
+                    <div className="space-y-4">
+                      <div><Label>Título *</Label><Input value={arqTitulo} onChange={e => setArqTitulo(e.target.value)} placeholder="Ex: POP-001 — IT Limpeza de Silos" /></div>
+                      <div><Label>Categoria</Label>
+                        <Select value={arqCategoria} onValueChange={setArqCategoria}>
+                          <SelectTrigger><SelectValue /></SelectTrigger>
+                          <SelectContent>{CATEGORIAS_ARQ.map(c => <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>)}</SelectContent>
+                        </Select>
+                      </div>
+                      <div><Label>Descrição</Label><Textarea value={arqDescricao} onChange={e => setArqDescricao(e.target.value)} placeholder="Detalhes sobre o documento..." /></div>
+                      <div>
+                        <Label>Arquivo (PDF, imagem, DOC)</Label>
+                        <Input type="file" accept=".pdf,.png,.jpg,.jpeg,.doc,.docx,.xls,.xlsx" onChange={e => setArqFile(e.target.files?.[0] || null)} />
+                      </div>
+                      <Button onClick={handleAddArquivo} className="w-full" disabled={saving || !arqTitulo || !arqFile}>
+                        {saving && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}Enviar
+                      </Button>
+                    </div>
+                  </DialogContent>
+                </Dialog>
+              </div>
+            </CardHeader>
+            <CardContent className="overflow-x-auto">
+              {loading ? <div className="flex justify-center py-8"><Loader2 className="w-6 h-6 animate-spin text-muted-foreground" /></div>
+              : filteredArquivos.length === 0 ? <p className="text-center text-muted-foreground py-8">Nenhum arquivo nesta categoria</p>
+              : (
+                <Table>
+                  <TableHeader><TableRow>
+                    <TableHead>Título</TableHead><TableHead>Categoria</TableHead><TableHead>Arquivo</TableHead>
+                    <TableHead>Descrição</TableHead><TableHead>Data</TableHead><TableHead className="w-16"></TableHead>
+                  </TableRow></TableHeader>
+                  <TableBody>
+                    {filteredArquivos.map(a => (
+                      <TableRow key={a.id}>
+                        <TableCell className="font-medium text-sm">{a.titulo}</TableCell>
+                        <TableCell>
+                          <Badge variant="outline" className="text-xs">
+                            {CATEGORIAS_ARQ.find(c => c.value === a.categoria)?.label || a.categoria}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          {a.arquivo_url ? (
+                            <a href={a.arquivo_url} target="_blank" rel="noopener noreferrer" className="text-xs text-primary hover:underline flex items-center gap-1">
+                              <ExternalLink className="w-3 h-3" /> {a.arquivo_nome || "Abrir"}
+                            </a>
+                          ) : <span className="text-xs text-muted-foreground">{a.arquivo_nome || "—"}</span>}
+                        </TableCell>
+                        <TableCell className="text-xs text-muted-foreground max-w-[200px] truncate">{a.descricao || "—"}</TableCell>
+                        <TableCell className="text-xs">{a.created_at?.split("T")[0]}</TableCell>
+                        <TableCell>
+                          <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={() => handleDeleteArquivo(a.id)}>
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
                   </TableBody>
                 </Table>
               )}
