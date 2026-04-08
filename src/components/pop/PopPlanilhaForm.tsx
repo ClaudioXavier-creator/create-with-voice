@@ -434,7 +434,7 @@ ${signBlock}
             else if (cellVal === "NC" || cellVal === "NÃO CONFORME" || cellVal === "NAO CONFORME" || cellVal === "NÃO" || cellVal === "N") conforme = false;
 
             if (conforme !== null) {
-              newGrid[key] = { conforme, responsavel: resp, funcao: func };
+              newGrid[key] = { conforme, responsavel: resp, funcao: func, observacoes: newGrid[key]?.observacoes || "" };
               imported++;
             }
           }
