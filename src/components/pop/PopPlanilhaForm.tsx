@@ -36,6 +36,7 @@ interface Props {
   userId: string;
   popCodigo?: string;
   popNome?: string;
+  empresaId?: string;
 }
 
 export default function PopPlanilhaForm({ planilhaId, periodicidade, userId, popCodigo, popNome }: Props) {
