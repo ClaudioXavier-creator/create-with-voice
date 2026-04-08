@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import PageHeader from "@/components/PageHeader";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { useEmpresa } from "@/hooks/useEmpresa";
 import { POPS_CONFIG, type PopConfig, type PopPeriodicidade } from "@/config/popsConfig";
 import PopPlanilhaForm from "@/components/pop/PopPlanilhaForm";
 
@@ -18,6 +19,7 @@ const MESES = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julh
 
 export default function PlanilhasPop() {
   const { user } = useAuth();
+  const { empresaAtiva } = useEmpresa();
   const [selectedPop, setSelectedPop] = useState<PopConfig>(POPS_CONFIG[1]); // POP-02 default
   const [selectedPeriodicidade, setSelectedPeriodicidade] = useState<PopPeriodicidade | null>(null);
   const [mes, setMes] = useState(new Date().getMonth() + 1);
@@ -131,6 +133,7 @@ export default function PlanilhasPop() {
           userId={user!.id}
           popCodigo={selectedPop.codigo}
           popNome={selectedPop.nome}
+          empresaId={empresaAtiva?.id}
         />
       </>
     );
