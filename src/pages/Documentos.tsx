@@ -146,9 +146,10 @@ export default function Documentos() {
     setSaving(true);
     const { error } = await supabase.from("documentos").insert({
       user_id: user.id, codigo: popCodigo, nome: popNome, versao: popVersao, responsavel: popResponsavel,
-    });
+      validade_revisao: popValidade || null, proxima_revisao: popProximaRevisao || null,
+    } as any);
     if (error) toast.error("Erro ao salvar");
-    else { toast.success("Documento salvo!"); setPopOpen(false); setPopCodigo(""); setPopNome(""); setPopVersao("01"); setPopResponsavel(""); fetchData(); }
+    else { toast.success("Documento salvo!"); setPopOpen(false); setPopCodigo(""); setPopNome(""); setPopVersao("01"); setPopResponsavel(""); setPopValidade(""); setPopProximaRevisao(""); fetchData(); }
     setSaving(false);
   };
 
