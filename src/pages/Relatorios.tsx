@@ -379,7 +379,7 @@ export default function Relatorios() {
     setAnualExporting(false);
   };
 
-
+  const toggleModule = (key: string) => {
     setSelectedModules(prev =>
       prev.includes(key) ? prev.filter(k => k !== key) : [...prev, key]
     );
