@@ -39,10 +39,12 @@ interface Props {
   empresaId?: string;
 }
 
-export default function PopPlanilhaForm({ planilhaId, periodicidade, userId, popCodigo, popNome }: Props) {
+export default function PopPlanilhaForm({ planilhaId, periodicidade, userId, popCodigo, popNome, empresaId }: Props) {
   const [grid, setGrid] = useState<Record<string, CellData>>({});
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [archiving, setArchiving] = useState(false);
+  const [planilhaStatus, setPlanilhaStatus] = useState<string>("em_andamento");
   const [signatures, setSignatures] = useState<Signatures>({
     executor: "", executorData: null,
     supervisor: "", supervisorData: null,
