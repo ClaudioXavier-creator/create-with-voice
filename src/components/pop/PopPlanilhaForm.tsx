@@ -109,7 +109,7 @@ export default function PopPlanilhaForm({ planilhaId, periodicidade, userId, pop
     const next = current === null ? true : current === true ? false : null;
     setGrid((prev) => ({
       ...prev,
-      [key]: { ...prev[key], conforme: next, responsavel: prev[key]?.responsavel || "", funcao: prev[key]?.funcao || "" },
+      [key]: { ...prev[key], conforme: next, responsavel: prev[key]?.responsavel || "", funcao: prev[key]?.funcao || "", observacoes: prev[key]?.observacoes || "" },
     }));
   }
 
