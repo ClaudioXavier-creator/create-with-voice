@@ -119,12 +119,14 @@ export default function Documentos() {
 
   const fetchData = async () => {
     if (!user) return;
-    const [docsRes, calRes] = await Promise.all([
+    const [docsRes, calRes, arqRes] = await Promise.all([
       supabase.from("documentos").select("*").order("codigo"),
       supabase.from("calibracoes").select("*").order("proxima_calibracao"),
+      supabase.from("arquivos_bpf").select("*").order("created_at", { ascending: false }),
     ]);
     if (docsRes.data) setDocs(docsRes.data);
     if (calRes.data) setCalibracoes(calRes.data as unknown as CalibracaoRow[]);
+    if (arqRes.data) setArquivos(arqRes.data as unknown as ArquivoBpf[]);
     setLoading(false);
   };
 
