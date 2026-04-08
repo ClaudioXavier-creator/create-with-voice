@@ -92,6 +92,7 @@ export default function PopPlanilhaForm({ planilhaId, periodicidade, userId, pop
 
     if (planilhaRes.data) {
       const p = planilhaRes.data;
+      setPlanilhaStatus(p.status || "em_andamento");
       setSignatures({
         executor: p.assinatura_executor || "",
         executorData: p.assinatura_executor_data || null,
