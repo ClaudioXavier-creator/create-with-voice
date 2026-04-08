@@ -144,7 +144,7 @@ export default function Documentos() {
     setSaving(false);
   };
 
-  const catLabel = (cat: string) => CATEGORIAS.find(c => c.value === cat)?.label || cat;
+  
   const tipoLabel = (tipo: string) => TIPOS_EQUIPAMENTO.find(t => t.value === tipo)?.label || tipo;
 
   const today = new Date().toISOString().split("T")[0];
