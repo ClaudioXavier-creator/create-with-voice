@@ -370,7 +370,7 @@ ${signBlock}
               else if (cellVal === "NC" || cellVal === "NÃO CONFORME" || cellVal === "NAO CONFORME" || cellVal === "NÃO" || cellVal === "N") conforme = false;
 
               if (conforme !== null) {
-                newGrid[key] = { conforme, responsavel: newGrid[key]?.responsavel || "", funcao: newGrid[key]?.funcao || "" };
+                newGrid[key] = { conforme, responsavel: newGrid[key]?.responsavel || "", funcao: newGrid[key]?.funcao || "", observacoes: newGrid[key]?.observacoes || "" };
                 imported++;
               }
             });
