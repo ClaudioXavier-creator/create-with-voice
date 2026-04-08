@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { FileDown, Plus, Upload, Monitor, ScanLine, Eye, Loader2, Download, CheckSquare } from "lucide-react";
+import { FileDown, Plus, Upload, Monitor, ScanLine, Eye, Loader2, Download, CheckSquare, CalendarDays, BarChart3, FileText } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
