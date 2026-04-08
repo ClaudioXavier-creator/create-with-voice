@@ -162,6 +162,7 @@ const AppRoutes = () => {
                   <Route path="/saude-pessoal" element={<SaudePessoal />} />
                   <Route path="/visitantes" element={<ControleVisitantes />} />
                   <Route path="/modelos" element={<Modelos />} />
+                  <Route path="/documentos-bpf" element={<DocumentosBPF />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </AppLayout>
