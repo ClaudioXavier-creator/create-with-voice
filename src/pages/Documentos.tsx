@@ -305,6 +305,10 @@ export default function Documentos() {
                       <div><Label>Versão</Label><Input value={popVersao} onChange={e => setPopVersao(e.target.value)} /></div>
                       <div><Label>Responsável</Label><Input value={popResponsavel} onChange={e => setPopResponsavel(e.target.value)} /></div>
                     </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div><Label>Validade da Revisão</Label><Input type="date" value={popValidade} onChange={e => setPopValidade(e.target.value)} /></div>
+                      <div><Label>Próxima Revisão</Label><Input type="date" value={popProximaRevisao} onChange={e => setPopProximaRevisao(e.target.value)} /></div>
+                    </div>
                     <Button onClick={handleAddPop} className="w-full" disabled={saving}>{saving && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}Salvar</Button>
                   </div>
                 </DialogContent>
