@@ -241,7 +241,6 @@ export default function PopPlanilhaForm({ planilhaId, periodicidade, userId, pop
       toast.error(`São necessárias pelo menos ${requiredSignatures} assinatura(s) para arquivar. Atualmente: ${signedCount}.`);
       return;
     }
-    }
     setArchiving(true);
     try {
       await saveAll();
