@@ -484,6 +484,9 @@ ${signBlock}
               <th className="px-2 py-2 text-center font-semibold text-foreground border-b border-border min-w-[100px]">
                 Função
               </th>
+              <th className="px-2 py-2 text-center font-semibold text-foreground border-b border-border min-w-[140px]">
+                Observações
+              </th>
             </tr>
           </thead>
           <tbody>
