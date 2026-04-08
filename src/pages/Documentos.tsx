@@ -81,9 +81,10 @@ const calibStatusBadge: Record<string, string> = {
 
 export default function Documentos() {
   const { user } = useAuth();
+  const { empresaId } = useEmpresa();
   const navigate = useNavigate();
   const [docs, setDocs] = useState<DocRow[]>([]);
-  
+  const [arquivos, setArquivos] = useState<ArquivoBpf[]>([]);
   const [calibracoes, setCalibracoes] = useState<CalibracaoRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
