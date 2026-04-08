@@ -102,9 +102,8 @@ export default function Documentos() {
 
   const fetchData = async () => {
     if (!user) return;
-    const [docsRes, arqRes, calRes] = await Promise.all([
+    const [docsRes, calRes] = await Promise.all([
       supabase.from("documentos").select("*").order("codigo"),
-      supabase.from("arquivos_bpf").select("*").order("created_at", { ascending: false }),
       supabase.from("calibracoes").select("*").order("proxima_calibracao"),
     ]);
     if (docsRes.data) setDocs(docsRes.data);
