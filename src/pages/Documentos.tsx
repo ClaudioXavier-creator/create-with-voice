@@ -102,6 +102,8 @@ export default function Documentos() {
   const [popNome, setPopNome] = useState("");
   const [popVersao, setPopVersao] = useState("01");
   const [popResponsavel, setPopResponsavel] = useState("");
+  const [popValidade, setPopValidade] = useState("");
+  const [popProximaRevisao, setPopProximaRevisao] = useState("");
 
 
   // Arquivo BPF form
