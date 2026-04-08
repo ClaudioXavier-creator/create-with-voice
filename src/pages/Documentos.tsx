@@ -435,6 +435,88 @@ export default function Documentos() {
             </CardContent>
           </Card>
         </TabsContent>
+
+        {/* Tab: Arquivo BPF */}
+        <TabsContent value="arquivo_bpf">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between flex-wrap gap-2">
+              <div>
+                <CardTitle className="font-display">Arquivo BPF — POPs, ITs e Documentos</CardTitle>
+                <p className="text-xs text-muted-foreground mt-1">Upload e organização de documentos físicos escaneados, ITs associadas aos POPs e demais arquivos</p>
+              </div>
+              <div className="flex items-center gap-2">
+                <Select value={arqFilterCat} onValueChange={setArqFilterCat}>
+                  <SelectTrigger className="w-44 h-8 text-xs"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="todos">Todos</SelectItem>
+                    {CATEGORIAS_ARQ.map(c => <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+                <Dialog open={arqOpen} onOpenChange={setArqOpen}>
+                  <DialogTrigger asChild><Button size="sm"><Upload className="w-4 h-4 mr-1" /> Enviar Arquivo</Button></DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader><DialogTitle>Enviar Arquivo BPF</DialogTitle></DialogHeader>
+                    <div className="space-y-4">
+                      <div><Label>Título *</Label><Input value={arqTitulo} onChange={e => setArqTitulo(e.target.value)} placeholder="Ex: POP-001 — IT Limpeza de Silos" /></div>
+                      <div><Label>Categoria</Label>
+                        <Select value={arqCategoria} onValueChange={setArqCategoria}>
+                          <SelectTrigger><SelectValue /></SelectTrigger>
+                          <SelectContent>{CATEGORIAS_ARQ.map(c => <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>)}</SelectContent>
+                        </Select>
+                      </div>
+                      <div><Label>Descrição</Label><Textarea value={arqDescricao} onChange={e => setArqDescricao(e.target.value)} placeholder="Detalhes sobre o documento..." /></div>
+                      <div>
+                        <Label>Arquivo (PDF, imagem, DOC)</Label>
+                        <Input type="file" accept=".pdf,.png,.jpg,.jpeg,.doc,.docx,.xls,.xlsx" onChange={e => setArqFile(e.target.files?.[0] || null)} />
+                      </div>
+                      <Button onClick={handleAddArquivo} className="w-full" disabled={saving || !arqTitulo || !arqFile}>
+                        {saving && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}Enviar
+                      </Button>
+                    </div>
+                  </DialogContent>
+                </Dialog>
+              </div>
+            </CardHeader>
+            <CardContent className="overflow-x-auto">
+              {loading ? <div className="flex justify-center py-8"><Loader2 className="w-6 h-6 animate-spin text-muted-foreground" /></div>
+              : filteredArquivos.length === 0 ? <p className="text-center text-muted-foreground py-8">Nenhum arquivo nesta categoria</p>
+              : (
+                <Table>
+                  <TableHeader><TableRow>
+                    <TableHead>Título</TableHead><TableHead>Categoria</TableHead><TableHead>Arquivo</TableHead>
+                    <TableHead>Descrição</TableHead><TableHead>Data</TableHead><TableHead className="w-16"></TableHead>
+                  </TableRow></TableHeader>
+                  <TableBody>
+                    {filteredArquivos.map(a => (
+                      <TableRow key={a.id}>
+                        <TableCell className="font-medium text-sm">{a.titulo}</TableCell>
+                        <TableCell>
+                          <Badge variant="outline" className="text-xs">
+                            {CATEGORIAS_ARQ.find(c => c.value === a.categoria)?.label || a.categoria}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          {a.arquivo_url ? (
+                            <a href={a.arquivo_url} target="_blank" rel="noopener noreferrer" className="text-xs text-primary hover:underline flex items-center gap-1">
+                              <ExternalLink className="w-3 h-3" /> {a.arquivo_nome || "Abrir"}
+                            </a>
+                          ) : <span className="text-xs text-muted-foreground">{a.arquivo_nome || "—"}</span>}
+                        </TableCell>
+                        <TableCell className="text-xs text-muted-foreground max-w-[200px] truncate">{a.descricao || "—"}</TableCell>
+                        <TableCell className="text-xs">{a.created_at?.split("T")[0]}</TableCell>
+                        <TableCell>
+                          <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={() => handleDeleteArquivo(a.id)}>
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
       </Tabs>
     </>
   );
