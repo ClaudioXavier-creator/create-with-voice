@@ -118,7 +118,7 @@ export default function PopPlanilhaForm({ planilhaId, periodicidade, userId, pop
       const key = cellKey(periodo, a.area);
       setGrid((prev) => ({
         ...prev,
-        [key]: { ...prev[key], conforme: prev[key]?.conforme ?? null, responsavel: prev[key]?.responsavel || "", funcao: prev[key]?.funcao || "", [field]: value },
+        [key]: { ...prev[key], conforme: prev[key]?.conforme ?? null, responsavel: prev[key]?.responsavel || "", funcao: prev[key]?.funcao || "", observacoes: prev[key]?.observacoes || "", [field]: value },
       }));
     });
   }
