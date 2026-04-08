@@ -82,6 +82,7 @@ export default function PopPlanilhaForm({ planilhaId, periodicidade, userId, pop
         conforme: item.conforme,
         responsavel: item.responsavel || "",
         funcao: item.funcao || "",
+        observacoes: item.observacoes || "",
       };
     });
     setGrid(newGrid);
