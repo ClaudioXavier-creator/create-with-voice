@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import PageHeader from "@/components/PageHeader";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { useEmpresa } from "@/hooks/useEmpresa";
 import { POPS_CONFIG, type PopConfig, type PopPeriodicidade } from "@/config/popsConfig";
 import PopPlanilhaForm from "@/components/pop/PopPlanilhaForm";
 
