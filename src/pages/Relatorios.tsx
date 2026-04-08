@@ -511,8 +511,6 @@ ${recallAtivos.length>0?`<div class="ab">&#9888; ${recallAtivos.length} recall(s
                       <span>7. Auditorias</span>
                       <span>8. Recall e Reclamações</span>
                       <span>9. Conclusão Técnica + Assinatura RT</span>
-                      <span>✓ Produção Anual</span>
-                      <span>✓ Declaração de Conformidade</span>
                     </div>
                   </div>
                   <Button onClick={handleExportAnual} className="w-full" disabled={anualExporting}>
