@@ -710,6 +710,59 @@ export type Database = {
           },
         ]
       }
+      documentos_bpf: {
+        Row: {
+          arquivo_nome: string
+          arquivo_path: string
+          created_at: string
+          data_documento: string | null
+          descricao: string | null
+          empresa_id: string
+          id: string
+          pop_codigo: string | null
+          tipo: string
+          titulo: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          arquivo_nome: string
+          arquivo_path: string
+          created_at?: string
+          data_documento?: string | null
+          descricao?: string | null
+          empresa_id: string
+          id?: string
+          pop_codigo?: string | null
+          tipo?: string
+          titulo: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          arquivo_nome?: string
+          arquivo_path?: string
+          created_at?: string
+          data_documento?: string | null
+          descricao?: string | null
+          empresa_id?: string
+          id?: string
+          pop_codigo?: string | null
+          tipo?: string
+          titulo?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "documentos_bpf_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       empresas: {
         Row: {
           capacidade: string | null
