@@ -97,7 +97,15 @@ export default function Documentos() {
   const [popResponsavel, setPopResponsavel] = useState("");
 
 
-  // Calibração form
+  // Arquivo BPF form
+  const [arqOpen, setArqOpen] = useState(false);
+  const [arqTitulo, setArqTitulo] = useState("");
+  const [arqCategoria, setArqCategoria] = useState("pop");
+  const [arqDescricao, setArqDescricao] = useState("");
+  const [arqFile, setArqFile] = useState<File | null>(null);
+  const [arqFilterCat, setArqFilterCat] = useState("todos");
+
+
   const [calOpen, setCalOpen] = useState(false);
   const [calEquipamento, setCalEquipamento] = useState("");
   const [calCodigo, setCalCodigo] = useState("");
