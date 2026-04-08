@@ -264,7 +264,81 @@ const digitalizacaoSection: GuiaSection = {
   ),
 };
 
-const sections: GuiaSection[] = [fluxoGeralSection, ...popSections, digitalizacaoSection];
+const docsRegistradosSection: GuiaSection = {
+  id: "docs-registrados",
+  title: "Tutorial: Aba Docs Registrados — Controle de Versão de Documentos",
+  icon: FileText,
+  badge: "Tutorial",
+  content: (
+    <div className="space-y-6">
+      <div className="bg-muted/50 rounded-lg p-4">
+        <h4 className="text-sm font-semibold mb-2">O que é esta aba?</h4>
+        <p className="text-sm text-muted-foreground">
+          A aba <b>Docs Registrados</b> serve para registrar e controlar as versões formais dos documentos do sistema de qualidade:
+          POPs, Instruções de Trabalho (ITs) e Manual BPF. Ela <b>não registra dados operacionais</b> (como recebimento de matéria-prima).
+          É o registro que o auditor consulta para saber qual a versão vigente de cada procedimento.
+        </p>
+      </div>
+
+      <div>
+        <h4 className="text-sm font-semibold mb-3">Quando usar?</h4>
+        <div className="space-y-2">
+          <Step n={1}>Quando um POP é <b>criado pela primeira vez</b> — registre como versão 01.</Step>
+          <Step n={2}>Quando um POP sofre <b>revisão</b> — registre a nova versão (02, 03...) e altere o status da anterior para "Obsoleto".</Step>
+          <Step n={3}>Quando o <b>Manual BPF</b> ou uma <b>IT</b> é atualizado — aplique o mesmo controle de versão.</Step>
+        </div>
+      </div>
+
+      <div>
+        <h4 className="text-sm font-semibold mb-3">Passo a passo do preenchimento</h4>
+        <div className="space-y-2">
+          <Step n={1}>Clique em <b>"Novo Documento"</b>.</Step>
+          <Step n={2}><b>Código:</b> Selecione o POP (POP-01 a POP-10), IT ou MANUAL-BPF na lista.</Step>
+          <Step n={3}><b>Nome/Título:</b> O sistema preenche automaticamente ao selecionar um POP. Para ITs, digite o título manualmente.</Step>
+          <Step n={4}><b>Versão:</b> Informe o número da versão (ex: 01, 02, 03). A primeira versão é sempre 01.</Step>
+          <Step n={5}><b>Responsável:</b> Nome do responsável técnico ou quem elaborou/revisou o documento.</Step>
+          <Step n={6}><b>Validade da Revisão:</b> Data até a qual esta versão do documento é considerada válida.</Step>
+          <Step n={7}><b>Próxima Revisão:</b> Data programada para a próxima revisão do documento (normalmente 12 meses).</Step>
+          <Step n={8}>Clique em <b>Salvar</b>.</Step>
+        </div>
+      </div>
+
+      <div>
+        <h4 className="text-sm font-semibold mb-3">Campos da tabela de registros</h4>
+        <Table>
+          <TableHeader><TableRow><TableHead>Campo</TableHead><TableHead>Descrição</TableHead></TableRow></TableHeader>
+          <TableBody>
+            <TableRow><TableCell className="font-medium">Código</TableCell><TableCell className="text-sm text-muted-foreground">Identificador do documento (POP-01, IT-001, MANUAL-BPF)</TableCell></TableRow>
+            <TableRow><TableCell className="font-medium">Nome</TableCell><TableCell className="text-sm text-muted-foreground">Título descritivo do procedimento</TableCell></TableRow>
+            <TableRow><TableCell className="font-medium">Versão</TableCell><TableCell className="text-sm text-muted-foreground">Número sequencial da versão (01, 02, 03...)</TableCell></TableRow>
+            <TableRow><TableCell className="font-medium">Revisão</TableCell><TableCell className="text-sm text-muted-foreground">Data em que a revisão foi realizada</TableCell></TableRow>
+            <TableRow><TableCell className="font-medium">Validade</TableCell><TableCell className="text-sm text-muted-foreground">Data limite de validade da versão atual. Aparece em vermelho se vencida.</TableCell></TableRow>
+            <TableRow><TableCell className="font-medium">Próx. Revisão</TableCell><TableCell className="text-sm text-muted-foreground">Data programada para a próxima revisão. Aparece em amarelo se nos próximos 30 dias.</TableCell></TableRow>
+            <TableRow><TableCell className="font-medium">Responsável</TableCell><TableCell className="text-sm text-muted-foreground">Quem elaborou ou revisou o documento</TableCell></TableRow>
+            <TableRow><TableCell className="font-medium">Status</TableCell><TableCell className="text-sm text-muted-foreground">Ativo (versão vigente), Em Revisão (sendo atualizado), Obsoleto (versão antiga)</TableCell></TableRow>
+          </TableBody>
+        </Table>
+      </div>
+
+      <div>
+        <h4 className="text-sm font-semibold mb-3">Boas práticas</h4>
+        <div className="space-y-2">
+          <Step n={1}>Nunca delete uma versão antiga — marque como <b>"Obsoleto"</b> para manter o histórico.</Step>
+          <Step n={2}>A cada nova versão, incremente o número (01 → 02 → 03).</Step>
+          <Step n={3}>Programe a próxima revisão com <b>12 meses</b> de intervalo ou conforme exigência do MAPA.</Step>
+          <Step n={4}>Monitore as datas de validade e próxima revisão para evitar documentos vencidos.</Step>
+        </div>
+      </div>
+
+      <Tip>
+        O auditor do MAPA sempre verifica se os POPs estão na versão vigente, com data de revisão e responsável registrados.
+        Manter esta aba atualizada é essencial para aprovação em auditorias.
+      </Tip>
+    </div>
+  ),
+};
+
+const sections: GuiaSection[] = [fluxoGeralSection, ...popSections, docsRegistradosSection, digitalizacaoSection];
 
 export default function GuiaPops() {
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({});
