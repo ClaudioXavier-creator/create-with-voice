@@ -321,14 +321,21 @@ export default function Documentos() {
                 <Table>
                   <TableHeader><TableRow>
                     <TableHead>Código</TableHead><TableHead>Nome</TableHead><TableHead>Versão</TableHead>
-                    <TableHead>Revisão</TableHead><TableHead>Responsável</TableHead><TableHead>Status</TableHead>
+                    <TableHead>Revisão</TableHead><TableHead>Validade</TableHead><TableHead>Próx. Revisão</TableHead><TableHead>Responsável</TableHead><TableHead>Status</TableHead>
                   </TableRow></TableHeader>
                   <TableBody>
-                    {docs.map(d => (
+                    {docs.map(d => {
+                      const today = new Date().toISOString().split("T")[0];
+                      const vencido = d.validade_revisao && d.validade_revisao < today;
+                      const proximoVencer = d.proxima_revisao && d.proxima_revisao <= new Date(Date.now() + 30 * 86400000).toISOString().split("T")[0];
+                      return (
                       <TableRow key={d.id}>
                         <TableCell className="font-mono text-sm">{d.codigo}</TableCell>
                         <TableCell>{d.nome}</TableCell><TableCell>{d.versao}</TableCell>
-                        <TableCell>{d.data_revisao}</TableCell><TableCell>{d.responsavel}</TableCell>
+                        <TableCell>{d.data_revisao}</TableCell>
+                        <TableCell className={vencido ? "text-destructive font-medium" : ""}>{d.validade_revisao || "—"}</TableCell>
+                        <TableCell className={proximoVencer ? "text-yellow-600 font-medium" : ""}>{d.proxima_revisao || "—"}</TableCell>
+                        <TableCell>{d.responsavel}</TableCell>
                         <TableCell><Badge className={statusBadge[d.status || "ativo"]}>{d.status === "em_revisao" ? "Em revisão" : d.status === "obsoleto" ? "Obsoleto" : "Ativo"}</Badge></TableCell>
                       </TableRow>
                     ))}
