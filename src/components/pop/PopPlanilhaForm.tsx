@@ -211,7 +211,8 @@ export default function PopPlanilhaForm({ planilhaId, periodicidade, userId, pop
     setSaving(false);
   }
 
-  const allSigned = !!(signatures.executorData && signatures.supervisorData && signatures.rtData);
+  const signedCount = [signatures.executorData, signatures.supervisorData, signatures.rtData].filter(Boolean).length;
+  const hasEnoughSignatures = signedCount >= requiredSignatures;
   const isArchived = planilhaStatus === "arquivada";
 
   function buildPdfHtml(): string {
