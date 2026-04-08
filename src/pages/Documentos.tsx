@@ -107,7 +107,6 @@ export default function Documentos() {
       supabase.from("calibracoes").select("*").order("proxima_calibracao"),
     ]);
     if (docsRes.data) setDocs(docsRes.data);
-    if (arqRes.data) setArquivos(arqRes.data as unknown as ArquivoRow[]);
     if (calRes.data) setCalibracoes(calRes.data as unknown as CalibracaoRow[]);
     setLoading(false);
   };
