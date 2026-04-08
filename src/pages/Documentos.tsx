@@ -163,7 +163,39 @@ export default function Documentos() {
     setSaving(false);
   };
 
-  
+  const handleAddArquivo = async () => {
+    if (!arqTitulo || !arqFile || !user) return;
+    setSaving(true);
+    let arquivo_url = "";
+    let arquivo_nome = arqFile.name;
+    // Upload para storage se disponível
+    const path = `bpf/${empresaAtiva?.id || user.id}/${arqCategoria}/${Date.now()}_${arqFile.name.replace(/[^a-zA-Z0-9._-]/g, "_")}`;
+    const { error: upErr } = await supabase.storage.from("feed-bpf").upload(path, arqFile);
+    if (!upErr) {
+      const { data: urlData } = supabase.storage.from("feed-bpf").getPublicUrl(path);
+      arquivo_url = urlData?.publicUrl || path;
+    }
+    const { error } = await supabase.from("arquivos_bpf").insert({
+      user_id: user.id, titulo: arqTitulo, categoria: arqCategoria, descricao: arqDescricao,
+      arquivo_nome, arquivo_url, empresa_id: empresaAtiva?.id || null,
+    });
+    if (error) toast.error("Erro ao salvar arquivo");
+    else {
+      toast.success("Arquivo BPF salvo!");
+      setArqOpen(false); setArqTitulo(""); setArqCategoria("pop"); setArqDescricao(""); setArqFile(null);
+      fetchData();
+    }
+    setSaving(false);
+  };
+
+  const handleDeleteArquivo = async (id: string) => {
+    const { error } = await supabase.from("arquivos_bpf").delete().eq("id", id);
+    if (error) toast.error("Erro ao excluir");
+    else { toast.success("Arquivo excluído"); fetchData(); }
+  };
+
+  const filteredArquivos = arqFilterCat === "todos" ? arquivos : arquivos.filter(a => a.categoria === arqFilterCat);
+
   const tipoLabel = (tipo: string) => TIPOS_EQUIPAMENTO.find(t => t.value === tipo)?.label || tipo;
 
   const today = new Date().toISOString().split("T")[0];
