@@ -140,7 +140,7 @@ export default function PopPlanilhaForm({ planilhaId, periodicidade, userId, pop
     updateData[`assinatura_${field}_data`] = now;
     if (field === "rt") updateData.assinatura_rt_crmv = signatures.rtCrmv;
 
-    const { error } = await supabase.from("pop_planilhas").update(updateData).eq("id", planilhaId);
+    const { error } = await supabase.from("pop_planilhas").update(updateData as any).eq("id", planilhaId);
     if (error) {
       toast.error("Erro ao registrar assinatura");
       return;

@@ -254,8 +254,8 @@ export default function Modelos() {
               </CardHeader>
               <CardContent>
                 <p className="text-xs text-muted-foreground mb-3">{modelo.descricao}</p>
-                <Button size="sm" variant="outline" className="w-full" onClick={() => toast.info(`Download de ${modelo.nome} — funcionalidade será conectada ao storage`)}>
-                  <Download className="w-4 h-4 mr-1" /> Baixar Modelo
+                <Button size="sm" variant="outline" className="w-full" onClick={() => handleDownload(modelo)}>
+                  <Download className="w-4 h-4 mr-1" /> {TEMPLATE_GENERATORS[modelo.arquivo] ? "Baixar Excel" : "Baixar PDF"}
                 </Button>
               </CardContent>
             </Card>
