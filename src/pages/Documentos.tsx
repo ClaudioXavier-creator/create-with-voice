@@ -229,7 +229,7 @@ export default function Documentos() {
         <TabsContent value="pops">
           <Card>
             <CardHeader>
-              <CardTitle className="font-display">9 POPs Obrigatórios — IN nº 04/2007 / Decreto 12.031/2024</CardTitle>
+              <CardTitle className="font-display">10 POPs Obrigatórios — IN nº 04/2007 / Decreto 12.031/2024</CardTitle>
               <p className="text-xs text-muted-foreground mt-1">Procedimentos operacionais padrão exigidos pelo MAPA para fábricas de alimentação animal</p>
             </CardHeader>
             <CardContent className="overflow-x-auto">
