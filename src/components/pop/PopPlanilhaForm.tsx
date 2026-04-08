@@ -17,6 +17,7 @@ interface CellData {
   conforme: boolean | null;
   responsavel: string;
   funcao: string;
+  observacoes: string;
 }
 
 interface Signatures {
