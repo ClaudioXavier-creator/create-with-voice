@@ -87,12 +87,6 @@ export default function Documentos() {
   const [popVersao, setPopVersao] = useState("01");
   const [popResponsavel, setPopResponsavel] = useState("");
 
-  // Arquivo form
-  const [arqOpen, setArqOpen] = useState(false);
-  const [arqCategoria, setArqCategoria] = useState("pop");
-  const [arqTitulo, setArqTitulo] = useState("");
-  const [arqDescricao, setArqDescricao] = useState("");
-  const [arqFile, setArqFile] = useState<File | null>(null);
 
   // Calibração form
   const [calOpen, setCalOpen] = useState(false);
