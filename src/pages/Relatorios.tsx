@@ -525,7 +525,69 @@ export default function Relatorios() {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between flex-wrap gap-2">
           <CardTitle className="font-display">Relatórios</CardTitle>
-          <div className="flex gap-2">
+          <div className="flex gap-2 flex-wrap">
+            {/* Relatório Anual IN 17/2017 */}
+            <Dialog open={anualOpen} onOpenChange={setAnualOpen}>
+              <DialogTrigger asChild>
+                <Button size="sm" variant="outline" className="border-primary/30 text-primary hover:bg-primary/10">
+                  <CalendarDays className="w-4 h-4 mr-1" /> Relatório Anual (IN 17/2017)
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-md">
+                <DialogHeader>
+                  <DialogTitle className="flex items-center gap-2">
+                    <BarChart3 className="w-5 h-5 text-primary" /> Relatório Anual de Atividades
+                  </DialogTitle>
+                </DialogHeader>
+                <p className="text-sm text-muted-foreground">
+                  Gera o Relatório Anual de Atividades conforme exigido pelo <strong>Art. 55 da IN 17/2017</strong>, consolidando todos os registros do ano selecionado.
+                </p>
+                <div className="space-y-4 mt-2">
+                  <div>
+                    <Label>Ano de referência</Label>
+                    <Select value={String(anualAno)} onValueChange={v => setAnualAno(Number(v))}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        {[new Date().getFullYear(), new Date().getFullYear() - 1, new Date().getFullYear() - 2].map(y => (
+                          <SelectItem key={y} value={String(y)}>{y}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <Label>Nome do RT</Label>
+                      <Input value={anualRtNome} onChange={e => setAnualRtNome(e.target.value)} placeholder="Dr(a). Nome" />
+                    </div>
+                    <div>
+                      <Label>CRMV</Label>
+                      <Input value={anualRtCrmv} onChange={e => setAnualRtCrmv(e.target.value)} placeholder="CRMV-XX 00000" />
+                    </div>
+                  </div>
+                  <div className="p-3 rounded-lg bg-muted/30 border space-y-1">
+                    <p className="text-xs font-semibold flex items-center gap-1"><FileText className="w-3 h-3" /> Seções incluídas:</p>
+                    <div className="grid grid-cols-2 gap-x-4 gap-y-0.5 text-[11px] text-muted-foreground">
+                      <span>✓ Resumo Executivo</span>
+                      <span>✓ Qualificação Fornecedores</span>
+                      <span>✓ Recebimento de MP</span>
+                      <span>✓ Higienização (POP-02)</span>
+                      <span>✓ Potabilidade da Água</span>
+                      <span>✓ Controle de Pragas</span>
+                      <span>✓ Não Conformidades</span>
+                      <span>✓ Treinamentos</span>
+                      <span>✓ Calibrações</span>
+                      <span>✓ Execução POPs/ITs</span>
+                      <span>✓ Produção Anual</span>
+                      <span>✓ Declaração de Conformidade</span>
+                    </div>
+                  </div>
+                  <Button onClick={handleExportAnual} className="w-full" disabled={anualExporting}>
+                    {anualExporting ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Download className="w-4 h-4 mr-2" />}
+                    Gerar Relatório Anual {anualAno}
+                  </Button>
+                </div>
+              </DialogContent>
+            </Dialog>
             <Dialog open={exportOpen} onOpenChange={setExportOpen}>
               <DialogTrigger asChild>
                 <Button size="sm" variant="outline"><Download className="w-4 h-4 mr-1" /> Exportar Dados</Button>
