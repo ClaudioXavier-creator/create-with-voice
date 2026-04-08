@@ -1,25 +1,13 @@
-import { useState } from "react";
-import { ClipboardCheck, CheckCircle2, XCircle, Link2, FileText, Users, Plus, Trash2, ShieldAlert, FileCheck } from "lucide-react";
-import DeclaracaoVisitante from "@/components/visitantes/DeclaracaoVisitante";
+import { ClipboardCheck, CheckCircle2, XCircle, Link2, FileText } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Switch } from "@/components/ui/switch";
-import { Textarea } from "@/components/ui/textarea";
 import PageHeader from "@/components/PageHeader";
 import { useChecklistItems } from "@/store/feedbpf-store";
 import { cn } from "@/lib/utils";
-import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/hooks/useAuth";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
 
 export default function Auditoria() {
   const [items, setItems] = useChecklistItems();
