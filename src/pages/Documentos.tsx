@@ -28,13 +28,6 @@ const POPS_OBRIGATORIOS = [
   { codigo: "POP-009", nome: "Procedimentos sobre o programa de autocontrole (PAC)", modulo: "/auditoria", moduloLabel: "Auditoria BPF" },
 ];
 
-const CATEGORIAS = [
-  { value: "manual_bpf", label: "Manual BPF", icon: BookOpen },
-  { value: "pop", label: "POP", icon: ClipboardList },
-  { value: "it", label: "Instrução de Trabalho (IT)", icon: Wrench },
-  { value: "planilha_preenchida", label: "Planilha Preenchida", icon: FileText },
-  { value: "outro", label: "Outro Documento", icon: FolderOpen },
-];
 
 const TIPOS_EQUIPAMENTO = [
   { value: "balanca", label: "Balança" },
