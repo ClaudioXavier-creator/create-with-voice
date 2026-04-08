@@ -530,6 +530,14 @@ ${signBlock}
                     onChange={(e) => updateField(periodo, "funcao", e.target.value)}
                   />
                 </td>
+                <td className="px-1 py-1 border-b border-border">
+                  <Input
+                    className="h-8 text-xs"
+                    placeholder="Obs. (NC)"
+                    value={getFieldForPeriodo(periodo, "observacoes")}
+                    onChange={(e) => updateField(periodo, "observacoes", e.target.value)}
+                  />
+                </td>
               </tr>
             ))}
           </tbody>
