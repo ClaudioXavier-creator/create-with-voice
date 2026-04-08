@@ -50,10 +50,6 @@ interface DocRow {
   data_revisao: string | null; responsavel: string | null; status: string | null;
 }
 
-interface ArquivoRow {
-  id: string; categoria: string; titulo: string; descricao: string | null;
-  arquivo_nome: string | null; arquivo_url: string | null; created_at: string;
-}
 
 interface CalibracaoRow {
   id: string; equipamento: string; codigo: string | null; tipo: string | null;
