@@ -207,10 +207,12 @@ export default function Documentos() {
       <PageHeader icon={FileText} title="Documentos, POPs e Calibração" description="POPs obrigatórios, Manual BPF, ITs, arquivos e gestão de calibração" />
 
       <Tabs defaultValue="pops" className="space-y-4">
-        <TabsList>
+        <TabsList className="flex flex-wrap h-auto gap-1 p-1">
           <TabsTrigger value="pops">POPs Obrigatórios</TabsTrigger>
           <TabsTrigger value="registrados">Docs Registrados ({docs.length})</TabsTrigger>
-          
+          <TabsTrigger value="arquivo_bpf" className="flex items-center gap-1">
+            <FolderOpen className="w-4 h-4" /> Arquivo BPF ({arquivos.length})
+          </TabsTrigger>
           <TabsTrigger value="calibracao" className="flex items-center gap-1">
             <Gauge className="w-4 h-4" /> Calibração ({calibracoes.length})
             {calibVencidas.length > 0 && <Badge variant="destructive" className="ml-1 text-[10px] px-1">{calibVencidas.length}</Badge>}
