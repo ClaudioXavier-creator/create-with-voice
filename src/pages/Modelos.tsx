@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import PageHeader from "@/components/PageHeader";
+import { TEMPLATE_GENERATORS } from "@/utils/excelTemplates";
 
 interface ModeloDoc {
   nome: string;
@@ -168,6 +169,16 @@ export default function Modelos() {
   const modelosFiltrados = filtro === "todos" ? MODELOS : MODELOS.filter(m => m.categoria === filtro);
   const categorias = ["todos", ...Object.keys(categoriaLabels)];
 
+  const handleDownload = (modelo: ModeloDoc) => {
+    const generator = TEMPLATE_GENERATORS[modelo.arquivo];
+    if (generator) {
+      generator();
+      toast.success(`${modelo.nome} — Excel gerado com sucesso!`);
+    } else {
+      toast.info(`${modelo.nome} — modelo em PDF será disponibilizado em breve`);
+    }
+  };
+
   const totalNovos = MODELOS.filter(m => m.novo).length;
 
   if (!desbloqueado) {
@@ -254,8 +265,8 @@ export default function Modelos() {
               </CardHeader>
               <CardContent>
                 <p className="text-xs text-muted-foreground mb-3">{modelo.descricao}</p>
-                <Button size="sm" variant="outline" className="w-full" onClick={() => toast.info(`Download de ${modelo.nome} — funcionalidade será conectada ao storage`)}>
-                  <Download className="w-4 h-4 mr-1" /> Baixar Modelo
+                <Button size="sm" variant="outline" className="w-full" onClick={() => handleDownload(modelo)}>
+                  <Download className="w-4 h-4 mr-1" /> {TEMPLATE_GENERATORS[modelo.arquivo] ? "Baixar Excel" : "Baixar PDF"}
                 </Button>
               </CardContent>
             </Card>

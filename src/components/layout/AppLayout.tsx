@@ -40,6 +40,7 @@ const NAV_ENTRIES: NavEntry[] = [
     icon: ClipboardCheck,
     items: [
       { path: "/documentos", label: "Documentos / POPs", icon: FileText },
+      { path: "/documentos-bpf", label: "Arquivo BPF (Scan)", icon: FileText },
       { path: "/execucao-pops", label: "Execução ITs/POPs", icon: PlayCircle },
       { path: "/auditoria", label: "Auditoria BPF", icon: ClipboardCheck },
       { path: "/nao-conformidades", label: "Não Conformidades", icon: AlertTriangle },

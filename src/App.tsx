@@ -52,6 +52,7 @@ import FeedBPFPage from "./pages/FeedBPFPage";
 import AuditsBPFPage from "./pages/AuditsBPFPage";
 import AgroGestaoCRMPage from "./pages/AgroGestaoCRMPage";
 import AdminLicencas from "./pages/AdminLicencas";
+import DocumentosBPF from "./pages/DocumentosBPF";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -161,6 +162,7 @@ const AppRoutes = () => {
                   <Route path="/saude-pessoal" element={<SaudePessoal />} />
                   <Route path="/visitantes" element={<ControleVisitantes />} />
                   <Route path="/modelos" element={<Modelos />} />
+                  <Route path="/documentos-bpf" element={<DocumentosBPF />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </AppLayout>
