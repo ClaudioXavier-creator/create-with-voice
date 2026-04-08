@@ -173,6 +173,7 @@ export default function PopPlanilhaForm({ planilhaId, periodicidade, userId, pop
             conforme: cell.conforme,
             responsavel: cell.responsavel,
             funcao: cell.funcao,
+            observacoes: cell.observacoes,
           });
         }
       }
