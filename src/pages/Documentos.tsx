@@ -124,21 +124,6 @@ export default function Documentos() {
     setSaving(false);
   };
 
-  const handleAddArquivo = async () => {
-    if (!arqTitulo || !arqFile || !user) return;
-    setSaving(true);
-    const filePath = `${user.id}/${Date.now()}_${arqFile.name}`;
-    const { error: uploadErr } = await supabase.storage.from("documentos_bpf").upload(filePath, arqFile);
-    if (uploadErr) { toast.error("Erro no upload: " + uploadErr.message); setSaving(false); return; }
-    const { data: urlData } = supabase.storage.from("documentos_bpf").getPublicUrl(filePath);
-    const { error } = await supabase.from("arquivos_bpf").insert({
-      user_id: user.id, categoria: arqCategoria, titulo: arqTitulo, descricao: arqDescricao,
-      arquivo_nome: arqFile.name, arquivo_url: urlData.publicUrl,
-    } as any);
-    if (error) toast.error("Erro ao salvar");
-    else { toast.success("Arquivo enviado!"); setArqOpen(false); setArqTitulo(""); setArqDescricao(""); setArqFile(null); setArqCategoria("pop"); fetchData(); }
-    setSaving(false);
-  };
 
   const handleAddCalibracao = async () => {
     if (!calEquipamento || !user) return;
