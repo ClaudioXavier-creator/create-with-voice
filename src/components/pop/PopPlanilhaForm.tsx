@@ -123,7 +123,7 @@ export default function PopPlanilhaForm({ planilhaId, periodicidade, userId, pop
     });
   }
 
-  function getFieldForPeriodo(periodo: string, field: "responsavel" | "funcao") {
+  function getFieldForPeriodo(periodo: string, field: "responsavel" | "funcao" | "observacoes") {
     const firstArea = periodicidade.areas[0]?.area;
     if (!firstArea) return "";
     return grid[cellKey(periodo, firstArea)]?.[field] || "";
