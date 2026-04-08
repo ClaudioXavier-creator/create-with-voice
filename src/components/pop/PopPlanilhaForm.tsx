@@ -113,7 +113,7 @@ export default function PopPlanilhaForm({ planilhaId, periodicidade, userId, pop
     }));
   }
 
-  function updateField(periodo: string, field: "responsavel" | "funcao", value: string) {
+  function updateField(periodo: string, field: "responsavel" | "funcao" | "observacoes", value: string) {
     periodicidade.areas.forEach((a) => {
       const key = cellKey(periodo, a.area);
       setGrid((prev) => ({
