@@ -61,7 +61,7 @@ export default function PopPlanilhaForm({ planilhaId, periodicidade, userId, pop
     const [itensRes, planilhaRes] = await Promise.all([
       supabase
         .from("pop_planilha_itens")
-        .select("periodo_label, area, conforme, responsavel, funcao")
+        .select("periodo_label, area, conforme, responsavel, funcao, observacoes")
         .eq("planilha_id", planilhaId),
       supabase
         .from("pop_planilhas")
