@@ -668,10 +668,12 @@ export type Database = {
           empresa_id: string | null
           id: string
           nome: string
+          proxima_revisao: string | null
           responsavel: string | null
           status: string | null
           updated_at: string
           user_id: string
+          validade_revisao: string | null
           versao: string | null
         }
         Insert: {
@@ -681,10 +683,12 @@ export type Database = {
           empresa_id?: string | null
           id?: string
           nome: string
+          proxima_revisao?: string | null
           responsavel?: string | null
           status?: string | null
           updated_at?: string
           user_id: string
+          validade_revisao?: string | null
           versao?: string | null
         }
         Update: {
@@ -694,10 +698,12 @@ export type Database = {
           empresa_id?: string | null
           id?: string
           nome?: string
+          proxima_revisao?: string | null
           responsavel?: string | null
           status?: string | null
           updated_at?: string
           user_id?: string
+          validade_revisao?: string | null
           versao?: string | null
         }
         Relationships: [

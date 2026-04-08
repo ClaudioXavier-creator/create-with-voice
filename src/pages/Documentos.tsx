@@ -57,6 +57,7 @@ const CATEGORIAS_ARQ = [
 interface DocRow {
   id: string; codigo: string; nome: string; versao: string | null;
   data_revisao: string | null; responsavel: string | null; status: string | null;
+  validade_revisao: string | null; proxima_revisao: string | null;
 }
 
 interface ArquivoBpf {
@@ -101,6 +102,8 @@ export default function Documentos() {
   const [popNome, setPopNome] = useState("");
   const [popVersao, setPopVersao] = useState("01");
   const [popResponsavel, setPopResponsavel] = useState("");
+  const [popValidade, setPopValidade] = useState("");
+  const [popProximaRevisao, setPopProximaRevisao] = useState("");
 
 
   // Arquivo BPF form
@@ -143,9 +146,10 @@ export default function Documentos() {
     setSaving(true);
     const { error } = await supabase.from("documentos").insert({
       user_id: user.id, codigo: popCodigo, nome: popNome, versao: popVersao, responsavel: popResponsavel,
-    });
+      validade_revisao: popValidade || null, proxima_revisao: popProximaRevisao || null,
+    } as any);
     if (error) toast.error("Erro ao salvar");
-    else { toast.success("Documento salvo!"); setPopOpen(false); setPopCodigo(""); setPopNome(""); setPopVersao("01"); setPopResponsavel(""); fetchData(); }
+    else { toast.success("Documento salvo!"); setPopOpen(false); setPopCodigo(""); setPopNome(""); setPopVersao("01"); setPopResponsavel(""); setPopValidade(""); setPopProximaRevisao(""); fetchData(); }
     setSaving(false);
   };
 
@@ -301,6 +305,10 @@ export default function Documentos() {
                       <div><Label>Versão</Label><Input value={popVersao} onChange={e => setPopVersao(e.target.value)} /></div>
                       <div><Label>Responsável</Label><Input value={popResponsavel} onChange={e => setPopResponsavel(e.target.value)} /></div>
                     </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div><Label>Validade da Revisão</Label><Input type="date" value={popValidade} onChange={e => setPopValidade(e.target.value)} /></div>
+                      <div><Label>Próxima Revisão</Label><Input type="date" value={popProximaRevisao} onChange={e => setPopProximaRevisao(e.target.value)} /></div>
+                    </div>
                     <Button onClick={handleAddPop} className="w-full" disabled={saving}>{saving && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}Salvar</Button>
                   </div>
                 </DialogContent>
@@ -313,17 +321,24 @@ export default function Documentos() {
                 <Table>
                   <TableHeader><TableRow>
                     <TableHead>Código</TableHead><TableHead>Nome</TableHead><TableHead>Versão</TableHead>
-                    <TableHead>Revisão</TableHead><TableHead>Responsável</TableHead><TableHead>Status</TableHead>
+                    <TableHead>Revisão</TableHead><TableHead>Validade</TableHead><TableHead>Próx. Revisão</TableHead><TableHead>Responsável</TableHead><TableHead>Status</TableHead>
                   </TableRow></TableHeader>
                   <TableBody>
-                    {docs.map(d => (
+                    {docs.map(d => {
+                      const today = new Date().toISOString().split("T")[0];
+                      const vencido = d.validade_revisao && d.validade_revisao < today;
+                      const proximoVencer = d.proxima_revisao && d.proxima_revisao <= new Date(Date.now() + 30 * 86400000).toISOString().split("T")[0];
+                      return (
                       <TableRow key={d.id}>
                         <TableCell className="font-mono text-sm">{d.codigo}</TableCell>
                         <TableCell>{d.nome}</TableCell><TableCell>{d.versao}</TableCell>
-                        <TableCell>{d.data_revisao}</TableCell><TableCell>{d.responsavel}</TableCell>
+                        <TableCell>{d.data_revisao}</TableCell>
+                        <TableCell className={vencido ? "text-destructive font-medium" : ""}>{d.validade_revisao || "—"}</TableCell>
+                        <TableCell className={proximoVencer ? "text-yellow-600 font-medium" : ""}>{d.proxima_revisao || "—"}</TableCell>
+                        <TableCell>{d.responsavel}</TableCell>
                         <TableCell><Badge className={statusBadge[d.status || "ativo"]}>{d.status === "em_revisao" ? "Em revisão" : d.status === "obsoleto" ? "Obsoleto" : "Ativo"}</Badge></TableCell>
                       </TableRow>
-                    ))}
+                    )})}
                   </TableBody>
                 </Table>
               )}
