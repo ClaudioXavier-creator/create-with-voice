@@ -17,6 +17,7 @@ interface CellData {
   conforme: boolean | null;
   responsavel: string;
   funcao: string;
+  observacoes: string;
 }
 
 interface Signatures {
@@ -60,7 +61,7 @@ export default function PopPlanilhaForm({ planilhaId, periodicidade, userId, pop
     const [itensRes, planilhaRes] = await Promise.all([
       supabase
         .from("pop_planilha_itens")
-        .select("periodo_label, area, conforme, responsavel, funcao")
+        .select("periodo_label, area, conforme, responsavel, funcao, observacoes")
         .eq("planilha_id", planilhaId),
       supabase
         .from("pop_planilhas")
@@ -81,6 +82,7 @@ export default function PopPlanilhaForm({ planilhaId, periodicidade, userId, pop
         conforme: item.conforme,
         responsavel: item.responsavel || "",
         funcao: item.funcao || "",
+        observacoes: item.observacoes || "",
       };
     });
     setGrid(newGrid);
@@ -107,21 +109,21 @@ export default function PopPlanilhaForm({ planilhaId, periodicidade, userId, pop
     const next = current === null ? true : current === true ? false : null;
     setGrid((prev) => ({
       ...prev,
-      [key]: { ...prev[key], conforme: next, responsavel: prev[key]?.responsavel || "", funcao: prev[key]?.funcao || "" },
+      [key]: { ...prev[key], conforme: next, responsavel: prev[key]?.responsavel || "", funcao: prev[key]?.funcao || "", observacoes: prev[key]?.observacoes || "" },
     }));
   }
 
-  function updateField(periodo: string, field: "responsavel" | "funcao", value: string) {
+  function updateField(periodo: string, field: "responsavel" | "funcao" | "observacoes", value: string) {
     periodicidade.areas.forEach((a) => {
       const key = cellKey(periodo, a.area);
       setGrid((prev) => ({
         ...prev,
-        [key]: { ...prev[key], conforme: prev[key]?.conforme ?? null, responsavel: prev[key]?.responsavel || "", funcao: prev[key]?.funcao || "", [field]: value },
+        [key]: { ...prev[key], conforme: prev[key]?.conforme ?? null, responsavel: prev[key]?.responsavel || "", funcao: prev[key]?.funcao || "", observacoes: prev[key]?.observacoes || "", [field]: value },
       }));
     });
   }
 
-  function getFieldForPeriodo(periodo: string, field: "responsavel" | "funcao") {
+  function getFieldForPeriodo(periodo: string, field: "responsavel" | "funcao" | "observacoes") {
     const firstArea = periodicidade.areas[0]?.area;
     if (!firstArea) return "";
     return grid[cellKey(periodo, firstArea)]?.[field] || "";
@@ -171,6 +173,7 @@ export default function PopPlanilhaForm({ planilhaId, periodicidade, userId, pop
             conforme: cell.conforme,
             responsavel: cell.responsavel,
             funcao: cell.funcao,
+            observacoes: cell.observacoes,
           });
         }
       }
@@ -368,7 +371,7 @@ ${signBlock}
               else if (cellVal === "NC" || cellVal === "NÃO CONFORME" || cellVal === "NAO CONFORME" || cellVal === "NÃO" || cellVal === "N") conforme = false;
 
               if (conforme !== null) {
-                newGrid[key] = { conforme, responsavel: newGrid[key]?.responsavel || "", funcao: newGrid[key]?.funcao || "" };
+                newGrid[key] = { conforme, responsavel: newGrid[key]?.responsavel || "", funcao: newGrid[key]?.funcao || "", observacoes: newGrid[key]?.observacoes || "" };
                 imported++;
               }
             });
@@ -432,7 +435,7 @@ ${signBlock}
             else if (cellVal === "NC" || cellVal === "NÃO CONFORME" || cellVal === "NAO CONFORME" || cellVal === "NÃO" || cellVal === "N") conforme = false;
 
             if (conforme !== null) {
-              newGrid[key] = { conforme, responsavel: resp, funcao: func };
+              newGrid[key] = { conforme, responsavel: resp, funcao: func, observacoes: newGrid[key]?.observacoes || "" };
               imported++;
             }
           }
@@ -481,6 +484,9 @@ ${signBlock}
               <th className="px-2 py-2 text-center font-semibold text-foreground border-b border-border min-w-[100px]">
                 Função
               </th>
+              <th className="px-2 py-2 text-center font-semibold text-foreground border-b border-border min-w-[140px]">
+                Observações
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -522,6 +528,14 @@ ${signBlock}
                     placeholder="Função"
                     value={getFieldForPeriodo(periodo, "funcao")}
                     onChange={(e) => updateField(periodo, "funcao", e.target.value)}
+                  />
+                </td>
+                <td className="px-1 py-1 border-b border-border">
+                  <Input
+                    className="h-8 text-xs"
+                    placeholder="Obs. (NC)"
+                    value={getFieldForPeriodo(periodo, "observacoes")}
+                    onChange={(e) => updateField(periodo, "observacoes", e.target.value)}
                   />
                 </td>
               </tr>
