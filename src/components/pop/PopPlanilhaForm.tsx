@@ -239,8 +239,8 @@ export default function PopPlanilhaForm({ planilhaId, periodicidade, userId, pop
   async function archivePlanilha() {
     if (!hasEnoughSignatures) {
       toast.error(`São necessárias pelo menos ${requiredSignatures} assinatura(s) para arquivar. Atualmente: ${signedCount}.`);
-      toast.error("Todas as assinaturas (Executor, Supervisor e RT) são obrigatórias para arquivar.");
       return;
+    }
     }
     setArchiving(true);
     try {
