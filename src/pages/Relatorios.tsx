@@ -111,6 +111,13 @@ export default function Relatorios() {
   const [rtCrmv, setRtCrmv] = useState("");
   const [rtAssinado, setRtAssinado] = useState(false);
 
+  // Relatório Anual IN 17/2017
+  const [anualOpen, setAnualOpen] = useState(false);
+  const [anualAno, setAnualAno] = useState(new Date().getFullYear());
+  const [anualExporting, setAnualExporting] = useState(false);
+  const [anualRtNome, setAnualRtNome] = useState("");
+  const [anualRtCrmv, setAnualRtCrmv] = useState("");
+
   const fetchRelatorios = async () => {
     if (!user) return;
     const { data, error } = await supabase
