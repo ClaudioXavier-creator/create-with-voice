@@ -75,7 +75,7 @@ export default function Documentos() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [docs, setDocs] = useState<DocRow[]>([]);
-  const [arquivos, setArquivos] = useState<ArquivoRow[]>([]);
+  
   const [calibracoes, setCalibracoes] = useState<CalibracaoRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
