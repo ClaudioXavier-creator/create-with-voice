@@ -19,6 +19,7 @@ const MESES = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julh
 
 export default function PlanilhasPop() {
   const { user } = useAuth();
+  const { empresaAtiva } = useEmpresa();
   const [selectedPop, setSelectedPop] = useState<PopConfig>(POPS_CONFIG[1]); // POP-02 default
   const [selectedPeriodicidade, setSelectedPeriodicidade] = useState<PopPeriodicidade | null>(null);
   const [mes, setMes] = useState(new Date().getMonth() + 1);
