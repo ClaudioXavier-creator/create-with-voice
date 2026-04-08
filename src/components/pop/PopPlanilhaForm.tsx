@@ -717,6 +717,13 @@ ${signBlock}
         </CardContent>
       </Card>
 
+      {/* Archive status badge */}
+      {isArchived && (
+        <div className="p-3 border-2 border-primary/30 bg-primary/5 rounded-lg text-center">
+          <p className="text-sm font-semibold text-primary">✅ Planilha Arquivada — Documento disponível no Arquivo BPF</p>
+        </div>
+      )}
+
       <div className="flex items-center justify-between flex-wrap gap-2">
         <p className="text-xs text-muted-foreground">
           *C = Conforme | NC = Não Conforme | Clique para alternar. Em caso de NC, emitir RNC.
@@ -738,9 +745,14 @@ ${signBlock}
           <Button variant="outline" onClick={() => fileInputRef.current?.click()}>
             <Upload className="w-4 h-4 mr-1" /> Importar Excel
           </Button>
-          <Button onClick={saveAll} disabled={saving}>
+          <Button onClick={saveAll} disabled={saving || isArchived}>
             {saving ? "Salvando..." : "Salvar Registros"}
           </Button>
+          {allSigned && !isArchived && (
+            <Button onClick={archivePlanilha} disabled={archiving} variant="default" className="bg-primary">
+              <Archive className="w-4 h-4 mr-1" /> {archiving ? "Arquivando..." : "Arquivar Planilha"}
+            </Button>
+          )}
         </div>
       </div>
     </div>
