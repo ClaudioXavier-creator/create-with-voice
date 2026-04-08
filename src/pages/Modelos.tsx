@@ -169,6 +169,16 @@ export default function Modelos() {
   const modelosFiltrados = filtro === "todos" ? MODELOS : MODELOS.filter(m => m.categoria === filtro);
   const categorias = ["todos", ...Object.keys(categoriaLabels)];
 
+  const handleDownload = (modelo: ModeloDoc) => {
+    const generator = TEMPLATE_GENERATORS[modelo.arquivo];
+    if (generator) {
+      generator();
+      toast.success(`${modelo.nome} — Excel gerado com sucesso!`);
+    } else {
+      toast.info(`${modelo.nome} — modelo em PDF será disponibilizado em breve`);
+    }
+  };
+
   const totalNovos = MODELOS.filter(m => m.novo).length;
 
   if (!desbloqueado) {
