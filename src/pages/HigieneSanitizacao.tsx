@@ -645,7 +645,7 @@ export default function HigieneSanitizacao() {
       <PageHeader title="POP 02/03/04 — Limpeza, Higiene Pessoal e Água" description="POP 02 (Limpeza de Instalações), POP 03 (Higiene e Saúde Pessoal), POP 04 (Potabilidade da Água) — IN 04/2007 e IN 15/2009" />
 
       <Tabs defaultValue="preop">
-        <TabsList className="flex flex-wrap">
+        <TabsList className="flex flex-wrap h-auto gap-1 p-1">
           <TabsTrigger value="preop"><ShieldCheck className="w-4 h-4 mr-1" />Pré-Operacional</TabsTrigger>
           <TabsTrigger value="liberacao"><Layers className="w-4 h-4 mr-1" />Liberação de Linha</TabsTrigger>
           <TabsTrigger value="superficies"><FlaskConical className="w-4 h-4 mr-1" />Superfícies</TabsTrigger>
