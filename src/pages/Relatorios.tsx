@@ -500,18 +500,17 @@ ${recallAtivos.length>0?`<div class="ab">&#9888; ${recallAtivos.length} recall(s
                     </div>
                   </div>
                   <div className="p-3 rounded-lg bg-muted/30 border space-y-1">
-                    <p className="text-xs font-semibold flex items-center gap-1"><FileText className="w-3 h-3" /> Seções incluídas:</p>
+                    <p className="text-xs font-semibold flex items-center gap-1"><FileText className="w-3 h-3" /> Seções do PDF:</p>
                     <div className="grid grid-cols-2 gap-x-4 gap-y-0.5 text-[11px] text-muted-foreground">
-                      <span>✓ Resumo Executivo</span>
-                      <span>✓ Qualificação Fornecedores</span>
-                      <span>✓ Recebimento de MP</span>
-                      <span>✓ Higienização (POP-02)</span>
-                      <span>✓ Potabilidade da Água</span>
-                      <span>✓ Controle de Pragas</span>
-                      <span>✓ Não Conformidades</span>
-                      <span>✓ Treinamentos</span>
-                      <span>✓ Calibrações</span>
-                      <span>✓ Execução POPs/ITs</span>
+                      <span>1. Identificação da Empresa</span>
+                      <span>2. Resumo Produtivo Anual</span>
+                      <span>3. Controle de Qualidade</span>
+                      <span>4. Não Conformidades</span>
+                      <span>5. Rastreabilidade</span>
+                      <span>6. Treinamentos</span>
+                      <span>7. Auditorias</span>
+                      <span>8. Recall e Reclamações</span>
+                      <span>9. Conclusão Técnica + Assinatura RT</span>
                       <span>✓ Produção Anual</span>
                       <span>✓ Declaração de Conformidade</span>
                     </div>
