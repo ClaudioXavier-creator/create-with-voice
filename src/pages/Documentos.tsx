@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { FileText, Plus, Upload, Eye, FolderOpen, Loader2, BookOpen, ClipboardList, Wrench, Gauge, AlertCircle, ExternalLink } from "lucide-react";
+import { FileText, Plus, Loader2, Wrench, Gauge, AlertCircle, ExternalLink } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
@@ -28,13 +28,6 @@ const POPS_OBRIGATORIOS = [
   { codigo: "POP-009", nome: "Procedimentos sobre o programa de autocontrole (PAC)", modulo: "/auditoria", moduloLabel: "Auditoria BPF" },
 ];
 
-const CATEGORIAS = [
-  { value: "manual_bpf", label: "Manual BPF", icon: BookOpen },
-  { value: "pop", label: "POP", icon: ClipboardList },
-  { value: "it", label: "Instrução de Trabalho (IT)", icon: Wrench },
-  { value: "planilha_preenchida", label: "Planilha Preenchida", icon: FileText },
-  { value: "outro", label: "Outro Documento", icon: FolderOpen },
-];
 
 const TIPOS_EQUIPAMENTO = [
   { value: "balanca", label: "Balança" },
@@ -50,10 +43,6 @@ interface DocRow {
   data_revisao: string | null; responsavel: string | null; status: string | null;
 }
 
-interface ArquivoRow {
-  id: string; categoria: string; titulo: string; descricao: string | null;
-  arquivo_nome: string | null; arquivo_url: string | null; created_at: string;
-}
 
 interface CalibracaoRow {
   id: string; equipamento: string; codigo: string | null; tipo: string | null;
@@ -79,7 +68,7 @@ export default function Documentos() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [docs, setDocs] = useState<DocRow[]>([]);
-  const [arquivos, setArquivos] = useState<ArquivoRow[]>([]);
+  
   const [calibracoes, setCalibracoes] = useState<CalibracaoRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -91,12 +80,6 @@ export default function Documentos() {
   const [popVersao, setPopVersao] = useState("01");
   const [popResponsavel, setPopResponsavel] = useState("");
 
-  // Arquivo form
-  const [arqOpen, setArqOpen] = useState(false);
-  const [arqCategoria, setArqCategoria] = useState("pop");
-  const [arqTitulo, setArqTitulo] = useState("");
-  const [arqDescricao, setArqDescricao] = useState("");
-  const [arqFile, setArqFile] = useState<File | null>(null);
 
   // Calibração form
   const [calOpen, setCalOpen] = useState(false);
@@ -112,13 +95,11 @@ export default function Documentos() {
 
   const fetchData = async () => {
     if (!user) return;
-    const [docsRes, arqRes, calRes] = await Promise.all([
+    const [docsRes, calRes] = await Promise.all([
       supabase.from("documentos").select("*").order("codigo"),
-      supabase.from("arquivos_bpf").select("*").order("created_at", { ascending: false }),
       supabase.from("calibracoes").select("*").order("proxima_calibracao"),
     ]);
     if (docsRes.data) setDocs(docsRes.data);
-    if (arqRes.data) setArquivos(arqRes.data as unknown as ArquivoRow[]);
     if (calRes.data) setCalibracoes(calRes.data as unknown as CalibracaoRow[]);
     setLoading(false);
   };
@@ -136,21 +117,6 @@ export default function Documentos() {
     setSaving(false);
   };
 
-  const handleAddArquivo = async () => {
-    if (!arqTitulo || !arqFile || !user) return;
-    setSaving(true);
-    const filePath = `${user.id}/${Date.now()}_${arqFile.name}`;
-    const { error: uploadErr } = await supabase.storage.from("documentos_bpf").upload(filePath, arqFile);
-    if (uploadErr) { toast.error("Erro no upload: " + uploadErr.message); setSaving(false); return; }
-    const { data: urlData } = supabase.storage.from("documentos_bpf").getPublicUrl(filePath);
-    const { error } = await supabase.from("arquivos_bpf").insert({
-      user_id: user.id, categoria: arqCategoria, titulo: arqTitulo, descricao: arqDescricao,
-      arquivo_nome: arqFile.name, arquivo_url: urlData.publicUrl,
-    } as any);
-    if (error) toast.error("Erro ao salvar");
-    else { toast.success("Arquivo enviado!"); setArqOpen(false); setArqTitulo(""); setArqDescricao(""); setArqFile(null); setArqCategoria("pop"); fetchData(); }
-    setSaving(false);
-  };
 
   const handleAddCalibracao = async () => {
     if (!calEquipamento || !user) return;
@@ -171,7 +137,7 @@ export default function Documentos() {
     setSaving(false);
   };
 
-  const catLabel = (cat: string) => CATEGORIAS.find(c => c.value === cat)?.label || cat;
+  
   const tipoLabel = (tipo: string) => TIPOS_EQUIPAMENTO.find(t => t.value === tipo)?.label || tipo;
 
   const today = new Date().toISOString().split("T")[0];
@@ -186,7 +152,7 @@ export default function Documentos() {
         <TabsList>
           <TabsTrigger value="pops">POPs Obrigatórios</TabsTrigger>
           <TabsTrigger value="registrados">Docs Registrados ({docs.length})</TabsTrigger>
-          <TabsTrigger value="arquivos">Arquivo BPF ({arquivos.length})</TabsTrigger>
+          
           <TabsTrigger value="calibracao" className="flex items-center gap-1">
             <Gauge className="w-4 h-4" /> Calibração ({calibracoes.length})
             {calibVencidas.length > 0 && <Badge variant="destructive" className="ml-1 text-[10px] px-1">{calibVencidas.length}</Badge>}
@@ -290,92 +256,6 @@ export default function Documentos() {
                         <TableCell>{d.nome}</TableCell><TableCell>{d.versao}</TableCell>
                         <TableCell>{d.data_revisao}</TableCell><TableCell>{d.responsavel}</TableCell>
                         <TableCell><Badge className={statusBadge[d.status || "ativo"]}>{d.status === "em_revisao" ? "Em revisão" : d.status === "obsoleto" ? "Obsoleto" : "Ativo"}</Badge></TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              )}
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        {/* Tab 3: Arquivo BPF */}
-        <TabsContent value="arquivos">
-          {/* ICP-Brasil Digital Signature Notice */}
-          <Card className="mb-4 border-primary/20 bg-primary/5">
-            <CardContent className="pt-4">
-              <div className="flex items-start gap-3">
-                <Wrench className="w-6 h-6 text-primary mt-0.5 shrink-0" />
-                <div>
-                  <h3 className="font-display font-semibold text-sm">Assinatura Digital — Validade Jurídica (MP 2.200-2/2001)</h3>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Para que documentos digitais tenham <strong>plena validade jurídica em fiscalizações eletrônicas do MAPA</strong>, é recomendável que sejam assinados com certificado digital ICP-Brasil (e-CPF ou e-CNPJ).
-                  </p>
-                  <ul className="text-xs text-muted-foreground mt-2 space-y-1 list-disc pl-4">
-                    <li>Documentos com assinatura ICP-Brasil possuem presunção de integridade e autoria (Art. 10, MP 2.200-2).</li>
-                    <li>Para fiscalizações presenciais, a assinatura manuscrita em documento impresso continua válida.</li>
-                    <li>O sistema registra data/hora e responsável pela aprovação digital como evidência de controle.</li>
-                    <li>Integração com certificadoras ICP-Brasil pode ser habilitada sob demanda.</li>
-                  </ul>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          <div className="grid md:grid-cols-2 gap-4 mb-6">
-            <Card className="border-primary/20 bg-primary/5">
-              <CardContent className="pt-4">
-                <div className="flex items-start gap-3">
-                  <BookOpen className="w-7 h-7 text-primary mt-1 shrink-0" />
-                  <div><h3 className="font-display font-semibold text-sm">Programa Digital</h3><p className="text-xs text-muted-foreground mt-1">Envie arquivos digitais: Manual BPF, POPs, ITs em PDF, Word etc.</p></div>
-                </div>
-              </CardContent>
-            </Card>
-            <Card className="border-accent/20 bg-accent/5">
-              <CardContent className="pt-4">
-                <div className="flex items-start gap-3">
-                  <ClipboardList className="w-7 h-7 text-accent mt-1 shrink-0" />
-                  <div><h3 className="font-display font-semibold text-sm">Programa Semi-Digital</h3><p className="text-xs text-muted-foreground mt-1">Envie planilhas preenchidas em papel, assinadas e digitalizadas.</p></div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle className="font-display">Arquivo de Documentação BPF</CardTitle>
-              <Dialog open={arqOpen} onOpenChange={setArqOpen}>
-                <DialogTrigger asChild><Button size="sm"><Upload className="w-4 h-4 mr-1" /> Enviar Arquivo</Button></DialogTrigger>
-                <DialogContent>
-                  <DialogHeader><DialogTitle>Enviar Documento ao Arquivo BPF</DialogTitle></DialogHeader>
-                  <div className="space-y-4">
-                    <div><Label>Categoria</Label>
-                      <Select value={arqCategoria} onValueChange={setArqCategoria}>
-                        <SelectTrigger><SelectValue /></SelectTrigger>
-                        <SelectContent>{CATEGORIAS.map(c => <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>)}</SelectContent>
-                      </Select>
-                    </div>
-                    <div><Label>Título</Label><Input value={arqTitulo} onChange={e => setArqTitulo(e.target.value)} /></div>
-                    <div><Label>Descrição (opcional)</Label><Textarea value={arqDescricao} onChange={e => setArqDescricao(e.target.value)} /></div>
-                    <div><Label>Arquivo (PDF, Word, imagem)</Label><Input type="file" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.xls,.xlsx" onChange={e => setArqFile(e.target.files?.[0] || null)} /></div>
-                    <Button onClick={handleAddArquivo} className="w-full" disabled={saving || !arqFile}>{saving && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}Enviar Arquivo</Button>
-                  </div>
-                </DialogContent>
-              </Dialog>
-            </CardHeader>
-            <CardContent>
-              {loading ? <div className="flex justify-center py-8"><Loader2 className="w-6 h-6 animate-spin text-muted-foreground" /></div>
-              : arquivos.length === 0 ? <p className="text-center text-muted-foreground py-8">Nenhum arquivo enviado</p>
-              : (
-                <Table>
-                  <TableHeader><TableRow>
-                    <TableHead>Categoria</TableHead><TableHead>Título</TableHead><TableHead>Arquivo</TableHead><TableHead>Data</TableHead>
-                  </TableRow></TableHeader>
-                  <TableBody>
-                    {arquivos.map(a => (
-                      <TableRow key={a.id}>
-                        <TableCell><Badge variant="outline" className="text-xs">{catLabel(a.categoria)}</Badge></TableCell>
-                        <TableCell><p className="font-medium text-sm">{a.titulo}</p>{a.descricao && <p className="text-xs text-muted-foreground">{a.descricao}</p>}</TableCell>
-                        <TableCell>{a.arquivo_url ? <Button variant="ghost" size="sm" className="gap-1 text-xs" asChild><a href={a.arquivo_url} target="_blank" rel="noopener noreferrer"><Eye className="w-3 h-3" /> {a.arquivo_nome}</a></Button> : "—"}</TableCell>
-                        <TableCell className="text-xs text-muted-foreground">{a.created_at?.split("T")[0]}</TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
