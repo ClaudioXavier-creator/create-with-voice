@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import PageHeader from "@/components/PageHeader";
+import { TEMPLATE_GENERATORS } from "@/utils/excelTemplates";
 
 interface ModeloDoc {
   nome: string;
