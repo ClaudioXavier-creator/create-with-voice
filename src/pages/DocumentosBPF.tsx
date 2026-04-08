@@ -48,7 +48,8 @@ interface DocBPF {
 
 export default function DocumentosBPF() {
   const { user } = useAuth();
-  const { empresaId } = useEmpresa();
+  const { empresaAtiva } = useEmpresa();
+  const empresaId = empresaAtiva?.id || null;
   const [docs, setDocs] = useState<DocBPF[]>([]);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
