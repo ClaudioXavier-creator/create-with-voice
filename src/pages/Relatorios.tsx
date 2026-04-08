@@ -191,9 +191,10 @@ export default function Relatorios() {
       const anoStart = `${anualAno}-01-01`;
       const anoEnd = `${anualAno}-12-31`;
       const now = new Date();
+      const dataGeracao = now.toLocaleString("pt-BR");
 
-      // Fetch all relevant data for the year
-      const [prodRes, recebRes, ncRes, treinRes, pragRes, execRes, checkRes, fornRes, calibRes, limpRes, aguaRes] = await Promise.all([
+      const [empresaRes, prodRes, recebRes, ncRes, treinRes, pragRes, execRes, checkRes, calibRes, limpRes, analisesRes, rastRes, reclamRes] = await Promise.all([
+        supabase.from("empresas").select("*").limit(1).single(),
         supabase.from("producao").select("*").gte("data", anoStart).lte("data", anoEnd),
         supabase.from("recebimento_mp").select("*").gte("data", anoStart).lte("data", anoEnd),
         supabase.from("nao_conformidades").select("*").gte("data", anoStart).lte("data", anoEnd),
@@ -201,12 +202,14 @@ export default function Relatorios() {
         supabase.from("controle_pragas").select("*").gte("data", anoStart).lte("data", anoEnd),
         supabase.from("execucao_pops").select("*").gte("data_execucao", anoStart).lte("data_execucao", anoEnd),
         supabase.from("checklist_items").select("*").gte("auditoria_data", anoStart).lte("auditoria_data", anoEnd),
-        supabase.from("fornecedores").select("*"),
         supabase.from("calibracoes").select("*"),
         supabase.from("registros_limpeza").select("*").gte("data_execucao", anoStart).lte("data_execucao", anoEnd),
-        supabase.from("analises_laboratorio").select("*").eq("tipo_analise", "potabilidade_agua").gte("data_analise", anoStart).lte("data_analise", anoEnd),
+        supabase.from("analises_laboratorio").select("*").gte("data_analise", anoStart).lte("data_analise", anoEnd),
+        supabase.from("rastreabilidade").select("*"),
+        supabase.from("reclamacoes_qualidade").select("*").gte("data_reclamacao", anoStart).lte("data_reclamacao", anoEnd),
       ]);
 
+      const emp = (empresaRes.data || {}) as any;
       const prod = prodRes.data || [];
       const receb = recebRes.data || [];
       const ncs = ncRes.data || [];
@@ -214,166 +217,98 @@ export default function Relatorios() {
       const pragas = pragRes.data || [];
       const execs = execRes.data || [];
       const checks = checkRes.data || [];
-      const forns = fornRes.data || [];
       const calibs = calibRes.data || [];
       const limps = limpRes.data || [];
-      const aguas = aguaRes.data || [];
+      const analises = analisesRes.data || [];
+      const rast = rastRes.data || [];
+      const reclam = reclamRes.data || [];
 
-      const ncAbertas = ncs.filter(n => (n as any).status === "aberta").length;
-      const ncFechadas = ncs.filter(n => (n as any).status === "fechada").length;
-      const ncAndamento = ncs.filter(n => (n as any).status === "em_andamento").length;
-      const checksConformes = checks.filter(c => (c as any).conforme === true).length;
+      const ncAbertas = ncs.filter((n: any) => n.status === "aberta").length;
+      const ncFechadas = ncs.filter((n: any) => n.status === "fechada").length;
+      const checksConformes = checks.filter((c: any) => c.conforme === true).length;
       const checksTotal = checks.length;
-      const pctConf = checksTotal > 0 ? ((checksConformes / checksTotal) * 100).toFixed(1) : "N/A";
+      const pctConf = checksTotal > 0 ? ((checksConformes / checksTotal) * 100).toFixed(1) : "0";
+      const analConformes = analises.filter((a: any) => a.conforme === true).length;
+      const analNaoConf = analises.filter((a: any) => a.conforme === false).length;
+      const recallAtivos = rast.filter((r: any) => r.recall_ativo === true);
+      const funcionariosTreinados = new Set(treins.map((t: any) => t.funcionario)).size;
 
-      const fornAprovados = forns.filter(f => (f as any).status_qualificacao === "aprovado" || (f as any).resultado_qualificacao === "aprovado").length;
-      const calibsVencidos = calibs.filter(c => {
-        const prox = (c as any).proxima_calibracao;
-        return prox && new Date(prox) < new Date();
-      }).length;
-
-      const aguasConformes = aguas.filter(a => (a as any).conforme === true).length;
-
-      // Build CSV report
-      let csv = "";
-      csv += "╔══════════════════════════════════════════════════════════════════════╗\n";
-      csv += "║     RELATÓRIO ANUAL DE ATIVIDADES — IN 17/2017 (Art. 55)           ║\n";
-      csv += "╚══════════════════════════════════════════════════════════════════════╝\n\n";
-      csv += `Ano de referência: ${anualAno}\n`;
-      csv += `Data de geração: ${now.toLocaleString("pt-BR")}\n`;
-      csv += `Responsável Técnico: ${anualRtNome || "(não informado)"}\n`;
-      csv += `CRMV: ${anualRtCrmv || "(não informado)"}\n\n`;
-
-      csv += "════════════════════════════════════════════════════════════════\n";
-      csv += "1. RESUMO EXECUTIVO\n";
-      csv += "════════════════════════════════════════════════════════════════\n";
-      csv += `Total de lotes produzidos: ${prod.length}\n`;
-      csv += `Total de recebimentos de matéria-prima: ${receb.length}\n`;
-      csv += `Não conformidades registradas: ${ncs.length} (Abertas: ${ncAbertas} | Em andamento: ${ncAndamento} | Fechadas: ${ncFechadas})\n`;
-      csv += `Treinamentos realizados: ${treins.length}\n`;
-      csv += `Ocorrências de pragas: ${pragas.length}\n`;
-      csv += `Execuções de POPs/ITs: ${execs.length}\n`;
-      csv += `Auditorias/Checklists: ${checksTotal} itens (${pctConf}% conformes)\n`;
-      csv += `Limpezas e sanitizações registradas: ${limps.length}\n`;
-      csv += `Análises de potabilidade da água: ${aguas.length} (${aguasConformes} conformes)\n\n`;
-
-      csv += "════════════════════════════════════════════════════════════════\n";
-      csv += "2. QUALIFICAÇÃO DE FORNECEDORES (POP-01)\n";
-      csv += "════════════════════════════════════════════════════════════════\n";
-      csv += `Total de fornecedores cadastrados: ${forns.length}\n`;
-      csv += `Fornecedores aprovados: ${fornAprovados}\n`;
-      csv += `Fornecedores pendentes/reprovados: ${forns.length - fornAprovados}\n\n`;
-
-      csv += "Fornecedor,CNPJ,Tipo Produto,Qualificação,Nota\n";
-      forns.forEach((f: any) => {
-        csv += `${escapeCsv(f.nome)},${escapeCsv(f.cnpj)},${escapeCsv(f.tipo_produto)},${escapeCsv(f.status_qualificacao || f.resultado_qualificacao)},${escapeCsv(f.nota_avaliacao)}\n`;
+      const prodByProduct: Record<string, { qtd: number; lotes: number }> = {};
+      prod.forEach((p: any) => {
+        const key = p.produto || "Sem nome";
+        if (!prodByProduct[key]) prodByProduct[key] = { qtd: 0, lotes: 0 };
+        prodByProduct[key].lotes++;
+        prodByProduct[key].qtd += parseFloat(p.quantidade || "0") || 0;
       });
-      csv += "\n";
 
-      csv += "════════════════════════════════════════════════════════════════\n";
-      csv += "3. RECEBIMENTO DE MATÉRIA-PRIMA (POP-01)\n";
-      csv += "════════════════════════════════════════════════════════════════\n";
-      csv += `Total de recebimentos: ${receb.length}\n`;
-      const recebAprov = receb.filter((r: any) => r.aprovado === true).length;
-      const recebRepr = receb.filter((r: any) => r.aprovado === false).length;
-      csv += `Aprovados: ${recebAprov} | Reprovados: ${recebRepr}\n\n`;
+      const ncBySetor: Record<string, number> = {};
+      ncs.forEach((n: any) => { const s = n.setor || "N/I"; ncBySetor[s] = (ncBySetor[s] || 0) + 1; });
 
-      csv += "════════════════════════════════════════════════════════════════\n";
-      csv += "4. HIGIENIZAÇÃO E SANITIZAÇÃO (POP-02)\n";
-      csv += "════════════════════════════════════════════════════════════════\n";
-      csv += `Total de registros de limpeza: ${limps.length}\n`;
-      const limpsConf = limps.filter((l: any) => l.conforme === true).length;
-      csv += `Conformes: ${limpsConf} | Não conformes: ${limps.length - limpsConf}\n\n`;
+      const treinTemas: Record<string, number> = {};
+      treins.forEach((t: any) => { const tema = t.treinamento || "Outros"; treinTemas[tema] = (treinTemas[tema] || 0) + 1; });
 
-      csv += "════════════════════════════════════════════════════════════════\n";
-      csv += "5. POTABILIDADE DA ÁGUA (POP-04)\n";
-      csv += "════════════════════════════════════════════════════════════════\n";
-      csv += `Total de análises: ${aguas.length}\n`;
-      csv += `Conformes: ${aguasConformes} | Não conformes: ${aguas.length - aguasConformes}\n\n`;
+      const esc = (v: any) => String(v ?? "").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
-      csv += "════════════════════════════════════════════════════════════════\n";
-      csv += "6. CONTROLE DE PRAGAS (POP-06)\n";
-      csv += "════════════════════════════════════════════════════════════════\n";
-      csv += `Total de ocorrências: ${pragas.length}\n`;
-      if (pragas.length > 0) {
-        csv += "Data,Local,Tipo,Ação,Responsável\n";
-        pragas.forEach((p: any) => {
-          csv += `${escapeCsv(p.data)},${escapeCsv(p.local)},${escapeCsv(p.tipo_praga)},${escapeCsv(p.acao)},${escapeCsv(p.responsavel)}\n`;
-        });
-      }
-      csv += "\n";
+      const html = `<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><style>
+@page{size:A4;margin:18mm 15mm}*{margin:0;padding:0;box-sizing:border-box}body{font-family:Arial,sans-serif;font-size:10pt;color:#1a1a1a;line-height:1.5}.pb{page-break-before:always}.hdr{text-align:center;border-bottom:3px solid #1a5f2a;padding-bottom:12px;margin-bottom:18px}.hdr h1{font-size:15pt;color:#1a5f2a;letter-spacing:1px}.hdr h2{font-size:11pt;color:#333;font-weight:normal}.hdr .sub{font-size:8pt;color:#666;margin-top:3px}.sec{margin-bottom:14px}.st{font-size:11pt;font-weight:bold;color:#1a5f2a;border-bottom:2px solid #1a5f2a;padding-bottom:3px;margin-bottom:8px}.sn{display:inline-block;background:#1a5f2a;color:#fff;width:20px;height:20px;text-align:center;border-radius:50%;font-size:9pt;line-height:20px;margin-right:6px}table{width:100%;border-collapse:collapse;margin:6px 0;font-size:9pt}th{background:#1a5f2a;color:#fff;padding:5px 7px;text-align:left;font-size:8pt;text-transform:uppercase}td{padding:4px 7px;border-bottom:1px solid #ddd}tr:nth-child(even){background:#f5f9f6}.kg{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:8px 0}.k{background:#f5f9f6;border:1px solid #c8e0cc;border-radius:6px;padding:8px;text-align:center}.kv{font-size:18pt;font-weight:bold;color:#1a5f2a}.kl{font-size:7pt;color:#666;text-transform:uppercase}.ig{display:grid;grid-template-columns:1fr 1fr;gap:3px 16px;margin:6px 0}.ii{font-size:9pt}.ii b{color:#333}.bo{background:#d4edda;color:#155724;padding:2px 6px;border-radius:10px;font-size:8pt;font-weight:bold}.bw{background:#fff3cd;color:#856404;padding:2px 6px;border-radius:10px;font-size:8pt;font-weight:bold}.conc{border:2px solid #1a5f2a;border-radius:8px;padding:14px;margin-top:16px;background:#f5f9f6}.sig{margin-top:24px;text-align:center}.sl{border-top:1px solid #333;width:280px;margin:32px auto 3px}.ft{margin-top:14px;text-align:center;font-size:7pt;color:#999;border-top:1px solid #ddd;padding-top:6px}.ab{background:#fff3cd;border:1px solid #ffc107;border-radius:6px;padding:8px;margin:6px 0}.nd{color:#999;font-style:italic;font-size:9pt;padding:6px 0}
+</style></head><body>
 
-      csv += "════════════════════════════════════════════════════════════════\n";
-      csv += "7. NÃO CONFORMIDADES E AÇÕES CORRETIVAS\n";
-      csv += "════════════════════════════════════════════════════════════════\n";
-      csv += `Total: ${ncs.length} | Abertas: ${ncAbertas} | Em andamento: ${ncAndamento} | Fechadas: ${ncFechadas}\n`;
-      if (ncs.length > 0) {
-        csv += "Data,Setor,Descrição,Causa,Ação Corretiva,Status\n";
-        ncs.forEach((n: any) => {
-          csv += `${escapeCsv(n.data)},${escapeCsv(n.setor)},${escapeCsv(n.descricao)},${escapeCsv(n.causa)},${escapeCsv(n.acao_corretiva)},${escapeCsv(n.status)}\n`;
-        });
-      }
-      csv += "\n";
+<div class="hdr"><h1>RELAT&Oacute;RIO ANUAL DE AUTOCONTROLE</h1><h2>${esc(emp.nome)} &mdash; Ano ${anualAno}</h2><div class="sub">Programa de Autocontrole (PAC/BPF) &mdash; IN 04/2007 | Decreto 6.296/2007</div><div class="sub">Gerado em ${dataGeracao} pelo Sistema FeedBPF</div></div>
 
-      csv += "════════════════════════════════════════════════════════════════\n";
-      csv += "8. TREINAMENTOS REALIZADOS (POP-03)\n";
-      csv += "════════════════════════════════════════════════════════════════\n";
-      csv += `Total: ${treins.length}\n`;
-      if (treins.length > 0) {
-        csv += "Data,Funcionário,Treinamento,Instrutor,Validade\n";
-        treins.forEach((t: any) => {
-          csv += `${escapeCsv(t.data)},${escapeCsv(t.funcionario)},${escapeCsv(t.treinamento)},${escapeCsv(t.instrutor)},${escapeCsv(t.validade)}\n`;
-        });
-      }
-      csv += "\n";
+<div class="sec"><div class="st"><span class="sn">1</span>Identifica&ccedil;&atilde;o da Empresa</div>
+<div class="ig"><div class="ii"><b>Raz&atilde;o Social:</b> ${esc(emp.nome)||"&mdash;"}</div><div class="ii"><b>CNPJ:</b> ${esc(emp.cnpj)||"&mdash;"}</div><div class="ii"><b>Endere&ccedil;o:</b> ${esc(emp.endereco)||"&mdash;"}</div><div class="ii"><b>Registro MAPA:</b> ${emp.crmv?"SIF vinculado":"&mdash;"}</div><div class="ii"><b>RT:</b> ${esc(anualRtNome||emp.responsavel_tecnico)||"&mdash;"}</div><div class="ii"><b>CRMV:</b> ${esc(anualRtCrmv||emp.crmv)||"&mdash;"}</div><div class="ii"><b>Produ&ccedil;&atilde;o:</b> ${esc((emp.tipo_producao||[]).join(", "))||"&mdash;"}</div><div class="ii"><b>Capacidade:</b> ${esc(emp.capacidade)||"&mdash;"}</div></div></div>
 
-      csv += "════════════════════════════════════════════════════════════════\n";
-      csv += "9. CALIBRAÇÕES DE EQUIPAMENTOS (POP-05)\n";
-      csv += "════════════════════════════════════════════════════════════════\n";
-      csv += `Total de equipamentos: ${calibs.length}\n`;
-      csv += `Com calibração vencida: ${calibsVencidos}\n\n`;
+<div class="sec"><div class="st"><span class="sn">2</span>Resumo Produtivo Anual</div>
+<div class="kg"><div class="k"><div class="kv">${prod.length}</div><div class="kl">Lotes Produzidos</div></div><div class="k"><div class="kv">${Object.keys(prodByProduct).length}</div><div class="kl">Produtos</div></div><div class="k"><div class="kv">${receb.length}</div><div class="kl">Recebimentos MP</div></div></div>
+${Object.keys(prodByProduct).length>0?`<table><thead><tr><th>Produto</th><th>Lotes</th><th>Volume (kg)</th></tr></thead><tbody>${Object.entries(prodByProduct).map(([p,v])=>`<tr><td>${esc(p)}</td><td>${v.lotes}</td><td>${v.qtd.toLocaleString("pt-BR")}</td></tr>`).join("")}</tbody></table>`:'<p class="nd">Sem registros de produ&ccedil;&atilde;o.</p>'}</div>
 
-      csv += "════════════════════════════════════════════════════════════════\n";
-      csv += "10. EXECUÇÃO DE POPs E ITs\n";
-      csv += "════════════════════════════════════════════════════════════════\n";
-      csv += `Total de execuções: ${execs.length}\n`;
-      const execConc = execs.filter((e: any) => e.status === "concluido").length;
-      const execNC = execs.filter((e: any) => e.status === "nao_conforme").length;
-      csv += `Concluídos: ${execConc} | Não conformes: ${execNC} | Outros: ${execs.length - execConc - execNC}\n\n`;
+<div class="sec"><div class="st"><span class="sn">3</span>Controle de Qualidade</div>
+<div class="kg"><div class="k"><div class="kv">${analises.length}</div><div class="kl">An&aacute;lises</div></div><div class="k"><div class="kv">${analConformes}</div><div class="kl">Conformes</div></div><div class="k"><div class="kv" style="color:${analNaoConf>0?'#dc3545':'#1a5f2a'}">${analNaoConf}</div><div class="kl">Fora do Padr&atilde;o</div></div></div>
+${analNaoConf>0?`<div class="ab">&#9888; ${analNaoConf} resultado(s) fora do padr&atilde;o.</div>`:'<p style="color:#1a5f2a;font-size:9pt;">&#10004; Resultados dentro dos padr&otilde;es.</p>'}
+<p style="font-size:9pt;margin-top:6px;"><b>Calibra&ccedil;&otilde;es:</b> ${calibs.length} equipamentos. ${calibs.filter((c:any)=>c.proxima_calibracao&&new Date(c.proxima_calibracao)<new Date()).length>0?`<span class="bw">${calibs.filter((c:any)=>c.proxima_calibracao&&new Date(c.proxima_calibracao)<new Date()).length} vencida(s)</span>`:'<span class="bo">Todas em dia</span>'}</p></div>
 
-      csv += "════════════════════════════════════════════════════════════════\n";
-      csv += "11. PRODUÇÃO ANUAL\n";
-      csv += "════════════════════════════════════════════════════════════════\n";
-      csv += `Total de lotes: ${prod.length}\n`;
-      if (prod.length > 0) {
-        csv += "Data,Produto,Lote,Operador,Quantidade\n";
-        prod.forEach((p: any) => {
-          csv += `${escapeCsv(p.data)},${escapeCsv(p.produto)},${escapeCsv(p.lote)},${escapeCsv(p.operador)},${escapeCsv(p.quantidade)}\n`;
-        });
-      }
-      csv += "\n";
+<div class="pb"></div>
 
-      csv += "╔══════════════════════════════════════════════════════════════════════╗\n";
-      csv += "║  DECLARAÇÃO DE CONFORMIDADE                                        ║\n";
-      csv += "╚══════════════════════════════════════════════════════════════════════╝\n\n";
-      csv += "Declaramos que as atividades descritas neste relatório foram executadas\n";
-      csv += "em conformidade com as Boas Práticas de Fabricação (BPF) estabelecidas\n";
-      csv += "pela IN 04/2007, IN 15/2009, IN 17/2017 e Decreto 12.031/2024.\n\n";
-      if (anualRtNome) {
-        csv += `[ASSINATURA DIGITAL: ${anualRtNome} — CRMV: ${anualRtCrmv} — ${now.toISOString()} — MP 2.200-2/2001]\n\n`;
-      }
-      csv += "════════════════════════════════════════════════════════════════\n";
-      csv += "Referências Normativas:\n";
-      csv += "• IN 04/2007 — Regulamento Técnico sobre BPF para fabricação de ração\n";
-      csv += "• IN 15/2009 — Prevenção de contaminação cruzada / Carry-over\n";
-      csv += "• IN 17/2017, Art. 55 — Relatório Anual de Atividades\n";
-      csv += "• Decreto 12.031/2024 — Fiscalização de estabelecimentos SIF/MAPA\n";
-      csv += "════════════════════════════════════════════════════════════════\n";
+<div class="sec"><div class="st"><span class="sn">4</span>N&atilde;o Conformidades</div>
+<div class="kg"><div class="k"><div class="kv">${ncs.length}</div><div class="kl">Total NCs</div></div><div class="k"><div class="kv" style="color:${ncAbertas>0?'#dc3545':'#1a5f2a'}">${ncAbertas}</div><div class="kl">Abertas</div></div><div class="k"><div class="kv">${ncFechadas}</div><div class="kl">Fechadas</div></div></div>
+${Object.keys(ncBySetor).length>0?`<table><thead><tr><th>Setor</th><th>Qtd</th></tr></thead><tbody>${Object.entries(ncBySetor).sort((a,b)=>b[1]-a[1]).map(([s,q])=>`<tr><td>${esc(s)}</td><td>${q}</td></tr>`).join("")}</tbody></table>`:'<p class="nd">Nenhuma NC. &#10004;</p>'}</div>
 
-      downloadCsv(`Relatorio_Anual_Atividades_${anualAno}.csv`, csv);
-      toast.success(`Relatório Anual de Atividades ${anualAno} gerado com sucesso!`);
+<div class="sec"><div class="st"><span class="sn">5</span>Rastreabilidade</div>
+<div class="kg"><div class="k"><div class="kv">${rast.length}</div><div class="kl">Registros</div></div><div class="k"><div class="kv">${rast.filter((r:any)=>r.data_venda).length}</div><div class="kl">Vendas</div></div><div class="k"><div class="kv">${recallAtivos.length}</div><div class="kl">Recalls</div></div></div>
+<p style="font-size:9pt;">${rast.length>0?"Sistema montante/jusante operacional.":"Sem registros no per&iacute;odo."}</p></div>
+
+<div class="sec"><div class="st"><span class="sn">6</span>Treinamentos</div>
+<div class="kg"><div class="k"><div class="kv">${treins.length}</div><div class="kl">Sess&otilde;es</div></div><div class="k"><div class="kv">${funcionariosTreinados}</div><div class="kl">Colaboradores</div></div><div class="k"><div class="kv">${Object.keys(treinTemas).length}</div><div class="kl">Temas</div></div></div>
+${Object.keys(treinTemas).length>0?`<table><thead><tr><th>Tema</th><th>Sess&otilde;es</th></tr></thead><tbody>${Object.entries(treinTemas).sort((a,b)=>b[1]-a[1]).map(([t,q])=>`<tr><td>${esc(t)}</td><td>${q}</td></tr>`).join("")}</tbody></table>`:'<p class="nd">Sem treinamentos.</p>'}</div>
+
+<div class="sec"><div class="st"><span class="sn">7</span>Auditorias</div>
+<div class="kg"><div class="k"><div class="kv">${checksTotal}</div><div class="kl">Itens Auditados</div></div><div class="k"><div class="kv">${pctConf}%</div><div class="kl">Conformidade</div></div><div class="k"><div class="kv">${execs.length}</div><div class="kl">POPs/ITs</div></div></div>
+<p style="font-size:9pt;"><b>Higieniza&ccedil;&atilde;o:</b> ${limps.length} limpezas (${limps.filter((l:any)=>l.conforme).length} conformes). <b>Pragas:</b> ${pragas.length} ocorr&ecirc;ncia(s).</p></div>
+
+<div class="pb"></div>
+
+<div class="sec"><div class="st"><span class="sn">8</span>Recall e Reclama&ccedil;&otilde;es</div>
+${recallAtivos.length>0?`<div class="ab">&#9888; ${recallAtivos.length} recall(s) ativo(s).</div><table><thead><tr><th>Produto</th><th>Lote</th><th>Motivo</th><th>Status</th></tr></thead><tbody>${recallAtivos.map((r:any)=>`<tr><td>${esc(r.produto)}</td><td>${esc(r.lote_produto)}</td><td>${esc(r.recall_motivo)}</td><td>${esc(r.recall_status)}</td></tr>`).join("")}</tbody></table>`:'<p style="color:#1a5f2a;font-size:9pt;">&#10004; Nenhum recall no per&iacute;odo.</p>'}
+<p style="font-size:9pt;margin-top:6px;"><b>Reclama&ccedil;&otilde;es:</b> ${reclam.length}${reclam.length>0?` (${reclam.filter((r:any)=>r.status==="fechada"||r.status==="concluida").length} conclu&iacute;da(s))`:""}</p></div>
+
+<div class="conc"><div class="st"><span class="sn">9</span>Conclus&atilde;o T&eacute;cnica</div>
+<p style="font-size:10pt;line-height:1.7;text-align:justify;">O presente relat&oacute;rio consolida as atividades de autocontrole da <b>${esc(emp.nome)}</b> durante <b>${anualAno}</b>, conforme BPF (IN 04/2007, Decreto 6.296/2007).</p>
+<p style="font-size:10pt;line-height:1.7;text-align:justify;margin-top:6px;">Foram produzidos <b>${prod.length} lotes</b>, realizadas <b>${analises.length} an&aacute;lises</b>, <b>${treins.length} treinamentos</b> para <b>${funcionariosTreinados} colaborador(es)</b> e tratadas <b>${ncs.length} NC(s)</b>${ncFechadas>0?` (${ncFechadas} encerrada(s))`:""}.${recallAtivos.length===0?" N&atilde;o houve recall.":" Houve "+recallAtivos.length+" recall(s)."}</p>
+<p style="font-size:10pt;line-height:1.7;text-align:justify;margin-top:6px;">Os registros atendem IN 04/2007, IN 15/2009, IN 22/2009 e Decreto 12.031/2024.</p>
+<div class="sig"><div class="sl"></div><p style="font-size:10pt;font-weight:bold;">${esc(anualRtNome||emp.responsavel_tecnico||"Respons&aacute;vel T&eacute;cnico")}</p><p style="font-size:9pt;">CRMV: ${esc(anualRtCrmv||emp.crmv)||"&mdash;"}</p><p style="font-size:8pt;color:#666;margin-top:3px;">[ASSINATURA DIGITAL &mdash; ${now.toISOString()} &mdash; MP 2.200-2/2001]</p></div></div>
+
+<div class="ft"><p>Relat&oacute;rio Anual de Autocontrole &mdash; ${esc(emp.nome)} &mdash; ${anualAno}</p><p>FeedBPF &mdash; ${dataGeracao}</p><p>IN 04/2007 | IN 15/2009 | Decreto 6.296/2007 | Decreto 12.031/2024</p></div>
+</body></html>`;
+
+      const printWindow = window.open("", "_blank");
+      if (!printWindow) { toast.error("Permita pop-ups para gerar o PDF"); setAnualExporting(false); return; }
+      printWindow.document.write(html);
+      printWindow.document.close();
+      setTimeout(() => { printWindow.print(); }, 600);
+      toast.success("Relatório Anual gerado! Use 'Salvar como PDF' na janela de impressão.");
       setAnualOpen(false);
-    } catch {
+    } catch (err) {
+      console.error(err);
       toast.error("Erro ao gerar relatório anual");
     }
     setAnualExporting(false);
@@ -565,20 +500,17 @@ export default function Relatorios() {
                     </div>
                   </div>
                   <div className="p-3 rounded-lg bg-muted/30 border space-y-1">
-                    <p className="text-xs font-semibold flex items-center gap-1"><FileText className="w-3 h-3" /> Seções incluídas:</p>
+                    <p className="text-xs font-semibold flex items-center gap-1"><FileText className="w-3 h-3" /> Seções do PDF:</p>
                     <div className="grid grid-cols-2 gap-x-4 gap-y-0.5 text-[11px] text-muted-foreground">
-                      <span>✓ Resumo Executivo</span>
-                      <span>✓ Qualificação Fornecedores</span>
-                      <span>✓ Recebimento de MP</span>
-                      <span>✓ Higienização (POP-02)</span>
-                      <span>✓ Potabilidade da Água</span>
-                      <span>✓ Controle de Pragas</span>
-                      <span>✓ Não Conformidades</span>
-                      <span>✓ Treinamentos</span>
-                      <span>✓ Calibrações</span>
-                      <span>✓ Execução POPs/ITs</span>
-                      <span>✓ Produção Anual</span>
-                      <span>✓ Declaração de Conformidade</span>
+                      <span>1. Identificação da Empresa</span>
+                      <span>2. Resumo Produtivo Anual</span>
+                      <span>3. Controle de Qualidade</span>
+                      <span>4. Não Conformidades</span>
+                      <span>5. Rastreabilidade</span>
+                      <span>6. Treinamentos</span>
+                      <span>7. Auditorias</span>
+                      <span>8. Recall e Reclamações</span>
+                      <span>9. Conclusão Técnica + Assinatura RT</span>
                     </div>
                   </div>
                   <Button onClick={handleExportAnual} className="w-full" disabled={anualExporting}>
