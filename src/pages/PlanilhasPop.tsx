@@ -133,6 +133,7 @@ export default function PlanilhasPop() {
           userId={user!.id}
           popCodigo={selectedPop.codigo}
           popNome={selectedPop.nome}
+          empresaId={empresaAtiva?.id}
         />
       </>
     );
