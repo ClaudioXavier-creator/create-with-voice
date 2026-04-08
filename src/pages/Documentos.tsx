@@ -16,18 +16,24 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useEmpresa } from "@/hooks/useEmpresa";
 import { toast } from "sonner";
+import { POPS_CONFIG } from "@/config/popsConfig";
 
-const POPS_OBRIGATORIOS = [
-  { codigo: "POP-001", nome: "Qualificação de fornecedores e controle de matérias-primas, ingredientes e de embalagens", modulo: "/recebimento", moduloLabel: "Recebimento MP" },
-  { codigo: "POP-002", nome: "Limpeza, higienização e manutenção de instalações, equipamentos e utensílios", modulo: "/higiene", moduloLabel: "Higiene / Sanitização" },
-  { codigo: "POP-003", nome: "Higiene e saúde do pessoal", modulo: "/treinamentos", moduloLabel: "Treinamentos / RH" },
-  { codigo: "POP-004", nome: "Potabilidade da água e higienização do reservatório", modulo: "/higiene", moduloLabel: "Controle de Água (POP-04)" },
-  { codigo: "POP-005", nome: "Prevenção de contaminação cruzada", modulo: "/pcp", moduloLabel: "PCP / Sequenciamento" },
-  { codigo: "POP-006", nome: "Manejo de resíduos", modulo: "/residuos", moduloLabel: "Resíduos / Efluentes" },
-  { codigo: "POP-007", nome: "Programa de controle integrado de pragas", modulo: "/pragas", moduloLabel: "Controle de Pragas" },
-  { codigo: "POP-008", nome: "Programa de rastreabilidade e recolhimento de produtos (recall)", modulo: "/rastreabilidade", moduloLabel: "Rastreabilidade" },
-  { codigo: "POP-009", nome: "Procedimentos sobre o programa de autocontrole (PAC)", modulo: "/auditoria", moduloLabel: "Auditoria BPF" },
-];
+const POPS_OBRIGATORIOS = POPS_CONFIG.map((p) => {
+  const moduloMap: Record<string, { modulo: string; moduloLabel: string }> = {
+    "POP-01": { modulo: "/recebimento", moduloLabel: "Recebimento MP" },
+    "POP-02": { modulo: "/higiene", moduloLabel: "Higiene / Sanitização" },
+    "POP-03": { modulo: "/saude-pessoal", moduloLabel: "Saúde Pessoal" },
+    "POP-04": { modulo: "/potabilidade-agua", moduloLabel: "Potabilidade da Água" },
+    "POP-05": { modulo: "/pcp", moduloLabel: "PCP / Sequenciamento" },
+    "POP-06": { modulo: "/manutencao", moduloLabel: "Manutenção / Calibração" },
+    "POP-07": { modulo: "/pragas", moduloLabel: "Controle de Pragas" },
+    "POP-08": { modulo: "/residuos", moduloLabel: "Resíduos / Efluentes" },
+    "POP-09": { modulo: "/rastreabilidade", moduloLabel: "Rastreabilidade / Recall" },
+    "POP-10": { modulo: "/auditoria", moduloLabel: "Auditoria BPF (PAC)" },
+  };
+  const link = moduloMap[p.codigo] || { modulo: "/documentos", moduloLabel: "Documentos" };
+  return { codigo: p.codigo, nome: p.descricao, ...link };
+});
 
 
 const TIPOS_EQUIPAMENTO = [
