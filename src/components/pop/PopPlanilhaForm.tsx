@@ -42,17 +42,30 @@ interface Props {
 }
 
 export default function PopPlanilhaForm({ planilhaId, periodicidade, userId, popCodigo, popNome, empresaId }: Props) {
+  const { empresaAtiva } = useEmpresa();
   const [grid, setGrid] = useState<Record<string, CellData>>({});
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [archiving, setArchiving] = useState(false);
   const [planilhaStatus, setPlanilhaStatus] = useState<string>("em_andamento");
+  const [requiredSignatures, setRequiredSignatures] = useState<number>(1);
   const [signatures, setSignatures] = useState<Signatures>({
     executor: "", executorData: null,
     supervisor: "", supervisorData: null,
     rt: "", rtCrmv: "", rtData: null,
   });
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Auto-fill RT name from empresa data in digital mode
+  useEffect(() => {
+    if (empresaAtiva?.responsavel_tecnico && !signatures.rt && !signatures.rtData) {
+      setSignatures((s) => ({
+        ...s,
+        rt: empresaAtiva.responsavel_tecnico || "",
+        rtCrmv: empresaAtiva.crmv || "",
+      }));
+    }
+  }, [empresaAtiva]);
 
   const cellKey = (periodo: string, area: string) => `${periodo}||${area}`;
 
