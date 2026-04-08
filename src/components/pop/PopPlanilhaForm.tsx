@@ -9,9 +9,11 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import type { PopPeriodicidade } from "@/config/popsConfig";
 import * as XLSX from "xlsx";
 import { format } from "date-fns";
+import { useEmpresa } from "@/hooks/useEmpresa";
 
 interface CellData {
   conforme: boolean | null;
@@ -40,17 +42,30 @@ interface Props {
 }
 
 export default function PopPlanilhaForm({ planilhaId, periodicidade, userId, popCodigo, popNome, empresaId }: Props) {
+  const { empresaAtiva } = useEmpresa();
   const [grid, setGrid] = useState<Record<string, CellData>>({});
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [archiving, setArchiving] = useState(false);
   const [planilhaStatus, setPlanilhaStatus] = useState<string>("em_andamento");
+  const [requiredSignatures, setRequiredSignatures] = useState<number>(1);
   const [signatures, setSignatures] = useState<Signatures>({
     executor: "", executorData: null,
     supervisor: "", supervisorData: null,
     rt: "", rtCrmv: "", rtData: null,
   });
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Auto-fill RT name from empresa data in digital mode
+  useEffect(() => {
+    if (empresaAtiva?.responsavel_tecnico && !signatures.rt && !signatures.rtData) {
+      setSignatures((s) => ({
+        ...s,
+        rt: empresaAtiva.responsavel_tecnico || "",
+        rtCrmv: empresaAtiva.crmv || "",
+      }));
+    }
+  }, [empresaAtiva]);
 
   const cellKey = (periodo: string, area: string) => `${periodo}||${area}`;
 
@@ -196,7 +211,8 @@ export default function PopPlanilhaForm({ planilhaId, periodicidade, userId, pop
     setSaving(false);
   }
 
-  const allSigned = !!(signatures.executorData && signatures.supervisorData && signatures.rtData);
+  const signedCount = [signatures.executorData, signatures.supervisorData, signatures.rtData].filter(Boolean).length;
+  const hasEnoughSignatures = signedCount >= requiredSignatures;
   const isArchived = planilhaStatus === "arquivada";
 
   function buildPdfHtml(): string {
@@ -221,9 +237,10 @@ export default function PopPlanilhaForm({ planilhaId, periodicidade, userId, pop
   }
 
   async function archivePlanilha() {
-    if (!allSigned) {
-      toast.error("Todas as assinaturas (Executor, Supervisor e RT) são obrigatórias para arquivar.");
+    if (!hasEnoughSignatures) {
+      toast.error(`São necessárias pelo menos ${requiredSignatures} assinatura(s) para arquivar. Atualmente: ${signedCount}.`);
       return;
+    }
     }
     setArchiving(true);
     try {
@@ -638,9 +655,26 @@ ${signBlock}
       {/* Signature Section */}
       <Card>
         <CardHeader className="pb-3">
-          <CardTitle className="text-sm flex items-center gap-2">
-            <PenLine className="w-4 h-4" /> Assinaturas Digitais
-          </CardTitle>
+          <div className="flex items-center justify-between flex-wrap gap-2">
+            <CardTitle className="text-sm flex items-center gap-2">
+              <PenLine className="w-4 h-4" /> Assinaturas Digitais
+            </CardTitle>
+            {!isArchived && (
+              <div className="flex items-center gap-2">
+                <Label className="text-xs text-muted-foreground whitespace-nowrap">Assinaturas para arquivar:</Label>
+                <Select value={String(requiredSignatures)} onValueChange={(v) => setRequiredSignatures(Number(v))}>
+                  <SelectTrigger className="h-8 w-[60px] text-xs">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="1">1</SelectItem>
+                    <SelectItem value="2">2</SelectItem>
+                    <SelectItem value="3">3</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+          </div>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -652,68 +686,73 @@ ${signBlock}
                 value={signatures.executor}
                 onChange={(e) => setSignatures((s) => ({ ...s, executor: e.target.value }))}
                 className="h-8 text-xs"
-                disabled={!!signatures.executorData}
+                disabled={!!signatures.executorData || isArchived}
               />
               {signatures.executorData ? (
                 <p className="text-xs text-primary font-medium">
                   ✓ Assinado em {formatSignDate(signatures.executorData)}
                 </p>
               ) : (
-                <Button size="sm" variant="outline" className="w-full text-xs" onClick={() => signField("executor")}>
+                <Button size="sm" variant="outline" className="w-full text-xs" onClick={() => signField("executor")} disabled={isArchived}>
                   <PenLine className="w-3 h-3 mr-1" /> Assinar
                 </Button>
               )}
             </div>
 
             {/* Supervisor */}
-            <div className="space-y-2 p-3 border border-border rounded-lg">
+            <div className={cn("space-y-2 p-3 border border-border rounded-lg", requiredSignatures < 2 && !signatures.supervisorData && "opacity-50")}>
               <Label className="text-xs font-semibold text-foreground">Verificador / Supervisor</Label>
               <Input
                 placeholder="Nome completo"
                 value={signatures.supervisor}
                 onChange={(e) => setSignatures((s) => ({ ...s, supervisor: e.target.value }))}
                 className="h-8 text-xs"
-                disabled={!!signatures.supervisorData}
+                disabled={!!signatures.supervisorData || isArchived}
               />
               {signatures.supervisorData ? (
                 <p className="text-xs text-primary font-medium">
                   ✓ Assinado em {formatSignDate(signatures.supervisorData)}
                 </p>
               ) : (
-                <Button size="sm" variant="outline" className="w-full text-xs" onClick={() => signField("supervisor")}>
+                <Button size="sm" variant="outline" className="w-full text-xs" onClick={() => signField("supervisor")} disabled={isArchived}>
                   <PenLine className="w-3 h-3 mr-1" /> Assinar
                 </Button>
               )}
             </div>
 
             {/* RT */}
-            <div className="space-y-2 p-3 border border-border rounded-lg">
+            <div className={cn("space-y-2 p-3 border border-border rounded-lg", requiredSignatures < 3 && !signatures.rtData && "opacity-50")}>
               <Label className="text-xs font-semibold text-foreground">Responsável Técnico (RT)</Label>
               <Input
-                placeholder="Nome completo"
+                placeholder="Nome completo (automático)"
                 value={signatures.rt}
                 onChange={(e) => setSignatures((s) => ({ ...s, rt: e.target.value }))}
                 className="h-8 text-xs"
-                disabled={!!signatures.rtData}
+                disabled={!!signatures.rtData || isArchived}
               />
               <Input
                 placeholder="CRMV"
                 value={signatures.rtCrmv}
                 onChange={(e) => setSignatures((s) => ({ ...s, rtCrmv: e.target.value }))}
                 className="h-8 text-xs"
-                disabled={!!signatures.rtData}
+                disabled={!!signatures.rtData || isArchived}
               />
               {signatures.rtData ? (
                 <p className="text-xs text-primary font-medium">
                   ✓ Assinado em {formatSignDate(signatures.rtData)}
                 </p>
               ) : (
-                <Button size="sm" variant="outline" className="w-full text-xs" onClick={() => signField("rt")}>
+                <Button size="sm" variant="outline" className="w-full text-xs" onClick={() => signField("rt")} disabled={isArchived}>
                   <PenLine className="w-3 h-3 mr-1" /> Assinar
                 </Button>
               )}
             </div>
           </div>
+          {!isArchived && (
+            <p className="text-xs text-muted-foreground mt-3">
+              {signedCount}/{requiredSignatures} assinatura(s) registrada(s) — {hasEnoughSignatures ? "✅ Pronto para arquivar" : "Faltam assinaturas"}
+            </p>
+          )}
         </CardContent>
       </Card>
 
@@ -748,8 +787,8 @@ ${signBlock}
           <Button onClick={saveAll} disabled={saving || isArchived}>
             {saving ? "Salvando..." : "Salvar Registros"}
           </Button>
-          {allSigned && !isArchived && (
-            <Button onClick={archivePlanilha} disabled={archiving} variant="default" className="bg-primary">
+          {!isArchived && (
+            <Button onClick={archivePlanilha} disabled={archiving || !hasEnoughSignatures} variant="default" className="bg-primary">
               <Archive className="w-4 h-4 mr-1" /> {archiving ? "Arquivando..." : "Arquivar Planilha"}
             </Button>
           )}
