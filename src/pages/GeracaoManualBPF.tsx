@@ -105,10 +105,9 @@ export default function GeracaoManualBPF() {
     sections.push(`\n${"=".repeat(60)}`);
     sections.push("PROCEDIMENTOS OPERACIONAIS PADRÃO (POPs)");
     sections.push("=".repeat(60));
-    popsConfig.forEach((pop) => {
+    POPS_CONFIG.forEach((pop) => {
       sections.push(`\n--- ${pop.codigo} — ${pop.nome} ---`);
-      sections.push(`Frequência: ${pop.frequencia}`);
-      sections.push(`Áreas: ${pop.areas.join(", ")}`);
+      sections.push(`Descrição: ${pop.descricao}`);
     });
 
     // Documentos cadastrados
