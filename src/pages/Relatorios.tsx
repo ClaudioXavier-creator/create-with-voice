@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { FileDown, Plus, Upload, Monitor, ScanLine, Eye, Loader2, Download, CheckSquare, CalendarDays, BarChart3, FileText } from "lucide-react";
+import { FileDown, Plus, Upload, Monitor, ScanLine, Eye, Loader2, Download, CheckSquare, CalendarDays, BarChart3, FileText, Printer } from "lucide-react";
+import { gerarRelatorioPDF } from "@/utils/pdfExport";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
@@ -550,10 +551,35 @@ ${recallAtivos.length>0?`<div class="ab">&#9888; ${recallAtivos.length} recall(s
                     </div>
                   ))}
                 </div>
-                <Button onClick={handleExport} className="w-full mt-2" disabled={exporting || selectedModules.length === 0}>
-                  {exporting ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Download className="w-4 h-4 mr-2" />}
-                  Exportar {selectedModules.length > 0 ? `(${selectedModules.length} módulo${selectedModules.length > 1 ? "s" : ""})` : ""}
-                </Button>
+                <div className="flex gap-2 mt-2">
+                  <Button onClick={handleExport} className="flex-1" disabled={exporting || selectedModules.length === 0}>
+                    {exporting ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Download className="w-4 h-4 mr-2" />}
+                    CSV {selectedModules.length > 0 ? `(${selectedModules.length})` : ""}
+                  </Button>
+                  <Button variant="outline" className="flex-1" disabled={exporting || selectedModules.length === 0} onClick={async () => {
+                    if (!user || selectedModules.length === 0) return;
+                    setExporting(true);
+                    try {
+                      for (const key of selectedModules) {
+                        const mod = EXPORT_MODULES.find(m => m.key === key);
+                        if (!mod) continue;
+                        const { data } = await supabase.from(mod.table).select("*").order("created_at", { ascending: false });
+                        const labels = COLUMN_LABELS[mod.key] || {};
+                        const cols = Object.keys(labels);
+                        gerarRelatorioPDF({
+                          title: `Relatório — ${mod.label}`,
+                          subtitle: "Art. 18 do Decreto 12.031/2024",
+                          columns: cols.map(c => ({ header: labels[c], accessor: c })),
+                          data: (data || []) as Record<string, unknown>[],
+                        });
+                      }
+                      toast.success("PDF(s) gerado(s)!");
+                    } catch { toast.error("Erro ao gerar PDF"); }
+                    setExporting(false);
+                  }}>
+                    <Printer className="w-4 h-4 mr-2" /> PDF
+                  </Button>
+                </div>
               </DialogContent>
             </Dialog>
             <Dialog open={open} onOpenChange={setOpen}>
