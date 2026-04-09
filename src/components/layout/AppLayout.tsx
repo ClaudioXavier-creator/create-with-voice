@@ -117,7 +117,20 @@ const NAV_ENTRIES: NavEntry[] = [
 
 function AdminLink({ currentPath, onNavigate }: { currentPath: string; onNavigate?: () => void }) {
   const { user } = useAuth();
-  if (user?.email !== ADMIN_EMAIL) return null;
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    if (!user) return;
+    supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", user.id)
+      .eq("role", "admin")
+      .maybeSingle()
+      .then(({ data }) => setIsAdmin(!!data));
+  }, [user]);
+
+  if (!isAdmin) return null;
   const isActive = currentPath === "/admin-licencas";
   return (
     <div className="px-3 pt-2">
