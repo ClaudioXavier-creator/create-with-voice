@@ -41,7 +41,6 @@ const NAV_ENTRIES: NavEntry[] = [
     icon: FileText,
     items: [
       { path: "/documentos", label: "Documentos / POPs", icon: FileText },
-      { path: "/documentos-bpf", label: "Arquivo BPF (Scan)", icon: FileText },
       { path: "/execucao-pops", label: "Execução ITs/POPs", icon: PlayCircle },
       { path: "/planilhas-pop", label: "Planilhas de POPs", icon: ClipboardCheck },
       { path: "/manual", label: "Manual BPF", icon: BookOpen },
