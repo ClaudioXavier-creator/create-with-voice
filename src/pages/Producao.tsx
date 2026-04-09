@@ -103,6 +103,11 @@ export default function Producao() {
       contraprova_local: cpLocal,
       contraprova_validade: cpVal,
       contraprova_quantidade: cpQtd,
+      // Campos de flush persistidos no DB — IN 15/2009
+      flush_realizado: realizouFlush,
+      flush_tipo: realizouFlush ? tipoLimpeza : "",
+      flush_volume: realizouFlush ? volumeFlush : "",
+      flush_produto_anterior: realizouFlush ? produtoAnterior : "",
     } as any);
     if (error) toast.error("Erro ao salvar");
     else {

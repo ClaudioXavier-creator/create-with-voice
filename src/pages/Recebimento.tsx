@@ -182,6 +182,12 @@ export default function Recebimento() {
       contraprova_local: cpLocal,
       contraprova_validade: cpVal,
       contraprova_quantidade: cpQtd,
+      // Campos persistidos no DB — IN 15/2009 & IN 04/2007
+      registro_mapa_produto: registroMapaIsento ? "ISENTO" : (registroMapaProduto || ""),
+      registro_mapa_isento: registroMapaIsento,
+      temperatura_veiculo: temperaturaVeiculo || "",
+      integridade_carga: integridadeCarga !== "comprometida",
+      integridade_observacoes: integridadeCarga === "comprometida" ? "Carga comprometida — NC obrigatória" : (integridadeCarga === "parcial" ? "Parcialmente comprometida" : ""),
     } as any);
     if (error) toast.error("Erro: " + error.message);
     else {
