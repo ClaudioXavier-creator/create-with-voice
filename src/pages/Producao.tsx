@@ -46,6 +46,14 @@ export default function Producao() {
   const [destinoSobra, setDestinoSobra] = useState("reprocesso");
   const [obsSobra, setObsSobra] = useState("");
 
+  // Flush / Limpeza entre lotes — IN 15/2009
+  const [realizouFlush, setRealizouFlush] = useState(false);
+  const [tipoLimpeza, setTipoLimpeza] = useState("flush_inerte");
+  const [volumeFlush, setVolumeFlush] = useState("");
+  const [produtoAnterior, setProdutoAnterior] = useState("");
+  const [prodAnteriorMedicado, setProdAnteriorMedicado] = useState(false);
+  const [obsFlush, setObsFlush] = useState("");
+
   const fetchData = async () => {
     if (!user) return;
     const { data } = await supabase.from("producao").select("*").order("data", { ascending: false });
