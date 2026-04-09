@@ -841,7 +841,96 @@ export default function Rastreabilidade() {
         </CardContent></Card>
       </div>
 
-      {/* ══════════ MELHORIA 3: ÁRVORE VISUAL DE RASTREABILIDADE ══════════ */}
+      {/* ══════════ SEGREGAÇÃO DIGITAL — QUARENTENA E LOTES RETIDOS ══════════ */}
+      <Card className="mb-6 border-yellow-500/30 bg-yellow-50/30 dark:bg-yellow-900/5">
+        <CardHeader className="pb-2">
+          <CardTitle className="font-display text-sm flex items-center gap-2 text-yellow-700 dark:text-yellow-400">
+            <ShieldAlert className="w-5 h-5" /> Segregação Digital — Quarentena e Lotes Retidos
+          </CardTitle>
+          <p className="text-xs text-muted-foreground">Controle de lotes em quarentena, retidos ou aguardando análise conforme IN 15/2009 e Decreto 12.031/2024.</p>
+        </CardHeader>
+        <CardContent>
+          {(() => {
+            const lotesQuarentena = registros.filter(r =>
+              r.recall_status === "quarentena" || r.recall_status === "retido" || r.recall_status === "aguardando_analise"
+            );
+            const lotesUnicos = Array.from(new Set(lotesQuarentena.map(r => r.lote_produto).filter(Boolean)));
+
+            if (lotesUnicos.length === 0) {
+              return (
+                <div className="text-center py-4 text-xs text-muted-foreground">
+                  <p>Nenhum lote em quarentena ou retido. Use a tabela de registros para marcar lotes.</p>
+                  <p className="mt-1">Opções: <strong>Quarentena</strong> | <strong>Retido</strong> | <strong>Aguardando Análise</strong></p>
+                </div>
+              );
+            }
+
+            return (
+              <div className="space-y-2">
+                <div className="grid grid-cols-3 gap-3 mb-3">
+                  <div className="text-center p-2 rounded-lg bg-yellow-100 dark:bg-yellow-900/20 border border-yellow-300">
+                    <p className="text-xl font-bold text-yellow-700">{lotesQuarentena.filter(r => r.recall_status === "quarentena").length}</p>
+                    <p className="text-[10px] text-muted-foreground">Em Quarentena</p>
+                  </div>
+                  <div className="text-center p-2 rounded-lg bg-orange-100 dark:bg-orange-900/20 border border-orange-300">
+                    <p className="text-xl font-bold text-orange-700">{lotesQuarentena.filter(r => r.recall_status === "retido").length}</p>
+                    <p className="text-[10px] text-muted-foreground">Retidos</p>
+                  </div>
+                  <div className="text-center p-2 rounded-lg bg-blue-100 dark:bg-blue-900/20 border border-blue-300">
+                    <p className="text-xl font-bold text-blue-700">{lotesQuarentena.filter(r => r.recall_status === "aguardando_analise").length}</p>
+                    <p className="text-[10px] text-muted-foreground">Aguard. Análise</p>
+                  </div>
+                </div>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Produto</TableHead>
+                      <TableHead>Lote</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead>Ação</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {lotesUnicos.map(lote => {
+                      const rec = lotesQuarentena.find(r => r.lote_produto === lote)!;
+                      return (
+                        <TableRow key={lote}>
+                          <TableCell>{rec.produto}</TableCell>
+                          <TableCell className="font-mono">{lote}</TableCell>
+                          <TableCell>
+                            <Badge variant="outline" className={
+                              rec.recall_status === "quarentena" ? "border-yellow-500 text-yellow-700" :
+                              rec.recall_status === "retido" ? "border-orange-500 text-orange-700" :
+                              "border-blue-500 text-blue-700"
+                            }>
+                              {rec.recall_status === "quarentena" ? "🔒 Quarentena" :
+                               rec.recall_status === "retido" ? "⛔ Retido" : "🔬 Aguard. Análise"}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>
+                            <Button size="sm" variant="outline" className="text-xs h-7" onClick={async () => {
+                              const { error } = await supabase.from("rastreabilidade").update({ recall_status: "liberado" } as any).eq("lote_produto", lote);
+                              if (error) toast.error("Erro ao liberar");
+                              else { toast.success(`Lote ${lote} liberado!`); fetchData(); }
+                            }}>
+                              ✅ Liberar
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+              </div>
+            );
+          })()}
+          <div className="mt-3 p-2 rounded bg-muted/30 text-[10px] text-muted-foreground space-y-1">
+            <p><strong>📋 Para segregar um lote:</strong> Na tabela de registros, use o botão de <em>Recall</em> e selecione o status "Quarentena", "Retido" ou "Aguardando Análise".</p>
+            <p><strong>IN 15/2009, Art. 12:</strong> Produtos não conformes devem ser segregados e identificados até decisão final (reprocesso, descarte ou recall).</p>
+          </div>
+        </CardContent>
+      </Card>
+
       <Card className="mb-6 border-accent/20">
         <CardHeader className="flex flex-row items-center justify-between">
           <div>
@@ -1631,6 +1720,9 @@ export default function Rastreabilidade() {
                   <SelectContent>
                     <SelectItem value="iniciado">Iniciado</SelectItem>
                     <SelectItem value="em_andamento">Em andamento</SelectItem>
+                    <SelectItem value="quarentena">🔒 Quarentena (Segregação)</SelectItem>
+                    <SelectItem value="retido">⛔ Retido (Produto Não Conforme)</SelectItem>
+                    <SelectItem value="aguardando_analise">🔬 Aguardando Análise</SelectItem>
                     <SelectItem value="concluido">Concluído / Encerrado</SelectItem>
                   </SelectContent>
                 </Select>

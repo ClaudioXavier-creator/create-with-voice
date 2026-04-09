@@ -357,10 +357,17 @@ export default function ManutencaoPreventiva() {
                         <SelectTrigger><SelectValue /></SelectTrigger>
                         <SelectContent>
                           <SelectItem value="balanca">Balança</SelectItem>
+                          <SelectItem value="balanca_precisao">Balança de Precisão (Microingredientes)</SelectItem>
                           <SelectItem value="termometro">Termômetro</SelectItem>
                           <SelectItem value="higrometro">Higrômetro</SelectItem>
                           <SelectItem value="manometro">Manômetro</SelectItem>
                           <SelectItem value="phmetro">pHmetro</SelectItem>
+                          <SelectItem value="exaustor">Exaustor / Ventilador</SelectItem>
+                          <SelectItem value="moinho">Moinho</SelectItem>
+                          <SelectItem value="peneira">Peneira / Classificador</SelectItem>
+                          <SelectItem value="dosador">Dosador</SelectItem>
+                          <SelectItem value="peletizadora">Peletizadora</SelectItem>
+                          <SelectItem value="misturador">Misturador</SelectItem>
                           <SelectItem value="outro">Outro</SelectItem>
                         </SelectContent>
                       </Select>

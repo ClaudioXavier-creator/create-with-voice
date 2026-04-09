@@ -86,6 +86,11 @@ export default function Recebimento() {
   const [lacreIntegro, setLacreIntegro] = useState("");
   const [condicoesTransporte, setCondicoesTransporte] = useState("");
 
+  // Temperatura do Veículo e Integridade da Carga — IN 04/2007 (Origem Animal)
+  const [temperaturaVeiculo, setTemperaturaVeiculo] = useState("");
+  const [integridadeCarga, setIntegridadeCarga] = useState("");
+  const [cargaOrigemAnimal, setCargaOrigemAnimal] = useState(false);
+
   const fetchData = async () => {
     if (!user) return;
     const { data, error } = await supabase
@@ -106,6 +111,7 @@ export default function Recebimento() {
     setVistoriaVeiculo({}); setPlacaVeiculo(""); setLacreNumero(""); setLacreIntegro(""); setCondicoesTransporte("");
     setContemOrigemAnimal(false); setTipoOrigemAnimal(""); setDestinoEspecie("");
     setRegistroMapaProduto(""); setRegistroMapaIsento(false);
+    setTemperaturaVeiculo(""); setIntegridadeCarga(""); setCargaOrigemAnimal(false);
   };
 
   const handleAdd = async () => {
@@ -125,6 +131,12 @@ export default function Recebimento() {
       const transporteInfo = `Condições Transporte: ${condicoesTransporte === "adequado" ? "Adequado" : condicoesTransporte === "parcial" ? "Parcialmente adequado ⚠️" : condicoesTransporte === "inadequado" ? "INADEQUADO ⚠️" : "N/I"}`;
       const vistoriaObs = `[VISTORIA VEÍCULO — POP-01 / IN 15/2009]\nPlaca: ${placaVeiculo || "N/I"}\n${lacreInfo}\n${transporteInfo}\n${checkItems}${naoConformes > 0 ? `\n⚠️ ${naoConformes} item(ns) não conforme(s)` : "\n✅ Veículo aprovado"}`;
       obsCompleta = vistoriaObs + (observacoes ? `\n\n${observacoes}` : "");
+    }
+
+    // Temperatura do Veículo e Integridade da Carga — IN 04/2007
+    if (cargaOrigemAnimal || temperaturaVeiculo || integridadeCarga) {
+      const tempVeicObs = `[INSPEÇÃO CARGA ORIGEM ANIMAL — IN 04/2007]\nTemperatura do veículo: ${temperaturaVeiculo ? temperaturaVeiculo + " °C" : "N/I"}\nIntegridade da carga: ${integridadeCarga === "integra" ? "Íntegra" : integridadeCarga === "parcial" ? "Parcialmente comprometida ⚠️" : integridadeCarga === "comprometida" ? "COMPROMETIDA ❌" : "N/I"}${cargaOrigemAnimal ? "\n⚠️ Produto de ORIGEM ANIMAL — verificação obrigatória" : ""}`;
+      obsCompleta = (obsCompleta ? obsCompleta + "\n\n" : "") + tempVeicObs;
     }
 
     // Registro MAPA do Produto — IN 15/2009
@@ -374,7 +386,45 @@ export default function Recebimento() {
                      </div>
                    </div>
 
-                   {/* Registro do Produto no MAPA — IN 15/2009 */}
+                   {/* Temperatura do Veículo e Integridade da Carga — IN 04/2007 */}
+                   <div className="p-3 rounded-lg border border-amber-400 bg-amber-50 dark:bg-amber-900/10 space-y-3">
+                     <p className="text-sm font-semibold flex items-center gap-2 text-amber-700 dark:text-amber-400">
+                       🌡️ Temperatura do Veículo e Integridade da Carga — IN 04/2007
+                     </p>
+                     <p className="text-[10px] text-muted-foreground">
+                       Para produtos de origem animal, registre a temperatura do baú/carroceria e avalie a integridade da carga na descarga.
+                     </p>
+                     <div className="flex items-center gap-2 mb-2">
+                       <input type="checkbox" checked={cargaOrigemAnimal} onChange={e => setCargaOrigemAnimal(e.target.checked)} className="h-4 w-4" />
+                       <Label className="text-sm">Produto de origem animal (verificação obrigatória)</Label>
+                     </div>
+                     <div className="grid grid-cols-2 gap-3">
+                       <div>
+                         <Label>Temperatura do Veículo (°C)</Label>
+                         <Input value={temperaturaVeiculo} onChange={e => setTemperaturaVeiculo(e.target.value)} placeholder="Ex: 5.2" type="number" step="0.1" />
+                         {cargaOrigemAnimal && temperaturaVeiculo && parseFloat(temperaturaVeiculo) > 10 && (
+                           <p className="text-xs text-destructive mt-1">⚠️ Temperatura acima do recomendado para produtos de origem animal (&le; 10°C)</p>
+                         )}
+                       </div>
+                       <div>
+                         <Label>Integridade da Carga</Label>
+                         <Select value={integridadeCarga} onValueChange={setIntegridadeCarga}>
+                           <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
+                           <SelectContent>
+                             <SelectItem value="integra">✅ Íntegra — embalagens intactas</SelectItem>
+                             <SelectItem value="parcial">⚠️ Parcialmente comprometida</SelectItem>
+                             <SelectItem value="comprometida">❌ Comprometida — avarias visíveis</SelectItem>
+                           </SelectContent>
+                         </Select>
+                       </div>
+                     </div>
+                     {(integridadeCarga === "comprometida" || (cargaOrigemAnimal && temperaturaVeiculo && parseFloat(temperaturaVeiculo) > 10)) && (
+                       <div className="p-2 rounded border border-destructive/30 bg-destructive/10">
+                         <p className="text-xs text-destructive font-semibold">⚠️ Atenção: Considerar rejeição da carga. Registrar não conformidade (IN 04/2007).</p>
+                       </div>
+                     )}
+                   </div>
+
                    <div className="p-3 rounded-lg border bg-muted/20 space-y-3">
                      <p className="text-sm font-semibold flex items-center gap-2">
                        <FileText className="w-4 h-4" /> Registro do Produto no MAPA — IN 15/2009
