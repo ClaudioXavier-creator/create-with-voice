@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import {
   LayoutDashboard, AlertTriangle, ClipboardCheck, GraduationCap, CheckCircle2,
   CalendarDays, Bell, Wrench, FileText, Droplets, Search, ShieldCheck,
-  ArrowRight, Timer
+  ArrowRight, Timer, BarChart
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
