@@ -24,7 +24,7 @@ interface ManualData {
 
 export default function GeracaoManualBPF() {
   const { user } = useAuth();
-  const { empresaSelecionada } = useEmpresa();
+  const { empresaAtiva } = useEmpresa();
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [manualData, setManualData] = useState<ManualData | null>(null);
