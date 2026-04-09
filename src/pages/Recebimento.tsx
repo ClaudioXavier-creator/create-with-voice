@@ -86,6 +86,11 @@ export default function Recebimento() {
   const [lacreIntegro, setLacreIntegro] = useState("");
   const [condicoesTransporte, setCondicoesTransporte] = useState("");
 
+  // Temperatura do Veículo e Integridade da Carga — IN 04/2007 (Origem Animal)
+  const [temperaturaVeiculo, setTemperaturaVeiculo] = useState("");
+  const [integridadeCarga, setIntegridadeCarga] = useState("");
+  const [cargaOrigemAnimal, setCargaOrigemAnimal] = useState(false);
+
   const fetchData = async () => {
     if (!user) return;
     const { data, error } = await supabase
