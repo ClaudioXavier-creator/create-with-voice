@@ -53,6 +53,9 @@ import AuditsBPFPage from "./pages/AuditsBPFPage";
 import AgroGestaoCRMPage from "./pages/AgroGestaoCRMPage";
 import AdminLicencas from "./pages/AdminLicencas";
 import DocumentosBPF from "./pages/DocumentosBPF";
+import ChecklistPreAuditoria from "./pages/ChecklistPreAuditoria";
+import SimulacaoRecall from "./pages/SimulacaoRecall";
+import BuscaGlobal from "./pages/BuscaGlobal";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -163,6 +166,9 @@ const AppRoutes = () => {
                   <Route path="/visitantes" element={<ControleVisitantes />} />
                   <Route path="/modelos" element={<Modelos />} />
                   <Route path="/documentos-bpf" element={<DocumentosBPF />} />
+                  <Route path="/checklist-pre-auditoria" element={<ChecklistPreAuditoria />} />
+                  <Route path="/simulacao-recall" element={<SimulacaoRecall />} />
+                  <Route path="/busca-global" element={<BuscaGlobal />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </AppLayout>

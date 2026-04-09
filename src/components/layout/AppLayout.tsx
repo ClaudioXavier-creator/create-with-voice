@@ -4,7 +4,7 @@ import {
   LayoutDashboard, Building2, FileText, ClipboardCheck, AlertTriangle,
   Package, Factory, Search, Bug, GraduationCap, BarChart3, Menu, X, LogOut,
   PlayCircle, FileDown, Scale, Users, ChevronDown, Wrench, Settings, BookOpen, FlaskConical,
-  Droplets, Recycle, ShieldAlert, ShieldCheck, CalendarDays, ClipboardList, Warehouse, Truck
+  Droplets, Recycle, ShieldAlert, ShieldCheck, CalendarDays, ClipboardList, Warehouse, Truck, Timer
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -89,6 +89,9 @@ const NAV_ENTRIES: NavEntry[] = [
       { path: "/relatorios", label: "Relatórios", icon: FileDown },
       { path: "/legislacao", label: "Legislação & IA", icon: Scale },
       { path: "/sala-auditor", label: "Sala do Auditor", icon: ClipboardCheck },
+      { path: "/checklist-pre-auditoria", label: "Checklist Pré-Auditoria", icon: ShieldCheck },
+      { path: "/simulacao-recall", label: "Simulação Recall", icon: Timer },
+      { path: "/busca-global", label: "Busca Global", icon: Search },
     ],
   },
   { path: "/manual", label: "Manual", icon: BookOpen },
