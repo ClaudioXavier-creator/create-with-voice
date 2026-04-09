@@ -56,6 +56,7 @@ import DocumentosBPF from "./pages/DocumentosBPF";
 import ChecklistPreAuditoria from "./pages/ChecklistPreAuditoria";
 import SimulacaoRecall from "./pages/SimulacaoRecall";
 import BuscaGlobal from "./pages/BuscaGlobal";
+import ModoTablet from "./pages/ModoTablet";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
