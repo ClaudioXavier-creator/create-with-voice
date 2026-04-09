@@ -82,15 +82,15 @@ export default function Index() {
         return r;
       };
       const [ncsRes, ncsFullRes, checklistRes, checklistDatesRes, treinamentosRes, recentNcsRes, planejamentoRes, calibracoesRes, documentosRes] = await Promise.all([
-        supabase.from("nao_conformidades").select("status").eq("user_id", user!.id),
-        supabase.from("nao_conformidades").select("data, status").eq("user_id", user!.id),
-        supabase.from("checklist_items").select("area, conforme").eq("user_id", user!.id),
-        supabase.from("checklist_items").select("auditoria_data, conforme").eq("user_id", user!.id),
-        supabase.from("treinamentos").select("funcionario, treinamento, validade").eq("user_id", user!.id),
-        supabase.from("nao_conformidades").select("setor, descricao, status").eq("user_id", user!.id).order("data", { ascending: false }).limit(5),
-        supabase.from("planejamento_anual").select("atividade, proxima_execucao, categoria").eq("user_id", user!.id).not("proxima_execucao", "is", null),
-        supabase.from("calibracoes").select("equipamento, proxima_calibracao, status").eq("user_id", user!.id),
-        supabase.from("documentos").select("nome, codigo, proxima_revisao, validade_revisao, status").eq("user_id", user!.id),
+        addEmpresa(supabase.from("nao_conformidades").select("status")),
+        addEmpresa(supabase.from("nao_conformidades").select("data, status")),
+        addEmpresa(supabase.from("checklist_items").select("area, conforme")),
+        addEmpresa(supabase.from("checklist_items").select("auditoria_data, conforme")),
+        addEmpresa(supabase.from("treinamentos").select("funcionario, treinamento, validade")),
+        addEmpresa(supabase.from("nao_conformidades").select("setor, descricao, status")).order("data", { ascending: false }).limit(5),
+        addEmpresa(supabase.from("planejamento_anual").select("atividade, proxima_execucao, categoria")).not("proxima_execucao", "is", null),
+        addEmpresa(supabase.from("calibracoes").select("equipamento, proxima_calibracao, status")),
+        addEmpresa(supabase.from("documentos").select("nome, codigo, proxima_revisao, validade_revisao, status")),
       ]);
 
       const ncs = ncsRes.data || [];
