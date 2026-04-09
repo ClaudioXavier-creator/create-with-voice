@@ -34,7 +34,7 @@ const statusColors: Record<string, string> = {
 
 export default function AnaliseTendencias() {
   const { user } = useAuth();
-  const { empresaSelecionada } = useEmpresa();
+  const { empresaAtiva } = useEmpresa();
   const [analise, setAnalise] = useState<Analise | null>(null);
   const [loading, setLoading] = useState(false);
 
