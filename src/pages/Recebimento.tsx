@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Package, Plus, CheckCircle2, XCircle, Loader2, Search, FileText, Download, Truck, AlertTriangle, ShieldAlert } from "lucide-react";
+import FileUploadComponent from "@/components/FileUpload";
 import { registrarAuditLog } from "@/utils/auditLog";
 import { gerarHashIntegridade, adicionarRodapeIntegridade } from "@/utils/integridade";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -322,26 +323,17 @@ export default function Recebimento() {
                    <div className="p-3 rounded-lg border bg-muted/20 space-y-3">
                      <p className="text-sm font-semibold flex items-center gap-2"><FileText className="w-4 h-4" /> Laudo de Conformidade do Fornecedor (Art. 12 — Decreto 12.031/2024)</p>
                      <div className="grid grid-cols-2 gap-3">
-                       <div><Label>Nº do Certificado / Laudo</Label><Input value={certNumero} onChange={e => setCertNumero(e.target.value)} placeholder="Ex: CA-2026-0321" /></div>
+                     <div><Label>Nº do Certificado / Laudo</Label><Input value={certNumero} onChange={e => setCertNumero(e.target.value)} placeholder="Ex: CA-2026-0321" /></div>
                        <div><Label>URL / Link do Laudo</Label><Input value={certUrl} onChange={e => setCertUrl(e.target.value)} placeholder="https://..." /></div>
                      </div>
                      <div>
                        <Label>Anexar Laudo (PDF, imagem)</Label>
-                       <Input type="file" accept=".pdf,.jpg,.jpeg,.png" onChange={async (e) => {
-                         const file = e.target.files?.[0];
-                         if (!file || !user) return;
-                         const filePath = `${user.id}/laudos/${Date.now()}_${file.name}`;
-                         const { error: uploadErr } = await supabase.storage.from("documentos_bpf").upload(filePath, file);
-                         if (uploadErr) { toast.error("Erro no upload: " + uploadErr.message); return; }
-                         const { data: urlData } = supabase.storage.from("documentos_bpf").getPublicUrl(filePath);
-                         setCertUrl(urlData.publicUrl);
-                         toast.success("Laudo anexado com sucesso!");
-                       }} />
-                       {certUrl && certUrl.startsWith("http") && (
-                         <a href={certUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-primary underline mt-1 inline-block">
-                           📎 Ver laudo anexado
-                         </a>
-                       )}
+                       <FileUploadComponent
+                         folder="laudos"
+                         label="Enviar Laudo"
+                         currentUrl={certUrl || null}
+                         onUploadComplete={(url) => { setCertUrl(url); toast.success("Laudo anexado!"); }}
+                       />
                      </div>
                      <div className="flex items-center gap-3">
                        <Switch checked={certValido === true} onCheckedChange={(v) => setCertValido(v ? true : false)} />
