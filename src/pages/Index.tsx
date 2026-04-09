@@ -1,14 +1,22 @@
 import { useEffect, useState } from "react";
-import { LayoutDashboard, AlertTriangle, ClipboardCheck, GraduationCap, CheckCircle2, CalendarDays, Bell } from "lucide-react";
+import {
+  LayoutDashboard, AlertTriangle, ClipboardCheck, GraduationCap, CheckCircle2,
+  CalendarDays, Bell, Wrench, FileText, Droplets, Search, ShieldCheck,
+  ArrowRight, Timer
+} from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
 import PageHeader from "@/components/PageHeader";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { Link } from "react-router-dom";
-import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts";
+import {
+  LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid,
+  Tooltip, ResponsiveContainer, Legend
+} from "recharts";
 import { differenceInDays, parseISO, format } from "date-fns";
 
 const statusColors: Record<string, string> = {
@@ -23,16 +31,16 @@ const statusLabels: Record<string, string> = {
   fechada: "Fechada",
 };
 
-interface NCPorMes {
-  mes: string;
-  abertas: number;
-  fechadas: number;
+interface AlertItem {
+  tipo: "calibracao" | "treinamento" | "documento" | "aso" | "planejamento";
+  descricao: string;
+  vencimento: string;
+  diasRestantes: number;
+  link: string;
 }
 
-interface ConformidadePorMes {
-  mes: string;
-  percentual: number;
-}
+interface NCPorMes { mes: string; abertas: number; fechadas: number }
+interface ConformidadePorMes { mes: string; percentual: number }
 
 interface DashboardData {
   ncAbertas: number;
@@ -43,44 +51,37 @@ interface DashboardData {
   conformidadePorArea: { area: string; pct: number }[];
   ncPorMes: NCPorMes[];
   conformidadePorMes: ConformidadePorMes[];
+  alertasVencimento: AlertItem[];
   atividadesVencidas: { atividade: string; proxima_execucao: string; categoria: string }[];
   atividadesProximas: { atividade: string; proxima_execucao: string; categoria: string; dias: number }[];
+  calibracoesVencidas: number;
+  docsVencidos: number;
   loading: boolean;
 }
 
 export default function Index() {
   const { user } = useAuth();
   const [data, setData] = useState<DashboardData>({
-    ncAbertas: 0,
-    auditoriasRealizadas: 0,
-    treinamentosPendentes: 0,
-    conformidadeBPF: 0,
-    recentNCs: [],
-    conformidadePorArea: [],
-    ncPorMes: [],
-    conformidadePorMes: [],
-    atividadesVencidas: [],
-    atividadesProximas: [],
-    loading: true,
+    ncAbertas: 0, auditoriasRealizadas: 0, treinamentosPendentes: 0, conformidadeBPF: 0,
+    recentNCs: [], conformidadePorArea: [], ncPorMes: [], conformidadePorMes: [],
+    alertasVencimento: [], atividadesVencidas: [], atividadesProximas: [],
+    calibracoesVencidas: 0, docsVencidos: 0, loading: true,
   });
 
   useEffect(() => {
     if (!user) return;
 
     async function fetchDashboard() {
-      const [ncsRes, ncsFullRes, checklistRes, checklistDatesRes, treinamentosRes, recentNcsRes, planejamentoRes] = await Promise.all([
+      const [ncsRes, ncsFullRes, checklistRes, checklistDatesRes, treinamentosRes, recentNcsRes, planejamentoRes, calibracoesRes, documentosRes] = await Promise.all([
         supabase.from("nao_conformidades").select("status").eq("user_id", user!.id),
         supabase.from("nao_conformidades").select("data, status").eq("user_id", user!.id),
         supabase.from("checklist_items").select("area, conforme").eq("user_id", user!.id),
         supabase.from("checklist_items").select("auditoria_data, conforme").eq("user_id", user!.id),
-        supabase.from("treinamentos").select("validade").eq("user_id", user!.id),
-        supabase
-          .from("nao_conformidades")
-          .select("setor, descricao, status")
-          .eq("user_id", user!.id)
-          .order("data", { ascending: false })
-          .limit(5),
+        supabase.from("treinamentos").select("funcionario, treinamento, validade").eq("user_id", user!.id),
+        supabase.from("nao_conformidades").select("setor, descricao, status").eq("user_id", user!.id).order("data", { ascending: false }).limit(5),
         supabase.from("planejamento_anual").select("atividade, proxima_execucao, categoria").eq("user_id", user!.id).not("proxima_execucao", "is", null),
+        supabase.from("calibracoes").select("equipamento, proxima_calibracao, status").eq("user_id", user!.id),
+        supabase.from("documentos").select("nome, codigo, proxima_revisao, validade_revisao, status").eq("user_id", user!.id),
       ]);
 
       const ncs = ncsRes.data || [];
@@ -89,28 +90,82 @@ export default function Index() {
       const checklistDates = checklistDatesRes.data || [];
       const treinamentos = treinamentosRes.data || [];
       const recentNCs = (recentNcsRes.data || []).map((nc) => ({
-        setor: nc.setor,
-        descricao: nc.descricao,
-        status: nc.status || "aberta",
+        setor: nc.setor, descricao: nc.descricao, status: nc.status || "aberta",
       }));
 
-      // NCs abertas
       const ncAbertas = ncs.filter((nc) => nc.status === "aberta" || nc.status === "em_andamento").length;
 
-      // Auditorias = datas únicas de checklist
       const auditoriasRealizadas = new Set(
         checklistDates.map((c) => c.auditoria_data).filter(Boolean)
       ).size;
 
-      // Treinamentos pendentes
       const hoje = new Date();
       const em30dias = new Date();
       em30dias.setDate(hoje.getDate() + 30);
-      const treinamentosPendentes = treinamentos.filter((t) => {
+
+      // ---- ALERTAS DE VENCIMENTO UNIFICADOS ----
+      const alertas: AlertItem[] = [];
+
+      // Treinamentos
+      const treinamentosPendentes = treinamentos.filter((t: any) => {
         if (!t.validade) return true;
         const validade = new Date(t.validade);
         return validade <= em30dias;
       }).length;
+
+      treinamentos.forEach((t: any) => {
+        if (!t.validade) return;
+        const dias = differenceInDays(parseISO(t.validade), hoje);
+        if (dias <= 30) {
+          alertas.push({
+            tipo: "treinamento",
+            descricao: `${t.treinamento} — ${t.funcionario}`,
+            vencimento: t.validade,
+            diasRestantes: dias,
+            link: "/treinamentos",
+          });
+        }
+      });
+
+      // Calibrações
+      const calibracoes = calibracoesRes.data || [];
+      let calibracoesVencidas = 0;
+      calibracoes.forEach((c: any) => {
+        if (!c.proxima_calibracao) return;
+        const dias = differenceInDays(parseISO(c.proxima_calibracao), hoje);
+        if (dias <= 30) {
+          if (dias < 0) calibracoesVencidas++;
+          alertas.push({
+            tipo: "calibracao",
+            descricao: `${c.equipamento}`,
+            vencimento: c.proxima_calibracao,
+            diasRestantes: dias,
+            link: "/manutencao",
+          });
+        }
+      });
+
+      // Documentos (revisões)
+      const documentos = documentosRes.data || [];
+      let docsVencidos = 0;
+      documentos.forEach((d: any) => {
+        const dataRef = d.proxima_revisao || d.validade_revisao;
+        if (!dataRef) return;
+        const dias = differenceInDays(parseISO(dataRef), hoje);
+        if (dias <= 30) {
+          if (dias < 0) docsVencidos++;
+          alertas.push({
+            tipo: "documento",
+            descricao: `${d.codigo} — ${d.nome}`,
+            vencimento: dataRef,
+            diasRestantes: dias,
+            link: "/documentos",
+          });
+        }
+      });
+
+      // Sort by urgency
+      alertas.sort((a, b) => a.diasRestantes - b.diasRestantes);
 
       // Conformidade por área
       const areaMap = new Map<string, { total: number; conformes: number }>();
@@ -125,12 +180,11 @@ export default function Index() {
         pct: total > 0 ? Math.round((conformes / total) * 100) : 0,
       }));
 
-      // Conformidade BPF geral
       const totalChecklist = checklist.length;
       const totalConformes = checklist.filter((c) => c.conforme === true).length;
       const conformidadeBPF = totalChecklist > 0 ? Math.round((totalConformes / totalChecklist) * 100) : 0;
 
-      // --- Gráfico: NCs por mês (últimos 6 meses) ---
+      // NCs por mês
       const mesesNomes = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
       const ncMesMap = new Map<string, { abertas: number; fechadas: number }>();
       for (let i = 5; i >= 0; i--) {
@@ -152,7 +206,7 @@ export default function Index() {
         return { mes: mesesNomes[parseInt(m) - 1], abertas: val.abertas, fechadas: val.fechadas };
       });
 
-      // --- Gráfico: Conformidade por mês (baseado em auditoria_data) ---
+      // Conformidade por mês
       const confMesMap = new Map<string, { total: number; conformes: number }>();
       for (let i = 5; i >= 0; i--) {
         const d = new Date();
@@ -170,38 +224,24 @@ export default function Index() {
       });
       const conformidadePorMes: ConformidadePorMes[] = Array.from(confMesMap.entries()).map(([key, val]) => {
         const [, m] = key.split("-");
-        return {
-          mes: mesesNomes[parseInt(m) - 1],
-          percentual: val.total > 0 ? Math.round((val.conformes / val.total) * 100) : 0,
-        };
+        return { mes: mesesNomes[parseInt(m) - 1], percentual: val.total > 0 ? Math.round((val.conformes / val.total) * 100) : 0 };
       });
 
-      // --- Planejamento Anual: vencidas e próximas ---
-      const planejamento = ((planejamentoRes.data || []) as any[]);
+      // Planejamento
+      const planejamento = (planejamentoRes.data || []) as any[];
       const now = new Date();
       const atividadesVencidas = planejamento
         .filter(p => p.proxima_execucao && differenceInDays(parseISO(p.proxima_execucao), now) < 0)
         .map(p => ({ atividade: p.atividade, proxima_execucao: p.proxima_execucao, categoria: p.categoria }));
       const atividadesProximas = planejamento
-        .filter(p => {
-          if (!p.proxima_execucao) return false;
-          const dias = differenceInDays(parseISO(p.proxima_execucao), now);
-          return dias >= 0 && dias <= 7;
-        })
+        .filter(p => { if (!p.proxima_execucao) return false; const dias = differenceInDays(parseISO(p.proxima_execucao), now); return dias >= 0 && dias <= 7; })
         .map(p => ({ atividade: p.atividade, proxima_execucao: p.proxima_execucao, categoria: p.categoria, dias: differenceInDays(parseISO(p.proxima_execucao), now) }));
 
       setData({
-        ncAbertas,
-        auditoriasRealizadas,
-        treinamentosPendentes,
-        conformidadeBPF,
-        recentNCs,
-        conformidadePorArea,
-        ncPorMes,
-        conformidadePorMes,
-        atividadesVencidas,
-        atividadesProximas,
-        loading: false,
+        ncAbertas, auditoriasRealizadas, treinamentosPendentes, conformidadeBPF,
+        recentNCs, conformidadePorArea, ncPorMes, conformidadePorMes,
+        alertasVencimento: alertas, atividadesVencidas, atividadesProximas,
+        calibracoesVencidas, docsVencidos, loading: false,
       });
     }
 
@@ -209,11 +249,29 @@ export default function Index() {
   }, [user]);
 
   const stats = [
-    { label: "Conformidade BPF", value: data.loading ? "..." : `${data.conformidadeBPF}%`, icon: CheckCircle2, color: "text-success" },
-    { label: "NCs Abertas", value: data.loading ? "..." : `${data.ncAbertas}`, icon: AlertTriangle, color: "text-warning" },
-    { label: "Auditorias Realizadas", value: data.loading ? "..." : `${data.auditoriasRealizadas}`, icon: ClipboardCheck, color: "text-info" },
-    { label: "Treinamentos Pendentes", value: data.loading ? "..." : `${data.treinamentosPendentes}`, icon: GraduationCap, color: "text-destructive" },
+    { label: "Conformidade BPF", value: data.loading ? "..." : `${data.conformidadeBPF}%`, icon: CheckCircle2, color: "text-primary", link: "/auditoria" },
+    { label: "NCs Abertas", value: data.loading ? "..." : `${data.ncAbertas}`, icon: AlertTriangle, color: "text-destructive", link: "/nao-conformidades" },
+    { label: "Auditorias Realizadas", value: data.loading ? "..." : `${data.auditoriasRealizadas}`, icon: ClipboardCheck, color: "text-blue-500", link: "/auditoria" },
+    { label: "Treinamentos Pendentes", value: data.loading ? "..." : `${data.treinamentosPendentes}`, icon: GraduationCap, color: "text-orange-500", link: "/treinamentos" },
+    { label: "Calibrações Vencidas", value: data.loading ? "..." : `${data.calibracoesVencidas}`, icon: Wrench, color: "text-red-500", link: "/manutencao" },
+    { label: "Docs p/ Revisão", value: data.loading ? "..." : `${data.docsVencidos}`, icon: FileText, color: "text-yellow-600", link: "/documentos" },
   ];
+
+  const alertaIconMap: Record<string, React.ElementType> = {
+    calibracao: Wrench,
+    treinamento: GraduationCap,
+    documento: FileText,
+    aso: Droplets,
+    planejamento: CalendarDays,
+  };
+
+  const alertaTipoLabel: Record<string, string> = {
+    calibracao: "Calibração",
+    treinamento: "Treinamento",
+    documento: "Documento",
+    aso: "ASO",
+    planejamento: "Planejamento",
+  };
 
   return (
     <>
@@ -265,21 +323,82 @@ export default function Index() {
         </div>
       )}
 
-      {/* Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      {/* Stats Cards — Clicáveis */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 mb-6">
         {stats.map((s) => (
-          <Card key={s.label} className="border border-border">
-            <CardContent className="flex items-center gap-4 pt-6">
-              <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-muted">
-                <s.icon className={`w-6 h-6 ${s.color}`} />
-              </div>
-              <div>
-                <p className="text-2xl font-bold font-display">{s.value}</p>
-                <p className="text-sm text-muted-foreground">{s.label}</p>
-              </div>
-            </CardContent>
-          </Card>
+          <Link key={s.label} to={s.link}>
+            <Card className="border border-border hover:border-primary/40 hover:shadow-md transition-all cursor-pointer group">
+              <CardContent className="flex flex-col items-center gap-2 pt-4 pb-3 px-3">
+                <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-muted group-hover:bg-primary/10 transition-colors">
+                  <s.icon className={`w-5 h-5 ${s.color}`} />
+                </div>
+                <p className="text-xl font-bold font-display">{s.value}</p>
+                <p className="text-xs text-muted-foreground text-center leading-tight">{s.label}</p>
+              </CardContent>
+            </Card>
+          </Link>
         ))}
+      </div>
+
+      {/* Painel de Alertas de Vencimento */}
+      {!data.loading && data.alertasVencimento.length > 0 && (
+        <Card className="mb-6 border-orange-400/50 bg-orange-50/30 dark:bg-orange-950/10">
+          <CardHeader className="pb-2">
+            <CardTitle className="font-display text-base flex items-center gap-2">
+              <Bell className="w-4 h-4 text-orange-500" />
+              Central de Alertas de Vencimento ({data.alertasVencimento.length})
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="divide-y divide-border max-h-64 overflow-y-auto">
+              {data.alertasVencimento.slice(0, 10).map((alerta, i) => {
+                const Icon = alertaIconMap[alerta.tipo] || Bell;
+                const isVencido = alerta.diasRestantes < 0;
+                return (
+                  <Link key={i} to={alerta.link} className="flex items-center gap-3 py-2 hover:bg-muted/50 rounded px-2 -mx-2 transition-colors">
+                    <Icon className={`w-4 h-4 shrink-0 ${isVencido ? "text-destructive" : "text-yellow-600"}`} />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium truncate">{alerta.descricao}</p>
+                      <p className="text-xs text-muted-foreground">{alertaTipoLabel[alerta.tipo]}</p>
+                    </div>
+                    <Badge variant={isVencido ? "destructive" : "secondary"} className="text-xs shrink-0">
+                      {isVencido ? `Vencido ${Math.abs(alerta.diasRestantes)}d` : alerta.diasRestantes === 0 ? "Hoje" : `${alerta.diasRestantes}d`}
+                    </Badge>
+                    <ArrowRight className="w-3 h-3 text-muted-foreground shrink-0" />
+                  </Link>
+                );
+              })}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Atalhos Rápidos */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+        <Link to="/checklist-pre-auditoria">
+          <Button variant="outline" className="w-full h-auto py-3 flex flex-col items-center gap-1.5">
+            <ShieldCheck className="w-5 h-5 text-primary" />
+            <span className="text-xs font-medium">Checklist Pré-Auditoria</span>
+          </Button>
+        </Link>
+        <Link to="/simulacao-recall">
+          <Button variant="outline" className="w-full h-auto py-3 flex flex-col items-center gap-1.5">
+            <Timer className="w-5 h-5 text-orange-500" />
+            <span className="text-xs font-medium">Simular Recall</span>
+          </Button>
+        </Link>
+        <Link to="/busca-global">
+          <Button variant="outline" className="w-full h-auto py-3 flex flex-col items-center gap-1.5">
+            <Search className="w-5 h-5 text-blue-500" />
+            <span className="text-xs font-medium">Busca Global</span>
+          </Button>
+        </Link>
+        <Link to="/qualidade-total">
+          <Button variant="outline" className="w-full h-auto py-3 flex flex-col items-center gap-1.5">
+            <BarChart3 className="w-5 h-5 text-emerald-500" />
+            <span className="text-xs font-medium">Relatório Anual</span>
+          </Button>
+        </Link>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -291,13 +410,13 @@ export default function Index() {
           <CardContent className="space-y-4">
             {data.loading ? (
               Array.from({ length: 4 }).map((_, i) => (
-                <div key={i} className="space-y-2">
-                  <Skeleton className="h-4 w-3/4" />
-                  <Skeleton className="h-2 w-full" />
-                </div>
+                <div key={i} className="space-y-2"><Skeleton className="h-4 w-3/4" /><Skeleton className="h-2 w-full" /></div>
               ))
             ) : data.conformidadePorArea.length === 0 ? (
-              <p className="text-sm text-muted-foreground">Nenhum dado de auditoria encontrado. Realize uma auditoria para ver a conformidade por área.</p>
+              <div className="text-center py-6">
+                <p className="text-sm text-muted-foreground mb-2">Nenhum dado de auditoria encontrado.</p>
+                <Link to="/auditoria"><Button size="sm">Realizar Auditoria</Button></Link>
+              </div>
             ) : (
               data.conformidadePorArea.map((item) => (
                 <div key={item.area}>
@@ -314,25 +433,24 @@ export default function Index() {
 
         {/* NCs Recentes */}
         <Card>
-          <CardHeader>
+          <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle className="font-display text-lg">Não Conformidades Recentes</CardTitle>
+            <Link to="/nao-conformidades"><Button variant="ghost" size="sm" className="text-xs">Ver todas <ArrowRight className="w-3 h-3 ml-1" /></Button></Link>
           </CardHeader>
           <CardContent className="space-y-3">
             {data.loading ? (
-              Array.from({ length: 3 }).map((_, i) => (
-                <Skeleton key={i} className="h-14 w-full" />
-              ))
+              Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-14 w-full" />)
             ) : data.recentNCs.length === 0 ? (
-              <p className="text-sm text-muted-foreground">Nenhuma não conformidade registrada ainda.</p>
+              <p className="text-sm text-muted-foreground">Nenhuma não conformidade registrada.</p>
             ) : (
               data.recentNCs.map((nc, i) => (
-                <div key={i} className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
+                <Link key={i} to="/nao-conformidades" className="flex items-center justify-between p-3 rounded-lg bg-muted/50 hover:bg-muted transition-colors">
                   <div>
                     <p className="font-medium text-sm">{nc.descricao}</p>
                     <p className="text-xs text-muted-foreground">{nc.setor}</p>
                   </div>
                   <Badge className={statusColors[nc.status] || ""}>{statusLabels[nc.status] || nc.status}</Badge>
-                </div>
+                </Link>
               ))
             )}
           </CardContent>
@@ -341,15 +459,10 @@ export default function Index() {
 
       {/* Gráficos */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
-        {/* Evolução de NCs */}
         <Card>
-          <CardHeader>
-            <CardTitle className="font-display text-lg">Evolução de NCs (últimos 6 meses)</CardTitle>
-          </CardHeader>
+          <CardHeader><CardTitle className="font-display text-lg">Evolução de NCs (últimos 6 meses)</CardTitle></CardHeader>
           <CardContent>
-            {data.loading ? (
-              <Skeleton className="h-64 w-full" />
-            ) : (
+            {data.loading ? <Skeleton className="h-64 w-full" /> : (
               <ResponsiveContainer width="100%" height={260}>
                 <BarChart data={data.ncPorMes}>
                   <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
@@ -365,15 +478,10 @@ export default function Index() {
           </CardContent>
         </Card>
 
-        {/* Conformidade ao longo do tempo */}
         <Card>
-          <CardHeader>
-            <CardTitle className="font-display text-lg">Conformidade BPF (últimos 6 meses)</CardTitle>
-          </CardHeader>
+          <CardHeader><CardTitle className="font-display text-lg">Conformidade BPF (últimos 6 meses)</CardTitle></CardHeader>
           <CardContent>
-            {data.loading ? (
-              <Skeleton className="h-64 w-full" />
-            ) : (
+            {data.loading ? <Skeleton className="h-64 w-full" /> : (
               <ResponsiveContainer width="100%" height={260}>
                 <LineChart data={data.conformidadePorMes}>
                   <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
