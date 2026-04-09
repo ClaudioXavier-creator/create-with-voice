@@ -76,9 +76,10 @@ export default function Producao() {
     }
     setSaving(true);
     
-    const obsCompleta = houveSobra 
-      ? `[SOBRA/VASSOURA] Qtd: ${qtdSobra || "N/I"} kg | Destino: ${destinoSobra === "reprocesso" ? "Reprocesso" : destinoSobra === "descarte" ? "Descarte (resíduo)" : destinoSobra === "devolucao" ? "Devolução ao silo" : "Outro"} | ${obsSobra}`.trim()
-      : "";
+    const obsCompleta = [
+      houveSobra ? `[SOBRA/VASSOURA] Qtd: ${qtdSobra || "N/I"} kg | Destino: ${destinoSobra === "reprocesso" ? "Reprocesso" : destinoSobra === "descarte" ? "Descarte (resíduo)" : destinoSobra === "devolucao" ? "Devolução ao silo" : "Outro"} | ${obsSobra}` : "",
+      realizouFlush ? `[FLUSH/LIMPEZA ENTRE LOTES — IN 15/2009] Tipo: ${tipoLimpeza === "flush_inerte" ? "Flushing c/ inerte" : tipoLimpeza === "limpeza_fisica" ? "Limpeza física (varrição)" : tipoLimpeza === "aspiracao" ? "Aspiração" : "Outro"} | Volume: ${volumeFlush || "N/I"} kg | Prod. anterior: ${produtoAnterior || "N/I"} | Medicado: ${prodAnteriorMedicado ? "SIM ⚠️" : "Não"} | ${obsFlush}` : "",
+    ].filter(Boolean).join("\n\n").trim();
     
     // Contraprova
     const cpQtd = (document.getElementById("prod-cp-qtd") as HTMLInputElement)?.value || "";
