@@ -60,6 +60,10 @@ export default function Recebimento() {
   const [certValido, setCertValido] = useState<boolean | null>(null);
   const [observacoes, setObservacoes] = useState("");
 
+  // Registro do Produto no MAPA — IN 15/2009
+  const [registroMapaProduto, setRegistroMapaProduto] = useState("");
+  const [registroMapaIsento, setRegistroMapaIsento] = useState(false);
+
   // Segregação de Origem Animal — IN 15/2009
   const [contemOrigemAnimal, setContemOrigemAnimal] = useState(false);
   const [tipoOrigemAnimal, setTipoOrigemAnimal] = useState("");
@@ -101,6 +105,7 @@ export default function Recebimento() {
     setCertUrl(""); setCertValido(null); setObservacoes("");
     setVistoriaVeiculo({}); setPlacaVeiculo(""); setLacreNumero(""); setLacreIntegro(""); setCondicoesTransporte("");
     setContemOrigemAnimal(false); setTipoOrigemAnimal(""); setDestinoEspecie("");
+    setRegistroMapaProduto(""); setRegistroMapaIsento(false);
   };
 
   const handleAdd = async () => {
@@ -120,6 +125,12 @@ export default function Recebimento() {
       const transporteInfo = `Condições Transporte: ${condicoesTransporte === "adequado" ? "Adequado" : condicoesTransporte === "parcial" ? "Parcialmente adequado ⚠️" : condicoesTransporte === "inadequado" ? "INADEQUADO ⚠️" : "N/I"}`;
       const vistoriaObs = `[VISTORIA VEÍCULO — POP-01 / IN 15/2009]\nPlaca: ${placaVeiculo || "N/I"}\n${lacreInfo}\n${transporteInfo}\n${checkItems}${naoConformes > 0 ? `\n⚠️ ${naoConformes} item(ns) não conforme(s)` : "\n✅ Veículo aprovado"}`;
       obsCompleta = vistoriaObs + (observacoes ? `\n\n${observacoes}` : "");
+    }
+
+    // Registro MAPA do Produto — IN 15/2009
+    if (registroMapaProduto || registroMapaIsento) {
+      const regObs = `[REGISTRO MAPA DO PRODUTO — IN 15/2009]\n${registroMapaIsento ? "Produto ISENTO de registro no MAPA" : `Nº Registro: ${registroMapaProduto}`}`;
+      obsCompleta = (obsCompleta ? obsCompleta + "\n\n" : "") + regObs;
     }
 
     // Segregação Origem Animal
@@ -361,6 +372,26 @@ export default function Recebimento() {
                          </div>
                        ))}
                      </div>
+                   </div>
+
+                   {/* Registro do Produto no MAPA — IN 15/2009 */}
+                   <div className="p-3 rounded-lg border bg-muted/20 space-y-3">
+                     <p className="text-sm font-semibold flex items-center gap-2">
+                       <FileText className="w-4 h-4" /> Registro do Produto no MAPA — IN 15/2009
+                     </p>
+                     <p className="text-[10px] text-muted-foreground">
+                       Exigido para ingredientes de alimentação animal. Informe o nº de registro ou marque como isento.
+                     </p>
+                     <div className="flex items-center gap-2">
+                       <input type="checkbox" checked={registroMapaIsento} onChange={e => { setRegistroMapaIsento(e.target.checked); if (e.target.checked) setRegistroMapaProduto(""); }} className="h-4 w-4" />
+                       <Label className="text-sm">Produto isento de registro no MAPA</Label>
+                     </div>
+                     {!registroMapaIsento && (
+                       <div>
+                         <Label>Nº Registro do Produto no MAPA</Label>
+                         <Input value={registroMapaProduto} onChange={e => setRegistroMapaProduto(e.target.value)} placeholder="Ex: BR 1234567890" />
+                       </div>
+                     )}
                    </div>
 
                    {/* Segregação Origem Animal — IN 15/2009 */}
