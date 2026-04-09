@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import PageHeader from "@/components/PageHeader";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { useEmpresa } from "@/hooks/useEmpresa";
 import { Link } from "react-router-dom";
 import { useOnboarding, OnboardingOverlay } from "@/components/OnboardingTour";
 import {
@@ -62,6 +63,7 @@ interface DashboardData {
 
 export default function Index() {
   const { user } = useAuth();
+  const { empresaAtiva } = useEmpresa();
   const { showOnboarding, fecharTour } = useOnboarding();
   const [data, setData] = useState<DashboardData>({
     ncAbertas: 0, auditoriasRealizadas: 0, treinamentosPendentes: 0, conformidadeBPF: 0,
@@ -74,16 +76,21 @@ export default function Index() {
     if (!user) return;
 
     async function fetchDashboard() {
+      const addEmpresa = (q: any) => {
+        let r = q.eq("user_id", user!.id);
+        if (empresaAtiva) r = r.eq("empresa_id", empresaAtiva.id);
+        return r;
+      };
       const [ncsRes, ncsFullRes, checklistRes, checklistDatesRes, treinamentosRes, recentNcsRes, planejamentoRes, calibracoesRes, documentosRes] = await Promise.all([
-        supabase.from("nao_conformidades").select("status").eq("user_id", user!.id),
-        supabase.from("nao_conformidades").select("data, status").eq("user_id", user!.id),
-        supabase.from("checklist_items").select("area, conforme").eq("user_id", user!.id),
-        supabase.from("checklist_items").select("auditoria_data, conforme").eq("user_id", user!.id),
-        supabase.from("treinamentos").select("funcionario, treinamento, validade").eq("user_id", user!.id),
-        supabase.from("nao_conformidades").select("setor, descricao, status").eq("user_id", user!.id).order("data", { ascending: false }).limit(5),
-        supabase.from("planejamento_anual").select("atividade, proxima_execucao, categoria").eq("user_id", user!.id).not("proxima_execucao", "is", null),
-        supabase.from("calibracoes").select("equipamento, proxima_calibracao, status").eq("user_id", user!.id),
-        supabase.from("documentos").select("nome, codigo, proxima_revisao, validade_revisao, status").eq("user_id", user!.id),
+        addEmpresa(supabase.from("nao_conformidades").select("status")),
+        addEmpresa(supabase.from("nao_conformidades").select("data, status")),
+        addEmpresa(supabase.from("checklist_items").select("area, conforme")),
+        addEmpresa(supabase.from("checklist_items").select("auditoria_data, conforme")),
+        addEmpresa(supabase.from("treinamentos").select("funcionario, treinamento, validade")),
+        addEmpresa(supabase.from("nao_conformidades").select("setor, descricao, status")).order("data", { ascending: false }).limit(5),
+        addEmpresa(supabase.from("planejamento_anual").select("atividade, proxima_execucao, categoria")).not("proxima_execucao", "is", null),
+        addEmpresa(supabase.from("calibracoes").select("equipamento, proxima_calibracao, status")),
+        addEmpresa(supabase.from("documentos").select("nome, codigo, proxima_revisao, validade_revisao, status")),
       ]);
 
       const ncs = ncsRes.data || [];
@@ -248,15 +255,15 @@ export default function Index() {
     }
 
     fetchDashboard();
-  }, [user]);
+  }, [user, empresaAtiva]);
 
   const stats = [
     { label: "Conformidade BPF", value: data.loading ? "..." : `${data.conformidadeBPF}%`, icon: CheckCircle2, color: "text-primary", link: "/auditoria" },
     { label: "NCs Abertas", value: data.loading ? "..." : `${data.ncAbertas}`, icon: AlertTriangle, color: "text-destructive", link: "/nao-conformidades" },
-    { label: "Auditorias Realizadas", value: data.loading ? "..." : `${data.auditoriasRealizadas}`, icon: ClipboardCheck, color: "text-blue-500", link: "/auditoria" },
-    { label: "Treinamentos Pendentes", value: data.loading ? "..." : `${data.treinamentosPendentes}`, icon: GraduationCap, color: "text-orange-500", link: "/treinamentos" },
-    { label: "Calibrações Vencidas", value: data.loading ? "..." : `${data.calibracoesVencidas}`, icon: Wrench, color: "text-red-500", link: "/manutencao" },
-    { label: "Docs p/ Revisão", value: data.loading ? "..." : `${data.docsVencidos}`, icon: FileText, color: "text-yellow-600", link: "/documentos" },
+    { label: "Auditorias Realizadas", value: data.loading ? "..." : `${data.auditoriasRealizadas}`, icon: ClipboardCheck, color: "text-accent-foreground", link: "/auditoria" },
+    { label: "Treinamentos Pendentes", value: data.loading ? "..." : `${data.treinamentosPendentes}`, icon: GraduationCap, color: "text-warning-foreground", link: "/treinamentos" },
+    { label: "Calibrações Vencidas", value: data.loading ? "..." : `${data.calibracoesVencidas}`, icon: Wrench, color: "text-destructive", link: "/manutencao" },
+    { label: "Docs p/ Revisão", value: data.loading ? "..." : `${data.docsVencidos}`, icon: FileText, color: "text-muted-foreground", link: "/documentos" },
   ];
 
   const alertaIconMap: Record<string, React.ElementType> = {
@@ -303,11 +310,11 @@ export default function Index() {
             </Card>
           )}
           {data.atividadesProximas.length > 0 && (
-            <Card className="border-yellow-500 bg-yellow-500/5">
+            <Card className="border-warning bg-warning/5">
               <CardContent className="flex items-start gap-3 p-4">
-                <Bell className="h-5 w-5 text-yellow-600 mt-0.5 shrink-0" />
+                <Bell className="h-5 w-5 text-warning-foreground mt-0.5 shrink-0" />
                 <div className="flex-1">
-                  <p className="font-semibold text-yellow-700 text-sm">
+                  <p className="font-semibold text-warning-foreground text-sm">
                     {data.atividadesProximas.length} atividade(s) vencem nos próximos 7 dias
                   </p>
                   <ul className="mt-1 space-y-0.5">
@@ -344,10 +351,10 @@ export default function Index() {
 
       {/* Painel de Alertas de Vencimento */}
       {!data.loading && data.alertasVencimento.length > 0 && (
-        <Card className="mb-6 border-orange-400/50 bg-orange-50/30 dark:bg-orange-950/10">
+        <Card className="mb-6 border-warning/50 bg-warning/5">
           <CardHeader className="pb-2">
             <CardTitle className="font-display text-base flex items-center gap-2">
-              <Bell className="w-4 h-4 text-orange-500" />
+              <Bell className="w-4 h-4 text-warning-foreground" />
               Central de Alertas de Vencimento ({data.alertasVencimento.length})
             </CardTitle>
           </CardHeader>
@@ -385,19 +392,19 @@ export default function Index() {
         </Link>
         <Link to="/simulacao-recall">
           <Button variant="outline" className="w-full h-auto py-3 flex flex-col items-center gap-1.5">
-            <Timer className="w-5 h-5 text-orange-500" />
+            <Timer className="w-5 h-5 text-destructive" />
             <span className="text-xs font-medium">Simular Recall</span>
           </Button>
         </Link>
         <Link to="/busca-global">
           <Button variant="outline" className="w-full h-auto py-3 flex flex-col items-center gap-1.5">
-            <Search className="w-5 h-5 text-blue-500" />
+            <Search className="w-5 h-5 text-primary" />
             <span className="text-xs font-medium">Busca Global</span>
           </Button>
         </Link>
         <Link to="/qualidade-total">
           <Button variant="outline" className="w-full h-auto py-3 flex flex-col items-center gap-1.5">
-            <BarChartIcon className="w-5 h-5 text-emerald-500" />
+            <BarChartIcon className="w-5 h-5 text-primary" />
             <span className="text-xs font-medium">Relatório Anual</span>
           </Button>
         </Link>
