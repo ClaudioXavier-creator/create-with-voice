@@ -53,6 +53,9 @@ import AuditsBPFPage from "./pages/AuditsBPFPage";
 import AgroGestaoCRMPage from "./pages/AgroGestaoCRMPage";
 import AdminLicencas from "./pages/AdminLicencas";
 import DocumentosBPF from "./pages/DocumentosBPF";
+import ChecklistPreAuditoria from "./pages/ChecklistPreAuditoria";
+import SimulacaoRecall from "./pages/SimulacaoRecall";
+import BuscaGlobal from "./pages/BuscaGlobal";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
