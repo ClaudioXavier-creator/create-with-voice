@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import PageHeader from "@/components/PageHeader";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { useEmpresa } from "@/hooks/useEmpresa";
 import { Link } from "react-router-dom";
 import { useOnboarding, OnboardingOverlay } from "@/components/OnboardingTour";
 import {
