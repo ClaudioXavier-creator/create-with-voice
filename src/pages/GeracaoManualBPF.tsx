@@ -94,11 +94,11 @@ export default function GeracaoManualBPF() {
     sections.push("");
 
     // Manual content sections
-    manualBpfContent.forEach((section) => {
+    MANUAL_BPF_SECTIONS.forEach((section) => {
       sections.push(`\n${"=".repeat(60)}`);
-      sections.push(section.titulo.toUpperCase());
+      sections.push(`${section.numero}. ${section.titulo.toUpperCase()}`);
       sections.push("=".repeat(60));
-      sections.push(section.conteudo);
+      sections.push(section.conteudo.join("\n"));
     });
 
     // POPs
