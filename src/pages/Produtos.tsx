@@ -86,12 +86,16 @@ export default function Produtos() {
           <TabsList className="mb-4">
             <TabsTrigger value="rotulo"><Tag className="w-4 h-4 mr-1" /> Rótulo IN 22</TabsTrigger>
             <TabsTrigger value="ficha"><FileText className="w-4 h-4 mr-1" /> Ficha Técnica</TabsTrigger>
+            <TabsTrigger value="rtpi"><ClipboardList className="w-4 h-4 mr-1" /> RTPI</TabsTrigger>
           </TabsList>
           <TabsContent value="rotulo">
             <RotuloEditor produtoId={selectedProduto.id} produtoNome={selectedProduto.nome} />
           </TabsContent>
           <TabsContent value="ficha">
             <FichaTecnica produtoId={selectedProduto.id} />
+          </TabsContent>
+          <TabsContent value="rtpi">
+            <RTPIEditor produtoId={selectedProduto.id} />
           </TabsContent>
         </Tabs>
       </>
