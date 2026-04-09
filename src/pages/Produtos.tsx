@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Package, Plus, Loader2, Edit, Tag, FileText, Trash2 } from "lucide-react";
+import { Package, Plus, Loader2, Edit, Tag, FileText, Trash2, ClipboardList } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
@@ -12,6 +12,7 @@ import { toast } from "sonner";
 import ProdutoForm from "@/components/produtos/ProdutoForm";
 import RotuloEditor from "@/components/produtos/RotuloEditor";
 import FichaTecnica from "@/components/produtos/FichaTecnica";
+import RTPIEditor from "@/components/produtos/RTPIEditor";
 
 const CLASSIFICACAO_LABELS: Record<string, string> = {
   racao: "Ração",
