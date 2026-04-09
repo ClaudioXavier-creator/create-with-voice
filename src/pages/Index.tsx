@@ -310,11 +310,11 @@ export default function Index() {
             </Card>
           )}
           {data.atividadesProximas.length > 0 && (
-            <Card className="border-yellow-500 bg-yellow-500/5">
+            <Card className="border-warning bg-warning/5">
               <CardContent className="flex items-start gap-3 p-4">
-                <Bell className="h-5 w-5 text-yellow-600 mt-0.5 shrink-0" />
+                <Bell className="h-5 w-5 text-warning-foreground mt-0.5 shrink-0" />
                 <div className="flex-1">
-                  <p className="font-semibold text-yellow-700 text-sm">
+                  <p className="font-semibold text-warning-foreground text-sm">
                     {data.atividadesProximas.length} atividade(s) vencem nos próximos 7 dias
                   </p>
                   <ul className="mt-1 space-y-0.5">
