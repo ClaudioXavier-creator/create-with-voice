@@ -37,27 +37,30 @@ const NAV_ENTRIES: NavEntry[] = [
   { path: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { path: "/cadastro", label: "Cadastro", icon: Building2 },
   {
-    label: "Qualidade",
-    icon: ClipboardCheck,
+    label: "Documentação",
+    icon: FileText,
     items: [
       { path: "/documentos", label: "Documentos / POPs", icon: FileText },
       { path: "/documentos-bpf", label: "Arquivo BPF (Scan)", icon: FileText },
       { path: "/execucao-pops", label: "Execução ITs/POPs", icon: PlayCircle },
+      { path: "/planilhas-pop", label: "Planilhas de POPs", icon: ClipboardCheck },
+      { path: "/manual", label: "Manual BPF", icon: BookOpen },
+      { path: "/guia-pops", label: "Guia POPs & ITs", icon: ClipboardList },
+    ],
+  },
+  {
+    label: "Qualidade",
+    icon: ClipboardCheck,
+    items: [
       { path: "/auditoria", label: "Auditoria BPF", icon: ClipboardCheck },
       { path: "/nao-conformidades", label: "Não Conformidades", icon: AlertTriangle },
-      { path: "/planilhas-pop", label: "Planilhas de POPs", icon: ClipboardCheck },
       { path: "/analises", label: "Análises Laboratoriais", icon: FlaskConical },
       { path: "/higiene", label: "Higiene / Sanitização", icon: Droplets },
-      { path: "/manutencao", label: "Manutenção Preventiva", icon: Wrench },
-      { path: "/residuos", label: "Resíduos / Efluentes", icon: Recycle },
       { path: "/substancias", label: "Substâncias Proibidas", icon: ShieldAlert },
       { path: "/validacao-limpeza", label: "Validação Limpeza", icon: ShieldCheck },
-      { path: "/armazenamento-transporte", label: "Armaz. & Transporte", icon: Truck },
       { path: "/potabilidade-agua", label: "Potabilidade da Água", icon: Droplets },
-      { path: "/saude-pessoal", label: "Saúde do Pessoal", icon: Users },
       { path: "/matriz-risco", label: "Matriz de Risco", icon: AlertTriangle },
-      { path: "/planejamento-anual", label: "Planejamento Anual", icon: CalendarDays },
-      { path: "/qualidade-total", label: "Qualidade Total-rel", icon: ClipboardList },
+      { path: "/qualidade-total", label: "Qualidade Total", icon: ClipboardList },
     ],
   },
   {
@@ -70,6 +73,8 @@ const NAV_ENTRIES: NavEntry[] = [
       { path: "/produtos", label: "Produtos / Rótulos", icon: Package },
       { path: "/pcp", label: "PCP / Ordens", icon: Settings },
       { path: "/rastreabilidade", label: "Rastreabilidade", icon: Search },
+      { path: "/armazenamento-transporte", label: "Armaz. & Transporte", icon: Truck },
+      { path: "/residuos", label: "Resíduos / Efluentes", icon: Recycle },
     ],
   },
   {
@@ -78,7 +83,10 @@ const NAV_ENTRIES: NavEntry[] = [
     items: [
       { path: "/pragas", label: "Controle de Pragas", icon: Bug },
       { path: "/treinamentos", label: "Treinamentos", icon: GraduationCap },
+      { path: "/saude-pessoal", label: "Saúde do Pessoal", icon: Users },
       { path: "/visitantes", label: "Controle Visitantes", icon: Users },
+      { path: "/manutencao", label: "Manutenção Preventiva", icon: Wrench },
+      { path: "/planejamento-anual", label: "Planejamento Anual", icon: CalendarDays },
     ],
   },
   {
@@ -98,8 +106,6 @@ const NAV_ENTRIES: NavEntry[] = [
       { path: "/consulta-sipeagro", label: "Consulta SIPEAGRO", icon: Globe },
     ],
   },
-  { path: "/manual", label: "Manual", icon: BookOpen },
-  { path: "/guia-pops", label: "Guia POPs", icon: ClipboardList },
   { path: "/modelos", label: "📁 Modelos", icon: FileText },
   { path: "/modo-tablet", label: "🏭 Modo Tablet", icon: Factory },
 ];

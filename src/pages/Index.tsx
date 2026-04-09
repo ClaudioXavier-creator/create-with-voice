@@ -253,10 +253,10 @@ export default function Index() {
   const stats = [
     { label: "Conformidade BPF", value: data.loading ? "..." : `${data.conformidadeBPF}%`, icon: CheckCircle2, color: "text-primary", link: "/auditoria" },
     { label: "NCs Abertas", value: data.loading ? "..." : `${data.ncAbertas}`, icon: AlertTriangle, color: "text-destructive", link: "/nao-conformidades" },
-    { label: "Auditorias Realizadas", value: data.loading ? "..." : `${data.auditoriasRealizadas}`, icon: ClipboardCheck, color: "text-blue-500", link: "/auditoria" },
-    { label: "Treinamentos Pendentes", value: data.loading ? "..." : `${data.treinamentosPendentes}`, icon: GraduationCap, color: "text-orange-500", link: "/treinamentos" },
-    { label: "Calibrações Vencidas", value: data.loading ? "..." : `${data.calibracoesVencidas}`, icon: Wrench, color: "text-red-500", link: "/manutencao" },
-    { label: "Docs p/ Revisão", value: data.loading ? "..." : `${data.docsVencidos}`, icon: FileText, color: "text-yellow-600", link: "/documentos" },
+    { label: "Auditorias Realizadas", value: data.loading ? "..." : `${data.auditoriasRealizadas}`, icon: ClipboardCheck, color: "text-accent-foreground", link: "/auditoria" },
+    { label: "Treinamentos Pendentes", value: data.loading ? "..." : `${data.treinamentosPendentes}`, icon: GraduationCap, color: "text-warning-foreground", link: "/treinamentos" },
+    { label: "Calibrações Vencidas", value: data.loading ? "..." : `${data.calibracoesVencidas}`, icon: Wrench, color: "text-destructive", link: "/manutencao" },
+    { label: "Docs p/ Revisão", value: data.loading ? "..." : `${data.docsVencidos}`, icon: FileText, color: "text-muted-foreground", link: "/documentos" },
   ];
 
   const alertaIconMap: Record<string, React.ElementType> = {
