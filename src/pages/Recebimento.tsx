@@ -60,6 +60,10 @@ export default function Recebimento() {
   const [certValido, setCertValido] = useState<boolean | null>(null);
   const [observacoes, setObservacoes] = useState("");
 
+  // Registro do Produto no MAPA — IN 15/2009
+  const [registroMapaProduto, setRegistroMapaProduto] = useState("");
+  const [registroMapaIsento, setRegistroMapaIsento] = useState(false);
+
   // Segregação de Origem Animal — IN 15/2009
   const [contemOrigemAnimal, setContemOrigemAnimal] = useState(false);
   const [tipoOrigemAnimal, setTipoOrigemAnimal] = useState("");
