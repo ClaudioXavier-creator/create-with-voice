@@ -497,6 +497,7 @@ export default function Index() {
           </CardContent>
         </Card>
       </div>
+      {showOnboarding && <OnboardingOverlay onClose={fecharTour} />}
     </>
   );
 }
