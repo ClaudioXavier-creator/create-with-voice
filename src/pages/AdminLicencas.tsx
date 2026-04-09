@@ -9,8 +9,6 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { Shield, UserCheck, UserX, Loader2, RefreshCw } from "lucide-react";
 
-const ADMIN_EMAIL = "claudiolx.nunes@gmail.com";
-
 interface LicenseUser {
   id: string;
   user_id: string;
@@ -34,6 +32,18 @@ export default function AdminLicencas() {
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [selectedDays, setSelectedDays] = useState<Record<string, string>>({});
+  const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    if (!user) return;
+    supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", user.id)
+      .eq("role", "admin")
+      .maybeSingle()
+      .then(({ data }) => setIsAdmin(!!data));
+  }, [user]);
 
   const fetchUsers = useCallback(async () => {
     setLoading(true);
@@ -51,10 +61,10 @@ export default function AdminLicencas() {
   }, []);
 
   useEffect(() => {
-    if (user?.email === ADMIN_EMAIL) fetchUsers();
-  }, [user, fetchUsers]);
+    if (isAdmin) fetchUsers();
+  }, [isAdmin, fetchUsers]);
 
-  if (authLoading) {
+  if (authLoading || isAdmin === null) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Loader2 className="w-8 h-8 animate-spin text-primary" />
@@ -62,7 +72,7 @@ export default function AdminLicencas() {
     );
   }
 
-  if (user?.email !== ADMIN_EMAIL) {
+  if (!isAdmin) {
     return <Navigate to="/dashboard" replace />;
   }
 

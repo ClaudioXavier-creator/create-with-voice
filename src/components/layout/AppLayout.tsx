@@ -1,19 +1,19 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import {
   LayoutDashboard, Building2, FileText, ClipboardCheck, AlertTriangle,
   Package, Factory, Search, Bug, GraduationCap, BarChart3, Menu, X, LogOut,
-  PlayCircle, FileDown, Scale, Users, ChevronDown, Wrench, Settings, BookOpen, FlaskConical,
-  Droplets, Recycle, ShieldAlert, ShieldCheck, CalendarDays, ClipboardList, Warehouse, Truck, Timer,
-  Brain, Globe
+  PlayCircle, FileDown, Scale, ChevronDown, Wrench, Settings, BookOpen, FlaskConical,
+  Droplets, Recycle, ShieldAlert, ShieldCheck, CalendarDays, ClipboardList, Truck, Timer,
+  Brain, Globe, HeartPulse, UserCheck, Clipboard, FolderOpen, Radar, FileSearch,
+  Tablet, ScrollText
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import EmpresaSelector from "@/components/EmpresaSelector";
+import { supabase } from "@/integrations/supabase/client";
 import logoImg from "@/assets/logo-feed-bpf.png";
-
-const ADMIN_EMAIL = "claudiolx.nunes@gmail.com";
 
 interface NavItem {
   path: string;
@@ -42,7 +42,7 @@ const NAV_ENTRIES: NavEntry[] = [
     items: [
       { path: "/documentos", label: "Documentos / POPs", icon: FileText },
       { path: "/execucao-pops", label: "Execução ITs/POPs", icon: PlayCircle },
-      { path: "/planilhas-pop", label: "Planilhas de POPs", icon: ClipboardCheck },
+      { path: "/planilhas-pop", label: "Planilhas de POPs", icon: Clipboard },
       { path: "/manual", label: "Manual BPF", icon: BookOpen },
       { path: "/guia-pops", label: "Guia POPs & ITs", icon: ClipboardList },
     ],
@@ -58,7 +58,7 @@ const NAV_ENTRIES: NavEntry[] = [
       { path: "/substancias", label: "Substâncias Proibidas", icon: ShieldAlert },
       { path: "/validacao-limpeza", label: "Validação Limpeza", icon: ShieldCheck },
       { path: "/potabilidade-agua", label: "Potabilidade da Água", icon: Droplets },
-      { path: "/matriz-risco", label: "Matriz de Risco", icon: AlertTriangle },
+      { path: "/matriz-risco", label: "Matriz de Risco", icon: Radar },
       { path: "/qualidade-total", label: "Qualidade Total", icon: ClipboardList },
     ],
   },
@@ -67,7 +67,7 @@ const NAV_ENTRIES: NavEntry[] = [
     icon: Factory,
     items: [
       { path: "/recebimento", label: "Recebimento MP", icon: Package },
-      { path: "/fornecedores", label: "Fornecedores", icon: Users },
+      { path: "/fornecedores", label: "Fornecedores", icon: UserCheck },
       { path: "/producao", label: "Produção", icon: Factory },
       { path: "/produtos", label: "Produtos / Rótulos", icon: Package },
       { path: "/pcp", label: "PCP / Ordens", icon: Settings },
@@ -82,36 +82,55 @@ const NAV_ENTRIES: NavEntry[] = [
     items: [
       { path: "/pragas", label: "Controle de Pragas", icon: Bug },
       { path: "/treinamentos", label: "Treinamentos", icon: GraduationCap },
-      { path: "/saude-pessoal", label: "Saúde do Pessoal", icon: Users },
-      { path: "/visitantes", label: "Controle Visitantes", icon: Users },
+      { path: "/saude-pessoal", label: "Saúde do Pessoal", icon: HeartPulse },
+      { path: "/visitantes", label: "Controle Visitantes", icon: UserCheck },
       { path: "/manutencao", label: "Manutenção Preventiva", icon: Wrench },
       { path: "/planejamento-anual", label: "Planejamento Anual", icon: CalendarDays },
     ],
   },
   {
     label: "Gestão",
-    icon: BookOpen,
+    icon: BarChart3,
     items: [
       { path: "/indicadores", label: "Indicadores", icon: BarChart3 },
-      { path: "/relatorio-producao", label: "Rel. Produção Mensal", icon: BarChart3 },
-      { path: "/relatorios", label: "Relatórios", icon: FileDown },
+      { path: "/relatorio-producao", label: "Rel. Produção Mensal", icon: FileDown },
+      { path: "/relatorios", label: "Relatórios", icon: ScrollText },
       { path: "/legislacao", label: "Legislação & IA", icon: Scale },
       { path: "/sala-auditor", label: "Sala do Auditor", icon: ClipboardCheck },
       { path: "/checklist-pre-auditoria", label: "Checklist Pré-Auditoria", icon: ShieldCheck },
+    ],
+  },
+  {
+    label: "Ferramentas",
+    icon: Settings,
+    items: [
       { path: "/simulacao-recall", label: "Simulação Recall", icon: Timer },
-      { path: "/busca-global", label: "Busca Global", icon: Search },
+      { path: "/busca-global", label: "Busca Global", icon: FileSearch },
       { path: "/analise-tendencias", label: "Tendências IA", icon: Brain },
       { path: "/geracao-manual-bpf", label: "Gerar Manual BPF", icon: BookOpen },
       { path: "/consulta-sipeagro", label: "Consulta SIPEAGRO", icon: Globe },
     ],
   },
-  { path: "/modelos", label: "📁 Modelos", icon: FileText },
-  { path: "/modo-tablet", label: "🏭 Modo Tablet", icon: Factory },
+  { path: "/modelos", label: "📁 Modelos", icon: FolderOpen },
+  { path: "/modo-tablet", label: "🏭 Modo Tablet", icon: Tablet },
 ];
 
 function AdminLink({ currentPath, onNavigate }: { currentPath: string; onNavigate?: () => void }) {
   const { user } = useAuth();
-  if (user?.email !== ADMIN_EMAIL) return null;
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    if (!user) return;
+    supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", user.id)
+      .eq("role", "admin")
+      .maybeSingle()
+      .then(({ data }) => setIsAdmin(!!data));
+  }, [user]);
+
+  if (!isAdmin) return null;
   const isActive = currentPath === "/admin-licencas";
   return (
     <div className="px-3 pt-2">

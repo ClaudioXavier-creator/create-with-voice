@@ -52,7 +52,7 @@ import FeedBPFPage from "./pages/FeedBPFPage";
 import AuditsBPFPage from "./pages/AuditsBPFPage";
 import AgroGestaoCRMPage from "./pages/AgroGestaoCRMPage";
 import AdminLicencas from "./pages/AdminLicencas";
-import DocumentosBPF from "./pages/DocumentosBPF";
+// DocumentosBPF integrado como aba em Documentos — rota standalone removida
 import ChecklistPreAuditoria from "./pages/ChecklistPreAuditoria";
 import SimulacaoRecall from "./pages/SimulacaoRecall";
 import BuscaGlobal from "./pages/BuscaGlobal";
@@ -169,7 +169,7 @@ const AppRoutes = () => {
                   <Route path="/saude-pessoal" element={<SaudePessoal />} />
                   <Route path="/visitantes" element={<ControleVisitantes />} />
                   <Route path="/modelos" element={<Modelos />} />
-                  <Route path="/documentos-bpf" element={<DocumentosBPF />} />
+                  {/* /documentos-bpf removido — consolidado na aba Arquivo BPF em /documentos */}
                   <Route path="/checklist-pre-auditoria" element={<ChecklistPreAuditoria />} />
                   <Route path="/simulacao-recall" element={<SimulacaoRecall />} />
                   <Route path="/busca-global" element={<BuscaGlobal />} />
