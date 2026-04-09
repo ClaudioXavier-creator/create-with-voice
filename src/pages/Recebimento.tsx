@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { Package, Plus, CheckCircle2, XCircle, Loader2, Search, FileText, Download, Truck, AlertTriangle, ShieldAlert } from "lucide-react";
+import { registrarAuditLog } from "@/utils/auditLog";
+import { gerarHashIntegridade, adicionarRodapeIntegridade } from "@/utils/integridade";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
@@ -192,6 +194,10 @@ export default function Recebimento() {
     if (error) toast.error("Erro: " + error.message);
     else {
       toast.success("Recebimento registrado!");
+      registrarAuditLog({
+        userId: user.id, tabela: "recebimento_mp", acao: "criar",
+        dadosNovos: { fornecedor, materia_prima: materiaPrima, lote, aprovado, registro_mapa_produto: registroMapaIsento ? "ISENTO" : registroMapaProduto },
+      });
       setOpen(false);
       resetForm();
       fetchData();

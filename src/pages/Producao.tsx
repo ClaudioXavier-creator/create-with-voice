@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { Factory, Plus, Loader2, AlertTriangle, Trash2, Download } from "lucide-react";
+import { registrarAuditLog } from "@/utils/auditLog";
+import { gerarHashIntegridade, adicionarRodapeIntegridade } from "@/utils/integridade";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
@@ -112,6 +114,10 @@ export default function Producao() {
     if (error) toast.error("Erro ao salvar");
     else {
       toast.success("Registro salvo!");
+      registrarAuditLog({
+        userId: user.id, tabela: "producao", acao: "criar",
+        dadosNovos: { produto, lote, operador, flush_realizado: realizouFlush, flush_tipo: tipoLimpeza },
+      });
       setOpen(false);
       setProduto(""); setLote(""); setOperador(""); setTempoMistura(""); setQuantidade("");
       setHouveSobra(false); setQtdSobra(""); setDestinoSobra("reprocesso"); setObsSobra("");
