@@ -37,7 +37,7 @@ export default function GeracaoManualBPF() {
     try {
       const eqUser = (q: any) => {
         let r = q.eq("user_id", user.id);
-        if (empresaSelecionada) r = r.eq("empresa_id", empresaSelecionada);
+        if (empresaAtiva) r = r.eq("empresa_id", empresaAtiva.id);
         return r;
       };
 
@@ -50,8 +50,8 @@ export default function GeracaoManualBPF() {
         { data: fornecedores },
         { data: produtos },
       ] = await Promise.all([
-        empresaSelecionada
-          ? supabase.from("empresas").select("*").eq("id", empresaSelecionada).single()
+        empresaAtiva
+          ? supabase.from("empresas").select("*").eq("id", empresaAtiva.id).single()
           : supabase.from("empresas").select("*").eq("user_id", user.id).limit(1).single(),
         eqUser(supabase.from("documentos").select("*")),
         eqUser(supabase.from("treinamentos" as any).select("*")),
