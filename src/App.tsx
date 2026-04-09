@@ -174,6 +174,9 @@ const AppRoutes = () => {
                   <Route path="/simulacao-recall" element={<SimulacaoRecall />} />
                   <Route path="/busca-global" element={<BuscaGlobal />} />
                   <Route path="/modo-tablet" element={<ModoTablet />} />
+                  <Route path="/analise-tendencias" element={<AnaliseTendencias />} />
+                  <Route path="/geracao-manual-bpf" element={<GeracaoManualBPF />} />
+                  <Route path="/consulta-sipeagro" element={<ConsultaSipeagro />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </AppLayout>
