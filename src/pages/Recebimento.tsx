@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Package, Plus, CheckCircle2, XCircle, Loader2, Search, FileText, Download, Truck, AlertTriangle, ShieldAlert } from "lucide-react";
+import FileUploadComponent from "@/components/FileUpload";
 import { registrarAuditLog } from "@/utils/auditLog";
 import { gerarHashIntegridade, adicionarRodapeIntegridade } from "@/utils/integridade";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
