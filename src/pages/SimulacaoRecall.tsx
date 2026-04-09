@@ -37,7 +37,7 @@ const ETAPAS_RECALL: Omit<RecallStep, "concluido" | "horaInicio" | "horaFim">[] 
 
 export default function SimulacaoRecall() {
   const { user } = useAuth();
-  const { empresaSelecionada } = useEmpresa();
+  const { empresaAtiva } = useEmpresa();
 
   const [emExecucao, setEmExecucao] = useState(false);
   const [tempoTotal, setTempoTotal] = useState(0); // seconds
