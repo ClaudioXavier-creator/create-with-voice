@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { Factory, Plus, Loader2, AlertTriangle, Trash2, Download } from "lucide-react";
+import { registrarAuditLog } from "@/utils/auditLog";
+import { gerarHashIntegridade, adicionarRodapeIntegridade } from "@/utils/integridade";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
@@ -103,10 +105,19 @@ export default function Producao() {
       contraprova_local: cpLocal,
       contraprova_validade: cpVal,
       contraprova_quantidade: cpQtd,
+      // Campos de flush persistidos no DB — IN 15/2009
+      flush_realizado: realizouFlush,
+      flush_tipo: realizouFlush ? tipoLimpeza : "",
+      flush_volume: realizouFlush ? volumeFlush : "",
+      flush_produto_anterior: realizouFlush ? produtoAnterior : "",
     } as any);
     if (error) toast.error("Erro ao salvar");
     else {
       toast.success("Registro salvo!");
+      registrarAuditLog({
+        userId: user.id, tabela: "producao", acao: "criar",
+        dadosNovos: { produto, lote, operador, flush_realizado: realizouFlush, flush_tipo: tipoLimpeza },
+      });
       setOpen(false);
       setProduto(""); setLote(""); setOperador(""); setTempoMistura(""); setQuantidade("");
       setHouveSobra(false); setQtdSobra(""); setDestinoSobra("reprocesso"); setObsSobra("");
@@ -116,14 +127,17 @@ export default function Producao() {
     setSaving(false);
   };
 
-  const exportCSV = () => {
+  const exportCSV = async () => {
     const headers = ["Data", "Produto", "Lote", "Operador", "Tempo Mistura", "Quantidade"];
     const rows = items.map(r => [r.data, r.produto, r.lote || "", r.operador || "", r.tempo_mistura || "", r.quantidade || ""]);
-    const csv = [headers.join(";"), ...rows.map(r => r.join(";"))].join("\n");
+    let csv = [headers.join(";"), ...rows.map(r => r.join(";"))].join("\n");
+    const nomeArquivo = `producao_${new Date().toISOString().split("T")[0]}.csv`;
+    const hash = await gerarHashIntegridade(csv);
+    csv = adicionarRodapeIntegridade(csv, hash, user?.email || "sistema", nomeArquivo);
     const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
     const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
-    link.download = `producao_${new Date().toISOString().split("T")[0]}.csv`;
+    link.download = nomeArquivo;
     link.click();
   };
 

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { FileText, Plus, Loader2, Wrench, Gauge, AlertCircle, ExternalLink, Upload, FolderOpen, Trash2 } from "lucide-react";
+import { FileText, Plus, Loader2, Wrench, Gauge, AlertCircle, ExternalLink, Upload, FolderOpen, Trash2, History } from "lucide-react";
+import { registrarAuditLog, registrarVersaoDocumento } from "@/utils/auditLog";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
@@ -105,7 +106,18 @@ export default function Documentos() {
   const [popValidade, setPopValidade] = useState("");
   const [popProximaRevisao, setPopProximaRevisao] = useState("");
 
-
+  // Versão / Revisão
+  const [versaoOpen, setVersaoOpen] = useState(false);
+  const [versaoDocId, setVersaoDocId] = useState("");
+  const [versaoDocCodigo, setVersaoDocCodigo] = useState("");
+  const [versaoAnterior, setVersaoAnterior] = useState("");
+  const [versaoNova, setVersaoNova] = useState("");
+  const [versaoMotivo, setVersaoMotivo] = useState("");
+  const [versaoAlteracoes, setVersaoAlteracoes] = useState("");
+  const [versaoResponsavel, setVersaoResponsavel] = useState("");
+  const [versoes, setVersoes] = useState<any[]>([]);
+  const [versoesOpen, setVersoesOpen] = useState(false);
+  const [versoesDocNome, setVersoesDocNome] = useState("");
   // Arquivo BPF form
   const [arqOpen, setArqOpen] = useState(false);
   const [arqTitulo, setArqTitulo] = useState("");
@@ -149,8 +161,44 @@ export default function Documentos() {
       validade_revisao: popValidade || null, proxima_revisao: popProximaRevisao || null,
     } as any);
     if (error) toast.error("Erro ao salvar");
-    else { toast.success("Documento salvo!"); setPopOpen(false); setPopCodigo(""); setPopNome(""); setPopVersao("01"); setPopResponsavel(""); setPopValidade(""); setPopProximaRevisao(""); fetchData(); }
+    else {
+      toast.success("Documento salvo!");
+      registrarAuditLog({ userId: user.id, tabela: "documentos", acao: "criar", dadosNovos: { codigo: popCodigo, nome: popNome, versao: popVersao } });
+      setPopOpen(false); setPopCodigo(""); setPopNome(""); setPopVersao("01"); setPopResponsavel(""); setPopValidade(""); setPopProximaRevisao(""); fetchData();
+    }
     setSaving(false);
+  };
+
+  const handleRevisarPop = async () => {
+    if (!versaoDocId || !versaoNova || !user) return;
+    setSaving(true);
+    // Update document version
+    const { error } = await supabase.from("documentos").update({
+      versao: versaoNova, data_revisao: new Date().toISOString().split("T")[0],
+      responsavel: versaoResponsavel || undefined,
+    } as any).eq("id", versaoDocId);
+    if (error) { toast.error("Erro ao atualizar"); setSaving(false); return; }
+    // Register version history
+    await registrarVersaoDocumento({
+      userId: user.id, empresaId: empresaAtiva?.id,
+      documentoId: versaoDocId, versaoAnterior: versaoAnterior, versaoNova: versaoNova,
+      responsavel: versaoResponsavel, motivo: versaoMotivo, alteracoes: versaoAlteracoes,
+    });
+    registrarAuditLog({
+      userId: user.id, tabela: "documentos", acao: "editar", registroId: versaoDocId,
+      dadosAnteriores: { versao: versaoAnterior }, dadosNovos: { versao: versaoNova, motivo: versaoMotivo },
+    });
+    toast.success("Revisão registrada com sucesso!");
+    setVersaoOpen(false); setVersaoDocId(""); setVersaoNova(""); setVersaoMotivo(""); setVersaoAlteracoes(""); setVersaoResponsavel("");
+    fetchData();
+    setSaving(false);
+  };
+
+  const handleVerHistorico = async (docId: string, docNome: string) => {
+    const { data } = await (supabase.from("documento_versoes") as any).select("*").eq("documento_id", docId).order("created_at", { ascending: false });
+    setVersoes(data || []);
+    setVersoesDocNome(docNome);
+    setVersoesOpen(true);
   };
 
 
@@ -321,7 +369,7 @@ export default function Documentos() {
                 <Table>
                   <TableHeader><TableRow>
                     <TableHead>Código</TableHead><TableHead>Nome</TableHead><TableHead>Versão</TableHead>
-                    <TableHead>Revisão</TableHead><TableHead>Validade</TableHead><TableHead>Próx. Revisão</TableHead><TableHead>Responsável</TableHead><TableHead>Status</TableHead>
+                    <TableHead>Revisão</TableHead><TableHead>Validade</TableHead><TableHead>Próx. Revisão</TableHead><TableHead>Responsável</TableHead><TableHead>Status</TableHead><TableHead className="w-32">Ações</TableHead>
                   </TableRow></TableHeader>
                   <TableBody>
                     {docs.map(d => {
@@ -337,6 +385,18 @@ export default function Documentos() {
                         <TableCell className={proximoVencer ? "text-yellow-600 font-medium" : ""}>{d.proxima_revisao || "—"}</TableCell>
                         <TableCell>{d.responsavel}</TableCell>
                         <TableCell><Badge className={statusBadge[d.status || "ativo"]}>{d.status === "em_revisao" ? "Em revisão" : d.status === "obsoleto" ? "Obsoleto" : "Ativo"}</Badge></TableCell>
+                        <TableCell>
+                          <div className="flex gap-1">
+                            <Button variant="outline" size="sm" className="h-7 text-xs" onClick={() => {
+                              setVersaoDocId(d.id); setVersaoDocCodigo(d.codigo); setVersaoAnterior(d.versao || "01");
+                              const next = String(parseInt(d.versao || "01") + 1).padStart(2, "0");
+                              setVersaoNova(next); setVersaoOpen(true);
+                            }}>Revisar</Button>
+                            <Button variant="ghost" size="sm" className="h-7 text-xs gap-1" onClick={() => handleVerHistorico(d.id, `${d.codigo} — ${d.nome}`)}>
+                              <History className="w-3 h-3" />
+                            </Button>
+                          </div>
+                        </TableCell>
                       </TableRow>
                     )})}
                   </TableBody>
@@ -539,6 +599,47 @@ export default function Documentos() {
           </Card>
         </TabsContent>
       </Tabs>
+
+      {/* Dialog: Revisar POP */}
+      <Dialog open={versaoOpen} onOpenChange={setVersaoOpen}>
+        <DialogContent>
+          <DialogHeader><DialogTitle>Revisar Documento — {versaoDocCodigo}</DialogTitle></DialogHeader>
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div><Label>Versão Anterior</Label><Input value={versaoAnterior} disabled /></div>
+              <div><Label>Nova Versão</Label><Input value={versaoNova} onChange={e => setVersaoNova(e.target.value)} /></div>
+            </div>
+            <div><Label>Responsável pela Revisão</Label><Input value={versaoResponsavel} onChange={e => setVersaoResponsavel(e.target.value)} /></div>
+            <div><Label>Motivo da Revisão</Label><Input value={versaoMotivo} onChange={e => setVersaoMotivo(e.target.value)} placeholder="Ex: Atualização conforme IN 15/2009" /></div>
+            <div><Label>Descrição das Alterações</Label><Textarea value={versaoAlteracoes} onChange={e => setVersaoAlteracoes(e.target.value)} placeholder="Descreva o que mudou nesta revisão..." /></div>
+            <Button onClick={handleRevisarPop} className="w-full" disabled={saving}>{saving && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}Registrar Revisão</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Dialog: Histórico de Versões */}
+      <Dialog open={versoesOpen} onOpenChange={setVersoesOpen}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader><DialogTitle>Histórico de Revisões — {versoesDocNome}</DialogTitle></DialogHeader>
+          {versoes.length === 0 ? (
+            <p className="text-center text-muted-foreground py-4">Nenhuma revisão registrada</p>
+          ) : (
+            <div className="space-y-3 max-h-[400px] overflow-y-auto">
+              {versoes.map((v: any) => (
+                <div key={v.id} className="border rounded-lg p-3 space-y-1">
+                  <div className="flex items-center justify-between">
+                    <Badge variant="outline" className="font-mono">v{v.versao_anterior} → v{v.versao_nova}</Badge>
+                    <span className="text-xs text-muted-foreground">{v.created_at?.split("T")[0]}</span>
+                  </div>
+                  {v.responsavel && <p className="text-sm"><span className="font-medium">Responsável:</span> {v.responsavel}</p>}
+                  {v.motivo && <p className="text-sm"><span className="font-medium">Motivo:</span> {v.motivo}</p>}
+                  {v.alteracoes && <p className="text-xs text-muted-foreground">{v.alteracoes}</p>}
+                </div>
+              ))}
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

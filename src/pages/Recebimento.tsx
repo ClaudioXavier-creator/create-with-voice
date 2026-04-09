@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { Package, Plus, CheckCircle2, XCircle, Loader2, Search, FileText, Download, Truck, AlertTriangle, ShieldAlert } from "lucide-react";
+import { registrarAuditLog } from "@/utils/auditLog";
+import { gerarHashIntegridade, adicionarRodapeIntegridade } from "@/utils/integridade";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
@@ -182,10 +184,20 @@ export default function Recebimento() {
       contraprova_local: cpLocal,
       contraprova_validade: cpVal,
       contraprova_quantidade: cpQtd,
+      // Campos persistidos no DB — IN 15/2009 & IN 04/2007
+      registro_mapa_produto: registroMapaIsento ? "ISENTO" : (registroMapaProduto || ""),
+      registro_mapa_isento: registroMapaIsento,
+      temperatura_veiculo: temperaturaVeiculo || "",
+      integridade_carga: integridadeCarga !== "comprometida",
+      integridade_observacoes: integridadeCarga === "comprometida" ? "Carga comprometida — NC obrigatória" : (integridadeCarga === "parcial" ? "Parcialmente comprometida" : ""),
     } as any);
     if (error) toast.error("Erro: " + error.message);
     else {
       toast.success("Recebimento registrado!");
+      registrarAuditLog({
+        userId: user.id, tabela: "recebimento_mp", acao: "criar",
+        dadosNovos: { fornecedor, materia_prima: materiaPrima, lote, aprovado, registro_mapa_produto: registroMapaIsento ? "ISENTO" : registroMapaProduto },
+      });
       setOpen(false);
       resetForm();
       fetchData();
@@ -193,7 +205,7 @@ export default function Recebimento() {
     setSaving(false);
   };
 
-  const exportCSV = () => {
+  const exportCSV = async () => {
     const headers = ["Data", "Fornecedor", "Matéria-Prima", "Lote", "Quantidade", "Unidade", "Odor", "Umidade", "Temperatura", "Insetos", "Aprovado", "Cert. Análise Nº", "Cert. Válido", "Validade", "Observações"];
     const rows = items.map(r => [
       r.data, r.fornecedor, r.materia_prima, r.lote || "", r.quantidade || "", r.unidade || "",
@@ -202,11 +214,14 @@ export default function Recebimento() {
       r.certificado_analise_valido === true ? "Sim" : r.certificado_analise_valido === false ? "Não" : "",
       r.validade || "", r.observacoes || "",
     ]);
-    const csv = [headers.join(";"), ...rows.map(r => r.join(";"))].join("\n");
+    let csv = [headers.join(";"), ...rows.map(r => r.join(";"))].join("\n");
+    const nomeArquivo = `recebimento_mp_${new Date().toISOString().split("T")[0]}.csv`;
+    const hash = await gerarHashIntegridade(csv);
+    csv = adicionarRodapeIntegridade(csv, hash, user?.email || "sistema", nomeArquivo);
     const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
     const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
-    link.download = `recebimento_mp_${new Date().toISOString().split("T")[0]}.csv`;
+    link.download = nomeArquivo;
     link.click();
   };
 
