@@ -63,6 +63,7 @@ interface DashboardData {
 
 export default function Index() {
   const { user } = useAuth();
+  const { empresaAtiva } = useEmpresa();
   const { showOnboarding, fecharTour } = useOnboarding();
   const [data, setData] = useState<DashboardData>({
     ncAbertas: 0, auditoriasRealizadas: 0, treinamentosPendentes: 0, conformidadeBPF: 0,
@@ -75,6 +76,11 @@ export default function Index() {
     if (!user) return;
 
     async function fetchDashboard() {
+      const addEmpresa = (q: any) => {
+        let r = q.eq("user_id", user!.id);
+        if (empresaAtiva) r = r.eq("empresa_id", empresaAtiva.id);
+        return r;
+      };
       const [ncsRes, ncsFullRes, checklistRes, checklistDatesRes, treinamentosRes, recentNcsRes, planejamentoRes, calibracoesRes, documentosRes] = await Promise.all([
         supabase.from("nao_conformidades").select("status").eq("user_id", user!.id),
         supabase.from("nao_conformidades").select("data, status").eq("user_id", user!.id),
