@@ -62,6 +62,7 @@ interface DashboardData {
 
 export default function Index() {
   const { user } = useAuth();
+  const { showOnboarding, fecharTour } = useOnboarding();
   const [data, setData] = useState<DashboardData>({
     ncAbertas: 0, auditoriasRealizadas: 0, treinamentosPendentes: 0, conformidadeBPF: 0,
     recentNCs: [], conformidadePorArea: [], ncPorMes: [], conformidadePorMes: [],
