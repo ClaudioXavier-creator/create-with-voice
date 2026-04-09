@@ -4,7 +4,8 @@ import {
   LayoutDashboard, Building2, FileText, ClipboardCheck, AlertTriangle,
   Package, Factory, Search, Bug, GraduationCap, BarChart3, Menu, X, LogOut,
   PlayCircle, FileDown, Scale, Users, ChevronDown, Wrench, Settings, BookOpen, FlaskConical,
-  Droplets, Recycle, ShieldAlert, ShieldCheck, CalendarDays, ClipboardList, Warehouse, Truck, Timer
+  Droplets, Recycle, ShieldAlert, ShieldCheck, CalendarDays, ClipboardList, Warehouse, Truck, Timer,
+  Brain, Globe
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
