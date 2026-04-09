@@ -1720,6 +1720,9 @@ export default function Rastreabilidade() {
                   <SelectContent>
                     <SelectItem value="iniciado">Iniciado</SelectItem>
                     <SelectItem value="em_andamento">Em andamento</SelectItem>
+                    <SelectItem value="quarentena">🔒 Quarentena (Segregação)</SelectItem>
+                    <SelectItem value="retido">⛔ Retido (Produto Não Conforme)</SelectItem>
+                    <SelectItem value="aguardando_analise">🔬 Aguardando Análise</SelectItem>
                     <SelectItem value="concluido">Concluído / Encerrado</SelectItem>
                   </SelectContent>
                 </Select>
