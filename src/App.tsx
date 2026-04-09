@@ -57,6 +57,9 @@ import ChecklistPreAuditoria from "./pages/ChecklistPreAuditoria";
 import SimulacaoRecall from "./pages/SimulacaoRecall";
 import BuscaGlobal from "./pages/BuscaGlobal";
 import ModoTablet from "./pages/ModoTablet";
+import AnaliseTendencias from "./pages/AnaliseTendencias";
+import GeracaoManualBPF from "./pages/GeracaoManualBPF";
+import ConsultaSipeagro from "./pages/ConsultaSipeagro";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
