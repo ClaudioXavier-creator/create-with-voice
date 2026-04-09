@@ -103,7 +103,7 @@ export default function SimulacaoRecall() {
     // Save as a NC for audit trail
     const { error } = await supabase.from("nao_conformidades").insert({
       user_id: user.id,
-      empresa_id: empresaSelecionada || null,
+      empresa_id: empresaAtiva?.id || null,
       setor: "Qualidade",
       descricao: `[SIMULAÇÃO RECALL] Produto: ${produtoSimulado} | Lote: ${loteSimulado} | Tempo total: ${formatTime(tempoTotal)} | Etapas concluídas: ${concluidas}/${etapas.length}`,
       causa: "Exercício anual de recall conforme Decreto 12.031/2024",

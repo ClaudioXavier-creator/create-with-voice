@@ -395,7 +395,7 @@ export default function Index() {
         </Link>
         <Link to="/qualidade-total">
           <Button variant="outline" className="w-full h-auto py-3 flex flex-col items-center gap-1.5">
-            <BarChart3 className="w-5 h-5 text-emerald-500" />
+            <BarChart className="w-5 h-5 text-emerald-500" />
             <span className="text-xs font-medium">Relatório Anual</span>
           </Button>
         </Link>
