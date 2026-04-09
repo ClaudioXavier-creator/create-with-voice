@@ -13,6 +13,7 @@ import PageHeader from "@/components/PageHeader";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { Link } from "react-router-dom";
+import { useOnboarding, OnboardingOverlay } from "@/components/OnboardingTour";
 import {
   LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid,
   Tooltip, ResponsiveContainer, Legend
@@ -61,6 +62,7 @@ interface DashboardData {
 
 export default function Index() {
   const { user } = useAuth();
+  const { showOnboarding, fecharTour } = useOnboarding();
   const [data, setData] = useState<DashboardData>({
     ncAbertas: 0, auditoriasRealizadas: 0, treinamentosPendentes: 0, conformidadeBPF: 0,
     recentNCs: [], conformidadePorArea: [], ncPorMes: [], conformidadePorMes: [],
@@ -495,6 +497,7 @@ export default function Index() {
           </CardContent>
         </Card>
       </div>
+      {showOnboarding && <OnboardingOverlay onClose={fecharTour} />}
     </>
   );
 }

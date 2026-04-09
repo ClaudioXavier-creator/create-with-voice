@@ -56,6 +56,7 @@ import DocumentosBPF from "./pages/DocumentosBPF";
 import ChecklistPreAuditoria from "./pages/ChecklistPreAuditoria";
 import SimulacaoRecall from "./pages/SimulacaoRecall";
 import BuscaGlobal from "./pages/BuscaGlobal";
+import ModoTablet from "./pages/ModoTablet";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -169,6 +170,7 @@ const AppRoutes = () => {
                   <Route path="/checklist-pre-auditoria" element={<ChecklistPreAuditoria />} />
                   <Route path="/simulacao-recall" element={<SimulacaoRecall />} />
                   <Route path="/busca-global" element={<BuscaGlobal />} />
+                  <Route path="/modo-tablet" element={<ModoTablet />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </AppLayout>
