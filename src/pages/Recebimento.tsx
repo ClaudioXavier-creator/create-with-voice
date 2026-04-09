@@ -111,6 +111,7 @@ export default function Recebimento() {
     setVistoriaVeiculo({}); setPlacaVeiculo(""); setLacreNumero(""); setLacreIntegro(""); setCondicoesTransporte("");
     setContemOrigemAnimal(false); setTipoOrigemAnimal(""); setDestinoEspecie("");
     setRegistroMapaProduto(""); setRegistroMapaIsento(false);
+    setTemperaturaVeiculo(""); setIntegridadeCarga(""); setCargaOrigemAnimal(false);
   };
 
   const handleAdd = async () => {
