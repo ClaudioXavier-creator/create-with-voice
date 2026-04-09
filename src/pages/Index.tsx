@@ -286,7 +286,19 @@ export default function Index() {
 
   return (
     <>
-      <PageHeader icon={LayoutDashboard} title="Dashboard" description="Visão geral do sistema FeedBPF" />
+      <div className="flex items-center justify-between mb-4">
+        <PageHeader icon={LayoutDashboard} title="Dashboard" description="Visão geral do sistema FeedBPF" />
+        <Select value={periodoFiltro} onValueChange={setPeriodoFiltro}>
+          <SelectTrigger className="w-[180px]"><SelectValue placeholder="Período" /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="todos">Todo período</SelectItem>
+            <SelectItem value="mes">Último mês</SelectItem>
+            <SelectItem value="trimestre">Último trimestre</SelectItem>
+            <SelectItem value="semestre">Último semestre</SelectItem>
+            <SelectItem value="ano">Último ano</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
 
       {/* Alertas do Planejamento Anual */}
       {!data.loading && (data.atividadesVencidas.length > 0 || data.atividadesProximas.length > 0) && (
