@@ -599,6 +599,47 @@ export default function Documentos() {
           </Card>
         </TabsContent>
       </Tabs>
+
+      {/* Dialog: Revisar POP */}
+      <Dialog open={versaoOpen} onOpenChange={setVersaoOpen}>
+        <DialogContent>
+          <DialogHeader><DialogTitle>Revisar Documento — {versaoDocCodigo}</DialogTitle></DialogHeader>
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div><Label>Versão Anterior</Label><Input value={versaoAnterior} disabled /></div>
+              <div><Label>Nova Versão</Label><Input value={versaoNova} onChange={e => setVersaoNova(e.target.value)} /></div>
+            </div>
+            <div><Label>Responsável pela Revisão</Label><Input value={versaoResponsavel} onChange={e => setVersaoResponsavel(e.target.value)} /></div>
+            <div><Label>Motivo da Revisão</Label><Input value={versaoMotivo} onChange={e => setVersaoMotivo(e.target.value)} placeholder="Ex: Atualização conforme IN 15/2009" /></div>
+            <div><Label>Descrição das Alterações</Label><Textarea value={versaoAlteracoes} onChange={e => setVersaoAlteracoes(e.target.value)} placeholder="Descreva o que mudou nesta revisão..." /></div>
+            <Button onClick={handleRevisarPop} className="w-full" disabled={saving}>{saving && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}Registrar Revisão</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Dialog: Histórico de Versões */}
+      <Dialog open={versoesOpen} onOpenChange={setVersoesOpen}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader><DialogTitle>Histórico de Revisões — {versoesDocNome}</DialogTitle></DialogHeader>
+          {versoes.length === 0 ? (
+            <p className="text-center text-muted-foreground py-4">Nenhuma revisão registrada</p>
+          ) : (
+            <div className="space-y-3 max-h-[400px] overflow-y-auto">
+              {versoes.map((v: any) => (
+                <div key={v.id} className="border rounded-lg p-3 space-y-1">
+                  <div className="flex items-center justify-between">
+                    <Badge variant="outline" className="font-mono">v{v.versao_anterior} → v{v.versao_nova}</Badge>
+                    <span className="text-xs text-muted-foreground">{v.created_at?.split("T")[0]}</span>
+                  </div>
+                  {v.responsavel && <p className="text-sm"><span className="font-medium">Responsável:</span> {v.responsavel}</p>}
+                  {v.motivo && <p className="text-sm"><span className="font-medium">Motivo:</span> {v.motivo}</p>}
+                  {v.alteracoes && <p className="text-xs text-muted-foreground">{v.alteracoes}</p>}
+                </div>
+              ))}
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </>
   );
 }
