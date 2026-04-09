@@ -97,6 +97,7 @@ const NAV_ENTRIES: NavEntry[] = [
   { path: "/manual", label: "Manual", icon: BookOpen },
   { path: "/guia-pops", label: "Guia POPs", icon: ClipboardList },
   { path: "/modelos", label: "📁 Modelos", icon: FileText },
+  { path: "/modo-tablet", label: "🏭 Modo Tablet", icon: Factory },
 ];
 
 function AdminLink({ currentPath, onNavigate }: { currentPath: string; onNavigate?: () => void }) {
