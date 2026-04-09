@@ -57,6 +57,9 @@ import ChecklistPreAuditoria from "./pages/ChecklistPreAuditoria";
 import SimulacaoRecall from "./pages/SimulacaoRecall";
 import BuscaGlobal from "./pages/BuscaGlobal";
 import ModoTablet from "./pages/ModoTablet";
+import AnaliseTendencias from "./pages/AnaliseTendencias";
+import GeracaoManualBPF from "./pages/GeracaoManualBPF";
+import ConsultaSipeagro from "./pages/ConsultaSipeagro";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -171,6 +174,9 @@ const AppRoutes = () => {
                   <Route path="/simulacao-recall" element={<SimulacaoRecall />} />
                   <Route path="/busca-global" element={<BuscaGlobal />} />
                   <Route path="/modo-tablet" element={<ModoTablet />} />
+                  <Route path="/analise-tendencias" element={<AnaliseTendencias />} />
+                  <Route path="/geracao-manual-bpf" element={<GeracaoManualBPF />} />
+                  <Route path="/consulta-sipeagro" element={<ConsultaSipeagro />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </AppLayout>

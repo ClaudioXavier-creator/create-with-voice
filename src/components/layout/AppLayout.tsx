@@ -4,7 +4,8 @@ import {
   LayoutDashboard, Building2, FileText, ClipboardCheck, AlertTriangle,
   Package, Factory, Search, Bug, GraduationCap, BarChart3, Menu, X, LogOut,
   PlayCircle, FileDown, Scale, Users, ChevronDown, Wrench, Settings, BookOpen, FlaskConical,
-  Droplets, Recycle, ShieldAlert, ShieldCheck, CalendarDays, ClipboardList, Warehouse, Truck, Timer
+  Droplets, Recycle, ShieldAlert, ShieldCheck, CalendarDays, ClipboardList, Warehouse, Truck, Timer,
+  Brain, Globe
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -92,6 +93,9 @@ const NAV_ENTRIES: NavEntry[] = [
       { path: "/checklist-pre-auditoria", label: "Checklist Pré-Auditoria", icon: ShieldCheck },
       { path: "/simulacao-recall", label: "Simulação Recall", icon: Timer },
       { path: "/busca-global", label: "Busca Global", icon: Search },
+      { path: "/analise-tendencias", label: "Tendências IA", icon: Brain },
+      { path: "/geracao-manual-bpf", label: "Gerar Manual BPF", icon: BookOpen },
+      { path: "/consulta-sipeagro", label: "Consulta SIPEAGRO", icon: Globe },
     ],
   },
   { path: "/manual", label: "Manual", icon: BookOpen },
