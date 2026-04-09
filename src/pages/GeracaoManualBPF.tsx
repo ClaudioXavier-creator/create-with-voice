@@ -9,8 +9,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useEmpresa } from "@/hooks/useEmpresa";
 import { toast } from "sonner";
-import { popsConfig } from "@/config/popsConfig";
-import { manualBpfContent } from "@/config/manualBpfContent";
+import { POPS_CONFIG } from "@/config/popsConfig";
+import { MANUAL_BPF_SECTIONS } from "@/config/manualBpfContent";
 
 interface ManualData {
   empresa: any;
