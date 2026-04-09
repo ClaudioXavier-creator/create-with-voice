@@ -351,10 +351,10 @@ export default function Index() {
 
       {/* Painel de Alertas de Vencimento */}
       {!data.loading && data.alertasVencimento.length > 0 && (
-        <Card className="mb-6 border-orange-400/50 bg-orange-50/30 dark:bg-orange-950/10">
+        <Card className="mb-6 border-warning/50 bg-warning/5">
           <CardHeader className="pb-2">
             <CardTitle className="font-display text-base flex items-center gap-2">
-              <Bell className="w-4 h-4 text-orange-500" />
+              <Bell className="w-4 h-4 text-warning-foreground" />
               Central de Alertas de Vencimento ({data.alertasVencimento.length})
             </CardTitle>
           </CardHeader>
