@@ -80,6 +80,9 @@ const MODELOS: ModeloDoc[] = [
   { nome: "Ficha Técnica de Produto", descricao: "Ficha técnica completa com níveis de garantia", categoria: "produto", arquivo: "Ficha_Tecnica_Produto", novo: true },
   { nome: "Modelo de Rótulo (Ração/Suplemento/Sal)", descricao: "Rótulo conforme IN 22/2009 e IN 12/2004", categoria: "produto", arquivo: "Modelo_Rotulo", novo: true },
 
+  // Checklist de Registro
+  { nome: "Checklist — Registro de Fábrica de Rações (MAPA)", descricao: "Checklist completo com 14 áreas para registro de estabelecimento no MAPA/SIPEAGRO", categoria: "auditoria", arquivo: "Checklist_Registro_Fabrica", novo: true },
+
   // Instruções de Trabalho (ITs)
   { nome: "IT-01-01 — Avaliação e Qualificação de Fornecedor", descricao: "Qualificação inicial com SIPEAGRO, documentação e nota de avaliação", categoria: "instrucao", arquivo: "IT-01-01", novo: true },
   { nome: "IT-01-02 — Recebimento de MP a Granel", descricao: "Inspeção de grãos: umidade, odor, insetos e contraprova", categoria: "instrucao", arquivo: "IT-01-02", novo: true },
