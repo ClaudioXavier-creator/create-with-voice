@@ -369,7 +369,7 @@ export default function Documentos() {
                 <Table>
                   <TableHeader><TableRow>
                     <TableHead>Código</TableHead><TableHead>Nome</TableHead><TableHead>Versão</TableHead>
-                    <TableHead>Revisão</TableHead><TableHead>Validade</TableHead><TableHead>Próx. Revisão</TableHead><TableHead>Responsável</TableHead><TableHead>Status</TableHead>
+                    <TableHead>Revisão</TableHead><TableHead>Validade</TableHead><TableHead>Próx. Revisão</TableHead><TableHead>Responsável</TableHead><TableHead>Status</TableHead><TableHead className="w-32">Ações</TableHead>
                   </TableRow></TableHeader>
                   <TableBody>
                     {docs.map(d => {
@@ -385,6 +385,18 @@ export default function Documentos() {
                         <TableCell className={proximoVencer ? "text-yellow-600 font-medium" : ""}>{d.proxima_revisao || "—"}</TableCell>
                         <TableCell>{d.responsavel}</TableCell>
                         <TableCell><Badge className={statusBadge[d.status || "ativo"]}>{d.status === "em_revisao" ? "Em revisão" : d.status === "obsoleto" ? "Obsoleto" : "Ativo"}</Badge></TableCell>
+                        <TableCell>
+                          <div className="flex gap-1">
+                            <Button variant="outline" size="sm" className="h-7 text-xs" onClick={() => {
+                              setVersaoDocId(d.id); setVersaoDocCodigo(d.codigo); setVersaoAnterior(d.versao || "01");
+                              const next = String(parseInt(d.versao || "01") + 1).padStart(2, "0");
+                              setVersaoNova(next); setVersaoOpen(true);
+                            }}>Revisar</Button>
+                            <Button variant="ghost" size="sm" className="h-7 text-xs gap-1" onClick={() => handleVerHistorico(d.id, `${d.codigo} — ${d.nome}`)}>
+                              <History className="w-3 h-3" />
+                            </Button>
+                          </div>
+                        </TableCell>
                       </TableRow>
                     )})}
                   </TableBody>
