@@ -110,6 +110,7 @@ export default function Producao() {
       setOpen(false);
       setProduto(""); setLote(""); setOperador(""); setTempoMistura(""); setQuantidade("");
       setHouveSobra(false); setQtdSobra(""); setDestinoSobra("reprocesso"); setObsSobra("");
+      setRealizouFlush(false); setTipoLimpeza("flush_inerte"); setVolumeFlush(""); setProdutoAnterior(""); setProdAnteriorMedicado(false); setObsFlush("");
       fetchData();
     }
     setSaving(false);
