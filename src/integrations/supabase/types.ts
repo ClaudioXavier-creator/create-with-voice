@@ -151,6 +151,53 @@ export type Database = {
           },
         ]
       }
+      audit_log: {
+        Row: {
+          acao: string
+          created_at: string
+          dados_anteriores: Json | null
+          dados_novos: Json | null
+          empresa_id: string | null
+          id: string
+          ip_address: string | null
+          registro_id: string | null
+          tabela: string
+          user_id: string
+        }
+        Insert: {
+          acao?: string
+          created_at?: string
+          dados_anteriores?: Json | null
+          dados_novos?: Json | null
+          empresa_id?: string | null
+          id?: string
+          ip_address?: string | null
+          registro_id?: string | null
+          tabela: string
+          user_id: string
+        }
+        Update: {
+          acao?: string
+          created_at?: string
+          dados_anteriores?: Json | null
+          dados_novos?: Json | null
+          empresa_id?: string | null
+          id?: string
+          ip_address?: string | null
+          registro_id?: string | null
+          tabela?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "audit_log_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       batidas_producao: {
         Row: {
           created_at: string
@@ -653,6 +700,63 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "cronogramas_higiene_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      documento_versoes: {
+        Row: {
+          alteracoes: string | null
+          created_at: string
+          data_revisao: string | null
+          documento_id: string
+          empresa_id: string | null
+          id: string
+          motivo: string | null
+          responsavel: string | null
+          user_id: string
+          versao_anterior: string | null
+          versao_nova: string
+        }
+        Insert: {
+          alteracoes?: string | null
+          created_at?: string
+          data_revisao?: string | null
+          documento_id: string
+          empresa_id?: string | null
+          id?: string
+          motivo?: string | null
+          responsavel?: string | null
+          user_id: string
+          versao_anterior?: string | null
+          versao_nova: string
+        }
+        Update: {
+          alteracoes?: string | null
+          created_at?: string
+          data_revisao?: string | null
+          documento_id?: string
+          empresa_id?: string | null
+          id?: string
+          motivo?: string | null
+          responsavel?: string | null
+          user_id?: string
+          versao_anterior?: string | null
+          versao_nova?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "documento_versoes_documento_id_fkey"
+            columns: ["documento_id"]
+            isOneToOne: false
+            referencedRelation: "documentos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "documento_versoes_empresa_id_fkey"
             columns: ["empresa_id"]
             isOneToOne: false
             referencedRelation: "empresas"
@@ -1762,6 +1866,10 @@ export type Database = {
           created_at: string
           data: string
           empresa_id: string | null
+          flush_produto_anterior: string | null
+          flush_realizado: boolean | null
+          flush_tipo: string | null
+          flush_volume: string | null
           id: string
           lote: string | null
           operador: string | null
@@ -1778,6 +1886,10 @@ export type Database = {
           created_at?: string
           data?: string
           empresa_id?: string | null
+          flush_produto_anterior?: string | null
+          flush_realizado?: boolean | null
+          flush_tipo?: string | null
+          flush_volume?: string | null
           id?: string
           lote?: string | null
           operador?: string | null
@@ -1794,6 +1906,10 @@ export type Database = {
           created_at?: string
           data?: string
           empresa_id?: string | null
+          flush_produto_anterior?: string | null
+          flush_realizado?: boolean | null
+          flush_tipo?: string | null
+          flush_volume?: string | null
           id?: string
           lote?: string | null
           operador?: string | null
@@ -2045,12 +2161,17 @@ export type Database = {
           fornecedor: string
           id: string
           insetos: string | null
+          integridade_carga: boolean | null
+          integridade_observacoes: string | null
           lote: string | null
           materia_prima: string
           observacoes: string | null
           odor: string | null
           quantidade: string | null
+          registro_mapa_isento: boolean | null
+          registro_mapa_produto: string | null
           temperatura: string | null
+          temperatura_veiculo: string | null
           umidade: string | null
           unidade: string | null
           user_id: string
@@ -2071,12 +2192,17 @@ export type Database = {
           fornecedor: string
           id?: string
           insetos?: string | null
+          integridade_carga?: boolean | null
+          integridade_observacoes?: string | null
           lote?: string | null
           materia_prima: string
           observacoes?: string | null
           odor?: string | null
           quantidade?: string | null
+          registro_mapa_isento?: boolean | null
+          registro_mapa_produto?: string | null
           temperatura?: string | null
+          temperatura_veiculo?: string | null
           umidade?: string | null
           unidade?: string | null
           user_id: string
@@ -2097,12 +2223,17 @@ export type Database = {
           fornecedor?: string
           id?: string
           insetos?: string | null
+          integridade_carga?: boolean | null
+          integridade_observacoes?: string | null
           lote?: string | null
           materia_prima?: string
           observacoes?: string | null
           odor?: string | null
           quantidade?: string | null
+          registro_mapa_isento?: boolean | null
+          registro_mapa_produto?: string | null
           temperatura?: string | null
+          temperatura_veiculo?: string | null
           umidade?: string | null
           unidade?: string | null
           user_id?: string
