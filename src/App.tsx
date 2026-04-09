@@ -170,6 +170,7 @@ const AppRoutes = () => {
                   <Route path="/checklist-pre-auditoria" element={<ChecklistPreAuditoria />} />
                   <Route path="/simulacao-recall" element={<SimulacaoRecall />} />
                   <Route path="/busca-global" element={<BuscaGlobal />} />
+                  <Route path="/modo-tablet" element={<ModoTablet />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </AppLayout>
