@@ -100,16 +100,16 @@ const VR_VITAMINAS: { mineral: string; vr: number; unit: string; key: string }[]
 const EXEMPLO_RACAO: { rotulo: Partial<RotuloData>; niveis: Record<string, any> } = {
   rotulo: {
     tipo_rotulo: "racao",
-    nome_comercial: "RAÇÃO HGM LAC 24",
-    classificacao_label: "RAÇÃO PARA VACAS EM LACTAÇÃO",
-    especie_categoria: "BOVINOS – VACAS EM LACTAÇÃO",
-    composicao_ingredientes: "Casca de soja, Milho integral moído (Espécie doadora do gene Agrobacterium thumefaciens, Bacillus thuringiensis, Streptomyces viridochromogenes, Zea mays), Farelo de Algodão (Espécie doadora do gene Agrobacterium thumefaciens, Bacillus thuringiensis, Streptomyces higroscópicos, Streptomyces viridochromogenes, Zea mays), farelo de soja (Espécie doadora do gene Agrobacterium thumefaciens, Arabidopsis thaliana, Bacillus thuringiensis, Streptomyces viridochromogenes), calcário calcitico, cloreto de sódio (sal comum), enxofre ventilado (flor de enxofre), fosfato bicálcico, iodato de cálcio, óxido de magnésio, selenito de sódio, sulfato de cobalto, sulfato de cobre, sulfato de manganês, sulfato de zinco, vitamina A, vitamina D3, vitamina E, BHT (hidróxido de tolueno butilado), monensina sódica.",
-    eventuais_substitutivos: "DDG (Espécie doadora do gene Agrobacterium thumefaciens, Bacillus thuringiensis, Streptomyces viridochromogenes, Zea mays), milheto, sorgo integral moído, carbonato de cálcio, fosfato monobicálcico, iodato de potássio, monóxido de manganês, óxido de zinco, vitamina A/D3.",
-    niveis_garantia_texto: "Umidade (Máx.) 130 g/Kg; Proteína Bruta (Mín.) 240 g/Kg; Extrato Etéreo (Mín.) 35 g/Kg; FDA (Máx.) 120 g/Kg; Matéria Fibrosa (Máx.) 80 g/Kg; Cálcio (Mín.) 8.000 mg/Kg; Cálcio (Máx.) 11 g/Kg; Enxofre (Mín.) 1.600 mg/Kg; Fósforo (Mín.) 4.800 mg/Kg; Cobalto (Mín.) 0,9 mg/Kg; Cobre (Mín.) 28,5 mg/Kg; Iodo (Mín.) 1,2 mg/Kg; Magnésio (Mín.) 4.500 mg/Kg; Manganês (Mín.) 47 mg/Kg; Monensina Sódica 30 mg/Kg; NDT (Mín.) 750 g/Kg; Selênio (Mín.) 0,70 mg/Kg; Sódio (Mín.) 2.100 mg/Kg; Vitamina A (Mín.) 6.600 U.I./Kg; Vitamina D3 (Mín.) 1.500 U.I./Kg; Vitamina E (Mín.) 30 U.I./Kg; Zinco (Mín.) 90 mg/Kg.",
-    indicacoes_uso: "Ração para vacas leiteiras em todos os estágios da lactação.",
-    modo_usar: "A ração já está pronta para o uso, ou seja, não é preciso ser misturada a outras matérias-primas; fornecer 1,0 kg de ração para cada 3 litros de leite produzidos ou de acordo com as recomendações de um técnico responsável.",
+    nome_comercial: "RAÇÃO HGM BEZERROS 18%",
+    classificacao_label: "RAÇÃO PARA BEZERROS DE LEITE E CORTE",
+    especie_categoria: "BOVINOS – BEZERROS DE LEITE E CORTE",
+    composicao_ingredientes: "Milho integral moído (Espécie doadora do gene Agrobacterium thumefaciens, Bacillus thuringiensis, Streptomyces viridochromogenes, Zea mays), farelo de soja (Espécie doadora do gene Agrobacterium thumefaciens, Arabidopsis thaliana, Bacillus thuringiensis, Streptomyces viridochromogenes), cloreto de sódio (sal comum), enxofre ventilado (flor de enxofre), fosfato bicálcico, iodato de cálcio, niacina, óxido de magnésio, pantotenato de cálcio, selenito de sódio, sulfato de cobalto, sulfato de cobre, sulfato de manganês, sulfato de zinco, vitamina A, Vitamina B12, vitamina B2, vitamina D3, vitamina E, caulim, aditivo aromatizante, BHT (hidróxido de tolueno butilado), monensina sódica.",
+    eventuais_substitutivos: "Farelo de Algodão (Espécie doadora do gene Agrobacterium thumefaciens, Bacillus thuringiensis, Streptomyces hygroscopicus, Streptomyces viridochromogenes, Zea mays), casca de soja, milheto, sorgo integral moído, calcário calcítico, fosfato monobicálcico, iodato de potássio, monóxido de manganês, óxido de zinco.",
+    niveis_garantia_texto: "Umidade (máx.) 130 g; Proteína Bruta (min.) 180 g; Extrato Etéreo (min.) 30 g; FDA (máx.) 60 g; Matéria Fibrosa (máx.) 40 g; Cálcio (mín.) 7.000 mg; Cálcio (máx.) 10 g; Enxofre (mín.) 1.450 mg; Fósforo (min.) 4.200 mg; Cobalto (mín.) 0,45 mg; Cobre (mín.) 11,5 mg; Iodo (mín.) 0,85 mg; Magnésio (mín.) 4.400 mg; Manganês (mín.) 15 mg; Monensina Sódica 31 mg; NDT (mín.) 750 g; Selênio (mín.) 0,18 mg; Sódio (mín) 4.300 mg; Vitamina A (mín.) 9.900 U.I.; Vitamina B1 (mín.) 3 mg; Vitamina B12 (mín.) 11,25 mcg; Vitamina B2 (mín.) 4 mg; Vitamina D3 (mín.) 1.980 U.I; Vitamina E (mín.) 24 U.I; Zinco (mín.) 73 mg.",
+    indicacoes_uso: "Ração para bezerros/as de leite ou corte em fase de aleitamento.",
+    modo_usar: "Fornecer à vontade 1 a 1,5 kg para cada 100 kg de peso vivo, do 4° dia de vida adiante até o desmame.",
     precaucoes_restricoes: "Este produto contém Ionóforo: Não permitir que cavalos ou outros equídeos tenham acesso a rações contendo Monensina, pois a ingestão pode ser fatal.",
-    armazenamento: "Conservar em local seco e arejado, afastado de piso e paredes e de preferência sobre estrados, evitar presença de insetos e roedores.",
+    armazenamento: "Conservar em local seco e arejado, afastado de piso e paredes e de preferência sobre estrados.",
     peso_liquido: "40 kg",
     prazo_validade: "6 meses a partir da data de fabricação",
     razao_social: "Agro Campo EIRELI-M. E.",
@@ -124,15 +124,15 @@ const EXEMPLO_RACAO: { rotulo: Partial<RotuloData>; niveis: Record<string, any> 
 const EXEMPLO_PROTEINADO: { rotulo: Partial<RotuloData>; niveis: Record<string, any> } = {
   rotulo: {
     tipo_rotulo: "suplemento",
-    nome_comercial: "HGM PROT+ 300",
-    classificacao_label: "SUPLEMENTO MINERAL PROTEICO DE PRONTO USO – BOVINOS DE CORTE",
+    nome_comercial: "HGM ENERGY+ 400",
+    classificacao_label: "SUPLEMENTO MINERAL PROTEICO ENERGÉTICO DE PRONTO USO – BOVINOS DE CORTE",
     especie_categoria: "BOVINOS DE CORTE",
     composicao_ingredientes: "CALCÁRIO CALCÍTICO, CLORETO DE SÓDIO (SAL COMUM 9,60%), ENXOFRE VENTILADO (FLOR DE ENXOFRE), FARELO DE SOJA, FOSFATO BICÁLCICO, IODATO DE CÁLCIO, MILHO INTEGRAL MOÍDO, ÓXIDO DE MAGNÉSIO, SELENITO DE SÓDIO, SULFATO DE COBALTO, SULFATO DE COBRE, SULFATO DE MANGANÊS, SULFATO DE ZINCO, CAULIM MICRO, URÉIA PECUÁRIA, MONENSINA SÓDICA.",
     eventuais_substitutivos: "DDG, Farelo de Algodão, casca de soja, milheto, sorgo integral moído, carbonato de cálcio, fosfato monobicálcico, iodato de potássio, monóxido de manganês, óxido de zinco.",
-    niveis_garantia_texto: "Cálcio (Mín.) 20,00 g; Cálcio (Máx.) 40,00 g; Cobalto (Mín.) 21,60 mg; Cobre (Mín.) 374,40 mg; Enxofre (Mín.) 4.176,00 mg; Flúor (Máx.) 120,00 mg; Fósforo (Mín.) 12,490 g; Iodo (Mín.) 24,00 mg; Magnésio (Mín.) 4.720,00 mg; Manganês (Mín.) 355,00 mg; Monensina 200,00 mg; Proteína Bruta (Mín.) 300,00 g; NNP Equiv. Proteína (Máx.) 225 g; NDT (Mín.) 450,00 g; Selênio (Mín.) 6,72 mg; Sódio (Mín.) 79,50 g; Zinco (Mín.) 1.200,00 mg.",
+    niveis_garantia_texto: "Cálcio (Mín.) 10,00 g; Cálcio (Máx.) 30,00 g; Cobalto (Mín.) 9,00 mg; Cobre (Mín.) 156,00 mg; Enxofre (Mín.) 1.750,00 mg; Flúor (Máx.) 55,00 mg; Fósforo (Mín.) 7.490,00 mg; Iodo (Mín.) 10,00 mg; Magnésio (Mín.) 1.690,00 mg; Manganês (Mín.) 150,00 mg; Monensina 167,00 mg; Proteína Bruta (Mín.) 200,00 g; NNP Equiv. Proteína (Máx.) 112 g; NDT (Mín.) 700,00 g; Selênio (Mín.) 2,8 mg; Sódio (Mín.) 22,00 g; Zinco (Mín.) 500,00 mg.",
     indicacoes_uso: "PRODUTO DESTINADO À SUPLEMENTAÇÃO DE MINERAIS E PROTEÍNAS PARA BOVINOS DE CORTE NAS FASES DE CRIA, RECRIA E ENGORDA.",
-    modo_usar: "ADAPTAÇÃO: 1 a 7 dias misturar com sal mineralizado sem uréia em partes iguais. Após 7 dias: servir puro. Fornecer à vontade em cocho coberto. Faixa recomendada: 100 g para cada 100 kg de peso corporal/dia.",
-    precaucoes_restricoes: "CUIDADOS AO USAR PRODUTO COM URÉIA: Servir sempre em cochos cobertos, manter boa disponibilidade de pasto, não fornecer para animais em jejum, famintos e debilitados. RESTRIÇÃO: Não permitir que equídeos tenham acesso a produtos contendo monensina. A ingestão pode ser fatal.",
+    modo_usar: "Adaptação: De 1 a 7 dias: Fornecer 100 g/100 kg de peso vivo. De 8 a 14 dias fornecer 200 g/100 kg de peso vivo. Após 14 dias fornecer de 200 a 400 g/100 kg de peso vivo. Para um melhor resultado servir no final do dia.",
+    precaucoes_restricoes: "CUIDADOS AO USAR PRODUTO COM URÉIA: Servir o produto sempre em cochos cobertos, manter boa disponibilidade de pasto, manter o cocho com o produto, não fornecer o produto para animais em jejum, famintos e debilitados. RESTRIÇÃO: Não permitir que cavalos ou outros equídeos tenham acesso a produtos contendo monensina. A ingestão pode ser fatal. A monensina é incompatível com tiamulina.",
     armazenamento: "Conservar em local seco e arejado, afastado de piso e paredes.",
     peso_liquido: "30 kg",
     prazo_validade: "6 meses a partir da data de fabricação",
@@ -143,19 +143,19 @@ const EXEMPLO_PROTEINADO: { rotulo: Partial<RotuloData>; niveis: Record<string, 
     exibir_tabela_consumo: true,
   },
   niveis: {
-    calcio: { min: "20.00", max: "40.00", unit: "g/kg" },
-    fosforo: { min: "12.49", unit: "g/kg" },
-    sodio: { min: "79.50", unit: "g/kg" },
-    magnesio: { min: "4.72", unit: "g/kg" },
-    enxofre: { min: "4.176", unit: "g/kg" },
-    cobalto: { min: "21.60", unit: "mg/kg" },
-    cobre: { min: "374.40", unit: "mg/kg" },
-    iodo: { min: "24.00", unit: "mg/kg" },
-    manganes: { min: "355.00", unit: "mg/kg" },
-    selenio: { min: "6.72", unit: "mg/kg" },
-    zinco: { min: "1200.00", unit: "mg/kg" },
-    consumo_pb: { min: "300" },
-    consumo_ndt: { min: "450" },
+    calcio: { min: "10.00", max: "30.00", unit: "g/kg" },
+    fosforo: { min: "7.49", unit: "g/kg" },
+    sodio: { min: "22.00", unit: "g/kg" },
+    magnesio: { min: "1.69", unit: "g/kg" },
+    enxofre: { min: "1.750", unit: "g/kg" },
+    cobalto: { min: "9.00", unit: "mg/kg" },
+    cobre: { min: "156.00", unit: "mg/kg" },
+    iodo: { min: "10.00", unit: "mg/kg" },
+    manganes: { min: "150.00", unit: "mg/kg" },
+    selenio: { min: "2.80", unit: "mg/kg" },
+    zinco: { min: "500.00", unit: "mg/kg" },
+    consumo_pb: { min: "200" },
+    consumo_ndt: { min: "700" },
   },
 };
 
@@ -922,11 +922,11 @@ export default function RotuloEditor({ produtoId, produtoNome }: Props) {
                 </Button>
                 <div className="border-l mx-2" />
                 <span className="text-xs text-muted-foreground self-center mr-1">Exemplos:</span>
-                <Button variant="secondary" size="sm" onClick={() => { setRotulo(prev => ({ ...prev, ...EXEMPLO_RACAO.rotulo })); setNiveisObj(EXEMPLO_RACAO.niveis); toast.info("Exemplo: Ração HGM LAC 24 carregado"); }}>
-                  Ração
+                <Button variant="secondary" size="sm" onClick={() => { setRotulo(prev => ({ ...prev, ...EXEMPLO_RACAO.rotulo })); setNiveisObj(EXEMPLO_RACAO.niveis); toast.info("Exemplo: Ração HGM Bezerros 18% carregado"); }}>
+                  Ração Bezerros
                 </Button>
-                <Button variant="secondary" size="sm" onClick={() => { setRotulo(prev => ({ ...prev, ...EXEMPLO_PROTEINADO.rotulo })); setNiveisObj(EXEMPLO_PROTEINADO.niveis); toast.info("Exemplo: HGM PROT+ 300 carregado"); }}>
-                  Proteinado
+                <Button variant="secondary" size="sm" onClick={() => { setRotulo(prev => ({ ...prev, ...EXEMPLO_PROTEINADO.rotulo })); setNiveisObj(EXEMPLO_PROTEINADO.niveis); toast.info("Exemplo: HGM Energy+ 400 carregado"); }}>
+                  Energy+ 400
                 </Button>
                 <Button variant="secondary" size="sm" onClick={() => { setRotulo(prev => ({ ...prev, ...EXEMPLO_SAL_MINERAL.rotulo })); setNiveisObj(EXEMPLO_SAL_MINERAL.niveis); toast.info("Exemplo: SAL HGM 60 carregado"); }}>
                   Sal Mineral
