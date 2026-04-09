@@ -24,7 +24,7 @@ interface Fornecedor {
 
 export default function ConsultaSipeagro() {
   const { user } = useAuth();
-  const { empresaSelecionada } = useEmpresa();
+  const { empresaAtiva } = useEmpresa();
   const [fornecedores, setFornecedores] = useState<Fornecedor[]>([]);
   const [filtro, setFiltro] = useState("");
   const [loading, setLoading] = useState(true);
