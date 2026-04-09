@@ -161,8 +161,44 @@ export default function Documentos() {
       validade_revisao: popValidade || null, proxima_revisao: popProximaRevisao || null,
     } as any);
     if (error) toast.error("Erro ao salvar");
-    else { toast.success("Documento salvo!"); setPopOpen(false); setPopCodigo(""); setPopNome(""); setPopVersao("01"); setPopResponsavel(""); setPopValidade(""); setPopProximaRevisao(""); fetchData(); }
+    else {
+      toast.success("Documento salvo!");
+      registrarAuditLog({ userId: user.id, tabela: "documentos", acao: "criar", dadosNovos: { codigo: popCodigo, nome: popNome, versao: popVersao } });
+      setPopOpen(false); setPopCodigo(""); setPopNome(""); setPopVersao("01"); setPopResponsavel(""); setPopValidade(""); setPopProximaRevisao(""); fetchData();
+    }
     setSaving(false);
+  };
+
+  const handleRevisarPop = async () => {
+    if (!versaoDocId || !versaoNova || !user) return;
+    setSaving(true);
+    // Update document version
+    const { error } = await supabase.from("documentos").update({
+      versao: versaoNova, data_revisao: new Date().toISOString().split("T")[0],
+      responsavel: versaoResponsavel || undefined,
+    } as any).eq("id", versaoDocId);
+    if (error) { toast.error("Erro ao atualizar"); setSaving(false); return; }
+    // Register version history
+    await registrarVersaoDocumento({
+      userId: user.id, empresaId: empresaAtiva?.id,
+      documentoId: versaoDocId, versaoAnterior: versaoAnterior, versaoNova: versaoNova,
+      responsavel: versaoResponsavel, motivo: versaoMotivo, alteracoes: versaoAlteracoes,
+    });
+    registrarAuditLog({
+      userId: user.id, tabela: "documentos", acao: "editar", registroId: versaoDocId,
+      dadosAnteriores: { versao: versaoAnterior }, dadosNovos: { versao: versaoNova, motivo: versaoMotivo },
+    });
+    toast.success("Revisão registrada com sucesso!");
+    setVersaoOpen(false); setVersaoDocId(""); setVersaoNova(""); setVersaoMotivo(""); setVersaoAlteracoes(""); setVersaoResponsavel("");
+    fetchData();
+    setSaving(false);
+  };
+
+  const handleVerHistorico = async (docId: string, docNome: string) => {
+    const { data } = await (supabase.from("documento_versoes") as any).select("*").eq("documento_id", docId).order("created_at", { ascending: false });
+    setVersoes(data || []);
+    setVersoesDocNome(docNome);
+    setVersoesOpen(true);
   };
 
 
