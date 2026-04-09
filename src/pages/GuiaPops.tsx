@@ -217,6 +217,8 @@ function PopContent({ codigo }: { codigo: string }) {
   );
 }
 
+// ── Seções do Guia ──
+
 const fluxoGeralSection: GuiaSection = {
   id: "fluxo-geral",
   title: "Fluxo Geral: Preenchimento → Verificação → Arquivamento",
@@ -229,37 +231,6 @@ const fluxoGeralSection: GuiaSection = {
       <div><h4 className="text-sm font-semibold mb-3">Passo 2A — Preencher Registros (Físico/Impresso)</h4><div className="space-y-2"><Step n={1}>Imprima a planilha mensal.</Step><Step n={2}>Preencha manualmente em letra legível.</Step><Step n={3}>Use caneta azul ou preta. <b>Não use lápis.</b></Step><Step n={4}>Em caso de erro, risque com um traço único e rubrique.</Step><Step n={5}><b>Não use corretivo</b> em hipótese alguma.</Step></div></div>
       <div><h4 className="text-sm font-semibold mb-3">Passo 3 — Assinaturas</h4><div className="space-y-2"><Step n={1}>O <b>executor</b> assina ao final de cada turno.</Step><Step n={2}>O <b>supervisor</b> verifica e assina ao final do período.</Step><Step n={3}>O <b>RT</b> assina com CRMV ao final do mês.</Step></div></div>
       <Tip>Formas de registro aceitas: <b>Digital</b>, <b>Físico</b> (impresso + digitalizado), ou <b>Híbrido</b>.</Tip>
-    </div>
-  ),
-};
-
-const popSections: GuiaSection[] = POP_TEXTOS.map((pop) => ({
-  id: pop.codigo.toLowerCase().replace("-", ""),
-  title: `${pop.codigo.replace("-", " ")} — ${pop.nome}`,
-  icon: POP_ICONS[pop.codigo] || FileText,
-  badge: pop.codigo,
-  content: <PopContent codigo={pop.codigo} />,
-}));
-
-const digitalizacaoSection: GuiaSection = {
-  id: "digitalizacao",
-  title: "Digitalização e Arquivamento",
-  icon: Upload,
-  badge: "Processo",
-  content: (
-    <div className="space-y-6">
-      <div>
-        <h4 className="text-sm font-semibold mb-3">Padrão de Nomenclatura de Arquivos</h4>
-        <Table>
-          <TableHeader><TableRow><TableHead>Tipo</TableHead><TableHead>Padrão</TableHead><TableHead>Exemplo</TableHead></TableRow></TableHeader>
-          <TableBody>
-            <TableRow><TableCell>Planilha POP</TableCell><TableCell className="font-mono text-xs">POP-XX_AAAA-MM_periodicidade.pdf</TableCell><TableCell className="text-xs">POP-02_2026-03_diario.pdf</TableCell></TableRow>
-            <TableRow><TableCell>Laudo laboratorial</TableCell><TableCell className="font-mono text-xs">LAUDO_produto_AAAA-MM-DD.pdf</TableCell><TableCell className="text-xs">LAUDO_racao-corte_2026-03-15.pdf</TableCell></TableRow>
-            <TableRow><TableCell>Certificado calibração</TableCell><TableCell className="font-mono text-xs">CALIB_equipamento_AAAA.pdf</TableCell><TableCell className="text-xs">CALIB_balanca-pesagem_2026.pdf</TableCell></TableRow>
-          </TableBody>
-        </Table>
-      </div>
-      <Tip>Mantenha cópias digitalizadas de todas as planilhas físicas para backup e auditorias.</Tip>
     </div>
   ),
 };
@@ -338,7 +309,45 @@ const docsRegistradosSection: GuiaSection = {
   ),
 };
 
-const sections: GuiaSection[] = [fluxoGeralSection, ...popSections, docsRegistradosSection, digitalizacaoSection];
+const digitalizacaoSection: GuiaSection = {
+  id: "digitalizacao",
+  title: "Digitalização e Arquivamento",
+  icon: Upload,
+  badge: "Processo",
+  content: (
+    <div className="space-y-6">
+      <div>
+        <h4 className="text-sm font-semibold mb-3">Padrão de Nomenclatura de Arquivos</h4>
+        <Table>
+          <TableHeader><TableRow><TableHead>Tipo</TableHead><TableHead>Padrão</TableHead><TableHead>Exemplo</TableHead></TableRow></TableHeader>
+          <TableBody>
+            <TableRow><TableCell>Planilha POP</TableCell><TableCell className="font-mono text-xs">POP-XX_AAAA-MM_periodicidade.pdf</TableCell><TableCell className="text-xs">POP-02_2026-03_diario.pdf</TableCell></TableRow>
+            <TableRow><TableCell>Laudo laboratorial</TableCell><TableCell className="font-mono text-xs">LAUDO_produto_AAAA-MM-DD.pdf</TableCell><TableCell className="text-xs">LAUDO_racao-corte_2026-03-15.pdf</TableCell></TableRow>
+            <TableRow><TableCell>Certificado calibração</TableCell><TableCell className="font-mono text-xs">CALIB_equipamento_AAAA.pdf</TableCell><TableCell className="text-xs">CALIB_balanca-pesagem_2026.pdf</TableCell></TableRow>
+          </TableBody>
+        </Table>
+      </div>
+      <Tip>Mantenha cópias digitalizadas de todas as planilhas físicas para backup e auditorias.</Tip>
+    </div>
+  ),
+};
+
+// Seções dos POPs na ordem correta (POP-01 a POP-10)
+const popSections: GuiaSection[] = POP_TEXTOS.map((pop) => ({
+  id: pop.codigo.toLowerCase().replace("-", ""),
+  title: `${pop.codigo.replace("-", " ")} — ${pop.nome}`,
+  icon: POP_ICONS[pop.codigo] || FileText,
+  badge: pop.codigo,
+  content: <PopContent codigo={pop.codigo} />,
+}));
+
+// Ordem final: Fluxo Geral → POP 01 a POP 10 → Tutoriais auxiliares
+const sections: GuiaSection[] = [
+  fluxoGeralSection,
+  ...popSections,
+  docsRegistradosSection,
+  digitalizacaoSection,
+];
 
 export default function GuiaPops() {
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({});
@@ -348,7 +357,7 @@ export default function GuiaPops() {
 
   return (
     <>
-      <PageHeader icon={BookOpen} title="Guia dos POPs — IN 04/2007" description="Textos procedimentais completos dos 10 POPs obrigatórios com orientações de preenchimento" />
+      <PageHeader icon={BookOpen} title="Guia dos POPs — IN 04/2007" description="Textos procedimentais completos dos 10 POPs obrigatórios com Instruções de Trabalho, orientações de preenchimento e digitalização" />
       <div className="flex gap-2 mb-6">
         <button onClick={expandAll} className="text-sm text-primary hover:underline font-medium">Expandir tudo</button>
         <span className="text-muted-foreground">|</span>
