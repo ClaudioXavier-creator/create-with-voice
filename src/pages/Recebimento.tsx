@@ -374,6 +374,26 @@ export default function Recebimento() {
                      </div>
                    </div>
 
+                   {/* Registro do Produto no MAPA — IN 15/2009 */}
+                   <div className="p-3 rounded-lg border bg-muted/20 space-y-3">
+                     <p className="text-sm font-semibold flex items-center gap-2">
+                       <FileText className="w-4 h-4" /> Registro do Produto no MAPA — IN 15/2009
+                     </p>
+                     <p className="text-[10px] text-muted-foreground">
+                       Exigido para ingredientes de alimentação animal. Informe o nº de registro ou marque como isento.
+                     </p>
+                     <div className="flex items-center gap-2">
+                       <input type="checkbox" checked={registroMapaIsento} onChange={e => { setRegistroMapaIsento(e.target.checked); if (e.target.checked) setRegistroMapaProduto(""); }} className="h-4 w-4" />
+                       <Label className="text-sm">Produto isento de registro no MAPA</Label>
+                     </div>
+                     {!registroMapaIsento && (
+                       <div>
+                         <Label>Nº Registro do Produto no MAPA</Label>
+                         <Input value={registroMapaProduto} onChange={e => setRegistroMapaProduto(e.target.value)} placeholder="Ex: BR 1234567890" />
+                       </div>
+                     )}
+                   </div>
+
                    {/* Segregação Origem Animal — IN 15/2009 */}
                    <div className="p-3 rounded-lg border border-orange-400 bg-orange-50 dark:bg-orange-900/20 space-y-3">
                      <p className="text-sm font-semibold flex items-center gap-2 text-orange-700 dark:text-orange-400">
