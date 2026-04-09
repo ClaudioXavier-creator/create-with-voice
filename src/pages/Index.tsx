@@ -255,7 +255,7 @@ export default function Index() {
     }
 
     fetchDashboard();
-  }, [user]);
+  }, [user, empresaAtiva]);
 
   const stats = [
     { label: "Conformidade BPF", value: data.loading ? "..." : `${data.conformidadeBPF}%`, icon: CheckCircle2, color: "text-primary", link: "/auditoria" },
