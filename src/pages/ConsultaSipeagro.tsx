@@ -31,7 +31,7 @@ export default function ConsultaSipeagro() {
 
   useEffect(() => {
     if (user) carregarFornecedores();
-  }, [user, empresaSelecionada]);
+  }, [user, empresaAtiva]);
 
   const carregarFornecedores = async () => {
     if (!user) return;
