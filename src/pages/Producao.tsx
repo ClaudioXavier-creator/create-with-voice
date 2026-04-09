@@ -203,7 +203,61 @@ export default function Producao() {
                     </div>
                   </div>
 
-                  {/* Sobras / Vassoura de produção — IN 15/2009 */}
+                  {/* Flush / Limpeza entre Lotes — IN 15/2009 (Carryover) */}
+                  <div className="p-3 rounded-lg border border-orange-400 bg-orange-50 dark:bg-orange-900/10 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <p className="text-sm font-semibold flex items-center gap-2 text-orange-700 dark:text-orange-400">
+                        🧹 Limpeza / Flush entre Lotes — IN 15/2009
+                      </p>
+                      <Switch checked={realizouFlush} onCheckedChange={setRealizouFlush} />
+                    </div>
+                    <p className="text-[10px] text-muted-foreground">
+                      Registre a limpeza/varrição/flushing realizada entre lotes para mitigar arraste (carryover) de medicamentos e aditivos restritos.
+                    </p>
+                    {realizouFlush && (
+                      <>
+                        <div className="grid grid-cols-2 gap-3">
+                          <div>
+                            <Label>Tipo de Limpeza</Label>
+                            <Select value={tipoLimpeza} onValueChange={setTipoLimpeza}>
+                              <SelectTrigger><SelectValue /></SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="flush_inerte">Flushing com inerte (milho, farelo)</SelectItem>
+                                <SelectItem value="limpeza_fisica">Limpeza física (varrição/raspagem)</SelectItem>
+                                <SelectItem value="aspiracao">Aspiração mecânica</SelectItem>
+                                <SelectItem value="lavagem">Lavagem úmida</SelectItem>
+                                <SelectItem value="outro">Outro</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          <div>
+                            <Label>Volume/Peso do Flush (kg)</Label>
+                            <Input value={volumeFlush} onChange={e => setVolumeFlush(e.target.value)} placeholder="Ex: 500" />
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-2 gap-3">
+                          <div>
+                            <Label>Produto Anterior na Linha</Label>
+                            <Input value={produtoAnterior} onChange={e => setProdutoAnterior(e.target.value)} placeholder="Ex: Ração Frango Engorda c/ Salinomicina" />
+                          </div>
+                          <div className="flex items-center gap-2 pt-6">
+                            <input type="checkbox" checked={prodAnteriorMedicado} onChange={e => setProdAnteriorMedicado(e.target.checked)} className="h-4 w-4" />
+                            <Label className="text-sm">Produto anterior continha medicamento/ionóforo</Label>
+                          </div>
+                        </div>
+                        {prodAnteriorMedicado && (
+                          <div className="p-2 rounded border border-destructive/30 bg-destructive/10">
+                            <p className="text-xs text-destructive font-semibold">⚠️ Atenção: Flushing obrigatório — arraste máximo permitido: &lt; 1% ionóforos, &lt; 3% medicados (IN 15/2009).</p>
+                          </div>
+                        )}
+                        <div>
+                          <Label>Observações do Flush</Label>
+                          <Input value={obsFlush} onChange={e => setObsFlush(e.target.value)} placeholder="Destino do material de flushing, análise de arraste, etc." />
+                        </div>
+                      </>
+                    )}
+                  </div>
+
                   <div className="p-3 rounded-lg border bg-muted/20 space-y-3">
                     <div className="flex items-center justify-between">
                       <p className="text-sm font-semibold flex items-center gap-2">
