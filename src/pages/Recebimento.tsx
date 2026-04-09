@@ -105,6 +105,7 @@ export default function Recebimento() {
     setCertUrl(""); setCertValido(null); setObservacoes("");
     setVistoriaVeiculo({}); setPlacaVeiculo(""); setLacreNumero(""); setLacreIntegro(""); setCondicoesTransporte("");
     setContemOrigemAnimal(false); setTipoOrigemAnimal(""); setDestinoEspecie("");
+    setRegistroMapaProduto(""); setRegistroMapaIsento(false);
   };
 
   const handleAdd = async () => {
