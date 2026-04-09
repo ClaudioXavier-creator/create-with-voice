@@ -15,7 +15,7 @@ import { MANUAL_BPF_SECTIONS } from "@/config/manualBpfContent";
 interface ManualData {
   empresa: any;
   documentos: any[];
-  pops: typeof popsConfig;
+  pops: typeof POPS_CONFIG;
   treinamentos: any[];
   calibracoes: any[];
   fornecedores: any[];
