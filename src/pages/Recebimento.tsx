@@ -133,6 +133,12 @@ export default function Recebimento() {
       obsCompleta = vistoriaObs + (observacoes ? `\n\n${observacoes}` : "");
     }
 
+    // Temperatura do Veículo e Integridade da Carga — IN 04/2007
+    if (cargaOrigemAnimal || temperaturaVeiculo || integridadeCarga) {
+      const tempVeicObs = `[INSPEÇÃO CARGA ORIGEM ANIMAL — IN 04/2007]\nTemperatura do veículo: ${temperaturaVeiculo ? temperaturaVeiculo + " °C" : "N/I"}\nIntegridade da carga: ${integridadeCarga === "integra" ? "Íntegra" : integridadeCarga === "parcial" ? "Parcialmente comprometida ⚠️" : integridadeCarga === "comprometida" ? "COMPROMETIDA ❌" : "N/I"}${cargaOrigemAnimal ? "\n⚠️ Produto de ORIGEM ANIMAL — verificação obrigatória" : ""}`;
+      obsCompleta = (obsCompleta ? obsCompleta + "\n\n" : "") + tempVeicObs;
+    }
+
     // Registro MAPA do Produto — IN 15/2009
     if (registroMapaProduto || registroMapaIsento) {
       const regObs = `[REGISTRO MAPA DO PRODUTO — IN 15/2009]\n${registroMapaIsento ? "Produto ISENTO de registro no MAPA" : `Nº Registro: ${registroMapaProduto}`}`;
