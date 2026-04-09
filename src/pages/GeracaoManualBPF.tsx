@@ -215,7 +215,7 @@ export default function GeracaoManualBPF() {
             <Card>
               <CardContent className="pt-4 text-center">
                 <ClipboardCheck className="w-6 h-6 mx-auto mb-2 text-primary" />
-                <p className="text-2xl font-bold">{popsConfig.length}</p>
+                <p className="text-2xl font-bold">{POPS_CONFIG.length}</p>
                 <p className="text-xs text-muted-foreground">POPs</p>
               </CardContent>
             </Card>

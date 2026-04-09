@@ -44,9 +44,9 @@ export default function AnaliseTendencias() {
     try {
       let qNC = supabase.from("nao_conformidades").select("*").eq("user_id", user.id);
       let qRec = supabase.from("reclamacoes_qualidade").select("*").eq("user_id", user.id);
-      if (empresaSelecionada) {
-        qNC = qNC.eq("empresa_id", empresaSelecionada);
-        qRec = qRec.eq("empresa_id", empresaSelecionada);
+      if (empresaAtiva) {
+        qNC = qNC.eq("empresa_id", empresaAtiva.id);
+        qRec = qRec.eq("empresa_id", empresaAtiva.id);
       }
       const [{ data: ncs }, { data: reclamacoes }] = await Promise.all([qNC, qRec]);
 

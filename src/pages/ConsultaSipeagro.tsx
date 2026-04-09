@@ -41,7 +41,7 @@ export default function ConsultaSipeagro() {
       .select("id, nome, cnpj, registro_mapa, registro_sipeagro, sipeagro_verificado, sipeagro_data_verificacao, status_qualificacao")
       .eq("user_id", user.id)
       .order("nome");
-    if (empresaSelecionada) q = q.eq("empresa_id", empresaSelecionada);
+    if (empresaAtiva) q = q.eq("empresa_id", empresaAtiva.id);
     const { data } = await q;
     setFornecedores((data as Fornecedor[]) || []);
     setLoading(false);
