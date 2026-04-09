@@ -127,6 +127,12 @@ export default function Recebimento() {
       obsCompleta = vistoriaObs + (observacoes ? `\n\n${observacoes}` : "");
     }
 
+    // Registro MAPA do Produto — IN 15/2009
+    if (registroMapaProduto || registroMapaIsento) {
+      const regObs = `[REGISTRO MAPA DO PRODUTO — IN 15/2009]\n${registroMapaIsento ? "Produto ISENTO de registro no MAPA" : `Nº Registro: ${registroMapaProduto}`}`;
+      obsCompleta = (obsCompleta ? obsCompleta + "\n\n" : "") + regObs;
+    }
+
     // Segregação Origem Animal
     if (contemOrigemAnimal) {
       const segregObs = `[SEGREGAÇÃO ORIGEM ANIMAL — IN 15/2009]\nTipo: ${tipoOrigemAnimal || "N/I"}\nEspécie destino: ${destinoEspecie || "N/I"}${destinoEspecie === "bovinos" ? "\n⚠️ ALERTA EEB: Proteína animal proibida para ruminantes!" : ""}`;
