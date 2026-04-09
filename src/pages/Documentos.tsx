@@ -106,7 +106,18 @@ export default function Documentos() {
   const [popValidade, setPopValidade] = useState("");
   const [popProximaRevisao, setPopProximaRevisao] = useState("");
 
-
+  // Versão / Revisão
+  const [versaoOpen, setVersaoOpen] = useState(false);
+  const [versaoDocId, setVersaoDocId] = useState("");
+  const [versaoDocCodigo, setVersaoDocCodigo] = useState("");
+  const [versaoAnterior, setVersaoAnterior] = useState("");
+  const [versaoNova, setVersaoNova] = useState("");
+  const [versaoMotivo, setVersaoMotivo] = useState("");
+  const [versaoAlteracoes, setVersaoAlteracoes] = useState("");
+  const [versaoResponsavel, setVersaoResponsavel] = useState("");
+  const [versoes, setVersoes] = useState<any[]>([]);
+  const [versoesOpen, setVersoesOpen] = useState(false);
+  const [versoesDocNome, setVersoesDocNome] = useState("");
   // Arquivo BPF form
   const [arqOpen, setArqOpen] = useState(false);
   const [arqTitulo, setArqTitulo] = useState("");
