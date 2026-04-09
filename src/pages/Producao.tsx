@@ -127,14 +127,17 @@ export default function Producao() {
     setSaving(false);
   };
 
-  const exportCSV = () => {
+  const exportCSV = async () => {
     const headers = ["Data", "Produto", "Lote", "Operador", "Tempo Mistura", "Quantidade"];
     const rows = items.map(r => [r.data, r.produto, r.lote || "", r.operador || "", r.tempo_mistura || "", r.quantidade || ""]);
-    const csv = [headers.join(";"), ...rows.map(r => r.join(";"))].join("\n");
+    let csv = [headers.join(";"), ...rows.map(r => r.join(";"))].join("\n");
+    const nomeArquivo = `producao_${new Date().toISOString().split("T")[0]}.csv`;
+    const hash = await gerarHashIntegridade(csv);
+    csv = adicionarRodapeIntegridade(csv, hash, user?.email || "sistema", nomeArquivo);
     const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
     const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
-    link.download = `producao_${new Date().toISOString().split("T")[0]}.csv`;
+    link.download = nomeArquivo;
     link.click();
   };
 

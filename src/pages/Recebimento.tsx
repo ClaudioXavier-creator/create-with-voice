@@ -205,7 +205,7 @@ export default function Recebimento() {
     setSaving(false);
   };
 
-  const exportCSV = () => {
+  const exportCSV = async () => {
     const headers = ["Data", "Fornecedor", "Matéria-Prima", "Lote", "Quantidade", "Unidade", "Odor", "Umidade", "Temperatura", "Insetos", "Aprovado", "Cert. Análise Nº", "Cert. Válido", "Validade", "Observações"];
     const rows = items.map(r => [
       r.data, r.fornecedor, r.materia_prima, r.lote || "", r.quantidade || "", r.unidade || "",
@@ -214,11 +214,14 @@ export default function Recebimento() {
       r.certificado_analise_valido === true ? "Sim" : r.certificado_analise_valido === false ? "Não" : "",
       r.validade || "", r.observacoes || "",
     ]);
-    const csv = [headers.join(";"), ...rows.map(r => r.join(";"))].join("\n");
+    let csv = [headers.join(";"), ...rows.map(r => r.join(";"))].join("\n");
+    const nomeArquivo = `recebimento_mp_${new Date().toISOString().split("T")[0]}.csv`;
+    const hash = await gerarHashIntegridade(csv);
+    csv = adicionarRodapeIntegridade(csv, hash, user?.email || "sistema", nomeArquivo);
     const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
     const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
-    link.download = `recebimento_mp_${new Date().toISOString().split("T")[0]}.csv`;
+    link.download = nomeArquivo;
     link.click();
   };
 
