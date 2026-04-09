@@ -66,6 +66,7 @@ export default function Index() {
   const { user } = useAuth();
   const { empresaAtiva } = useEmpresa();
   const { showOnboarding, fecharTour } = useOnboarding();
+  const [periodoFiltro, setPeriodoFiltro] = useState("todos");
   const [data, setData] = useState<DashboardData>({
     ncAbertas: 0, auditoriasRealizadas: 0, treinamentosPendentes: 0, conformidadeBPF: 0,
     recentNCs: [], conformidadePorArea: [], ncPorMes: [], conformidadePorMes: [],
