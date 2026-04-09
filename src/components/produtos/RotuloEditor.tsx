@@ -922,11 +922,11 @@ export default function RotuloEditor({ produtoId, produtoNome }: Props) {
                 </Button>
                 <div className="border-l mx-2" />
                 <span className="text-xs text-muted-foreground self-center mr-1">Exemplos:</span>
-                <Button variant="secondary" size="sm" onClick={() => { setRotulo(prev => ({ ...prev, ...EXEMPLO_RACAO.rotulo })); setNiveisObj(EXEMPLO_RACAO.niveis); toast.info("Exemplo: Ração HGM LAC 24 carregado"); }}>
-                  Ração
+                <Button variant="secondary" size="sm" onClick={() => { setRotulo(prev => ({ ...prev, ...EXEMPLO_RACAO.rotulo })); setNiveisObj(EXEMPLO_RACAO.niveis); toast.info("Exemplo: Ração HGM Bezerros 18% carregado"); }}>
+                  Ração Bezerros
                 </Button>
-                <Button variant="secondary" size="sm" onClick={() => { setRotulo(prev => ({ ...prev, ...EXEMPLO_PROTEINADO.rotulo })); setNiveisObj(EXEMPLO_PROTEINADO.niveis); toast.info("Exemplo: HGM PROT+ 300 carregado"); }}>
-                  Proteinado
+                <Button variant="secondary" size="sm" onClick={() => { setRotulo(prev => ({ ...prev, ...EXEMPLO_PROTEINADO.rotulo })); setNiveisObj(EXEMPLO_PROTEINADO.niveis); toast.info("Exemplo: HGM Energy+ 400 carregado"); }}>
+                  Energy+ 400
                 </Button>
                 <Button variant="secondary" size="sm" onClick={() => { setRotulo(prev => ({ ...prev, ...EXEMPLO_SAL_MINERAL.rotulo })); setNiveisObj(EXEMPLO_SAL_MINERAL.niveis); toast.info("Exemplo: SAL HGM 60 carregado"); }}>
                   Sal Mineral
