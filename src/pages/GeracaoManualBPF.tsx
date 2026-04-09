@@ -64,7 +64,7 @@ export default function GeracaoManualBPF() {
       setManualData({
         empresa: empresa || {},
         documentos: documentos || [],
-        pops: popsConfig,
+        pops: POPS_CONFIG,
         treinamentos: treinamentos || [],
         calibracoes: calibracoes || [],
         fornecedores: fornecedores || [],
