@@ -552,6 +552,59 @@ export function gerarFormMonitoramentoSaude() {
   downloadWorkbook(wb, "Form_Monitoramento_Saude");
 }
 
+// ─── Checklist Registro de Fábrica de Rações (MAPA) ───
+export function gerarChecklistRegistroFabrica() {
+  const wb = XLSX.utils.book_new();
+
+  const sections: { titulo: string; itens: string[] }[] = [
+    { titulo: "1. DOCUMENTAÇÃO LEGAL DA EMPRESA", itens: ["CNPJ ativo", "Contrato social atualizado", "Inscrição estadual", "Alvará de funcionamento", "Licença ambiental (quando aplicável)", "Memorial descritivo da atividade"] },
+    { titulo: "2. RESPONSÁVEL TÉCNICO (RT)", itens: ["RT habilitado (médico veterinário, zootecnista ou engenheiro agrônomo)", "Registro no conselho (CRMV/CREA)", "ART ativa", "Contrato com a empresa"] },
+    { titulo: "3. INSTALAÇÕES", itens: ["Layout da fábrica (fluxo unidirecional)", "Área separada para recebimento de matérias-primas", "Área separada para armazenamento", "Área separada para produção", "Área separada para expedição", "Piso impermeável e lavável", "Ventilação adequada", "Iluminação suficiente", "Controle de acesso"] },
+    { titulo: "4. CONTROLE DE PRAGAS", itens: ["Programa de controle de pragas documentado", "Empresa terceirizada ou controle próprio", "Registros de aplicação", "Mapa de iscas"] },
+    { titulo: "5. MATÉRIAS-PRIMAS", itens: ["Cadastro de fornecedores", "Controle de recebimento", "Inspeção na chegada", "Armazenamento adequado", "Identificação por lote"] },
+    { titulo: "6. PROCESSO PRODUTIVO", itens: ["Fluxograma de produção", "Procedimentos operacionais (POPs)", "Controle de pesagem", "Sequenciamento de produção", "Controle de contaminação cruzada"] },
+    { titulo: "7. CONTROLE DE QUALIDADE", itens: ["Plano de amostragem", "Análises laboratoriais (interno ou terceirizado)", "Controle de produto acabado", "Registros de resultados"] },
+    { titulo: "8. RASTREABILIDADE", itens: ["Identificação de lotes", "Registro de produção por lote", "Controle de destino (clientes)", "Sistema de recall definido"] },
+    { titulo: "9. PRODUTO E ROTULAGEM", itens: ["Registro ou dispensa de registro do produto", "Rótulos conforme MAPA", "Garantias nutricionais", "Espécie/destinação", "Modo de uso", "Responsável técnico no rótulo"] },
+    { titulo: "10. HIGIENE E SANITIZAÇÃO", itens: ["Programa de limpeza", "POP de higienização", "Registros de limpeza", "Controle de água (potabilidade)"] },
+    { titulo: "11. TREINAMENTO DE FUNCIONÁRIOS", itens: ["Treinamento em BPF", "Registros de capacitação", "Procedimentos operacionais conhecidos pela equipe"] },
+    { titulo: "12. MANUAL DE BPF (OBRIGATÓRIO)", itens: ["Manual documentado", "POPs incluídos", "Controle de versões", "Assinado pelo RT"] },
+    { titulo: "13. REGISTROS OBRIGATÓRIOS", itens: ["Produção por lote", "Controle de matéria-prima", "Não conformidades", "Ações corretivas", "Reclamações de clientes"] },
+    { titulo: "14. REGISTRO NO MAPA (SIPEAGRO)", itens: ["Cadastro no sistema", "Solicitação de registro do estabelecimento", "Anexos enviados", "Acompanhamento do processo"] },
+  ];
+
+  const data: (string | null)[][] = [
+    ["CHECKLIST — REGISTRO DE FÁBRICA DE RAÇÕES (MAPA)"],
+    ["Empresa:", "", "", "Data:", ""],
+    ["Responsável pela verificação:", "", "", "CRMV/CREA:", ""],
+    [""],
+    ["Nº", "ÁREA / ITEM", "CONFORME", "NÃO CONFORME", "N/A", "OBSERVAÇÕES"],
+  ];
+
+  let num = 1;
+  for (const section of sections) {
+    data.push([section.titulo, "", "", "", "", ""]);
+    for (const item of section.itens) {
+      data.push([String(num), item, "☐", "☐", "☐", ""]);
+      num++;
+    }
+    data.push(["", "", "", "", "", ""]);
+  }
+
+  data.push(["RESULTADO GERAL"]);
+  data.push(["Total de itens conformes:", "", "", "Total não conformes:", "", ""]);
+  data.push(["Percentual de conformidade:", "", "", "", "", ""]);
+  data.push([""]);
+  data.push(["Parecer:", ""]);
+  data.push([""]);
+  data.push(["Assinatura do Responsável Técnico:", "", "", "Data:", ""]);
+  data.push(["Nome:", "", "", "CRMV/CREA:", ""]);
+
+  const ws = createSheet(data, [6, 50, 12, 14, 8, 30]);
+  XLSX.utils.book_append_sheet(wb, ws, "Checklist Registro");
+  downloadWorkbook(wb, "Checklist_Registro_Fabrica_Racoes_MAPA");
+}
+
 // Map arquivo key → generator function
 export const TEMPLATE_GENERATORS: Record<string, () => void> = {
   "PL_POP_1": gerarPL_POP_1,
@@ -576,4 +629,5 @@ export const TEMPLATE_GENERATORS: Record<string, () => void> = {
   "Form_Higienizacao_Reservatorio": gerarFormHigienizacaoReservatorio,
   "Form_Controle_ASO": gerarFormControleASO,
   "Form_Monitoramento_Saude": gerarFormMonitoramentoSaude,
+  "Checklist_Registro_Fabrica": gerarChecklistRegistroFabrica,
 };
