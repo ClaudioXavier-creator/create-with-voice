@@ -392,19 +392,19 @@ export default function Index() {
         </Link>
         <Link to="/simulacao-recall">
           <Button variant="outline" className="w-full h-auto py-3 flex flex-col items-center gap-1.5">
-            <Timer className="w-5 h-5 text-orange-500" />
+            <Timer className="w-5 h-5 text-destructive" />
             <span className="text-xs font-medium">Simular Recall</span>
           </Button>
         </Link>
         <Link to="/busca-global">
           <Button variant="outline" className="w-full h-auto py-3 flex flex-col items-center gap-1.5">
-            <Search className="w-5 h-5 text-blue-500" />
+            <Search className="w-5 h-5 text-primary" />
             <span className="text-xs font-medium">Busca Global</span>
           </Button>
         </Link>
         <Link to="/qualidade-total">
           <Button variant="outline" className="w-full h-auto py-3 flex flex-col items-center gap-1.5">
-            <BarChartIcon className="w-5 h-5 text-emerald-500" />
+            <BarChartIcon className="w-5 h-5 text-primary" />
             <span className="text-xs font-medium">Relatório Anual</span>
           </Button>
         </Link>
