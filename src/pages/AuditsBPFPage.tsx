@@ -133,9 +133,9 @@ export default function AuditsBPFPage() {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-4xl mx-auto">
             {[
-              { periodo: "Mensal", preco: "R$ 197", sub: "/mês", nota: "Sem compromisso de fidelidade", destaque: false },
-              { periodo: "Semestral", preco: "R$ 1.004,70", sub: "", nota: "≈ R$ 167/mês • 15% OFF", destaque: true, badge: "Mais Popular" },
-              { periodo: "Anual", preco: "R$ 1.773", sub: "", nota: "≈ R$ 148/mês • 25% OFF", destaque: true, badge: "Melhor Custo" },
+              { periodo: "Mensal", preco: "R$ 149,90", sub: "", nota: "Sem compromisso de fidelidade", destaque: false },
+              { periodo: "Semestral", preco: "R$ 764,49", sub: "", nota: "equivale a R$ 127,42/mês • 15% OFF", destaque: true, badge: "Mais Popular" },
+              { periodo: "Anual", preco: "R$ 1.349,10", sub: "", nota: "equivale a R$ 112,43/mês • 25% OFF", destaque: true, badge: "Melhor Custo" },
             ].map((plan) => (
               <Card key={plan.periodo} className={`transition-all hover:shadow-xl ${plan.destaque ? "border-primary/50 bg-primary/5 scale-[1.02]" : "border-border"} relative`}>
                 {plan.badge && (
