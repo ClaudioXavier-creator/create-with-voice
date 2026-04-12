@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { useEmpresa } from "@/hooks/useEmpresa";
 import { toast } from "sonner";
 import PageHeader from "@/components/PageHeader";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -83,6 +84,7 @@ function getFreqLabel(val: string) {
 
 export default function PlanejamentoAnual() {
   const { session } = useAuth();
+  const { empresaAtiva } = useEmpresa();
   const [items, setItems] = useState<PlanItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -101,21 +103,24 @@ export default function PlanejamentoAnual() {
 
   const fetchItems = async () => {
     if (!session?.user?.id) return;
-    const { data, error } = await supabase
+    let q = supabase
       .from("planejamento_anual")
       .select("*")
       .eq("user_id", session.user.id)
       .order("proxima_execucao", { ascending: true, nullsFirst: false });
+    if (empresaAtiva) q = q.eq("empresa_id", empresaAtiva.id);
+    const { data, error } = await q;
     if (!error && data) setItems(data as unknown as PlanItem[]);
     setLoading(false);
   };
 
-  useEffect(() => { fetchItems(); }, [session]);
+  useEffect(() => { fetchItems(); }, [session, empresaAtiva]);
 
   const handleAdd = async () => {
     if (!session?.user?.id || !form.atividade) { toast.error("Preencha a atividade"); return; }
     const { error } = await supabase.from("planejamento_anual").insert({
       user_id: session.user.id,
+      empresa_id: empresaAtiva?.id || null,
       categoria: form.categoria,
       atividade: form.atividade,
       descricao: form.descricao,
@@ -149,6 +154,7 @@ export default function PlanejamentoAnual() {
       return {
         ...t,
         user_id: session.user.id,
+        empresa_id: empresaAtiva?.id || null,
         proxima_execucao: format(proxDate, "yyyy-MM-dd"),
       };
     });

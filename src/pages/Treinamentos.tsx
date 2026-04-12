@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
+import { useEmpresa } from "@/hooks/useEmpresa";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -40,6 +41,7 @@ function escapeCsv(val: unknown): string {
 
 export default function Treinamentos() {
   const { user } = useAuth();
+  const { empresaAtiva } = useEmpresa();
   const qc = useQueryClient();
 
   // ── Treinamento form ──
@@ -69,7 +71,7 @@ export default function Treinamentos() {
   const { data: treinamentos = [] } = useQuery({
     queryKey: ["treinamentos"],
     queryFn: async () => {
-      const { data, error } = await supabase.from("treinamentos").select("*").order("data", { ascending: false });
+      const { data, error } = await supabase.from("treinamentos").select("*").order("data", { ascending: false }).then(r => empresaAtiva ? { ...r, data: r.data?.filter((d: any) => d.empresa_id === empresaAtiva.id) || null } : r);
       if (error) throw error;
       return data;
     },
@@ -102,6 +104,7 @@ export default function Treinamentos() {
         ...treinoForm,
         validade: treinoForm.validade || null,
         user_id: user!.id,
+        empresa_id: empresaAtiva?.id || null,
       });
       if (error) throw error;
     },
@@ -118,6 +121,7 @@ export default function Treinamentos() {
     mutationFn: async () => {
       const { error } = await supabase.from("saude_manipuladores" as any).insert({
         user_id: user!.id,
+        empresa_id: empresaAtiva?.id || null,
         funcionario: asoForm.funcionario,
         tipo_exame: asoForm.tipo_exame,
         data_exame: asoForm.data,

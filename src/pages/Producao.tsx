@@ -15,6 +15,7 @@ import { Switch } from "@/components/ui/switch";
 import PageHeader from "@/components/PageHeader";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { useEmpresa } from "@/hooks/useEmpresa";
 import { toast } from "sonner";
 
 interface ProdRow {
@@ -31,6 +32,7 @@ const TEMPO_MISTURA_MINIMO = 3; // minutos — padrão IN 04/2007
 
 export default function Producao() {
   const { user } = useAuth();
+  const { empresaAtiva } = useEmpresa();
   const [items, setItems] = useState<ProdRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -58,12 +60,14 @@ export default function Producao() {
 
   const fetchData = async () => {
     if (!user) return;
-    const { data } = await supabase.from("producao").select("*").order("data", { ascending: false });
+    let q = supabase.from("producao").select("*").order("data", { ascending: false });
+    if (empresaAtiva) q = q.eq("empresa_id", empresaAtiva.id);
+    const { data } = await q;
     if (data) setItems(data);
     setLoading(false);
   };
 
-  useEffect(() => { fetchData(); }, [user]);
+  useEffect(() => { fetchData(); }, [user, empresaAtiva]);
 
   const tempoMisturaValido = () => {
     const min = parseFloat(tempoMistura);
@@ -95,7 +99,7 @@ export default function Producao() {
     }
 
     const { error } = await supabase.from("producao").insert({
-      user_id: user.id,
+      user_id: user.id, empresa_id: empresaAtiva?.id || null,
       produto,
       lote,
       operador,

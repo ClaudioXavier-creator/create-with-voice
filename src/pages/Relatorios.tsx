@@ -16,6 +16,7 @@ import { Switch } from "@/components/ui/switch";
 import PageHeader from "@/components/PageHeader";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { useEmpresa } from "@/hooks/useEmpresa";
 import { toast } from "sonner";
 
 const MODULOS = [
@@ -94,6 +95,7 @@ const COLUMN_LABELS: Record<string, Record<string, string>> = {
 
 export default function Relatorios() {
   const { user } = useAuth();
+  const { empresaAtiva } = useEmpresa();
   const [relatorios, setRelatorios] = useState<RelatorioRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -121,10 +123,12 @@ export default function Relatorios() {
 
   const fetchRelatorios = async () => {
     if (!user) return;
-    const { data, error } = await supabase
+    let q = supabase
       .from("relatorios")
       .select("*")
       .order("created_at", { ascending: false });
+    if (empresaAtiva) q = q.eq("empresa_id", empresaAtiva.id);
+    const { data, error } = await q;
     if (error) {
       toast.error("Erro ao carregar relatórios");
     } else {
@@ -135,7 +139,7 @@ export default function Relatorios() {
 
   useEffect(() => {
     fetchRelatorios();
-  }, [user]);
+  }, [user, empresaAtiva]);
 
   const handleAdd = async () => {
     if (!titulo || !modulo || !user) return;
@@ -145,7 +149,8 @@ export default function Relatorios() {
     let arquivoNome = "";
 
     if (tipo === "digitalizado" && arquivo) {
-      const filePath = `${user.id}/${Date.now()}_${arquivo.name}`;
+      const empresaSegment = empresaAtiva ? `${empresaAtiva.id}/` : "";
+      const filePath = `${user.id}/${empresaSegment}${Date.now()}_${arquivo.name}`;
       const { error: uploadError } = await supabase.storage
         .from("relatorios")
         .upload(filePath, arquivo);
@@ -162,6 +167,7 @@ export default function Relatorios() {
     const rtInfo = rtAssinado ? ` | [ASSINATURA RT] ${rtNome} - CRMV: ${rtCrmv} - ${new Date().toISOString()}` : "";
     const { error } = await supabase.from("relatorios").insert({
       user_id: user.id,
+      empresa_id: empresaAtiva?.id || null,
       titulo,
       tipo,
       modulo,

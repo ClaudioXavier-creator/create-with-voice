@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import PageHeader from "@/components/PageHeader";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { useEmpresa } from "@/hooks/useEmpresa";
 import { toast } from "sonner";
 
 // Fixed MAPA item list for the monthly report
@@ -76,6 +77,7 @@ function escapeCsv(val: unknown): string {
 
 export default function RelatorioProducao() {
   const { user } = useAuth();
+  const { empresaAtiva } = useEmpresa();
   const currentYear = new Date().getFullYear();
   const currentMonth = new Date().getMonth() + 1;
   const [ano, setAno] = useState(String(currentYear));

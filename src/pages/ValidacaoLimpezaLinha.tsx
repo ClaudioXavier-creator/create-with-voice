@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
+import { useEmpresa } from "@/hooks/useEmpresa";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -28,6 +29,7 @@ const TIPOS_VALIDACAO = [
 
 export default function ValidacaoLimpezaLinha() {
   const { user } = useAuth();
+  const { empresaAtiva } = useEmpresa();
   const qc = useQueryClient();
   const [open, setOpen] = useState(false);
 
@@ -50,7 +52,7 @@ export default function ValidacaoLimpezaLinha() {
 
   const add = useMutation({
     mutationFn: async () => {
-      const { error } = await supabase.from("validacao_limpeza_linha").insert({ ...form, user_id: user!.id });
+      const { error } = await supabase.from("validacao_limpeza_linha").insert({ ...form, user_id: user!.id, empresa_id: empresaAtiva?.id || null });
       if (error) throw error;
     },
     onSuccess: () => {

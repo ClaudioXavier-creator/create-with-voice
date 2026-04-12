@@ -15,6 +15,7 @@ import { Separator } from "@/components/ui/separator";
 import PageHeader from "@/components/PageHeader";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { useEmpresa } from "@/hooks/useEmpresa";
 import { toast } from "sonner";
 import { format, addMonths, isBefore, differenceInDays } from "date-fns";
 
@@ -116,6 +117,7 @@ const tipoLabels: Record<string, string> = {
 
 export default function QualidadeTotal() {
   const { user } = useAuth();
+  const { empresaAtiva } = useEmpresa();
   const [reclamacoes, setReclamacoes] = useState<Reclamacao[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");

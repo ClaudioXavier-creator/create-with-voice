@@ -15,6 +15,7 @@ import { Progress } from "@/components/ui/progress";
 import PageHeader from "@/components/PageHeader";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { useEmpresa } from "@/hooks/useEmpresa";
 import { toast } from "sonner";
 
 interface RastreabilidadeRow {
@@ -45,6 +46,7 @@ interface TesteResult {
 
 export default function Rastreabilidade() {
   const { user } = useAuth();
+  const { empresaAtiva } = useEmpresa();
   const [registros, setRegistros] = useState<RastreabilidadeRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -133,10 +135,9 @@ export default function Rastreabilidade() {
 
   const fetchData = async () => {
     if (!user) return;
-    const { data, error } = await supabase
-      .from("rastreabilidade")
-      .select("*")
-      .order("created_at", { ascending: false });
+    let q = supabase.from("rastreabilidade").select("*").order("created_at", { ascending: false });
+    if (empresaAtiva) q = q.eq("empresa_id", empresaAtiva.id);
+    const { data, error } = await q;
     if (error) toast.error("Erro ao carregar dados");
     else setRegistros((data as unknown as RastreabilidadeRow[]) || []);
     setLoading(false);
@@ -144,11 +145,9 @@ export default function Rastreabilidade() {
 
   const fetchAnalisesLab = async () => {
     if (!user) return;
-    const { data } = await supabase
-      .from("analises_laboratorio")
-      .select("*")
-      .order("data_analise", { ascending: false })
-      .limit(200);
+    let q = supabase.from("analises_laboratorio").select("*").order("data_analise", { ascending: false }).limit(200);
+    if (empresaAtiva) q = q.eq("empresa_id", empresaAtiva.id);
+    const { data } = await q;
     if (data) setAnalisesLab(data);
   };
 
@@ -162,24 +161,19 @@ export default function Rastreabilidade() {
     if (data) setTestesHistorico(data);
   };
 
-  // MELHORIA 1: Fetch recebimentos e ordens de produção
   const fetchRecebimentos = async () => {
     if (!user) return;
-    const { data } = await supabase
-      .from("recebimento_mp")
-      .select("*")
-      .order("data", { ascending: false })
-      .limit(500);
+    let q = supabase.from("recebimento_mp").select("*").order("data", { ascending: false }).limit(500);
+    if (empresaAtiva) q = q.eq("empresa_id", empresaAtiva.id);
+    const { data } = await q;
     if (data) setRecebimentos(data);
   };
 
   const fetchOrdensProducao = async () => {
     if (!user) return;
-    const { data } = await supabase
-      .from("ordens_producao")
-      .select("*")
-      .order("data_programada", { ascending: false })
-      .limit(500);
+    let q = supabase.from("ordens_producao").select("*").order("data_programada", { ascending: false }).limit(500);
+    if (empresaAtiva) q = q.eq("empresa_id", empresaAtiva.id);
+    const { data } = await q;
     if (data) setOrdensProducao(data);
   };
 
@@ -208,7 +202,7 @@ export default function Rastreabilidade() {
     fetchRecebimentos();
     fetchOrdensProducao();
     fetchContraprovas();
-  }, [user]);
+  }, [user, empresaAtiva]);
 
   // ──── MELHORIA 4: Cálculo de contraprovas vencidas ────
   const contraprovosVencidas = useMemo(() => {
@@ -373,7 +367,7 @@ export default function Rastreabilidade() {
     if (!user || !testeResult) return;
     setTesteSaving(true);
     const { error } = await supabase.from("testes_rastreabilidade").insert({
-      user_id: user.id,
+      user_id: user.id, empresa_id: empresaAtiva?.id || null,
       lote_testado: testeResult.lote,
       produto: testeResult.produto,
       direcao: "completo",
@@ -395,7 +389,7 @@ export default function Rastreabilidade() {
     if (!produto || !materiaPrima || !user) return;
     setSaving(true);
     const { error } = await supabase.from("rastreabilidade").insert({
-      user_id: user.id,
+      user_id: user.id, empresa_id: empresaAtiva?.id || null,
       produto,
       lote_produto: loteProduto,
       materia_prima: materiaPrima,
@@ -535,7 +529,7 @@ export default function Rastreabilidade() {
     toast.success("Balanço de massa exportado para fiscalização!");
     if (user) {
       const dataGeracao = new Date().toISOString().split("T")[0];
-      await supabase.from("relatorios").insert({ user_id: user.id, titulo: `Balanço de Massa — ${dataGeracao}`, tipo: "digital", modulo: "rastreabilidade", descricao: `Relatório automático de balanço de massa com ${lotes.size} lotes rastreados. Gerado conforme Art. 18 do Decreto 12.031/2024.`, data_geracao: dataGeracao, status: "ativo" });
+      await supabase.from("relatorios").insert({ user_id: user.id, empresa_id: empresaAtiva?.id || null, titulo: `Balanço de Massa — ${dataGeracao}`, tipo: "digital", modulo: "rastreabilidade", descricao: `Relatório automático de balanço de massa com ${lotes.size} lotes rastreados. Gerado conforme Art. 18 do Decreto 12.031/2024.`, data_geracao: dataGeracao, status: "ativo" });
       toast.info("Relatório salvo automaticamente no módulo de Relatórios (Decreto 12.031/2024)");
     }
   };

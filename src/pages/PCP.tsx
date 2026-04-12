@@ -13,6 +13,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import PageHeader from "@/components/PageHeader";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { useEmpresa } from "@/hooks/useEmpresa";
 import { toast } from "sonner";
 
 interface OrdemProd {
@@ -76,6 +77,7 @@ const prioridadeConfig: Record<string, { label: string; className: string }> = {
 
 export default function PCP() {
   const { user } = useAuth();
+  const { empresaAtiva } = useEmpresa();
   const [ordens, setOrdens] = useState<OrdemProd[]>([]);
   const [formulaItens, setFormulaItens] = useState<FormulaItem[]>([]);
   const [batidas, setBatidas] = useState<Batida[]>([]);
@@ -167,10 +169,10 @@ export default function PCP() {
   const fetchData = async () => {
     if (!user) return;
     const [ordensRes, itensRes, batidasRes, matrizRes, coRes, flushRes] = await Promise.all([
-      supabase.from("ordens_producao").select("*").order("data_programada", { ascending: false }),
-      supabase.from("formula_itens").select("*").order("created_at"),
-      supabase.from("batidas_producao").select("*").order("numero_batida"),
-      supabase.from("matriz_sensibilidade").select("*").order("produto_anterior"),
+      (() => { let q = supabase.from("ordens_producao").select("*").order("data_programada", { ascending: false }); if (empresaAtiva) q = q.eq("empresa_id", empresaAtiva.id); return q; })(),
+      (() => { let q = supabase.from("formula_itens").select("*").order("created_at"); if (empresaAtiva) q = q.eq("empresa_id", empresaAtiva.id); return q; })(),
+      (() => { let q = supabase.from("batidas_producao").select("*").order("numero_batida"); if (empresaAtiva) q = q.eq("empresa_id", empresaAtiva.id); return q; })(),
+      (() => { let q = supabase.from("matriz_sensibilidade").select("*").order("produto_anterior"); if (empresaAtiva) q = q.eq("empresa_id", empresaAtiva.id); return q; })(),
       supabase.from("execucao_pops").select("*").eq("codigo_pop", "POP-CARRYOVER").order("data_execucao", { ascending: false }).limit(100),
       supabase.from("execucao_pops").select("*").eq("codigo_pop", "POP-FLUSH").order("data_execucao", { ascending: false }).limit(100),
     ]);
@@ -189,7 +191,7 @@ export default function PCP() {
     if (!numOrdem || !produto || !user) return;
     setSaving(true);
     const { error } = await supabase.from("ordens_producao").insert({
-      user_id: user.id,
+      user_id: user.id, empresa_id: empresaAtiva?.id || null,
       numero_ordem: numOrdem,
       produto,
       formula_nome: formulaNome,
@@ -221,7 +223,7 @@ export default function PCP() {
     if (!itemMP || !itemOrdemId || !user) return;
     setSaving(true);
     const { error } = await supabase.from("formula_itens").insert({
-      user_id: user.id,
+      user_id: user.id, empresa_id: empresaAtiva?.id || null,
       ordem_id: itemOrdemId,
       materia_prima: itemMP,
       lote_mp: itemLoteMP,
@@ -249,7 +251,7 @@ export default function PCP() {
     const limpezaInfo = `[LIMPEZA ENTRE LOTES] Tipo: ${limpezaTipo === "vassouragem" ? "Vassouragem" : limpezaTipo === "flushing" ? "Flushing" : "Lavagem completa"} | Resp: ${limpezaResponsavel} | Hora: ${limpezaHora}`;
     const obsCompleta = batidaObs ? `${limpezaInfo}\n${batidaObs}` : limpezaInfo;
     const { error } = await supabase.from("batidas_producao").insert({
-      user_id: user.id,
+      user_id: user.id, empresa_id: empresaAtiva?.id || null,
       ordem_id: batidaOrdemId,
       numero_batida: parseInt(batidaNum) || 1,
       operador: batidaOperador,
@@ -283,7 +285,7 @@ export default function PCP() {
       const itens = formulaItens.filter(i => i.ordem_id === id);
       if (ordem && itens.length > 0) {
         const records = itens.map(item => ({
-          user_id: user.id,
+          user_id: user.id, empresa_id: empresaAtiva?.id || null,
           produto: ordem.produto,
           lote_produto: ordem.lote_produto || "",
           materia_prima: item.materia_prima,
@@ -346,7 +348,7 @@ export default function PCP() {
     ].filter(Boolean).join("\n");
 
     const { error } = await supabase.from("execucao_pops").insert({
-      user_id: user.id,
+      user_id: user.id, empresa_id: empresaAtiva?.id || null,
       codigo_pop: "POP-CARRYOVER",
       nome_pop: "Teste de Carry-over",
       executor: coResponsavel,
@@ -1283,7 +1285,7 @@ export default function PCP() {
                 flushObs ? `Obs: ${flushObs}` : "",
               ].filter(Boolean).join("\n");
               const { error } = await supabase.from("execucao_pops").insert({
-                user_id: user.id,
+                user_id: user.id, empresa_id: empresaAtiva?.id || null,
                 codigo_pop: "POP-FLUSH",
                 nome_pop: "Validação de Limpeza de Linha (Flush)",
                 executor: flushResp,

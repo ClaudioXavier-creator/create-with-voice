@@ -17,6 +17,7 @@ import { Calendar } from "@/components/ui/calendar";
 import PageHeader from "@/components/PageHeader";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { useEmpresa } from "@/hooks/useEmpresa";
 import { toast } from "sonner";
 
 interface DocRow {
@@ -159,6 +160,7 @@ interface Alerta {
 
 export default function ExecucaoPops() {
   const { user } = useAuth();
+  const { empresaAtiva } = useEmpresa();
   const [execucoes, setExecucoes] = useState<ExecRow[]>([]);
   const [docs, setDocs] = useState<DocRow[]>([]);
   const [arquivos, setArquivos] = useState<ArquivoRow[]>([]);
@@ -195,9 +197,9 @@ export default function ExecucaoPops() {
   const fetchData = async () => {
     if (!user) return;
     const [execRes, docsRes, arqRes] = await Promise.all([
-      supabase.from("execucao_pops").select("*").order("data_execucao", { ascending: false }),
-      supabase.from("documentos").select("*").order("codigo"),
-      supabase.from("arquivos_bpf").select("id, arquivo_url, arquivo_nome, documento_ref_id"),
+      (() => { let q = supabase.from("execucao_pops").select("*").order("data_execucao", { ascending: false }); if (empresaAtiva) q = q.eq("empresa_id", empresaAtiva.id); return q; })(),
+      (() => { let q = supabase.from("documentos").select("*").order("codigo"); if (empresaAtiva) q = q.eq("empresa_id", empresaAtiva.id); return q; })(),
+      (() => { let q = supabase.from("arquivos_bpf").select("id, arquivo_url, arquivo_nome, documento_ref_id"); if (empresaAtiva) q = q.eq("empresa_id", empresaAtiva.id); return q; })(),
     ]);
     if (execRes.data) setExecucoes(execRes.data as unknown as ExecRow[]);
     if (docsRes.data) setDocs(docsRes.data);
@@ -236,7 +238,7 @@ export default function ExecucaoPops() {
     }
 
     const { error } = await supabase.from("execucao_pops").insert({
-      user_id: user.id,
+      user_id: user.id, empresa_id: empresaAtiva?.id || null,
       codigo_pop: selectedDoc.codigo,
       nome_pop: selectedDoc.nome,
       executor,

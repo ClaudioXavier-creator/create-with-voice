@@ -140,24 +140,29 @@ export default function Documentos() {
 
   const fetchData = async () => {
     if (!user) return;
-    const [docsRes, calRes, arqRes] = await Promise.all([
-      supabase.from("documentos").select("*").order("codigo"),
-      supabase.from("calibracoes").select("*").order("proxima_calibracao"),
-      supabase.from("arquivos_bpf").select("*").order("created_at", { ascending: false }),
-    ]);
+    let docsQ = supabase.from("documentos").select("*").order("codigo");
+    let calQ = supabase.from("calibracoes").select("*").order("proxima_calibracao");
+    let arqQ = supabase.from("arquivos_bpf").select("*").order("created_at", { ascending: false });
+    if (empresaAtiva) {
+      docsQ = docsQ.eq("empresa_id", empresaAtiva.id);
+      calQ = calQ.eq("empresa_id", empresaAtiva.id);
+      arqQ = arqQ.eq("empresa_id", empresaAtiva.id);
+    }
+    const [docsRes, calRes, arqRes] = await Promise.all([docsQ, calQ, arqQ]);
     if (docsRes.data) setDocs(docsRes.data);
     if (calRes.data) setCalibracoes(calRes.data as unknown as CalibracaoRow[]);
     if (arqRes.data) setArquivos(arqRes.data as unknown as ArquivoBpf[]);
     setLoading(false);
   };
 
-  useEffect(() => { fetchData(); }, [user]);
+  useEffect(() => { fetchData(); }, [user, empresaAtiva]);
 
   const handleAddPop = async () => {
     if (!popCodigo || !popNome || !user) return;
     setSaving(true);
     const { error } = await supabase.from("documentos").insert({
-      user_id: user.id, codigo: popCodigo, nome: popNome, versao: popVersao, responsavel: popResponsavel,
+      user_id: user.id, empresa_id: empresaAtiva?.id || null,
+      codigo: popCodigo, nome: popNome, versao: popVersao, responsavel: popResponsavel,
       validade_revisao: popValidade || null, proxima_revisao: popProximaRevisao || null,
     } as any);
     if (error) toast.error("Erro ao salvar");
@@ -206,7 +211,8 @@ export default function Documentos() {
     if (!calEquipamento || !user) return;
     setSaving(true);
     const { error } = await supabase.from("calibracoes").insert({
-      user_id: user.id, equipamento: calEquipamento, codigo: calCodigo, tipo: calTipo,
+      user_id: user.id, empresa_id: empresaAtiva?.id || null,
+      equipamento: calEquipamento, codigo: calCodigo, tipo: calTipo,
       localizacao: calLocal, data_calibracao: calData || null, proxima_calibracao: calProxima || null,
       responsavel: calResponsavel, certificado_numero: calCertificado, observacoes: calObs,
     } as any);

@@ -13,6 +13,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import PageHeader from "@/components/PageHeader";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { useEmpresa } from "@/hooks/useEmpresa";
 import { toast } from "sonner";
 
 // ──── Types ────
@@ -87,6 +88,7 @@ const ORGAO_OPTIONS = ["MAPA", "ANVISA", "IBAMA", "MMA", "Presidência", "Outro"
 
 export default function Legislacao() {
   const { user } = useAuth();
+  const { empresaAtiva } = useEmpresa();
 
   // Alertas state
   const [loading, setLoading] = useState(false);
@@ -133,15 +135,17 @@ export default function Legislacao() {
 
   const fetchAlertas = async () => {
     if (!user) return;
-    const { data } = await supabase
+    let q = supabase
       .from("legislacao_alertas")
       .select("*")
       .order("created_at", { ascending: false });
+    if (empresaAtiva) q = q.eq("empresa_id", empresaAtiva.id);
+    const { data } = await q;
     if (data) setAlertas(data as unknown as AlertaDB[]);
     setFetchingDB(false);
   };
 
-  useEffect(() => { fetchAlertas(); fetchNormas(); }, [user]);
+  useEffect(() => { fetchAlertas(); fetchNormas(); }, [user, empresaAtiva]);
 
   const buscarAtualizacoes = async () => {
     if (!user) return;
@@ -159,6 +163,7 @@ export default function Legislacao() {
         setResumoGeral(result.resumo_geral || "");
         const records = result.alertas.map((a: Alerta) => ({
           user_id: user.id,
+          empresa_id: empresaAtiva?.id || null,
           titulo: a.titulo,
           resumo: a.resumo,
           fonte: a.fonte || "",
@@ -203,10 +208,12 @@ export default function Legislacao() {
   const fetchNormas = async () => {
     if (!user) return;
     setNormasLoading(true);
-    const { data } = await supabase
+    let q = supabase
       .from("normas_legislacao")
       .select("*")
       .order("created_at", { ascending: false });
+    if (empresaAtiva) q = q.eq("empresa_id", empresaAtiva.id);
+    const { data } = await q;
     if (data) setNormas(data as unknown as NormaDB[]);
     setNormasLoading(false);
   };
@@ -216,8 +223,8 @@ export default function Legislacao() {
     if (!file || !user) return;
     setUploadingFile(true);
 
-    const ext = file.name.split(".").pop();
-    const path = `${user.id}/${Date.now()}_${file.name}`;
+    const empresaSegment = empresaAtiva ? `${empresaAtiva.id}/` : "";
+    const path = `${user.id}/${empresaSegment}${Date.now()}_${file.name}`;
 
     const { error } = await supabase.storage.from("normas_legislacao").upload(path, file);
     if (error) {
@@ -246,6 +253,7 @@ export default function Legislacao() {
 
     const payload = {
       user_id: user.id,
+      empresa_id: empresaAtiva?.id || null,
       titulo: normaForm.titulo,
       codigo: normaForm.codigo,
       tipo: normaForm.tipo,
@@ -288,7 +296,8 @@ export default function Legislacao() {
       const safeName = file.name
         .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
         .replace(/[^a-zA-Z0-9._-]/g, "_");
-      const path = `${user.id}/${Date.now()}_${safeName}`;
+      const empresaSegment = empresaAtiva ? `${empresaAtiva.id}/` : "";
+      const path = `${user.id}/${empresaSegment}${Date.now()}_${safeName}`;
       const { error: uploadError } = await supabase.storage.from("normas_legislacao").upload(path, file);
       if (uploadError) {
         toast.error(`Erro ao enviar "${file.name}": ${uploadError.message}`);
@@ -301,6 +310,7 @@ export default function Legislacao() {
 
       const { error: insertError } = await supabase.from("normas_legislacao").insert({
         user_id: user.id,
+        empresa_id: empresaAtiva?.id || null,
         titulo,
         codigo: "",
         tipo,

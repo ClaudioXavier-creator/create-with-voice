@@ -15,6 +15,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import PageHeader from "@/components/PageHeader";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { useEmpresa } from "@/hooks/useEmpresa";
 import { toast } from "sonner";
 import {
   exportQuestionarioBlankXlsx,
@@ -83,6 +84,7 @@ const ESTADOS_BR = [
 
 export default function Fornecedores() {
   const { user } = useAuth();
+  const { empresaAtiva } = useEmpresa();
   const [fornecedores, setFornecedores] = useState<FornecedorRow[]>([]);
   const [recebimentos, setRecebimentos] = useState<RecebimentoRow[]>([]);
   const [loading, setLoading] = useState(true);
@@ -134,16 +136,19 @@ export default function Fornecedores() {
 
   const fetchData = async () => {
     if (!user) return;
-    const [fornRes, recRes] = await Promise.all([
-      supabase.from("fornecedores").select("*").order("nome"),
-      supabase.from("recebimento_mp").select("id, data, fornecedor, materia_prima, lote, aprovado").order("data", { ascending: false }).limit(100),
-    ]);
+    let fornQ = supabase.from("fornecedores").select("*").order("nome");
+    let recQ = supabase.from("recebimento_mp").select("id, data, fornecedor, materia_prima, lote, aprovado").order("data", { ascending: false }).limit(100);
+    if (empresaAtiva) {
+      fornQ = fornQ.eq("empresa_id", empresaAtiva.id);
+      recQ = recQ.eq("empresa_id", empresaAtiva.id);
+    }
+    const [fornRes, recRes] = await Promise.all([fornQ, recQ]);
     if (fornRes.data) setFornecedores(fornRes.data as unknown as FornecedorRow[]);
     if (recRes.data) setRecebimentos(recRes.data as unknown as RecebimentoRow[]);
     setLoading(false);
   };
 
-  useEffect(() => { fetchData(); }, [user]);
+  useEffect(() => { fetchData(); }, [user, empresaAtiva]);
 
   const resetForm = () => {
     setNome(""); setCnpj(""); setEndereco(""); setBairro(""); setCep(""); setCidade(""); setEstado("");
@@ -159,7 +164,7 @@ export default function Fornecedores() {
     if (!nome || !user) return;
     setSaving(true);
     const { error } = await supabase.from("fornecedores").insert({
-      user_id: user.id, nome, cnpj, endereco, contato: contatoQualidade, email: contatoQualidadeTelEmail,
+      user_id: user.id, empresa_id: empresaAtiva?.id || null, nome, cnpj, endereco, contato: contatoQualidade, email: contatoQualidadeTelEmail,
       tipo_produto: tipoProduto, observacoes,
       bairro, cep, cidade, estado, inscricao_estadual: inscricaoEstadual,
       registro_mapa: registroMapa, contato_qualidade: contatoQualidade,

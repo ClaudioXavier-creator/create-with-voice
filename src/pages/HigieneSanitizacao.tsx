@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
+import { useEmpresa } from "@/hooks/useEmpresa";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -223,6 +224,7 @@ const CHECKLIST_RESERVATORIO: { area: string; itens: string[] }[] = [
 
 export default function HigieneSanitizacao() {
   const { user } = useAuth();
+  const { empresaAtiva } = useEmpresa();
   const qc = useQueryClient();
   const [openCronograma, setOpenCronograma] = useState(false);
   const [openRegistro, setOpenRegistro] = useState(false);
@@ -348,7 +350,7 @@ export default function HigieneSanitizacao() {
   const { data: cronogramas = [] } = useQuery({
     queryKey: ["cronogramas_higiene"],
     queryFn: async () => {
-      const { data, error } = await supabase.from("cronogramas_higiene").select("*").order("area");
+      const { data, error } = await (() => { let q = supabase.from("cronogramas_higiene").select("*").order("area"); if (empresaAtiva) q = q.eq("empresa_id", empresaAtiva.id); return q; })();
       if (error) throw error;
       return data;
     },
@@ -574,7 +576,7 @@ export default function HigieneSanitizacao() {
     ].filter(Boolean).join("\n");
 
     const { error } = await supabase.from("execucao_pops").insert({
-      user_id: user.id,
+      user_id: user.id, empresa_id: empresaAtiva?.id || null,
       codigo_pop: "POP-02-LIB-LINHA",
       nome_pop: "Checklist Liberação de Linha",
       executor: libLinhaResp,
@@ -617,7 +619,7 @@ export default function HigieneSanitizacao() {
     ].filter(Boolean).join("\n");
 
     const { error } = await supabase.from("execucao_pops").insert({
-      user_id: user.id,
+      user_id: user.id, empresa_id: empresaAtiva?.id || null,
       codigo_pop: "POP-02-SUPERFICIE",
       nome_pop: "Monitoramento de Limpeza de Superfícies",
       executor: supResp,
@@ -751,7 +753,7 @@ export default function HigieneSanitizacao() {
                       `[ASSINATURA DIGITAL: ${preOpResponsavel} — ${new Date().toLocaleString("pt-BR")} — MP 2.200-2/2001]`,
                     ].join("\n");
                     const { error } = await supabase.from("execucao_pops").insert({
-                      user_id: user.id,
+                      user_id: user.id, empresa_id: empresaAtiva?.id || null,
                       codigo_pop: "POP-02/03-PREOP",
                       nome_pop: "Checklist Pré-Operacional Limpeza",
                       executor: preOpResponsavel,
@@ -1091,7 +1093,7 @@ export default function HigieneSanitizacao() {
                       silosObs ? `Obs: ${silosObs}` : "",
                     ].filter(Boolean).join("\n");
                     const { error } = await supabase.from("execucao_pops").insert({
-                      user_id: user.id,
+                      user_id: user.id, empresa_id: empresaAtiva?.id || null,
                       codigo_pop: "POP-03-SILOS",
                       nome_pop: "Limpeza de Silos & Transportadores",
                       executor: silosResp,
@@ -1193,7 +1195,7 @@ export default function HigieneSanitizacao() {
                   setSavingHigPes(true);
                   const ncs = CHECKLIST_HIGIENE_PESSOAL.flatMap(g => g.itens.filter(item => !higPesChecklist[`higpes__${g.area}__${item}`]).map(item => `${g.area}: ${item}`));
                   const obs = [`[CHECKLIST HIGIENE PESSOAL — POP-03 / IN 04/2007]`, `Data: ${higPesData} | Turno: ${higPesTurno || "—"}`, `Itens conformes: ${marcados}/${totalItens}`, ncs.length > 0 ? `NCs: ${ncs.join("; ")}` : "Todos conformes ✅"].join("\n");
-                  const { error } = await supabase.from("execucao_pops").insert({ user_id: user.id, codigo_pop: "POP-03-HIGIENE", nome_pop: "Checklist Higiene e Saúde Pessoal", executor: higPesResp, setor: higPesTurno || "Produção", status: todosOk ? "concluido" : "nao_conforme", observacoes: obs, data_execucao: higPesData });
+                  const { error } = await supabase.from("execucao_pops").insert({ user_id: user.id, empresa_id: empresaAtiva?.id || null, codigo_pop: "POP-03-HIGIENE", nome_pop: "Checklist Higiene e Saúde Pessoal", executor: higPesResp, setor: higPesTurno || "Produção", status: todosOk ? "concluido" : "nao_conforme", observacoes: obs, data_execucao: higPesData });
                   if (error) toast.error("Erro: " + error.message);
                   else { toast.success("Checklist POP-03 Higiene Pessoal salvo!"); setHigPesChecklist({}); setHigPesResp(""); setHigPesTurno(""); }
                   setSavingHigPes(false);
@@ -1271,7 +1273,7 @@ export default function HigieneSanitizacao() {
                   setSavingRes(true);
                   const ncs = CHECKLIST_RESERVATORIO.flatMap(g => g.itens.filter(item => !resChecklist[`res__${g.area}__${item}`]).map(item => `${g.area}: ${item}`));
                   const obs = [`[HIGIENIZAÇÃO DE RESERVATÓRIO — POP-04 / IN 04/2007]`, `Data: ${resData} | Reservatório: ${resIdentificacao} (${resCapacidade || "—"}L)`, `Empresa: ${resEmpresa || "Equipe interna"}`, `Itens conformes: ${marcados}/${totalItens}`, ncs.length > 0 ? `NCs: ${ncs.join("; ")}` : "Todos conformes ✅", resObs ? `Obs: ${resObs}` : ""].filter(Boolean).join("\n");
-                  const { error } = await supabase.from("execucao_pops").insert({ user_id: user.id, codigo_pop: "POP-04-RESERVATORIO", nome_pop: "Higienização de Reservatório de Água", executor: resResp, setor: resIdentificacao, status: todosOk ? "concluido" : "nao_conforme", observacoes: obs, data_execucao: resData });
+                  const { error } = await supabase.from("execucao_pops").insert({ user_id: user.id, empresa_id: empresaAtiva?.id || null, codigo_pop: "POP-04-RESERVATORIO", nome_pop: "Higienização de Reservatório de Água", executor: resResp, setor: resIdentificacao, status: todosOk ? "concluido" : "nao_conforme", observacoes: obs, data_execucao: resData });
                   if (error) toast.error("Erro: " + error.message);
                   else { toast.success("Registro de higienização do reservatório salvo!"); qc.invalidateQueries({ queryKey: ["registros_agua"] }); setResChecklist({}); setResResp(""); setResIdentificacao(""); setResCapacidade(""); setResEmpresa(""); setResObs(""); }
                   setSavingRes(false);
@@ -1638,7 +1640,7 @@ export default function HigieneSanitizacao() {
                     ncs.length > 0 ? `NCs: ${ncs.join("; ")}` : "Todos conformes ✅",
                   ].join("\n");
                   const { error } = await supabase.from("execucao_pops").insert({
-                    user_id: user.id,
+                    user_id: user.id, empresa_id: empresaAtiva?.id || null,
                     codigo_pop: "POP-04-CHECKLIST",
                     nome_pop: "Checklist Potabilidade da Água",
                     executor: aguaCheckResp,
@@ -1945,7 +1947,7 @@ export default function HigieneSanitizacao() {
                     sintomaObs ? `Obs: ${sintomaObs}` : "",
                   ].filter(Boolean).join("\n");
                   const { error } = await supabase.from("execucao_pops").insert({
-                    user_id: user.id, codigo_pop: "POP-03-SINTOMAS", nome_pop: "Monitoramento Diário de Sintomas",
+                    user_id: user.id, empresa_id: empresaAtiva?.id || null, codigo_pop: "POP-03-SINTOMAS", nome_pop: "Monitoramento Diário de Sintomas",
                     executor: sintomaFuncionario, setor: "Produção",
                     status: sintomaApto ? "concluido" : "nao_conforme",
                     observacoes: obs, data_execucao: sintomaData,

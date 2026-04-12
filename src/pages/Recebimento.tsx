@@ -16,6 +16,7 @@ import { Switch } from "@/components/ui/switch";
 import PageHeader from "@/components/PageHeader";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { useEmpresa } from "@/hooks/useEmpresa";
 import { toast } from "sonner";
 
 interface RecebimentoRow {
@@ -40,6 +41,7 @@ interface RecebimentoRow {
 
 export default function Recebimento() {
   const { user } = useAuth();
+  const { empresaAtiva } = useEmpresa();
   const [items, setItems] = useState<RecebimentoRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -96,15 +98,17 @@ export default function Recebimento() {
 
   const fetchData = async () => {
     if (!user) return;
-    const { data, error } = await supabase
+    let q = supabase
       .from("recebimento_mp")
       .select("*")
       .order("data", { ascending: false });
+    if (empresaAtiva) q = q.eq("empresa_id", empresaAtiva.id);
+    const { data, error } = await q;
     if (!error && data) setItems(data as any);
     setLoading(false);
   };
 
-  useEffect(() => { fetchData(); }, [user]);
+  useEffect(() => { fetchData(); }, [user, empresaAtiva]);
 
   const resetForm = () => {
     setFornecedor(""); setMateriaPrima(""); setLote(""); setOdor("normal");
@@ -165,7 +169,7 @@ export default function Recebimento() {
     }
 
     const { error } = await supabase.from("recebimento_mp").insert({
-      user_id: user.id,
+      user_id: user.id, empresa_id: empresaAtiva?.id || null,
       fornecedor,
       materia_prima: materiaPrima,
       lote: lote || null,

@@ -13,6 +13,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import PageHeader from "@/components/PageHeader";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { useEmpresa } from "@/hooks/useEmpresa";
 import { toast } from "sonner";
 
 const SETORES = [
@@ -48,6 +49,7 @@ interface NCRow {
 
 export default function NaoConformidades() {
   const { user } = useAuth();
+  const { empresaAtiva } = useEmpresa();
   const [ncs, setNcs] = useState<NCRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -75,15 +77,17 @@ export default function NaoConformidades() {
 
   const fetchData = async () => {
     if (!user) return;
-    const { data } = await supabase
+    let q = supabase
       .from("nao_conformidades")
       .select("*")
       .order("data", { ascending: false });
+    if (empresaAtiva) q = q.eq("empresa_id", empresaAtiva.id);
+    const { data } = await q;
     if (data) setNcs(data as unknown as NCRow[]);
     setLoading(false);
   };
 
-  useEffect(() => { fetchData(); }, [user]);
+  useEffect(() => { fetchData(); }, [user, empresaAtiva]);
 
   const resetForm = () => {
     setFormData(new Date().toISOString().split("T")[0]);
@@ -96,7 +100,7 @@ export default function NaoConformidades() {
     if (!user || !formSetor || !formDescricao) return;
     setSaving(true);
     const { error } = await supabase.from("nao_conformidades").insert({
-      user_id: user.id,
+      user_id: user.id, empresa_id: empresaAtiva?.id || null,
       data: formData,
       setor: formSetor,
       descricao: formDescricao,

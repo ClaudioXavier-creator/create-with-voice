@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
+import { useEmpresa } from "@/hooks/useEmpresa";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -43,6 +44,7 @@ const STATUS_LIST = [
 
 export default function ManutencaoPreventiva() {
   const { user } = useAuth();
+  const { empresaAtiva } = useEmpresa();
   const qc = useQueryClient();
   const [open, setOpen] = useState(false);
   const [openCalib, setOpenCalib] = useState(false);
@@ -85,7 +87,7 @@ export default function ManutencaoPreventiva() {
 
   const addManutencao = useMutation({
     mutationFn: async () => {
-      const payload: any = { ...form, user_id: user!.id };
+      const payload: any = { ...form, user_id: user!.id, empresa_id: empresaAtiva?.id || null };
       if (!payload.data_execucao) delete payload.data_execucao;
       if (!payload.proxima_manutencao) delete payload.proxima_manutencao;
       const { error } = await supabase.from("manutencoes").insert(payload);
@@ -110,7 +112,7 @@ export default function ManutencaoPreventiva() {
 
   const addTrocaPecas = useMutation({
     mutationFn: async () => {
-      const payload: any = { ...trocaForm, user_id: user!.id };
+      const payload: any = { ...trocaForm, user_id: user!.id, empresa_id: empresaAtiva?.id || null };
       if (!payload.data_execucao) delete payload.data_execucao;
       if (!payload.proxima_manutencao) delete payload.proxima_manutencao;
       payload.descricao = `[TROCA DE PEÇAS] ${payload.descricao}`;
@@ -137,7 +139,7 @@ export default function ManutencaoPreventiva() {
 
   const addCalibracao = useMutation({
     mutationFn: async () => {
-      const payload: any = { ...calibForm, user_id: user!.id };
+      const payload: any = { ...calibForm, user_id: user!.id, empresa_id: empresaAtiva?.id || null };
       if (!payload.proxima_calibracao) delete payload.proxima_calibracao;
       if (!payload.proxima_verificacao_intermediaria) delete payload.proxima_verificacao_intermediaria;
       if (!payload.resultado_verificacao) delete payload.resultado_verificacao;
@@ -165,7 +167,9 @@ export default function ManutencaoPreventiva() {
   const { data: calibracoes = [] } = useQuery({
     queryKey: ["calibracoes"],
     queryFn: async () => {
-      const { data, error } = await supabase.from("calibracoes").select("*").order("proxima_calibracao");
+      let qCal = supabase.from("calibracoes").select("*").order("proxima_calibracao");
+      if (empresaAtiva) qCal = qCal.eq("empresa_id", empresaAtiva.id);
+      const { data, error } = await qCal;
       if (error) throw error;
       return data;
     },
