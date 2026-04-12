@@ -4,7 +4,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider, useAuth } from "@/hooks/useAuth";
-import { useLicense } from "@/hooks/useLicense";
+
 import { EmpresaProvider } from "@/hooks/useEmpresa";
 import AppLayout from "@/components/layout/AppLayout";
 import LicenseGate from "@/components/LicenseGate";
