@@ -15,6 +15,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import PageHeader from "@/components/PageHeader";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { useEmpresa } from "@/hooks/useEmpresa";
 import { toast } from "sonner";
 import {
   exportQuestionarioBlankXlsx,
