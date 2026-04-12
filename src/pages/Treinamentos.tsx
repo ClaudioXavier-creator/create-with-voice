@@ -104,7 +104,7 @@ export default function Treinamentos() {
         ...treinoForm,
         validade: treinoForm.validade || null,
         user_id: user!.id,
-        empresa_id: empresaAtiva?.id || null, empresa_id: empresaAtiva?.id || null,
+        empresa_id: empresaAtiva?.id || null,
       });
       if (error) throw error;
     },

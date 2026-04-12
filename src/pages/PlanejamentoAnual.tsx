@@ -84,6 +84,7 @@ function getFreqLabel(val: string) {
 
 export default function PlanejamentoAnual() {
   const { session } = useAuth();
+  const { empresaAtiva } = useEmpresa();
   const [items, setItems] = useState<PlanItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
