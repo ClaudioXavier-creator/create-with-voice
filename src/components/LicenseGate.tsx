@@ -108,7 +108,10 @@ export default function LicenseGate({ children }: { children: React.ReactNode })
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <p className="text-2xl font-bold">{plan.price}</p>
+                  <p className="text-2xl font-bold">{plan.priceTotal}</p>
+                  {plan.priceMes && (
+                    <p className="text-sm font-medium text-primary">{plan.priceMes}</p>
+                  )}
                   <p className="text-sm text-muted-foreground">{plan.desc}</p>
                 </div>
                 <Button
