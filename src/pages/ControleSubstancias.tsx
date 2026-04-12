@@ -55,7 +55,7 @@ export default function ControleSubstancias() {
   const add = useMutation({
     mutationFn: async () => {
       const status = form.conforme ? "conforme" : "nao_conforme";
-      const { error } = await supabase.from("controle_substancias").insert({ ...form, status, user_id: user!.id });
+      const { error } = await supabase.from("controle_substancias").insert({ ...form, status, user_id: user!.id, empresa_id: empresaAtiva?.id || null });
       if (error) throw error;
     },
     onSuccess: () => {

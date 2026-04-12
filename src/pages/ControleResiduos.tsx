@@ -70,7 +70,7 @@ export default function ControleResiduos() {
 
   const add = useMutation({
     mutationFn: async () => {
-      const { error } = await supabase.from("controle_residuos").insert({ ...form, user_id: user!.id });
+      const { error } = await supabase.from("controle_residuos").insert({ ...form, user_id: user!.id, empresa_id: empresaAtiva?.id || null });
       if (error) throw error;
 
       // Auto-register in execucao_pops for discarded products (IN 15/2009)

@@ -66,7 +66,7 @@ export default function Pragas() {
   // --- Mutations ---
   const addPraga = useMutation({
     mutationFn: async () => {
-      const { error } = await supabase.from("controle_pragas").insert({ ...pragaForm, user_id: user!.id });
+      const { error } = await supabase.from("controle_pragas").insert({ ...pragaForm, user_id: user!.id, empresa_id: empresaAtiva?.id || null });
       if (error) throw error;
     },
     onSuccess: () => {

@@ -52,7 +52,7 @@ export default function ValidacaoLimpezaLinha() {
 
   const add = useMutation({
     mutationFn: async () => {
-      const { error } = await supabase.from("validacao_limpeza_linha").insert({ ...form, user_id: user!.id });
+      const { error } = await supabase.from("validacao_limpeza_linha").insert({ ...form, user_id: user!.id, empresa_id: empresaAtiva?.id || null });
       if (error) throw error;
     },
     onSuccess: () => {
