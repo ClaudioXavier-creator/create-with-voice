@@ -1,4 +1,4 @@
-import { Building2, Plus, Pencil, Trash2 } from "lucide-react";
+import { Building2, Plus, Pencil, Trash2, AlertTriangle } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -43,7 +43,16 @@ export default function Cadastro() {
     }));
   };
 
-  const openNew = () => { setForm(emptyForm); setEditId(null); setOpen(true); };
+  const MAX_EMPRESAS = 10;
+  const limitReached = (empresas?.length || 0) >= MAX_EMPRESAS;
+
+  const openNew = () => {
+    if (limitReached) {
+      toast.error(`Limite de ${MAX_EMPRESAS} empresas atingido. Entre em contato para contratar o plano expandido (+25%).`);
+      return;
+    }
+    setForm(emptyForm); setEditId(null); setOpen(true);
+  };
 
   const openEdit = (e: any) => {
     setForm({
@@ -101,10 +110,20 @@ export default function Cadastro() {
     <>
       <PageHeader icon={Building2} title="Cadastro de Empresas" description="Gerencie múltiplas unidades fabris — dados isolados por empresa" />
 
-      <div className="flex justify-end mb-4">
+      {limitReached && (
+        <div className="mb-4 p-3 rounded-lg bg-warning/10 border border-warning/30 flex items-center gap-3 text-sm">
+          <AlertTriangle className="w-5 h-5 text-warning shrink-0" />
+          <span>
+            Limite de <strong>{MAX_EMPRESAS} empresas</strong> atingido. Para cadastrar mais, contrate o plano expandido (<strong>+25%</strong> sobre o valor atual).
+          </span>
+        </div>
+      )}
+
+      <div className="flex items-center justify-between mb-4">
+        <span className="text-sm text-muted-foreground">{empresas?.length || 0} / {MAX_EMPRESAS} empresas</span>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
-            <Button onClick={openNew}><Plus className="w-4 h-4 mr-1" /> Nova Empresa</Button>
+            <Button onClick={openNew} disabled={limitReached}><Plus className="w-4 h-4 mr-1" /> Nova Empresa</Button>
           </DialogTrigger>
           <DialogContent className="max-w-2xl">
             <DialogHeader>

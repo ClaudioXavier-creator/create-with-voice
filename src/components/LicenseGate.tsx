@@ -132,10 +132,15 @@ export default function LicenseGate({ children }: { children: React.ReactNode })
           ))}
         </div>
 
-        <p className="text-center text-xs text-muted-foreground">
-          <ShieldCheck className="w-3 h-3 inline mr-1" />
-          Pagamento seguro via Stripe. Cancele a qualquer momento.
-        </p>
+        <div className="text-center space-y-1">
+          <p className="text-xs text-muted-foreground">
+            <ShieldCheck className="w-3 h-3 inline mr-1" />
+            Pagamento seguro via Stripe. Cancele a qualquer momento.
+          </p>
+          <p className="text-xs text-muted-foreground">
+            Inclui até <strong>10 empresas</strong>. Acima disso, acréscimo de 25% no valor do plano.
+          </p>
+        </div>
       </div>
     </div>
   );
