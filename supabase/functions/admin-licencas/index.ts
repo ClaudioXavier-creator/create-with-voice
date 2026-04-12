@@ -5,8 +5,6 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-const ADMIN_EMAIL = "claudiolx.nunes@gmail.com";
-
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
@@ -24,12 +22,12 @@ Deno.serve(async (req) => {
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 
-    // Verify caller is admin
+    // Verify caller is admin via user_roles
     const userClient = createClient(supabaseUrl, Deno.env.get("SUPABASE_ANON_KEY")!, {
       global: { headers: { Authorization: authHeader } },
     });
     const { data: { user }, error: userError } = await userClient.auth.getUser();
-    if (userError || !user || user.email !== ADMIN_EMAIL) {
+    if (userError || !user) {
       return new Response(JSON.stringify({ error: "Acesso negado" }), {
         status: 403,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -37,24 +35,44 @@ Deno.serve(async (req) => {
     }
 
     const adminClient = createClient(supabaseUrl, supabaseServiceKey);
+
+    // Check admin role
+    const { data: roleData } = await adminClient
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", user.id)
+      .eq("role", "admin")
+      .maybeSingle();
+
+    if (!roleData) {
+      return new Response(JSON.stringify({ error: "Acesso negado" }), {
+        status: 403,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     const { action, ...params } = await req.json();
 
     if (action === "list") {
-      // List all users with their license info
+      // List all licenses with empresa info
       const { data: licenses, error } = await adminClient
         .from("licencas")
-        .select("*")
+        .select("*, empresas(nome)")
         .order("created_at", { ascending: false });
 
       if (error) throw error;
 
-      // Get user emails from auth
+      // Get user emails
       const { data: { users: authUsers }, error: authError } = await adminClient.auth.admin.listUsers({ perPage: 1000 });
       if (authError) throw authError;
 
       const enriched = (licenses || []).map((lic: any) => {
         const authUser = authUsers?.find((u: any) => u.id === lic.user_id);
-        return { ...lic, email: authUser?.email || "—" };
+        return {
+          ...lic,
+          email: authUser?.email || "—",
+          empresa_nome: lic.empresas?.nome || "—",
+        };
       });
 
       return new Response(JSON.stringify(enriched), {
@@ -63,8 +81,8 @@ Deno.serve(async (req) => {
     }
 
     if (action === "grant") {
-      const { user_id, dias } = params;
-      if (!user_id || !dias) throw new Error("user_id e dias são obrigatórios");
+      const { empresa_id, dias } = params;
+      if (!empresa_id || !dias) throw new Error("empresa_id e dias são obrigatórios");
 
       const planoMap: Record<number, string> = {
         30: "trial",
@@ -79,11 +97,20 @@ Deno.serve(async (req) => {
 
       const chave = `ADM-${crypto.randomUUID().replace(/-/g, "").slice(0, 16).toUpperCase()}`;
 
-      // Check if user already has a license
+      // Get empresa owner
+      const { data: empresa } = await adminClient
+        .from("empresas")
+        .select("user_id")
+        .eq("id", empresa_id)
+        .single();
+
+      if (!empresa) throw new Error("Empresa não encontrada");
+
+      // Check existing license for this empresa
       const { data: existing } = await adminClient
         .from("licencas")
         .select("id")
-        .eq("user_id", user_id)
+        .eq("empresa_id", empresa_id)
         .maybeSingle();
 
       if (existing) {
@@ -95,17 +122,20 @@ Deno.serve(async (req) => {
             data_expiracao: expDate.toISOString().split("T")[0],
             status: "ativa",
             chave_licenca: chave,
+            liberado_admin: true,
           })
           .eq("id", existing.id);
         if (error) throw error;
       } else {
         const { error } = await adminClient.from("licencas").insert({
-          user_id,
+          user_id: empresa.user_id,
+          empresa_id,
           chave_licenca: chave,
           plano: planoMap[Number(dias)] || `${dias}_dias`,
           data_inicio: now.toISOString().split("T")[0],
           data_expiracao: expDate.toISOString().split("T")[0],
           status: "ativa",
+          liberado_admin: true,
         });
         if (error) throw error;
       }
@@ -116,16 +146,17 @@ Deno.serve(async (req) => {
     }
 
     if (action === "revoke") {
-      const { user_id } = params;
-      if (!user_id) throw new Error("user_id é obrigatório");
+      const { empresa_id } = params;
+      if (!empresa_id) throw new Error("empresa_id é obrigatório");
 
       const { error } = await adminClient
         .from("licencas")
         .update({
           status: "revogada",
           data_expiracao: new Date().toISOString().split("T")[0],
+          liberado_admin: false,
         })
-        .eq("user_id", user_id);
+        .eq("empresa_id", empresa_id);
 
       if (error) throw error;
 
