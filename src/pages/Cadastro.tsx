@@ -1,4 +1,4 @@
-import { Building2, Plus, Pencil, Trash2 } from "lucide-react";
+import { Building2, Plus, Pencil, Trash2, AlertTriangle } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -43,7 +43,16 @@ export default function Cadastro() {
     }));
   };
 
-  const openNew = () => { setForm(emptyForm); setEditId(null); setOpen(true); };
+  const MAX_EMPRESAS = 10;
+  const limitReached = (empresas?.length || 0) >= MAX_EMPRESAS;
+
+  const openNew = () => {
+    if (limitReached) {
+      toast.error(`Limite de ${MAX_EMPRESAS} empresas atingido. Entre em contato para contratar o plano expandido (+25%).`);
+      return;
+    }
+    setForm(emptyForm); setEditId(null); setOpen(true);
+  };
 
   const openEdit = (e: any) => {
     setForm({
