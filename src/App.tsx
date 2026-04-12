@@ -4,9 +4,10 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider, useAuth } from "@/hooks/useAuth";
-import { useLicense } from "@/hooks/useLicense";
+
 import { EmpresaProvider } from "@/hooks/useEmpresa";
 import AppLayout from "@/components/layout/AppLayout";
+
 import Vitrine from "./pages/Vitrine";
 import Index from "./pages/Index";
 import Cadastro from "./pages/Cadastro";
@@ -44,7 +45,7 @@ import PotabilidadeAgua from "./pages/PotabilidadeAgua";
 import SaudePessoal from "./pages/SaudePessoal";
 import ControleVisitantes from "./pages/ControleVisitantes";
 import Auth from "./pages/Auth";
-import AtivarLicenca from "./pages/AtivarLicenca";
+
 import Modelos from "./pages/Modelos";
 import Instalar from "./pages/Instalar";
 import NutriCRMPage from "./pages/NutriCRMPage";
@@ -79,23 +80,7 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
 
-function LicenseGate({ children }: { children: React.ReactNode }) {
-  const { loading, isActive } = useLicense();
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
-      </div>
-    );
-  }
-
-  if (!isActive) {
-    return <AtivarLicenca />;
-  }
-
-  return <>{children}</>;
-}
 
 function AuthRoute() {
   const { session } = useAuth();
@@ -130,7 +115,6 @@ const AppRoutes = () => {
         path="/*"
         element={
           <ProtectedRoute>
-            <LicenseGate>
               <AppLayout>
                 <Routes>
                   <Route path="/dashboard" element={<Index />} />
@@ -169,7 +153,6 @@ const AppRoutes = () => {
                   <Route path="/saude-pessoal" element={<SaudePessoal />} />
                   <Route path="/visitantes" element={<ControleVisitantes />} />
                   <Route path="/modelos" element={<Modelos />} />
-                  {/* /documentos-bpf removido — consolidado na aba Arquivo BPF em /documentos */}
                   <Route path="/checklist-pre-auditoria" element={<ChecklistPreAuditoria />} />
                   <Route path="/simulacao-recall" element={<SimulacaoRecall />} />
                   <Route path="/busca-global" element={<BuscaGlobal />} />
@@ -180,7 +163,6 @@ const AppRoutes = () => {
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </AppLayout>
-            </LicenseGate>
           </ProtectedRoute>
         }
       />
