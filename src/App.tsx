@@ -83,11 +83,7 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 
 
 function AuthRoute() {
-  const { session } = useAuth();
-  const [searchParams] = useSearchParams();
-  const redirectTo = searchParams.get("redirect") || "/dashboard";
-
-  return session ? <Navigate to={redirectTo} replace /> : <Auth />;
+  return <Auth />;
 }
 
 const AppRoutes = () => {
