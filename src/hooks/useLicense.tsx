@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "./useAuth";
+import { useEmpresa } from "./useEmpresa";
 
 export interface LicenseInfo {
   id: string;
@@ -9,10 +10,13 @@ export interface LicenseInfo {
   data_inicio: string;
   data_expiracao: string;
   chave_licenca: string;
+  empresa_id: string | null;
+  liberado_admin: boolean;
 }
 
 export function useLicense() {
   const { user } = useAuth();
+  const { empresaAtiva } = useEmpresa();
   const [license, setLicense] = useState<LicenseInfo | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -21,7 +25,7 @@ export function useLicense() {
     : false;
 
   const isActive = license
-    ? !isExpired && license.status === "ativa"
+    ? (!isExpired && license.status === "ativa") || license.liberado_admin
     : false;
 
   const daysRemaining = license
@@ -29,54 +33,57 @@ export function useLicense() {
     : 0;
 
   useEffect(() => {
-    if (!user) { setLoading(false); return; }
+    if (!user) { setLicense(null); setLoading(false); return; }
 
-    const fetch = async () => {
-      const { data } = await supabase
+    const fetchLicense = async () => {
+      setLoading(true);
+
+      let query = supabase
         .from("licencas")
         .select("*")
-        .eq("user_id", user.id)
         .order("created_at", { ascending: false })
-        .limit(1)
-        .single();
+        .limit(1);
 
+      if (empresaAtiva) {
+        query = query.eq("empresa_id", empresaAtiva.id);
+      } else {
+        query = query.eq("user_id", user.id).is("empresa_id", null);
+      }
+
+      const { data } = await query.maybeSingle();
       setLicense(data as LicenseInfo | null);
       setLoading(false);
     };
 
-    fetch();
-  }, [user]);
+    fetchLicense();
+  }, [user, empresaAtiva]);
 
   const activateKey = async (key: string) => {
     if (!user) throw new Error("Não autenticado");
 
-    const url = `https://uyrcxfypdzasdminxizq.supabase.co/functions/v1/activate-license`;
     const session = (await supabase.auth.getSession()).data.session;
-
-    const res = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${session?.access_token}`,
-        apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
-      },
-      body: JSON.stringify({ chave: key }),
+    const { data, error } = await supabase.functions.invoke("activate-license", {
+      body: { chave: key, empresa_id: empresaAtiva?.id || null },
     });
 
-    const result = await res.json();
-    if (!res.ok) throw new Error(result.error || "Erro ao ativar licença");
+    if (error) throw new Error(error.message || "Erro ao ativar licença");
 
     // Refresh license
-    const { data } = await supabase
+    let query = supabase
       .from("licencas")
       .select("*")
-      .eq("user_id", user.id)
       .order("created_at", { ascending: false })
-      .limit(1)
-      .single();
+      .limit(1);
 
-    setLicense(data as LicenseInfo | null);
-    return result;
+    if (empresaAtiva) {
+      query = query.eq("empresa_id", empresaAtiva.id);
+    } else {
+      query = query.eq("user_id", user.id).is("empresa_id", null);
+    }
+
+    const { data: refreshed } = await query.maybeSingle();
+    setLicense(refreshed as LicenseInfo | null);
+    return data;
   };
 
   return { license, loading, isActive, isExpired, daysRemaining, activateKey };
