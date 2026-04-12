@@ -87,7 +87,7 @@ export default function ManutencaoPreventiva() {
 
   const addManutencao = useMutation({
     mutationFn: async () => {
-      const payload: any = { ...form, user_id: user!.id };
+      const payload: any = { ...form, user_id: user!.id, empresa_id: empresaAtiva?.id || null };
       if (!payload.data_execucao) delete payload.data_execucao;
       if (!payload.proxima_manutencao) delete payload.proxima_manutencao;
       const { error } = await supabase.from("manutencoes").insert(payload);
@@ -112,7 +112,7 @@ export default function ManutencaoPreventiva() {
 
   const addTrocaPecas = useMutation({
     mutationFn: async () => {
-      const payload: any = { ...trocaForm, user_id: user!.id };
+      const payload: any = { ...trocaForm, user_id: user!.id, empresa_id: empresaAtiva?.id || null };
       if (!payload.data_execucao) delete payload.data_execucao;
       if (!payload.proxima_manutencao) delete payload.proxima_manutencao;
       payload.descricao = `[TROCA DE PEÇAS] ${payload.descricao}`;
@@ -139,7 +139,7 @@ export default function ManutencaoPreventiva() {
 
   const addCalibracao = useMutation({
     mutationFn: async () => {
-      const payload: any = { ...calibForm, user_id: user!.id };
+      const payload: any = { ...calibForm, user_id: user!.id, empresa_id: empresaAtiva?.id || null };
       if (!payload.proxima_calibracao) delete payload.proxima_calibracao;
       if (!payload.proxima_verificacao_intermediaria) delete payload.proxima_verificacao_intermediaria;
       if (!payload.resultado_verificacao) delete payload.resultado_verificacao;

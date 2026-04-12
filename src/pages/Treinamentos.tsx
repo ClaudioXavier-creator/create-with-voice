@@ -104,6 +104,7 @@ export default function Treinamentos() {
         ...treinoForm,
         validade: treinoForm.validade || null,
         user_id: user!.id,
+        empresa_id: empresaAtiva?.id || null, empresa_id: empresaAtiva?.id || null,
       });
       if (error) throw error;
     },
@@ -120,6 +121,7 @@ export default function Treinamentos() {
     mutationFn: async () => {
       const { error } = await supabase.from("saude_manipuladores" as any).insert({
         user_id: user!.id,
+        empresa_id: empresaAtiva?.id || null,
         funcionario: asoForm.funcionario,
         tipo_exame: asoForm.tipo_exame,
         data_exame: asoForm.data,

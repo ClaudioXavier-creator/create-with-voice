@@ -117,6 +117,7 @@ export default function PlanejamentoAnual() {
     if (!session?.user?.id || !form.atividade) { toast.error("Preencha a atividade"); return; }
     const { error } = await supabase.from("planejamento_anual").insert({
       user_id: session.user.id,
+      empresa_id: empresaAtiva?.id || null,
       categoria: form.categoria,
       atividade: form.atividade,
       descricao: form.descricao,
@@ -150,6 +151,7 @@ export default function PlanejamentoAnual() {
       return {
         ...t,
         user_id: session.user.id,
+        empresa_id: empresaAtiva?.id || null,
         proxima_execucao: format(proxDate, "yyyy-MM-dd"),
       };
     });
