@@ -139,7 +139,7 @@ export default function Relatorios() {
 
   useEffect(() => {
     fetchRelatorios();
-  }, [user]);
+  }, [user, empresaAtiva]);
 
   const handleAdd = async () => {
     if (!titulo || !modulo || !user) return;

@@ -155,7 +155,7 @@ export default function Documentos() {
     setLoading(false);
   };
 
-  useEffect(() => { fetchData(); }, [user]);
+  useEffect(() => { fetchData(); }, [user, empresaAtiva]);
 
   const handleAddPop = async () => {
     if (!popCodigo || !popNome || !user) return;

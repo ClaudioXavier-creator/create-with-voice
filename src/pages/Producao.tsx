@@ -67,7 +67,7 @@ export default function Producao() {
     setLoading(false);
   };
 
-  useEffect(() => { fetchData(); }, [user]);
+  useEffect(() => { fetchData(); }, [user, empresaAtiva]);
 
   const tempoMisturaValido = () => {
     const min = parseFloat(tempoMistura);

@@ -148,7 +148,7 @@ export default function Fornecedores() {
     setLoading(false);
   };
 
-  useEffect(() => { fetchData(); }, [user]);
+  useEffect(() => { fetchData(); }, [user, empresaAtiva]);
 
   const resetForm = () => {
     setNome(""); setCnpj(""); setEndereco(""); setBairro(""); setCep(""); setCidade(""); setEstado("");

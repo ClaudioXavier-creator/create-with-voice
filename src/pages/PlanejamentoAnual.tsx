@@ -114,7 +114,7 @@ export default function PlanejamentoAnual() {
     setLoading(false);
   };
 
-  useEffect(() => { fetchItems(); }, [session]);
+  useEffect(() => { fetchItems(); }, [session, empresaAtiva]);
 
   const handleAdd = async () => {
     if (!session?.user?.id || !form.atividade) { toast.error("Preencha a atividade"); return; }

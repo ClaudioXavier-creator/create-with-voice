@@ -145,7 +145,7 @@ export default function Legislacao() {
     setFetchingDB(false);
   };
 
-  useEffect(() => { fetchAlertas(); fetchNormas(); }, [user]);
+  useEffect(() => { fetchAlertas(); fetchNormas(); }, [user, empresaAtiva]);
 
   const buscarAtualizacoes = async () => {
     if (!user) return;

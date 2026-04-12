@@ -87,7 +87,7 @@ export default function NaoConformidades() {
     setLoading(false);
   };
 
-  useEffect(() => { fetchData(); }, [user]);
+  useEffect(() => { fetchData(); }, [user, empresaAtiva]);
 
   const resetForm = () => {
     setFormData(new Date().toISOString().split("T")[0]);

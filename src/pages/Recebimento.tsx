@@ -108,7 +108,7 @@ export default function Recebimento() {
     setLoading(false);
   };
 
-  useEffect(() => { fetchData(); }, [user]);
+  useEffect(() => { fetchData(); }, [user, empresaAtiva]);
 
   const resetForm = () => {
     setFornecedor(""); setMateriaPrima(""); setLote(""); setOdor("normal");

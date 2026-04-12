@@ -202,7 +202,7 @@ export default function Rastreabilidade() {
     fetchRecebimentos();
     fetchOrdensProducao();
     fetchContraprovas();
-  }, [user]);
+  }, [user, empresaAtiva]);
 
   // ──── MELHORIA 4: Cálculo de contraprovas vencidas ────
   const contraprovosVencidas = useMemo(() => {
