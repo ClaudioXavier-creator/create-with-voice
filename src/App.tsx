@@ -7,6 +7,7 @@ import { AuthProvider, useAuth } from "@/hooks/useAuth";
 
 import { EmpresaProvider } from "@/hooks/useEmpresa";
 import AppLayout from "@/components/layout/AppLayout";
+import LicenseGate from "@/components/LicenseGate";
 
 import Vitrine from "./pages/Vitrine";
 import Index from "./pages/Index";
@@ -103,15 +104,16 @@ const AppRoutes = () => {
       <Route path="/auth" element={<AuthRoute />} />
       <Route path="/instalar" element={<Instalar />} />
       <Route path="/nutricrm" element={<ProtectedRoute><NutriCRMPage /></ProtectedRoute>} />
-      <Route path="/feedbpf" element={<FeedBPFPage />} />
+      <Route path="/feedbpf" element={<ProtectedRoute><FeedBPFPage /></ProtectedRoute>} />
       <Route path="/audits-bpf" element={<ProtectedRoute><AuditsBPFPage /></ProtectedRoute>} />
-      <Route path="/agrogestao" element={<ProtectedRoute><AgroGestaoCRMPage /></ProtectedRoute>} />
+      <Route path="/agrogestao" element={<ProtectedRoute><LicenseGate><AgroGestaoCRMPage /></LicenseGate></ProtectedRoute>} />
       <Route path="/admin-licencas" element={<ProtectedRoute><AdminLicencas /></ProtectedRoute>} />
       <Route
         path="/*"
         element={
           <ProtectedRoute>
               <AppLayout>
+                <LicenseGate>
                 <Routes>
                   <Route path="/dashboard" element={<Index />} />
                   <Route path="/cadastro" element={<Cadastro />} />
@@ -158,6 +160,7 @@ const AppRoutes = () => {
                   <Route path="/consulta-sipeagro" element={<ConsultaSipeagro />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
+                </LicenseGate>
               </AppLayout>
           </ProtectedRoute>
         }
