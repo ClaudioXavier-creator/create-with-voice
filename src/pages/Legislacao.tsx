@@ -296,7 +296,8 @@ export default function Legislacao() {
       const safeName = file.name
         .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
         .replace(/[^a-zA-Z0-9._-]/g, "_");
-      const path = `${user.id}/${Date.now()}_${safeName}`;
+      const empresaSegment = empresaAtiva ? `${empresaAtiva.id}/` : "";
+      const path = `${user.id}/${empresaSegment}${Date.now()}_${safeName}`;
       const { error: uploadError } = await supabase.storage.from("normas_legislacao").upload(path, file);
       if (uploadError) {
         toast.error(`Erro ao enviar "${file.name}": ${uploadError.message}`);
@@ -309,6 +310,7 @@ export default function Legislacao() {
 
       const { error: insertError } = await supabase.from("normas_legislacao").insert({
         user_id: user.id,
+        empresa_id: empresaAtiva?.id || null,
         titulo,
         codigo: "",
         tipo,

@@ -123,10 +123,12 @@ export default function Relatorios() {
 
   const fetchRelatorios = async () => {
     if (!user) return;
-    const { data, error } = await supabase
+    let q = supabase
       .from("relatorios")
       .select("*")
       .order("created_at", { ascending: false });
+    if (empresaAtiva) q = q.eq("empresa_id", empresaAtiva.id);
+    const { data, error } = await q;
     if (error) {
       toast.error("Erro ao carregar relatórios");
     } else {
@@ -147,7 +149,8 @@ export default function Relatorios() {
     let arquivoNome = "";
 
     if (tipo === "digitalizado" && arquivo) {
-      const filePath = `${user.id}/${Date.now()}_${arquivo.name}`;
+      const empresaSegment = empresaAtiva ? `${empresaAtiva.id}/` : "";
+      const filePath = `${user.id}/${empresaSegment}${Date.now()}_${arquivo.name}`;
       const { error: uploadError } = await supabase.storage
         .from("relatorios")
         .upload(filePath, arquivo);
@@ -164,6 +167,7 @@ export default function Relatorios() {
     const rtInfo = rtAssinado ? ` | [ASSINATURA RT] ${rtNome} - CRMV: ${rtCrmv} - ${new Date().toISOString()}` : "";
     const { error } = await supabase.from("relatorios").insert({
       user_id: user.id,
+      empresa_id: empresaAtiva?.id || null,
       titulo,
       tipo,
       modulo,
