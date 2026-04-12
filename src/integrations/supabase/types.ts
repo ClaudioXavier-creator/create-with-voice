@@ -1216,7 +1216,9 @@ export type Database = {
           created_at: string
           data_expiracao: string
           data_inicio: string
+          empresa_id: string | null
           id: string
+          liberado_admin: boolean
           plano: string
           status: string
           stripe_checkout_id: string | null
@@ -1229,7 +1231,9 @@ export type Database = {
           created_at?: string
           data_expiracao: string
           data_inicio?: string
+          empresa_id?: string | null
           id?: string
+          liberado_admin?: boolean
           plano?: string
           status?: string
           stripe_checkout_id?: string | null
@@ -1242,7 +1246,9 @@ export type Database = {
           created_at?: string
           data_expiracao?: string
           data_inicio?: string
+          empresa_id?: string | null
           id?: string
+          liberado_admin?: boolean
           plano?: string
           status?: string
           stripe_checkout_id?: string | null
@@ -1250,7 +1256,15 @@ export type Database = {
           updated_at?: string
           user_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "licencas_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       manutencoes: {
         Row: {
