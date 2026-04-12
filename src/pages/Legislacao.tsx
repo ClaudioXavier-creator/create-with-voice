@@ -135,10 +135,12 @@ export default function Legislacao() {
 
   const fetchAlertas = async () => {
     if (!user) return;
-    const { data } = await supabase
+    let q = supabase
       .from("legislacao_alertas")
       .select("*")
       .order("created_at", { ascending: false });
+    if (empresaAtiva) q = q.eq("empresa_id", empresaAtiva.id);
+    const { data } = await q;
     if (data) setAlertas(data as unknown as AlertaDB[]);
     setFetchingDB(false);
   };
@@ -161,6 +163,7 @@ export default function Legislacao() {
         setResumoGeral(result.resumo_geral || "");
         const records = result.alertas.map((a: Alerta) => ({
           user_id: user.id,
+          empresa_id: empresaAtiva?.id || null,
           titulo: a.titulo,
           resumo: a.resumo,
           fonte: a.fonte || "",
@@ -205,10 +208,12 @@ export default function Legislacao() {
   const fetchNormas = async () => {
     if (!user) return;
     setNormasLoading(true);
-    const { data } = await supabase
+    let q = supabase
       .from("normas_legislacao")
       .select("*")
       .order("created_at", { ascending: false });
+    if (empresaAtiva) q = q.eq("empresa_id", empresaAtiva.id);
+    const { data } = await q;
     if (data) setNormas(data as unknown as NormaDB[]);
     setNormasLoading(false);
   };
