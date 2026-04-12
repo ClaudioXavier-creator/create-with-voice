@@ -80,7 +80,7 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
 
-// LicenseGate is now imported from @/components/LicenseGate
+
 
 function AuthRoute() {
   const { session } = useAuth();
