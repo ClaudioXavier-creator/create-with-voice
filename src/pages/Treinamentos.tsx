@@ -71,7 +71,7 @@ export default function Treinamentos() {
   const { data: treinamentos = [] } = useQuery({
     queryKey: ["treinamentos"],
     queryFn: async () => {
-      const { data, error } = await supabase.from("treinamentos").select("*").order("data", { ascending: false });
+      const { data, error } = await supabase.from("treinamentos").select("*").order("data", { ascending: false }).then(r => empresaAtiva ? { ...r, data: r.data?.filter((d: any) => d.empresa_id === empresaAtiva.id) || null } : r);
       if (error) throw error;
       return data;
     },

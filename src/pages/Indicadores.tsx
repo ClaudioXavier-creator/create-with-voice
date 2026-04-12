@@ -86,11 +86,11 @@ export default function Indicadores() {
     if (!user) return;
     (async () => {
       const [o, b, n, c, r] = await Promise.all([
-        supabase.from("ordens_producao").select("id,produto,quantidade_programada,status,data_programada,created_at").order("data_programada"),
-        supabase.from("batidas_producao").select("id,ordem_id,tempo_mistura_minutos,hora_inicio,hora_fim,status,created_at").order("created_at"),
-        supabase.from("nao_conformidades").select("id,setor,status,data").order("data"),
-        supabase.from("checklist_items").select("id,area,conforme,auditoria_data").order("auditoria_data"),
-        supabase.from("recebimento_mp").select("id,aprovado,data").order("data"),
+        (() => { let q = supabase.from("ordens_producao").select("id,produto,quantidade_programada,status,data_programada,created_at").order("data_programada"); if (empresaAtiva) q = q.eq("empresa_id", empresaAtiva.id); return q; })(),
+        (() => { let q = supabase.from("batidas_producao").select("id,ordem_id,tempo_mistura_minutos,hora_inicio,hora_fim,status,created_at").order("created_at"); if (empresaAtiva) q = q.eq("empresa_id", empresaAtiva.id); return q; })(),
+        (() => { let q = supabase.from("nao_conformidades").select("id,setor,status,data").order("data"); if (empresaAtiva) q = q.eq("empresa_id", empresaAtiva.id); return q; })(),
+        (() => { let q = supabase.from("checklist_items").select("id,area,conforme,auditoria_data").order("auditoria_data"); if (empresaAtiva) q = q.eq("empresa_id", empresaAtiva.id); return q; })(),
+        (() => { let q = supabase.from("recebimento_mp").select("id,aprovado,data").order("data"); if (empresaAtiva) q = q.eq("empresa_id", empresaAtiva.id); return q; })(),
       ]);
       if (o.data) setOrdens(o.data as unknown as OrdemProd[]);
       if (b.data) setBatidas(b.data as unknown as Batida[]);

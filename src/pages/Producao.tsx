@@ -60,7 +60,9 @@ export default function Producao() {
 
   const fetchData = async () => {
     if (!user) return;
-    const { data } = await supabase.from("producao").select("*").order("data", { ascending: false });
+    let q = supabase.from("producao").select("*").order("data", { ascending: false });
+    if (empresaAtiva) q = q.eq("empresa_id", empresaAtiva.id);
+    const { data } = await q;
     if (data) setItems(data);
     setLoading(false);
   };

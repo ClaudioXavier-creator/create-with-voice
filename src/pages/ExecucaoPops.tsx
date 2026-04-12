@@ -197,9 +197,9 @@ export default function ExecucaoPops() {
   const fetchData = async () => {
     if (!user) return;
     const [execRes, docsRes, arqRes] = await Promise.all([
-      supabase.from("execucao_pops").select("*").order("data_execucao", { ascending: false }),
-      supabase.from("documentos").select("*").order("codigo"),
-      supabase.from("arquivos_bpf").select("id, arquivo_url, arquivo_nome, documento_ref_id"),
+      (() => { let q = supabase.from("execucao_pops").select("*").order("data_execucao", { ascending: false }); if (empresaAtiva) q = q.eq("empresa_id", empresaAtiva.id); return q; })(),
+      (() => { let q = supabase.from("documentos").select("*").order("codigo"); if (empresaAtiva) q = q.eq("empresa_id", empresaAtiva.id); return q; })(),
+      (() => { let q = supabase.from("arquivos_bpf").select("id, arquivo_url, arquivo_nome, documento_ref_id"); if (empresaAtiva) q = q.eq("empresa_id", empresaAtiva.id); return q; })(),
     ]);
     if (execRes.data) setExecucoes(execRes.data as unknown as ExecRow[]);
     if (docsRes.data) setDocs(docsRes.data);

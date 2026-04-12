@@ -167,7 +167,9 @@ export default function ManutencaoPreventiva() {
   const { data: calibracoes = [] } = useQuery({
     queryKey: ["calibracoes"],
     queryFn: async () => {
-      const { data, error } = await supabase.from("calibracoes").select("*").order("proxima_calibracao");
+      let qCal = supabase.from("calibracoes").select("*").order("proxima_calibracao");
+      if (empresaAtiva) qCal = qCal.eq("empresa_id", empresaAtiva.id);
+      const { data, error } = await qCal;
       if (error) throw error;
       return data;
     },

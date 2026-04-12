@@ -32,7 +32,7 @@ export default function ChecklistPreAuditoria() {
     setLoading(true);
 
     const [docsRes, popsRes, calibRes, treinRes, checklistRes, ncRes, rastrRes, higieneRes] = await Promise.all([
-      supabase.from("documentos").select("codigo, nome, status, proxima_revisao, validade_revisao").eq("user_id", user.id),
+      supabase.from("documentos").select("codigo, nome, status, proxima_revisao, validade_revisao").eq("user_id", user.id).then(r => { if (empresaAtiva) { return { ...r, data: r.data?.filter((d: any) => !d.empresa_id || d.empresa_id === empresaAtiva.id) || null }; } return r; }),
       supabase.from("pop_planilhas").select("pop_codigo, pop_nome, status, mes, ano").eq("user_id", user.id),
       supabase.from("calibracoes").select("equipamento, proxima_calibracao, status").eq("user_id", user.id),
       supabase.from("treinamentos").select("funcionario, treinamento, validade").eq("user_id", user.id),

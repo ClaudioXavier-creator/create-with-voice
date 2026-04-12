@@ -169,10 +169,10 @@ export default function PCP() {
   const fetchData = async () => {
     if (!user) return;
     const [ordensRes, itensRes, batidasRes, matrizRes, coRes, flushRes] = await Promise.all([
-      supabase.from("ordens_producao").select("*").order("data_programada", { ascending: false }),
-      supabase.from("formula_itens").select("*").order("created_at"),
-      supabase.from("batidas_producao").select("*").order("numero_batida"),
-      supabase.from("matriz_sensibilidade").select("*").order("produto_anterior"),
+      (() => { let q = supabase.from("ordens_producao").select("*").order("data_programada", { ascending: false }); if (empresaAtiva) q = q.eq("empresa_id", empresaAtiva.id); return q; })(),
+      (() => { let q = supabase.from("formula_itens").select("*").order("created_at"); if (empresaAtiva) q = q.eq("empresa_id", empresaAtiva.id); return q; })(),
+      (() => { let q = supabase.from("batidas_producao").select("*").order("numero_batida"); if (empresaAtiva) q = q.eq("empresa_id", empresaAtiva.id); return q; })(),
+      (() => { let q = supabase.from("matriz_sensibilidade").select("*").order("produto_anterior"); if (empresaAtiva) q = q.eq("empresa_id", empresaAtiva.id); return q; })(),
       supabase.from("execucao_pops").select("*").eq("codigo_pop", "POP-CARRYOVER").order("data_execucao", { ascending: false }).limit(100),
       supabase.from("execucao_pops").select("*").eq("codigo_pop", "POP-FLUSH").order("data_execucao", { ascending: false }).limit(100),
     ]);

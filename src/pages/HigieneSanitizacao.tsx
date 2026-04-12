@@ -350,7 +350,7 @@ export default function HigieneSanitizacao() {
   const { data: cronogramas = [] } = useQuery({
     queryKey: ["cronogramas_higiene"],
     queryFn: async () => {
-      const { data, error } = await supabase.from("cronogramas_higiene").select("*").order("area");
+      const { data, error } = await (() => { let q = supabase.from("cronogramas_higiene").select("*").order("area"); if (empresaAtiva) q = q.eq("empresa_id", empresaAtiva.id); return q; })();
       if (error) throw error;
       return data;
     },
