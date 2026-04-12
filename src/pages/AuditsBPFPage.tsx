@@ -130,6 +130,7 @@ export default function AuditsBPFPage() {
             <Badge variant="outline" className="mb-3 text-xs tracking-widest uppercase px-4 py-1">Planos e Preços</Badge>
             <h2 className="text-3xl font-bold font-display text-foreground mb-2">Planos Audits_BPF</h2>
             <p className="text-muted-foreground">Escolha o plano ideal para sua empresa</p>
+            <p className="text-sm text-muted-foreground mt-1">Inclui até <strong>10 empresas</strong>. Acima disso, acréscimo de 25%.</p>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-4xl mx-auto">
             {[
