@@ -13,6 +13,7 @@ interface FileUploadProps {
   onUploadComplete?: (url: string, fileName: string) => void;
   label?: string;
   currentUrl?: string | null;
+  empresaId?: string | null;
 }
 
 export default function FileUpload({
@@ -23,6 +24,7 @@ export default function FileUpload({
   onUploadComplete,
   label = "Anexar arquivo",
   currentUrl,
+  empresaId,
 }: FileUploadProps) {
   const { user } = useAuth();
   const [uploading, setUploading] = useState(false);
@@ -41,7 +43,8 @@ export default function FileUpload({
 
     setUploading(true);
     const ext = file.name.split(".").pop();
-    const path = `${user.id}/${folder}/${Date.now()}.${ext}`;
+    const empresaSegment = empresaId ? `${empresaId}/` : "";
+    const path = `${user.id}/${empresaSegment}${folder}/${Date.now()}.${ext}`;
 
     const { error } = await supabase.storage.from(bucket).upload(path, file, {
       cacheControl: "3600",
