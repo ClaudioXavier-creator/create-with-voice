@@ -95,6 +95,7 @@ const COLUMN_LABELS: Record<string, Record<string, string>> = {
 
 export default function Relatorios() {
   const { user } = useAuth();
+  const { empresaAtiva } = useEmpresa();
   const [relatorios, setRelatorios] = useState<RelatorioRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);

@@ -88,6 +88,7 @@ const ORGAO_OPTIONS = ["MAPA", "ANVISA", "IBAMA", "MMA", "Presidência", "Outro"
 
 export default function Legislacao() {
   const { user } = useAuth();
+  const { empresaAtiva } = useEmpresa();
 
   // Alertas state
   const [loading, setLoading] = useState(false);

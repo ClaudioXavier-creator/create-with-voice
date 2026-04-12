@@ -84,6 +84,7 @@ const ESTADOS_BR = [
 
 export default function Fornecedores() {
   const { user } = useAuth();
+  const { empresaAtiva } = useEmpresa();
   const [fornecedores, setFornecedores] = useState<FornecedorRow[]>([]);
   const [recebimentos, setRecebimentos] = useState<RecebimentoRow[]>([]);
   const [loading, setLoading] = useState(true);
