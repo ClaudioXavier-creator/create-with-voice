@@ -161,7 +161,8 @@ export default function Documentos() {
     if (!popCodigo || !popNome || !user) return;
     setSaving(true);
     const { error } = await supabase.from("documentos").insert({
-      user_id: user.id, codigo: popCodigo, nome: popNome, versao: popVersao, responsavel: popResponsavel,
+      user_id: user.id, empresa_id: empresaAtiva?.id || null,
+      codigo: popCodigo, nome: popNome, versao: popVersao, responsavel: popResponsavel,
       validade_revisao: popValidade || null, proxima_revisao: popProximaRevisao || null,
     } as any);
     if (error) toast.error("Erro ao salvar");
@@ -210,7 +211,8 @@ export default function Documentos() {
     if (!calEquipamento || !user) return;
     setSaving(true);
     const { error } = await supabase.from("calibracoes").insert({
-      user_id: user.id, equipamento: calEquipamento, codigo: calCodigo, tipo: calTipo,
+      user_id: user.id, empresa_id: empresaAtiva?.id || null,
+      equipamento: calEquipamento, codigo: calCodigo, tipo: calTipo,
       localizacao: calLocal, data_calibracao: calData || null, proxima_calibracao: calProxima || null,
       responsavel: calResponsavel, certificado_numero: calCertificado, observacoes: calObs,
     } as any);
