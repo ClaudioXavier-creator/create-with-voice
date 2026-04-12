@@ -8,6 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import PageHeader from "@/components/PageHeader";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { useEmpresa } from "@/hooks/useEmpresa";
 import { Link } from "react-router-dom";
 
 interface SearchResult {
