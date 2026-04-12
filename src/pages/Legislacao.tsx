@@ -223,8 +223,8 @@ export default function Legislacao() {
     if (!file || !user) return;
     setUploadingFile(true);
 
-    const ext = file.name.split(".").pop();
-    const path = `${user.id}/${Date.now()}_${file.name}`;
+    const empresaSegment = empresaAtiva ? `${empresaAtiva.id}/` : "";
+    const path = `${user.id}/${empresaSegment}${Date.now()}_${file.name}`;
 
     const { error } = await supabase.storage.from("normas_legislacao").upload(path, file);
     if (error) {
@@ -253,6 +253,7 @@ export default function Legislacao() {
 
     const payload = {
       user_id: user.id,
+      empresa_id: empresaAtiva?.id || null,
       titulo: normaForm.titulo,
       codigo: normaForm.codigo,
       tipo: normaForm.tipo,
