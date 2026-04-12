@@ -45,7 +45,7 @@ import PotabilidadeAgua from "./pages/PotabilidadeAgua";
 import SaudePessoal from "./pages/SaudePessoal";
 import ControleVisitantes from "./pages/ControleVisitantes";
 import Auth from "./pages/Auth";
-import AtivarLicenca from "./pages/AtivarLicenca";
+
 import Modelos from "./pages/Modelos";
 import Instalar from "./pages/Instalar";
 import NutriCRMPage from "./pages/NutriCRMPage";
