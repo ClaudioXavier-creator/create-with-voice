@@ -10,8 +10,8 @@ import { toast } from "sonner";
 
 const PLANS = [
   { key: "mensal", label: "Mensal", priceTotal: "R$ 150", priceMes: null, desc: "Pagamento único" },
-  { key: "semestral", label: "Semestral", priceTotal: "R$ 840", priceMes: "R$ 140/mês", desc: "6 meses recorrente" },
-  { key: "anual", label: "Anual", priceTotal: "R$ 1.500", priceMes: "R$ 125/mês", desc: "12 meses recorrente" },
+  { key: "semestral", label: "Semestral", priceTotal: "R$ 840", priceMes: "equivale a R$ 140/mês", desc: "Pagamento único por 6 meses" },
+  { key: "anual", label: "Anual", priceTotal: "R$ 1.500", priceMes: "equivale a R$ 125/mês", desc: "Pagamento único por 12 meses" },
 ];
 
 export default function LicenseGate({ children }: { children: React.ReactNode }) {
