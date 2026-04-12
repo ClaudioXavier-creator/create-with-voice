@@ -97,7 +97,7 @@ export default function Producao() {
     }
 
     const { error } = await supabase.from("producao").insert({
-      user_id: user.id,
+      user_id: user.id, empresa_id: empresaAtiva?.id || null,
       produto,
       lote,
       operador,

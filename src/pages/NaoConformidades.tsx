@@ -98,7 +98,7 @@ export default function NaoConformidades() {
     if (!user || !formSetor || !formDescricao) return;
     setSaving(true);
     const { error } = await supabase.from("nao_conformidades").insert({
-      user_id: user.id,
+      user_id: user.id, empresa_id: empresaAtiva?.id || null,
       data: formData,
       setor: formSetor,
       descricao: formDescricao,

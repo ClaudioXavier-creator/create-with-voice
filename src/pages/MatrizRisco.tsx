@@ -262,7 +262,7 @@ export default function MatrizRisco() {
     products.forEach(row => {
       products.forEach(col => {
         rows.push({
-          user_id: user.id,
+          user_id: user.id, empresa_id: empresaAtiva?.id || null,
           produto_anterior: row,
           produto_seguinte: col,
           requer_flushing: matrix[row]?.[col] || false,
@@ -280,7 +280,7 @@ export default function MatrizRisco() {
     if (!user) return;
     await supabase.from("matriz_risco").delete().eq("user_id", user.id);
     const rows = risks.map(r => ({
-      user_id: user.id,
+      user_id: user.id, empresa_id: empresaAtiva?.id || null,
       etapa_processo: r.etapa_processo,
       perigo_identificado: r.perigo_identificado,
       tipo_perigo: r.tipo_perigo,

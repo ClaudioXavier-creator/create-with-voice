@@ -191,7 +191,7 @@ export default function PCP() {
     if (!numOrdem || !produto || !user) return;
     setSaving(true);
     const { error } = await supabase.from("ordens_producao").insert({
-      user_id: user.id,
+      user_id: user.id, empresa_id: empresaAtiva?.id || null,
       numero_ordem: numOrdem,
       produto,
       formula_nome: formulaNome,
@@ -223,7 +223,7 @@ export default function PCP() {
     if (!itemMP || !itemOrdemId || !user) return;
     setSaving(true);
     const { error } = await supabase.from("formula_itens").insert({
-      user_id: user.id,
+      user_id: user.id, empresa_id: empresaAtiva?.id || null,
       ordem_id: itemOrdemId,
       materia_prima: itemMP,
       lote_mp: itemLoteMP,
@@ -251,7 +251,7 @@ export default function PCP() {
     const limpezaInfo = `[LIMPEZA ENTRE LOTES] Tipo: ${limpezaTipo === "vassouragem" ? "Vassouragem" : limpezaTipo === "flushing" ? "Flushing" : "Lavagem completa"} | Resp: ${limpezaResponsavel} | Hora: ${limpezaHora}`;
     const obsCompleta = batidaObs ? `${limpezaInfo}\n${batidaObs}` : limpezaInfo;
     const { error } = await supabase.from("batidas_producao").insert({
-      user_id: user.id,
+      user_id: user.id, empresa_id: empresaAtiva?.id || null,
       ordem_id: batidaOrdemId,
       numero_batida: parseInt(batidaNum) || 1,
       operador: batidaOperador,
@@ -285,7 +285,7 @@ export default function PCP() {
       const itens = formulaItens.filter(i => i.ordem_id === id);
       if (ordem && itens.length > 0) {
         const records = itens.map(item => ({
-          user_id: user.id,
+          user_id: user.id, empresa_id: empresaAtiva?.id || null,
           produto: ordem.produto,
           lote_produto: ordem.lote_produto || "",
           materia_prima: item.materia_prima,
@@ -348,7 +348,7 @@ export default function PCP() {
     ].filter(Boolean).join("\n");
 
     const { error } = await supabase.from("execucao_pops").insert({
-      user_id: user.id,
+      user_id: user.id, empresa_id: empresaAtiva?.id || null,
       codigo_pop: "POP-CARRYOVER",
       nome_pop: "Teste de Carry-over",
       executor: coResponsavel,
@@ -1285,7 +1285,7 @@ export default function PCP() {
                 flushObs ? `Obs: ${flushObs}` : "",
               ].filter(Boolean).join("\n");
               const { error } = await supabase.from("execucao_pops").insert({
-                user_id: user.id,
+                user_id: user.id, empresa_id: empresaAtiva?.id || null,
                 codigo_pop: "POP-FLUSH",
                 nome_pop: "Validação de Limpeza de Linha (Flush)",
                 executor: flushResp,

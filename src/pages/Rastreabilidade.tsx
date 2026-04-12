@@ -375,7 +375,7 @@ export default function Rastreabilidade() {
     if (!user || !testeResult) return;
     setTesteSaving(true);
     const { error } = await supabase.from("testes_rastreabilidade").insert({
-      user_id: user.id,
+      user_id: user.id, empresa_id: empresaAtiva?.id || null,
       lote_testado: testeResult.lote,
       produto: testeResult.produto,
       direcao: "completo",
@@ -397,7 +397,7 @@ export default function Rastreabilidade() {
     if (!produto || !materiaPrima || !user) return;
     setSaving(true);
     const { error } = await supabase.from("rastreabilidade").insert({
-      user_id: user.id,
+      user_id: user.id, empresa_id: empresaAtiva?.id || null,
       produto,
       lote_produto: loteProduto,
       materia_prima: materiaPrima,
@@ -537,7 +537,7 @@ export default function Rastreabilidade() {
     toast.success("Balanço de massa exportado para fiscalização!");
     if (user) {
       const dataGeracao = new Date().toISOString().split("T")[0];
-      await supabase.from("relatorios").insert({ user_id: user.id, titulo: `Balanço de Massa — ${dataGeracao}`, tipo: "digital", modulo: "rastreabilidade", descricao: `Relatório automático de balanço de massa com ${lotes.size} lotes rastreados. Gerado conforme Art. 18 do Decreto 12.031/2024.`, data_geracao: dataGeracao, status: "ativo" });
+      await supabase.from("relatorios").insert({ user_id: user.id, empresa_id: empresaAtiva?.id || null, titulo: `Balanço de Massa — ${dataGeracao}`, tipo: "digital", modulo: "rastreabilidade", descricao: `Relatório automático de balanço de massa com ${lotes.size} lotes rastreados. Gerado conforme Art. 18 do Decreto 12.031/2024.`, data_geracao: dataGeracao, status: "ativo" });
       toast.info("Relatório salvo automaticamente no módulo de Relatórios (Decreto 12.031/2024)");
     }
   };

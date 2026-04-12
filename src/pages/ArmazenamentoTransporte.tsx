@@ -162,7 +162,7 @@ export default function ArmazenamentoTransporte() {
     ].filter(Boolean).join("\n");
 
     const { error } = await supabase.from("execucao_pops").insert({
-      user_id: user.id,
+      user_id: user.id, empresa_id: empresaAtiva?.id || null,
       codigo_pop: "POP-VEICULO",
       nome_pop: "Inspeção de Veículo de Transporte",
       executor: veicResp,
@@ -202,7 +202,7 @@ export default function ArmazenamentoTransporte() {
     ].filter(Boolean).join("\n");
 
     const { error } = await supabase.from("execucao_pops").insert({
-      user_id: user.id,
+      user_id: user.id, empresa_id: empresaAtiva?.id || null,
       codigo_pop: "POP-DEPOSITO",
       nome_pop: "Inspeção de Depósito/Armazém",
       executor: depResp,
@@ -243,7 +243,7 @@ export default function ArmazenamentoTransporte() {
     ].filter(Boolean).join("\n");
 
     const { error } = await supabase.from("execucao_pops").insert({
-      user_id: user.id,
+      user_id: user.id, empresa_id: empresaAtiva?.id || null,
       codigo_pop: "POP-TEMP-UMID",
       nome_pop: "Monitoramento de Temperatura e Umidade",
       executor: logResp,

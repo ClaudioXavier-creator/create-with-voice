@@ -167,7 +167,7 @@ export default function Recebimento() {
     }
 
     const { error } = await supabase.from("recebimento_mp").insert({
-      user_id: user.id,
+      user_id: user.id, empresa_id: empresaAtiva?.id || null,
       fornecedor,
       materia_prima: materiaPrima,
       lote: lote || null,

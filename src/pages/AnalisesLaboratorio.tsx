@@ -118,7 +118,7 @@ export default function AnalisesLaboratorio() {
     }
     setSaving(true);
     const { error } = await supabase.from("analises_laboratorio").insert({
-      user_id: user.id,
+      user_id: user.id, empresa_id: empresaAtiva?.id || null,
       ...form,
       data_analise: form.data_analise || null,
       data_resultado: form.data_resultado || null,

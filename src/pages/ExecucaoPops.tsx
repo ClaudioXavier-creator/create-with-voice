@@ -238,7 +238,7 @@ export default function ExecucaoPops() {
     }
 
     const { error } = await supabase.from("execucao_pops").insert({
-      user_id: user.id,
+      user_id: user.id, empresa_id: empresaAtiva?.id || null,
       codigo_pop: selectedDoc.codigo,
       nome_pop: selectedDoc.nome,
       executor,
