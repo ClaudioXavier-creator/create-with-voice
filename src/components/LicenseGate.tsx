@@ -9,9 +9,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 const PLANS = [
-  { key: "mensal", label: "Mensal", priceTotal: "R$ 150", priceMes: null, desc: "Pagamento único" },
-  { key: "semestral", label: "Semestral", priceTotal: "R$ 840", priceMes: "equivale a R$ 140/mês", desc: "Pagamento único por 6 meses" },
-  { key: "anual", label: "Anual", priceTotal: "R$ 1.500", priceMes: "equivale a R$ 125/mês", desc: "Pagamento único por 12 meses" },
+  { key: "mensal", label: "Mensal", priceTotal: "R$ 495", priceMes: null, desc: "Pagamento único" },
+  { key: "semestral", label: "Semestral", priceTotal: "R$ 2.475", priceMes: "equivale a R$ 412,50/mês", desc: "Pagamento único por 6 meses" },
+  { key: "anual", label: "Anual", priceTotal: "R$ 4.455", priceMes: "equivale a R$ 371,25/mês", desc: "Pagamento único por 12 meses" },
 ];
 
 export default function LicenseGate({ children }: { children: React.ReactNode }) {
