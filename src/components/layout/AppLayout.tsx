@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import EmpresaSelector from "@/components/EmpresaSelector";
+import LicenseGate from "@/components/LicenseGate";
 import { supabase } from "@/integrations/supabase/client";
 import logoImg from "@/assets/logo-feed-bpf.png";
 
