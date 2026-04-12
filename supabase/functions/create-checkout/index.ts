@@ -7,11 +7,28 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-// Feed_BPF prices
-const PRICES = {
-  mensal: "price_1TDWj9HDmwi8j6XZ4HEBAQ2o", // R$150 one-time (placeholder)
-  semestral: "price_1TDYX2HDmwi8j6XZrfMmnYDV", // R$140/6mo
-  anual: "price_1TDWk6HDmwi8j6XZDa8Zy9RI", // R$125/yr
+// Price IDs per product and plan
+const PRODUCT_PRICES: Record<string, Record<string, string>> = {
+  feedbpf: {
+    mensal: "price_1TLVzdHDmwi8j6XZGmQXXtCz",   // R$495
+    semestral: "price_1TLW00HDmwi8j6XZJJprabSE", // R$2.475
+    anual: "price_1TLW0THDmwi8j6XZz51tgZyf",     // R$4.455
+  },
+  nutricrm: {
+    mensal: "price_1TH7N9HDmwi8j6XZxrNYaLy2",    // R$97
+    semestral: "price_1TH7NlHDmwi8j6XZ3KABj9ne", // R$497
+    anual: "price_1TH7OAHDmwi8j6XZtbxAcu35",     // R$897
+  },
+  agrogestao: {
+    mensal: "price_1TLVzdHDmwi8j6XZGmQXXtCz",    // TODO: criar preços próprios
+    semestral: "price_1TLW00HDmwi8j6XZJJprabSE",
+    anual: "price_1TLW0THDmwi8j6XZz51tgZyf",
+  },
+  auditsbpf: {
+    mensal: "price_1TLVzdHDmwi8j6XZGmQXXtCz",    // TODO: criar preços próprios
+    semestral: "price_1TLW00HDmwi8j6XZJJprabSE",
+    anual: "price_1TLW0THDmwi8j6XZz51tgZyf",
+  },
 };
 
 serve(async (req) => {
@@ -22,7 +39,6 @@ serve(async (req) => {
   try {
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
-
     const supabaseClient = createClient(supabaseUrl, supabaseAnonKey);
 
     const authHeader = req.headers.get("Authorization")!;
@@ -30,36 +46,38 @@ serve(async (req) => {
     const { data: { user }, error: userError } = await supabaseClient.auth.getUser(token);
     if (userError || !user?.email) throw new Error("Usuário não autenticado");
 
-    const { empresa_id, plano } = await req.json();
+    const { empresa_id, plano, produto } = await req.json();
     if (!empresa_id) throw new Error("empresa_id é obrigatório");
 
-    const priceId = PRICES[plano as keyof typeof PRICES];
+    const productKey = (produto || "feedbpf").toLowerCase();
+    const productPrices = PRODUCT_PRICES[productKey];
+    if (!productPrices) throw new Error(`Produto inválido: ${productKey}`);
+
+    const priceId = productPrices[plano as string];
     if (!priceId) throw new Error("Plano inválido. Use: mensal, semestral ou anual");
 
     const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
       apiVersion: "2025-08-27.basil",
     });
 
-    // Find or create Stripe customer
     const customers = await stripe.customers.list({ email: user.email, limit: 1 });
     let customerId: string | undefined;
     if (customers.data.length > 0) {
       customerId = customers.data[0].id;
     }
 
-    const isRecurring = plano !== "mensal";
-
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
       customer_email: customerId ? undefined : user.email,
       line_items: [{ price: priceId, quantity: 1 }],
-      mode: isRecurring ? "subscription" : "payment",
+      mode: "payment",
       success_url: `${req.headers.get("origin")}/dashboard?checkout=success&empresa_id=${empresa_id}`,
       cancel_url: `${req.headers.get("origin")}/dashboard?checkout=canceled`,
       metadata: {
         empresa_id,
         user_id: user.id,
         plano,
+        produto: productKey,
       },
     });
 

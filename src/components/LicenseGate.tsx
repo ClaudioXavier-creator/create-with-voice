@@ -8,16 +8,58 @@ import { useEmpresa } from "@/hooks/useEmpresa";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
-const PLANS = [
-  { key: "mensal", label: "Mensal", priceTotal: "R$ 495", priceMes: null, desc: "Pagamento único" },
-  { key: "semestral", label: "Semestral", priceTotal: "R$ 2.475", priceMes: "equivale a R$ 412,50/mês", desc: "Pagamento único por 6 meses" },
-  { key: "anual", label: "Anual", priceTotal: "R$ 4.455", priceMes: "equivale a R$ 371,25/mês", desc: "Pagamento único por 12 meses" },
-];
+type ProductKey = "feedbpf" | "nutricrm" | "agrogestao" | "auditsbpf";
 
-export default function LicenseGate({ children }: { children: React.ReactNode }) {
+interface PlanInfo {
+  key: string;
+  label: string;
+  priceTotal: string;
+  priceMes: string | null;
+  desc: string;
+}
+
+const PRODUCT_PLANS: Record<ProductKey, PlanInfo[]> = {
+  feedbpf: [
+    { key: "mensal", label: "Mensal", priceTotal: "R$ 495", priceMes: null, desc: "Pagamento único — 30 dias" },
+    { key: "semestral", label: "Semestral", priceTotal: "R$ 2.475", priceMes: "equivale a R$ 412,50/mês", desc: "Pagamento único — 6 meses" },
+    { key: "anual", label: "Anual", priceTotal: "R$ 4.455", priceMes: "equivale a R$ 371,25/mês", desc: "Pagamento único — 12 meses" },
+  ],
+  nutricrm: [
+    { key: "mensal", label: "Mensal", priceTotal: "R$ 97", priceMes: null, desc: "Pagamento mensal recorrente" },
+    { key: "semestral", label: "Semestral", priceTotal: "R$ 497", priceMes: "equivale a R$ 82,83/mês", desc: "Pagamento único — 6 meses" },
+    { key: "anual", label: "Anual", priceTotal: "R$ 897", priceMes: "equivale a R$ 74,75/mês", desc: "Pagamento único — 12 meses" },
+  ],
+  agrogestao: [
+    { key: "mensal", label: "Mensal", priceTotal: "R$ 495", priceMes: null, desc: "Pagamento único — 30 dias" },
+    { key: "semestral", label: "Semestral", priceTotal: "R$ 2.475", priceMes: "equivale a R$ 412,50/mês", desc: "Pagamento único — 6 meses" },
+    { key: "anual", label: "Anual", priceTotal: "R$ 4.455", priceMes: "equivale a R$ 371,25/mês", desc: "Pagamento único — 12 meses" },
+  ],
+  auditsbpf: [
+    { key: "mensal", label: "Mensal", priceTotal: "R$ 249,90", priceMes: null, desc: "Pagamento único — 30 dias" },
+    { key: "semestral", label: "Semestral", priceTotal: "R$ 1.274,49", priceMes: "equivale a R$ 212,42/mês", desc: "15% de desconto — 6 meses" },
+    { key: "anual", label: "Anual", priceTotal: "R$ 2.249,10", priceMes: "equivale a R$ 187,43/mês", desc: "25% de desconto — 12 meses" },
+  ],
+};
+
+const PRODUCT_LABELS: Record<ProductKey, string> = {
+  feedbpf: "Feed_BPF",
+  nutricrm: "NutriCRM",
+  agrogestao: "AgroGestão CRM",
+  auditsbpf: "Audits_BPF",
+};
+
+interface LicenseGateProps {
+  children: React.ReactNode;
+  product?: ProductKey;
+}
+
+export default function LicenseGate({ children, product = "feedbpf" }: LicenseGateProps) {
   const { license, loading, isActive, daysRemaining } = useLicense();
   const { empresaAtiva, loading: empresaLoading } = useEmpresa();
   const [checkoutLoading, setCheckoutLoading] = useState<string | null>(null);
+
+  const plans = PRODUCT_PLANS[product];
+  const productLabel = PRODUCT_LABELS[product];
 
   if (loading || empresaLoading) {
     return (
@@ -27,10 +69,8 @@ export default function LicenseGate({ children }: { children: React.ReactNode })
     );
   }
 
-  // No empresa selected yet — let them through to cadastro
   if (!empresaAtiva) return <>{children}</>;
 
-  // Active license — show children with optional trial banner
   if (isActive) {
     return (
       <>
@@ -56,13 +96,12 @@ export default function LicenseGate({ children }: { children: React.ReactNode })
     );
   }
 
-  // Expired or no license — block access and show plans
   const handleCheckout = async (plano: string) => {
     if (!empresaAtiva) return;
     setCheckoutLoading(plano);
     try {
       const { data, error } = await supabase.functions.invoke("create-checkout", {
-        body: { empresa_id: empresaAtiva.id, plano },
+        body: { empresa_id: empresaAtiva.id, plano, produto: product },
       });
       if (error) throw error;
       if (data?.url) {
@@ -82,10 +121,10 @@ export default function LicenseGate({ children }: { children: React.ReactNode })
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-destructive/10 mb-2">
             <AlertTriangle className="w-8 h-8 text-destructive" />
           </div>
-          <h2 className="text-2xl font-bold">Acesso expirado</h2>
+          <h2 className="text-2xl font-bold">Acesso expirado — {productLabel}</h2>
           <p className="text-muted-foreground max-w-md mx-auto">
             A licença da empresa <strong>{empresaAtiva.nome}</strong> expirou.
-            Escolha um plano para continuar utilizando o sistema.
+            Escolha um plano para continuar utilizando o {productLabel}.
           </p>
           {license && (
             <Badge variant="destructive">
@@ -96,7 +135,7 @@ export default function LicenseGate({ children }: { children: React.ReactNode })
         </div>
 
         <div id="license-plans" className="grid gap-4 md:grid-cols-3">
-          {PLANS.map((plan) => (
+          {plans.map((plan) => (
             <Card key={plan.key} className={plan.key === "anual" ? "border-primary ring-1 ring-primary" : ""}>
               <CardHeader className="pb-2">
                 <div className="flex items-center justify-between">
