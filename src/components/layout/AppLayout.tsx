@@ -338,7 +338,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       {/* Main content */}
       <main className="flex-1 lg:ml-0 mt-14 lg:mt-0 overflow-auto">
         <div className="p-4 md:p-6 lg:p-8 max-w-7xl mx-auto">
-          {children}
+          <LicenseGate>
+            {children}
+          </LicenseGate>
         </div>
       </main>
     </div>
