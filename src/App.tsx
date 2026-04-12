@@ -113,6 +113,7 @@ const AppRoutes = () => {
         element={
           <ProtectedRoute>
               <AppLayout>
+                <LicenseGate>
                 <Routes>
                   <Route path="/dashboard" element={<Index />} />
                   <Route path="/cadastro" element={<Cadastro />} />
@@ -159,6 +160,7 @@ const AppRoutes = () => {
                   <Route path="/consulta-sipeagro" element={<ConsultaSipeagro />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
+                </LicenseGate>
               </AppLayout>
           </ProtectedRoute>
         }
