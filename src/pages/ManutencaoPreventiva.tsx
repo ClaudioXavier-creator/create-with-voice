@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
+import { useEmpresa } from "@/hooks/useEmpresa";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -43,6 +44,7 @@ const STATUS_LIST = [
 
 export default function ManutencaoPreventiva() {
   const { user } = useAuth();
+  const { empresaAtiva } = useEmpresa();
   const qc = useQueryClient();
   const [open, setOpen] = useState(false);
   const [openCalib, setOpenCalib] = useState(false);

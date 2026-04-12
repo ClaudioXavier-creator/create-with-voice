@@ -14,6 +14,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import PageHeader from "@/components/PageHeader";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { useEmpresa } from "@/hooks/useEmpresa";
 import { toast } from "sonner";
 
 interface AnaliseRow {
@@ -61,6 +62,7 @@ const STATUS_CONFIG: Record<string, { label: string; className: string }> = {
 
 export default function AnalisesLaboratorio() {
   const { user } = useAuth();
+  const { empresaAtiva } = useEmpresa();
   const [analises, setAnalises] = useState<AnaliseRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);

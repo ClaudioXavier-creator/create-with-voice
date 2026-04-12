@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { useEmpresa } from "@/hooks/useEmpresa";
 import { toast } from "sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
@@ -156,6 +157,7 @@ function riskColor(nivel: string) {
 
 export default function MatrizRisco() {
   const { user } = useAuth();
+  const { empresaAtiva } = useEmpresa();
   const [tab, setTab] = useState("questionario");
 
   // Sensitivity state

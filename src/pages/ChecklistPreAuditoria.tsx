@@ -8,6 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import PageHeader from "@/components/PageHeader";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { useEmpresa } from "@/hooks/useEmpresa";
 import { Link } from "react-router-dom";
 import { differenceInDays, parseISO } from "date-fns";
 
@@ -22,6 +23,7 @@ interface CheckItem {
 
 export default function ChecklistPreAuditoria() {
   const { user } = useAuth();
+  const { empresaAtiva } = useEmpresa();
   const [items, setItems] = useState<CheckItem[]>([]);
   const [loading, setLoading] = useState(true);
 

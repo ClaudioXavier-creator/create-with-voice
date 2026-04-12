@@ -17,6 +17,7 @@ import { Calendar } from "@/components/ui/calendar";
 import PageHeader from "@/components/PageHeader";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { useEmpresa } from "@/hooks/useEmpresa";
 import { toast } from "sonner";
 
 interface DocRow {
@@ -159,6 +160,7 @@ interface Alerta {
 
 export default function ExecucaoPops() {
   const { user } = useAuth();
+  const { empresaAtiva } = useEmpresa();
   const [execucoes, setExecucoes] = useState<ExecRow[]>([]);
   const [docs, setDocs] = useState<DocRow[]>([]);
   const [arquivos, setArquivos] = useState<ArquivoRow[]>([]);

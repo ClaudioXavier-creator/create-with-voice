@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
+import { useEmpresa } from "@/hooks/useEmpresa";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -26,6 +27,7 @@ const METODOS_EXPURGO = ["Fosfina (PH₃)", "Deltametrina", "Pirimifós-metílic
 
 export default function Pragas() {
   const { user } = useAuth();
+  const { empresaAtiva } = useEmpresa();
   const qc = useQueryClient();
   const [openPraga, setOpenPraga] = useState(false);
   const [openExpurgo, setOpenExpurgo] = useState(false);

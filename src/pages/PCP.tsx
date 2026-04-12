@@ -13,6 +13,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import PageHeader from "@/components/PageHeader";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { useEmpresa } from "@/hooks/useEmpresa";
 import { toast } from "sonner";
 
 interface OrdemProd {
@@ -76,6 +77,7 @@ const prioridadeConfig: Record<string, { label: string; className: string }> = {
 
 export default function PCP() {
   const { user } = useAuth();
+  const { empresaAtiva } = useEmpresa();
   const [ordens, setOrdens] = useState<OrdemProd[]>([]);
   const [formulaItens, setFormulaItens] = useState<FormulaItem[]>([]);
   const [batidas, setBatidas] = useState<Batida[]>([]);

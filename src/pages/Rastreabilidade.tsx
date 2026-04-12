@@ -15,6 +15,7 @@ import { Progress } from "@/components/ui/progress";
 import PageHeader from "@/components/PageHeader";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { useEmpresa } from "@/hooks/useEmpresa";
 import { toast } from "sonner";
 
 interface RastreabilidadeRow {
@@ -45,6 +46,7 @@ interface TesteResult {
 
 export default function Rastreabilidade() {
   const { user } = useAuth();
+  const { empresaAtiva } = useEmpresa();
   const [registros, setRegistros] = useState<RastreabilidadeRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);

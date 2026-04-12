@@ -13,6 +13,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import PageHeader from "@/components/PageHeader";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { useEmpresa } from "@/hooks/useEmpresa";
 import { toast } from "sonner";
 
 const SETORES = [
@@ -48,6 +49,7 @@ interface NCRow {
 
 export default function NaoConformidades() {
   const { user } = useAuth();
+  const { empresaAtiva } = useEmpresa();
   const [ncs, setNcs] = useState<NCRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);

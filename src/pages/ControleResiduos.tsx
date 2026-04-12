@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
+import { useEmpresa } from "@/hooks/useEmpresa";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -44,6 +45,7 @@ const MOTIVOS_DESCARTE = [
 
 export default function ControleResiduos() {
   const { user } = useAuth();
+  const { empresaAtiva } = useEmpresa();
   const qc = useQueryClient();
   const [open, setOpen] = useState(false);
 

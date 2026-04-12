@@ -9,6 +9,7 @@ import {
 } from "recharts";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { useEmpresa } from "@/hooks/useEmpresa";
 
 // ── Types ──────────────────────────────────────────────
 interface OrdemProd {
@@ -73,6 +74,7 @@ function groupByMonth<T>(items: T[], dateKey: keyof T) {
 
 export default function Indicadores() {
   const { user } = useAuth();
+  const { empresaAtiva } = useEmpresa();
   const [ordens, setOrdens] = useState<OrdemProd[]>([]);
   const [batidas, setBatidas] = useState<Batida[]>([]);
   const [ncs, setNCs] = useState<NC[]>([]);

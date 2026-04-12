@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
+import { useEmpresa } from "@/hooks/useEmpresa";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -40,6 +41,7 @@ function escapeCsv(val: unknown): string {
 
 export default function Treinamentos() {
   const { user } = useAuth();
+  const { empresaAtiva } = useEmpresa();
   const qc = useQueryClient();
 
   // ── Treinamento form ──

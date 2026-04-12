@@ -16,6 +16,7 @@ import { Switch } from "@/components/ui/switch";
 import PageHeader from "@/components/PageHeader";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { useEmpresa } from "@/hooks/useEmpresa";
 import { toast } from "sonner";
 
 interface RecebimentoRow {
@@ -40,6 +41,7 @@ interface RecebimentoRow {
 
 export default function Recebimento() {
   const { user } = useAuth();
+  const { empresaAtiva } = useEmpresa();
   const [items, setItems] = useState<RecebimentoRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);

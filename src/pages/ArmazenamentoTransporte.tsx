@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
+import { useEmpresa } from "@/hooks/useEmpresa";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -90,6 +91,7 @@ const CHECKLIST_DEPOSITO: { area: string; itens: string[] }[] = [
 
 export default function ArmazenamentoTransporte() {
   const { user } = useAuth();
+  const { empresaAtiva } = useEmpresa();
   const qc = useQueryClient();
 
   // Vehicle inspection

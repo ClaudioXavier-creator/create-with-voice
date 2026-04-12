@@ -15,6 +15,7 @@ import { Switch } from "@/components/ui/switch";
 import PageHeader from "@/components/PageHeader";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { useEmpresa } from "@/hooks/useEmpresa";
 import { toast } from "sonner";
 
 interface ProdRow {
@@ -31,6 +32,7 @@ const TEMPO_MISTURA_MINIMO = 3; // minutos — padrão IN 04/2007
 
 export default function Producao() {
   const { user } = useAuth();
+  const { empresaAtiva } = useEmpresa();
   const [items, setItems] = useState<ProdRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
