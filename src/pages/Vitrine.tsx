@@ -19,7 +19,7 @@ const produtos = [
     bgCard: "bg-gradient-to-br from-sky-50 to-blue-50 dark:from-sky-950/30 dark:to-blue-950/30",
     borderColor: "border-sky-200 dark:border-sky-800",
     trial: "7 dias grátis",
-    trialLink: "/auth?product=feedbpf&mode=signup&redirect=%2Fdashboard",
+    trialLink: "/auth?product=feedbpf&mode=signup&redirect=%2Ffeedbpf",
     preco: "A partir de R$ 497/mês",
   },
   {
@@ -60,7 +60,7 @@ const produtos = [
     bgCard: "bg-gradient-to-br from-green-50 to-teal-50 dark:from-green-950/30 dark:to-teal-950/30",
     borderColor: "border-green-200 dark:border-green-800",
     trial: "7 dias grátis",
-    trialLink: "/auth?product=agrogestao&mode=signup&redirect=%2Fdashboard",
+    trialLink: "/auth?product=agrogestao&mode=signup&redirect=%2Fagrogestao",
     preco: "A partir de R$ 97/mês",
   },
 ];
