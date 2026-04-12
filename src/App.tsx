@@ -103,10 +103,10 @@ const AppRoutes = () => {
       <Route path="/" element={<Vitrine />} />
       <Route path="/auth" element={<AuthRoute />} />
       <Route path="/instalar" element={<Instalar />} />
-      <Route path="/nutricrm" element={<ProtectedRoute><LicenseGate><NutriCRMPage /></LicenseGate></ProtectedRoute>} />
-      <Route path="/feedbpf" element={<ProtectedRoute><LicenseGate><FeedBPFPage /></LicenseGate></ProtectedRoute>} />
-      <Route path="/audits-bpf" element={<ProtectedRoute><LicenseGate><AuditsBPFPage /></LicenseGate></ProtectedRoute>} />
-      <Route path="/agrogestao" element={<ProtectedRoute><LicenseGate><AgroGestaoCRMPage /></LicenseGate></ProtectedRoute>} />
+      <Route path="/nutricrm" element={<ProtectedRoute><LicenseGate product="nutricrm"><NutriCRMPage /></LicenseGate></ProtectedRoute>} />
+      <Route path="/feedbpf" element={<ProtectedRoute><LicenseGate product="feedbpf"><FeedBPFPage /></LicenseGate></ProtectedRoute>} />
+      <Route path="/audits-bpf" element={<ProtectedRoute><LicenseGate product="auditsbpf"><AuditsBPFPage /></LicenseGate></ProtectedRoute>} />
+      <Route path="/agrogestao" element={<ProtectedRoute><LicenseGate product="agrogestao"><AgroGestaoCRMPage /></LicenseGate></ProtectedRoute>} />
       <Route path="/admin-licencas" element={<ProtectedRoute><AdminLicencas /></ProtectedRoute>} />
       <Route
         path="/*"
