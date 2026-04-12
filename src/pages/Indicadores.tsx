@@ -99,7 +99,7 @@ export default function Indicadores() {
       if (r.data) setRecebimentos(r.data as unknown as RecebimentoMP[]);
       setLoading(false);
     })();
-  }, [user]);
+  }, [user, empresaAtiva]);
 
   // ── Computed data ──────────────────────────────────
   const totalProduzido = useMemo(() => {

@@ -8,6 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import PageHeader from "@/components/PageHeader";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { useEmpresa } from "@/hooks/useEmpresa";
 import { Link } from "react-router-dom";
 
 interface SearchResult {
@@ -20,6 +21,7 @@ interface SearchResult {
 
 export default function BuscaGlobal() {
   const { user } = useAuth();
+  const { empresaAtiva } = useEmpresa();
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<SearchResult[]>([]);
   const [loading, setLoading] = useState(false);
@@ -33,13 +35,15 @@ export default function BuscaGlobal() {
     const q = query.trim();
     const found: SearchResult[] = [];
 
+    const addEmpresa = (qb: any) => empresaAtiva ? qb.eq("empresa_id", empresaAtiva.id) : qb;
+
     const [prodRes, fornRes, ncRes, rastRes, calibRes, docsRes] = await Promise.all([
-      supabase.from("produtos").select("nome, classificacao, registro_mapa").eq("user_id", user.id).or(`nome.ilike.%${q}%,registro_mapa.ilike.%${q}%`).limit(10),
-      supabase.from("fornecedores").select("nome, cnpj, tipo_produto").eq("user_id", user.id).or(`nome.ilike.%${q}%,cnpj.ilike.%${q}%`).limit(10),
-      supabase.from("nao_conformidades").select("descricao, setor, status").eq("user_id", user.id).ilike("descricao", `%${q}%`).limit(10),
-      supabase.from("rastreabilidade").select("produto, lote_produto, lote_mp, fornecedor").eq("user_id", user.id).or(`produto.ilike.%${q}%,lote_produto.ilike.%${q}%,lote_mp.ilike.%${q}%`).limit(10),
-      supabase.from("calibracoes").select("equipamento, codigo, status").eq("user_id", user.id).or(`equipamento.ilike.%${q}%,codigo.ilike.%${q}%`).limit(10),
-      supabase.from("documentos").select("nome, codigo, status").eq("user_id", user.id).or(`nome.ilike.%${q}%,codigo.ilike.%${q}%`).limit(10),
+      addEmpresa(supabase.from("produtos").select("nome, classificacao, registro_mapa").eq("user_id", user.id).or(`nome.ilike.%${q}%,registro_mapa.ilike.%${q}%`)).limit(10),
+      addEmpresa(supabase.from("fornecedores").select("nome, cnpj, tipo_produto").eq("user_id", user.id).or(`nome.ilike.%${q}%,cnpj.ilike.%${q}%`)).limit(10),
+      addEmpresa(supabase.from("nao_conformidades").select("descricao, setor, status").eq("user_id", user.id).ilike("descricao", `%${q}%`)).limit(10),
+      addEmpresa(supabase.from("rastreabilidade").select("produto, lote_produto, lote_mp, fornecedor").eq("user_id", user.id).or(`produto.ilike.%${q}%,lote_produto.ilike.%${q}%,lote_mp.ilike.%${q}%`)).limit(10),
+      addEmpresa(supabase.from("calibracoes").select("equipamento, codigo, status").eq("user_id", user.id).or(`equipamento.ilike.%${q}%,codigo.ilike.%${q}%`)).limit(10),
+      addEmpresa(supabase.from("documentos").select("nome, codigo, status").eq("user_id", user.id).or(`nome.ilike.%${q}%,codigo.ilike.%${q}%`)).limit(10),
     ]);
 
     (prodRes.data || []).forEach(p => found.push({ tipo: "Produto", titulo: p.nome, subtitulo: `${p.classificacao} ${p.registro_mapa ? `| MAPA: ${p.registro_mapa}` : ""}`, link: "/produtos", icon: Package }));
