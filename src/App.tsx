@@ -7,6 +7,7 @@ import { AuthProvider, useAuth } from "@/hooks/useAuth";
 import { useLicense } from "@/hooks/useLicense";
 import { EmpresaProvider } from "@/hooks/useEmpresa";
 import AppLayout from "@/components/layout/AppLayout";
+import LicenseGate from "@/components/LicenseGate";
 import Vitrine from "./pages/Vitrine";
 import Index from "./pages/Index";
 import Cadastro from "./pages/Cadastro";
