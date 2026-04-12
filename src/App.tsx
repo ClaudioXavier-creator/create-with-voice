@@ -115,7 +115,6 @@ const AppRoutes = () => {
         path="/*"
         element={
           <ProtectedRoute>
-            <LicenseGate>
               <AppLayout>
                 <Routes>
                   <Route path="/dashboard" element={<Index />} />
@@ -154,7 +153,6 @@ const AppRoutes = () => {
                   <Route path="/saude-pessoal" element={<SaudePessoal />} />
                   <Route path="/visitantes" element={<ControleVisitantes />} />
                   <Route path="/modelos" element={<Modelos />} />
-                  {/* /documentos-bpf removido — consolidado na aba Arquivo BPF em /documentos */}
                   <Route path="/checklist-pre-auditoria" element={<ChecklistPreAuditoria />} />
                   <Route path="/simulacao-recall" element={<SimulacaoRecall />} />
                   <Route path="/busca-global" element={<BuscaGlobal />} />
@@ -165,7 +163,6 @@ const AppRoutes = () => {
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </AppLayout>
-            </LicenseGate>
           </ProtectedRoute>
         }
       />
