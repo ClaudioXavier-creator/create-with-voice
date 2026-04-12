@@ -102,11 +102,13 @@ export default function PlanejamentoAnual() {
 
   const fetchItems = async () => {
     if (!session?.user?.id) return;
-    const { data, error } = await supabase
+    let q = supabase
       .from("planejamento_anual")
       .select("*")
       .eq("user_id", session.user.id)
       .order("proxima_execucao", { ascending: true, nullsFirst: false });
+    if (empresaAtiva) q = q.eq("empresa_id", empresaAtiva.id);
+    const { data, error } = await q;
     if (!error && data) setItems(data as unknown as PlanItem[]);
     setLoading(false);
   };

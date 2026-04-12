@@ -135,10 +135,9 @@ export default function Rastreabilidade() {
 
   const fetchData = async () => {
     if (!user) return;
-    const { data, error } = await supabase
-      .from("rastreabilidade")
-      .select("*")
-      .order("created_at", { ascending: false });
+    let q = supabase.from("rastreabilidade").select("*").order("created_at", { ascending: false });
+    if (empresaAtiva) q = q.eq("empresa_id", empresaAtiva.id);
+    const { data, error } = await q;
     if (error) toast.error("Erro ao carregar dados");
     else setRegistros((data as unknown as RastreabilidadeRow[]) || []);
     setLoading(false);
@@ -146,11 +145,9 @@ export default function Rastreabilidade() {
 
   const fetchAnalisesLab = async () => {
     if (!user) return;
-    const { data } = await supabase
-      .from("analises_laboratorio")
-      .select("*")
-      .order("data_analise", { ascending: false })
-      .limit(200);
+    let q = supabase.from("analises_laboratorio").select("*").order("data_analise", { ascending: false }).limit(200);
+    if (empresaAtiva) q = q.eq("empresa_id", empresaAtiva.id);
+    const { data } = await q;
     if (data) setAnalisesLab(data);
   };
 
@@ -164,24 +161,19 @@ export default function Rastreabilidade() {
     if (data) setTestesHistorico(data);
   };
 
-  // MELHORIA 1: Fetch recebimentos e ordens de produção
   const fetchRecebimentos = async () => {
     if (!user) return;
-    const { data } = await supabase
-      .from("recebimento_mp")
-      .select("*")
-      .order("data", { ascending: false })
-      .limit(500);
+    let q = supabase.from("recebimento_mp").select("*").order("data", { ascending: false }).limit(500);
+    if (empresaAtiva) q = q.eq("empresa_id", empresaAtiva.id);
+    const { data } = await q;
     if (data) setRecebimentos(data);
   };
 
   const fetchOrdensProducao = async () => {
     if (!user) return;
-    const { data } = await supabase
-      .from("ordens_producao")
-      .select("*")
-      .order("data_programada", { ascending: false })
-      .limit(500);
+    let q = supabase.from("ordens_producao").select("*").order("data_programada", { ascending: false }).limit(500);
+    if (empresaAtiva) q = q.eq("empresa_id", empresaAtiva.id);
+    const { data } = await q;
     if (data) setOrdensProducao(data);
   };
 

@@ -77,10 +77,12 @@ export default function NaoConformidades() {
 
   const fetchData = async () => {
     if (!user) return;
-    const { data } = await supabase
+    let q = supabase
       .from("nao_conformidades")
       .select("*")
       .order("data", { ascending: false });
+    if (empresaAtiva) q = q.eq("empresa_id", empresaAtiva.id);
+    const { data } = await q;
     if (data) setNcs(data as unknown as NCRow[]);
     setLoading(false);
   };
