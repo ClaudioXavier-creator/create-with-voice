@@ -201,8 +201,9 @@ export default function LicenseGate({ children, product = "feedbpf" }: LicenseGa
   );
 }
 
-function ContactFormDialog() {
+function ContactFormDialog({ programa }: { programa?: string }) {
   const [open, setOpen] = useState(false);
+  const { user } = useAuth();
   const [formData, setFormData] = useState({
     nome: "",
     email: "",
@@ -221,17 +222,22 @@ function ContactFormDialog() {
     }
     setSending(true);
     try {
-      // Send via mailto as fallback
-      const subject = encodeURIComponent(`Contato via ${window.location.hostname} — ${formData.nome}`);
-      const body = encodeURIComponent(
-        `Nome: ${formData.nome}\nE-mail: ${formData.email}\nTelefone: ${formData.telefone}\nCidade: ${formData.cidade}\nEstado: ${formData.estado}\n\nMensagem:\n${formData.mensagem}`
-      );
-      window.open(`mailto:contato@bpfconsult.com.br?subject=${subject}&body=${body}`, "_blank");
-      toast.success("Janela de e-mail aberta! Envie sua mensagem.");
+      const { error } = await supabase.from("leads_contato").insert({
+        nome: formData.nome.trim(),
+        email: formData.email.trim(),
+        telefone: formData.telefone.trim() || null,
+        cidade: formData.cidade.trim() || null,
+        estado: formData.estado.trim().toUpperCase() || null,
+        mensagem: formData.mensagem.trim() || null,
+        programa: programa || null,
+        user_id: user?.id || null,
+      });
+      if (error) throw error;
+      toast.success("Mensagem enviada com sucesso! Entraremos em contato.");
       setOpen(false);
       setFormData({ nome: "", email: "", telefone: "", cidade: "", estado: "", mensagem: "" });
-    } catch {
-      toast.error("Erro ao abrir o e-mail.");
+    } catch (err: any) {
+      toast.error("Erro ao enviar mensagem: " + (err.message || "Tente novamente."));
     } finally {
       setSending(false);
     }
