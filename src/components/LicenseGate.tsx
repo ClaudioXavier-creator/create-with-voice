@@ -193,7 +193,7 @@ export default function LicenseGate({ children, product = "feedbpf" }: LicenseGa
               <Mail className="w-3.5 h-3.5" />
               contato@bpfconsult.com.br
             </a>
-            <ContactFormDialog />
+            <ContactFormDialog programa={product} />
           </div>
         </div>
       </div>
