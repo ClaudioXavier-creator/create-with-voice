@@ -25,9 +25,9 @@ const PRODUCT_PRICES: Record<string, Record<string, string>> = {
     anual: "price_1TLW0THDmwi8j6XZz51tgZyf",
   },
   auditsbpf: {
-    mensal: "price_1TLVzdHDmwi8j6XZGmQXXtCz",    // TODO: criar preços próprios
-    semestral: "price_1TLW00HDmwi8j6XZJJprabSE",
-    anual: "price_1TLW0THDmwi8j6XZz51tgZyf",
+    mensal: "price_1TLXosHDmwi8j6XZo9uTIGO4",    // R$249,90
+    semestral: "price_1TLZcUHDmwi8j6XZWDGCAls8",  // R$1.274,49
+    anual: "price_1TLZcnHDmwi8j6XZv5rRM7BL",      // R$2.249,10
   },
 };
 
