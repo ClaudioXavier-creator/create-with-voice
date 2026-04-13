@@ -15,14 +15,14 @@ const PRODUCT_PRICES: Record<string, Record<string, string>> = {
     anual: "price_1TLW0THDmwi8j6XZz51tgZyf",     // R$4.455
   },
   nutricrm: {
-    mensal: "price_1TH7N9HDmwi8j6XZxrNYaLy2",    // R$97
-    semestral: "price_1TH7NlHDmwi8j6XZ3KABj9ne", // R$497
-    anual: "price_1TH7OAHDmwi8j6XZtbxAcu35",     // R$897
+    mensal: "price_1TLXTIHDmwi8j6XZ5byr2YbO",    // R$149,90
+    semestral: "price_1TLXUVHDmwi8j6XZ5h50hbw6",  // R$764,49
+    anual: "price_1TLXVCHDmwi8j6XZQnPOIfGz",      // R$1.349,10
   },
   agrogestao: {
-    mensal: "price_1TLVzdHDmwi8j6XZGmQXXtCz",    // TODO: criar preços próprios
-    semestral: "price_1TLW00HDmwi8j6XZJJprabSE",
-    anual: "price_1TLW0THDmwi8j6XZz51tgZyf",
+    mensal: "price_1TLWWSHDmwi8j6XZ3Pg9pqrI",    // R$149,90
+    semestral: "price_1TLXQcHDmwi8j6XZ0MlYrbFS",  // R$764,49
+    anual: "price_1TLXS7HDmwi8j6XZZexmdePl",      // R$1.349,10
   },
   auditsbpf: {
     mensal: "price_1TLXosHDmwi8j6XZo9uTIGO4",    // R$249,90
