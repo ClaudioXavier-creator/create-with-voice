@@ -31,14 +31,14 @@ const PRODUCT_PLANS: Record<ProductKey, PlanInfo[]> = {
     { key: "anual", label: "Anual", priceTotal: "R$ 4.455", priceMes: "equivale a R$ 371,25/mês", desc: "Pagamento único — 12 meses" },
   ],
   nutricrm: [
-    { key: "mensal", label: "Mensal", priceTotal: "R$ 97", priceMes: null, desc: "Pagamento mensal recorrente" },
-    { key: "semestral", label: "Semestral", priceTotal: "R$ 497", priceMes: "equivale a R$ 82,83/mês", desc: "Pagamento único — 6 meses" },
-    { key: "anual", label: "Anual", priceTotal: "R$ 897", priceMes: "equivale a R$ 74,75/mês", desc: "Pagamento único — 12 meses" },
+    { key: "mensal", label: "Mensal", priceTotal: "R$ 149,90", priceMes: null, desc: "Pagamento único — 30 dias" },
+    { key: "semestral", label: "Semestral", priceTotal: "R$ 764,49", priceMes: "equivale a R$ 127,42/mês", desc: "15% de desconto — 6 meses" },
+    { key: "anual", label: "Anual", priceTotal: "R$ 1.349,10", priceMes: "equivale a R$ 112,43/mês", desc: "25% de desconto — 12 meses" },
   ],
   agrogestao: [
-    { key: "mensal", label: "Mensal", priceTotal: "R$ 495", priceMes: null, desc: "Pagamento único — 30 dias" },
-    { key: "semestral", label: "Semestral", priceTotal: "R$ 2.475", priceMes: "equivale a R$ 412,50/mês", desc: "Pagamento único — 6 meses" },
-    { key: "anual", label: "Anual", priceTotal: "R$ 4.455", priceMes: "equivale a R$ 371,25/mês", desc: "Pagamento único — 12 meses" },
+    { key: "mensal", label: "Mensal", priceTotal: "R$ 149,90", priceMes: null, desc: "Pagamento único — 30 dias" },
+    { key: "semestral", label: "Semestral", priceTotal: "R$ 764,49", priceMes: "equivale a R$ 127,42/mês", desc: "15% de desconto — 6 meses" },
+    { key: "anual", label: "Anual", priceTotal: "R$ 1.349,10", priceMes: "equivale a R$ 112,43/mês", desc: "25% de desconto — 12 meses" },
   ],
   auditsbpf: [
     { key: "mensal", label: "Mensal", priceTotal: "R$ 249,90", priceMes: null, desc: "Pagamento único — 30 dias" },
