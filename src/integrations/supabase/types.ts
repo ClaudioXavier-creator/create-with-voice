@@ -1160,6 +1160,48 @@ export type Database = {
           },
         ]
       }
+      leads_contato: {
+        Row: {
+          cidade: string | null
+          created_at: string
+          email: string
+          estado: string | null
+          id: string
+          mensagem: string | null
+          nome: string
+          programa: string | null
+          status: string
+          telefone: string | null
+          user_id: string | null
+        }
+        Insert: {
+          cidade?: string | null
+          created_at?: string
+          email: string
+          estado?: string | null
+          id?: string
+          mensagem?: string | null
+          nome: string
+          programa?: string | null
+          status?: string
+          telefone?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          cidade?: string | null
+          created_at?: string
+          email?: string
+          estado?: string | null
+          id?: string
+          mensagem?: string | null
+          nome?: string
+          programa?: string | null
+          status?: string
+          telefone?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       legislacao_alertas: {
         Row: {
           created_at: string
