@@ -1,8 +1,12 @@
 import { useState } from "react";
-import { AlertTriangle, CreditCard, Loader2, Clock, ShieldCheck } from "lucide-react";
+import { AlertTriangle, CreditCard, Loader2, Clock, ShieldCheck, Mail, MessageCircle, X } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useLicense } from "@/hooks/useLicense";
 import { useEmpresa } from "@/hooks/useEmpresa";
 import { supabase } from "@/integrations/supabase/client";
@@ -171,7 +175,7 @@ export default function LicenseGate({ children, product = "feedbpf" }: LicenseGa
           ))}
         </div>
 
-        <div className="text-center space-y-1">
+        <div className="text-center space-y-2">
           <p className="text-xs text-muted-foreground">
             <ShieldCheck className="w-3 h-3 inline mr-1" />
             Pagamento seguro via Stripe. Cancele a qualquer momento.
@@ -179,8 +183,145 @@ export default function LicenseGate({ children, product = "feedbpf" }: LicenseGa
           <p className="text-xs text-muted-foreground">
             Inclui até <strong>10 empresas</strong>. Acima disso, acréscimo de 25% no valor do plano.
           </p>
+          <div className="flex items-center justify-center gap-4 pt-2">
+            <a
+              href="mailto:contato@bpfconsult.com.br"
+              className="inline-flex items-center gap-1.5 text-xs text-primary hover:underline"
+            >
+              <Mail className="w-3.5 h-3.5" />
+              contato@bpfconsult.com.br
+            </a>
+            <ContactFormDialog />
+          </div>
         </div>
       </div>
     </div>
+  );
+}
+
+function ContactFormDialog() {
+  const [open, setOpen] = useState(false);
+  const [formData, setFormData] = useState({
+    nome: "",
+    email: "",
+    telefone: "",
+    cidade: "",
+    estado: "",
+    mensagem: "",
+  });
+  const [sending, setSending] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!formData.nome || !formData.email) {
+      toast.error("Preencha ao menos nome e e-mail.");
+      return;
+    }
+    setSending(true);
+    try {
+      // Send via mailto as fallback
+      const subject = encodeURIComponent(`Contato via ${window.location.hostname} — ${formData.nome}`);
+      const body = encodeURIComponent(
+        `Nome: ${formData.nome}\nE-mail: ${formData.email}\nTelefone: ${formData.telefone}\nCidade: ${formData.cidade}\nEstado: ${formData.estado}\n\nMensagem:\n${formData.mensagem}`
+      );
+      window.open(`mailto:contato@bpfconsult.com.br?subject=${subject}&body=${body}`, "_blank");
+      toast.success("Janela de e-mail aberta! Envie sua mensagem.");
+      setOpen(false);
+      setFormData({ nome: "", email: "", telefone: "", cidade: "", estado: "", mensagem: "" });
+    } catch {
+      toast.error("Erro ao abrir o e-mail.");
+    } finally {
+      setSending(false);
+    }
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <button className="inline-flex items-center gap-1.5 text-xs text-primary hover:underline cursor-pointer bg-transparent border-none p-0">
+          <MessageCircle className="w-3.5 h-3.5" />
+          Fale Conosco
+        </button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle className="text-lg">Fale Conosco</DialogTitle>
+        </DialogHeader>
+        <form onSubmit={handleSubmit} className="space-y-4 pt-2">
+          <div>
+            <Label htmlFor="contact-nome">Nome completo *</Label>
+            <Input
+              id="contact-nome"
+              value={formData.nome}
+              onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
+              placeholder="Seu nome"
+              required
+              maxLength={100}
+            />
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <Label htmlFor="contact-email">E-mail *</Label>
+              <Input
+                id="contact-email"
+                type="email"
+                value={formData.email}
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                placeholder="seu@email.com"
+                required
+                maxLength={255}
+              />
+            </div>
+            <div>
+              <Label htmlFor="contact-telefone">Telefone</Label>
+              <Input
+                id="contact-telefone"
+                value={formData.telefone}
+                onChange={(e) => setFormData({ ...formData, telefone: e.target.value })}
+                placeholder="(00) 00000-0000"
+                maxLength={20}
+              />
+            </div>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <Label htmlFor="contact-cidade">Cidade</Label>
+              <Input
+                id="contact-cidade"
+                value={formData.cidade}
+                onChange={(e) => setFormData({ ...formData, cidade: e.target.value })}
+                placeholder="Sua cidade"
+                maxLength={100}
+              />
+            </div>
+            <div>
+              <Label htmlFor="contact-estado">Estado</Label>
+              <Input
+                id="contact-estado"
+                value={formData.estado}
+                onChange={(e) => setFormData({ ...formData, estado: e.target.value })}
+                placeholder="UF"
+                maxLength={2}
+              />
+            </div>
+          </div>
+          <div>
+            <Label htmlFor="contact-mensagem">Mensagem</Label>
+            <Textarea
+              id="contact-mensagem"
+              value={formData.mensagem}
+              onChange={(e) => setFormData({ ...formData, mensagem: e.target.value })}
+              placeholder="Como podemos ajudar?"
+              rows={3}
+              maxLength={1000}
+            />
+          </div>
+          <Button type="submit" className="w-full gap-2" disabled={sending}>
+            {sending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Mail className="w-4 h-4" />}
+            Enviar Mensagem
+          </Button>
+        </form>
+      </DialogContent>
+    </Dialog>
   );
 }
