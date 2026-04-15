@@ -342,7 +342,8 @@ function extractFromProduto(prod: any): Partial<RotuloData> {
     modo_usar: prod.modo_uso || "",
     precaucoes_restricoes: prod.precaucoes || "",
     peso_liquido: `${prod.peso_liquido || ""} ${prod.unidade_peso || "kg"}`.trim(),
-    prazo_validade: `${prod.validade_meses || 6} meses a partir da data de fabricação`,
+    prazo_validade: prod.validade_meses ? `${prod.validade_meses} meses a partir da data de fabricação` : "6 meses a partir da data de fabricação",
+    validade_dias: prod.validade_meses ? prod.validade_meses * 30 : 180,
     armazenamento: prod.armazenamento || "",
     registro_mapa: prod.registro_mapa || "",
     exibir_tabela_consumo: shouldShowConsumptionTable(tipo, prod.especie_alvo || ""),
@@ -865,6 +866,9 @@ export default function RotuloEditor({ produtoId, produtoNome }: Props) {
         largura_mm: data.largura_mm || 200,
         altura_mm: data.altura_mm || 100,
         exibir_tabela_consumo: autoTabela,
+        lote: "",
+        data_fabricacao: "",
+        validade_dias: prod?.validade_meses ? prod.validade_meses * 30 : 180,
       });
     } else {
       await syncFromProduto(true);
@@ -887,7 +891,7 @@ export default function RotuloEditor({ produtoId, produtoNome }: Props) {
   async function handleSave() {
     if (!user) return;
     setSaving(true);
-    const { exibir_tabela_consumo, ...rotuloToSave } = rotulo;
+    const { exibir_tabela_consumo, lote, data_fabricacao, validade_dias, ...rotuloToSave } = rotulo;
     const payload = { user_id: user.id, produto_id: produtoId, ...rotuloToSave };
 
     const { error } = rotuloId
