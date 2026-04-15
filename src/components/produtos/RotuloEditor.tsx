@@ -672,8 +672,8 @@ function buildPrintHTML(rotulo: RotuloData, niveisObj: Record<string, any>): str
           <p style="font-weight:bold;font-size:8pt;margin:2px 0;color:#000;">INDÚSTRIA BRASILEIRA</p>
           <p style="margin:1px 0;font-size:7pt;">
             ${rotulo.registro_mapa
-              ? 'Produto Registrado no Ministério da Agricultura, Pecuária e Abastecimento.'
-              : 'Produto Isento de Registro no Ministério da Agricultura, Pecuária e Abastecimento.'
+              ? 'Produto Registrado no Ministério da Agricultura e Pecuária.'
+              : 'Produto Isento de Registro no Ministério da Agricultura e Pecuária.'
             }
           </p>
         </div>
