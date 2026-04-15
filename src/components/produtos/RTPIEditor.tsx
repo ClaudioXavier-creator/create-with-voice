@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useSessionDraft } from "@/hooks/useSessionDraft";
 import { Loader2, Printer, Save, RefreshCw, Download } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -87,7 +88,7 @@ function formatNiveisForRTPI(niveisObj: Record<string, any>): string {
 
 export default function RTPIEditor({ produtoId }: Props) {
   const { user } = useAuth();
-  const [rtpi, setRtpi] = useState<RTPIData>({ ...EMPTY_RTPI });
+  const [rtpi, setRtpi, clearRtpiDraft] = useSessionDraft<RTPIData>(`rtpi_${produtoId}`, { ...EMPTY_RTPI });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
