@@ -1294,7 +1294,6 @@ export default function RotuloEditor({ produtoId, produtoNome }: Props) {
                   <Input readOnly value={rotulo.data_fabricacao ? calcDataVencimento(rotulo.data_fabricacao, rotulo.validade_dias) : "Preencha a data de fabricação"} className="bg-muted/50" />
                 </div>
               </div>
-              </div>
             </CardContent>
           </Card>
 
