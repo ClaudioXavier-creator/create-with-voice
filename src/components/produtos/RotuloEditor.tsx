@@ -998,8 +998,12 @@ export default function RotuloEditor({ produtoId, produtoNome }: Props) {
     addSep();
 
     // Footer info
-    lines.push(`^FO${x},${y}^A0N,${Math.round(14 * s)},${Math.round(14 * s)}^FD${rotulo.lote_placeholder}^FS`);
-    lines.push(`^FO${Math.floor(textColW / 2)},${y}^A0N,${Math.round(14 * s)},${Math.round(14 * s)}^FD${rotulo.fabricacao_placeholder}^FS`);
+    const loteZpl = rotulo.lote ? `LOTE: ${rotulo.lote}` : rotulo.lote_placeholder;
+    const fabZpl = rotulo.data_fabricacao ? `FAB: ${formatDateBR(rotulo.data_fabricacao)}` : rotulo.fabricacao_placeholder;
+    const valZpl = rotulo.data_fabricacao && rotulo.validade_dias ? `VAL: ${calcDataVencimento(rotulo.data_fabricacao, rotulo.validade_dias)}` : 'VAL: ___/___/______';
+    lines.push(`^FO${x},${y}^A0N,${Math.round(14 * s)},${Math.round(14 * s)}^FD${loteZpl}^FS`);
+    lines.push(`^FO${Math.floor(textColW / 3)},${y}^A0N,${Math.round(14 * s)},${Math.round(14 * s)}^FD${fabZpl}^FS`);
+    lines.push(`^FO${Math.floor(textColW * 2 / 3)},${y}^A0N,${Math.round(14 * s)},${Math.round(14 * s)}^FD${valZpl}^FS`);
     y += Math.round(18 * s);
     if (rotulo.rt_nome) { addLine(`RT: ${rotulo.rt_nome} - CRMV: ${rotulo.rt_crmv}`, 12, 12); }
     if (rotulo.sac_contato) { addLine(`SAC: ${rotulo.sac_contato}`, 12, 12); }
