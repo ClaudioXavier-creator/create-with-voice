@@ -521,48 +521,60 @@ function buildPrintHTML(rotulo: RotuloData, niveisObj: Record<string, any>): str
 
     const consumoPB = niveisObj.consumo_pb;
     const consumoNDT = niveisObj.consumo_ndt;
+    const consumoDiario = parseFloat(niveisObj._consumo_diario_g || "100");
+    const fator = consumoDiario / 1000;
 
-    // Header row for the table
     let html = `
       <div style="padding:4px 6px;">
         <p style="font-size:8pt;font-weight:bold;text-align:center;margin:0 0 4px;text-decoration:underline;">TABELA VALOR DE REFERÊNCIA</p>
+        <p style="font-size:6pt;text-align:center;margin:0 0 4px;">(Consumo diário: ${consumoDiario} g de suplemento)</p>
         <table style="width:100%;border-collapse:collapse;margin-bottom:4px;">
           <thead><tr>
             <th style="${thS}">VALOR<br/>GARANTIA</th>
             <th style="${thS}">VALOR<br/>REFERÊNCIA<br/>(VR)¹</th>
-            <th style="${thS}">QUANTIDADE<br/>POR 100 G DE<br/>SUPLEMENTO</th>
-            <th style="${thS}">QUANTIDADE<br/>DO VR POR 100<br/>SUPLEMENTO</th>
+            <th style="${thS}">QUANTIDADE<br/>POR ${consumoDiario} G DE<br/>SUPLEMENTO</th>
+            <th style="${thS}">% DO VR</th>
           </tr></thead>
           <tbody>`;
 
-    // PB / NDT rows
     if (consumoPB && typeof consumoPB === "object" && parseFloat(consumoPB.min || "0")) {
       const vrPB = parseFloat(consumoPB.vr || "550");
-      const qtd = parseFloat(consumoPB.min) / 10;
+      const qtd = parseFloat(consumoPB.min) * fator;
       const pct = ((qtd / vrPB) * 100).toFixed(2);
-      html += `<tr><td style="${leftS}">Consumo em PB (g/dia)</td><td style="${cellS}">${vrPB}</td><td style="${cellS}">${qtd.toFixed(0)}</td><td style="${cellS}">${pct}</td></tr>`;
+      html += `<tr><td style="${leftS}">Proteína Bruta (g/dia)</td><td style="${cellS}">${vrPB}</td><td style="${cellS}">${qtd.toFixed(1)}</td><td style="${cellS}">${pct}%</td></tr>`;
     }
     if (consumoNDT && typeof consumoNDT === "object" && parseFloat(consumoNDT.min || "0")) {
       const vrNDT = parseFloat(consumoNDT.vr || "4000");
-      const qtd = parseFloat(consumoNDT.min) / 10;
+      const qtd = parseFloat(consumoNDT.min) * fator;
       const pct = ((qtd / vrNDT) * 100).toFixed(2);
-      html += `<tr><td style="${leftS}">Consumo em NDT (g/dia)</td><td style="${cellS}">${vrNDT}</td><td style="${cellS}">${qtd.toFixed(0)}</td><td style="${cellS}">${pct}</td></tr>`;
+      html += `<tr><td style="${leftS}">NDT (g/dia)</td><td style="${cellS}">${vrNDT}</td><td style="${cellS}">${qtd.toFixed(1)}</td><td style="${cellS}">${pct}%</td></tr>`;
     }
     html += `</tbody></table>`;
 
-    // Macro / Micro / Vitaminas sections
+    const calcPrint = (key: string, refUnit: string): number | null => {
+      const nutrient = niveisObj[key];
+      if (!nutrient || typeof nutrient !== "object") return null;
+      const rawVal = parseFloat(nutrient.min || nutrient.max || "0");
+      if (!rawVal) return null;
+      const nutUnit = (nutrient.unit || "").toLowerCase();
+      let val = rawVal * fator;
+      if (refUnit.includes("g/dia") && nutUnit.includes("mg")) val = val / 1000;
+      if (refUnit.includes("mg/dia") && nutUnit.includes("g/")) val = val * 1000;
+      return val;
+    };
+
     const renderGroup = (title: string, refs: typeof VR_MACRO) => {
       let g = `<p style="font-size:6.5pt;font-weight:bold;margin:4px 0 2px;">${title}</p>
         <table style="width:100%;border-collapse:collapse;margin-bottom:2px;">
         <tbody>`;
       refs.forEach(ref => {
-        const qtd = calcQtdPer100g(niveisObj, ref.key, ref.unit);
+        const qtd = calcPrint(ref.key, ref.unit);
         const pct = qtd !== null ? calcVRPercent(qtd, ref.vr) : null;
         g += `<tr>
           <td style="${leftS}">${ref.mineral}</td>
           <td style="${cellS}">${ref.vr}</td>
           <td style="${cellS}">${qtd !== null ? qtd.toFixed(2) : '–'}</td>
-          <td style="${cellS}">${pct !== null ? pct.toFixed(2) : '–'}</td>
+          <td style="${cellS}">${pct !== null ? pct.toFixed(1) + '%' : '–'}</td>
         </tr>`;
       });
       g += `</tbody></table>`;
@@ -572,7 +584,7 @@ function buildPrintHTML(rotulo: RotuloData, niveisObj: Record<string, any>): str
     html += renderGroup("MACROMINERAIS (g/dia)", VR_MACRO);
     html += renderGroup("MICROMINERAIS (mg/dia)", VR_MICRO);
     html += renderGroup("VITAMINAS (UI/dia)", VR_VITAMINAS);
-    html += `<p style="font-size:5.5pt;font-style:italic;margin:3px 0 0;">1: Valor diário de referência para manutenção de um animal de 450 kg de peso corporal</p>`;
+    html += `<p style="font-size:5.5pt;font-style:italic;margin:3px 0 0;">¹ Valor diário de referência para manutenção de um animal de 450 kg de peso corporal (NRC / IN 12/2004)</p>`;
     html += `</div>`;
     return html;
   };
