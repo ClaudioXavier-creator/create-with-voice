@@ -1154,6 +1154,9 @@ export default function RotuloEditor({ produtoId, produtoNome }: Props) {
             <Button variant="outline" onClick={handlePrint}>
               <Printer className="w-4 h-4 mr-1" /> Imprimir PDF
             </Button>
+            <Button variant="outline" onClick={() => exportRotuloDocx(rotulo, niveisObj)}>
+              <FileText className="w-4 h-4 mr-1" /> Editar no Word
+            </Button>
           </div>
         </TabsContent>
 
