@@ -1298,6 +1298,21 @@ export default function RotuloEditor({ produtoId, produtoNome }: Props) {
                   <Input readOnly value={rotulo.data_fabricacao ? calcDataVencimento(rotulo.data_fabricacao, rotulo.validade_dias) : "Preencha a data de fabricação"} className="bg-muted/50" />
                 </div>
               </div>
+
+              <h3 className="font-semibold text-foreground text-sm mt-4">Dimensões do Rótulo</h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <div>
+                  <Label className="text-xs">Largura (mm)</Label>
+                  <Input type="number" min={50} max={500} value={rotulo.largura_mm} onChange={(e) => updateField("largura_mm", parseInt(e.target.value) || 200)} />
+                </div>
+                <div>
+                  <Label className="text-xs">Altura (mm)</Label>
+                  <Input type="number" min={30} max={500} value={rotulo.altura_mm} onChange={(e) => updateField("altura_mm", parseInt(e.target.value) || 100)} />
+                </div>
+                <div className="flex items-end">
+                  <p className="text-[10px] text-muted-foreground pb-2">Preview: {rotulo.largura_mm}×{rotulo.altura_mm} mm — ajuste conforme a impressora</p>
+                </div>
+              </div>
             </CardContent>
           </Card>
 
