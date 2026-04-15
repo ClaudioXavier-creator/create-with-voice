@@ -1012,6 +1012,9 @@ export default function RotuloEditor({ produtoId, produtoNome }: Props) {
                   <Button variant="outline" size="sm" onClick={handlePrint}>
                     <Printer className="w-4 h-4 mr-1" /> PDF / Jato de Tinta
                   </Button>
+                  <Button variant="outline" size="sm" onClick={() => exportRotuloDocx(rotulo, niveisObj)}>
+                    <FileText className="w-4 h-4 mr-1" /> Editar no Word
+                  </Button>
                 </div>
               </CardTitle>
             </CardHeader>
