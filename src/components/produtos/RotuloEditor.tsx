@@ -515,6 +515,22 @@ function TabelaConsumo({ niveisObj, onNiveisChange }: { niveisObj: Record<string
   );
 }
 
+function formatDateBR(dateStr: string): string {
+  if (!dateStr) return "";
+  const [y, m, d] = dateStr.split("-");
+  return `${d}/${m}/${y}`;
+}
+
+function calcDataVencimento(dataFab: string, validadeDias: number): string {
+  if (!dataFab) return "";
+  const date = new Date(dataFab + "T00:00:00");
+  date.setDate(date.getDate() + validadeDias);
+  const d = String(date.getDate()).padStart(2, "0");
+  const m = String(date.getMonth() + 1).padStart(2, "0");
+  const y = date.getFullYear();
+  return `${d}/${m}/${y}`;
+}
+
 // ──── Build print-ready HTML matching the uploaded label models ────
 function buildPrintHTML(rotulo: RotuloData, niveisObj: Record<string, any>): string {
   const hasTable = rotulo.exibir_tabela_consumo;
