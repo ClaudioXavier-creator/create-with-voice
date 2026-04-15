@@ -646,8 +646,9 @@ function buildPrintHTML(rotulo: RotuloData, niveisObj: Record<string, any>): str
       <!-- FOOTER -->
       <div style="border-top:1px solid #000;padding:4px 10px;font-size:6.5pt;">
         <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:2px;">
-          <span>${rotulo.lote_placeholder}</span>
-          <span>${rotulo.fabricacao_placeholder}</span>
+          <span>${rotulo.lote ? `LOTE: ${rotulo.lote}` : rotulo.lote_placeholder}</span>
+          <span>${rotulo.data_fabricacao ? `FAB: ${formatDateBR(rotulo.data_fabricacao)}` : rotulo.fabricacao_placeholder}</span>
+          <span>${rotulo.data_fabricacao && rotulo.validade_dias ? `VAL: ${calcDataVencimento(rotulo.data_fabricacao, rotulo.validade_dias)}` : 'VAL: ___/___/______'}</span>
           ${rotulo.rt_nome ? `<span>RT: ${rotulo.rt_nome} – CRMV: ${rotulo.rt_crmv}</span>` : ''}
           ${rotulo.sac_contato ? `<span>SAC: ${rotulo.sac_contato}</span>` : ''}
         </div>
