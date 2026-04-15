@@ -92,6 +92,9 @@ const CLASSIFICACAO_FULL: Record<string, string> = {
   nucleo: "NÚCLEO",
   aditivo: "ADITIVO",
   sal_mineral: "SAL MINERAL",
+  proteico: "SUPLEMENTO MINERAL PROTEICO",
+  proteico_energetico: "SUPLEMENTO MINERAL PROTEICO ENERGÉTICO",
+  energetico: "SUPLEMENTO ENERGÉTICO",
 };
 
 // ──── Reference values for 450kg bovine maintenance (NRC / IN 12/2004) ────
@@ -224,9 +227,12 @@ const EXEMPLO_SAL_MINERAL: { rotulo: Partial<RotuloData>; niveis: Record<string,
 };
 
 function shouldShowConsumptionTable(tipo: string, especie: string): boolean {
-  const tiposValidos = ["sal_mineral", "suplemento"];
+  const tiposValidos = ["sal_mineral", "suplemento", "proteico", "proteico_energetico", "energetico"];
   const isBovino = especie.toLowerCase().includes("bovin");
-  return tiposValidos.includes(tipo) && isBovino;
+  const classLower = (tipo || "").toLowerCase();
+  const matchesClassificacao = tiposValidos.includes(classLower) ||
+    classLower.includes("mineral") || classLower.includes("proteico") || classLower.includes("energetico");
+  return matchesClassificacao && isBovino;
 }
 
 function calcQtdPer100g(niveisObj: Record<string, any>, key: string, refUnit: string): number | null {
