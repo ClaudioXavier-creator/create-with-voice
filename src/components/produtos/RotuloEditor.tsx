@@ -92,6 +92,9 @@ const CLASSIFICACAO_FULL: Record<string, string> = {
   nucleo: "NÚCLEO",
   aditivo: "ADITIVO",
   sal_mineral: "SAL MINERAL",
+  proteico: "SUPLEMENTO MINERAL PROTEICO",
+  proteico_energetico: "SUPLEMENTO MINERAL PROTEICO ENERGÉTICO",
+  energetico: "SUPLEMENTO ENERGÉTICO",
 };
 
 // ──── Reference values for 450kg bovine maintenance (NRC / IN 12/2004) ────
@@ -224,9 +227,12 @@ const EXEMPLO_SAL_MINERAL: { rotulo: Partial<RotuloData>; niveis: Record<string,
 };
 
 function shouldShowConsumptionTable(tipo: string, especie: string): boolean {
-  const tiposValidos = ["sal_mineral", "suplemento"];
+  const tiposValidos = ["sal_mineral", "suplemento", "proteico", "proteico_energetico", "energetico"];
   const isBovino = especie.toLowerCase().includes("bovin");
-  return tiposValidos.includes(tipo) && isBovino;
+  const classLower = (tipo || "").toLowerCase();
+  const matchesClassificacao = tiposValidos.includes(classLower) ||
+    classLower.includes("mineral") || classLower.includes("proteico") || classLower.includes("energetico");
+  return matchesClassificacao && isBovino;
 }
 
 function calcQtdPer100g(niveisObj: Record<string, any>, key: string, refUnit: string): number | null {
@@ -340,92 +346,165 @@ function extractFromProduto(prod: any): Partial<RotuloData> {
 }
 
 // ──── Consumption table UI sub-component ────
-function TabelaConsumo({ niveisObj }: { niveisObj: Record<string, any> }) {
+function TabelaConsumo({ niveisObj, onNiveisChange }: { niveisObj: Record<string, any>; onNiveisChange?: (n: Record<string, any>) => void }) {
   const consumoPB = niveisObj.consumo_pb;
   const consumoNDT = niveisObj.consumo_ndt;
+  const consumoDiario = parseFloat(niveisObj._consumo_diario_g || "100");
 
-  const renderRow = (ref: typeof VR_MACRO[0]) => {
-    const qtd = calcQtdPer100g(niveisObj, ref.key, ref.unit);
+  const updateNivel = (key: string, field: string, value: string) => {
+    if (!onNiveisChange) return;
+    const current = typeof niveisObj[key] === "object" ? niveisObj[key] : {};
+    onNiveisChange({ ...niveisObj, [key]: { ...current, [field]: value } });
+  };
+
+  const setConsumoDiario = (val: string) => {
+    if (!onNiveisChange) return;
+    onNiveisChange({ ...niveisObj, _consumo_diario_g: val });
+  };
+
+  const fatorConsumo = consumoDiario / 1000; // e.g. 100g = 0.1 of 1kg
+
+  const calcQtdConsumo = (key: string, refUnit: string): number | null => {
+    const nutrient = niveisObj[key];
+    if (!nutrient || typeof nutrient !== "object") return null;
+    const rawVal = parseFloat(nutrient.min || nutrient.max || "0");
+    if (!rawVal) return null;
+    const nutUnit = (nutrient.unit || "").toLowerCase();
+    // value is per kg, multiply by factor to get per consumoDiario grams
+    let val = rawVal * fatorConsumo;
+    // Convert units to match VR unit
+    if (refUnit.includes("g/dia") && nutUnit.includes("mg")) val = val / 1000;
+    if (refUnit.includes("mg/dia") && nutUnit.includes("g/")) val = val * 1000;
+    return val;
+  };
+
+  const renderRow = (ref: typeof VR_MACRO[0], editable: boolean) => {
+    const qtd = calcQtdConsumo(ref.key, ref.unit);
     const pct = qtd !== null ? calcVRPercent(qtd, ref.vr) : null;
+    const nutrient = niveisObj[ref.key];
+    const rawVal = nutrient && typeof nutrient === "object" ? (nutrient.min || "") : "";
+    const rawUnit = nutrient && typeof nutrient === "object" ? (nutrient.unit || "") : "";
+
     return (
       <TableRow key={ref.key}>
         <TableCell className="py-1 text-xs">{ref.mineral}</TableCell>
+        <TableCell className="py-1 text-xs text-center">
+          {editable ? (
+            <Input className="h-6 text-xs w-20 text-center mx-auto" value={rawVal}
+              onChange={(e) => updateNivel(ref.key, "min", e.target.value)} />
+          ) : rawVal || "–"}
+        </TableCell>
+        <TableCell className="py-1 text-xs text-center">{rawUnit || "–"}</TableCell>
         <TableCell className="py-1 text-xs text-center">{ref.vr}</TableCell>
         <TableCell className="py-1 text-xs text-center">{qtd !== null ? qtd.toFixed(2) : "–"}</TableCell>
-        <TableCell className="py-1 text-xs text-center">{pct !== null ? pct.toFixed(2) : "–"}</TableCell>
+        <TableCell className="py-1 text-xs text-center font-semibold">{pct !== null ? `${pct.toFixed(1)}%` : "–"}</TableCell>
       </TableRow>
     );
   };
 
+  const tableHeader = (
+    <TableHeader>
+      <TableRow>
+        <TableHead className="py-1 text-xs">Nutriente</TableHead>
+        <TableHead className="py-1 text-xs text-center">Teor/kg</TableHead>
+        <TableHead className="py-1 text-xs text-center">Unid.</TableHead>
+        <TableHead className="py-1 text-xs text-center">VR¹ (dia)</TableHead>
+        <TableHead className="py-1 text-xs text-center">Qtd/{consumoDiario}g</TableHead>
+        <TableHead className="py-1 text-xs text-center">% do VR</TableHead>
+      </TableRow>
+    </TableHeader>
+  );
+
+  const editable = !!onNiveisChange;
+
   return (
-    <div className="space-y-3">
+    <div className="space-y-4">
+      <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg">
+        <Label className="text-xs font-semibold whitespace-nowrap">Consumo diário recomendado (g):</Label>
+        <Input
+          type="number" min={1} max={5000}
+          className="h-8 w-24 text-xs"
+          value={niveisObj._consumo_diario_g || "100"}
+          onChange={(e) => setConsumoDiario(e.target.value)}
+          disabled={!editable}
+        />
+        <span className="text-[10px] text-muted-foreground">gramas de suplemento/animal/dia</span>
+      </div>
+
       {(consumoPB || consumoNDT) && (
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="py-1 text-xs">Parâmetro</TableHead>
-              <TableHead className="py-1 text-xs text-center">VR¹ (g/dia)</TableHead>
-              <TableHead className="py-1 text-xs text-center">Qtd/100g Supl.</TableHead>
-              <TableHead className="py-1 text-xs text-center">% do VR</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {consumoPB && typeof consumoPB === "object" && (
+        <div>
+          <p className="text-xs font-bold mb-1">PARÂMETROS NUTRICIONAIS</p>
+          <Table>
+            <TableHeader>
               <TableRow>
-                <TableCell className="py-1 text-xs">Consumo em PB</TableCell>
-                <TableCell className="py-1 text-xs text-center">{consumoPB.vr || "550"}</TableCell>
-                <TableCell className="py-1 text-xs text-center">
-                  {parseFloat(consumoPB.min || "0") ? (parseFloat(consumoPB.min) / 10).toFixed(1) : "–"}
-                </TableCell>
-                <TableCell className="py-1 text-xs text-center">
-                  {parseFloat(consumoPB.min || "0") ? ((parseFloat(consumoPB.min) / 10 / parseFloat(consumoPB.vr || "550")) * 100).toFixed(2) : "–"}
-                </TableCell>
+                <TableHead className="py-1 text-xs">Parâmetro</TableHead>
+                <TableHead className="py-1 text-xs text-center">Teor/kg</TableHead>
+                <TableHead className="py-1 text-xs text-center">Unid.</TableHead>
+                <TableHead className="py-1 text-xs text-center">VR¹ (g/dia)</TableHead>
+                <TableHead className="py-1 text-xs text-center">Qtd/{consumoDiario}g</TableHead>
+                <TableHead className="py-1 text-xs text-center">% do VR</TableHead>
               </TableRow>
-            )}
-            {consumoNDT && typeof consumoNDT === "object" && (
-              <TableRow>
-                <TableCell className="py-1 text-xs">Consumo em NDT</TableCell>
-                <TableCell className="py-1 text-xs text-center">{consumoNDT.vr || "4000"}</TableCell>
-                <TableCell className="py-1 text-xs text-center">
-                  {parseFloat(consumoNDT.min || "0") ? (parseFloat(consumoNDT.min) / 10).toFixed(1) : "–"}
-                </TableCell>
-                <TableCell className="py-1 text-xs text-center">
-                  {parseFloat(consumoNDT.min || "0") ? ((parseFloat(consumoNDT.min) / 10 / parseFloat(consumoNDT.vr || "4000")) * 100).toFixed(2) : "–"}
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
+            </TableHeader>
+            <TableBody>
+              {consumoPB && typeof consumoPB === "object" && (() => {
+                const val = parseFloat(consumoPB.min || "0");
+                const vrPB = parseFloat(consumoPB.vr || "550");
+                const qtd = val * fatorConsumo;
+                const pct = vrPB > 0 ? (qtd / vrPB) * 100 : 0;
+                return (
+                  <TableRow>
+                    <TableCell className="py-1 text-xs">Proteína Bruta</TableCell>
+                    <TableCell className="py-1 text-xs text-center">
+                      {editable ? <Input className="h-6 text-xs w-20 text-center mx-auto" value={consumoPB.min || ""} onChange={(e) => updateNivel("consumo_pb", "min", e.target.value)} /> : consumoPB.min || "–"}
+                    </TableCell>
+                    <TableCell className="py-1 text-xs text-center">g/kg</TableCell>
+                    <TableCell className="py-1 text-xs text-center">
+                      {editable ? <Input className="h-6 text-xs w-20 text-center mx-auto" value={consumoPB.vr || "550"} onChange={(e) => updateNivel("consumo_pb", "vr", e.target.value)} /> : vrPB}
+                    </TableCell>
+                    <TableCell className="py-1 text-xs text-center">{val ? qtd.toFixed(1) : "–"}</TableCell>
+                    <TableCell className="py-1 text-xs text-center font-semibold">{val ? `${pct.toFixed(1)}%` : "–"}</TableCell>
+                  </TableRow>
+                );
+              })()}
+              {consumoNDT && typeof consumoNDT === "object" && (() => {
+                const val = parseFloat(consumoNDT.min || "0");
+                const vrNDT = parseFloat(consumoNDT.vr || "4000");
+                const qtd = val * fatorConsumo;
+                const pct = vrNDT > 0 ? (qtd / vrNDT) * 100 : 0;
+                return (
+                  <TableRow>
+                    <TableCell className="py-1 text-xs">NDT</TableCell>
+                    <TableCell className="py-1 text-xs text-center">
+                      {editable ? <Input className="h-6 text-xs w-20 text-center mx-auto" value={consumoNDT.min || ""} onChange={(e) => updateNivel("consumo_ndt", "min", e.target.value)} /> : consumoNDT.min || "–"}
+                    </TableCell>
+                    <TableCell className="py-1 text-xs text-center">g/kg</TableCell>
+                    <TableCell className="py-1 text-xs text-center">
+                      {editable ? <Input className="h-6 text-xs w-20 text-center mx-auto" value={consumoNDT.vr || "4000"} onChange={(e) => updateNivel("consumo_ndt", "vr", e.target.value)} /> : vrNDT}
+                    </TableCell>
+                    <TableCell className="py-1 text-xs text-center">{val ? qtd.toFixed(1) : "–"}</TableCell>
+                    <TableCell className="py-1 text-xs text-center font-semibold">{val ? `${pct.toFixed(1)}%` : "–"}</TableCell>
+                  </TableRow>
+                );
+              })()}
+            </TableBody>
+          </Table>
+        </div>
       )}
+
       <div>
         <p className="text-xs font-bold mb-1">MACROMINERAIS (g/dia)</p>
-        <Table><TableHeader><TableRow>
-          <TableHead className="py-1 text-xs">Mineral</TableHead>
-          <TableHead className="py-1 text-xs text-center">VR¹</TableHead>
-          <TableHead className="py-1 text-xs text-center">Qtd/100g</TableHead>
-          <TableHead className="py-1 text-xs text-center">% do VR</TableHead>
-        </TableRow></TableHeader><TableBody>{VR_MACRO.map(renderRow)}</TableBody></Table>
+        <Table>{tableHeader}<TableBody>{VR_MACRO.map(r => renderRow(r, editable))}</TableBody></Table>
       </div>
       <div>
         <p className="text-xs font-bold mb-1">MICROMINERAIS (mg/dia)</p>
-        <Table><TableHeader><TableRow>
-          <TableHead className="py-1 text-xs">Mineral</TableHead>
-          <TableHead className="py-1 text-xs text-center">VR¹</TableHead>
-          <TableHead className="py-1 text-xs text-center">Qtd/100g</TableHead>
-          <TableHead className="py-1 text-xs text-center">% do VR</TableHead>
-        </TableRow></TableHeader><TableBody>{VR_MICRO.map(renderRow)}</TableBody></Table>
+        <Table>{tableHeader}<TableBody>{VR_MICRO.map(r => renderRow(r, editable))}</TableBody></Table>
       </div>
       <div>
         <p className="text-xs font-bold mb-1">VITAMINAS (UI/dia)</p>
-        <Table><TableHeader><TableRow>
-          <TableHead className="py-1 text-xs">Vitamina</TableHead>
-          <TableHead className="py-1 text-xs text-center">VR¹</TableHead>
-          <TableHead className="py-1 text-xs text-center">Qtd/100g</TableHead>
-          <TableHead className="py-1 text-xs text-center">% do VR</TableHead>
-        </TableRow></TableHeader><TableBody>{VR_VITAMINAS.map(renderRow)}</TableBody></Table>
+        <Table>{tableHeader}<TableBody>{VR_VITAMINAS.map(r => renderRow(r, editable))}</TableBody></Table>
       </div>
       <p className="text-[9px] text-muted-foreground italic">
-        ¹ Valor diário de referência para manutenção de um animal de 450 kg de peso corporal (IN 12/2004 – MAPA).
+        ¹ Valor diário de referência para manutenção de um animal de 450 kg de peso corporal (NRC / IN 12/2004 – MAPA).
       </p>
     </div>
   );
@@ -442,48 +521,60 @@ function buildPrintHTML(rotulo: RotuloData, niveisObj: Record<string, any>): str
 
     const consumoPB = niveisObj.consumo_pb;
     const consumoNDT = niveisObj.consumo_ndt;
+    const consumoDiario = parseFloat(niveisObj._consumo_diario_g || "100");
+    const fator = consumoDiario / 1000;
 
-    // Header row for the table
     let html = `
       <div style="padding:4px 6px;">
         <p style="font-size:8pt;font-weight:bold;text-align:center;margin:0 0 4px;text-decoration:underline;">TABELA VALOR DE REFERÊNCIA</p>
+        <p style="font-size:6pt;text-align:center;margin:0 0 4px;">(Consumo diário: ${consumoDiario} g de suplemento)</p>
         <table style="width:100%;border-collapse:collapse;margin-bottom:4px;">
           <thead><tr>
             <th style="${thS}">VALOR<br/>GARANTIA</th>
             <th style="${thS}">VALOR<br/>REFERÊNCIA<br/>(VR)¹</th>
-            <th style="${thS}">QUANTIDADE<br/>POR 100 G DE<br/>SUPLEMENTO</th>
-            <th style="${thS}">QUANTIDADE<br/>DO VR POR 100<br/>SUPLEMENTO</th>
+            <th style="${thS}">QUANTIDADE<br/>POR ${consumoDiario} G DE<br/>SUPLEMENTO</th>
+            <th style="${thS}">% DO VR</th>
           </tr></thead>
           <tbody>`;
 
-    // PB / NDT rows
     if (consumoPB && typeof consumoPB === "object" && parseFloat(consumoPB.min || "0")) {
       const vrPB = parseFloat(consumoPB.vr || "550");
-      const qtd = parseFloat(consumoPB.min) / 10;
+      const qtd = parseFloat(consumoPB.min) * fator;
       const pct = ((qtd / vrPB) * 100).toFixed(2);
-      html += `<tr><td style="${leftS}">Consumo em PB (g/dia)</td><td style="${cellS}">${vrPB}</td><td style="${cellS}">${qtd.toFixed(0)}</td><td style="${cellS}">${pct}</td></tr>`;
+      html += `<tr><td style="${leftS}">Proteína Bruta (g/dia)</td><td style="${cellS}">${vrPB}</td><td style="${cellS}">${qtd.toFixed(1)}</td><td style="${cellS}">${pct}%</td></tr>`;
     }
     if (consumoNDT && typeof consumoNDT === "object" && parseFloat(consumoNDT.min || "0")) {
       const vrNDT = parseFloat(consumoNDT.vr || "4000");
-      const qtd = parseFloat(consumoNDT.min) / 10;
+      const qtd = parseFloat(consumoNDT.min) * fator;
       const pct = ((qtd / vrNDT) * 100).toFixed(2);
-      html += `<tr><td style="${leftS}">Consumo em NDT (g/dia)</td><td style="${cellS}">${vrNDT}</td><td style="${cellS}">${qtd.toFixed(0)}</td><td style="${cellS}">${pct}</td></tr>`;
+      html += `<tr><td style="${leftS}">NDT (g/dia)</td><td style="${cellS}">${vrNDT}</td><td style="${cellS}">${qtd.toFixed(1)}</td><td style="${cellS}">${pct}%</td></tr>`;
     }
     html += `</tbody></table>`;
 
-    // Macro / Micro / Vitaminas sections
+    const calcPrint = (key: string, refUnit: string): number | null => {
+      const nutrient = niveisObj[key];
+      if (!nutrient || typeof nutrient !== "object") return null;
+      const rawVal = parseFloat(nutrient.min || nutrient.max || "0");
+      if (!rawVal) return null;
+      const nutUnit = (nutrient.unit || "").toLowerCase();
+      let val = rawVal * fator;
+      if (refUnit.includes("g/dia") && nutUnit.includes("mg")) val = val / 1000;
+      if (refUnit.includes("mg/dia") && nutUnit.includes("g/")) val = val * 1000;
+      return val;
+    };
+
     const renderGroup = (title: string, refs: typeof VR_MACRO) => {
       let g = `<p style="font-size:6.5pt;font-weight:bold;margin:4px 0 2px;">${title}</p>
         <table style="width:100%;border-collapse:collapse;margin-bottom:2px;">
         <tbody>`;
       refs.forEach(ref => {
-        const qtd = calcQtdPer100g(niveisObj, ref.key, ref.unit);
+        const qtd = calcPrint(ref.key, ref.unit);
         const pct = qtd !== null ? calcVRPercent(qtd, ref.vr) : null;
         g += `<tr>
           <td style="${leftS}">${ref.mineral}</td>
           <td style="${cellS}">${ref.vr}</td>
           <td style="${cellS}">${qtd !== null ? qtd.toFixed(2) : '–'}</td>
-          <td style="${cellS}">${pct !== null ? pct.toFixed(2) : '–'}</td>
+          <td style="${cellS}">${pct !== null ? pct.toFixed(1) + '%' : '–'}</td>
         </tr>`;
       });
       g += `</tbody></table>`;
@@ -493,7 +584,7 @@ function buildPrintHTML(rotulo: RotuloData, niveisObj: Record<string, any>): str
     html += renderGroup("MACROMINERAIS (g/dia)", VR_MACRO);
     html += renderGroup("MICROMINERAIS (mg/dia)", VR_MICRO);
     html += renderGroup("VITAMINAS (UI/dia)", VR_VITAMINAS);
-    html += `<p style="font-size:5.5pt;font-style:italic;margin:3px 0 0;">1: Valor diário de referência para manutenção de um animal de 450 kg de peso corporal</p>`;
+    html += `<p style="font-size:5.5pt;font-style:italic;margin:3px 0 0;">¹ Valor diário de referência para manutenção de um animal de 450 kg de peso corporal (NRC / IN 12/2004)</p>`;
     html += `</div>`;
     return html;
   };
@@ -1065,7 +1156,7 @@ export default function RotuloEditor({ produtoId, produtoNome }: Props) {
         <TabsList>
           <TabsTrigger value="preview">Visualizar Rótulo</TabsTrigger>
           <TabsTrigger value="editor">Editor</TabsTrigger>
-          {rotulo.exibir_tabela_consumo && <TabsTrigger value="tabela">Tabela de Consumo</TabsTrigger>}
+          {rotulo.exibir_tabela_consumo && <TabsTrigger value="tabela">Calculadora VR</TabsTrigger>}
         </TabsList>
 
         {/* Preview Tab — now default */}
@@ -1141,10 +1232,13 @@ export default function RotuloEditor({ produtoId, produtoNome }: Props) {
                     <SelectContent>
                       <SelectItem value="racao">Ração</SelectItem>
                       <SelectItem value="suplemento">Suplemento</SelectItem>
+                      <SelectItem value="sal_mineral">Sal Mineral</SelectItem>
+                      <SelectItem value="proteico">Supl. Mineral Proteico</SelectItem>
+                      <SelectItem value="proteico_energetico">Supl. Proteico Energético</SelectItem>
+                      <SelectItem value="energetico">Supl. Energético</SelectItem>
                       <SelectItem value="premix">Premix</SelectItem>
                       <SelectItem value="nucleo">Núcleo</SelectItem>
                       <SelectItem value="aditivo">Aditivo</SelectItem>
-                      <SelectItem value="sal_mineral">Sal Mineral</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -1237,13 +1331,18 @@ export default function RotuloEditor({ produtoId, produtoNome }: Props) {
           </div>
         </TabsContent>
 
-        {/* Consumption Table Tab */}
+        {/* Consumption Table Tab — interactive calculator */}
         {rotulo.exibir_tabela_consumo && (
           <TabsContent value="tabela">
             <Card>
-              <CardHeader><CardTitle className="text-sm">Tabela de Consumo por 100g de Suplemento</CardTitle></CardHeader>
+              <CardHeader>
+                <CardTitle className="text-sm">Calculadora — Tabela de Referência por Consumo Diário</CardTitle>
+              </CardHeader>
               <CardContent>
-                <TabelaConsumo niveisObj={niveisObj} />
+                <p className="text-xs text-muted-foreground mb-3">
+                  Os valores são calculados automaticamente a partir dos Níveis de Garantia do produto. Ajuste o consumo diário recomendado e os teores conforme necessário.
+                </p>
+                <TabelaConsumo niveisObj={niveisObj} onNiveisChange={setNiveisObj} />
               </CardContent>
             </Card>
           </TabsContent>
