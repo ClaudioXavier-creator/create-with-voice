@@ -75,6 +75,7 @@ const EMPTY_ROTULO: RotuloData = {
   rt_nome: "", rt_crmv: "", sac_contato: "",
   largura_mm: 200, altura_mm: 100,
   exibir_tabela_consumo: false,
+  lote: "", data_fabricacao: "", validade_dias: 180,
 };
 
 const DEFAULT_ZEBRA: ZebraConfig = {
