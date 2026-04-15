@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Loader2, Plus, X } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -94,34 +94,65 @@ export default function ProdutoForm({ produtoId, onSaved }: Props) {
   const { user } = useAuth();
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(!!produtoId);
+  const draftKey = `draft_produto_${produtoId || "new"}`;
 
-  const [nome, setNome] = useState("");
-  const [marca, setMarca] = useState("");
-  const [classificacao, setClassificacao] = useState("racao");
-  const [especieAlvo, setEspecieAlvo] = useState("");
-  const [categoriaAnimal, setCategoriaAnimal] = useState("");
-  const [registroMapa, setRegistroMapa] = useState("");
-  const [pesoLiquido, setPesoLiquido] = useState("");
-  const [unidadePeso, setUnidadePeso] = useState("kg");
-  const [validadeMeses, setValidadeMeses] = useState("6");
-  const [formaFisica, setFormaFisica] = useState("");
-  const [armazenamento, setArmazenamento] = useState("");
-  const [modoUso, setModoUso] = useState("");
-  const [precaucoes, setPrecaucoes] = useState("");
-  const [indicacoes, setIndicacoes] = useState("");
-  const [composicao, setComposicao] = useState("");
-  const [eventuaisSubstitutos, setEventuaisSubstitutos] = useState("");
-  const [diferenciais, setDiferenciais] = useState("");
-  const [modoPreparo, setModoPreparo] = useState("");
-  const [embalagem, setEmbalagem] = useState("");
-  const [observacoes, setObservacoes] = useState("");
+  // Restore draft from sessionStorage
+  const getDraft = useCallback(() => {
+    try {
+      const saved = sessionStorage.getItem(draftKey);
+      if (saved) return JSON.parse(saved);
+    } catch {}
+    return null;
+  }, [draftKey]);
 
-  const [activeNutrients, setActiveNutrients] = useState<Set<string>>(new Set());
-  const [nutrientValues, setNutrientValues] = useState<Record<string, NutrientValue>>({});
-  const [customNutrients, setCustomNutrients] = useState<NutrientDef[]>([]);
+  const draft = getDraft();
+
+  const [nome, setNome] = useState(draft?.nome || "");
+  const [marca, setMarca] = useState(draft?.marca || "");
+  const [classificacao, setClassificacao] = useState(draft?.classificacao || "racao");
+  const [especieAlvo, setEspecieAlvo] = useState(draft?.especieAlvo || "");
+  const [categoriaAnimal, setCategoriaAnimal] = useState(draft?.categoriaAnimal || "");
+  const [registroMapa, setRegistroMapa] = useState(draft?.registroMapa || "");
+  const [pesoLiquido, setPesoLiquido] = useState(draft?.pesoLiquido || "");
+  const [unidadePeso, setUnidadePeso] = useState(draft?.unidadePeso || "kg");
+  const [validadeMeses, setValidadeMeses] = useState(draft?.validadeMeses || "6");
+  const [formaFisica, setFormaFisica] = useState(draft?.formaFisica || "");
+  const [armazenamento, setArmazenamento] = useState(draft?.armazenamento || "");
+  const [modoUso, setModoUso] = useState(draft?.modoUso || "");
+  const [precaucoes, setPrecaucoes] = useState(draft?.precaucoes || "");
+  const [indicacoes, setIndicacoes] = useState(draft?.indicacoes || "");
+  const [composicao, setComposicao] = useState(draft?.composicao || "");
+  const [eventuaisSubstitutos, setEventuaisSubstitutos] = useState(draft?.eventuaisSubstitutos || "");
+  const [diferenciais, setDiferenciais] = useState(draft?.diferenciais || "");
+  const [modoPreparo, setModoPreparo] = useState(draft?.modoPreparo || "");
+  const [embalagem, setEmbalagem] = useState(draft?.embalagem || "");
+  const [observacoes, setObservacoes] = useState(draft?.observacoes || "");
+
+  const [activeNutrients, setActiveNutrients] = useState<Set<string>>(() => draft?.activeNutrients ? new Set(draft.activeNutrients) : new Set());
+  const [nutrientValues, setNutrientValues] = useState<Record<string, NutrientValue>>(draft?.nutrientValues || {});
+  const [customNutrients, setCustomNutrients] = useState<NutrientDef[]>(draft?.customNutrients || []);
   const [newNutrientName, setNewNutrientName] = useState("");
   const [newNutrientUnit, setNewNutrientUnit] = useState("mg/kg");
   const [nutrientTab, setNutrientTab] = useState("macro");
+
+  // Persist draft on every change
+  useEffect(() => {
+    const data = {
+      nome, marca, classificacao, especieAlvo, categoriaAnimal, registroMapa,
+      pesoLiquido, unidadePeso, validadeMeses, formaFisica, armazenamento,
+      modoUso, precaucoes, indicacoes, composicao, eventuaisSubstitutos,
+      diferenciais, modoPreparo, embalagem, observacoes,
+      activeNutrients: Array.from(activeNutrients),
+      nutrientValues, customNutrients,
+    };
+    sessionStorage.setItem(draftKey, JSON.stringify(data));
+  }, [nome, marca, classificacao, especieAlvo, categoriaAnimal, registroMapa,
+    pesoLiquido, unidadePeso, validadeMeses, formaFisica, armazenamento,
+    modoUso, precaucoes, indicacoes, composicao, eventuaisSubstitutos,
+    diferenciais, modoPreparo, embalagem, observacoes,
+    activeNutrients, nutrientValues, customNutrients, draftKey]);
+
+  const clearDraft = useCallback(() => sessionStorage.removeItem(draftKey), [draftKey]);
 
   useEffect(() => {
     if (produtoId) loadProduto();
@@ -256,7 +287,7 @@ export default function ProdutoForm({ produtoId, onSaved }: Props) {
       : await supabase.from("produtos").insert(payload as any);
 
     if (error) toast.error("Erro: " + error.message);
-    else { toast.success("Produto salvo!"); onSaved(); }
+    else { toast.success("Produto salvo!"); clearDraft(); onSaved(); }
     setSaving(false);
   }
 
