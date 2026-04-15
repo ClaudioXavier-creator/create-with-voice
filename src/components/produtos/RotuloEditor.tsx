@@ -246,6 +246,46 @@ function calcVRPercent(qtdPer100g: number, vr: number): number | null {
   return (qtdPer100g / vr) * 100;
 }
 
+// Units that must NOT be auto-converted between g/mg
+const SPECIAL_UNIT_PATTERNS = [
+  /ufc/i, /ftu/i, /u\.?i\.?/i, /kui/i, /mcg/i, /ui/i,
+];
+
+function isSpecialUnit(unit: string): boolean {
+  return SPECIAL_UNIT_PATTERNS.some(p => p.test(unit));
+}
+
+/**
+ * Auto-adjust unit per MAPA convention:
+ * - < 10 g/kg → show in mg/kg (×1000)
+ * - ≥ 10 g/kg → show in g/kg (÷1000 if was mg)
+ * - Exception: UFC, FTU, UI, KUI, mcg units are never converted
+ */
+function autoAdjustUnit(value: string, unit: string): { displayValue: string; displayUnit: string } {
+  const u = (unit || "").trim().toLowerCase();
+  // Don't touch special units (vitamins UI/KUI, enzymes FTU, yeasts UFC, mcg)
+  if (isSpecialUnit(u)) return { displayValue: value, displayUnit: unit };
+
+  const numVal = parseFloat(value.replace(/\./g, "").replace(",", "."));
+  if (isNaN(numVal)) return { displayValue: value, displayUnit: unit };
+
+  const isGperKg = u === "g/kg" || u === "g";
+  const isMgPerKg = u === "mg/kg" || u === "mg";
+
+  if (isGperKg && numVal < 10) {
+    // Convert g → mg
+    const mgVal = numVal * 1000;
+    return { displayValue: mgVal.toFixed(2).replace(/\.?0+$/, ""), displayUnit: "mg/kg" };
+  }
+  if (isMgPerKg && numVal >= 10000) {
+    // Convert mg → g (10000 mg/kg = 10 g/kg)
+    const gVal = numVal / 1000;
+    return { displayValue: gVal.toFixed(2).replace(/\.?0+$/, ""), displayUnit: "g/kg" };
+  }
+
+  return { displayValue: value, displayUnit: unit };
+}
+
 function formatNiveisIN22(niveisObj: Record<string, any>): string {
   const lines: string[] = [];
   Object.entries(niveisObj).forEach(([key, val]) => {
@@ -254,9 +294,17 @@ function formatNiveisIN22(niveisObj: Record<string, any>): string {
     if (typeof val === "object" && val !== null) {
       const { min, max, unit } = val as { min?: string; max?: string; unit?: string };
       const u = unit || "";
-      if (min && max) lines.push(`${label} (Mín.) ${min} ${u}; ${label} (Máx.) ${max} ${u}`);
-      else if (min) lines.push(`${label} (Mín.) ${min} ${u}`);
-      else if (max) lines.push(`${label} (Máx.) ${max} ${u}`);
+      if (min && max) {
+        const adjMin = autoAdjustUnit(min, u);
+        const adjMax = autoAdjustUnit(max, u);
+        lines.push(`${label} (Mín.) ${adjMin.displayValue} ${adjMin.displayUnit}; ${label} (Máx.) ${adjMax.displayValue} ${adjMax.displayUnit}`);
+      } else if (min) {
+        const adj = autoAdjustUnit(min, u);
+        lines.push(`${label} (Mín.) ${adj.displayValue} ${adj.displayUnit}`);
+      } else if (max) {
+        const adj = autoAdjustUnit(max, u);
+        lines.push(`${label} (Máx.) ${adj.displayValue} ${adj.displayUnit}`);
+      }
     } else if (val) lines.push(`${label}: ${val}`);
   });
   return lines.join("; ") + ".";
