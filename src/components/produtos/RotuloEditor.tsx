@@ -47,6 +47,9 @@ interface RotuloData {
   largura_mm: number;
   altura_mm: number;
   exibir_tabela_consumo: boolean;
+  lote: string;
+  data_fabricacao: string;
+  validade_dias: number;
 }
 
 interface ZebraConfig {
