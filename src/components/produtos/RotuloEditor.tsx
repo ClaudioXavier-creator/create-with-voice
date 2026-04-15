@@ -1270,8 +1270,30 @@ export default function RotuloEditor({ produtoId, produtoNome }: Props) {
                 <div><Label className="text-xs">Classificação</Label><Input value={rotulo.classificacao_label} onChange={(e) => updateField("classificacao_label", e.target.value)} placeholder="Ex: RAÇÃO PARA BOVINOS DE CORTE" /></div>
                 <div><Label className="text-xs">Espécie / Categoria</Label><Input value={rotulo.especie_categoria} onChange={(e) => updateField("especie_categoria", e.target.value)} /></div>
                 <div><Label className="text-xs">Peso Líquido</Label><Input value={rotulo.peso_liquido} onChange={(e) => updateField("peso_liquido", e.target.value)} /></div>
-                <div><Label className="text-xs">Prazo de Validade</Label><Input value={rotulo.prazo_validade} onChange={(e) => updateField("prazo_validade", e.target.value)} /></div>
+                <div><Label className="text-xs">Prazo de Validade (texto)</Label><Input value={rotulo.prazo_validade} onChange={(e) => updateField("prazo_validade", e.target.value)} /></div>
                 <div><Label className="text-xs">Registro MAPA (se aplicável)</Label><Input value={rotulo.registro_mapa} onChange={(e) => updateField("registro_mapa", e.target.value)} placeholder="Deixe vazio se isento" /></div>
+              </div>
+
+              <h3 className="font-semibold text-foreground text-sm mt-4">Lote e Datas (para impressão)</h3>
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+                <div>
+                  <Label className="text-xs">Lote</Label>
+                  <Input value={rotulo.lote} onChange={(e) => updateField("lote", e.target.value)} placeholder="Ex: L001-2026" />
+                </div>
+                <div>
+                  <Label className="text-xs">Data de Fabricação</Label>
+                  <Input type="date" value={rotulo.data_fabricacao} onChange={(e) => updateField("data_fabricacao", e.target.value)} />
+                </div>
+                <div>
+                  <Label className="text-xs">Validade (dias)</Label>
+                  <Input type="number" min={1} value={rotulo.validade_dias} onChange={(e) => updateField("validade_dias", parseInt(e.target.value) || 180)} />
+                  <p className="text-[10px] text-muted-foreground mt-0.5">Importado do cadastro do produto</p>
+                </div>
+                <div>
+                  <Label className="text-xs">Data de Vencimento</Label>
+                  <Input readOnly value={rotulo.data_fabricacao ? calcDataVencimento(rotulo.data_fabricacao, rotulo.validade_dias) : "Preencha a data de fabricação"} className="bg-muted/50" />
+                </div>
+              </div>
               </div>
             </CardContent>
           </Card>
