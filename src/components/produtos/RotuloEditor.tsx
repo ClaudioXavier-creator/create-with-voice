@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Loader2, Printer, Download, Save, RefreshCw } from "lucide-react";
+import { Loader2, Printer, Download, Save, RefreshCw, Settings, Eye, Send } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,6 +9,7 @@ import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
@@ -47,6 +48,17 @@ interface RotuloData {
   exibir_tabela_consumo: boolean;
 }
 
+interface ZebraConfig {
+  dpi: 203 | 300;
+  largura_mm: number;
+  altura_mm: number;
+  velocidade: number;
+  escurecimento: number;
+  conexao: "download" | "usb" | "rede";
+  ip_impressora: string;
+  porta: number;
+}
+
 const EMPTY_ROTULO: RotuloData = {
   tipo_rotulo: "racao",
   nome_comercial: "", classificacao_label: "", especie_categoria: "",
@@ -61,6 +73,17 @@ const EMPTY_ROTULO: RotuloData = {
   exibir_tabela_consumo: false,
 };
 
+const DEFAULT_ZEBRA: ZebraConfig = {
+  dpi: 203,
+  largura_mm: 200,
+  altura_mm: 100,
+  velocidade: 4,
+  escurecimento: 15,
+  conexao: "download",
+  ip_impressora: "192.168.1.100",
+  porta: 9100,
+};
+
 const CLASSIFICACAO_FULL: Record<string, string> = {
   racao: "RAÇÃO",
   suplemento: "SUPLEMENTO",
@@ -71,7 +94,7 @@ const CLASSIFICACAO_FULL: Record<string, string> = {
 };
 
 // ──── Reference values for 450kg bovine maintenance (NRC / IN 12/2004) ────
-const VR_MACRO: { mineral: string; vr: number; unit: string; key: string }[] = [
+const VR_MACRO = [
   { mineral: "Cálcio", vr: 14, unit: "g/dia", key: "calcio" },
   { mineral: "Fósforo", vr: 11, unit: "g/dia", key: "fosforo" },
   { mineral: "Sódio", vr: 7, unit: "g/dia", key: "sodio" },
@@ -80,7 +103,7 @@ const VR_MACRO: { mineral: string; vr: number; unit: string; key: string }[] = [
   { mineral: "Potássio", vr: 54, unit: "g/dia", key: "potassio" },
 ];
 
-const VR_MICRO: { mineral: string; vr: number; unit: string; key: string }[] = [
+const VR_MICRO = [
   { mineral: "Cobalto", vr: 0.9, unit: "mg/dia", key: "cobalto" },
   { mineral: "Cobre", vr: 90, unit: "mg/dia", key: "cobre" },
   { mineral: "Iodo", vr: 4.5, unit: "mg/dia", key: "iodo" },
@@ -90,13 +113,13 @@ const VR_MICRO: { mineral: string; vr: number; unit: string; key: string }[] = [
   { mineral: "Ferro", vr: 450, unit: "mg/dia", key: "ferro" },
 ];
 
-const VR_VITAMINAS: { mineral: string; vr: number; unit: string; key: string }[] = [
+const VR_VITAMINAS = [
   { mineral: "Vitamina A", vr: 20000, unit: "UI/dia", key: "vitamina_a" },
   { mineral: "Vitamina D", vr: 2500, unit: "UI/dia", key: "vitamina_d" },
   { mineral: "Vitamina E", vr: 350, unit: "UI/dia", key: "vitamina_e" },
 ];
 
-// ──── Example product data from uploaded DOCX models ────
+// ──── Example data ────
 const EXEMPLO_RACAO: { rotulo: Partial<RotuloData>; niveis: Record<string, any> } = {
   rotulo: {
     tipo_rotulo: "racao",
@@ -105,11 +128,11 @@ const EXEMPLO_RACAO: { rotulo: Partial<RotuloData>; niveis: Record<string, any> 
     especie_categoria: "BOVINOS – BEZERROS DE LEITE E CORTE",
     composicao_ingredientes: "Milho integral moído (Espécie doadora do gene Agrobacterium thumefaciens, Bacillus thuringiensis, Streptomyces viridochromogenes, Zea mays), farelo de soja (Espécie doadora do gene Agrobacterium thumefaciens, Arabidopsis thaliana, Bacillus thuringiensis, Streptomyces viridochromogenes), cloreto de sódio (sal comum), enxofre ventilado (flor de enxofre), fosfato bicálcico, iodato de cálcio, niacina, óxido de magnésio, pantotenato de cálcio, selenito de sódio, sulfato de cobalto, sulfato de cobre, sulfato de manganês, sulfato de zinco, vitamina A, Vitamina B12, vitamina B2, vitamina D3, vitamina E, caulim, aditivo aromatizante, BHT (hidróxido de tolueno butilado), monensina sódica.",
     eventuais_substitutivos: "Farelo de Algodão (Espécie doadora do gene Agrobacterium thumefaciens, Bacillus thuringiensis, Streptomyces hygroscopicus, Streptomyces viridochromogenes, Zea mays), casca de soja, milheto, sorgo integral moído, calcário calcítico, fosfato monobicálcico, iodato de potássio, monóxido de manganês, óxido de zinco.",
-    niveis_garantia_texto: "Umidade (máx.) 130 g; Proteína Bruta (min.) 180 g; Extrato Etéreo (min.) 30 g; FDA (máx.) 60 g; Matéria Fibrosa (máx.) 40 g; Cálcio (mín.) 7.000 mg; Cálcio (máx.) 10 g; Enxofre (mín.) 1.450 mg; Fósforo (min.) 4.200 mg; Cobalto (mín.) 0,45 mg; Cobre (mín.) 11,5 mg; Iodo (mín.) 0,85 mg; Magnésio (mín.) 4.400 mg; Manganês (mín.) 15 mg; Monensina Sódica 31 mg; NDT (mín.) 750 g; Selênio (mín.) 0,18 mg; Sódio (mín) 4.300 mg; Vitamina A (mín.) 9.900 U.I.; Vitamina B1 (mín.) 3 mg; Vitamina B12 (mín.) 11,25 mcg; Vitamina B2 (mín.) 4 mg; Vitamina D3 (mín.) 1.980 U.I; Vitamina E (mín.) 24 U.I; Zinco (mín.) 73 mg.",
+    niveis_garantia_texto: "Umidade (máx.) 130 g/Kg; Proteína Bruta (mín.) 180 g/Kg; Extrato Etéreo (mín.) 30 g/Kg; FDA (máx.) 80 g/Kg; Matéria Fibrosa (máx.) 80 g/Kg; Cálcio (mín.) 7.000 mg/Kg; Cálcio (máx.) 10 g/Kg; Enxofre (mín.) 450 mg/Kg; Fósforo (mín.) 4.200 mg/Kg; Cobalto (mín.) 0,45 mg/Kg; Cobre (mín.) 11,5 mg/Kg; Iodo (mín.) 0,85 mg/Kg; Magnésio (mín.) 450 mg/Kg; Manganês (mín.) 15 mg/Kg; Monensina Sódica 31 mg/Kg; NDT (mín.) 750 g/Kg; Selênio (mín.) 0,18 mg/Kg; Sódio (mín.) 4.450 mg/Kg; Vitamina A (mín.) 10.000 U.I./Kg; Vitamina B1 (mín.) 3 mg/Kg; Vitamina B12 (mín.) 11,25 mcg/Kg; Vitamina B2 (mín.) 4 mg/Kg; Vitamina D3 (mín.) 1.980 U.I./Kg; Vitamina E (mín.) 0,240 U.I./Kg; Zinco (mín.) 59 mg/Kg.",
     indicacoes_uso: "Ração para bezerros/as de leite ou corte em fase de aleitamento.",
     modo_usar: "Fornecer à vontade 1 a 1,5 kg para cada 100 kg de peso vivo, do 4° dia de vida adiante até o desmame.",
     precaucoes_restricoes: "Este produto contém Ionóforo: Não permitir que cavalos ou outros equídeos tenham acesso a rações contendo Monensina, pois a ingestão pode ser fatal.",
-    armazenamento: "Conservar em local seco e arejado, afastado de piso e paredes e de preferência sobre estrados.",
+    armazenamento: "Conservar em local seco e arejado, afastado de piso e paredes e de preferência sobre estrados, evitar presença de insetos e roedores.",
     peso_liquido: "40 kg",
     prazo_validade: "6 meses a partir da data de fabricação",
     razao_social: "Agro Campo EIRELI-M. E.",
@@ -124,16 +147,16 @@ const EXEMPLO_RACAO: { rotulo: Partial<RotuloData>; niveis: Record<string, any> 
 const EXEMPLO_PROTEINADO: { rotulo: Partial<RotuloData>; niveis: Record<string, any> } = {
   rotulo: {
     tipo_rotulo: "suplemento",
-    nome_comercial: "HGM ENERGY+ 400",
+    nome_comercial: "HGM PAC 400",
     classificacao_label: "SUPLEMENTO MINERAL PROTEICO ENERGÉTICO DE PRONTO USO – BOVINOS DE CORTE",
     especie_categoria: "BOVINOS DE CORTE",
-    composicao_ingredientes: "CALCÁRIO CALCÍTICO, CLORETO DE SÓDIO (SAL COMUM 9,60%), ENXOFRE VENTILADO (FLOR DE ENXOFRE), FARELO DE SOJA, FOSFATO BICÁLCICO, IODATO DE CÁLCIO, MILHO INTEGRAL MOÍDO, ÓXIDO DE MAGNÉSIO, SELENITO DE SÓDIO, SULFATO DE COBALTO, SULFATO DE COBRE, SULFATO DE MANGANÊS, SULFATO DE ZINCO, CAULIM MICRO, URÉIA PECUÁRIA, MONENSINA SÓDICA.",
-    eventuais_substitutivos: "DDG, Farelo de Algodão, casca de soja, milheto, sorgo integral moído, carbonato de cálcio, fosfato monobicálcico, iodato de potássio, monóxido de manganês, óxido de zinco.",
-    niveis_garantia_texto: "Cálcio (Mín.) 10,00 g; Cálcio (Máx.) 30,00 g; Cobalto (Mín.) 9,00 mg; Cobre (Mín.) 156,00 mg; Enxofre (Mín.) 1.750,00 mg; Flúor (Máx.) 55,00 mg; Fósforo (Mín.) 7.490,00 mg; Iodo (Mín.) 10,00 mg; Magnésio (Mín.) 1.690,00 mg; Manganês (Mín.) 150,00 mg; Monensina 167,00 mg; Proteína Bruta (Mín.) 200,00 g; NNP Equiv. Proteína (Máx.) 112 g; NDT (Mín.) 700,00 g; Selênio (Mín.) 2,8 mg; Sódio (Mín.) 22,00 g; Zinco (Mín.) 500,00 mg.",
+    composicao_ingredientes: "CALCÁRIO CALCÍTICO, CLORETO DE SÓDIO (SAL COMUM 9,60%), ENXOFRE VENTILADO (FLOR DE ENXOFRE) FARELO DE SOJA (POSSÍVEIS ESPÉCIES DOADORAS DO GENE: Agrobacterium tumefaciens, Bacillus thuringiensis, Arabidopsis thaliana E Streptomyces viridochromogenes), FOSFATO BICÁLCICO, IODATO DE CÁLCIO, MILHO INTEGRAL MOÍDO (POSSÍVEIS ESPÉCIES DOADORAS DO GENTE: Agrobacterium tumefaciens, Bacillus thuringiensis, Streptomyces viridochromogenes E Zea mays), ÓXIDO DE MAGNÉSIO, SELENITO DE SÓDIO, SULFATO DE COBALTO, SULFATO DE COBRE, SULFATO DE MANGANÊS, SULFATO DE ZINCO, CAULIM MICRO, URÉIA PECUÁRIA, MONENSINA SÓDICA.",
+    eventuais_substitutivos: "Farelo de Algodão (Espécie doadora do gene Agrobacterium thumefaciens, Bacillus thuringiensis, Streptomyces hygroscopicus, Streptomyces viridochromogenes, Zea mays), casca de soja, milheto, sorgo integral moído, carbonato de cálcio, fosfato monobicálcico, iodato de potássio, monóxido de manganês, óxido de zinco.",
+    niveis_garantia_texto: "Cálcio (Mín.) 10,00 g; Cálcio (Máx.) 30,00 g; Cobalto (Mín.) 9,00 mg; Cobre (Mín.) 156,00 mg; Enxofre (Mín.) 1.750,00 mg; Flúor (Máx.) 55,00 mg; Fósforo (Mín.) 7.490,00 mg; Iodo (Mín.) 10,00 mg; Magnésio (Mín.) 1.690,00 mg; Manganês (Mín.) 150,00 mg; Monensina – 167,00 mg; Proteína Bruta (Mín.) 200,00 g; NNP Equivalente Proteína (Máx.) 112 g; NDT (Mín.) 700,00 g; Selênio (Mín.) 2,8 mg; Sódio (Mín.) 22,00 g; Zinco (Mín.) 500,00 mg.",
     indicacoes_uso: "PRODUTO DESTINADO À SUPLEMENTAÇÃO DE MINERAIS E PROTEÍNAS PARA BOVINOS DE CORTE NAS FASES DE CRIA, RECRIA E ENGORDA.",
-    modo_usar: "Adaptação: De 1 a 7 dias: Fornecer 100 g/100 kg de peso vivo. De 8 a 14 dias fornecer 200 g/100 kg de peso vivo. Após 14 dias fornecer de 200 a 400 g/100 kg de peso vivo. Para um melhor resultado servir no final do dia.",
-    precaucoes_restricoes: "CUIDADOS AO USAR PRODUTO COM URÉIA: Servir o produto sempre em cochos cobertos, manter boa disponibilidade de pasto, manter o cocho com o produto, não fornecer o produto para animais em jejum, famintos e debilitados. RESTRIÇÃO: Não permitir que cavalos ou outros equídeos tenham acesso a produtos contendo monensina. A ingestão pode ser fatal. A monensina é incompatível com tiamulina.",
-    armazenamento: "Conservar em local seco e arejado, afastado de piso e paredes.",
+    modo_usar: "Adaptação ao consumo de PROTÉICO HGM PAC 400:\nDe 1 a 7 dias: Fornecer 100 g/100 kg de peso vivo. De 8 a 14 dias fornecer 200 g/100 kg de peso vivo. Após 14 dias fornecer de 200 a 400 g/100 kg de peso vivo.\nCONSUMO DIÁRIO: Varia de 200 a 400g de HGM PAC 400 para cada 100Kg de peso corporal. Para um melhor resultado servir no final do dia.",
+    precaucoes_restricoes: "CUIDADOS AO USAR PRODUTO COM URÉIA: Servir o produto sempre em cochos cobertos e/ou com sistema que evite o acúmulo de água, manter boa disponibilidade de pasto, manter o cocho com o produto, não fornecer o produto para animais em jejum, famintos e debilitados e procurar o profissional habilitado de sua confiança em caso de intoxicação.\nRESTRIÇÃO DE USO: Não permitir que cavalos ou outros equídeos tenham acesso a produtos contendo monensina. A ingestão pode ser fatal. A monensina é incompatível com tiamulina.",
+    armazenamento: "Conservar em local seco e arejado, afastado de piso e paredes e de preferência sobre estrados, evitar presença de insetos e roedores.",
     peso_liquido: "30 kg",
     prazo_validade: "6 meses a partir da data de fabricação",
     razao_social: "Agro Campo EIRELI-M. E.",
@@ -154,8 +177,12 @@ const EXEMPLO_PROTEINADO: { rotulo: Partial<RotuloData>; niveis: Record<string, 
     manganes: { min: "150.00", unit: "mg/kg" },
     selenio: { min: "2.80", unit: "mg/kg" },
     zinco: { min: "500.00", unit: "mg/kg" },
-    consumo_pb: { min: "200" },
-    consumo_ndt: { min: "700" },
+    ferro: { min: "450.00", unit: "mg/kg" },
+    consumo_pb: { min: "200", vr: "550" },
+    consumo_ndt: { min: "700", vr: "4000" },
+    vitamina_a: { min: "20000", unit: "UI/kg" },
+    vitamina_d: { min: "2500", unit: "UI/kg" },
+    vitamina_e: { min: "350", unit: "UI/kg" },
   },
 };
 
@@ -213,6 +240,11 @@ function calcQtdPer100g(niveisObj: Record<string, any>, key: string, refUnit: st
   return valPer100g;
 }
 
+function calcVRPercent(qtdPer100g: number, vr: number): number | null {
+  if (vr <= 0) return null;
+  return (qtdPer100g / vr) * 100;
+}
+
 function formatNiveisIN22(niveisObj: Record<string, any>): string {
   const lines: string[] = [];
   Object.entries(niveisObj).forEach(([key, val]) => {
@@ -265,7 +297,7 @@ function TabelaConsumo({ niveisObj }: { niveisObj: Record<string, any> }) {
 
   const renderRow = (ref: typeof VR_MACRO[0]) => {
     const qtd = calcQtdPer100g(niveisObj, ref.key, ref.unit);
-    const pct = qtd !== null && ref.vr > 0 ? ((qtd / ref.vr) * 100) : null;
+    const pct = qtd !== null ? calcVRPercent(qtd, ref.vr) : null;
     return (
       <TableRow key={ref.key}>
         <TableCell className="py-1 text-xs">{ref.mineral}</TableCell>
@@ -292,24 +324,24 @@ function TabelaConsumo({ niveisObj }: { niveisObj: Record<string, any> }) {
             {consumoPB && typeof consumoPB === "object" && (
               <TableRow>
                 <TableCell className="py-1 text-xs">Consumo em PB</TableCell>
-                <TableCell className="py-1 text-xs text-center">550</TableCell>
+                <TableCell className="py-1 text-xs text-center">{consumoPB.vr || "550"}</TableCell>
                 <TableCell className="py-1 text-xs text-center">
                   {parseFloat(consumoPB.min || "0") ? (parseFloat(consumoPB.min) / 10).toFixed(1) : "–"}
                 </TableCell>
                 <TableCell className="py-1 text-xs text-center">
-                  {parseFloat(consumoPB.min || "0") ? ((parseFloat(consumoPB.min) / 10 / 550) * 100).toFixed(2) : "–"}
+                  {parseFloat(consumoPB.min || "0") ? ((parseFloat(consumoPB.min) / 10 / parseFloat(consumoPB.vr || "550")) * 100).toFixed(2) : "–"}
                 </TableCell>
               </TableRow>
             )}
             {consumoNDT && typeof consumoNDT === "object" && (
               <TableRow>
                 <TableCell className="py-1 text-xs">Consumo em NDT</TableCell>
-                <TableCell className="py-1 text-xs text-center">4000</TableCell>
+                <TableCell className="py-1 text-xs text-center">{consumoNDT.vr || "4000"}</TableCell>
                 <TableCell className="py-1 text-xs text-center">
                   {parseFloat(consumoNDT.min || "0") ? (parseFloat(consumoNDT.min) / 10).toFixed(1) : "–"}
                 </TableCell>
                 <TableCell className="py-1 text-xs text-center">
-                  {parseFloat(consumoNDT.min || "0") ? ((parseFloat(consumoNDT.min) / 10 / 4000) * 100).toFixed(2) : "–"}
+                  {parseFloat(consumoNDT.min || "0") ? ((parseFloat(consumoNDT.min) / 10 / parseFloat(consumoNDT.vr || "4000")) * 100).toFixed(2) : "–"}
                 </TableCell>
               </TableRow>
             )}
@@ -350,67 +382,76 @@ function TabelaConsumo({ niveisObj }: { niveisObj: Record<string, any> }) {
   );
 }
 
-// ──── Build print-ready HTML for the label ────
+// ──── Build print-ready HTML matching the uploaded label models ────
 function buildPrintHTML(rotulo: RotuloData, niveisObj: Record<string, any>): string {
   const hasTable = rotulo.exibir_tabela_consumo;
 
-  // Helper: build consumption table HTML
   const buildTableHTML = () => {
-    const cellS = 'border:1px solid #333;padding:1px 3px;font-size:6.5pt;text-align:center;';
-    const headerS = cellS + 'font-weight:bold;background:#e5e5e5;';
+    const thS = 'border:1px solid #000;padding:2px 4px;font-size:6.5pt;text-align:center;font-weight:bold;background:#fff;';
+    const cellS = 'border:1px solid #000;padding:1px 3px;font-size:6.5pt;text-align:center;';
     const leftS = cellS + 'text-align:left;';
-
-    const renderRows = (refs: typeof VR_MACRO) => refs.map(ref => {
-      const qtd = calcQtdPer100g(niveisObj, ref.key, ref.unit);
-      const pct = qtd !== null && ref.vr > 0 ? ((qtd / ref.vr) * 100) : null;
-      return `<tr><td style="${leftS}">${ref.mineral}</td><td style="${cellS}">${ref.vr}</td><td style="${cellS}">${qtd !== null ? qtd.toFixed(2) : '–'}</td><td style="${cellS}">${pct !== null ? pct.toFixed(2) : '–'}</td></tr>`;
-    }).join('');
 
     const consumoPB = niveisObj.consumo_pb;
     const consumoNDT = niveisObj.consumo_ndt;
-    let pbNdtRows = '';
-    if (consumoPB && typeof consumoPB === 'object' && parseFloat(consumoPB.min || '0')) {
-      const v = parseFloat(consumoPB.min) / 10;
-      pbNdtRows += `<tr><td style="${leftS}">Consumo em PB (g/dia)</td><td style="${cellS}" colspan="3">${v.toFixed(0)}</td></tr>`;
-    }
-    if (consumoNDT && typeof consumoNDT === 'object' && parseFloat(consumoNDT.min || '0')) {
-      const v = parseFloat(consumoNDT.min) / 10;
-      pbNdtRows += `<tr><td style="${leftS}">Consumo em NDT (g/dia)</td><td style="${cellS}" colspan="3">${v.toFixed(0)}</td></tr>`;
-    }
 
-    return `
-      <div style="padding:4px;">
-        <p style="font-size:9pt;font-weight:bold;text-align:center;margin:0 0 4px;">TABELA VALOR DE REFERÊNCIA</p>
-        <table style="width:100%;border-collapse:collapse;margin-bottom:3px;">
+    // Header row for the table
+    let html = `
+      <div style="padding:4px 6px;">
+        <p style="font-size:8pt;font-weight:bold;text-align:center;margin:0 0 4px;text-decoration:underline;">TABELA VALOR DE REFERÊNCIA</p>
+        <table style="width:100%;border-collapse:collapse;margin-bottom:4px;">
           <thead><tr>
-            <th style="${headerS}">GARANTIA</th>
-            <th style="${headerS}">VALOR REFERÊNCIA (VR)¹</th>
-            <th style="${headerS}">QUANTIDADE POR 100 G DE SUPLEMENTO</th>
-            <th style="${headerS}">QUANTIDADE % DO VR POR 100 G SUPLEMENTO</th>
+            <th style="${thS}">VALOR<br/>GARANTIA</th>
+            <th style="${thS}">VALOR<br/>REFERÊNCIA<br/>(VR)¹</th>
+            <th style="${thS}">QUANTIDADE<br/>POR 100 G DE<br/>SUPLEMENTO</th>
+            <th style="${thS}">QUANTIDADE<br/>DO VR POR 100<br/>SUPLEMENTO</th>
           </tr></thead>
-          <tbody>${pbNdtRows}</tbody>
-        </table>
-        <p style="font-size:6.5pt;font-weight:bold;margin:3px 0 1px;">MACROMINERAIS (g/dia)</p>
+          <tbody>`;
+
+    // PB / NDT rows
+    if (consumoPB && typeof consumoPB === "object" && parseFloat(consumoPB.min || "0")) {
+      const vrPB = parseFloat(consumoPB.vr || "550");
+      const qtd = parseFloat(consumoPB.min) / 10;
+      const pct = ((qtd / vrPB) * 100).toFixed(2);
+      html += `<tr><td style="${leftS}">Consumo em PB (g/dia)</td><td style="${cellS}">${vrPB}</td><td style="${cellS}">${qtd.toFixed(0)}</td><td style="${cellS}">${pct}</td></tr>`;
+    }
+    if (consumoNDT && typeof consumoNDT === "object" && parseFloat(consumoNDT.min || "0")) {
+      const vrNDT = parseFloat(consumoNDT.vr || "4000");
+      const qtd = parseFloat(consumoNDT.min) / 10;
+      const pct = ((qtd / vrNDT) * 100).toFixed(2);
+      html += `<tr><td style="${leftS}">Consumo em NDT (g/dia)</td><td style="${cellS}">${vrNDT}</td><td style="${cellS}">${qtd.toFixed(0)}</td><td style="${cellS}">${pct}</td></tr>`;
+    }
+    html += `</tbody></table>`;
+
+    // Macro / Micro / Vitaminas sections
+    const renderGroup = (title: string, refs: typeof VR_MACRO) => {
+      let g = `<p style="font-size:6.5pt;font-weight:bold;margin:4px 0 2px;">${title}</p>
         <table style="width:100%;border-collapse:collapse;margin-bottom:2px;">
-          <tbody>${renderRows(VR_MACRO)}</tbody>
-        </table>
-        <p style="font-size:6.5pt;font-weight:bold;margin:3px 0 1px;">MICROMINERAIS (mg/dia)</p>
-        <table style="width:100%;border-collapse:collapse;margin-bottom:2px;">
-          <tbody>${renderRows(VR_MICRO)}</tbody>
-        </table>
-        <p style="font-size:6.5pt;font-weight:bold;margin:3px 0 1px;">VITAMINAS (UI/dia)</p>
-        <table style="width:100%;border-collapse:collapse;margin-bottom:2px;">
-          <tbody>${renderRows(VR_VITAMINAS)}</tbody>
-        </table>
-        <p style="font-size:5.5pt;font-style:italic;margin:2px 0 0;">¹ Valor diário de referência para manutenção de um animal de 450 kg de peso corporal</p>
-      </div>
-    `;
+        <tbody>`;
+      refs.forEach(ref => {
+        const qtd = calcQtdPer100g(niveisObj, ref.key, ref.unit);
+        const pct = qtd !== null ? calcVRPercent(qtd, ref.vr) : null;
+        g += `<tr>
+          <td style="${leftS}">${ref.mineral}</td>
+          <td style="${cellS}">${ref.vr}</td>
+          <td style="${cellS}">${qtd !== null ? qtd.toFixed(2) : '–'}</td>
+          <td style="${cellS}">${pct !== null ? pct.toFixed(2) : '–'}</td>
+        </tr>`;
+      });
+      g += `</tbody></table>`;
+      return g;
+    };
+
+    html += renderGroup("MACROMINERAIS (g/dia)", VR_MACRO);
+    html += renderGroup("MICROMINERAIS (mg/dia)", VR_MICRO);
+    html += renderGroup("VITAMINAS (UI/dia)", VR_VITAMINAS);
+    html += `<p style="font-size:5.5pt;font-style:italic;margin:3px 0 0;">1: Valor diário de referência para manutenção de um animal de 450 kg de peso corporal</p>`;
+    html += `</div>`;
+    return html;
   };
 
-  // Helper: build section
   const section = (title: string, content: string) => {
     if (!content) return '';
-    return `<p style="font-size:7pt;font-weight:bold;margin:3px 0 1px;">${title}</p><p style="font-size:6.5pt;line-height:1.35;margin:0 0 2px;text-align:justify;">${content}</p>`;
+    return `<p style="font-size:7pt;font-weight:bold;margin:4px 0 1px;">${title}</p><p style="font-size:6.5pt;line-height:1.4;margin:0 0 2px;text-align:justify;">${content}</p>`;
   };
 
   const bodyContent = `
@@ -423,56 +464,30 @@ function buildPrintHTML(rotulo: RotuloData, niveisObj: Record<string, any>): str
     ${section('CONDIÇÕES DE CONSERVAÇÃO:', rotulo.armazenamento)}
   `;
 
-  const footerCenter = `
-    <div style="text-align:center;font-size:7pt;margin-top:4px;border-top:1px solid #000;padding-top:3px;">
-      <p style="font-weight:bold;margin:1px 0;">INDÚSTRIA BRASILEIRA</p>
-      <p style="margin:1px 0;">${rotulo.registro_mapa
-        ? 'Produto Registrado no Ministério da Agricultura, Pecuária e Abastecimento.'
-        : 'Produto Isento de Registro no Ministério da Agricultura, Pecuária e Abastecimento.'
-      }</p>
-    </div>
-  `;
-
   const leftColumnWidth = hasTable ? '55%' : '100%';
 
   return `
-    <div style="width:${rotulo.largura_mm - 4}mm;font-family:Arial,Helvetica,sans-serif;border:2px solid #000;box-sizing:border-box;">
+    <div style="width:${rotulo.largura_mm - 4}mm;font-family:Arial,Helvetica,sans-serif;border:2px solid #000;box-sizing:border-box;background:#fff;color:#000;">
       <!-- HEADER -->
       <div style="display:flex;border-bottom:2px solid #000;">
-        <div style="flex:1;padding:4px 8px;border-right:1px solid #000;">
-          <p style="font-size:7.5pt;text-align:center;margin:0 0 2px;font-weight:bold;">${rotulo.classificacao_label}</p>
-          <p style="font-size:16pt;font-weight:bold;text-align:center;margin:2px 0;">${rotulo.nome_comercial}</p>
+        <div style="flex:1;padding:6px 10px;border-right:1px solid #000;">
+          <p style="font-size:7.5pt;text-align:center;margin:0 0 4px;font-weight:bold;">${rotulo.classificacao_label}</p>
+          <p style="font-size:18pt;font-weight:900;text-align:center;margin:4px 0;letter-spacing:1px;">${rotulo.nome_comercial}</p>
         </div>
-        <div style="width:35%;padding:4px 6px;font-size:6.5pt;line-height:1.5;">
-          <p style="font-weight:bold;font-size:7pt;margin:0 0 1px;">Fabricado por:</p>
-          <p style="margin:0;">${rotulo.razao_social}</p>
-          <p style="margin:0;">${rotulo.endereco}</p>
-          <p style="margin:0;">CNPJ: ${rotulo.cnpj}</p>
-          <p style="margin:0;font-weight:bold;">INDÚSTRIA BRASILEIRA</p>
+        <div style="width:30%;padding:5px 8px;font-size:6.5pt;line-height:1.5;border-left:1px solid #000;">
+          <p style="font-weight:bold;font-size:7pt;margin:0 0 1px;text-align:right;">Fabricado por:</p>
+          <p style="margin:0;text-align:right;">${rotulo.razao_social}</p>
+          <p style="margin:0;text-align:right;">${rotulo.endereco}</p>
+          <p style="margin:0;text-align:right;">CNPJ: ${rotulo.cnpj}</p>
+          <p style="margin:0;font-weight:bold;text-align:right;">INDÚSTRIA BRASILEIRA</p>
         </div>
       </div>
 
       <!-- BODY -->
       <div style="display:flex;">
         <!-- Left column: text content -->
-        <div style="width:${leftColumnWidth};padding:4px 8px;${hasTable ? 'border-right:1px solid #000;' : ''}">
+        <div style="width:${leftColumnWidth};padding:6px 10px;${hasTable ? 'border-right:1px solid #000;' : ''}">
           ${bodyContent}
-
-          <div style="border-top:0.5pt solid #000;margin-top:3px;padding-top:2px;font-size:6.5pt;">
-            <div style="display:flex;justify-content:space-between;margin-bottom:1px;">
-              <span><strong>PESO LÍQ:</strong> ${rotulo.peso_liquido}</span>
-              <span><strong>VALIDADE:</strong> ${rotulo.prazo_validade}</span>
-            </div>
-            <div style="display:flex;justify-content:space-between;margin-bottom:1px;">
-              <span>${rotulo.lote_placeholder}</span>
-              <span>${rotulo.fabricacao_placeholder}</span>
-            </div>
-            ${rotulo.registro_mapa ? `<p style="margin:1px 0;"><strong>Registro MAPA Nº:</strong> ${rotulo.registro_mapa}</p>` : ''}
-            ${rotulo.rt_nome ? `<p style="margin:1px 0;">RT: ${rotulo.rt_nome} – CRMV: ${rotulo.rt_crmv}</p>` : ''}
-            ${rotulo.sac_contato ? `<p style="margin:1px 0;">SAC: ${rotulo.sac_contato}</p>` : ''}
-          </div>
-
-          ${footerCenter}
         </div>
 
         ${hasTable ? `
@@ -482,8 +497,150 @@ function buildPrintHTML(rotulo: RotuloData, niveisObj: Record<string, any>): str
           </div>
         ` : ''}
       </div>
+
+      <!-- FOOTER -->
+      <div style="border-top:1px solid #000;padding:4px 10px;font-size:6.5pt;">
+        <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:2px;">
+          <span>${rotulo.lote_placeholder}</span>
+          <span>${rotulo.fabricacao_placeholder}</span>
+          ${rotulo.rt_nome ? `<span>RT: ${rotulo.rt_nome} – CRMV: ${rotulo.rt_crmv}</span>` : ''}
+          ${rotulo.sac_contato ? `<span>SAC: ${rotulo.sac_contato}</span>` : ''}
+        </div>
+        <div style="text-align:center;margin-top:6px;padding-top:4px;border-top:0.5pt solid #666;">
+          <p style="font-weight:bold;font-size:8pt;margin:2px 0;color:#000;">INDÚSTRIA BRASILEIRA</p>
+          <p style="margin:1px 0;font-size:7pt;">
+            ${rotulo.registro_mapa
+              ? 'Produto Registrado no Ministério da Agricultura, Pecuária e Abastecimento.'
+              : 'Produto Isento de Registro no Ministério da Agricultura, Pecuária e Abastecimento.'
+            }
+          </p>
+        </div>
+      </div>
     </div>
   `;
+}
+
+// ──── Zebra Config Dialog ────
+function ZebraConfigDialog({ config, onChange }: { config: ZebraConfig; onChange: (c: ZebraConfig) => void }) {
+  return (
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button variant="outline" size="sm">
+          <Settings className="w-4 h-4 mr-1" /> Config. Zebra
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="max-w-md">
+        <DialogHeader>
+          <DialogTitle className="text-sm">Configuração da Impressora Zebra</DialogTitle>
+        </DialogHeader>
+        <div className="space-y-4">
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <Label className="text-xs">Resolução (DPI)</Label>
+              <Select value={String(config.dpi)} onValueChange={(v) => onChange({ ...config, dpi: parseInt(v) as 203 | 300 })}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="203">203 DPI (padrão)</SelectItem>
+                  <SelectItem value="300">300 DPI (alta resolução)</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label className="text-xs">Velocidade (pol/s)</Label>
+              <Select value={String(config.velocidade)} onValueChange={(v) => onChange({ ...config, velocidade: parseInt(v) })}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="2">2 (lento/qualidade)</SelectItem>
+                  <SelectItem value="4">4 (padrão)</SelectItem>
+                  <SelectItem value="6">6 (rápido)</SelectItem>
+                  <SelectItem value="8">8 (muito rápido)</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label className="text-xs">Largura Etiqueta (mm)</Label>
+              <Input type="number" value={config.largura_mm} onChange={(e) => onChange({ ...config, largura_mm: parseInt(e.target.value) || 200 })} />
+            </div>
+            <div>
+              <Label className="text-xs">Altura Etiqueta (mm)</Label>
+              <Input type="number" value={config.altura_mm} onChange={(e) => onChange({ ...config, altura_mm: parseInt(e.target.value) || 100 })} />
+            </div>
+            <div>
+              <Label className="text-xs">Escurecimento (0-30)</Label>
+              <Input type="number" min={0} max={30} value={config.escurecimento} onChange={(e) => onChange({ ...config, escurecimento: parseInt(e.target.value) || 15 })} />
+            </div>
+          </div>
+
+          <div className="border-t pt-3">
+            <Label className="text-xs font-semibold">Método de Envio</Label>
+            <Select value={config.conexao} onValueChange={(v) => onChange({ ...config, conexao: v as any })}>
+              <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="download">Download arquivo .zpl</SelectItem>
+                <SelectItem value="rede">Envio direto via rede (TCP/IP)</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          {config.conexao === "rede" && (
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label className="text-xs">IP da Impressora</Label>
+                <Input value={config.ip_impressora} onChange={(e) => onChange({ ...config, ip_impressora: e.target.value })} placeholder="192.168.1.100" />
+              </div>
+              <div>
+                <Label className="text-xs">Porta</Label>
+                <Input type="number" value={config.porta} onChange={(e) => onChange({ ...config, porta: parseInt(e.target.value) || 9100 })} />
+              </div>
+            </div>
+          )}
+
+          <div className="bg-muted/50 rounded p-3 text-xs text-muted-foreground space-y-1">
+            <p className="font-semibold text-foreground">Impressoras compatíveis:</p>
+            <p>• ZT230/ZT231 — Industrial de mesa</p>
+            <p>• ZT410/ZT420 — Industrial alto volume</p>
+            <p>• ZD420/ZD620 — Desktop compacta</p>
+            <p>• GC420/GK420 — Econômica</p>
+            <p className="mt-2">O ZPL gerado é compatível com qualquer impressora Zebra que aceite linguagem ZPL II.</p>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+// ──── ZPL Preview Dialog ────
+function ZPLPreviewDialog({ zpl }: { zpl: string }) {
+  return (
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button variant="outline" size="sm">
+          <Eye className="w-4 h-4 mr-1" /> Ver ZPL
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="max-w-2xl max-h-[80vh]">
+        <DialogHeader>
+          <DialogTitle className="text-sm">Código ZPL Gerado</DialogTitle>
+        </DialogHeader>
+        <div className="overflow-auto max-h-[60vh]">
+          <pre className="bg-muted p-4 rounded text-xs font-mono whitespace-pre-wrap break-all">
+            {zpl}
+          </pre>
+        </div>
+        <div className="flex gap-2 justify-end">
+          <Button size="sm" variant="outline" onClick={() => { navigator.clipboard.writeText(zpl); toast.success("ZPL copiado!"); }}>
+            Copiar ZPL
+          </Button>
+          <Button size="sm" variant="outline" onClick={() => {
+            const url = `http://labelary.com/viewer.html?zpl=${encodeURIComponent(zpl)}`;
+            window.open(url, "_blank");
+          }}>
+            Testar no Labelary
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
 }
 
 // ──── Main component ────
@@ -495,9 +652,18 @@ export default function RotuloEditor({ produtoId, produtoNome }: Props) {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [syncing, setSyncing] = useState(false);
+  const [zebraConfig, setZebraConfig] = useState<ZebraConfig>(() => {
+    const saved = localStorage.getItem("zebra_config");
+    return saved ? JSON.parse(saved) : DEFAULT_ZEBRA;
+  });
+  const [qtdEtiquetas, setQtdEtiquetas] = useState(1);
   const printRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => { loadRotulo(); }, [produtoId]);
+
+  useEffect(() => {
+    localStorage.setItem("zebra_config", JSON.stringify(zebraConfig));
+  }, [zebraConfig]);
 
   async function loadRotulo() {
     setLoading(true);
@@ -573,27 +739,33 @@ export default function RotuloEditor({ produtoId, produtoNome }: Props) {
   }
 
   function generateZPL(): string {
-    const w = rotulo.largura_mm;
-    const h = rotulo.altura_mm;
-    const dotsW = w * 8;
-    const dotsH = h * 8;
+    const dpmm = zebraConfig.dpi === 300 ? 12 : 8; // dots per mm
+    const w = zebraConfig.largura_mm || rotulo.largura_mm;
+    const h = zebraConfig.altura_mm || rotulo.altura_mm;
+    const dotsW = w * dpmm;
+    const dotsH = h * dpmm;
     const hasTable = rotulo.exibir_tabela_consumo;
     const textColW = hasTable ? Math.floor(dotsW * 0.55) : dotsW;
     const tableColX = textColW + 10;
     const x = 20;
     const maxFB = textColW - 40;
 
+    // Scale font sizes based on DPI
+    const s = dpmm === 12 ? 1.5 : 1;
+
     const lines: string[] = [];
     let y = 20;
 
     const addLine = (text: string, fontH: number, fontW: number, maxLines = 1, customX = x, customFB = maxFB) => {
       if (!text) return;
+      const fH = Math.round(fontH * s);
+      const fW = Math.round(fontW * s);
       if (maxLines > 1) {
-        lines.push(`^FO${customX},${y}^A0N,${fontH},${fontW}^FB${customFB},${maxLines},,^FD${text}^FS`);
-        y += fontH * maxLines + 2;
+        lines.push(`^FO${customX},${y}^A0N,${fH},${fW}^FB${customFB},${maxLines},,^FD${text}^FS`);
+        y += fH * maxLines + 2;
       } else {
-        lines.push(`^FO${customX},${y}^A0N,${fontH},${fontW}^FD${text}^FS`);
-        y += fontH + 4;
+        lines.push(`^FO${customX},${y}^A0N,${fH},${fW}^FD${text}^FS`);
+        y += fH + 4;
       }
     };
 
@@ -606,28 +778,26 @@ export default function RotuloEditor({ produtoId, produtoNome }: Props) {
       addLine(content, 14, 14, contentLines);
     };
 
-    // ── Header (full width) ──
-    // Classification + Name on left, Manufacturer on right
-    lines.push(`^FO${x},${y}^A0N,16,16^FB${textColW - 40},1,,^FD${rotulo.classificacao_label}^FS`);
-    // Manufacturer block at right
+    // ── Header ──
     const mfX = hasTable ? tableColX : Math.floor(dotsW * 0.65);
-    lines.push(`^FO${mfX},${y}^A0N,14,14^FDFabricado por:^FS`);
-    y += 18;
-    lines.push(`^FO${x},${y}^A0N,28,28^FB${textColW - 40},1,,^FD${rotulo.nome_comercial}^FS`);
-    lines.push(`^FO${mfX},${y}^A0N,12,12^FD${rotulo.razao_social}^FS`);
-    y += 16;
-    lines.push(`^FO${mfX},${y}^A0N,12,12^FD${rotulo.endereco}^FS`);
-    y += 14;
-    lines.push(`^FO${mfX},${y}^A0N,12,12^FDCNPJ: ${rotulo.cnpj}^FS`);
-    y += 14;
-    lines.push(`^FO${mfX},${y}^A0N,12,12^FDINDUSTRIA BRASILEIRA^FS`);
-    y = 90; // normalize after header
+    lines.push(`^FO${x},${y}^A0N,${Math.round(16 * s)},${Math.round(16 * s)}^FB${textColW - 40},1,,^FD${rotulo.classificacao_label}^FS`);
+    lines.push(`^FO${mfX},${y}^A0N,${Math.round(14 * s)},${Math.round(14 * s)}^FDFabricado por:^FS`);
+    y += Math.round(18 * s);
+    lines.push(`^FO${x},${y}^A0N,${Math.round(28 * s)},${Math.round(28 * s)}^FB${textColW - 40},1,,^FD${rotulo.nome_comercial}^FS`);
+    lines.push(`^FO${mfX},${y}^A0N,${Math.round(12 * s)},${Math.round(12 * s)}^FD${rotulo.razao_social}^FS`);
+    y += Math.round(16 * s);
+    lines.push(`^FO${mfX},${y}^A0N,${Math.round(12 * s)},${Math.round(12 * s)}^FD${rotulo.endereco}^FS`);
+    y += Math.round(14 * s);
+    lines.push(`^FO${mfX},${y}^A0N,${Math.round(12 * s)},${Math.round(12 * s)}^FDCNPJ: ${rotulo.cnpj}^FS`);
+    y += Math.round(14 * s);
+    lines.push(`^FO${mfX},${y}^A0N,${Math.round(12 * s)},${Math.round(12 * s)}^FDINDUSTRIA BRASILEIRA^FS`);
+    y = Math.round(90 * s);
 
-    // Separator across full width
+    // Full separator
     lines.push(`^FO${x},${y}^GB${dotsW - 40},2,2^FS`);
     y += 8;
 
-    // ── Body (left column) ──
+    // ── Body ──
     addSection("COMPOSICAO BASICA:", rotulo.composicao_ingredientes, 4);
     addSection("EVENTUAIS SUBSTITUTIVOS:", rotulo.eventuais_substitutivos, 2);
     addSection("NIVEIS DE GARANTIA POR KG DO PRODUTO:", rotulo.niveis_garantia_texto, 5);
@@ -638,40 +808,34 @@ export default function RotuloEditor({ produtoId, produtoNome }: Props) {
 
     addSep();
 
-    // Peso / Validade
-    lines.push(`^FO${x},${y}^A0N,14,14^FDPESO LIQ: ${rotulo.peso_liquido}^FS`);
-    lines.push(`^FO${Math.floor(textColW / 2)},${y}^A0N,14,14^FDVAL: ${rotulo.prazo_validade}^FS`);
-    y += 18;
-    lines.push(`^FO${x},${y}^A0N,14,14^FD${rotulo.lote_placeholder}^FS`);
-    lines.push(`^FO${Math.floor(textColW / 2)},${y}^A0N,14,14^FD${rotulo.fabricacao_placeholder}^FS`);
-    y += 18;
-    if (rotulo.registro_mapa) { addLine(`REG. MAPA: ${rotulo.registro_mapa}`, 14, 14); }
+    // Footer info
+    lines.push(`^FO${x},${y}^A0N,${Math.round(14 * s)},${Math.round(14 * s)}^FD${rotulo.lote_placeholder}^FS`);
+    lines.push(`^FO${Math.floor(textColW / 2)},${y}^A0N,${Math.round(14 * s)},${Math.round(14 * s)}^FD${rotulo.fabricacao_placeholder}^FS`);
+    y += Math.round(18 * s);
     if (rotulo.rt_nome) { addLine(`RT: ${rotulo.rt_nome} - CRMV: ${rotulo.rt_crmv}`, 12, 12); }
     if (rotulo.sac_contato) { addLine(`SAC: ${rotulo.sac_contato}`, 12, 12); }
 
     addSep();
     addLine("INDUSTRIA BRASILEIRA", 14, 14);
-    addLine(rotulo.registro_mapa ? "Produto Registrado no MAPA" : "Produto Isento de Registro no MAPA", 12, 12);
+    addLine(rotulo.registro_mapa ? "Produto Registrado no MAPA" : "Produto Isento de Registro no Ministerio da Agricultura, Pecuaria e Abastecimento.", 12, 12, 2);
 
     // ── Right column: consumption table (ZPL grid) ──
     if (hasTable) {
       const tX = tableColX;
       const tW = dotsW - tableColX - 20;
-      let tY = 96;
+      let tY = Math.round(96 * s);
       const colW = [Math.floor(tW * 0.28), Math.floor(tW * 0.24), Math.floor(tW * 0.24), Math.floor(tW * 0.24)];
 
-      // Table title
-      lines.push(`^FO${tX},${tY}^A0N,16,16^FB${tW},1,,^FDTABELA VALOR DE REFERENCIA^FS`);
-      tY += 20;
+      lines.push(`^FO${tX},${tY}^A0N,${Math.round(16 * s)},${Math.round(16 * s)}^FB${tW},1,,^FDTABELA VALOR DE REFERENCIA^FS`);
+      tY += Math.round(20 * s);
 
-      // Header row
-      const headers = ["GARANTIA", "VR¹", "QTD/100G", "% VR"];
+      const headers = ["GARANTIA", "VR", "QTD/100G", "% VR"];
       let cx = tX;
       headers.forEach((h, i) => {
-        lines.push(`^FO${cx},${tY}^A0N,12,10^FB${colW[i]},1,,^FD${h}^FS`);
+        lines.push(`^FO${cx},${tY}^A0N,${Math.round(12 * s)},${Math.round(10 * s)}^FB${colW[i]},1,,^FD${h}^FS`);
         cx += colW[i];
       });
-      tY += 16;
+      tY += Math.round(16 * s);
       lines.push(`^FO${tX},${tY}^GB${tW},1,1^FS`);
       tY += 4;
 
@@ -679,21 +843,27 @@ export default function RotuloEditor({ produtoId, produtoNome }: Props) {
       const consumoPB = niveisObj.consumo_pb;
       const consumoNDT = niveisObj.consumo_ndt;
       if (consumoPB && typeof consumoPB === "object" && parseFloat(consumoPB.min || "0")) {
+        const vrVal = consumoPB.vr || "550";
         const v = (parseFloat(consumoPB.min) / 10).toFixed(0);
-        lines.push(`^FO${tX},${tY}^A0N,11,10^FDConsumo PB (g/dia)^FS`);
-        lines.push(`^FO${tX + colW[0]},${tY}^A0N,11,10^FD550^FS`);
-        lines.push(`^FO${tX + colW[0] + colW[1]},${tY}^A0N,11,10^FD${v}^FS`);
-        tY += 14;
+        const pct = ((parseFloat(consumoPB.min) / 10 / parseFloat(vrVal)) * 100).toFixed(2);
+        lines.push(`^FO${tX},${tY}^A0N,${Math.round(11 * s)},${Math.round(10 * s)}^FDConsumo PB (g/dia)^FS`);
+        lines.push(`^FO${tX + colW[0]},${tY}^A0N,${Math.round(11 * s)},${Math.round(10 * s)}^FD${vrVal}^FS`);
+        lines.push(`^FO${tX + colW[0] + colW[1]},${tY}^A0N,${Math.round(11 * s)},${Math.round(10 * s)}^FD${v}^FS`);
+        lines.push(`^FO${tX + colW[0] + colW[1] + colW[2]},${tY}^A0N,${Math.round(11 * s)},${Math.round(10 * s)}^FD${pct}^FS`);
+        tY += Math.round(14 * s);
       }
       if (consumoNDT && typeof consumoNDT === "object" && parseFloat(consumoNDT.min || "0")) {
+        const vrVal = consumoNDT.vr || "4000";
         const v = (parseFloat(consumoNDT.min) / 10).toFixed(0);
-        lines.push(`^FO${tX},${tY}^A0N,11,10^FDConsumo NDT (g/dia)^FS`);
-        lines.push(`^FO${tX + colW[0]},${tY}^A0N,11,10^FD4000^FS`);
-        lines.push(`^FO${tX + colW[0] + colW[1]},${tY}^A0N,11,10^FD${v}^FS`);
-        tY += 14;
+        const pct = ((parseFloat(consumoNDT.min) / 10 / parseFloat(vrVal)) * 100).toFixed(2);
+        lines.push(`^FO${tX},${tY}^A0N,${Math.round(11 * s)},${Math.round(10 * s)}^FDConsumo NDT (g/dia)^FS`);
+        lines.push(`^FO${tX + colW[0]},${tY}^A0N,${Math.round(11 * s)},${Math.round(10 * s)}^FD${vrVal}^FS`);
+        lines.push(`^FO${tX + colW[0] + colW[1]},${tY}^A0N,${Math.round(11 * s)},${Math.round(10 * s)}^FD${v}^FS`);
+        lines.push(`^FO${tX + colW[0] + colW[1] + colW[2]},${tY}^A0N,${Math.round(11 * s)},${Math.round(10 * s)}^FD${pct}^FS`);
+        tY += Math.round(14 * s);
       }
 
-      // Macro/Micro/Vitaminas
+      // Minerals & Vitamins groups
       const allGroups = [
         { label: "MACROMINERAIS (g/dia)", refs: VR_MACRO },
         { label: "MICROMINERAIS (mg/dia)", refs: VR_MICRO },
@@ -702,30 +872,44 @@ export default function RotuloEditor({ produtoId, produtoNome }: Props) {
 
       allGroups.forEach(grp => {
         tY += 4;
-        lines.push(`^FO${tX},${tY}^A0N,12,10^FD${grp.label}^FS`);
-        tY += 14;
+        lines.push(`^FO${tX},${tY}^A0N,${Math.round(12 * s)},${Math.round(10 * s)}^FD${grp.label}^FS`);
+        tY += Math.round(14 * s);
         grp.refs.forEach(ref => {
           const qtd = calcQtdPer100g(niveisObj, ref.key, ref.unit);
-          const pct = qtd !== null && ref.vr > 0 ? ((qtd / ref.vr) * 100) : null;
+          const pct = qtd !== null ? calcVRPercent(qtd, ref.vr) : null;
           let cx2 = tX;
-          lines.push(`^FO${cx2},${tY}^A0N,11,10^FD${ref.mineral}^FS`);
+          lines.push(`^FO${cx2},${tY}^A0N,${Math.round(11 * s)},${Math.round(10 * s)}^FD${ref.mineral}^FS`);
           cx2 += colW[0];
-          lines.push(`^FO${cx2},${tY}^A0N,11,10^FD${ref.vr}^FS`);
+          lines.push(`^FO${cx2},${tY}^A0N,${Math.round(11 * s)},${Math.round(10 * s)}^FD${ref.vr}^FS`);
           cx2 += colW[1];
-          lines.push(`^FO${cx2},${tY}^A0N,11,10^FD${qtd !== null ? qtd.toFixed(2) : '--'}^FS`);
+          lines.push(`^FO${cx2},${tY}^A0N,${Math.round(11 * s)},${Math.round(10 * s)}^FD${qtd !== null ? qtd.toFixed(2) : '--'}^FS`);
           cx2 += colW[2];
-          lines.push(`^FO${cx2},${tY}^A0N,11,10^FD${pct !== null ? pct.toFixed(2) : '--'}^FS`);
-          tY += 13;
+          lines.push(`^FO${cx2},${tY}^A0N,${Math.round(11 * s)},${Math.round(10 * s)}^FD${pct !== null ? pct.toFixed(2) : '--'}^FS`);
+          tY += Math.round(13 * s);
         });
       });
 
       tY += 4;
-      lines.push(`^FO${tX},${tY}^A0N,10,9^FB${tW},2,,^FD1: VR para manutencao de animal de 450 kg^FS`);
+      lines.push(`^FO${tX},${tY}^A0N,${Math.round(10 * s)},${Math.round(9 * s)}^FB${tW},2,,^FD1: VR para manutencao de animal de 450 kg^FS`);
     }
 
     const finalH = Math.max(dotsH, y + 20);
-    let zpl = `^XA\n^PW${dotsW}\n^LL${finalH}\n^CF0,16\n`;
-    zpl += lines.join("\n") + "\n^XZ";
+
+    // Build ZPL with printer config
+    let zpl = `^XA\n`;
+    zpl += `^PW${dotsW}\n`;
+    zpl += `^LL${finalH}\n`;
+    zpl += `^PR${zebraConfig.velocidade}\n`;
+    zpl += `~SD${zebraConfig.escurecimento.toString().padStart(2, '0')}\n`;
+    zpl += `^CF0,${Math.round(16 * s)}\n`;
+    zpl += lines.join("\n") + "\n";
+
+    // Repeat for quantity
+    if (qtdEtiquetas > 1) {
+      zpl += `^PQ${qtdEtiquetas}\n`;
+    }
+
+    zpl += `^XZ`;
     return zpl;
   }
 
@@ -738,7 +922,28 @@ export default function RotuloEditor({ produtoId, produtoNome }: Props) {
     a.download = `Rotulo_${rotulo.nome_comercial.replace(/\s+/g, "_")}.zpl`;
     a.click();
     URL.revokeObjectURL(url);
-    toast.success("Arquivo ZPL baixado para impressora Zebra!");
+    toast.success("Arquivo ZPL baixado! Envie para sua impressora Zebra.");
+  }
+
+  async function enviarParaImpressora() {
+    if (zebraConfig.conexao === "download") {
+      downloadZPL();
+      return;
+    }
+
+    const zpl = generateZPL();
+
+    if (zebraConfig.conexao === "rede") {
+      // For network printing, we create a download with instructions
+      toast.info(
+        `Para imprimir via rede, envie o arquivo ZPL para ${zebraConfig.ip_impressora}:${zebraConfig.porta}.\n\nNo terminal: echo "${zpl.substring(0, 30)}..." | nc ${zebraConfig.ip_impressora} ${zebraConfig.porta}`,
+        { duration: 8000 }
+      );
+      downloadZPL();
+      return;
+    }
+
+    downloadZPL();
   }
 
   function handlePrint() {
@@ -749,7 +954,7 @@ export default function RotuloEditor({ produtoId, produtoNome }: Props) {
       <html><head><title>Rótulo – ${rotulo.nome_comercial}</title>
       <style>
         @page { size: ${rotulo.largura_mm}mm ${rotulo.altura_mm}mm; margin: 2mm; }
-        body { margin: 0; padding: 0; }
+        body { margin: 0; padding: 0; background: #fff; color: #000; }
       </style></head><body>
       ${html}
       <script>window.print();window.close();<\/script>
@@ -764,21 +969,82 @@ export default function RotuloEditor({ produtoId, produtoNome }: Props) {
 
   if (loading) return <div className="flex justify-center py-8"><Loader2 className="w-6 h-6 animate-spin" /></div>;
 
+  const currentZPL = generateZPL();
+
   return (
     <div className="space-y-4">
-      <div className="flex justify-end">
+      <div className="flex justify-between items-center flex-wrap gap-2">
+        <div className="flex gap-2 items-center">
+          <ZebraConfigDialog config={zebraConfig} onChange={setZebraConfig} />
+          <ZPLPreviewDialog zpl={currentZPL} />
+          <div className="flex items-center gap-1">
+            <Label className="text-xs whitespace-nowrap">Qtd:</Label>
+            <Input type="number" min={1} max={999} value={qtdEtiquetas} onChange={(e) => setQtdEtiquetas(Math.max(1, parseInt(e.target.value) || 1))} className="w-16 h-8 text-xs" />
+          </div>
+        </div>
         <Button variant="outline" size="sm" onClick={() => syncFromProduto()} disabled={syncing}>
           {syncing ? <Loader2 className="w-4 h-4 mr-1 animate-spin" /> : <RefreshCw className="w-4 h-4 mr-1" />}
           Sincronizar do Produto
         </Button>
       </div>
 
-      <Tabs defaultValue="editor">
+      <Tabs defaultValue="preview">
         <TabsList>
-          <TabsTrigger value="editor">Editor</TabsTrigger>
           <TabsTrigger value="preview">Visualizar Rótulo</TabsTrigger>
+          <TabsTrigger value="editor">Editor</TabsTrigger>
           {rotulo.exibir_tabela_consumo && <TabsTrigger value="tabela">Tabela de Consumo</TabsTrigger>}
         </TabsList>
+
+        {/* Preview Tab — now default */}
+        <TabsContent value="preview">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-sm flex items-center justify-between">
+                <span>Pré-visualização do Rótulo</span>
+                <div className="flex gap-2 flex-wrap">
+                  <Button variant="default" size="sm" onClick={enviarParaImpressora}>
+                    <Send className="w-4 h-4 mr-1" /> Imprimir Zebra ({zebraConfig.dpi} DPI)
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={downloadZPL}>
+                    <Download className="w-4 h-4 mr-1" /> Download ZPL
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={handlePrint}>
+                    <Printer className="w-4 h-4 mr-1" /> PDF / Jato de Tinta
+                  </Button>
+                </div>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex gap-2 mb-4 flex-wrap">
+                <span className="text-xs text-muted-foreground self-center mr-1">Carregar exemplo:</span>
+                <Button variant="secondary" size="sm" onClick={() => { setRotulo(prev => ({ ...prev, ...EXEMPLO_RACAO.rotulo })); setNiveisObj(EXEMPLO_RACAO.niveis); toast.info("Exemplo: Ração HGM Bezerros 18%"); }}>
+                  Ração Bezerros
+                </Button>
+                <Button variant="secondary" size="sm" onClick={() => { setRotulo(prev => ({ ...prev, ...EXEMPLO_PROTEINADO.rotulo })); setNiveisObj(EXEMPLO_PROTEINADO.niveis); toast.info("Exemplo: HGM PAC 400"); }}>
+                  HGM PAC 400
+                </Button>
+                <Button variant="secondary" size="sm" onClick={() => { setRotulo(prev => ({ ...prev, ...EXEMPLO_SAL_MINERAL.rotulo })); setNiveisObj(EXEMPLO_SAL_MINERAL.niveis); toast.info("Exemplo: SAL HGM 60"); }}>
+                  Sal Mineral
+                </Button>
+              </div>
+
+              <div className="overflow-auto bg-muted/30 p-4 rounded-lg">
+                <div
+                  ref={printRef}
+                  style={{ maxWidth: "900px", fontFamily: "Arial, sans-serif" }}
+                  dangerouslySetInnerHTML={{ __html: buildPrintHTML(rotulo, niveisObj) }}
+                />
+              </div>
+
+              <div className="mt-3 bg-muted/50 rounded p-3 text-xs text-muted-foreground space-y-1">
+                <p className="font-semibold text-foreground">ℹ️ Informação sobre impressão</p>
+                <p>• O <strong>selo do MAPA</strong> e o <strong>símbolo de transgênicos (T)</strong> vão impressos diretamente na <strong>sacaria/embalagem</strong>, não no rótulo.</p>
+                <p>• A configuração Zebra ({zebraConfig.dpi} DPI, {zebraConfig.largura_mm}×{zebraConfig.altura_mm}mm) é salva automaticamente para uso futuro.</p>
+                <p>• Use o botão <strong>"Testar no Labelary"</strong> (em "Ver ZPL") para verificar o layout antes de imprimir.</p>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
 
         <TabsContent value="editor" className="space-y-4">
           {/* Identificação */}
@@ -805,7 +1071,7 @@ export default function RotuloEditor({ produtoId, produtoNome }: Props) {
                 <div><Label className="text-xs">Espécie / Categoria</Label><Input value={rotulo.especie_categoria} onChange={(e) => updateField("especie_categoria", e.target.value)} /></div>
                 <div><Label className="text-xs">Peso Líquido</Label><Input value={rotulo.peso_liquido} onChange={(e) => updateField("peso_liquido", e.target.value)} /></div>
                 <div><Label className="text-xs">Prazo de Validade</Label><Input value={rotulo.prazo_validade} onChange={(e) => updateField("prazo_validade", e.target.value)} /></div>
-                <div><Label className="text-xs">Registro MAPA</Label><Input value={rotulo.registro_mapa} onChange={(e) => updateField("registro_mapa", e.target.value)} /></div>
+                <div><Label className="text-xs">Registro MAPA (se aplicável)</Label><Input value={rotulo.registro_mapa} onChange={(e) => updateField("registro_mapa", e.target.value)} placeholder="Deixe vazio se isento" /></div>
               </div>
             </CardContent>
           </Card>
@@ -870,28 +1136,19 @@ export default function RotuloEditor({ produtoId, produtoNome }: Props) {
             </CardContent>
           </Card>
 
-          {/* Dimensões */}
-          <Card>
-            <CardContent className="pt-6 space-y-3">
-              <h3 className="font-semibold text-foreground text-sm">Dimensões da Etiqueta</h3>
-              <div className="grid grid-cols-2 gap-3">
-                <div><Label className="text-xs">Largura (mm)</Label><Input type="number" value={rotulo.largura_mm} onChange={(e) => updateField("largura_mm", parseInt(e.target.value) || 200)} /></div>
-                <div><Label className="text-xs">Altura (mm)</Label><Input type="number" value={rotulo.altura_mm} onChange={(e) => updateField("altura_mm", parseInt(e.target.value) || 100)} /></div>
-              </div>
-              <p className="text-xs text-muted-foreground">Padrão: 200x100mm (horizontal, conforme modelo IN 22).</p>
-            </CardContent>
-          </Card>
-
           <div className="flex gap-2 flex-wrap">
             <Button onClick={handleSave} disabled={saving}>
               {saving ? <Loader2 className="w-4 h-4 mr-1 animate-spin" /> : <Save className="w-4 h-4 mr-1" />}
               Salvar Rótulo
             </Button>
+            <Button variant="default" onClick={enviarParaImpressora}>
+              <Send className="w-4 h-4 mr-1" /> Imprimir Zebra
+            </Button>
             <Button variant="outline" onClick={downloadZPL}>
-              <Download className="w-4 h-4 mr-1" /> Exportar ZPL (Zebra)
+              <Download className="w-4 h-4 mr-1" /> Download ZPL
             </Button>
             <Button variant="outline" onClick={handlePrint}>
-              <Printer className="w-4 h-4 mr-1" /> Imprimir Rótulo
+              <Printer className="w-4 h-4 mr-1" /> Imprimir PDF
             </Button>
           </div>
         </TabsContent>
@@ -907,42 +1164,6 @@ export default function RotuloEditor({ produtoId, produtoNome }: Props) {
             </Card>
           </TabsContent>
         )}
-
-        {/* Preview Tab */}
-        <TabsContent value="preview">
-          <Card>
-            <CardHeader><CardTitle className="text-sm">Pré-visualização do Rótulo (IN 22 – Layout Horizontal)</CardTitle></CardHeader>
-            <CardContent>
-              <div className="flex gap-2 mb-4 flex-wrap">
-                <Button variant="outline" size="sm" onClick={downloadZPL}>
-                  <Download className="w-4 h-4 mr-1" /> ZPL (Zebra)
-                </Button>
-                <Button variant="outline" size="sm" onClick={handlePrint}>
-                  <Printer className="w-4 h-4 mr-1" /> Imprimir
-                </Button>
-                <div className="border-l mx-2" />
-                <span className="text-xs text-muted-foreground self-center mr-1">Exemplos:</span>
-                <Button variant="secondary" size="sm" onClick={() => { setRotulo(prev => ({ ...prev, ...EXEMPLO_RACAO.rotulo })); setNiveisObj(EXEMPLO_RACAO.niveis); toast.info("Exemplo: Ração HGM Bezerros 18% carregado"); }}>
-                  Ração Bezerros
-                </Button>
-                <Button variant="secondary" size="sm" onClick={() => { setRotulo(prev => ({ ...prev, ...EXEMPLO_PROTEINADO.rotulo })); setNiveisObj(EXEMPLO_PROTEINADO.niveis); toast.info("Exemplo: HGM Energy+ 400 carregado"); }}>
-                  Energy+ 400
-                </Button>
-                <Button variant="secondary" size="sm" onClick={() => { setRotulo(prev => ({ ...prev, ...EXEMPLO_SAL_MINERAL.rotulo })); setNiveisObj(EXEMPLO_SAL_MINERAL.niveis); toast.info("Exemplo: SAL HGM 60 carregado"); }}>
-                  Sal Mineral
-                </Button>
-              </div>
-
-              <div className="overflow-auto">
-                <div
-                  ref={printRef}
-                  style={{ maxWidth: "900px", fontFamily: "Arial, sans-serif" }}
-                  dangerouslySetInnerHTML={{ __html: buildPrintHTML(rotulo, niveisObj) }}
-                />
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
       </Tabs>
     </div>
   );
