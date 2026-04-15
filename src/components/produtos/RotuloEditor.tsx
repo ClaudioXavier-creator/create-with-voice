@@ -803,7 +803,11 @@ export default function RotuloEditor({ produtoId, produtoNome }: Props) {
         });
 
     if (error) toast.error("Erro: " + error.message);
-    else toast.success("Rótulo salvo!");
+    else {
+      toast.success("Rótulo salvo!");
+      sessionStorage.removeItem(sessionKey);
+      sessionStorage.removeItem(niveisSessionKey);
+    }
     setSaving(false);
   }
 
