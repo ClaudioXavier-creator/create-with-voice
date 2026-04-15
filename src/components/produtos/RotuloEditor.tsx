@@ -1104,10 +1104,15 @@ export default function RotuloEditor({ produtoId, produtoNome }: Props) {
                 </Button>
               </div>
 
-              <div className="overflow-auto bg-muted/30 p-4 rounded-lg">
+              <div className="overflow-auto bg-muted/30 p-4 rounded-lg flex justify-center">
                 <div
                   ref={printRef}
-                  style={{ maxWidth: "900px", fontFamily: "Arial, sans-serif" }}
+                  style={{
+                    width: `${rotulo.largura_mm}mm`,
+                    minHeight: `${rotulo.altura_mm}mm`,
+                    fontFamily: "Arial, sans-serif",
+                    transformOrigin: "top center",
+                  }}
                   dangerouslySetInnerHTML={{ __html: buildPrintHTML(rotulo, niveisObj) }}
                 />
               </div>
