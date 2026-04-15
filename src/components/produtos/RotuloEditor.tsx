@@ -1220,10 +1220,13 @@ export default function RotuloEditor({ produtoId, produtoNome }: Props) {
                     <SelectContent>
                       <SelectItem value="racao">Ração</SelectItem>
                       <SelectItem value="suplemento">Suplemento</SelectItem>
+                      <SelectItem value="sal_mineral">Sal Mineral</SelectItem>
+                      <SelectItem value="proteico">Supl. Mineral Proteico</SelectItem>
+                      <SelectItem value="proteico_energetico">Supl. Proteico Energético</SelectItem>
+                      <SelectItem value="energetico">Supl. Energético</SelectItem>
                       <SelectItem value="premix">Premix</SelectItem>
                       <SelectItem value="nucleo">Núcleo</SelectItem>
                       <SelectItem value="aditivo">Aditivo</SelectItem>
-                      <SelectItem value="sal_mineral">Sal Mineral</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -1316,13 +1319,18 @@ export default function RotuloEditor({ produtoId, produtoNome }: Props) {
           </div>
         </TabsContent>
 
-        {/* Consumption Table Tab */}
+        {/* Consumption Table Tab — interactive calculator */}
         {rotulo.exibir_tabela_consumo && (
           <TabsContent value="tabela">
             <Card>
-              <CardHeader><CardTitle className="text-sm">Tabela de Consumo por 100g de Suplemento</CardTitle></CardHeader>
+              <CardHeader>
+                <CardTitle className="text-sm">Calculadora — Tabela de Referência por Consumo Diário</CardTitle>
+              </CardHeader>
               <CardContent>
-                <TabelaConsumo niveisObj={niveisObj} />
+                <p className="text-xs text-muted-foreground mb-3">
+                  Os valores são calculados automaticamente a partir dos Níveis de Garantia do produto. Ajuste o consumo diário recomendado e os teores conforme necessário.
+                </p>
+                <TabelaConsumo niveisObj={niveisObj} onNiveisChange={setNiveisObj} />
               </CardContent>
             </Card>
           </TabsContent>
