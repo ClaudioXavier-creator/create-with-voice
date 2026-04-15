@@ -695,9 +695,20 @@ function ZPLPreviewDialog({ zpl }: { zpl: string }) {
 // ──── Main component ────
 export default function RotuloEditor({ produtoId, produtoNome }: Props) {
   const { user } = useAuth();
-  const [rotulo, setRotulo] = useState<RotuloData>({ ...EMPTY_ROTULO, nome_comercial: produtoNome });
+  const sessionKey = `rotulo_draft_${produtoId}`;
+  const niveisSessionKey = `rotulo_niveis_draft_${produtoId}`;
+
+  const [rotulo, setRotulo] = useState<RotuloData>(() => {
+    const draft = sessionStorage.getItem(sessionKey);
+    if (draft) { try { return JSON.parse(draft); } catch {} }
+    return { ...EMPTY_ROTULO, nome_comercial: produtoNome };
+  });
   const [rotuloId, setRotuloId] = useState<string | null>(null);
-  const [niveisObj, setNiveisObj] = useState<Record<string, any>>({});
+  const [niveisObj, setNiveisObj] = useState<Record<string, any>>(() => {
+    const draft = sessionStorage.getItem(niveisSessionKey);
+    if (draft) { try { return JSON.parse(draft); } catch {} }
+    return {};
+  });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [syncing, setSyncing] = useState(false);
@@ -707,6 +718,15 @@ export default function RotuloEditor({ produtoId, produtoNome }: Props) {
   });
   const [qtdEtiquetas, setQtdEtiquetas] = useState(1);
   const printRef = useRef<HTMLDivElement>(null);
+
+  // Persist draft to sessionStorage (survives navigation, lost on tab close)
+  useEffect(() => {
+    sessionStorage.setItem(sessionKey, JSON.stringify(rotulo));
+  }, [rotulo, sessionKey]);
+
+  useEffect(() => {
+    sessionStorage.setItem(niveisSessionKey, JSON.stringify(niveisObj));
+  }, [niveisObj, niveisSessionKey]);
 
   useEffect(() => { loadRotulo(); }, [produtoId]);
 
@@ -783,7 +803,11 @@ export default function RotuloEditor({ produtoId, produtoNome }: Props) {
         });
 
     if (error) toast.error("Erro: " + error.message);
-    else toast.success("Rótulo salvo!");
+    else {
+      toast.success("Rótulo salvo!");
+      sessionStorage.removeItem(sessionKey);
+      sessionStorage.removeItem(niveisSessionKey);
+    }
     setSaving(false);
   }
 
