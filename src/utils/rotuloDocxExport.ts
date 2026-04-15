@@ -340,8 +340,8 @@ export async function exportRotuloDocx(rotulo: RotuloDocxData, niveisObj: Record
     spacing: { after: 40 },
     children: [new TextRun({
       text: rotulo.registro_mapa
-        ? "Produto Registrado no Ministério da Agricultura, Pecuária e Abastecimento."
-        : "Produto Isento de Registro no Ministério da Agricultura, Pecuária e Abastecimento.",
+        ? "Produto Registrado no Ministério da Agricultura e Pecuária."
+        : "Produto Isento de Registro no Ministério da Agricultura e Pecuária.",
       font: "Arial", size: 14,
     })],
   }));
