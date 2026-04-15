@@ -287,7 +287,7 @@ export default function ProdutoForm({ produtoId, onSaved }: Props) {
       : await supabase.from("produtos").insert(payload as any);
 
     if (error) toast.error("Erro: " + error.message);
-    else { toast.success("Produto salvo!"); onSaved(); }
+    else { toast.success("Produto salvo!"); clearDraft(); onSaved(); }
     setSaving(false);
   }
 
