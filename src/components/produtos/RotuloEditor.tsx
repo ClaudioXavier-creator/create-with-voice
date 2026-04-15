@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
-import { Loader2, Printer, Download, Save, RefreshCw, Settings, Eye, Send } from "lucide-react";
+import { Loader2, Printer, Download, Save, RefreshCw, Settings, Eye, Send, FileText } from "lucide-react";
+import { exportRotuloDocx } from "@/utils/rotuloDocxExport";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -1011,6 +1012,9 @@ export default function RotuloEditor({ produtoId, produtoNome }: Props) {
                   <Button variant="outline" size="sm" onClick={handlePrint}>
                     <Printer className="w-4 h-4 mr-1" /> PDF / Jato de Tinta
                   </Button>
+                  <Button variant="outline" size="sm" onClick={() => exportRotuloDocx(rotulo, niveisObj)}>
+                    <FileText className="w-4 h-4 mr-1" /> Editar no Word
+                  </Button>
                 </div>
               </CardTitle>
             </CardHeader>
@@ -1149,6 +1153,9 @@ export default function RotuloEditor({ produtoId, produtoNome }: Props) {
             </Button>
             <Button variant="outline" onClick={handlePrint}>
               <Printer className="w-4 h-4 mr-1" /> Imprimir PDF
+            </Button>
+            <Button variant="outline" onClick={() => exportRotuloDocx(rotulo, niveisObj)}>
+              <FileText className="w-4 h-4 mr-1" /> Editar no Word
             </Button>
           </div>
         </TabsContent>
