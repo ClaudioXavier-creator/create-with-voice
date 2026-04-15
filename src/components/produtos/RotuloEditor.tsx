@@ -47,6 +47,9 @@ interface RotuloData {
   largura_mm: number;
   altura_mm: number;
   exibir_tabela_consumo: boolean;
+  lote: string;
+  data_fabricacao: string;
+  validade_dias: number;
 }
 
 interface ZebraConfig {
@@ -72,6 +75,7 @@ const EMPTY_ROTULO: RotuloData = {
   rt_nome: "", rt_crmv: "", sac_contato: "",
   largura_mm: 200, altura_mm: 100,
   exibir_tabela_consumo: false,
+  lote: "", data_fabricacao: "", validade_dias: 180,
 };
 
 const DEFAULT_ZEBRA: ZebraConfig = {
@@ -338,7 +342,8 @@ function extractFromProduto(prod: any): Partial<RotuloData> {
     modo_usar: prod.modo_uso || "",
     precaucoes_restricoes: prod.precaucoes || "",
     peso_liquido: `${prod.peso_liquido || ""} ${prod.unidade_peso || "kg"}`.trim(),
-    prazo_validade: `${prod.validade_meses || 6} meses a partir da data de fabricação`,
+    prazo_validade: prod.validade_meses ? `${prod.validade_meses} meses a partir da data de fabricação` : "6 meses a partir da data de fabricação",
+    validade_dias: prod.validade_meses ? prod.validade_meses * 30 : 180,
     armazenamento: prod.armazenamento || "",
     registro_mapa: prod.registro_mapa || "",
     exibir_tabela_consumo: shouldShowConsumptionTable(tipo, prod.especie_alvo || ""),
@@ -510,6 +515,22 @@ function TabelaConsumo({ niveisObj, onNiveisChange }: { niveisObj: Record<string
   );
 }
 
+function formatDateBR(dateStr: string): string {
+  if (!dateStr) return "";
+  const [y, m, d] = dateStr.split("-");
+  return `${d}/${m}/${y}`;
+}
+
+function calcDataVencimento(dataFab: string, validadeDias: number): string {
+  if (!dataFab) return "";
+  const date = new Date(dataFab + "T00:00:00");
+  date.setDate(date.getDate() + validadeDias);
+  const d = String(date.getDate()).padStart(2, "0");
+  const m = String(date.getMonth() + 1).padStart(2, "0");
+  const y = date.getFullYear();
+  return `${d}/${m}/${y}`;
+}
+
 // ──── Build print-ready HTML matching the uploaded label models ────
 function buildPrintHTML(rotulo: RotuloData, niveisObj: Record<string, any>): string {
   const hasTable = rotulo.exibir_tabela_consumo;
@@ -641,8 +662,9 @@ function buildPrintHTML(rotulo: RotuloData, niveisObj: Record<string, any>): str
       <!-- FOOTER -->
       <div style="border-top:1px solid #000;padding:4px 10px;font-size:6.5pt;">
         <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:2px;">
-          <span>${rotulo.lote_placeholder}</span>
-          <span>${rotulo.fabricacao_placeholder}</span>
+          <span>${rotulo.lote ? `LOTE: ${rotulo.lote}` : rotulo.lote_placeholder}</span>
+          <span>${rotulo.data_fabricacao ? `FAB: ${formatDateBR(rotulo.data_fabricacao)}` : rotulo.fabricacao_placeholder}</span>
+          <span>${rotulo.data_fabricacao && rotulo.validade_dias ? `VAL: ${calcDataVencimento(rotulo.data_fabricacao, rotulo.validade_dias)}` : 'VAL: ___/___/______'}</span>
           ${rotulo.rt_nome ? `<span>RT: ${rotulo.rt_nome} – CRMV: ${rotulo.rt_crmv}</span>` : ''}
           ${rotulo.sac_contato ? `<span>SAC: ${rotulo.sac_contato}</span>` : ''}
         </div>
@@ -827,7 +849,7 @@ export default function RotuloEditor({ produtoId, produtoNome }: Props) {
 
   async function loadRotulo() {
     setLoading(true);
-    const { data: prod } = await supabase.from("produtos").select("niveis_garantia, classificacao, especie_alvo").eq("id", produtoId).single();
+    const { data: prod } = await supabase.from("produtos").select("niveis_garantia, classificacao, especie_alvo, validade_meses").eq("id", produtoId).single();
     if (prod) setNiveisObj((prod.niveis_garantia as Record<string, any>) || {});
 
     const { data } = await supabase.from("rotulos").select("*").eq("produto_id", produtoId).maybeSingle();
@@ -861,6 +883,9 @@ export default function RotuloEditor({ produtoId, produtoNome }: Props) {
         largura_mm: data.largura_mm || 200,
         altura_mm: data.altura_mm || 100,
         exibir_tabela_consumo: autoTabela,
+        lote: "",
+        data_fabricacao: "",
+        validade_dias: prod?.validade_meses ? prod.validade_meses * 30 : 180,
       });
     } else {
       await syncFromProduto(true);
@@ -883,7 +908,7 @@ export default function RotuloEditor({ produtoId, produtoNome }: Props) {
   async function handleSave() {
     if (!user) return;
     setSaving(true);
-    const { exibir_tabela_consumo, ...rotuloToSave } = rotulo;
+    const { exibir_tabela_consumo, lote, data_fabricacao, validade_dias, ...rotuloToSave } = rotulo;
     const payload = { user_id: user.id, produto_id: produtoId, ...rotuloToSave };
 
     const { error } = rotuloId
@@ -973,8 +998,12 @@ export default function RotuloEditor({ produtoId, produtoNome }: Props) {
     addSep();
 
     // Footer info
-    lines.push(`^FO${x},${y}^A0N,${Math.round(14 * s)},${Math.round(14 * s)}^FD${rotulo.lote_placeholder}^FS`);
-    lines.push(`^FO${Math.floor(textColW / 2)},${y}^A0N,${Math.round(14 * s)},${Math.round(14 * s)}^FD${rotulo.fabricacao_placeholder}^FS`);
+    const loteZpl = rotulo.lote ? `LOTE: ${rotulo.lote}` : rotulo.lote_placeholder;
+    const fabZpl = rotulo.data_fabricacao ? `FAB: ${formatDateBR(rotulo.data_fabricacao)}` : rotulo.fabricacao_placeholder;
+    const valZpl = rotulo.data_fabricacao && rotulo.validade_dias ? `VAL: ${calcDataVencimento(rotulo.data_fabricacao, rotulo.validade_dias)}` : 'VAL: ___/___/______';
+    lines.push(`^FO${x},${y}^A0N,${Math.round(14 * s)},${Math.round(14 * s)}^FD${loteZpl}^FS`);
+    lines.push(`^FO${Math.floor(textColW / 3)},${y}^A0N,${Math.round(14 * s)},${Math.round(14 * s)}^FD${fabZpl}^FS`);
+    lines.push(`^FO${Math.floor(textColW * 2 / 3)},${y}^A0N,${Math.round(14 * s)},${Math.round(14 * s)}^FD${valZpl}^FS`);
     y += Math.round(18 * s);
     if (rotulo.rt_nome) { addLine(`RT: ${rotulo.rt_nome} - CRMV: ${rotulo.rt_crmv}`, 12, 12); }
     if (rotulo.sac_contato) { addLine(`SAC: ${rotulo.sac_contato}`, 12, 12); }
@@ -1245,8 +1274,29 @@ export default function RotuloEditor({ produtoId, produtoNome }: Props) {
                 <div><Label className="text-xs">Classificação</Label><Input value={rotulo.classificacao_label} onChange={(e) => updateField("classificacao_label", e.target.value)} placeholder="Ex: RAÇÃO PARA BOVINOS DE CORTE" /></div>
                 <div><Label className="text-xs">Espécie / Categoria</Label><Input value={rotulo.especie_categoria} onChange={(e) => updateField("especie_categoria", e.target.value)} /></div>
                 <div><Label className="text-xs">Peso Líquido</Label><Input value={rotulo.peso_liquido} onChange={(e) => updateField("peso_liquido", e.target.value)} /></div>
-                <div><Label className="text-xs">Prazo de Validade</Label><Input value={rotulo.prazo_validade} onChange={(e) => updateField("prazo_validade", e.target.value)} /></div>
+                <div><Label className="text-xs">Prazo de Validade (texto)</Label><Input value={rotulo.prazo_validade} onChange={(e) => updateField("prazo_validade", e.target.value)} /></div>
                 <div><Label className="text-xs">Registro MAPA (se aplicável)</Label><Input value={rotulo.registro_mapa} onChange={(e) => updateField("registro_mapa", e.target.value)} placeholder="Deixe vazio se isento" /></div>
+              </div>
+
+              <h3 className="font-semibold text-foreground text-sm mt-4">Lote e Datas (para impressão)</h3>
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+                <div>
+                  <Label className="text-xs">Lote</Label>
+                  <Input value={rotulo.lote} onChange={(e) => updateField("lote", e.target.value)} placeholder="Ex: L001-2026" />
+                </div>
+                <div>
+                  <Label className="text-xs">Data de Fabricação</Label>
+                  <Input type="date" value={rotulo.data_fabricacao} onChange={(e) => updateField("data_fabricacao", e.target.value)} />
+                </div>
+                <div>
+                  <Label className="text-xs">Validade (dias)</Label>
+                  <Input type="number" min={1} value={rotulo.validade_dias} onChange={(e) => updateField("validade_dias", parseInt(e.target.value) || 180)} />
+                  <p className="text-[10px] text-muted-foreground mt-0.5">Importado do cadastro do produto</p>
+                </div>
+                <div>
+                  <Label className="text-xs">Data de Vencimento</Label>
+                  <Input readOnly value={rotulo.data_fabricacao ? calcDataVencimento(rotulo.data_fabricacao, rotulo.validade_dias) : "Preencha a data de fabricação"} className="bg-muted/50" />
+                </div>
               </div>
             </CardContent>
           </Card>
