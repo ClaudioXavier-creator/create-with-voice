@@ -1156,7 +1156,7 @@ export default function RotuloEditor({ produtoId, produtoNome }: Props) {
         <TabsList>
           <TabsTrigger value="preview">Visualizar Rótulo</TabsTrigger>
           <TabsTrigger value="editor">Editor</TabsTrigger>
-          {rotulo.exibir_tabela_consumo && <TabsTrigger value="tabela">Tabela de Consumo</TabsTrigger>}
+          {rotulo.exibir_tabela_consumo && <TabsTrigger value="tabela">Calculadora VR</TabsTrigger>}
         </TabsList>
 
         {/* Preview Tab — now default */}
