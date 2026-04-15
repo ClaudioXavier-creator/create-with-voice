@@ -832,7 +832,7 @@ export default function RotuloEditor({ produtoId, produtoNome }: Props) {
 
   async function loadRotulo() {
     setLoading(true);
-    const { data: prod } = await supabase.from("produtos").select("niveis_garantia, classificacao, especie_alvo").eq("id", produtoId).single();
+    const { data: prod } = await supabase.from("produtos").select("niveis_garantia, classificacao, especie_alvo, validade_meses").eq("id", produtoId).single();
     if (prod) setNiveisObj((prod.niveis_garantia as Record<string, any>) || {});
 
     const { data } = await supabase.from("rotulos").select("*").eq("produto_id", produtoId).maybeSingle();
