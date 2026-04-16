@@ -83,6 +83,7 @@ const NAV_ENTRIES: NavEntry[] = [
       { path: "/producao", label: "Produção", icon: Factory },
       { path: "/pcp", label: "PCP / Sequenciamento", icon: Settings },
       { path: "/produtos", label: "Produtos / Rótulos", icon: Package },
+      { path: "/formulas", label: "Fórmulas (versionadas)", icon: FileText },
       { path: "/armazenamento-transporte", label: "Armaz. & Transporte", icon: Truck },
     ],
   },

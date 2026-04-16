@@ -30,6 +30,7 @@ import Manual from "./pages/Manual";
 import PlanilhasPop from "./pages/PlanilhasPop";
 import GuiaPops from "./pages/GuiaPops";
 import Produtos from "./pages/Produtos";
+import Formulas from "./pages/Formulas";
 import AnalisesLaboratorio from "./pages/AnalisesLaboratorio";
 import HigieneSanitizacao from "./pages/HigieneSanitizacao";
 import ManutencaoPreventiva from "./pages/ManutencaoPreventiva";
@@ -135,6 +136,7 @@ const AppRoutes = () => {
                   <Route path="/guia-pops" element={<GuiaPops />} />
                   <Route path="/planilhas-pop" element={<PlanilhasPop />} />
                   <Route path="/produtos" element={<Produtos />} />
+                  <Route path="/formulas" element={<Formulas />} />
                   <Route path="/analises" element={<AnalisesLaboratorio />} />
                   <Route path="/higiene" element={<HigieneSanitizacao />} />
                   <Route path="/manutencao" element={<ManutencaoPreventiva />} />
