@@ -1417,6 +1417,57 @@ export type Database = {
           },
         ]
       }
+      licenca_empresas: {
+        Row: {
+          ativo: boolean
+          desvinculado_em: string | null
+          empresa_id: string
+          excedente: boolean
+          id: string
+          licenca_id: string
+          stripe_invoice_id: string | null
+          user_id: string
+          vinculado_em: string
+        }
+        Insert: {
+          ativo?: boolean
+          desvinculado_em?: string | null
+          empresa_id: string
+          excedente?: boolean
+          id?: string
+          licenca_id: string
+          stripe_invoice_id?: string | null
+          user_id: string
+          vinculado_em?: string
+        }
+        Update: {
+          ativo?: boolean
+          desvinculado_em?: string | null
+          empresa_id?: string
+          excedente?: boolean
+          id?: string
+          licenca_id?: string
+          stripe_invoice_id?: string | null
+          user_id?: string
+          vinculado_em?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "licenca_empresas_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "licenca_empresas_licenca_id_fkey"
+            columns: ["licenca_id"]
+            isOneToOne: false
+            referencedRelation: "licencas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       licencas: {
         Row: {
           chave_licenca: string
@@ -1426,10 +1477,15 @@ export type Database = {
           empresa_id: string | null
           id: string
           liberado_admin: boolean
+          nivel: string
           plano: string
+          produto: string
+          slots_max: number
+          slots_usados: number
           status: string
           stripe_checkout_id: string | null
           stripe_customer_id: string | null
+          stripe_subscription_id: string | null
           updated_at: string
           user_id: string | null
         }
@@ -1441,10 +1497,15 @@ export type Database = {
           empresa_id?: string | null
           id?: string
           liberado_admin?: boolean
+          nivel?: string
           plano?: string
+          produto?: string
+          slots_max?: number
+          slots_usados?: number
           status?: string
           stripe_checkout_id?: string | null
           stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
           updated_at?: string
           user_id?: string | null
         }
@@ -1456,10 +1517,15 @@ export type Database = {
           empresa_id?: string | null
           id?: string
           liberado_admin?: boolean
+          nivel?: string
           plano?: string
+          produto?: string
+          slots_max?: number
+          slots_usados?: number
           status?: string
           stripe_checkout_id?: string | null
           stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
           updated_at?: string
           user_id?: string | null
         }
@@ -3139,12 +3205,49 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      desvincular_empresa_licenca_consultor: {
+        Args: { _vinculo_id: string }
+        Returns: Json
+      }
+      get_licenca_consultor_ativa: {
+        Args: { _produto: string; _user_id: string }
+        Returns: {
+          chave_licenca: string
+          created_at: string
+          data_expiracao: string
+          data_inicio: string
+          empresa_id: string | null
+          id: string
+          liberado_admin: boolean
+          nivel: string
+          plano: string
+          produto: string
+          slots_max: number
+          slots_usados: number
+          status: string
+          stripe_checkout_id: string | null
+          stripe_customer_id: string | null
+          stripe_subscription_id: string | null
+          updated_at: string
+          user_id: string | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "licencas"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
         }
         Returns: boolean
+      }
+      vincular_empresa_licenca_consultor: {
+        Args: { _empresa_id: string; _licenca_id: string }
+        Returns: Json
       }
     }
     Enums: {
