@@ -15,37 +15,80 @@ import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
 
 type ProductKey = "feedbpf" | "nutricrm" | "agrogestao" | "auditsbpf";
+type NivelKey = "entrada" | "intermediario" | "avancado";
 
 interface PlanInfo {
   key: string;
   label: string;
-  priceTotal: string;
-  priceMes: string | null;
+  priceFull: number;     // preço cheio mensal-equivalente do período
+  priceTotal: number;    // total do período
   desc: string;
 }
 
-const PRODUCT_PLANS: Record<ProductKey, PlanInfo[]> = {
-  feedbpf: [
-    { key: "mensal", label: "Mensal", priceTotal: "R$ 495", priceMes: null, desc: "Pagamento único — 30 dias" },
-    { key: "semestral", label: "Semestral", priceTotal: "R$ 2.475", priceMes: "equivale a R$ 412,50/mês", desc: "Pagamento único — 6 meses" },
-    { key: "anual", label: "Anual", priceTotal: "R$ 4.455", priceMes: "equivale a R$ 371,25/mês", desc: "Pagamento único — 12 meses" },
-  ],
-  nutricrm: [
-    { key: "mensal", label: "Mensal", priceTotal: "R$ 149,90", priceMes: null, desc: "Pagamento único — 30 dias" },
-    { key: "semestral", label: "Semestral", priceTotal: "R$ 764,49", priceMes: "equivale a R$ 127,42/mês", desc: "15% de desconto — 6 meses" },
-    { key: "anual", label: "Anual", priceTotal: "R$ 1.349,10", priceMes: "equivale a R$ 112,43/mês", desc: "25% de desconto — 12 meses" },
-  ],
-  agrogestao: [
-    { key: "mensal", label: "Mensal", priceTotal: "R$ 149,90", priceMes: null, desc: "Pagamento único — 30 dias" },
-    { key: "semestral", label: "Semestral", priceTotal: "R$ 764,49", priceMes: "equivale a R$ 127,42/mês", desc: "15% de desconto — 6 meses" },
-    { key: "anual", label: "Anual", priceTotal: "R$ 1.349,10", priceMes: "equivale a R$ 112,43/mês", desc: "25% de desconto — 12 meses" },
-  ],
-  auditsbpf: [
-    { key: "mensal", label: "Mensal", priceTotal: "R$ 249,90", priceMes: null, desc: "Pagamento único — 30 dias" },
-    { key: "semestral", label: "Semestral", priceTotal: "R$ 1.274,49", priceMes: "equivale a R$ 212,42/mês", desc: "15% de desconto — 6 meses" },
-    { key: "anual", label: "Anual", priceTotal: "R$ 2.249,10", priceMes: "equivale a R$ 187,43/mês", desc: "25% de desconto — 12 meses" },
-  ],
-};
+interface NivelInfo {
+  key: NivelKey;
+  label: string;
+  porte: string;
+  destaque?: boolean;
+  features: string[];
+  plans: PlanInfo[];
+}
+
+// Lançamento 2026: 50% off em todos os planos até 31/12/2026
+const LAUNCH_END = new Date("2026-12-31T23:59:59");
+const isLaunchActive = () => new Date() <= LAUNCH_END;
+
+const NIVEIS: NivelInfo[] = [
+  {
+    key: "entrada",
+    label: "Entrada",
+    porte: "Pequeno porte",
+    features: [
+      "Essencial MAPA (IN 04/2007)",
+      "Arquivamento digital de registros físicos",
+      "Até 1 empresa",
+    ],
+    plans: [
+      { key: "mensal", label: "Mensal", priceFull: 495, priceTotal: 495, desc: "30 dias" },
+      { key: "semestral", label: "Semestral", priceFull: 420.75, priceTotal: 2524.5, desc: "15% off — 6 meses" },
+      { key: "anual", label: "Anual", priceFull: 371.25, priceTotal: 4455, desc: "25% off — 12 meses" },
+    ],
+  },
+  {
+    key: "intermediario",
+    label: "Intermediário",
+    porte: "Médio porte",
+    destaque: true,
+    features: [
+      "Modelo híbrido (físico + digital)",
+      "PCP, fórmulas versionadas, planilhas POP",
+      "Auditoria interna e até 3 empresas",
+    ],
+    plans: [
+      { key: "mensal", label: "Mensal", priceFull: 890, priceTotal: 890, desc: "30 dias" },
+      { key: "semestral", label: "Semestral", priceFull: 756.5, priceTotal: 4539, desc: "15% off — 6 meses" },
+      { key: "anual", label: "Anual", priceFull: 667.5, priceTotal: 8010, desc: "25% off — 12 meses" },
+    ],
+  },
+  {
+    key: "avancado",
+    label: "Avançado",
+    porte: "Grande porte",
+    features: [
+      "100% digital, multi-empresa",
+      "IA, integração SIPEAGRO, todas as features",
+      "Empresas ilimitadas",
+    ],
+    plans: [
+      { key: "mensal", label: "Mensal", priceFull: 1490, priceTotal: 1490, desc: "30 dias" },
+      { key: "semestral", label: "Semestral", priceFull: 1266.5, priceTotal: 7599, desc: "15% off — 6 meses" },
+      { key: "anual", label: "Anual", priceFull: 1117.5, priceTotal: 13410, desc: "25% off — 12 meses" },
+    ],
+  },
+];
+
+const formatBRL = (v: number) =>
+  v.toLocaleString("pt-BR", { style: "currency", currency: "BRL", minimumFractionDigits: 2 });
 
 const PRODUCT_LABELS: Record<ProductKey, string> = {
   feedbpf: "Feed_BPF",
