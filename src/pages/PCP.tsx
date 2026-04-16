@@ -14,6 +14,7 @@ import PageHeader from "@/components/PageHeader";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useEmpresa } from "@/hooks/useEmpresa";
+import FichaProducaoDigital from "@/components/pcp/FichaProducaoDigital";
 import { toast } from "sonner";
 
 interface OrdemProd {
