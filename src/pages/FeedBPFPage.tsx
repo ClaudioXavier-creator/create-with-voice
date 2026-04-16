@@ -138,31 +138,77 @@ export default function FeedBPFPage() {
           <div className="text-center mb-10">
             <Badge variant="outline" className="mb-3 text-xs tracking-widest uppercase px-4 py-1">Planos e Preços</Badge>
             <h2 className="text-3xl font-bold font-display text-foreground mb-2">Planos Feed_BPF</h2>
-            <p className="text-muted-foreground">Escolha o plano ideal para sua empresa</p>
+            <p className="text-muted-foreground">Três níveis × três periodicidades — escolha o ideal para sua empresa</p>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-4xl mx-auto">
-            {[
-              { periodo: "Mensal", preco: "R$ 497", sub: "/mês", nota: "Sem compromisso de fidelidade", destaque: false },
-              { periodo: "Semestral", preco: "R$ 2.534,70", sub: "", nota: "≈ R$ 422/mês • 15% OFF", destaque: true, badge: "Mais Popular" },
-              { periodo: "Anual", preco: "R$ 4.473", sub: "", nota: "≈ R$ 373/mês • 25% OFF", destaque: true, badge: "Melhor Custo" },
-            ].map((plan) => (
-              <Card key={plan.periodo} className={`transition-all hover:shadow-xl ${plan.destaque ? "border-primary/50 bg-primary/5 scale-[1.02]" : "border-border"} relative`}>
-                {plan.badge && (
-                  <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground text-xs shadow-lg">
-                    {plan.badge}
-                  </Badge>
-                )}
-                <CardContent className="p-6 text-center space-y-3">
-                  <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">{plan.periodo}</p>
-                  <div>
-                    <span className="text-3xl font-bold text-foreground">{plan.preco}</span>
-                    <span className="text-muted-foreground">{plan.sub}</span>
-                  </div>
-                  <p className="text-xs text-muted-foreground">{plan.nota}</p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+
+          {[
+            {
+              nivel: "Entrada",
+              desc: "Para fábricas iniciando a estruturação BPF",
+              destaque: false,
+              planos: [
+                { periodo: "Mensal", preco: "R$ 495", sub: "/mês", nota: "Sem compromisso de fidelidade" },
+                { periodo: "Semestral", preco: "R$ 2.524,50", sub: "", nota: "≈ R$ 420,75/mês • 15% OFF", badge: "15% OFF" },
+                { periodo: "Anual", preco: "R$ 4.455", sub: "", nota: "≈ R$ 371,25/mês • 25% OFF", badge: "25% OFF" },
+              ],
+            },
+            {
+              nivel: "Intermediário",
+              desc: "Para fábricas em consolidação operacional",
+              destaque: true,
+              planos: [
+                { periodo: "Mensal", preco: "R$ 890", sub: "/mês", nota: "Sem compromisso de fidelidade" },
+                { periodo: "Semestral", preco: "R$ 4.539", sub: "", nota: "≈ R$ 756,50/mês • 15% OFF", badge: "15% OFF" },
+                { periodo: "Anual", preco: "R$ 8.010", sub: "", nota: "≈ R$ 667,50/mês • 25% OFF", badge: "25% OFF" },
+              ],
+            },
+            {
+              nivel: "Avançado",
+              desc: "Para fábricas com gestão completa e auditoria MAPA",
+              destaque: false,
+              planos: [
+                { periodo: "Mensal", preco: "R$ 1.490", sub: "/mês", nota: "Sem compromisso de fidelidade" },
+                { periodo: "Semestral", preco: "R$ 7.599", sub: "", nota: "≈ R$ 1.266,50/mês • 15% OFF", badge: "15% OFF" },
+                { periodo: "Anual", preco: "R$ 13.410", sub: "", nota: "≈ R$ 1.117,50/mês • 25% OFF", badge: "25% OFF" },
+              ],
+            },
+          ].map((tier) => (
+            <div key={tier.nivel} className="mb-10">
+              <div className="text-center mb-5">
+                <h3 className="text-xl font-bold font-display text-foreground">
+                  Plano {tier.nivel}
+                  {tier.destaque && (
+                    <Badge className="ml-2 bg-primary text-primary-foreground text-xs">Mais Popular</Badge>
+                  )}
+                </h3>
+                <p className="text-sm text-muted-foreground">{tier.desc}</p>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 max-w-4xl mx-auto">
+                {tier.planos.map((plan) => (
+                  <Card
+                    key={plan.periodo}
+                    className={`transition-all hover:shadow-xl relative ${
+                      tier.destaque ? "border-primary/40 bg-primary/5" : "border-border"
+                    }`}
+                  >
+                    {plan.badge && (
+                      <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground text-xs shadow-lg">
+                        {plan.badge}
+                      </Badge>
+                    )}
+                    <CardContent className="p-5 text-center space-y-2">
+                      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{plan.periodo}</p>
+                      <div>
+                        <span className="text-2xl font-bold text-foreground">{plan.preco}</span>
+                        <span className="text-muted-foreground text-sm">{plan.sub}</span>
+                      </div>
+                      <p className="text-xs text-muted-foreground">{plan.nota}</p>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          ))}
           <div className="mt-12 text-center">
             <h3 className="text-xl font-bold font-display text-foreground mb-3">Experimente grátis por 7 dias!</h3>
             <p className="text-muted-foreground mb-6">Crie sua conta e tenha acesso completo ao Feed_BPF durante o período trial.</p>
