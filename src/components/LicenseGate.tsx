@@ -15,37 +15,80 @@ import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
 
 type ProductKey = "feedbpf" | "nutricrm" | "agrogestao" | "auditsbpf";
+type NivelKey = "entrada" | "intermediario" | "avancado";
 
 interface PlanInfo {
   key: string;
   label: string;
-  priceTotal: string;
-  priceMes: string | null;
+  priceFull: number;     // preço cheio mensal-equivalente do período
+  priceTotal: number;    // total do período
   desc: string;
 }
 
-const PRODUCT_PLANS: Record<ProductKey, PlanInfo[]> = {
-  feedbpf: [
-    { key: "mensal", label: "Mensal", priceTotal: "R$ 495", priceMes: null, desc: "Pagamento único — 30 dias" },
-    { key: "semestral", label: "Semestral", priceTotal: "R$ 2.475", priceMes: "equivale a R$ 412,50/mês", desc: "Pagamento único — 6 meses" },
-    { key: "anual", label: "Anual", priceTotal: "R$ 4.455", priceMes: "equivale a R$ 371,25/mês", desc: "Pagamento único — 12 meses" },
-  ],
-  nutricrm: [
-    { key: "mensal", label: "Mensal", priceTotal: "R$ 149,90", priceMes: null, desc: "Pagamento único — 30 dias" },
-    { key: "semestral", label: "Semestral", priceTotal: "R$ 764,49", priceMes: "equivale a R$ 127,42/mês", desc: "15% de desconto — 6 meses" },
-    { key: "anual", label: "Anual", priceTotal: "R$ 1.349,10", priceMes: "equivale a R$ 112,43/mês", desc: "25% de desconto — 12 meses" },
-  ],
-  agrogestao: [
-    { key: "mensal", label: "Mensal", priceTotal: "R$ 149,90", priceMes: null, desc: "Pagamento único — 30 dias" },
-    { key: "semestral", label: "Semestral", priceTotal: "R$ 764,49", priceMes: "equivale a R$ 127,42/mês", desc: "15% de desconto — 6 meses" },
-    { key: "anual", label: "Anual", priceTotal: "R$ 1.349,10", priceMes: "equivale a R$ 112,43/mês", desc: "25% de desconto — 12 meses" },
-  ],
-  auditsbpf: [
-    { key: "mensal", label: "Mensal", priceTotal: "R$ 249,90", priceMes: null, desc: "Pagamento único — 30 dias" },
-    { key: "semestral", label: "Semestral", priceTotal: "R$ 1.274,49", priceMes: "equivale a R$ 212,42/mês", desc: "15% de desconto — 6 meses" },
-    { key: "anual", label: "Anual", priceTotal: "R$ 2.249,10", priceMes: "equivale a R$ 187,43/mês", desc: "25% de desconto — 12 meses" },
-  ],
-};
+interface NivelInfo {
+  key: NivelKey;
+  label: string;
+  porte: string;
+  destaque?: boolean;
+  features: string[];
+  plans: PlanInfo[];
+}
+
+// Lançamento 2026: 50% off em todos os planos até 31/12/2026
+const LAUNCH_END = new Date("2026-12-31T23:59:59");
+const isLaunchActive = () => new Date() <= LAUNCH_END;
+
+const NIVEIS: NivelInfo[] = [
+  {
+    key: "entrada",
+    label: "Entrada",
+    porte: "Pequeno porte",
+    features: [
+      "Essencial MAPA (IN 04/2007)",
+      "Arquivamento digital de registros físicos",
+      "Até 1 empresa",
+    ],
+    plans: [
+      { key: "mensal", label: "Mensal", priceFull: 495, priceTotal: 495, desc: "30 dias" },
+      { key: "semestral", label: "Semestral", priceFull: 420.75, priceTotal: 2524.5, desc: "15% off — 6 meses" },
+      { key: "anual", label: "Anual", priceFull: 371.25, priceTotal: 4455, desc: "25% off — 12 meses" },
+    ],
+  },
+  {
+    key: "intermediario",
+    label: "Intermediário",
+    porte: "Médio porte",
+    destaque: true,
+    features: [
+      "Modelo híbrido (físico + digital)",
+      "PCP, fórmulas versionadas, planilhas POP",
+      "Auditoria interna e até 3 empresas",
+    ],
+    plans: [
+      { key: "mensal", label: "Mensal", priceFull: 890, priceTotal: 890, desc: "30 dias" },
+      { key: "semestral", label: "Semestral", priceFull: 756.5, priceTotal: 4539, desc: "15% off — 6 meses" },
+      { key: "anual", label: "Anual", priceFull: 667.5, priceTotal: 8010, desc: "25% off — 12 meses" },
+    ],
+  },
+  {
+    key: "avancado",
+    label: "Avançado",
+    porte: "Grande porte",
+    features: [
+      "100% digital, multi-empresa",
+      "IA, integração SIPEAGRO, todas as features",
+      "Empresas ilimitadas",
+    ],
+    plans: [
+      { key: "mensal", label: "Mensal", priceFull: 1490, priceTotal: 1490, desc: "30 dias" },
+      { key: "semestral", label: "Semestral", priceFull: 1266.5, priceTotal: 7599, desc: "15% off — 6 meses" },
+      { key: "anual", label: "Anual", priceFull: 1117.5, priceTotal: 13410, desc: "25% off — 12 meses" },
+    ],
+  },
+];
+
+const formatBRL = (v: number) =>
+  v.toLocaleString("pt-BR", { style: "currency", currency: "BRL", minimumFractionDigits: 2 });
 
 const PRODUCT_LABELS: Record<ProductKey, string> = {
   feedbpf: "Feed_BPF",
@@ -63,9 +106,11 @@ export default function LicenseGate({ children, product = "feedbpf" }: LicenseGa
   const { license, loading, isActive, daysRemaining } = useLicense();
   const { empresaAtiva, loading: empresaLoading } = useEmpresa();
   const [checkoutLoading, setCheckoutLoading] = useState<string | null>(null);
+  const [nivelSelecionado, setNivelSelecionado] = useState<NivelKey>("intermediario");
 
-  const plans = PRODUCT_PLANS[product];
   const productLabel = PRODUCT_LABELS[product];
+  const launchActive = isLaunchActive();
+  const nivelAtivo = NIVEIS.find((n) => n.key === nivelSelecionado)!;
 
   if (loading || empresaLoading) {
     return (
@@ -102,17 +147,16 @@ export default function LicenseGate({ children, product = "feedbpf" }: LicenseGa
     );
   }
 
-  const handleCheckout = async (plano: string) => {
+  const handleCheckout = async (planoKey: string) => {
     if (!empresaAtiva) return;
-    setCheckoutLoading(plano);
+    const loadingKey = `${nivelSelecionado}-${planoKey}`;
+    setCheckoutLoading(loadingKey);
     try {
       const { data, error } = await supabase.functions.invoke("create-checkout", {
-        body: { empresa_id: empresaAtiva.id, plano, produto: product },
+        body: { empresa_id: empresaAtiva.id, plano: planoKey, nivel: nivelSelecionado },
       });
       if (error) throw error;
-      if (data?.url) {
-        window.open(data.url, "_blank");
-      }
+      if (data?.url) window.open(data.url, "_blank");
     } catch (err: any) {
       toast.error("Erro ao iniciar pagamento: " + err.message);
     } finally {
@@ -122,7 +166,7 @@ export default function LicenseGate({ children, product = "feedbpf" }: LicenseGa
 
   return (
     <div className="flex items-center justify-center min-h-[60vh] p-4">
-      <div className="max-w-3xl w-full space-y-6">
+      <div className="max-w-5xl w-full space-y-6">
         <div className="text-center space-y-3">
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-destructive/10 mb-2">
             <AlertTriangle className="w-8 h-8 text-destructive" />
@@ -130,7 +174,7 @@ export default function LicenseGate({ children, product = "feedbpf" }: LicenseGa
           <h2 className="text-2xl font-bold">Acesso expirado — {productLabel}</h2>
           <p className="text-muted-foreground max-w-md mx-auto">
             A licença da empresa <strong>{empresaAtiva.nome}</strong> expirou.
-            Escolha um plano para continuar utilizando o {productLabel}.
+            Escolha um nível e plano para continuar.
           </p>
           {license && (
             <Badge variant="destructive">
@@ -138,43 +182,88 @@ export default function LicenseGate({ children, product = "feedbpf" }: LicenseGa
               {new Date(license.data_expiracao).toLocaleDateString("pt-BR")}
             </Badge>
           )}
+          {launchActive && (
+            <div className="inline-block px-4 py-2 rounded-lg bg-primary/10 border border-primary/30">
+              <p className="text-sm font-semibold text-primary">
+                🎉 Lançamento 2026 — 50% OFF aplicado automaticamente em todos os planos
+              </p>
+            </div>
+          )}
         </div>
 
-        <div id="license-plans" className="grid gap-4 md:grid-cols-3">
-          {plans.map((plan) => (
-            <Card key={plan.key} className={plan.key === "anual" ? "border-primary ring-1 ring-primary" : ""}>
-              <CardHeader className="pb-2">
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-lg">{plan.label}</CardTitle>
-                  {plan.key === "anual" && (
-                    <Badge variant="default" className="text-xs">Melhor valor</Badge>
-                  )}
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <p className="text-2xl font-bold">{plan.priceTotal}</p>
-                  {plan.priceMes && (
-                    <p className="text-sm font-medium text-primary">{plan.priceMes}</p>
-                  )}
-                  <p className="text-sm text-muted-foreground">{plan.desc}</p>
-                </div>
-                <Button
-                  className="w-full"
-                  variant={plan.key === "anual" ? "default" : "outline"}
-                  onClick={() => handleCheckout(plan.key)}
-                  disabled={!!checkoutLoading}
-                >
-                  {checkoutLoading === plan.key ? (
-                    <Loader2 className="w-4 h-4 animate-spin mr-2" />
-                  ) : (
-                    <CreditCard className="w-4 h-4 mr-2" />
-                  )}
-                  Assinar
-                </Button>
-              </CardContent>
-            </Card>
+        <div id="license-plans" className="grid gap-3 md:grid-cols-3">
+          {NIVEIS.map((nivel) => (
+            <button
+              key={nivel.key}
+              onClick={() => setNivelSelecionado(nivel.key)}
+              className={`text-left p-4 rounded-lg border-2 transition-all ${
+                nivelSelecionado === nivel.key
+                  ? "border-primary bg-primary/5 ring-2 ring-primary/20"
+                  : "border-border hover:border-primary/50"
+              }`}
+            >
+              <div className="flex items-center justify-between mb-2">
+                <h3 className="font-bold text-lg">{nivel.label}</h3>
+                {nivel.destaque && <Badge variant="default" className="text-xs">Mais popular</Badge>}
+              </div>
+              <p className="text-xs text-muted-foreground mb-3">{nivel.porte}</p>
+              <ul className="space-y-1">
+                {nivel.features.map((f, i) => (
+                  <li key={i} className="text-xs flex items-start gap-1.5">
+                    <span className="text-primary mt-0.5">✓</span>
+                    <span>{f}</span>
+                  </li>
+                ))}
+              </ul>
+            </button>
           ))}
+        </div>
+
+        <div className="grid gap-4 md:grid-cols-3">
+          {nivelAtivo.plans.map((plan) => {
+            const totalEffective = launchActive ? plan.priceTotal / 2 : plan.priceTotal;
+            const mesEffective = launchActive ? plan.priceFull / 2 : plan.priceFull;
+            const loadingKey = `${nivelSelecionado}-${plan.key}`;
+            return (
+              <Card key={plan.key} className={plan.key === "anual" ? "border-primary ring-1 ring-primary" : ""}>
+                <CardHeader className="pb-2">
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="text-lg">{plan.label}</CardTitle>
+                    {plan.key === "anual" && <Badge variant="default" className="text-xs">Melhor valor</Badge>}
+                  </div>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div>
+                    {launchActive && (
+                      <p className="text-xs text-muted-foreground line-through">
+                        {formatBRL(plan.priceTotal)}
+                      </p>
+                    )}
+                    <p className="text-2xl font-bold">{formatBRL(totalEffective)}</p>
+                    {plan.key !== "mensal" && (
+                      <p className="text-sm font-medium text-primary">
+                        equivale a {formatBRL(mesEffective)}/mês
+                      </p>
+                    )}
+                    <p className="text-sm text-muted-foreground">{plan.desc}</p>
+                  </div>
+                  <Button
+                    className="w-full"
+                    variant={plan.key === "anual" ? "default" : "outline"}
+                    onClick={() => handleCheckout(plan.key)}
+                    disabled={!!checkoutLoading}
+                  >
+                    {checkoutLoading === loadingKey ? (
+                      <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                    ) : (
+                      <CreditCard className="w-4 h-4 mr-2" />
+                    )}
+                    Assinar
+                  </Button>
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
 
         <div className="text-center space-y-2">
