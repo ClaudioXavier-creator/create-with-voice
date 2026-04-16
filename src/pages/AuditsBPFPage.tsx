@@ -129,32 +129,55 @@ export default function AuditsBPFPage() {
           <div className="text-center mb-10">
             <Badge variant="outline" className="mb-3 text-xs tracking-widest uppercase px-4 py-1">Planos e Preços</Badge>
             <h2 className="text-3xl font-bold font-display text-foreground mb-2">Planos Audits_BPF</h2>
-            <p className="text-muted-foreground">Escolha o plano ideal para sua empresa</p>
-            <p className="text-sm text-muted-foreground mt-1">Inclui até <strong>10 empresas</strong>. Acima disso, acréscimo de 25%.</p>
+            <p className="text-muted-foreground">Escolha o plano ideal para sua operação</p>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-4xl mx-auto">
-            {[
-              { periodo: "Mensal", preco: "R$ 249,90", sub: "", nota: "Sem compromisso de fidelidade", destaque: false },
-              { periodo: "Semestral", preco: "R$ 1.274,49", sub: "", nota: "equivale a R$ 212,42/mês • 15% OFF", destaque: true, badge: "Mais Popular" },
-              { periodo: "Anual", preco: "R$ 2.249,10", sub: "", nota: "equivale a R$ 187,43/mês • 25% OFF", destaque: true, badge: "Melhor Custo" },
-            ].map((plan) => (
-              <Card key={plan.periodo} className={`transition-all hover:shadow-xl ${plan.destaque ? "border-primary/50 bg-primary/5 scale-[1.02]" : "border-border"} relative`}>
-                {plan.badge && (
-                  <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground text-xs shadow-lg">
-                    {plan.badge}
-                  </Badge>
-                )}
-                <CardContent className="p-6 text-center space-y-3">
-                  <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">{plan.periodo}</p>
-                  <div>
-                    <span className="text-3xl font-bold text-foreground">{plan.preco}</span>
-                    <span className="text-muted-foreground">{plan.sub}</span>
-                  </div>
-                  <p className="text-xs text-muted-foreground">{plan.nota}</p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+
+          {[
+            {
+              nivel: "Individual",
+              descricao: "Para 1 empresa / fábrica",
+              planos: [
+                { periodo: "Mensal", preco: "R$ 249,00", nota: "Sem compromisso de fidelidade", destaque: false },
+                { periodo: "Semestral", preco: "R$ 1.269,90", nota: "equivale a R$ 211,65/mês • 15% OFF", destaque: true, badge: "Mais Popular" },
+                { periodo: "Anual", preco: "R$ 2.241,00", nota: "equivale a R$ 186,75/mês • 25% OFF", destaque: true, badge: "Melhor Custo" },
+              ],
+            },
+            {
+              nivel: "Consultor",
+              descricao: "Para consultores — até 10 empresas gerenciadas",
+              planos: [
+                { periodo: "Mensal", preco: "R$ 499,00", nota: "Sem compromisso de fidelidade", destaque: false },
+                { periodo: "Semestral", preco: "R$ 2.544,90", nota: "equivale a R$ 424,15/mês • 15% OFF", destaque: true, badge: "Mais Popular" },
+                { periodo: "Anual", preco: "R$ 4.491,00", nota: "equivale a R$ 374,25/mês • 25% OFF", destaque: true, badge: "Melhor Custo" },
+              ],
+            },
+          ].map((tier) => (
+            <div key={tier.nivel} className="mb-10">
+              <div className="text-center mb-4">
+                <h3 className="text-xl font-bold font-display text-foreground">Plano {tier.nivel}</h3>
+                <p className="text-sm text-muted-foreground">{tier.descricao}</p>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-4xl mx-auto">
+                {tier.planos.map((plan) => (
+                  <Card key={plan.periodo} className={`transition-all hover:shadow-xl ${plan.destaque ? "border-primary/50 bg-primary/5 scale-[1.02]" : "border-border"} relative`}>
+                    {plan.badge && (
+                      <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground text-xs shadow-lg">
+                        {plan.badge}
+                      </Badge>
+                    )}
+                    <CardContent className="p-6 text-center space-y-3">
+                      <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">{plan.periodo}</p>
+                      <div>
+                        <span className="text-3xl font-bold text-foreground">{plan.preco}</span>
+                      </div>
+                      <p className="text-xs text-muted-foreground">{plan.nota}</p>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          ))}
+
           <div className="mt-12 text-center">
             <h3 className="text-xl font-bold font-display text-foreground mb-3">Experimente grátis por 7 dias!</h3>
             <p className="text-muted-foreground mb-6">Crie sua conta e tenha acesso completo ao Audits_BPF durante o período trial.</p>
