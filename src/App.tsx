@@ -53,6 +53,7 @@ import Instalar from "./pages/Instalar";
 import NutriCRMPage from "./pages/NutriCRMPage";
 import FeedBPFPage from "./pages/FeedBPFPage";
 import AuditsBPFPage from "./pages/AuditsBPFPage";
+import AuditsBPFPlanos from "./pages/AuditsBPFPlanos";
 import AgroGestaoCRMPage from "./pages/AgroGestaoCRMPage";
 import AdminLicencas from "./pages/AdminLicencas";
 // DocumentosBPF integrado como aba em Documentos — rota standalone removida
@@ -106,6 +107,7 @@ const AppRoutes = () => {
       <Route path="/instalar" element={<Instalar />} />
       <Route path="/nutricrm" element={<ProtectedRoute><LicenseGate product="nutricrm"><NutriCRMPage /></LicenseGate></ProtectedRoute>} />
       <Route path="/feedbpf" element={<ProtectedRoute><LicenseGate product="feedbpf"><FeedBPFPage /></LicenseGate></ProtectedRoute>} />
+      <Route path="/audits-bpf/planos" element={<ProtectedRoute><AuditsBPFPlanos /></ProtectedRoute>} />
       <Route path="/audits-bpf" element={<ProtectedRoute><LicenseGate product="auditsbpf"><AuditsBPFPage /></LicenseGate></ProtectedRoute>} />
       <Route path="/agrogestao" element={<ProtectedRoute><LicenseGate product="agrogestao"><AgroGestaoCRMPage /></LicenseGate></ProtectedRoute>} />
       <Route path="/admin-licencas" element={<ProtectedRoute><AdminLicencas /></ProtectedRoute>} />
