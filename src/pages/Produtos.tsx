@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Package, Plus, Loader2, Edit, Tag, FileText, Trash2, ClipboardList } from "lucide-react";
+import { Package, Plus, Loader2, Edit, Tag, FileText, Trash2, ClipboardList, FlaskConical } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
@@ -13,6 +13,7 @@ import ProdutoForm from "@/components/produtos/ProdutoForm";
 import RotuloEditor from "@/components/produtos/RotuloEditor";
 import FichaTecnica from "@/components/produtos/FichaTecnica";
 import RTPIEditor from "@/components/produtos/RTPIEditor";
+import FormulasManager from "@/components/produtos/FormulasManager";
 
 const CLASSIFICACAO_LABELS: Record<string, string> = {
   racao: "Ração",
@@ -87,6 +88,7 @@ export default function Produtos() {
             <TabsTrigger value="rotulo"><Tag className="w-4 h-4 mr-1" /> Rótulo IN 22</TabsTrigger>
             <TabsTrigger value="ficha"><FileText className="w-4 h-4 mr-1" /> Ficha Técnica</TabsTrigger>
             <TabsTrigger value="rtpi"><ClipboardList className="w-4 h-4 mr-1" /> RTPI</TabsTrigger>
+            <TabsTrigger value="formulas"><FlaskConical className="w-4 h-4 mr-1" /> Fórmulas</TabsTrigger>
           </TabsList>
           <TabsContent value="rotulo">
             <RotuloEditor produtoId={selectedProduto.id} produtoNome={selectedProduto.nome} />
@@ -96,6 +98,9 @@ export default function Produtos() {
           </TabsContent>
           <TabsContent value="rtpi">
             <RTPIEditor produtoId={selectedProduto.id} />
+          </TabsContent>
+          <TabsContent value="formulas">
+            <FormulasManager produtoIdFixo={selectedProduto.id} produtoNomeFixo={selectedProduto.nome} />
           </TabsContent>
         </Tabs>
       </>

@@ -198,6 +198,60 @@ export type Database = {
           },
         ]
       }
+      batida_lotes: {
+        Row: {
+          created_at: string
+          empresa_id: string | null
+          fornecedor: string | null
+          id: string
+          lote_mp: string | null
+          materia_prima: string
+          numero_batida: number
+          ordem_id: string
+          quantidade_kg: number
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          empresa_id?: string | null
+          fornecedor?: string | null
+          id?: string
+          lote_mp?: string | null
+          materia_prima: string
+          numero_batida?: number
+          ordem_id: string
+          quantidade_kg?: number
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          empresa_id?: string | null
+          fornecedor?: string | null
+          id?: string
+          lote_mp?: string | null
+          materia_prima?: string
+          numero_batida?: number
+          ordem_id?: string
+          quantidade_kg?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "batida_lotes_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "batida_lotes_ordem_id_fkey"
+            columns: ["ordem_id"]
+            isOneToOne: false
+            referencedRelation: "ordens_producao"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       batidas_producao: {
         Row: {
           created_at: string
@@ -978,6 +1032,57 @@ export type Database = {
           },
         ]
       }
+      formula_ingredientes: {
+        Row: {
+          created_at: string
+          empresa_id: string | null
+          formula_id: string
+          id: string
+          materia_prima: string
+          observacoes: string | null
+          ordem: number
+          quantidade_kg: number
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          empresa_id?: string | null
+          formula_id: string
+          id?: string
+          materia_prima: string
+          observacoes?: string | null
+          ordem?: number
+          quantidade_kg?: number
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          empresa_id?: string | null
+          formula_id?: string
+          id?: string
+          materia_prima?: string
+          observacoes?: string | null
+          ordem?: number
+          quantidade_kg?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "formula_ingredientes_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "formula_ingredientes_formula_id_fkey"
+            columns: ["formula_id"]
+            isOneToOne: false
+            referencedRelation: "formulas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       formula_itens: {
         Row: {
           created_at: string
@@ -1031,6 +1136,66 @@ export type Database = {
             columns: ["ordem_id"]
             isOneToOne: false
             referencedRelation: "ordens_producao"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      formulas: {
+        Row: {
+          codigo: string
+          created_at: string
+          data_versao: string
+          empresa_id: string | null
+          id: string
+          observacoes: string | null
+          produto_id: string | null
+          produto_nome: string
+          status: string
+          updated_at: string
+          user_id: string
+          versao: string
+        }
+        Insert: {
+          codigo: string
+          created_at?: string
+          data_versao?: string
+          empresa_id?: string | null
+          id?: string
+          observacoes?: string | null
+          produto_id?: string | null
+          produto_nome: string
+          status?: string
+          updated_at?: string
+          user_id: string
+          versao?: string
+        }
+        Update: {
+          codigo?: string
+          created_at?: string
+          data_versao?: string
+          empresa_id?: string | null
+          id?: string
+          observacoes?: string | null
+          produto_id?: string | null
+          produto_nome?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+          versao?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "formulas_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "formulas_produto_id_fkey"
+            columns: ["produto_id"]
+            isOneToOne: false
+            referencedRelation: "produtos"
             referencedColumns: ["id"]
           },
         ]
@@ -1621,10 +1786,13 @@ export type Database = {
           data_programada: string
           destino_sobra: string | null
           empresa_id: string | null
+          formula_id: string | null
           formula_nome: string
           id: string
           lote_produto: string | null
+          material_flushing: string | null
           motivo_retrabalho: string | null
+          necessita_flushing: boolean | null
           numero_batidas: number | null
           numero_ordem: string
           observacoes: string | null
@@ -1632,7 +1800,9 @@ export type Database = {
           peso_por_batida: string | null
           prioridade: string | null
           produto: string
+          proximo_produto: string | null
           quantidade_programada: string | null
+          quantidade_sacos: number | null
           quantidade_sobra: string | null
           sequencia_producao: number | null
           status: string | null
@@ -1640,16 +1810,22 @@ export type Database = {
           unidade: string | null
           updated_at: string
           user_id: string
+          verificacao_data: string | null
+          verificacao_responsavel: string | null
+          volume_misturador_kg: number | null
         }
         Insert: {
           created_at?: string
           data_programada?: string
           destino_sobra?: string | null
           empresa_id?: string | null
+          formula_id?: string | null
           formula_nome?: string
           id?: string
           lote_produto?: string | null
+          material_flushing?: string | null
           motivo_retrabalho?: string | null
+          necessita_flushing?: boolean | null
           numero_batidas?: number | null
           numero_ordem: string
           observacoes?: string | null
@@ -1657,7 +1833,9 @@ export type Database = {
           peso_por_batida?: string | null
           prioridade?: string | null
           produto: string
+          proximo_produto?: string | null
           quantidade_programada?: string | null
+          quantidade_sacos?: number | null
           quantidade_sobra?: string | null
           sequencia_producao?: number | null
           status?: string | null
@@ -1665,16 +1843,22 @@ export type Database = {
           unidade?: string | null
           updated_at?: string
           user_id: string
+          verificacao_data?: string | null
+          verificacao_responsavel?: string | null
+          volume_misturador_kg?: number | null
         }
         Update: {
           created_at?: string
           data_programada?: string
           destino_sobra?: string | null
           empresa_id?: string | null
+          formula_id?: string | null
           formula_nome?: string
           id?: string
           lote_produto?: string | null
+          material_flushing?: string | null
           motivo_retrabalho?: string | null
+          necessita_flushing?: boolean | null
           numero_batidas?: number | null
           numero_ordem?: string
           observacoes?: string | null
@@ -1682,7 +1866,9 @@ export type Database = {
           peso_por_batida?: string | null
           prioridade?: string | null
           produto?: string
+          proximo_produto?: string | null
           quantidade_programada?: string | null
+          quantidade_sacos?: number | null
           quantidade_sobra?: string | null
           sequencia_producao?: number | null
           status?: string | null
@@ -1690,6 +1876,9 @@ export type Database = {
           unidade?: string | null
           updated_at?: string
           user_id?: string
+          verificacao_data?: string | null
+          verificacao_responsavel?: string | null
+          volume_misturador_kg?: number | null
         }
         Relationships: [
           {
@@ -1697,6 +1886,13 @@ export type Database = {
             columns: ["empresa_id"]
             isOneToOne: false
             referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ordens_producao_formula_id_fkey"
+            columns: ["formula_id"]
+            isOneToOne: false
+            referencedRelation: "formulas"
             referencedColumns: ["id"]
           },
           {
