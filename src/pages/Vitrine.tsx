@@ -20,7 +20,7 @@ const produtos = [
     borderColor: "border-sky-200 dark:border-sky-800",
     trial: "7 dias grátis",
     trialLink: "/auth?product=feedbpf&mode=signup&redirect=%2Ffeedbpf",
-    preco: "A partir de R$ 497/mês",
+    preco: "A partir de R$ 495/mês",
   },
   {
     nome: "Audits_BPF",
@@ -33,7 +33,7 @@ const produtos = [
     borderColor: "border-emerald-200 dark:border-emerald-800",
     trial: "7 dias grátis",
     trialLink: "https://friendly-flame-igniter.lovable.app/auth",
-    preco: "A partir de R$ 197/mês",
+    preco: "A partir de R$ 249/mês",
     external: true,
   },
   {
