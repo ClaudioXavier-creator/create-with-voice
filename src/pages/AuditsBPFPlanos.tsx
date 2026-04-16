@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Check, Loader2, ShieldCheck, Users } from "lucide-react";
+import { ArrowLeft, Check, Loader2, ShieldCheck, Users, Sparkles } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
@@ -61,6 +61,26 @@ export default function AuditsBPFPlanos() {
   const { session } = useAuth();
   const [nivelSelecionado, setNivelSelecionado] = useState<Nivel>("individual");
   const [loading, setLoading] = useState<Periodo | null>(null);
+  const [trialLoading, setTrialLoading] = useState(false);
+
+  const handleTrialConsultor = async () => {
+    if (!session) {
+      navigate("/auth?product=auditsbpf");
+      return;
+    }
+    setTrialLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("audits-trial-consultor", { body: {} });
+      if (error) throw error;
+      if (!data?.ok) throw new Error(data?.error || "Falha ao ativar trial");
+      toast.success("Trial Consultor ativado! 7 dias com até 10 empresas.");
+      setTimeout(() => navigate("/audits-bpf"), 1500);
+    } catch (err: any) {
+      toast.error(err.message || "Erro ao ativar trial");
+    } finally {
+      setTrialLoading(false);
+    }
+  };
 
   const handleCheckout = async (periodo: Periodo) => {
     if (!session) {
@@ -204,8 +224,24 @@ export default function AuditsBPFPlanos() {
           })}
         </div>
 
+        {nivelSelecionado === "consultor" && (
+          <div className="mt-8 p-6 rounded-lg border-2 border-dashed border-primary/40 bg-primary/5 text-center">
+            <Sparkles className="h-6 w-6 text-primary mx-auto mb-2" />
+            <h3 className="font-bold text-lg mb-1">Experimente grátis por 7 dias</h3>
+            <p className="text-sm text-muted-foreground mb-4">
+              Trial Consultor com até 10 empresas — sem cartão de crédito.
+            </p>
+            <Button onClick={handleTrialConsultor} disabled={trialLoading} variant="default">
+              {trialLoading ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Sparkles className="h-4 w-4 mr-2" />}
+              Iniciar Trial Consultor — 7 dias grátis
+            </Button>
+          </div>
+        )}
+
         <p className="text-center text-xs text-muted-foreground mt-8">
           Pagamento processado com segurança via Stripe. Você poderá cancelar a qualquer momento.
+          {" "}Empresas excedentes (acima de 10) são cobradas automaticamente: <strong>R$ 311,25/mês</strong> no plano Mensal,
+          ou <strong>+25%</strong> no valor do período no Semestral/Anual.
         </p>
       </div>
     </div>
