@@ -189,6 +189,12 @@ export default function FichaProducaoDigital({ ordemId, onClose }: Props) {
       <Card>
         <CardHeader>
           <CardTitle className="text-base">Configuração da Ficha de Produção</CardTitle>
+          {ordem.formula_nome && (
+            <p className="text-xs font-mono text-muted-foreground mt-1">
+              📋 Fórmula oficial: <span className="font-semibold text-foreground">{ordem.formula_nome}</span>
+              {!ordem.formula_id && <span className="ml-2 text-yellow-600">(⚠️ não vinculada — vincule uma fórmula versionada na OP)</span>}
+            </p>
+          )}
         </CardHeader>
         <CardContent className="space-y-3">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -324,6 +330,11 @@ export default function FichaProducaoDigital({ ordemId, onClose }: Props) {
       <div ref={printRef} style={{ display: "none" }}>
         <h1>ORDEM DE PRODUÇÃO — FÓRMULA E INCLUSÃO DE MATÉRIAS-PRIMAS</h1>
         <h2 style={{ textAlign: "center" }}>{ordem.produto} {ordem.lote_produto ? `— LOTE: ${ordem.lote_produto}` : ""}</h2>
+        {ordem.formula_nome && (
+          <p style={{ textAlign: "center", fontFamily: "monospace", fontSize: 11, margin: "0 0 8px" }}>
+            <strong>Fórmula Oficial:</strong> {ordem.formula_nome}
+          </p>
+        )}
         <div className="header-info">
           <div><strong>OP:</strong> {ordem.numero_ordem}</div>
           <div><strong>Data:</strong> {new Date(ordem.data_programada + "T00:00").toLocaleDateString("pt-BR")}</div>
