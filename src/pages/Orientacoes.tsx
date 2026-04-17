@@ -8,7 +8,11 @@ import { OrientacaoModulo } from "@/components/OrientacaoModulo";
 import { Search, BookOpen, ArrowLeft, GraduationCap } from "lucide-react";
 import PageHeader from "@/components/PageHeader";
 
-const POP_ORDEM = ["POP-01", "POP-02", "POP-03", "POP-04", "POP-05", "POP-06", "POP-07", "POP-08", "POP-09", "POP-10"];
+const POP_ORDEM = ["POP-01", "POP-02", "POP-03", "POP-04", "POP-05", "POP-06", "POP-07", "POP-08", "POP-09", "POP-10", "AUX"];
+
+const POP_LABEL: Record<string, string> = {
+  "AUX": "Auxiliares & Operacionais",
+};
 
 export default function Orientacoes() {
   const [busca, setBusca] = useState("");
