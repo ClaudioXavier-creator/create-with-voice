@@ -60,6 +60,7 @@ import AdminLicencas from "./pages/AdminLicencas";
 import ChecklistPreAuditoria from "./pages/ChecklistPreAuditoria";
 import SimulacaoRecall from "./pages/SimulacaoRecall";
 import SimulacaoCarimbo from "./pages/SimulacaoCarimbo";
+import Orientacoes from "./pages/Orientacoes";
 import BuscaGlobal from "./pages/BuscaGlobal";
 import ModoTablet from "./pages/ModoTablet";
 import AnaliseTendencias from "./pages/AnaliseTendencias";
@@ -159,6 +160,8 @@ const AppRoutes = () => {
                   <Route path="/checklist-pre-auditoria" element={<ChecklistPreAuditoria />} />
                   <Route path="/simulacao-recall" element={<SimulacaoRecall />} />
                   <Route path="/simulacao-carimbo" element={<SimulacaoCarimbo />} />
+                  <Route path="/orientacoes" element={<Orientacoes />} />
+                  <Route path="/orientacoes/:moduloId" element={<Orientacoes />} />
                   <Route path="/busca-global" element={<BuscaGlobal />} />
                   <Route path="/modo-tablet" element={<ModoTablet />} />
                   <Route path="/analise-tendencias" element={<AnaliseTendencias />} />
