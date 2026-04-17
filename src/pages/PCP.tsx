@@ -608,8 +608,30 @@ export default function PCP() {
                   <Input value={produto} onChange={e => setProduto(e.target.value)} placeholder="Ex: Ração Bovinos Confinamento 22%" />
                 </div>
                 <div>
-                  <Label>Fórmula / Nome da Receita</Label>
-                  <Input value={formulaNome} onChange={e => setFormulaNome(e.target.value)} placeholder="Ex: FORMULA-RC-22" />
+                  <Label>Fórmula Oficial (versionada)</Label>
+                  <Select value={formulaId} onValueChange={(v) => {
+                    setFormulaId(v);
+                    const f = formulasDisponiveis.find((x: any) => x.id === v);
+                    if (f) {
+                      setFormulaNome(f.codigo);
+                      if (!produto) setProduto(f.produto_nome);
+                    }
+                  }}>
+                    <SelectTrigger><SelectValue placeholder="Selecione a fórmula ativa" /></SelectTrigger>
+                    <SelectContent>
+                      {formulasDisponiveis.length === 0 && (
+                        <div className="px-3 py-2 text-xs text-muted-foreground">Nenhuma fórmula cadastrada. Cadastre em "Fórmulas (versionadas)".</div>
+                      )}
+                      {formulasDisponiveis.map((f: any) => (
+                        <SelectItem key={f.id} value={f.id}>
+                          {f.status === "ativa" ? "✅ " : "📦 "}{f.codigo}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {formulaId && (
+                    <p className="text-[10px] text-muted-foreground mt-1 font-mono">Código fixado na OP: {formulaNome}</p>
+                  )}
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
