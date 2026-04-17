@@ -65,7 +65,7 @@ const NIVEIS: NivelInfo[] = [
       "Tudo do Entrada + lançamento digital operacional",
       "PCP, fórmulas versionadas, planilhas POP digitais",
       "Recebimento, Produção, Higiene, Pragas, Resíduos",
-      "Até 3 empresas",
+      "Até 5 empresas",
     ],
     plans: [
       { key: "mensal", label: "Mensal", priceFull: 890, priceTotal: 890, desc: "30 dias" },
@@ -276,7 +276,7 @@ export default function LicenseGate({ children, product = "feedbpf" }: LicenseGa
             Pagamento seguro via Stripe. Cancele a qualquer momento.
           </p>
           <p className="text-xs text-muted-foreground">
-            Limites por plano: Entrada <strong>1</strong> · Intermediário <strong>3</strong> · Avançado <strong>até 10</strong> empresas.
+            Limites por plano: Entrada <strong>1</strong> · Intermediário <strong>até 5</strong> · Avançado <strong>até 10</strong> empresas.
           </p>
           <div className="flex items-center justify-center gap-4 pt-2">
             <a

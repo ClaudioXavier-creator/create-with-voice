@@ -23,7 +23,7 @@ export const TIER_LABEL: Record<Tier, string> = {
 
 export const TIER_MAX_EMPRESAS: Record<Tier, number> = {
   entrada: 1,
-  intermediario: 3,
+  intermediario: 5,
   avancado: 10,
 };
 
