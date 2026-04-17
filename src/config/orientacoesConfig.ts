@@ -1,0 +1,610 @@
+// Configuração centralizada das orientações de preenchimento e simulações
+// para todos os módulos do sistema BPF_Consult.
+// Cada módulo possui: passos de tutorial + dados fictícios para simulação sandbox.
+
+export interface CampoSimulacao {
+  nome: string;
+  label: string;
+  tipo: "text" | "number" | "date" | "select" | "textarea" | "boolean";
+  exemplo: string | number | boolean;
+  opcoes?: string[];
+  ajuda?: string;
+}
+
+export interface PassoOrientacao {
+  titulo: string;
+  descricao: string;
+  dica?: string;
+  base_legal?: string;
+}
+
+export interface ModuloOrientacao {
+  id: string;
+  codigo: string; // POP-01, POP-02, etc. ou 'AUX' para auxiliares
+  titulo: string;
+  rota: string;
+  descricao: string;
+  base_legal: string[];
+  passos: PassoOrientacao[];
+  campos_simulacao: CampoSimulacao[];
+  exemplo_resultado?: string; // texto explicativo do que acontece após salvar
+}
+
+export const ORIENTACOES: ModuloOrientacao[] = [
+  // ============ POP 01 ============
+  {
+    id: "fornecedores",
+    codigo: "POP-01",
+    titulo: "Qualificação de Fornecedores",
+    rota: "/fornecedores",
+    descricao: "Cadastro e qualificação de fornecedores de matérias-primas e embalagens conforme PL POP 1.1.",
+    base_legal: ["IN 04/2007 (MAPA)", "Decreto 12.031/2024", "IN 15/2009"],
+    passos: [
+      { titulo: "1. Cadastrar fornecedor", descricao: "Clique em 'Novo Fornecedor' e preencha CNPJ, razão social e contato.", dica: "O CNPJ é validado automaticamente." },
+      { titulo: "2. Verificar SIPEAGRO", descricao: "Use o botão 'Consultar SIPEAGRO' para validar o registro no MAPA.", base_legal: "IN 04/2007 Art. 12" },
+      { titulo: "3. Aplicar questionário", descricao: "Responda o questionário de qualificação (PL POP 1.1) — 25 critérios.", dica: "Resultado gera ranking automático de 1 a 5 estrelas." },
+      { titulo: "4. Anexar documentos", descricao: "Anexe Alvará, Registro MAPA, Ficha Técnica e Certificado de Análise.", base_legal: "IN 04/2007 Art. 18" },
+      { titulo: "5. Definir próxima avaliação", descricao: "O sistema agenda automaticamente nova avaliação em 12 meses." },
+    ],
+    campos_simulacao: [
+      { nome: "nome", label: "Razão Social", tipo: "text", exemplo: "Nutrigrãos Indústria de Alimentos Ltda" },
+      { nome: "cnpj", label: "CNPJ", tipo: "text", exemplo: "12.345.678/0001-90" },
+      { nome: "registro_mapa", label: "Registro MAPA", tipo: "text", exemplo: "SP-001234-5", ajuda: "Obrigatório para fornecedores de MP de origem animal" },
+      { nome: "tipo_produto", label: "Tipo de Produto", tipo: "select", exemplo: "Núcleo Mineral", opcoes: ["Milho", "Soja", "Núcleo Mineral", "Aditivo", "Embalagem"] },
+      { nome: "nota_avaliacao", label: "Nota (1-5)", tipo: "number", exemplo: 4 },
+      { nome: "status_qualificacao", label: "Status", tipo: "select", exemplo: "Aprovado", opcoes: ["Aprovado", "Aprovado c/ Restrição", "Reprovado"] },
+    ],
+    exemplo_resultado: "Fornecedor aprovado, próxima avaliação agendada para 12 meses, alerta de vencimento em 60 dias.",
+  },
+  {
+    id: "recebimento",
+    codigo: "POP-01",
+    titulo: "Recebimento de Matéria-Prima",
+    rota: "/recebimento",
+    descricao: "Lançamento único do recebimento de MP — inclui lote, fornecedor, laudo e umidade (PL POP 1.2 / 1.3 / 1.5).",
+    base_legal: ["IN 04/2007", "IN 15/2009"],
+    passos: [
+      { titulo: "1. Selecionar fornecedor", descricao: "Escolha do cadastro qualificado. Sistema bloqueia recebimento se status = Reprovado." },
+      { titulo: "2. Identificar MP e lote", descricao: "Informe matéria-prima, lote do fornecedor, NF e quantidade." },
+      { titulo: "3. Inspeção visual", descricao: "Marque conformidade de embalagem, odor, presença de pragas e contaminantes." },
+      { titulo: "4. Medir umidade (grãos)", descricao: "Para milho/soja, registre umidade. Alerta automático se >14%.", base_legal: "IN 60/2011" },
+      { titulo: "5. Anexar laudo", descricao: "Upload do Certificado de Análise do fornecedor e checagem de Registro MAPA.", base_legal: "IN 04/2007 Art. 18" },
+      { titulo: "6. Decisão", descricao: "Aprovar / Reprovar / Aprovar com Restrição (gera RNC automático)." },
+    ],
+    campos_simulacao: [
+      { nome: "data", label: "Data do Recebimento", tipo: "date", exemplo: "2025-04-15" },
+      { nome: "materia_prima", label: "Matéria-Prima", tipo: "text", exemplo: "Milho em grãos" },
+      { nome: "fornecedor", label: "Fornecedor", tipo: "text", exemplo: "Nutrigrãos Ind. Alimentos Ltda" },
+      { nome: "lote", label: "Lote do Fornecedor", tipo: "text", exemplo: "MIL-2025-04-0123" },
+      { nome: "nota_fiscal", label: "Nota Fiscal", tipo: "text", exemplo: "045892" },
+      { nome: "quantidade_kg", label: "Quantidade (kg)", tipo: "number", exemplo: 28000 },
+      { nome: "umidade", label: "Umidade (%)", tipo: "number", exemplo: 13.2, ajuda: "Limite: 14% (alerta automático acima)" },
+      { nome: "registro_mapa", label: "Registro MAPA do produto", tipo: "text", exemplo: "SP-001234-5" },
+      { nome: "decisao", label: "Decisão", tipo: "select", exemplo: "Aprovado", opcoes: ["Aprovado", "Reprovado", "Aprovado c/ Restrição"] },
+    ],
+    exemplo_resultado: "Lote registrado e disponível para rastreabilidade. Lote do fornecedor vinculado para futuro recall.",
+  },
+  {
+    id: "analises",
+    codigo: "POP-01",
+    titulo: "Análises Laboratoriais",
+    rota: "/analises",
+    descricao: "Registro de laudos laboratoriais de MP e produto acabado.",
+    base_legal: ["IN 04/2007", "IN 17/2017"],
+    passos: [
+      { titulo: "1. Identificar amostra", descricao: "Informe produto, lote, data da coleta e laboratório." },
+      { titulo: "2. Definir parâmetros", descricao: "Selecione parâmetros (umidade, proteína, micotoxinas, salmonella, etc.)." },
+      { titulo: "3. Lançar resultados", descricao: "Insira resultado, unidade e limite de referência." },
+      { titulo: "4. Anexar laudo", descricao: "Upload do laudo PDF do laboratório acreditado." },
+      { titulo: "5. Tratar não conformidade", descricao: "Resultados fora do limite geram RNC automático.", base_legal: "Decreto 12.031/2024" },
+    ],
+    campos_simulacao: [
+      { nome: "produto", label: "Produto/MP", tipo: "text", exemplo: "Farelo de Soja" },
+      { nome: "lote", label: "Lote", tipo: "text", exemplo: "FS-2025-04-002" },
+      { nome: "laboratorio", label: "Laboratório", tipo: "text", exemplo: "LabAnálise Acreditado RBC nº 0123" },
+      { nome: "tipo_analise", label: "Tipo de Análise", tipo: "select", exemplo: "Micotoxinas", opcoes: ["Micotoxinas", "Microbiológica", "Bromatológica", "Físico-Química"] },
+      { nome: "parametro", label: "Parâmetro", tipo: "text", exemplo: "Aflatoxina B1" },
+      { nome: "resultado", label: "Resultado", tipo: "text", exemplo: "8" },
+      { nome: "unidade", label: "Unidade", tipo: "text", exemplo: "ppb" },
+      { nome: "limite_referencia", label: "Limite Referência", tipo: "text", exemplo: "20 ppb (IN 07/1988)" },
+      { nome: "conforme", label: "Conforme?", tipo: "boolean", exemplo: true },
+    ],
+    exemplo_resultado: "Laudo arquivado por 2 anos. Se NC, gera RNC e bloqueia uso do lote.",
+  },
+  {
+    id: "substancias",
+    codigo: "POP-01",
+    titulo: "Substâncias Proibidas",
+    rota: "/substancias",
+    descricao: "Controle de substâncias proibidas conforme IN 17/2017 (ractopamina, nitrofuranos, etc.).",
+    base_legal: ["IN 17/2017", "IN 65/2020"],
+    passos: [
+      { titulo: "1. Cadastrar análise", descricao: "Selecione MP, lote e substância a ser monitorada." },
+      { titulo: "2. Limite máximo", descricao: "Sistema preenche automaticamente o limite legal." },
+      { titulo: "3. Resultado", descricao: "Lance resultado em mg/kg ou 'Não Detectado'." },
+      { titulo: "4. Certificação", descricao: "Resultados 'Não Detectado' alimentam o certificado Ractopamina Free." },
+    ],
+    campos_simulacao: [
+      { nome: "materia_prima", label: "Matéria-Prima", tipo: "text", exemplo: "Pré-mistura para suínos" },
+      { nome: "lote", label: "Lote", tipo: "text", exemplo: "PRE-2025-04-007" },
+      { nome: "substancia", label: "Substância", tipo: "select", exemplo: "Ractopamina", opcoes: ["Ractopamina", "Cloranfenicol", "Nitrofurano", "Olaquindox"] },
+      { nome: "limite_maximo", label: "Limite Máximo", tipo: "text", exemplo: "Não permitido (IN 17/2017)" },
+      { nome: "resultado", label: "Resultado", tipo: "text", exemplo: "Não Detectado" },
+      { nome: "conforme", label: "Conforme?", tipo: "boolean", exemplo: true },
+    ],
+    exemplo_resultado: "Resultado 'Não Detectado' libera lote para certificação Ractopamina Free.",
+  },
+  // ============ POP 02 ============
+  {
+    id: "higiene",
+    codigo: "POP-02",
+    titulo: "Higiene e Sanitização",
+    rota: "/higiene",
+    descricao: "Cronograma de limpeza diária, semanal, mensal e checklists das 7 áreas críticas.",
+    base_legal: ["IN 04/2007", "IN 15/2009"],
+    passos: [
+      { titulo: "1. Definir cronograma", descricao: "Configure áreas, frequência e produto químico utilizado." },
+      { titulo: "2. Registrar execução", descricao: "Marque execução com responsável e horário." },
+      { titulo: "3. Validar concentração", descricao: "Registre concentração do sanitizante (ex: cloro 200 ppm)." },
+      { titulo: "4. Liberar linha (23 itens)", descricao: "Use o checklist de liberação de linha após limpeza pesada." },
+    ],
+    campos_simulacao: [
+      { nome: "area", label: "Área", tipo: "select", exemplo: "Misturador horizontal", opcoes: ["Recepção de grãos", "Misturador horizontal", "Ensaque", "Vestiário", "Área externa"] },
+      { nome: "procedimento", label: "Procedimento", tipo: "text", exemplo: "Limpeza pesada com flushing de farelo de milho" },
+      { nome: "frequencia", label: "Frequência", tipo: "select", exemplo: "Semanal", opcoes: ["Diária", "Semanal", "Quinzenal", "Mensal"] },
+      { nome: "produto_utilizado", label: "Produto Químico", tipo: "text", exemplo: "Quaternário de amônio 200 ppm" },
+      { nome: "concentracao", label: "Concentração", tipo: "text", exemplo: "200 ppm" },
+      { nome: "responsavel", label: "Responsável", tipo: "text", exemplo: "João Silva — Operador" },
+      { nome: "status", label: "Status", tipo: "select", exemplo: "Concluído", opcoes: ["Pendente", "Em andamento", "Concluído"] },
+    ],
+    exemplo_resultado: "Registro arquivado com timestamp para auditoria. Próxima limpeza calculada automaticamente.",
+  },
+  {
+    id: "validacao-limpeza",
+    codigo: "POP-02",
+    titulo: "Validação de Limpeza de Linha",
+    rota: "/validacao-limpeza",
+    descricao: "Validação por swab/ATP/farelo de varredura após limpeza entre lotes (IN 15/2009).",
+    base_legal: ["IN 15/2009 — Carry-over"],
+    passos: [
+      { titulo: "1. Identificar linha", descricao: "Selecione equipamento (misturador, transportador, ensaque)." },
+      { titulo: "2. Método de validação", descricao: "Escolha: Inspeção visual / Swab ATP / Análise química do flushing." },
+      { titulo: "3. Registrar resultado", descricao: "Lance valor de RLU (ATP), presença residual ou aprovação visual." },
+      { titulo: "4. Liberar linha", descricao: "Aprovação libera próximo lote. Reprovação exige nova limpeza." },
+    ],
+    campos_simulacao: [
+      { nome: "equipamento", label: "Equipamento", tipo: "text", exemplo: "Misturador horizontal MH-01" },
+      { nome: "produto_anterior", label: "Produto Anterior", tipo: "text", exemplo: "Ração frangos com Salinomicina" },
+      { nome: "produto_seguinte", label: "Produto Seguinte", tipo: "text", exemplo: "Ração matrizes (sem ionóforos)" },
+      { nome: "metodo", label: "Método", tipo: "select", exemplo: "ATP por bioluminescência", opcoes: ["Visual", "ATP por bioluminescência", "Análise química"] },
+      { nome: "resultado", label: "Resultado (RLU)", tipo: "number", exemplo: 45 },
+      { nome: "limite", label: "Limite Aceito", tipo: "text", exemplo: "≤ 100 RLU" },
+      { nome: "aprovado", label: "Aprovado?", tipo: "boolean", exemplo: true },
+    ],
+    exemplo_resultado: "Linha liberada para produção do próximo lote. Reduz risco de carry-over de medicamentos.",
+  },
+  // ============ POP 03 ============
+  {
+    id: "saude-pessoal",
+    codigo: "POP-03",
+    titulo: "Saúde e Higiene Pessoal",
+    rota: "/saude-pessoal",
+    descricao: "Controle de ASO, exames periódicos, treinamento de higiene e EPIs.",
+    base_legal: ["IN 04/2007", "NR 7 / NR 6"],
+    passos: [
+      { titulo: "1. Cadastrar colaborador", descricao: "Nome, função, setor e data de admissão." },
+      { titulo: "2. Registrar ASO", descricao: "Anexe ASO admissional/periódico/demissional. Sistema alerta vencimento.", base_legal: "NR 7" },
+      { titulo: "3. Treinamento de higiene", descricao: "Registre treinamento anual de BPF/Higiene." },
+      { titulo: "4. EPI fornecido", descricao: "Liste EPIs entregues (touca, máscara, uniforme, botas)." },
+    ],
+    campos_simulacao: [
+      { nome: "colaborador", label: "Colaborador", tipo: "text", exemplo: "Maria Santos" },
+      { nome: "funcao", label: "Função", tipo: "text", exemplo: "Operadora de Mistura" },
+      { nome: "data_aso", label: "Data ASO", tipo: "date", exemplo: "2025-01-15" },
+      { nome: "validade_aso", label: "Validade ASO", tipo: "date", exemplo: "2026-01-15" },
+      { nome: "treinamento_higiene", label: "Última Capacitação BPF", tipo: "date", exemplo: "2024-11-20" },
+      { nome: "epi_entregue", label: "EPIs Entregues", tipo: "text", exemplo: "Touca, máscara N95, uniforme, botas" },
+    ],
+    exemplo_resultado: "Alerta automático 30 dias antes do vencimento do ASO. Bloqueio de acesso à produção se vencido.",
+  },
+  {
+    id: "treinamentos",
+    codigo: "POP-03",
+    titulo: "Treinamentos",
+    rota: "/treinamentos",
+    descricao: "Registro de capacitações da equipe (BPF, segurança, POPs).",
+    base_legal: ["IN 04/2007 Art. 8º"],
+    passos: [
+      { titulo: "1. Definir treinamento", descricao: "Tema, instrutor, carga horária e data." },
+      { titulo: "2. Lista de presença", descricao: "Registre participantes e funções." },
+      { titulo: "3. Avaliação de eficácia", descricao: "Aplique avaliação ao final (nota mínima 70%)." },
+      { titulo: "4. Anexar certificado", descricao: "Upload de lista assinada e certificados." },
+    ],
+    campos_simulacao: [
+      { nome: "tema", label: "Tema", tipo: "text", exemplo: "Boas Práticas de Fabricação — Anual" },
+      { nome: "instrutor", label: "Instrutor", tipo: "text", exemplo: "Dr. Carlos Mendes — RT CRMV/SP 12345" },
+      { nome: "data", label: "Data", tipo: "date", exemplo: "2025-03-10" },
+      { nome: "carga_horaria", label: "Carga Horária (h)", tipo: "number", exemplo: 8 },
+      { nome: "participantes", label: "Nº Participantes", tipo: "number", exemplo: 18 },
+      { nome: "nota_media", label: "Nota Média Avaliação", tipo: "number", exemplo: 87 },
+    ],
+    exemplo_resultado: "Treinamento registrado. Próxima capacitação programada para 12 meses.",
+  },
+  {
+    id: "visitantes",
+    codigo: "POP-03",
+    titulo: "Controle de Visitantes",
+    rota: "/visitantes",
+    descricao: "Registro único de visitantes com declaração de biosseguridade.",
+    base_legal: ["IN 04/2007", "Programa de Biosseguridade"],
+    passos: [
+      { titulo: "1. Identificar visitante", descricao: "Nome, documento, empresa e motivo." },
+      { titulo: "2. Declaração de biosseguridade", descricao: "Visitante assina digitalmente — confirma ausência de contato com outras fábricas/granjas em 48h." },
+      { titulo: "3. Fornecer EPI", descricao: "Touca, máscara, jaleco/uniforme descartável e propé." },
+      { titulo: "4. Registrar áreas visitadas", descricao: "Acompanhante obrigatório em áreas de produção." },
+    ],
+    campos_simulacao: [
+      { nome: "nome_visitante", label: "Nome", tipo: "text", exemplo: "Eng. Pedro Almeida" },
+      { nome: "documento", label: "Documento", tipo: "text", exemplo: "RG 12.345.678-9" },
+      { nome: "empresa", label: "Empresa", tipo: "text", exemplo: "Auditoria MAPA — SFA/SP" },
+      { nome: "motivo", label: "Motivo", tipo: "text", exemplo: "Inspeção fiscal de rotina" },
+      { nome: "areas_visitadas", label: "Áreas Visitadas", tipo: "text", exemplo: "Recepção MP, Mistura, Ensaque, Expedição" },
+      { nome: "epi_fornecido", label: "EPI Fornecido?", tipo: "boolean", exemplo: true },
+      { nome: "orientacao_biosseguridade", label: "Orientação Biosseguridade?", tipo: "boolean", exemplo: true },
+      { nome: "acompanhante", label: "Acompanhante", tipo: "text", exemplo: "RT — Dr. Carlos Mendes" },
+    ],
+    exemplo_resultado: "Declaração de biosseguridade arquivada com assinatura digital e carimbo SHA-256.",
+  },
+  // ============ POP 04 ============
+  {
+    id: "potabilidade-agua",
+    codigo: "POP-04",
+    titulo: "Potabilidade da Água",
+    rota: "/potabilidade-agua",
+    descricao: "Monitoramento de cloro residual, pH, turbidez e coliformes.",
+    base_legal: ["Portaria GM/MS 888/2021", "IN 04/2007"],
+    passos: [
+      { titulo: "1. Coletar amostra", descricao: "Pontos: reservatório, ponto de uso (mistura), ponto distal." },
+      { titulo: "2. Análise de campo", descricao: "Cloro residual (0,2-2,0 mg/L), pH (6,0-9,5), turbidez (≤ 5 NTU)." },
+      { titulo: "3. Análise laboratorial", descricao: "Coliformes totais e E. coli — semestral, laboratório acreditado." },
+      { titulo: "4. Higienização do reservatório", descricao: "Semestral, com cloração e registro fotográfico." },
+    ],
+    campos_simulacao: [
+      { nome: "data", label: "Data Coleta", tipo: "date", exemplo: "2025-04-15" },
+      { nome: "ponto_coleta", label: "Ponto de Coleta", tipo: "select", exemplo: "Reservatório principal", opcoes: ["Reservatório principal", "Ponto de uso — Mistura", "Ponto distal"] },
+      { nome: "cloro_residual", label: "Cloro Residual (mg/L)", tipo: "number", exemplo: 0.8, ajuda: "Faixa: 0,2 a 2,0 mg/L" },
+      { nome: "ph", label: "pH", tipo: "number", exemplo: 7.2, ajuda: "Faixa: 6,0 a 9,5" },
+      { nome: "turbidez", label: "Turbidez (NTU)", tipo: "number", exemplo: 1.5 },
+      { nome: "coliformes_totais", label: "Coliformes Totais", tipo: "text", exemplo: "Ausentes em 100mL" },
+      { nome: "ecoli", label: "E. coli", tipo: "text", exemplo: "Ausentes em 100mL" },
+      { nome: "conforme", label: "Conforme?", tipo: "boolean", exemplo: true },
+    ],
+    exemplo_resultado: "Resultado dentro dos parâmetros. Próxima análise laboratorial agendada para 6 meses.",
+  },
+  // ============ POP 05 ============
+  {
+    id: "pcp",
+    codigo: "POP-05",
+    titulo: "PCP / Sequenciamento de Produção",
+    rota: "/pcp",
+    descricao: "Ordens de produção, fórmula versionada, batidas, flushing e Ficha Digital.",
+    base_legal: ["IN 04/2007", "IN 15/2009 — Carry-over"],
+    passos: [
+      { titulo: "1. Criar ordem de produção", descricao: "Selecione produto, fórmula versionada e quantidade programada." },
+      { titulo: "2. Verificar matriz de sensibilidade", descricao: "Sistema alerta necessidade de flushing entre lotes críticos.", base_legal: "IN 15/2009" },
+      { titulo: "3. Sequenciar produção", descricao: "Defina ordem das batidas (priorize produtos sem medicamento → com medicamento)." },
+      { titulo: "4. Registrar batidas", descricao: "Cada batida com lote MP, peso, hora início/fim, operador." },
+      { titulo: "5. Imprimir Ficha Digital", descricao: "PDF com carimbo SHA-256 anti-fraude e timestamp." },
+    ],
+    campos_simulacao: [
+      { nome: "numero_ordem", label: "Nº Ordem", tipo: "text", exemplo: "OP-2025-0451" },
+      { nome: "produto", label: "Produto", tipo: "text", exemplo: "Ração Bovinos Confinamento 22% PB" },
+      { nome: "formula", label: "Fórmula (versão)", tipo: "text", exemplo: "FORM-BOV-CONF-v2.3" },
+      { nome: "quantidade_kg", label: "Quantidade (kg)", tipo: "number", exemplo: 5000 },
+      { nome: "numero_batidas", label: "Nº Batidas", tipo: "number", exemplo: 5 },
+      { nome: "peso_por_batida", label: "Peso/Batida (kg)", tipo: "number", exemplo: 1000 },
+      { nome: "necessita_flushing", label: "Necessita Flushing?", tipo: "boolean", exemplo: false },
+      { nome: "data_programada", label: "Data Programada", tipo: "date", exemplo: "2025-04-16" },
+    ],
+    exemplo_resultado: "OP criada, Ficha Digital com carimbo gerada, lotes vinculados para rastreabilidade.",
+  },
+  {
+    id: "producao",
+    codigo: "POP-05",
+    titulo: "Registro de Produção",
+    rota: "/producao",
+    descricao: "Lançamento de produção diária com contraprova e flushing.",
+    base_legal: ["IN 04/2007", "IN 15/2009"],
+    passos: [
+      { titulo: "1. Identificar lote produzido", descricao: "Produto, lote, quantidade e operador." },
+      { titulo: "2. Tempo de mistura", descricao: "Registre tempo (mín. validado por homogeneidade)." },
+      { titulo: "3. Reter contraprova", descricao: "300g por lote, validade do produto + 30 dias.", base_legal: "IN 04/2007 Art. 25" },
+      { titulo: "4. Flushing (se aplicável)", descricao: "Registre material e volume usados." },
+    ],
+    campos_simulacao: [
+      { nome: "data", label: "Data", tipo: "date", exemplo: "2025-04-16" },
+      { nome: "produto", label: "Produto", tipo: "text", exemplo: "Ração Bovinos Conf. 22% PB" },
+      { nome: "lote", label: "Lote", tipo: "text", exemplo: "BOV-CONF-20250416-01" },
+      { nome: "quantidade", label: "Quantidade", tipo: "text", exemplo: "5000 kg" },
+      { nome: "tempo_mistura", label: "Tempo Mistura (min)", tipo: "text", exemplo: "8" },
+      { nome: "operador", label: "Operador", tipo: "text", exemplo: "João Silva" },
+      { nome: "contraprova_retida", label: "Contraprova Retida?", tipo: "boolean", exemplo: true },
+      { nome: "contraprova_validade", label: "Validade Contraprova", tipo: "date", exemplo: "2025-11-16" },
+    ],
+    exemplo_resultado: "Lote produzido, contraprova arquivada por 7 meses (validade + 30d).",
+  },
+  {
+    id: "produtos",
+    codigo: "POP-05",
+    titulo: "Produtos / Rótulos / RTPI",
+    rota: "/produtos",
+    descricao: "Cadastro de produtos com Ficha Técnica, Rótulo e RTPI (18 campos).",
+    base_legal: ["IN 22/2009", "IN 30/2009 — Rotulagem"],
+    passos: [
+      { titulo: "1. Cadastro básico", descricao: "Nome, marca, classificação, espécie alvo, registro MAPA." },
+      { titulo: "2. Níveis de garantia", descricao: "Lance níveis com unidades (auto-conversão g↔mg, exceções UFC/FTU/UI).", base_legal: "IN 30/2009" },
+      { titulo: "3. Editor de Rótulo", descricao: "Layout conforme IN 22/2009. Sistema avisa para inserir selo MAPA na sacaria, não no rótulo." },
+      { titulo: "4. RTPI (18 campos)", descricao: "Para produtos com aditivos restritos (ionóforos, ureia)." },
+      { titulo: "5. Exportar", descricao: "PDF com carimbo, ZPL para Zebra ou Excel para layout." },
+    ],
+    campos_simulacao: [
+      { nome: "nome", label: "Nome Comercial", tipo: "text", exemplo: "BoviGold Confinamento 22" },
+      { nome: "marca", label: "Marca", tipo: "text", exemplo: "BPF_Consult" },
+      { nome: "classificacao", label: "Classificação", tipo: "select", exemplo: "Ração Completa", opcoes: ["Ração Completa", "Concentrado", "Suplemento Mineral", "Núcleo", "Premix"] },
+      { nome: "especie_alvo", label: "Espécie Alvo", tipo: "text", exemplo: "Bovinos de corte em terminação" },
+      { nome: "registro_mapa", label: "Registro MAPA", tipo: "text", exemplo: "SP-098765-4" },
+      { nome: "validade_meses", label: "Validade (meses)", tipo: "number", exemplo: 6 },
+    ],
+    exemplo_resultado: "Produto cadastrado. Rótulo e RTPI gerados em PDF com carimbo SHA-256.",
+  },
+  {
+    id: "formulas",
+    codigo: "POP-05",
+    titulo: "Fórmulas Versionadas",
+    rota: "/formulas",
+    descricao: "Cadastro de fórmulas com versionamento, ingredientes e percentuais.",
+    base_legal: ["IN 04/2007 Art. 26"],
+    passos: [
+      { titulo: "1. Vincular ao produto", descricao: "Selecione produto e crie nova versão (v1.0, v2.0)." },
+      { titulo: "2. Adicionar ingredientes", descricao: "MP, percentual, ordem de inclusão e observações." },
+      { titulo: "3. Validar 100%", descricao: "Sistema verifica soma de percentuais." },
+      { titulo: "4. Aprovar e arquivar", descricao: "Versão aprovada bloqueia edição (apenas nova versão é permitida)." },
+    ],
+    campos_simulacao: [
+      { nome: "codigo", label: "Código Fórmula", tipo: "text", exemplo: "FORM-BOV-CONF" },
+      { nome: "produto_nome", label: "Produto", tipo: "text", exemplo: "BoviGold Confinamento 22" },
+      { nome: "versao", label: "Versão", tipo: "text", exemplo: "v2.3" },
+      { nome: "data_versao", label: "Data Versão", tipo: "date", exemplo: "2025-04-01" },
+      { nome: "status", label: "Status", tipo: "select", exemplo: "Ativa", opcoes: ["Rascunho", "Ativa", "Obsoleta"] },
+      { nome: "observacoes", label: "Observações", tipo: "textarea", exemplo: "Ajuste de NDT após análise bromatológica do milho safra 2025." },
+    ],
+    exemplo_resultado: "Fórmula v2.3 ativa. Versão anterior (v2.2) marcada como Obsoleta automaticamente.",
+  },
+  {
+    id: "armazenamento-transporte",
+    codigo: "POP-05",
+    titulo: "Armazenamento e Transporte",
+    rota: "/armazenamento-transporte",
+    descricao: "Checklists de armazéns, veículos e prevenção de EEB.",
+    base_legal: ["IN 04/2007", "IN 08/2004 — Prevenção EEB"],
+    passos: [
+      { titulo: "1. Inspeção do armazém", descricao: "Temperatura, umidade, pragas, paletização e PEPS." },
+      { titulo: "2. Checklist do veículo", descricao: "Limpeza, ausência de odores, lacre, certificado de transporte." },
+      { titulo: "3. Declaração EEB", descricao: "Veículo nunca transportou farinha de origem animal proibida.", base_legal: "IN 08/2004" },
+      { titulo: "4. Registro de saída", descricao: "Lote, cliente, NF e veículo." },
+    ],
+    campos_simulacao: [
+      { nome: "data", label: "Data", tipo: "date", exemplo: "2025-04-17" },
+      { nome: "tipo", label: "Tipo de Inspeção", tipo: "select", exemplo: "Veículo de transporte", opcoes: ["Armazém de MP", "Armazém produto acabado", "Veículo de transporte"] },
+      { nome: "identificacao", label: "Identificação", tipo: "text", exemplo: "Caminhão Placa ABC-1D23" },
+      { nome: "temperatura", label: "Temperatura (°C)", tipo: "number", exemplo: 25 },
+      { nome: "umidade", label: "Umidade (%)", tipo: "number", exemplo: 60 },
+      { nome: "limpeza_ok", label: "Limpeza OK?", tipo: "boolean", exemplo: true },
+      { nome: "declaracao_eeb", label: "Declaração EEB OK?", tipo: "boolean", exemplo: true },
+    ],
+    exemplo_resultado: "Veículo liberado para carga. Declaração EEB arquivada por 2 anos.",
+  },
+  // ============ POP 06 ============
+  {
+    id: "manutencao",
+    codigo: "POP-06",
+    titulo: "Manutenção e Calibração",
+    rota: "/manutencao",
+    descricao: "Manutenção preventiva, corretiva e calibração de instrumentos.",
+    base_legal: ["IN 04/2007", "IN 15/2009"],
+    passos: [
+      { titulo: "1. Cadastrar equipamento", descricao: "Código, descrição, localização e criticidade." },
+      { titulo: "2. Plano de manutenção preventiva", descricao: "Defina frequência (semanal/mensal/anual)." },
+      { titulo: "3. Calibração", descricao: "Balanças e termômetros — anual com certificado RBC." },
+      { titulo: "4. Registrar OS", descricao: "Tipo (preventiva/corretiva), peças, tempo e responsável." },
+    ],
+    campos_simulacao: [
+      { nome: "equipamento", label: "Equipamento", tipo: "text", exemplo: "Misturador Horizontal MH-01" },
+      { nome: "codigo_equipamento", label: "Código", tipo: "text", exemplo: "EQ-001" },
+      { nome: "tipo", label: "Tipo", tipo: "select", exemplo: "Preventiva", opcoes: ["Preventiva", "Corretiva", "Calibração"] },
+      { nome: "data_programada", label: "Data Programada", tipo: "date", exemplo: "2025-04-20" },
+      { nome: "data_execucao", label: "Data Execução", tipo: "date", exemplo: "2025-04-20" },
+      { nome: "descricao", label: "Descrição do Serviço", tipo: "textarea", exemplo: "Lubrificação de mancais, troca de correias e verificação de pás." },
+      { nome: "responsavel", label: "Responsável", tipo: "text", exemplo: "Equipe Manutenção Interna" },
+      { nome: "proxima_manutencao", label: "Próxima", tipo: "date", exemplo: "2025-07-20" },
+    ],
+    exemplo_resultado: "OS registrada. Próxima preventiva agendada (90 dias). Histórico do equipamento atualizado.",
+  },
+  // ============ POP 07 ============
+  {
+    id: "pragas",
+    codigo: "POP-07",
+    titulo: "Controle Integrado de Pragas",
+    rota: "/pragas",
+    descricao: "MIP — monitoramento, aplicação, mapa de iscas e expurgo.",
+    base_legal: ["IN 04/2007", "RDC 52/2009"],
+    passos: [
+      { titulo: "1. Cadastrar mapa de iscas", descricao: "Numere e mapeie pontos no croqui." },
+      { titulo: "2. Monitoramento semanal", descricao: "Registre consumo, tipo de praga e ações." },
+      { titulo: "3. Aplicação por empresa especializada", descricao: "Anexar contrato, alvará e laudo de aplicação." },
+      { titulo: "4. Expurgo de matéria-prima", descricao: "Fosfina/PH3 — checklist de segurança e tempo de exposição." },
+    ],
+    campos_simulacao: [
+      { nome: "data", label: "Data", tipo: "date", exemplo: "2025-04-12" },
+      { nome: "tipo_praga", label: "Praga Monitorada", tipo: "select", exemplo: "Roedor", opcoes: ["Roedor", "Inseto rastejante", "Inseto voador", "Ave"] },
+      { nome: "local", label: "Local / Ponto Isca", tipo: "text", exemplo: "Ponto 12 — Doca de recepção" },
+      { nome: "acao", label: "Ação Tomada", tipo: "text", exemplo: "Reposição de isca rodenticida e vedação de fresta" },
+      { nome: "responsavel", label: "Responsável", tipo: "text", exemplo: "DedetSP — Empresa especializada" },
+    ],
+    exemplo_resultado: "Monitoramento registrado. Tendência de pragas atualizada para análise.",
+  },
+  // ============ POP 08 ============
+  {
+    id: "residuos",
+    codigo: "POP-08",
+    titulo: "Resíduos e Efluentes",
+    rota: "/residuos",
+    descricao: "PGRS — gestão de resíduos sólidos e efluentes (CONAMA 430/2011).",
+    base_legal: ["CONAMA 430/2011", "Decreto 12.031/2024"],
+    passos: [
+      { titulo: "1. Classificar resíduo", descricao: "ABNT NBR 10004 — Classe I (perigoso), II-A, II-B." },
+      { titulo: "2. Segregar e armazenar", descricao: "Bombonas/contêineres identificados, área coberta." },
+      { titulo: "3. Empresa coletora licenciada", descricao: "Anexar licença ambiental e MTR (Manifesto)." },
+      { titulo: "4. Destino final", descricao: "Aterro, coprocessamento ou reciclagem — comprovado por certificado." },
+    ],
+    campos_simulacao: [
+      { nome: "tipo_residuo", label: "Tipo de Resíduo", tipo: "text", exemplo: "Embalagens contaminadas com medicamento veterinário" },
+      { nome: "classificacao", label: "Classificação", tipo: "select", exemplo: "Classe I (Perigoso)", opcoes: ["Classe I (Perigoso)", "Classe II-A (Não inerte)", "Classe II-B (Inerte)"] },
+      { nome: "quantidade", label: "Quantidade", tipo: "text", exemplo: "85" },
+      { nome: "unidade", label: "Unidade", tipo: "select", exemplo: "kg", opcoes: ["kg", "L", "m³", "un"] },
+      { nome: "data_coleta", label: "Data Coleta", tipo: "date", exemplo: "2025-04-15" },
+      { nome: "empresa_coletora", label: "Empresa Coletora", tipo: "text", exemplo: "EcoLog Ambiental Ltda" },
+      { nome: "licenca_ambiental", label: "Licença Ambiental", tipo: "text", exemplo: "CETESB nº 45.123/2024" },
+      { nome: "manifesto_numero", label: "MTR Nº", tipo: "text", exemplo: "MTR-2025-0123456" },
+      { nome: "destino_final", label: "Destino Final", tipo: "text", exemplo: "Coprocessamento — Holcim/Cantagalo" },
+    ],
+    exemplo_resultado: "Resíduo descartado conforme PGRS. MTR arquivado para fiscalização ambiental.",
+  },
+  // ============ POP 09 ============
+  {
+    id: "rastreabilidade",
+    codigo: "POP-09",
+    titulo: "Rastreabilidade",
+    rota: "/rastreabilidade",
+    descricao: "Árvore visual de rastreio MP → Lote → Cliente.",
+    base_legal: ["IN 04/2007 Art. 30", "IN 34/2008 — Espécies"],
+    passos: [
+      { titulo: "1. Buscar lote", descricao: "Informe lote do produto acabado." },
+      { titulo: "2. Visualizar árvore", descricao: "Sistema mostra MPs (com lote/fornecedor) e clientes que receberam." },
+      { titulo: "3. Alertas de espécie", descricao: "Sistema bloqueia uso cruzado conforme IN 34/2008 (ex: ruminantes ↔ não-ruminantes)." },
+      { titulo: "4. Exportar para recall", descricao: "Lista de clientes/lotes pronta para acionamento." },
+    ],
+    campos_simulacao: [
+      { nome: "lote_busca", label: "Lote do Produto", tipo: "text", exemplo: "BOV-CONF-20250416-01" },
+      { nome: "mp_principal", label: "MP Principal Encontrada", tipo: "text", exemplo: "Milho lote MIL-2025-04-0123 (Nutrigrãos)" },
+      { nome: "clientes_atingidos", label: "Clientes Atingidos", tipo: "number", exemplo: 12 },
+      { nome: "quantidade_distribuida_kg", label: "Qtd Distribuída (kg)", tipo: "number", exemplo: 4500 },
+    ],
+    exemplo_resultado: "Árvore visual gerada. 12 clientes mapeados. Lista exportável para recall em 1 clique.",
+  },
+  {
+    id: "simulacao-recall",
+    codigo: "POP-09",
+    titulo: "Simulação de Recall",
+    rota: "/simulacao-recall",
+    descricao: "Exercício anual obrigatório de recall (10 etapas, com cronômetro).",
+    base_legal: ["Decreto 12.031/2024 Art. 38", "IN 04/2007"],
+    passos: [
+      { titulo: "1. Iniciar simulação", descricao: "Defina lote-alvo (real ou fictício)." },
+      { titulo: "2. Cronômetro inicia", descricao: "Sistema mede tempo de cada etapa para avaliar eficiência." },
+      { titulo: "3. 10 etapas", descricao: "Identificação → Comunicação → Coleta → Segregação → Destino → Relatório." },
+      { titulo: "4. Gera RNC automática", descricao: "Toda simulação gera RNC para análise de gaps." },
+    ],
+    campos_simulacao: [
+      { nome: "lote_alvo", label: "Lote Alvo", tipo: "text", exemplo: "BOV-CONF-20250416-01" },
+      { nome: "motivo", label: "Motivo da Simulação", tipo: "select", exemplo: "Exercício anual obrigatório", opcoes: ["Exercício anual obrigatório", "Reclamação real de cliente", "Detecção interna de NC"] },
+      { nome: "data_inicio", label: "Data/Hora Início", tipo: "date", exemplo: "2025-04-17" },
+      { nome: "tempo_total_horas", label: "Tempo Total (h)", tipo: "number", exemplo: 4 },
+      { nome: "percentual_recolhido", label: "% Recolhido", tipo: "number", exemplo: 95 },
+    ],
+    exemplo_resultado: "Simulação concluída em 4h, 95% do lote rastreado. RNC gerada para análise de gap.",
+  },
+  {
+    id: "nao-conformidades",
+    codigo: "POP-09",
+    titulo: "Não Conformidades",
+    rota: "/nao-conformidades",
+    descricao: "Registro e tratamento de RNCs com plano de ação.",
+    base_legal: ["IN 04/2007 Art. 32", "Decreto 12.031/2024"],
+    passos: [
+      { titulo: "1. Identificar NC", descricao: "Setor, descrição, evidência fotográfica." },
+      { titulo: "2. Análise de causa", descricao: "Use 5 Porquês ou Ishikawa." },
+      { titulo: "3. Ação corretiva", descricao: "Defina ação, responsável e prazo." },
+      { titulo: "4. Verificar eficácia", descricao: "Após prazo, validar se NC foi eliminada." },
+    ],
+    campos_simulacao: [
+      { nome: "data", label: "Data Detecção", tipo: "date", exemplo: "2025-04-14" },
+      { nome: "setor", label: "Setor", tipo: "text", exemplo: "Mistura" },
+      { nome: "descricao", label: "Descrição", tipo: "textarea", exemplo: "Tempo de mistura abaixo do validado (5 min em vez de 8 min mínimo)." },
+      { nome: "causa", label: "Causa Raiz", tipo: "textarea", exemplo: "Operador novo sem treinamento específico no procedimento de mistura." },
+      { nome: "acao_corretiva", label: "Ação Corretiva", tipo: "textarea", exemplo: "Treinar operador, revisar IT-05 e implementar timer visual no painel." },
+      { nome: "responsavel", label: "Responsável", tipo: "text", exemplo: "Supervisor de Produção" },
+      { nome: "prazo", label: "Prazo", tipo: "date", exemplo: "2025-04-30" },
+      { nome: "status", label: "Status", tipo: "select", exemplo: "Em andamento", opcoes: ["Aberta", "Em andamento", "Fechada"] },
+    ],
+    exemplo_resultado: "RNC registrada com plano de ação. Alerta automático no prazo de verificação.",
+  },
+  // ============ POP 10 ============
+  {
+    id: "auditoria",
+    codigo: "POP-10",
+    titulo: "Auditoria BPF",
+    rota: "/auditoria",
+    descricao: "Checklist baseado em Decreto 12.031/2024 e IN 04/2007.",
+    base_legal: ["Decreto 12.031/2024", "IN 04/2007"],
+    passos: [
+      { titulo: "1. Selecionar checklist", descricao: "Auditoria interna ou pré-fiscalização MAPA." },
+      { titulo: "2. Avaliar item por item", descricao: "Conforme/Não Conforme/Não Aplicável + observação." },
+      { titulo: "3. % Conformidade", descricao: "Sistema calcula automaticamente." },
+      { titulo: "4. Gerar plano de ação", descricao: "NCs viram RNCs com prazos." },
+    ],
+    campos_simulacao: [
+      { nome: "data", label: "Data Auditoria", tipo: "date", exemplo: "2025-04-10" },
+      { nome: "auditor", label: "Auditor", tipo: "text", exemplo: "Dr. Carlos Mendes — RT" },
+      { nome: "tipo", label: "Tipo", tipo: "select", exemplo: "Interna", opcoes: ["Interna", "Pré-fiscalização", "Fiscalização MAPA"] },
+      { nome: "itens_avaliados", label: "Nº Itens", tipo: "number", exemplo: 87 },
+      { nome: "itens_conformes", label: "Nº Conformes", tipo: "number", exemplo: 79 },
+      { nome: "percentual_conformidade", label: "% Conformidade", tipo: "number", exemplo: 91 },
+    ],
+    exemplo_resultado: "Auditoria 91% conforme. 8 NCs geradas com plano de ação automático.",
+  },
+  {
+    id: "matriz-risco",
+    codigo: "POP-10",
+    titulo: "Matriz de Risco / APPCC",
+    rota: "/matriz-risco",
+    descricao: "HACCP — ~35 perigos em 13 etapas, Probabilidade × Severidade.",
+    base_legal: ["Codex Alimentarius — HACCP", "IN 04/2007"],
+    passos: [
+      { titulo: "1. Identificar etapa do processo", descricao: "Recepção, mistura, ensaque, expedição..." },
+      { titulo: "2. Listar perigos", descricao: "Físico (corpo estranho), Químico (micotoxina, medicamento), Biológico (Salmonella)." },
+      { titulo: "3. Avaliar P × S", descricao: "Probabilidade (1-5) × Severidade (1-5) = nível de risco." },
+      { titulo: "4. Definir medidas de controle", descricao: "PCC, PPRO ou PPR conforme criticidade." },
+    ],
+    campos_simulacao: [
+      { nome: "etapa_processo", label: "Etapa", tipo: "text", exemplo: "Recepção de milho" },
+      { nome: "tipo_perigo", label: "Tipo Perigo", tipo: "select", exemplo: "Químico", opcoes: ["Físico", "Químico", "Biológico"] },
+      { nome: "perigo_identificado", label: "Perigo", tipo: "text", exemplo: "Aflatoxina B1 acima de 20 ppb" },
+      { nome: "probabilidade", label: "Probabilidade (1-5)", tipo: "select", exemplo: "3", opcoes: ["1", "2", "3", "4", "5"] },
+      { nome: "severidade", label: "Severidade (1-5)", tipo: "select", exemplo: "5", opcoes: ["1", "2", "3", "4", "5"] },
+      { nome: "nivel_risco", label: "Nível de Risco", tipo: "select", exemplo: "Alto (PCC)", opcoes: ["Baixo (PPR)", "Médio (PPRO)", "Alto (PCC)"] },
+      { nome: "medidas_controle", label: "Medidas de Controle", tipo: "textarea", exemplo: "Análise obrigatória de aflatoxinas em 100% dos lotes; rejeitar acima de 20 ppb." },
+    ],
+    exemplo_resultado: "Risco classificado como PCC. Sistema integra ao plano APPCC e exige monitoramento.",
+  },
+];
+
+export const ORIENTACOES_POR_POP = ORIENTACOES.reduce((acc, m) => {
+  if (!acc[m.codigo]) acc[m.codigo] = [];
+  acc[m.codigo].push(m);
+  return acc;
+}, {} as Record<string, ModuloOrientacao[]>);
+
+export function getOrientacaoByRota(rota: string): ModuloOrientacao | undefined {
+  return ORIENTACOES.find((o) => o.rota === rota);
+}
