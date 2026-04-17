@@ -83,6 +83,42 @@ export default function ConsultaSipeagro() {
         orientacaoModuloId="consulta-sipeagro"
       />
 
+      {/* Banner: Lista Oficial MAPA (sempre atualizada) */}
+      <Card className="border-primary/40 bg-primary/5">
+        <CardContent className="pt-4 pb-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <div className="flex-1">
+            <p className="font-semibold text-sm flex items-center gap-2">
+              🏛️ Lista Oficial de Estabelecimentos Registrados — MAPA/SIPEAGRO
+            </p>
+            <p className="text-xs text-muted-foreground mt-1">
+              A planilha oficial é atualizada semanalmente pelo MAPA. Consulte sempre a versão mais recente diretamente no portal gov.br para validar fornecedores por CNPJ, Razão Social ou nº de registro.
+            </p>
+          </div>
+          <div className="flex flex-col sm:flex-row gap-2 shrink-0">
+            <a
+              href="https://www.gov.br/agricultura/pt-br/assuntos/insumos-agropecuarios/insumos-pecuarios/alimentacao-animal/arquivos-alimentacao-animal/estabelecimentos-registrados"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Button size="sm" className="gap-2 w-full">
+                <ExternalLink className="w-4 h-4" />
+                Lista Oficial (XLSX)
+              </Button>
+            </a>
+            <a
+              href="https://sistemasweb.agricultura.gov.br/pages/SIPEAGRO.html"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Button size="sm" variant="outline" className="gap-2 w-full">
+                <Search className="w-4 h-4" />
+                Consulta Online
+              </Button>
+            </a>
+          </div>
+        </CardContent>
+      </Card>
+
       <div className="grid gap-4 md:grid-cols-3">
         <Card>
           <CardContent className="pt-4 text-center">
