@@ -42,10 +42,12 @@ const NIVEIS: NivelInfo[] = [
   {
     key: "entrada",
     label: "Entrada",
-    porte: "Pequeno porte",
+    porte: "Pequeno porte — modo híbrido",
     features: [
-      "Essencial MAPA (IN 04/2007)",
-      "Arquivamento digital de registros físicos",
+      "Gestão 100% digital de Documentos & POPs",
+      "Rastreabilidade, Recall e Matriz de Risco (Decreto 12.031/2024)",
+      "Saúde do Pessoal / ASO (NR-07)",
+      "Operacionais em planilha física + arquivamento PDF",
       "Até 1 empresa",
     ],
     plans: [
@@ -57,12 +59,13 @@ const NIVEIS: NivelInfo[] = [
   {
     key: "intermediario",
     label: "Intermediário",
-    porte: "Médio porte",
+    porte: "Médio porte — 100% digital",
     destaque: true,
     features: [
-      "Modelo híbrido (físico + digital)",
-      "PCP, fórmulas versionadas, planilhas POP",
-      "Auditoria interna e até 3 empresas",
+      "Tudo do Entrada + lançamento digital operacional",
+      "PCP, fórmulas versionadas, planilhas POP digitais",
+      "Recebimento, Produção, Higiene, Pragas, Resíduos",
+      "Até 3 empresas",
     ],
     plans: [
       { key: "mensal", label: "Mensal", priceFull: 890, priceTotal: 890, desc: "30 dias" },
@@ -73,11 +76,12 @@ const NIVEIS: NivelInfo[] = [
   {
     key: "avancado",
     label: "Avançado",
-    porte: "Grande porte",
+    porte: "Grande porte — multi-unidade",
     features: [
-      "100% digital, multi-empresa",
-      "IA, integração SIPEAGRO, todas as features",
-      "Empresas ilimitadas",
+      "Tudo do Intermediário + IA + Integrações",
+      "Análise de Tendências (IA), Consulta SIPEAGRO",
+      "Geração automática do Manual BPF",
+      "Até 10 empresas",
     ],
     plans: [
       { key: "mensal", label: "Mensal", priceFull: 1490, priceTotal: 1490, desc: "30 dias" },
@@ -272,7 +276,7 @@ export default function LicenseGate({ children, product = "feedbpf" }: LicenseGa
             Pagamento seguro via Stripe. Cancele a qualquer momento.
           </p>
           <p className="text-xs text-muted-foreground">
-            Inclui até <strong>10 empresas</strong>. Acima disso, acréscimo de 25% no valor do plano.
+            Limites por plano: Entrada <strong>1</strong> · Intermediário <strong>3</strong> · Avançado <strong>até 10</strong> empresas.
           </p>
           <div className="flex items-center justify-center gap-4 pt-2">
             <a

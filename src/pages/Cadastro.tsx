@@ -10,6 +10,8 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useEmpresa } from "@/hooks/useEmpresa";
+import { useLicense } from "@/hooks/useLicense";
+import { resolveTier, TIER_MAX_EMPRESAS, TIER_LABEL } from "@/config/tiers";
 import { toast } from "sonner";
 
 const TIPOS = ["Ração farelada", "Ração peletizada", "Núcleo", "Premix", "Suplemento mineral", "Sal mineral"];
@@ -29,6 +31,7 @@ const emptyForm: EmpresaForm = { nome: "", cnpj: "", endereco: "", responsavel_t
 export default function Cadastro() {
   const { user } = useAuth();
   const { empresas, recarregar, setEmpresaAtiva } = useEmpresa();
+  const { license } = useLicense();
   const [form, setForm] = useState<EmpresaForm>(emptyForm);
   const [editId, setEditId] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
@@ -43,12 +46,14 @@ export default function Cadastro() {
     }));
   };
 
-  const MAX_EMPRESAS = 10;
+  const tier = resolveTier(license?.plano);
+  const MAX_EMPRESAS = TIER_MAX_EMPRESAS[tier];
+  const tierLabel = TIER_LABEL[tier];
   const limitReached = (empresas?.length || 0) >= MAX_EMPRESAS;
 
   const openNew = () => {
     if (limitReached) {
-      toast.error(`Limite de ${MAX_EMPRESAS} empresas atingido. Entre em contato para contratar o plano expandido (+25%).`);
+      toast.error(`Limite de ${MAX_EMPRESAS} empresa(s) do plano ${tierLabel} atingido. Faça upgrade para cadastrar mais.`);
       return;
     }
     setForm(emptyForm); setEditId(null); setOpen(true);
@@ -114,13 +119,15 @@ export default function Cadastro() {
         <div className="mb-4 p-3 rounded-lg bg-warning/10 border border-warning/30 flex items-center gap-3 text-sm">
           <AlertTriangle className="w-5 h-5 text-warning shrink-0" />
           <span>
-            Limite de <strong>{MAX_EMPRESAS} empresas</strong> atingido. Para cadastrar mais, contrate o plano expandido (<strong>+25%</strong> sobre o valor atual).
+            Limite de <strong>{MAX_EMPRESAS} empresa(s)</strong> do plano <strong>{tierLabel}</strong> atingido. Faça upgrade para cadastrar mais unidades.
           </span>
         </div>
       )}
 
       <div className="flex items-center justify-between mb-4">
-        <span className="text-sm text-muted-foreground">{empresas?.length || 0} / {MAX_EMPRESAS} empresas</span>
+        <span className="text-sm text-muted-foreground">
+          {empresas?.length || 0} / {MAX_EMPRESAS} empresas — plano {tierLabel}
+        </span>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
             <Button onClick={openNew} disabled={limitReached}><Plus className="w-4 h-4 mr-1" /> Nova Empresa</Button>

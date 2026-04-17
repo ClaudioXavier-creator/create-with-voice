@@ -1,0 +1,83 @@
+import { ReactNode } from "react";
+import { useLocation } from "react-router-dom";
+import { AlertTriangle, FileDown, Lock } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { useLicense } from "@/hooks/useLicense";
+import { checkAccess, resolveTier, TIER_LABEL } from "@/config/tiers";
+import { Link } from "react-router-dom";
+
+interface TierGateProps {
+  children: ReactNode;
+}
+
+/**
+ * Bloqueio funcional por nível.
+ * - Avançado bloqueado: card "Disponível no Avançado".
+ * - Entrada em módulo operacional: aviso de modo híbrido (mantém o conteúdo,
+ *   mas exibe banner com link para Documentos BPF para arquivamento físico).
+ */
+export default function TierGate({ children }: TierGateProps) {
+  const { license } = useLicense();
+  const location = useLocation();
+  const tier = resolveTier(license?.plano);
+  const access = checkAccess(tier, location.pathname);
+
+  if (!access.allowed) {
+    return (
+      <div className="flex items-center justify-center min-h-[50vh] p-4">
+        <Card className="max-w-md w-full">
+          <CardHeader>
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                <Lock className="w-5 h-5 text-primary" />
+              </div>
+              <div>
+                <CardTitle className="text-lg">Recurso bloqueado</CardTitle>
+                <Badge variant="outline" className="mt-1 text-xs">
+                  Plano atual: {TIER_LABEL[tier]}
+                </Badge>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <p className="text-sm text-muted-foreground">{access.reason}</p>
+            <Button asChild className="w-full">
+              <Link to="/dashboard">Voltar ao Dashboard</Link>
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  if (access.hybrid) {
+    return (
+      <>
+        <div className="mb-4 p-4 rounded-lg bg-warning/10 border border-warning/30 flex items-start gap-3">
+          <AlertTriangle className="w-5 h-5 text-warning shrink-0 mt-0.5" />
+          <div className="flex-1 text-sm space-y-2">
+            <p className="font-semibold">Modo Híbrido — Plano Entrada</p>
+            <p className="text-muted-foreground">{access.reason}</p>
+            <div className="flex flex-wrap gap-2 pt-1">
+              <Button asChild size="sm" variant="outline">
+                <Link to="/modelos">
+                  <FileDown className="w-4 h-4 mr-1" /> Baixar planilha em branco
+                </Link>
+              </Button>
+              <Button asChild size="sm" variant="outline">
+                <Link to="/documentos-bpf">Arquivar PDF preenchido</Link>
+              </Button>
+            </div>
+          </div>
+        </div>
+        {/* No modo híbrido o conteúdo segue visível como referência (read-only ideal),
+            mas inserções continuarão funcionando — o aviso orienta o fluxo correto. */}
+        {children}
+      </>
+    );
+  }
+
+  return <>{children}</>;
+}

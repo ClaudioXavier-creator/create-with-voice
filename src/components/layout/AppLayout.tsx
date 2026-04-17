@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import EmpresaSelector from "@/components/EmpresaSelector";
 import LicenseGate from "@/components/LicenseGate";
+import TierGate from "@/components/TierGate";
 import { supabase } from "@/integrations/supabase/client";
 import logoImg from "@/assets/logo-feed-bpf.png";
 
@@ -340,7 +341,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       <main className="flex-1 lg:ml-0 mt-14 lg:mt-0 overflow-auto">
         <div className="p-4 md:p-6 lg:p-8 max-w-7xl mx-auto">
           <LicenseGate>
-            {children}
+            <TierGate>{children}</TierGate>
           </LicenseGate>
         </div>
       </main>
