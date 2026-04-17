@@ -77,7 +77,7 @@ const NAV_ENTRIES: NavEntry[] = [
   },
   { path: "/potabilidade-agua", label: "POP 04 — Potabilidade da Água", icon: Droplets },
   {
-    label: "POP 05 — Contaminação Cruzada",
+    label: "POP 05 — Controle da Produção e Prevenção da Contaminação Cruzada",
     icon: ShieldAlert,
     items: [
       { path: "/producao", label: "Produção", icon: Factory },
