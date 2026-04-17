@@ -51,9 +51,12 @@ export default function FeedBPFPage() {
               <h1 className="text-4xl sm:text-5xl font-bold font-display text-foreground mb-4 tracking-tight">
                 Feed_<span className="text-primary">BPF</span>
               </h1>
-              <p className="text-lg text-muted-foreground max-w-xl leading-relaxed mb-6">
+              <p className="text-lg text-muted-foreground max-w-xl leading-relaxed mb-3">
                 Plataforma completa de Boas Práticas de Fabricação para nutrição animal. 
                 Em conformidade com <strong className="text-foreground">IN 04/2007</strong> e <strong className="text-foreground">Decreto 12.031/2024</strong>.
+              </p>
+              <p className="text-sm text-muted-foreground max-w-xl leading-relaxed mb-6">
+                <strong className="text-foreground">Feed_BPF</strong> é o programa de gestão desenvolvido pela <strong className="text-foreground">BPF_Consult</strong> — consultoria especializada em Boas Práticas de Fabricação para a indústria de nutrição animal.
               </p>
               <div className="flex flex-col sm:flex-row gap-3">
                 <Link to={signupLink}>
