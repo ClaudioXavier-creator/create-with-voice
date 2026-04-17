@@ -8,6 +8,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
 import { useEmpresa } from "@/hooks/useEmpresa";
+import { useAuth } from "@/hooks/useAuth";
+import { gerarCarimboSync, carimboHTML } from "@/utils/carimboDocumento";
 import { toast } from "sonner";
 
 const REGRAS_VISITA = [
@@ -35,6 +37,7 @@ const DECLARACOES_BIOSSEGURIDADE = [
 
 export default function DeclaracaoVisitante() {
   const { empresaAtiva } = useEmpresa();
+  const { user } = useAuth();
   const [form, setForm] = useState({
     nome: "", empresa_origem: "", documento: "", cargo: "", telefone: "", motivo: "",
   });
@@ -139,6 +142,12 @@ ${DECLARACOES_BIOSSEGURIDADE.map(d => `
 <div class="footer">
   ${nomeEmpresa}${cnpj ? " — CNPJ: " + cnpj : ""} | Documento gerado em ${dataHora} | Válido somente com assinatura do visitante e acompanhante
 </div>
+${carimboHTML(gerarCarimboSync({
+  documentoTipo: "Declaração de Visitante (Biosseguridade)",
+  documentoId: form.nome,
+  empresa: nomeEmpresa,
+  usuario: user?.email,
+}))}
 
 </body></html>`;
 

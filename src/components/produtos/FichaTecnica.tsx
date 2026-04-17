@@ -4,6 +4,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
+import { gerarCarimboSync, carimboHTML } from "@/utils/carimboDocumento";
 
 const CLASSIFICACAO_LABELS: Record<string, string> = {
   racao: "Ração", suplemento: "Suplemento", premix: "Premix",
@@ -22,6 +24,7 @@ interface Props {
 }
 
 export default function FichaTecnica({ produtoId }: Props) {
+  const { user } = useAuth();
   const [produto, setProduto] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [empresa, setEmpresa] = useState<any>(null);
@@ -115,7 +118,13 @@ ${empresa ? `
   <tr><th>Resp. Técnico</th><td>${empresa.responsavel_tecnico} — CRMV: ${empresa.crmv}</td></tr>
 </table>` : ""}
 
-<p class="footer">Documento gerado pelo sistema Feed_BPF — Ficha Técnica conforme exigências MAPA</p>
+<p class="footer">Documento gerado pelo sistema BPF_Consult — Ficha Técnica conforme exigências MAPA</p>
+${carimboHTML(gerarCarimboSync({
+  documentoTipo: "Ficha Técnica de Produto",
+  documentoId: produto?.nome,
+  empresa: empresa?.nome,
+  usuario: user?.email,
+}))}
 <script>window.print();window.close();</script>
 </body></html>`;
 

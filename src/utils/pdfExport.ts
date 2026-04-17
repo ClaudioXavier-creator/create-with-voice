@@ -1,7 +1,12 @@
 /**
  * PDF Export Utility — Generates professional PDF reports using browser print.
  * Uses a hidden iframe to render styled HTML, then triggers print-to-PDF.
+ *
+ * Todos os relatórios incluem CARIMBO ANTI-FRAUDE com data/hora de emissão,
+ * usuário responsável e selo de integridade (Decreto 12.031/2024 & MP 2.200-2/2001).
  */
+
+import { gerarCarimboSync, carimboHTML } from "./carimboDocumento";
 
 interface PdfColumn {
   header: string;
@@ -93,10 +98,15 @@ export function gerarRelatorioPDF(options: PdfReportOptions) {
 </table>
 
 <div class="footer">
-  <span>${footer || 'Documento gerado automaticamente pelo sistema Feed_BPF'}</span>
+  <span>${footer || 'Documento gerado automaticamente pelo sistema BPF_Consult'}</span>
   <span>Página 1 de 1</span>
 </div>
-<div class="selo">Decreto 12.031/2024 — Documento com integridade digital verificável</div>
+${carimboHTML(gerarCarimboSync({
+  documentoTipo: title,
+  documentoId: subtitle,
+  empresa: empresa,
+  usuario: responsavel,
+}))}
 </body>
 </html>`;
 
