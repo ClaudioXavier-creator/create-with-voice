@@ -92,7 +92,10 @@ export default function Orientacoes() {
               <div key={pop} className="space-y-3">
                 <h2 className="font-display text-xl font-semibold flex items-center gap-2">
                   <Badge variant="default">{pop}</Badge>
-                  <span className="text-muted-foreground">— {modulos.length} módulo{modulos.length > 1 ? "s" : ""}</span>
+                  <span className="text-muted-foreground">
+                    {POP_LABEL[pop] ? `— ${POP_LABEL[pop]} · ` : "— "}
+                    {modulos.length} módulo{modulos.length > 1 ? "s" : ""}
+                  </span>
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                   {modulos.map((m) => (
