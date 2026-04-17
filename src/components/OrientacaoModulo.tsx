@@ -214,15 +214,30 @@ export function OrientacaoModulo({ modulo, showRouteLink = true }: Props) {
                 </Button>
               </div>
 
-              {salvo && (
-                <Alert className="bg-primary/5 border-primary/30">
-                  <CheckCircle2 className="h-4 w-4 text-primary" />
-                  <AlertTitle className="text-primary">Simulação concluída ✓</AlertTitle>
-                  <AlertDescription className="text-sm mt-2">
-                    {modulo.exemplo_resultado || "Em uso real, este registro seria salvo no banco com carimbo SHA-256 anti-fraude."}
-                  </AlertDescription>
-                </Alert>
-              )}
+              {salvo && (() => {
+                const agora = new Date();
+                const ts = agora.toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "medium" });
+                // Hash SHA-256 simulado (visual) — em produção é gerado pelo utils/integridade
+                const payload = JSON.stringify({ ...valores, ts });
+                let hash = 0;
+                for (let i = 0; i < payload.length; i++) hash = ((hash << 5) - hash + payload.charCodeAt(i)) | 0;
+                const hex = (Math.abs(hash).toString(16) + "abcdef0123456789").slice(0, 16).toUpperCase();
+                return (
+                  <Alert className="bg-primary/5 border-primary/30">
+                    <CheckCircle2 className="h-4 w-4 text-primary" />
+                    <AlertTitle className="text-primary">Simulação concluída ✓</AlertTitle>
+                    <AlertDescription className="text-sm mt-2 space-y-3">
+                      <p>{modulo.exemplo_resultado || "Em uso real, este registro seria salvo no banco com carimbo SHA-256 anti-fraude."}</p>
+                      <div className="border border-dashed border-primary/40 rounded-md p-3 bg-background/60 font-mono text-xs space-y-1">
+                        <div className="font-semibold text-primary not-italic">🔒 CARIMBO ANTI-FRAUDE (exigência MAPA)</div>
+                        <div>📅 Data/Hora: <strong>{ts}</strong></div>
+                        <div>🆔 Hash SHA-256 (simulado): <strong>{hex}…</strong></div>
+                        <div className="text-muted-foreground">Em produção: timestamp servidor + SHA-256 real + audit_log (Decreto 12.031/2024).</div>
+                      </div>
+                    </AlertDescription>
+                  </Alert>
+                );
+              })()}
             </CardContent>
           </Card>
         </TabsContent>
