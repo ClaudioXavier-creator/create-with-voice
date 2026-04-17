@@ -8,7 +8,11 @@ import { OrientacaoModulo } from "@/components/OrientacaoModulo";
 import { Search, BookOpen, ArrowLeft, GraduationCap } from "lucide-react";
 import PageHeader from "@/components/PageHeader";
 
-const POP_ORDEM = ["POP-01", "POP-02", "POP-03", "POP-04", "POP-05", "POP-06", "POP-07", "POP-08", "POP-09", "POP-10"];
+const POP_ORDEM = ["POP-01", "POP-02", "POP-03", "POP-04", "POP-05", "POP-06", "POP-07", "POP-08", "POP-09", "POP-10", "AUX"];
+
+const POP_LABEL: Record<string, string> = {
+  "AUX": "Auxiliares & Operacionais",
+};
 
 export default function Orientacoes() {
   const [busca, setBusca] = useState("");
@@ -88,7 +92,10 @@ export default function Orientacoes() {
               <div key={pop} className="space-y-3">
                 <h2 className="font-display text-xl font-semibold flex items-center gap-2">
                   <Badge variant="default">{pop}</Badge>
-                  <span className="text-muted-foreground">— {modulos.length} módulo{modulos.length > 1 ? "s" : ""}</span>
+                  <span className="text-muted-foreground">
+                    {POP_LABEL[pop] ? `— ${POP_LABEL[pop]} · ` : "— "}
+                    {modulos.length} módulo{modulos.length > 1 ? "s" : ""}
+                  </span>
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                   {modulos.map((m) => (
