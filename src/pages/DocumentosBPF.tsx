@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import { FolderOpen, Upload, Trash2, Download, FileText, Filter, Loader2, Calendar, Tag } from "lucide-react";
+import { FolderOpen, Upload, Trash2, Download, FileText, Filter, Loader2, Calendar, Tag, ClipboardCheck } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,9 +7,11 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import PageHeader from "@/components/PageHeader";
 import EmpresaSelector from "@/components/EmpresaSelector";
+import ChecklistObrigatorios from "@/components/documentos/ChecklistObrigatorios";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useEmpresa } from "@/hooks/useEmpresa";
@@ -189,8 +191,20 @@ export default function DocumentosBPF() {
 
   return (
     <div className="space-y-6">
-      <PageHeader icon={FolderOpen} title="Documentos BPF — Arquivo Digital" description="POPs, ITs e planilhas preenchidas/escaneadas organizados por tipo e data" />
+      <PageHeader icon={FolderOpen} title="Documentos BPF — Arquivo Digital" description="Checklist de documentos obrigatórios + arquivo livre de POPs, ITs e planilhas escaneadas" />
       <EmpresaSelector />
+
+      <Tabs defaultValue="checklist" className="space-y-4">
+        <TabsList>
+          <TabsTrigger value="checklist"><ClipboardCheck className="w-4 h-4 mr-2" />Checklist Obrigatórios</TabsTrigger>
+          <TabsTrigger value="arquivo"><FolderOpen className="w-4 h-4 mr-2" />Arquivo Livre</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="checklist">
+          <ChecklistObrigatorios empresaId={empresaId} userId={user!.id} />
+        </TabsContent>
+
+        <TabsContent value="arquivo" className="space-y-6">
 
       {/* Filters + Upload */}
       <div className="flex flex-wrap items-end gap-3">
@@ -367,6 +381,8 @@ export default function DocumentosBPF() {
           </p>
         </CardContent>
       </Card>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

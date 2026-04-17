@@ -44,7 +44,7 @@ const NAV_ENTRIES: NavEntry[] = [
       { path: "/documentos", label: "Documentos / POPs", icon: FileText },
       { path: "/execucao-pops", label: "Execução ITs/POPs", icon: PlayCircle },
       { path: "/planilhas-pop", label: "Planilhas de POPs", icon: Clipboard },
-      { path: "/manual", label: "Manual BPF", icon: BookOpen },
+      { path: "/manual", label: "Manual Feed_BPF", icon: BookOpen },
       { path: "/guia-pops", label: "Guia POPs & ITs", icon: ClipboardList },
     ],
   },

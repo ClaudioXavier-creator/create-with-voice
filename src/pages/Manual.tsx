@@ -616,7 +616,7 @@ export default function Manual() {
 
   return (
     <>
-      <PageHeader icon={BookOpen} title="Manual de Utilização" description="Guia completo de todas as funcionalidades do sistema FeedBPF — organizado pela sequência dos 10 POPs obrigatórios (IN 04/2007)" />
+      <PageHeader icon={BookOpen} title="Manual Feed_BPF" description="Manual de utilização do sistema Feed_BPF — guia das funcionalidades organizado pela sequência dos 10 POPs obrigatórios (IN 04/2007). Não confundir com o Manual BPF da empresa (gerado em 'Geração Manual BPF')." />
 
       <div className="flex gap-2 mb-6">
         <button onClick={expandAll} className="text-sm text-primary hover:underline font-medium">
