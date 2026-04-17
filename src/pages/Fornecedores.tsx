@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Users, Plus, Loader2, Star, AlertCircle, CheckCircle2, Clock, FileText, Download, Printer } from "lucide-react";
+import { Users, Plus, Loader2, Star, AlertCircle, CheckCircle2, Clock, FileText, Download, Printer, ExternalLink, Search } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
@@ -222,6 +222,26 @@ export default function Fornecedores() {
     <>
       <PageHeader icon={Users} title="Qualificação de Fornecedores" description="Cadastro, avaliação e histórico integrado ao Recebimento de MP — POP-001"
         orientacaoModuloId="fornecedores" />
+
+      {/* Validação SIPEAGRO — links oficiais MAPA */}
+      <Card className="border-primary/40 bg-primary/5 mb-6">
+        <CardContent className="pt-4 pb-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <div className="flex-1">
+            <p className="font-semibold text-sm">🏛️ Validar fornecedor no MAPA/SIPEAGRO</p>
+            <p className="text-xs text-muted-foreground mt-1">
+              Lista oficial atualizada semanalmente. Consulte por CNPJ, Razão Social ou nº de registro antes de aprovar fornecedores de insumos para alimentação animal (IN 17/2017).
+            </p>
+          </div>
+          <div className="flex flex-col sm:flex-row gap-2 shrink-0">
+            <a href="https://www.gov.br/agricultura/pt-br/assuntos/insumos-agropecuarios/insumos-pecuarios/alimentacao-animal/arquivos-alimentacao-animal/estabelecimentos-registrados" target="_blank" rel="noopener noreferrer">
+              <Button size="sm" className="gap-2 w-full"><ExternalLink className="w-4 h-4" />Lista Oficial (XLSX)</Button>
+            </a>
+            <a href="https://sistemasweb.agricultura.gov.br/pages/SIPEAGRO.html" target="_blank" rel="noopener noreferrer">
+              <Button size="sm" variant="outline" className="gap-2 w-full"><Search className="w-4 h-4" />Consulta Online</Button>
+            </a>
+          </div>
+        </CardContent>
+      </Card>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         <Card><CardContent className="pt-4 text-center">
