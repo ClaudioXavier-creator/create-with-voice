@@ -141,6 +141,81 @@ export default function FeedBPFPage() {
             <p className="text-muted-foreground">Três níveis × três periodicidades — escolha o ideal para sua empresa</p>
           </div>
 
+          {/* Explicação dos níveis */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5 max-w-5xl mx-auto mb-12">
+            {[
+              {
+                nivel: "Entrada",
+                publico: "Fábricas iniciando a estruturação BPF",
+                ideal: "Pequenas fábricas, granjas integradas e operações em fase de implantação do programa de autocontrole.",
+                inclui: [
+                  "Até 1 empresa cadastrada",
+                  "Manual BPF + 10 POPs obrigatórios (IN 04/2007)",
+                  "Planilhas digitais de execução dos POPs",
+                  "Controle de fornecedores, recebimento de MP e produção",
+                  "Rastreabilidade básica e contraprovas",
+                  "Trial de 7 dias incluso",
+                ],
+                cor: "border-border",
+              },
+              {
+                nivel: "Intermediário",
+                publico: "Fábricas em consolidação operacional",
+                ideal: "Fábricas com produção regular que precisam estruturar APPCC, calibração, treinamentos e auditorias internas.",
+                inclui: [
+                  "Tudo do Entrada +",
+                  "Matriz de Risco APPCC (banco de ~50 perigos)",
+                  "Manutenção preventiva e calibração de equipamentos",
+                  "Gestão de treinamentos e ASO (saúde do pessoal)",
+                  "Checklist pré-auditoria e Sala do Auditor",
+                  "Análise de tendências por IA + alertas automáticos",
+                ],
+                cor: "border-primary/40 bg-primary/5",
+                destaque: true,
+              },
+              {
+                nivel: "Avançado",
+                publico: "Fábricas com gestão completa e auditoria MAPA",
+                ideal: "Fábricas registradas no MAPA/SIPEAGRO que exigem rastreabilidade total, simulação de recall e relatórios oficiais.",
+                inclui: [
+                  "Tudo do Intermediário +",
+                  "Múltiplas empresas/unidades fabris",
+                  "Simulação de Recall (Decreto 12.031/2024)",
+                  "Relatório Anual de Autocontrole + SIPEAGRO",
+                  "Selos SHA-256 e trilha de auditoria completa",
+                  "Modo Tablet (chão de fábrica) + biblioteca de modelos",
+                ],
+                cor: "border-border",
+              },
+            ].map((n) => (
+              <Card key={n.nivel} className={`relative ${n.cor}`}>
+                {n.destaque && (
+                  <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground text-xs shadow-lg">
+                    Mais Popular
+                  </Badge>
+                )}
+                <CardContent className="p-6 space-y-4">
+                  <div>
+                    <h3 className="text-lg font-bold font-display text-foreground">Plano {n.nivel}</h3>
+                    <p className="text-xs text-muted-foreground mt-1">{n.publico}</p>
+                  </div>
+                  <p className="text-sm text-foreground/80 leading-relaxed">{n.ideal}</p>
+                  <div>
+                    <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">O que inclui</p>
+                    <ul className="space-y-1.5">
+                      {n.inclui.map((item) => (
+                        <li key={item} className="text-xs text-foreground/80 flex gap-2">
+                          <span className="text-primary mt-0.5">✓</span>
+                          <span>{item}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
           {[
             {
               nivel: "Entrada",
