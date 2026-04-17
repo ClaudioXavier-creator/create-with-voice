@@ -335,6 +335,7 @@ export default function ArmazenamentoTransporte() {
         icon={Warehouse}
         title="Armazenamento & Transporte (POP-05)"
         description="Inspeção de veículos, controle de temperatura/umidade e checklist de depósitos — IN 15/2009"
+        orientacaoModuloId="armazenamento-transporte"
       />
 
       <Tabs defaultValue="veiculo" className="space-y-4">

@@ -73,7 +73,8 @@ export default function ValidacaoLimpezaLinha() {
 
   return (
     <div className="space-y-6">
-      <PageHeader title="Validação de Limpeza de Linha" description="Controle de contaminação cruzada — IN 04/2007 e IN 15/2009" />
+      <PageHeader title="Validação de Limpeza de Linha" description="Controle de contaminação cruzada — IN 04/2007 e IN 15/2009"
+        orientacaoModuloId="validacao-limpeza" />
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card><CardContent className="pt-6 text-center"><p className="text-3xl font-bold text-primary">{validacoes.length}</p><p className="text-sm text-muted-foreground">Total</p></CardContent></Card>

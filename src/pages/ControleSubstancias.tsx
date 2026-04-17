@@ -75,7 +75,8 @@ export default function ControleSubstancias() {
 
   return (
     <div className="space-y-6">
-      <PageHeader title="Substâncias Proibidas e Indesejáveis" description="Controle conforme Anexos da IN 15/2009 — MAPA | Programa Ractopamina Free" />
+      <PageHeader title="Substâncias Proibidas e Indesejáveis" description="Controle conforme Anexos da IN 15/2009 — MAPA | Programa Ractopamina Free"
+        orientacaoModuloId="substancias" />
 
       {/* ── CERTIFICAÇÃO RACTOPAMINA FREE ── */}
       <Card className="border-green-600/30 bg-green-50 dark:bg-green-900/10">

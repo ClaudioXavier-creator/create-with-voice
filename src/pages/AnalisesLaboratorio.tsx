@@ -160,6 +160,7 @@ export default function AnalisesLaboratorio() {
         icon={FlaskConical}
         title="Análises Laboratoriais"
         description="Físico-química, micotoxinas, antibióticos, microbiologia e homogeneidade"
+        orientacaoModuloId="analises"
       />
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">

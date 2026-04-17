@@ -220,7 +220,8 @@ export default function Fornecedores() {
 
   return (
     <>
-      <PageHeader icon={Users} title="Qualificação de Fornecedores" description="Cadastro, avaliação e histórico integrado ao Recebimento de MP — POP-001" />
+      <PageHeader icon={Users} title="Qualificação de Fornecedores" description="Cadastro, avaliação e histórico integrado ao Recebimento de MP — POP-001"
+        orientacaoModuloId="fornecedores" />
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         <Card><CardContent className="pt-4 text-center">
