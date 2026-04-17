@@ -7,6 +7,12 @@ export interface PopPeriodicidade {
   label: string;
   periodos: string[]; // labels dos períodos (dias, semanas, etc.)
   areas: PopAreaConfig[];
+  /**
+   * Quando preenchido, indica que o lançamento operacional desta planilha
+   * é feito em outro módulo (evita duplicidade). A aba do POP exibe apenas
+   * um aviso com link para o módulo correspondente.
+   */
+  modulo_origem?: { rota: string; label: string };
 }
 
 export interface PopConfig {
@@ -15,6 +21,11 @@ export interface PopConfig {
   descricao: string;
   periodicidades: PopPeriodicidade[];
   anexos?: string[];
+  /**
+   * Módulos onde os registros operacionais deste POP são efetivamente lançados.
+   * Exibido na aba do POP como referência de "lançamento único".
+   */
+  modulos_vinculados?: { rota: string; label: string; descricao: string }[];
 }
 
 function diasDoMes(): string[] {
@@ -38,47 +49,12 @@ export const POPS_CONFIG: PopConfig[] = [
     codigo: "POP-01",
     nome: "Qualificação de Fornecedores",
     descricao: "Procedimentos para qualificação de fornecedores, especificação e controle de matérias-primas e embalagens conforme IN 04/2007.",
+    modulos_vinculados: [
+      { rota: "/fornecedores", label: "Fornecedores", descricao: "Cadastro e qualificação (PL POP 1.1)" },
+      { rota: "/recebimento", label: "Recebimento MP", descricao: "Lançamento único de recebimento de MP, lotes, laudos e umidade (PL POP 1.2 / 1.3 / 1.5)" },
+      { rota: "/pragas", label: "Controle de Pragas", descricao: "Registros de expurgo (PL POP 1.8)" },
+    ],
     periodicidades: [
-      {
-        key: "recebimento_mp",
-        label: "PL POP 1.2 — Recebimento de Matéria-Prima",
-        periodos: ["Ocorrência"],
-        areas: [
-          { area: "Fornecedor (Nome)" },
-          { area: "Data" },
-          { area: "Nº Nota Fiscal" },
-          { area: "Nº Lote" },
-          { area: "Nº Laudo / Lote Fornecedor" },
-          { area: "Placa do Caminhão" },
-          { area: "Condições Higiênicas do Produto (C/NC/NA)" },
-          { area: "Condições Higiênicas do Veículo (C/NC/NA)" },
-          { area: "Presença de Laudo (C/NC/NA)" },
-          { area: "Produto" },
-          { area: "Quantidade (Kg)" },
-          { area: "Umidade lida — Medidor (%)" },
-          { area: "Resultado (%)" },
-          { area: "Aprovado / Reprovado / Aprovado c/ Restrição (secagem)" },
-          { area: "Ocorrência" },
-          { area: "Ação Corretiva" },
-          { area: "Medida Preventiva" },
-          { area: "Novo Monitoramento Após Secagem" },
-        ],
-      },
-      {
-        key: "controle_entrada_mp",
-        label: "PL POP 1.3 — Controle de Entrada de Matéria-Prima",
-        periodos: diasDoMes(),
-        areas: [
-          { area: "Data" },
-          { area: "Matéria-prima" },
-          { area: "Fornecedor" },
-          { area: "Lote" },
-          { area: "Nota Fiscal" },
-          { area: "C/NC" },
-          { area: "Responsável" },
-          { area: "Função" },
-        ],
-      },
       {
         key: "controle_entrada_embalagens",
         label: "PL POP 1.4 — Entrada de Embalagens",
@@ -92,17 +68,6 @@ export const POPS_CONFIG: PopConfig[] = [
           { area: "Inspeção visual" },
           { area: "C/NC" },
           { area: "Responsável" },
-        ],
-      },
-      {
-        key: "umidade_silos",
-        label: "PL POP 1.5 — Medição de Umidade de Grãos nos Silos",
-        periodos: semanas(),
-        areas: [
-          { area: "Local (Silo)" },
-          { area: "Produto" },
-          { area: "% Umidade" },
-          { area: "C/NC" },
         ],
       },
       {
@@ -146,39 +111,25 @@ export const POPS_CONFIG: PopConfig[] = [
           { area: "Embalagens (Lotes 1–110)" },
         ],
       },
-      {
-        key: "expurgo",
-        label: "PL POP 1.8 — Controle de Expurgo",
-        periodos: meses(),
-        areas: [
-          { area: "Tipo de produto" },
-          { area: "Local (Silo / Estoque)" },
-          { area: "Lote" },
-          { area: "Quantidade de produto" },
-          { area: "Tratamento — Data inicial" },
-          { area: "Tratamento — Data final" },
-          { area: "Produto químico — Nome" },
-          { area: "Produto químico — Quantidade" },
-          { area: "Eficácia (C/NC)" },
-          { area: "Responsável monitoramento" },
-        ],
-      },
     ],
     anexos: [
-      "ANEXO 1: Lista de Fornecedores – PL POP 1.1",
-      "ANEXO 2: Recebimento de MP – PL POP 1.2",
-      "ANEXO 3: Controle de entrada de MP – PL POP 1.3",
+      "ANEXO 1: Lista de Fornecedores – PL POP 1.1 (módulo /fornecedores)",
+      "ANEXO 2: Recebimento de MP – PL POP 1.2 (módulo /recebimento)",
+      "ANEXO 3: Controle de entrada de MP – PL POP 1.3 (módulo /recebimento)",
       "ANEXO 4: Controle de entrada de embalagens – PL POP 1.4",
-      "ANEXO 5: Medição da umidade dos silos – PL POP 1.5",
+      "ANEXO 5: Medição da umidade dos silos – PL POP 1.5 (módulo /recebimento)",
       "ANEXO 6: Recebimento de Embalagens – PL POP 1.6",
       "ANEXO 7: Controle dos lotes internos – PL POP 1.7",
-      "ANEXO 8: Controle de expurgo – PL POP 1.8",
+      "ANEXO 8: Controle de expurgo – PL POP 1.8 (módulo /pragas)",
     ],
   },
   {
     codigo: "POP-02",
     nome: "Limpeza de Instalações, Equipamentos e Utensílios",
     descricao: "Procedimentos de limpeza e higienização de todas as áreas, equipamentos e utensílios da fábrica conforme IN 04/2007 e IN 15/2009.",
+    modulos_vinculados: [
+      { rota: "/higiene", label: "Higiene / Sanitização", descricao: "Cronogramas e checklists de limpeza pesada/concorrente" },
+    ],
     periodicidades: [
       {
         key: "diario",
@@ -236,98 +187,35 @@ export const POPS_CONFIG: PopConfig[] = [
     codigo: "POP-03",
     nome: "Higiene e Saúde Pessoal",
     descricao: "Procedimentos de higiene pessoal, saúde dos colaboradores, uso de EPIs e comportamento nas áreas de produção conforme IN 04/2007.",
-    periodicidades: [
-      {
-        key: "semanal",
-        label: "PL POP 3.1 — Registro de Higiene e Saúde do Pessoal",
-        periodos: semanas(),
-        areas: [
-          { area: "Uniforme limpo e adequado" },
-          { area: "Uso de EPIs (luvas, botas, touca)" },
-          { area: "Higiene das mãos (lavagem correta)" },
-          { area: "Ausência de adornos (anéis, relógio, brincos)" },
-          { area: "Unhas curtas e sem esmalte" },
-          { area: "Barba aparada / protegida" },
-          { area: "Ausência de ferimentos expostos" },
-          { area: "Condições de saúde (sintomas visíveis)" },
-          { area: "Uso de perfume/maquiagem (proibido)" },
-          { area: "Comportamento adequado (não comer, fumar, etc.)" },
-          { area: "Vestiários limpos e organizados" },
-          { area: "Sanitários abastecidos (sabonete, papel)" },
-          { area: "Lavatórios funcionando" },
-          { area: "Cartazes de orientação afixados" },
-        ],
-      },
-      {
-        key: "mensal",
-        label: "Controle Mensal — Saúde e Documentação",
-        periodos: meses(),
-        areas: [
-          { area: "ASO em dia (todos os colaboradores)" },
-          { area: "Exames periódicos atualizados" },
-          { area: "Treinamento de higiene realizado" },
-          { area: "Registro de visitantes (higiene)" },
-          { area: "Controle de atestados médicos" },
-          { area: "PCMSO atualizado" },
-        ],
-      },
+    modulos_vinculados: [
+      { rota: "/saude-pessoal", label: "Saúde Pessoal", descricao: "Lançamento único de ASO, exames, EPIs e treinamentos de higiene" },
+      { rota: "/visitantes", label: "Controle de Visitantes", descricao: "Orientação de biosseguridade e EPI de visitantes" },
     ],
+    periodicidades: [],
     anexos: [
-      "ANEXO 1: Registro de Higiene e Saúde do Pessoal – PL POP 3.1",
+      "ANEXO 1: Registro de Higiene e Saúde do Pessoal – PL POP 3.1 (módulo /saude-pessoal)",
     ],
   },
   {
     codigo: "POP-04",
     nome: "Potabilidade da Água",
     descricao: "Procedimentos de controle da potabilidade da água e higienização dos reservatórios conforme IN 04/2007 e Portaria de Potabilidade.",
-    periodicidades: [
-      {
-        key: "diario",
-        label: "Controle Diário de Cloro Residual",
-        periodos: diasDoMes(),
-        areas: [
-          { area: "Ponto 1 — Entrada / Poço" },
-          { area: "Ponto 2 — Área de Produção" },
-          { area: "Ponto 3 — Bebedouro / Refeitório" },
-          { area: "Ponto 4 — Lavagem de equipamentos" },
-          { area: "Registro de pH" },
-          { area: "Registro de turbidez" },
-        ],
-      },
-      {
-        key: "semanal",
-        label: "Verificação Semanal — Reservatórios e Rede",
-        periodos: semanas(),
-        areas: [
-          { area: "Inspeção visual da caixa d'água" },
-          { area: "Verificação de tampa/vedação do reservatório" },
-          { area: "Estado das tubulações (vazamentos)" },
-          { area: "Filtros de água (limpeza/troca)" },
-        ],
-      },
-      {
-        key: "mensal",
-        label: "Análise Mensal — Laudos e Manutenção",
-        periodos: meses(),
-        areas: [
-          { area: "Análise microbiológica (coliformes totais e E. coli)" },
-          { area: "Análise físico-química (pH, cloro, turbidez, cor)" },
-          { area: "Envio de amostra ao laboratório" },
-          { area: "Recebimento e arquivo do laudo" },
-          { area: "Higienização do reservatório (semestral)" },
-          { area: "Certificado da empresa de limpeza" },
-        ],
-      },
+    modulos_vinculados: [
+      { rota: "/potabilidade-agua", label: "Potabilidade da Água", descricao: "Lançamento único de cloro, pH, turbidez, laudos e higienização de reservatórios" },
     ],
+    periodicidades: [],
     anexos: [
-      "ANEXO 1: Planilha de Controle de Cloro Residual",
-      "ANEXO 2: Planilha de Higienização do Reservatório",
+      "ANEXO 1: Planilha de Controle de Cloro Residual (módulo /potabilidade-agua)",
+      "ANEXO 2: Planilha de Higienização do Reservatório (módulo /potabilidade-agua)",
     ],
   },
   {
     codigo: "POP-05",
-    nome: "Prevenção de Contaminação Cruzada",
-    descricao: "Procedimentos para prevenção da contaminação cruzada no fluxo produtivo, armazenamento e identificação de matérias-primas conforme IN 04/2007.",
+    nome: "Controle da Produção e Prevenção da Contaminação Cruzada",
+    descricao: "Procedimentos para prevenção da contaminação cruzada no fluxo produtivo, sequenciamento, flushing, armazenamento e identificação de matérias-primas conforme IN 04/2007.",
+    modulos_vinculados: [
+      { rota: "/pcp", label: "PCP / Sequenciamento", descricao: "Ordens de produção, fórmula versionada, batidas e flushing (Ficha Digital)" },
+    ],
     periodicidades: [
       {
         key: "semanal",
@@ -368,64 +256,13 @@ export const POPS_CONFIG: PopConfig[] = [
     codigo: "POP-06",
     nome: "Manutenção e Calibração de Equipamentos e Instrumentos",
     descricao: "Procedimentos de manutenção preventiva e calibração dos equipamentos e instrumentos de medição conforme IN 04/2007 e IN 15/2009.",
+    modulos_vinculados: [
+      { rota: "/manutencao", label: "Manutenção / Calibração", descricao: "Lançamento único de OS, manutenção preventiva, corretiva e calibração de instrumentos" },
+    ],
     periodicidades: [
       {
-        key: "cronograma_manutencao",
-        label: "PL POP 6.1 — Cronograma de Manutenção Preventiva",
-        periodos: meses(),
-        areas: [
-          { area: "Recepção de Grãos — Chupins" },
-          { area: "Pesagem e Mistura — Chupins" },
-          { area: "Pesagem e Mistura — Peneira Pré-Limpeza" },
-          { area: "Pesagem e Mistura — Trituradores" },
-          { area: "Pesagem e Mistura — Silos Pulmão/Caixas" },
-          { area: "Pesagem e Mistura — Balanças MP" },
-          { area: "Pesagem e Mistura — Misturadores" },
-          { area: "Pesagem e Mistura — Roscas Transportadoras" },
-          { area: "Ensaque — Silos de Ensaque" },
-          { area: "Ensaque — Balanças de Ensaque" },
-          { area: "Ensaque — Chupins Ensaque" },
-          { area: "Silos de Armazenamento" },
-          { area: "Máquinas de Levantamento de Sacos" },
-          { area: "Empilhadeiras" },
-        ],
-      },
-      {
-        key: "calibracao",
-        label: "PL POP 6.2 — Calibração de Instrumentos",
-        periodos: meses(),
-        areas: [
-          { area: "Balança rodoviária" },
-          { area: "Balança de pesagem (MP)" },
-          { area: "Balança de ensaque" },
-          { area: "Termômetros" },
-          { area: "Medidores de umidade" },
-          { area: "Verificação intermediária" },
-        ],
-      },
-      {
-        key: "ordem_servico",
-        label: "PL POP 6.3 — Ordem de Serviço de Manutenção",
-        periodos: ["Ocorrência"],
-        areas: [
-          { area: "Unidade" },
-          { area: "Setor" },
-          { area: "Data" },
-          { area: "Tipo de Serviço (Mecânica/Elétrica/Civil)" },
-          { area: "Tipo de Manutenção (Preventiva/Corretiva/Reforma)" },
-          { area: "Condições de Operação" },
-          { area: "Problema / Solicitação" },
-          { area: "Diagnóstico de Causas" },
-          { area: "Executante / Responsável" },
-          { area: "Data Inicial / Previsão Final" },
-          { area: "Serviços Executados / Peças Substituídas" },
-          { area: "Parecer do Solicitante" },
-          { area: "Concluído (Sim/Não)" },
-        ],
-      },
-      {
         key: "lista_equipamentos",
-        label: "PL POP 6.4 — Lista de Equipamentos e Instrumentos",
+        label: "PL POP 6.4 — Lista de Equipamentos e Instrumentos (Cadastro)",
         periodos: ["Registro"],
         areas: [
           { area: "Nº" },
@@ -436,9 +273,9 @@ export const POPS_CONFIG: PopConfig[] = [
       },
     ],
     anexos: [
-      "ANEXO 1: Cronograma de Manutenção Preventiva – PL POP 6.1",
-      "ANEXO 2: Calibração de Instrumentos – PL POP 6.2",
-      "ANEXO 3: Ordem de Serviço de Manutenção – PL POP 6.3",
+      "ANEXO 1: Cronograma de Manutenção Preventiva – PL POP 6.1 (módulo /manutencao)",
+      "ANEXO 2: Calibração de Instrumentos – PL POP 6.2 (módulo /manutencao)",
+      "ANEXO 3: Ordem de Serviço de Manutenção – PL POP 6.3 (módulo /manutencao)",
       "ANEXO 4: Lista de Equipamentos e Instrumentos – PL POP 6.4",
     ],
   },
@@ -446,139 +283,39 @@ export const POPS_CONFIG: PopConfig[] = [
     codigo: "POP-07",
     nome: "Controle Integrado de Pragas",
     descricao: "Procedimentos de manejo integrado de pragas (medidas preventivas, corretivas e de eliminação) conforme IN 04/2007.",
-    periodicidades: [
-      {
-        key: "semanal",
-        label: "Monitoramento Semanal de Pragas",
-        periodos: semanas(),
-        areas: [
-          { area: "Armadilhas internas (inspeção)" },
-          { area: "Armadilhas externas (inspeção)" },
-          { area: "Portas e janelas (vedação)" },
-          { area: "Telas anti-inseto (integridade)" },
-          { area: "Indícios de roedores" },
-          { area: "Indícios de insetos" },
-          { area: "Indícios de pássaros" },
-        ],
-      },
-      {
-        key: "mensal",
-        label: "Controle Mensal — Aplicações e Laudos",
-        periodos: meses(),
-        areas: [
-          { area: "Desinsetização realizada" },
-          { area: "Desratização realizada" },
-          { area: "Laudo empresa terceirizada" },
-          { area: "Mapa de iscas atualizado" },
-          { area: "Registro de produtos aplicados" },
-          { area: "Destino de pragas mortas" },
-        ],
-      },
+    modulos_vinculados: [
+      { rota: "/pragas", label: "Controle de Pragas", descricao: "Lançamento único de monitoramento, aplicações, mapa de iscas e laudos" },
     ],
+    periodicidades: [],
     anexos: [
-      "ANEXO 1: Planilha de Monitoramento Semanal de Pragas",
-      "ANEXO 2: Registro de Aplicações Mensais",
-      "ANEXO 3: Mapa de Iscas",
+      "ANEXO 1: Planilha de Monitoramento Semanal de Pragas (módulo /pragas)",
+      "ANEXO 2: Registro de Aplicações Mensais (módulo /pragas)",
+      "ANEXO 3: Mapa de Iscas (módulo /pragas)",
     ],
   },
   {
     codigo: "POP-08",
     nome: "Controle de Resíduos e Efluentes",
     descricao: "Procedimentos de coleta, segregação, transporte e destinação de resíduos sólidos e efluentes conforme Decreto 12.031/2024.",
-    periodicidades: [
-      {
-        key: "controle_residuos",
-        label: "PL POP 8.1 — Controle de Resíduos",
-        periodos: diasDoMes(),
-        areas: [
-          { area: "Data" },
-          { area: "Tipo de Resíduo" },
-          { area: "Peso" },
-          { area: "Destino" },
-          { area: "Monitoramento" },
-          { area: "Função" },
-        ],
-      },
+    modulos_vinculados: [
+      { rota: "/residuos", label: "Resíduos / Efluentes", descricao: "Lançamento único de coleta, classificação, manifesto e destino" },
     ],
+    periodicidades: [],
     anexos: [
-      "ANEXO 1: Controle de Resíduos – PL POP 8.1",
+      "ANEXO 1: Controle de Resíduos – PL POP 8.1 (módulo /residuos)",
     ],
   },
   {
     codigo: "POP-09",
     nome: "Programa de Rastreabilidade e Recolhimento (Recall)",
     descricao: "Procedimentos de rastreabilidade de produtos, controle de não conformidades e programa de recolhimento (recall) conforme IN 04/2007.",
+    modulos_vinculados: [
+      { rota: "/pcp", label: "PCP / Sequenciamento", descricao: "Ordem de produção e fórmula com lotes de MP (PL POP 9.1 / 9.3 — Ficha Digital)" },
+      { rota: "/rastreabilidade", label: "Rastreabilidade", descricao: "Expedição por cliente/produto e árvore de rastreio (PL POP 9.2)" },
+      { rota: "/simulacao-recall", label: "Simulação de Recall", descricao: "Recall de produtos (PL POP 9.4)" },
+      { rota: "/nao-conformidades", label: "Não Conformidades", descricao: "Controle de RNC (PL POP 9.5)" },
+    ],
     periodicidades: [
-      {
-        key: "ordem_producao",
-        label: "PL POP 9.1 — Ordem Diária de Produção",
-        periodos: diasDoMes(),
-        areas: [
-          { area: "Produto / Fórmula" },
-          { area: "Lote de produção" },
-          { area: "Quantidade programada" },
-          { area: "MP utilizadas (lotes)" },
-          { area: "Operador responsável" },
-          { area: "Tempo de mistura" },
-          { area: "Observações" },
-        ],
-      },
-      {
-        key: "expedicao",
-        label: "PL POP 9.2 — Expedição por Cliente e Produto",
-        periodos: diasDoMes(),
-        areas: [
-          { area: "Cliente / Destino" },
-          { area: "Produto" },
-          { area: "Lote(s) expedido(s)" },
-          { area: "Quantidade" },
-          { area: "Nota fiscal / DANFE" },
-          { area: "Conferente" },
-        ],
-      },
-      {
-        key: "formula_mp",
-        label: "PL POP 9.3 — Fórmula e Inclusão de MP",
-        periodos: diasDoMes(),
-        areas: [
-          { area: "Matéria-prima" },
-          { area: "Lote da MP" },
-          { area: "Fornecedor" },
-          { area: "Quantidade utilizada" },
-          { area: "Número da batida" },
-          { area: "Tempo de mistura" },
-        ],
-      },
-      {
-        key: "recall",
-        label: "PL POP 9.4 — Produtos Recolhidos (Recall)",
-        periodos: ["Ocorrência"],
-        areas: [
-          { area: "Produto recolhido" },
-          { area: "Lote(s) afetado(s)" },
-          { area: "Motivo do recall" },
-          { area: "Clientes notificados" },
-          { area: "Quantidade recolhida" },
-          { area: "Destino do produto recolhido" },
-          { area: "Status do recolhimento" },
-          { area: "Data início / fim" },
-        ],
-      },
-      {
-        key: "controle_rnc",
-        label: "PL POP 9.5 — Controle de RNC (Relatório de Não Conformidade)",
-        periodos: ["Ocorrência"],
-        areas: [
-          { area: "Nº da RNC" },
-          { area: "Origem da Não Conformidade" },
-          { area: "Qual é o problema?" },
-          { area: "Área" },
-          { area: "Responsável" },
-          { area: "Data de Abertura" },
-          { area: "Data Prevista para Fechamento" },
-          { area: "Status" },
-        ],
-      },
       {
         key: "reclamacoes_clientes",
         label: "PL POP 9.6 — Registro de Reclamações de Clientes/Produtos",
@@ -595,11 +332,11 @@ export const POPS_CONFIG: PopConfig[] = [
       },
     ],
     anexos: [
-      "ANEXO 1: Ordem diária de Produção – PL POP 9.1",
-      "ANEXO 2: Expedição por cliente e produto – PL POP 9.2",
-      "ANEXO 3: Fórmula e Inclusão de MP – PL POP 9.3",
-      "ANEXO 4: Produtos Recolhidos (Recall) – PL POP 9.4",
-      "ANEXO 5: Controle de RNC – PL POP 9.5",
+      "ANEXO 1: Ordem diária de Produção – PL POP 9.1 (módulo /pcp)",
+      "ANEXO 2: Expedição por cliente e produto – PL POP 9.2 (módulo /rastreabilidade)",
+      "ANEXO 3: Fórmula e Inclusão de MP – PL POP 9.3 (módulo /pcp)",
+      "ANEXO 4: Produtos Recolhidos (Recall) – PL POP 9.4 (módulo /simulacao-recall)",
+      "ANEXO 5: Controle de RNC – PL POP 9.5 (módulo /nao-conformidades)",
       "ANEXO 6: Registro de Reclamações de Clientes – PL POP 9.6",
     ],
   },
