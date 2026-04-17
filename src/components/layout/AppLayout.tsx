@@ -6,7 +6,7 @@ import {
   PlayCircle, FileDown, Scale, ChevronDown, Wrench, Settings, BookOpen, FlaskConical,
   Droplets, Recycle, ShieldAlert, ShieldCheck, CalendarDays, ClipboardList, Truck, Timer,
   Brain, Globe, HeartPulse, UserCheck, Clipboard, FolderOpen, Radar, FileSearch,
-  Tablet, ScrollText, GraduationCap
+  Tablet, ScrollText
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
