@@ -14,6 +14,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
+import { gerarCarimboSync, carimboHTMLCompacto } from "@/utils/carimboDocumento";
 
 interface Props {
   produtoId: string;

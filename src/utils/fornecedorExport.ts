@@ -267,6 +267,8 @@ ${f?.observacoes ? `<p><strong>Observações:</strong> ${f.observacoes}</p>` : "
   <div><div class="line">Verificação</div></div>
 </div>
 
+${carimboHTML(carimbo)}
+
 </body></html>`;
 
   const win = window.open("", "_blank");

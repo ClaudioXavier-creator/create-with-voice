@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
+import { gerarCarimboSync, carimboHTML } from "@/utils/carimboDocumento";
 
 interface Props {
   produtoId: string;
