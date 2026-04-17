@@ -83,6 +83,7 @@ export default function PCP() {
   const [formulaItens, setFormulaItens] = useState<FormulaItem[]>([]);
   const [batidas, setBatidas] = useState<Batida[]>([]);
   const [matrizSensibilidade, setMatrizSensibilidade] = useState<any[]>([]);
+  const [formulasDisponiveis, setFormulasDisponiveis] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [expandedOrdem, setExpandedOrdem] = useState<string | null>(null);
@@ -91,6 +92,7 @@ export default function PCP() {
   const [ordemOpen, setOrdemOpen] = useState(false);
   const [numOrdem, setNumOrdem] = useState("");
   const [produto, setProduto] = useState("");
+  const [formulaId, setFormulaId] = useState<string>("");
   const [formulaNome, setFormulaNome] = useState("");
   const [lotePA, setLotePA] = useState("");
   const [qtdProgramada, setQtdProgramada] = useState("");
@@ -169,13 +171,14 @@ export default function PCP() {
 
   const fetchData = async () => {
     if (!user) return;
-    const [ordensRes, itensRes, batidasRes, matrizRes, coRes, flushRes] = await Promise.all([
+    const [ordensRes, itensRes, batidasRes, matrizRes, coRes, flushRes, formRes] = await Promise.all([
       (() => { let q = supabase.from("ordens_producao").select("*").order("data_programada", { ascending: false }); if (empresaAtiva) q = q.eq("empresa_id", empresaAtiva.id); return q; })(),
       (() => { let q = supabase.from("formula_itens").select("*").order("created_at"); if (empresaAtiva) q = q.eq("empresa_id", empresaAtiva.id); return q; })(),
       (() => { let q = supabase.from("batidas_producao").select("*").order("numero_batida"); if (empresaAtiva) q = q.eq("empresa_id", empresaAtiva.id); return q; })(),
       (() => { let q = supabase.from("matriz_sensibilidade").select("*").order("produto_anterior"); if (empresaAtiva) q = q.eq("empresa_id", empresaAtiva.id); return q; })(),
       supabase.from("execucao_pops").select("*").eq("codigo_pop", "POP-CARRYOVER").order("data_execucao", { ascending: false }).limit(100),
       supabase.from("execucao_pops").select("*").eq("codigo_pop", "POP-FLUSH").order("data_execucao", { ascending: false }).limit(100),
+      (() => { let q = supabase.from("formulas" as any).select("*").order("status").order("data_versao", { ascending: false }); if (empresaAtiva) q = q.eq("empresa_id", empresaAtiva.id); return q; })(),
     ]);
     if (ordensRes.data) setOrdens(ordensRes.data as unknown as OrdemProd[]);
     if (itensRes.data) setFormulaItens(itensRes.data as unknown as FormulaItem[]);
@@ -183,6 +186,7 @@ export default function PCP() {
     if (matrizRes.data) setMatrizSensibilidade(matrizRes.data);
     if (coRes.data) setCarryoverRecords(coRes.data);
     if (flushRes.data) setFlushRecords(flushRes.data);
+    if (formRes.data) setFormulasDisponiveis(formRes.data as any[]);
     setLoading(false);
   };
 
@@ -195,6 +199,7 @@ export default function PCP() {
       user_id: user.id, empresa_id: empresaAtiva?.id || null,
       numero_ordem: numOrdem,
       produto,
+      formula_id: formulaId || null,
       formula_nome: formulaNome,
       lote_produto: lotePA,
       quantidade_programada: qtdProgramada,
@@ -212,7 +217,7 @@ export default function PCP() {
     else {
       toast.success("Ordem criada!");
       setOrdemOpen(false);
-      setNumOrdem(""); setProduto(""); setFormulaNome(""); setLotePA(""); setQtdProgramada("");
+      setNumOrdem(""); setProduto(""); setFormulaId(""); setFormulaNome(""); setLotePA(""); setQtdProgramada("");
       setNumBatidas("1"); setPesoBatida(""); setPrioridade("normal"); setObsOrdem("");
       setTipoOrdem("normal"); setOrdemOrigemId(""); setMotivoRetrabalho(""); setQtdSobra(""); setDestinoSobra("");
       fetchData();
