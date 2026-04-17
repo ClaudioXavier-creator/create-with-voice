@@ -240,7 +240,8 @@ export default function Recebimento() {
 
   return (
     <>
-      <PageHeader icon={Package} title="Recebimento de Matérias-Primas" description="Controle de qualidade no recebimento — IN 15/2009" />
+      <PageHeader icon={Package} title="Recebimento de Matérias-Primas" description="Controle de qualidade no recebimento — IN 15/2009"
+        orientacaoModuloId="recebimento" />
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         <Card><CardContent className="pt-4 text-center">

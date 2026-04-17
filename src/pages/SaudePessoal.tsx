@@ -110,6 +110,7 @@ export default function SaudePessoal() {
       <PageHeader
         title="Saúde do Pessoal"
         description="POP-03 — Registro de ASO e exames médicos conforme IN 04/2007 e NR-7"
+        orientacaoModuloId="saude-pessoal"
       />
 
       {/* KPIs */}

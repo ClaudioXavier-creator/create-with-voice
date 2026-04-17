@@ -230,7 +230,8 @@ export default function Treinamentos() {
 
   return (
     <div className="space-y-6">
-      <PageHeader icon={GraduationCap} title="Treinamentos, Saúde e Higiene Pessoal" description="POP-02 (IN 04/2007) — Capacitação, ASOs e triagem diária de higiene" />
+      <PageHeader icon={GraduationCap} title="Treinamentos, Saúde e Higiene Pessoal" description="POP-02 (IN 04/2007) — Capacitação, ASOs e triagem diária de higiene"
+        orientacaoModuloId="treinamentos" />
 
       {/* Summary */}
       <div className="grid grid-cols-2 md:grid-cols-6 gap-4">

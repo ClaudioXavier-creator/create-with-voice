@@ -191,6 +191,7 @@ export default function PotabilidadeAgua() {
       <PageHeader
         title="Potabilidade da Água"
         description="POP-04 — Controle de qualidade da água conforme IN 04/2007 e Portaria GM/MS 888/2021"
+        orientacaoModuloId="potabilidade-agua"
       />
 
       {/* KPIs */}

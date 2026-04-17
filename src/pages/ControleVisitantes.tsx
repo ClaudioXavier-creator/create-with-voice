@@ -99,6 +99,7 @@ export default function ControleVisitantes() {
       <PageHeader
         title="Controle de Visitantes"
         description="Registro de entrada de visitantes conforme IN 56/2007 (Biosseguridade) e IN 04/2007"
+        orientacaoModuloId="visitantes"
       />
 
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4">

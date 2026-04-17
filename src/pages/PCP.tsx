@@ -377,7 +377,8 @@ export default function PCP() {
 
   if (loading) return (
     <>
-      <PageHeader icon={ClipboardList} title="PCP — Ordens de Produção" description="Planejamento e controle de produção com fórmulas, batidas e rastreabilidade de lotes" />
+      <PageHeader icon={ClipboardList} title="PCP — Ordens de Produção" description="Planejamento e controle de produção com fórmulas, batidas e rastreabilidade de lotes"
+        orientacaoModuloId="pcp" />
       <div className="flex justify-center py-12"><Loader2 className="w-8 h-8 animate-spin text-muted-foreground" /></div>
     </>
   );
