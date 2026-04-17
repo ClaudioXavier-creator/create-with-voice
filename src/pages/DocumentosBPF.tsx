@@ -191,8 +191,20 @@ export default function DocumentosBPF() {
 
   return (
     <div className="space-y-6">
-      <PageHeader icon={FolderOpen} title="Documentos BPF — Arquivo Digital" description="POPs, ITs e planilhas preenchidas/escaneadas organizados por tipo e data" />
+      <PageHeader icon={FolderOpen} title="Documentos BPF — Arquivo Digital" description="Checklist de documentos obrigatórios + arquivo livre de POPs, ITs e planilhas escaneadas" />
       <EmpresaSelector />
+
+      <Tabs defaultValue="checklist" className="space-y-4">
+        <TabsList>
+          <TabsTrigger value="checklist"><ClipboardCheck className="w-4 h-4 mr-2" />Checklist Obrigatórios</TabsTrigger>
+          <TabsTrigger value="arquivo"><FolderOpen className="w-4 h-4 mr-2" />Arquivo Livre</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="checklist">
+          <ChecklistObrigatorios empresaId={empresaId} userId={user!.id} />
+        </TabsContent>
+
+        <TabsContent value="arquivo" className="space-y-6">
 
       {/* Filters + Upload */}
       <div className="flex flex-wrap items-end gap-3">
