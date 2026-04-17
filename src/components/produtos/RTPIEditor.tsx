@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
+import { gerarCarimboSync, carimboHTML } from "@/utils/carimboDocumento";
 
 interface Props {
   produtoId: string;
@@ -190,6 +191,11 @@ export default function RTPIEditor({ produtoId }: Props) {
   <p><strong>${rtpi.rt_nome}</strong></p>
   <p>CRMV: ${rtpi.rt_crmv}</p>
 </div>
+${carimboHTML(gerarCarimboSync({
+  documentoTipo: "RTPI — Relatório Técnico Produto Isento",
+  documentoId: rtpi.nome_produto,
+  empresa: rtpi.razao_social,
+}))}
 <script>window.print();window.close();</script>
 </body></html>`;
   }

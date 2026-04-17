@@ -304,7 +304,21 @@ ${recallAtivos.length>0?`<div class="ab">&#9888; ${recallAtivos.length} recall(s
 <p style="font-size:10pt;line-height:1.7;text-align:justify;margin-top:6px;">Os registros atendem IN 04/2007, IN 15/2009, IN 22/2009 e Decreto 12.031/2024.</p>
 <div class="sig"><div class="sl"></div><p style="font-size:10pt;font-weight:bold;">${esc(anualRtNome||emp.responsavel_tecnico||"Respons&aacute;vel T&eacute;cnico")}</p><p style="font-size:9pt;">CRMV: ${esc(anualRtCrmv||emp.crmv)||"&mdash;"}</p><p style="font-size:8pt;color:#666;margin-top:3px;">[ASSINATURA DIGITAL &mdash; ${now.toISOString()} &mdash; MP 2.200-2/2001]</p></div></div>
 
-<div class="ft"><p>Relat&oacute;rio Anual de Autocontrole &mdash; ${esc(emp.nome)} &mdash; ${anualAno}</p><p>FeedBPF &mdash; ${dataGeracao}</p><p>IN 04/2007 | IN 15/2009 | Decreto 6.296/2007 | Decreto 12.031/2024</p></div>
+<div class="ft"><p>Relat&oacute;rio Anual de Autocontrole &mdash; ${esc(emp.nome)} &mdash; ${anualAno}</p><p>BPF_Consult &mdash; ${dataGeracao}</p><p>IN 04/2007 | IN 15/2009 | Decreto 6.296/2007 | Decreto 12.031/2024</p></div>
+${(() => {
+  const ts = new Date();
+  const dt = ts.toLocaleString("pt-BR", { day:"2-digit", month:"2-digit", year:"numeric", hour:"2-digit", minute:"2-digit", second:"2-digit" });
+  let h = 5381; const base = `Relatório Anual|${anualAno}|${emp.nome}|${ts.toISOString()}`;
+  for (let i = 0; i < base.length; i++) h = ((h << 5) + h) + base.charCodeAt(i);
+  const hash = (h >>> 0).toString(16).padStart(8,"0").toUpperCase().slice(0,12);
+  return `<div style="margin-top:14px;padding:8px 10px;border-top:2px solid #1a1a2e;font-family:Arial,sans-serif;font-size:9px;color:#444;background:#fafafa;">
+    <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+      <div><strong>Relat&oacute;rio Anual de Autocontrole</strong> &mdash; ${anualAno}<br/>Empresa: ${esc(emp.nome)}</div>
+      <div style="text-align:right;">Emitido em: <strong>${dt}</strong><br/><span style="font-family:monospace;color:#1a1a2e;">INTEGRIDADE: ${hash}</span></div>
+    </div>
+    <div style="margin-top:4px;font-size:8px;color:#888;">Documento com data/hora de emiss&atilde;o e selo de integridade &mdash; Decreto 12.031/2024 &amp; MP 2.200-2/2001 (MAPA). Adultera&ccedil;&atilde;o invalida o registro.</div>
+  </div>`;
+})()}
 </body></html>`;
 
       const printWindow = window.open("", "_blank");

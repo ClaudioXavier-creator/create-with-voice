@@ -155,8 +155,15 @@ export default function FichaProducaoDigital({ ordemId, onClose }: Props) {
 
   const totalFormula = () => ingredientes.reduce((s, i) => s + Number(i.quantidade_kg), 0);
 
-  const handlePrint = () => {
+  const handlePrint = async () => {
     if (!printRef.current) return;
+    const { gerarCarimboSync, carimboHTML } = await import("@/utils/carimboDocumento");
+    const carimbo = gerarCarimboSync({
+      documentoTipo: "Ficha de Produção (OP)",
+      documentoId: ordem?.numero_ordem,
+      empresa: empresaAtiva?.nome,
+      usuario: user?.email,
+    });
     const w = window.open("", "_blank", "width=1200,height=800");
     if (!w) return;
     w.document.write(`<!DOCTYPE html><html><head><title>Ficha de Produção - ${ordem?.numero_ordem}</title>
@@ -173,7 +180,7 @@ export default function FichaProducaoDigital({ ordemId, onClose }: Props) {
         .signature-row > div { border-top: 1px solid #000; padding-top: 4px; text-align: center; }
         .footer { margin-top: 14px; font-size: 10px; }
         @media print { body { padding: 10px; } }
-      </style></head><body>${printRef.current.innerHTML}</body></html>`);
+      </style></head><body>${printRef.current.innerHTML}${carimboHTML(carimbo)}</body></html>`);
     w.document.close();
     setTimeout(() => { w.print(); }, 500);
   };

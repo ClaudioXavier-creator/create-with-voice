@@ -194,6 +194,13 @@ export function exportListaAprovadosXlsx(fornecedores: FornecedorData[]) {
  * Gera um "PDF" via impressão do navegador (window.print) de conteúdo HTML
  */
 export function printQuestionario(f?: FornecedorData) {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const { gerarCarimboSync, carimboHTML } = require("./carimboDocumento");
+  const carimbo = gerarCarimboSync({
+    documentoTipo: "PL POP 1.1 — Questionário Qualificação Fornecedor",
+    documentoId: f?.nome,
+    empresa: f?.nome,
+  });
   const nome = f?.nome || "";
   const html = `
 <!DOCTYPE html>
@@ -259,6 +266,8 @@ ${f?.observacoes ? `<p><strong>Observações:</strong> ${f.observacoes}</p>` : "
   <div><div class="line">Controle de Qualidade</div></div>
   <div><div class="line">Verificação</div></div>
 </div>
+
+${carimboHTML(carimbo)}
 
 </body></html>`;
 
