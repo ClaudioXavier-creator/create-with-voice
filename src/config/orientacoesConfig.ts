@@ -810,6 +810,30 @@ export const ORIENTACOES: ModuloOrientacao[] = [
     ],
     exemplo_resultado: "Registro confirmado como Ativo. Status salvo no cadastro do fornecedor.",
   },
+  {
+    id: "execucao-pops",
+    codigo: "AUX",
+    titulo: "Execução de ITs/POPs (Diário Operacional)",
+    rota: "/execucao-pops",
+    descricao: "Diário de bordo digital de cada execução de POP/IT no chão de fábrica. Comprova ao MAPA que os procedimentos não ficam só no papel — há evidência de execução periódica com responsável, data e checklist.",
+    base_legal: ["IN 04/2007 Art. 4º", "Decreto 12.031/2024", "IN 15/2009"],
+    passos: [
+      { titulo: "1. Ver alertas de atraso", descricao: "Painel mostra POPs cuja periodicidade venceu (ex: POP-02 deveria ser semanal e está há 10 dias sem registro).", dica: "Vermelho = ação urgente antes da auditoria." },
+      { titulo: "2. Nova Execução", descricao: "Selecione o POP/IT (vinculado a Documentos), informe executor, setor e status." },
+      { titulo: "3. Preencher checklist específico", descricao: "POP-02 (12 itens triagem + ASO), POP-03 (15 itens limpeza + produto químico), POP-04 (11 itens água + laudo), POP-05 (16 itens higiene pessoal), POP-09 (8 itens veículo) — sistema carrega automaticamente conforme o POP escolhido." },
+      { titulo: "4. Filtrar por período", descricao: "Use Status + POP + Data início/fim para auditoria mensal, trimestral ou por setor." },
+      { titulo: "5. Exportar histórico", descricao: "PDF com carimbo SHA-256 do período filtrado — entregar ao auditor MAPA." },
+    ],
+    campos_simulacao: [
+      { nome: "codigo_pop", label: "Código POP", tipo: "select", exemplo: "POP-002", opcoes: ["POP-001", "POP-002", "POP-003", "POP-004", "POP-005", "POP-006", "POP-007", "POP-008", "POP-009"] },
+      { nome: "data_execucao", label: "Data Execução", tipo: "date", exemplo: "2025-04-17" },
+      { nome: "executor", label: "Executor", tipo: "text", exemplo: "João Silva" },
+      { nome: "setor", label: "Setor", tipo: "text", exemplo: "Mistura/Granulação" },
+      { nome: "status", label: "Status", tipo: "select", exemplo: "concluido", opcoes: ["pendente", "em_execucao", "concluido", "nao_conforme"] },
+      { nome: "observacoes", label: "Observações / Não conformidades", tipo: "textarea", exemplo: "Todos os itens conformes. Cloro 1,2 mg/L." },
+    ],
+    exemplo_resultado: "Execução registrada e vinculada ao POP-002. Alerta de atraso removido. Disponível em filtro 'Concluído' do mês 04/2025.",
+  },
 ];
 
 export const ORIENTACOES_POR_POP = ORIENTACOES.reduce((acc, m) => {

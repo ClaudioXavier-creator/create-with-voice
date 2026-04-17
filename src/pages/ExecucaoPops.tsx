@@ -347,7 +347,7 @@ export default function ExecucaoPops() {
 
   return (
     <>
-      <PageHeader icon={PlayCircle} title="Execução de ITs e POPs" description="Registro de execução vinculado aos documentos cadastrados" />
+      <PageHeader icon={PlayCircle} title="Execução de ITs e POPs" description="Diário de bordo digital — comprova ao MAPA que os POPs são executados" orientacaoModuloId="execucao-pops" />
 
       {/* Alertas de não realização */}
       {alertas.length > 0 && (
