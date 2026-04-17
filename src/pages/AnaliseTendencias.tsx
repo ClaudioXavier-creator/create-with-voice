@@ -78,6 +78,7 @@ export default function AnaliseTendencias() {
         title="Análise de Tendências com IA"
         description="Identificação de padrões recorrentes de NCs e sugestões preventivas baseadas em IA"
         icon={Brain}
+        orientacaoModuloId="analise-tendencias"
       />
 
       <Card>

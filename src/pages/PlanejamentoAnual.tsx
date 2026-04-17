@@ -236,6 +236,7 @@ export default function PlanejamentoAnual() {
       <PageHeader
         title="Planejamento Anual de Atividades"
         description="Cronograma de análises, treinamentos e atividades obrigatórias com alertas inteligentes"
+        orientacaoModuloId="planejamento-anual"
       />
 
       {/* KPI Dashboard */}

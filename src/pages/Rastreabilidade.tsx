@@ -584,7 +584,8 @@ export default function Rastreabilidade() {
 
   return (
     <>
-      <PageHeader icon={Search} title="Rastreabilidade" description="Cadeia completa: MP → PA → Venda/Entrega → Recall — Decreto 12.031/2024" />
+      <PageHeader icon={Search} title="Rastreabilidade" description="Cadeia completa: MP → PA → Venda/Entrega → Recall — Decreto 12.031/2024"
+        orientacaoModuloId="rastreabilidade" />
 
       {/* ══════════ MELHORIA 5: DASHBOARD DE COBERTURA ══════════ */}
       <Card className="mb-6 border-primary/20 bg-gradient-to-r from-primary/5 to-transparent">

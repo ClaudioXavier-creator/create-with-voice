@@ -80,6 +80,7 @@ export default function ConsultaSipeagro() {
         title="Consulta SIPEAGRO"
         description="Verificação de fornecedores no sistema MAPA/SIPEAGRO"
         icon={Search}
+        orientacaoModuloId="consulta-sipeagro"
       />
 
       <div className="grid gap-4 md:grid-cols-3">

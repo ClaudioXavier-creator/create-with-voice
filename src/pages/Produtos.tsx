@@ -64,7 +64,8 @@ export default function Produtos() {
   if (showForm || editingId) {
     return (
       <>
-        <PageHeader icon={Package} title={editingId ? "Editar Produto" : "Novo Produto"} description="Cadastro de produto" />
+        <PageHeader icon={Package} title={editingId ? "Editar Produto" : "Novo Produto"} description="Cadastro de produto"
+        orientacaoModuloId="produtos" />
         <Button variant="outline" size="sm" className="mb-4" onClick={() => { setShowForm(false); setEditingId(null); }}>
           ← Voltar
         </Button>

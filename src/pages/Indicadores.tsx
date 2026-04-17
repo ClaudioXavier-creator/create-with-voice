@@ -209,7 +209,8 @@ export default function Indicadores() {
 
   if (loading) return (
     <>
-      <PageHeader icon={BarChart3} title="Indicadores" description="Dashboard de indicadores de gestão BPF e produção" />
+      <PageHeader icon={BarChart3} title="Indicadores" description="Dashboard de indicadores de gestão BPF e produção"
+        orientacaoModuloId="indicadores" />
       <div className="flex justify-center py-12"><Loader2 className="w-8 h-8 animate-spin text-muted-foreground" /></div>
     </>
   );

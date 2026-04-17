@@ -9,6 +9,7 @@ export default function Formulas() {
         icon={FileText}
         title="Fórmulas de Produção"
         description="Cadastro versionado de fórmulas — código automático: 'Produto - vXX-DDMMAAAA'"
+        orientacaoModuloId="formulas"
       />
       <FormulasManager />
     </>

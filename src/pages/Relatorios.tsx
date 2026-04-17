@@ -430,7 +430,8 @@ ${(() => {
 
   return (
     <>
-      <PageHeader icon={FileDown} title="Relatórios" description="Relatórios digitais e documentos digitalizados" />
+      <PageHeader icon={FileDown} title="Relatórios" description="Relatórios digitais e documentos digitalizados"
+        orientacaoModuloId="relatorios" />
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         <Card><CardContent className="pt-4 text-center">

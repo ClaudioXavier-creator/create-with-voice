@@ -128,7 +128,8 @@ export default function SimulacaoRecall() {
 
   return (
     <>
-      <PageHeader icon={Timer} title="Simulação de Recall" description="Exercício anual obrigatório — Decreto 12.031/2024 e POP-008" />
+      <PageHeader icon={Timer} title="Simulação de Recall" description="Exercício anual obrigatório — Decreto 12.031/2024 e POP-008"
+        orientacaoModuloId="simulacao-recall" />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Painel lateral */}

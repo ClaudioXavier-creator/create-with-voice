@@ -268,7 +268,8 @@ export default function Documentos() {
 
   return (
     <>
-      <PageHeader icon={FileText} title="Documentos, POPs e Calibração" description="POPs obrigatórios, Manual BPF, ITs, arquivos e gestão de calibração" />
+      <PageHeader icon={FileText} title="Documentos, POPs e Calibração" description="POPs obrigatórios, Manual BPF, ITs, arquivos e gestão de calibração"
+        orientacaoModuloId="documentos" />
 
       <Tabs defaultValue="pops" className="space-y-4">
         <TabsList className="flex flex-wrap h-auto gap-1 p-1">
