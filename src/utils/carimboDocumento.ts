@@ -41,6 +41,46 @@ async function hashCurto(conteudo: string): Promise<string> {
   return (h >>> 0).toString(16).padStart(8, "0").toUpperCase().slice(0, 12);
 }
 
+/** Hash síncrono (djb2) para uso em fluxos não-async */
+function hashCurtoSync(conteudo: string): string {
+  let h = 5381;
+  for (let i = 0; i < conteudo.length; i++) h = ((h << 5) + h) + conteudo.charCodeAt(i);
+  return (h >>> 0).toString(16).padStart(8, "0").toUpperCase().slice(0, 12);
+}
+
+/** Versão síncrona — usa djb2. Recomendado para fluxos de impressão. */
+export function gerarCarimboSync(params: {
+  documentoTipo: string;
+  documentoId?: string;
+  empresa?: string;
+  usuario?: string;
+}): CarimboInfo {
+  const agora = new Date();
+  const dataHoraISO = agora.toISOString();
+  const dataHoraBR = agora.toLocaleString("pt-BR", {
+    day: "2-digit", month: "2-digit", year: "numeric",
+    hour: "2-digit", minute: "2-digit", second: "2-digit",
+  });
+  const base = [
+    params.documentoTipo,
+    params.documentoId || "",
+    params.empresa || "",
+    params.usuario || "",
+    dataHoraISO,
+  ].join("|");
+  const hash = hashCurtoSync(base);
+  return {
+    documentoTipo: params.documentoTipo,
+    documentoId: params.documentoId,
+    empresa: params.empresa,
+    usuario: params.usuario,
+    dataHoraISO,
+    dataHoraBR,
+    hashCurto: hash,
+    selo: `INTEGRIDADE: ${hash}`,
+  };
+}
+
 export async function gerarCarimbo(params: {
   documentoTipo: string;
   documentoId?: string;
