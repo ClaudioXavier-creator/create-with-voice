@@ -164,7 +164,8 @@ export default function ChecklistPreAuditoria() {
 
   return (
     <>
-      <PageHeader icon={ShieldCheck} title="Checklist Pré-Auditoria" description="Verificação automática de conformidade antes de auditorias do MAPA" />
+      <PageHeader icon={ShieldCheck} title="Checklist Pré-Auditoria" description="Verificação automática de conformidade antes de auditorias do MAPA"
+        orientacaoModuloId="checklist-pre-auditoria" />
 
       {/* Resumo */}
       <Card className="mb-6">

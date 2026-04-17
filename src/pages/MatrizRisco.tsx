@@ -327,7 +327,8 @@ export default function MatrizRisco() {
 
   return (
     <div className="space-y-6">
-      <PageHeader title="Matriz de Sensibilidade e Risco" description="Sequenciamento de produção e análise de perigos APPCC" icon={AlertTriangle} />
+      <PageHeader title="Matriz de Sensibilidade e Risco" description="Sequenciamento de produção e análise de perigos APPCC" icon={AlertTriangle}
+        orientacaoModuloId="matriz-risco" />
 
       <Tabs value={tab} onValueChange={setTab}>
         <TabsList>

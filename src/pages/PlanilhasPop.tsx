@@ -122,7 +122,8 @@ export default function PlanilhasPop() {
   if (showForm && planilhaId && selectedPeriodicidade) {
     return (
       <>
-        <PageHeader icon={ClipboardList} title={`${selectedPop.codigo} - ${selectedPeriodicidade.label}`} description={`${MESES[mes - 1]} / ${ano}`} />
+        <PageHeader icon={ClipboardList} title={`${selectedPop.codigo} - ${selectedPeriodicidade.label}`} description={`${MESES[mes - 1]} / ${ano}`}
+        orientacaoModuloId="planilhas-pop" />
         <div className="flex gap-2 mb-4">
           <Button variant="outline" size="sm" onClick={() => setShowForm(false)}>
             ← Voltar

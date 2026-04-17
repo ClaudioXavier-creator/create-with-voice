@@ -415,6 +415,7 @@ export default function Legislacao() {
         icon={Scale}
         title="Legislação & IA"
         description="Atualizações legislativas, biblioteca de normas e análise com IA"
+        orientacaoModuloId="legislacao"
       />
 
       {/* Stats */}

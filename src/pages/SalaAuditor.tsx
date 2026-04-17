@@ -128,7 +128,8 @@ export default function SalaAuditor() {
 
   return (
     <>
-      <PageHeader icon={Shield} title="Sala do Auditor" description="Acesso centralizado a todos os itens de fiscalização — Decreto 12.031/2024" />
+      <PageHeader icon={Shield} title="Sala do Auditor" description="Acesso centralizado a todos os itens de fiscalização — Decreto 12.031/2024"
+        orientacaoModuloId="sala-auditor" />
 
       {/* Summary Cards */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
