@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
-import { ClipboardList, Plus, Download, Check, FileSpreadsheet } from "lucide-react";
+import { ClipboardList, Plus, Download, Check, FileSpreadsheet, ExternalLink, Info } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -20,6 +21,7 @@ const MESES = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julh
 export default function PlanilhasPop() {
   const { user } = useAuth();
   const { empresaAtiva } = useEmpresa();
+  const navigate = useNavigate();
   const [selectedPop, setSelectedPop] = useState<PopConfig>(POPS_CONFIG[1]); // POP-02 default
   const [selectedPeriodicidade, setSelectedPeriodicidade] = useState<PopPeriodicidade | null>(null);
   const [mes, setMes] = useState(new Date().getMonth() + 1);
@@ -31,6 +33,8 @@ export default function PlanilhasPop() {
   useEffect(() => {
     if (selectedPop.periodicidades.length > 0) {
       setSelectedPeriodicidade(selectedPop.periodicidades[0]);
+    } else {
+      setSelectedPeriodicidade(null);
     }
   }, [selectedPop]);
 
@@ -195,6 +199,53 @@ export default function PlanilhasPop() {
           <CardDescription>{selectedPop.descricao}</CardDescription>
         </CardHeader>
       </Card>
+
+      {/* Aviso de lançamento único em módulos específicos */}
+      {selectedPop.modulos_vinculados && selectedPop.modulos_vinculados.length > 0 && (
+        <Card className="mb-6 border-primary/40 bg-primary/5">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm flex items-center gap-2">
+              <Info className="w-4 h-4 text-primary" />
+              Lançamento único — registros operacionais deste POP
+            </CardTitle>
+            <CardDescription className="text-xs">
+              Para evitar duplicidade, os registros do dia a dia deste POP são feitos diretamente nos módulos abaixo.
+              As planilhas digitais oficiais (com assinatura RT) e os relatórios já consomem esses dados.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+              {selectedPop.modulos_vinculados.map((m) => (
+                <Button
+                  key={m.rota}
+                  variant="outline"
+                  size="sm"
+                  className="justify-start h-auto py-2 text-left"
+                  onClick={() => navigate(m.rota)}
+                >
+                  <ExternalLink className="w-3.5 h-3.5 mr-2 shrink-0 text-primary" />
+                  <span className="flex flex-col items-start">
+                    <span className="font-medium text-xs">{m.label}</span>
+                    <span className="text-[11px] text-muted-foreground font-normal">{m.descricao}</span>
+                  </span>
+                </Button>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Caso o POP não tenha planilhas próprias (tudo no módulo) */}
+      {selectedPop.periodicidades.length === 0 && (
+        <Card className="border-dashed">
+          <CardContent className="py-8 text-center">
+            <ClipboardList className="w-10 h-10 mx-auto text-muted-foreground mb-3" />
+            <p className="text-sm text-muted-foreground">
+              Este POP não possui planilhas próprias nesta tela. Todos os registros são lançados nos módulos vinculados acima.
+            </p>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Periodicidades disponíveis */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
