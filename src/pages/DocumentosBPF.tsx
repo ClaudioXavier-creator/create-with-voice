@@ -381,6 +381,8 @@ export default function DocumentosBPF() {
           </p>
         </CardContent>
       </Card>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
