@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { ClipboardList, Plus, Loader2, ChevronDown, ChevronUp, Clock, CheckCircle2, AlertTriangle, Factory, FlaskConical, ArrowRightLeft, ShieldAlert, TestTube, Shield, Droplets } from "lucide-react";
+import { ClipboardList, Plus, Loader2, ChevronDown, ChevronUp, Clock, CheckCircle2, AlertTriangle, Factory, FlaskConical, ArrowRightLeft, ShieldAlert, TestTube, Shield, Droplets, FileText } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
@@ -687,6 +687,19 @@ export default function PCP() {
                               <TabsTrigger value="carryover"><TestTube className="w-3 h-3 mr-1" /> Carry-over</TabsTrigger>
                             </TabsList>
                             <div className="flex gap-2">
+                              <Dialog>
+                                <DialogTrigger asChild>
+                                  <Button size="sm" variant="default" className="h-8 text-xs gap-1">
+                                    <FileText className="w-3 h-3" /> Ficha Digital + PDF
+                                  </Button>
+                                </DialogTrigger>
+                                <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
+                                  <DialogHeader>
+                                    <DialogTitle>Ficha Digital de Produção — {o.numero_ordem}</DialogTitle>
+                                  </DialogHeader>
+                                  <FichaProducaoDigital ordemId={o.id} />
+                                </DialogContent>
+                              </Dialog>
                               <Select value={o.status || "programada"} onValueChange={(v) => handleUpdateStatus(o.id, v)}>
                                 <SelectTrigger className="w-36 h-8 text-xs"><SelectValue /></SelectTrigger>
                                 <SelectContent>
