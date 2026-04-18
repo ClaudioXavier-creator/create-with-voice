@@ -51,6 +51,13 @@ interface BatidaLote {
   quantidade_kg: number;
 }
 
+interface LoteDisponivel {
+  materia_prima: string;
+  lote: string;
+  fornecedor: string | null;
+  data: string;
+}
+
 const VOLUMES_MISTURADOR = [500, 1000, 2000];
 
 export default function FichaProducaoDigital({ ordemId, onClose }: Props) {
@@ -59,6 +66,7 @@ export default function FichaProducaoDigital({ ordemId, onClose }: Props) {
   const [ordem, setOrdem] = useState<Ordem | null>(null);
   const [ingredientes, setIngredientes] = useState<Ingrediente[]>([]);
   const [lotes, setLotes] = useState<BatidaLote[]>([]);
+  const [lotesDisp, setLotesDisp] = useState<LoteDisponivel[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
