@@ -1708,8 +1708,10 @@ export default function Rastreabilidade() {
             <Input placeholder="Buscar por produto, lote, MP, fornecedor, cliente, NF..." value={busca} onChange={(e) => setBusca(e.target.value)} className="mt-2" />
           </div>
           <div className="flex gap-2 flex-wrap">
-            <Button size="sm" variant="outline" onClick={exportBalancoMassa} disabled={registros.length === 0}><Download className="w-4 h-4 mr-1" /> Balanço de Massa</Button>
-            <Button size="sm" variant="outline" onClick={exportHistoricoCSV} disabled={registros.length === 0}><Download className="w-4 h-4 mr-1" /> Exportar Histórico</Button>
+            <Button size="sm" variant="outline" onClick={exportBalancoMassa} disabled={registros.length === 0}><Download className="w-4 h-4 mr-1" /> Balanço Quantitativo</Button>
+            <Button size="sm" variant="outline" onClick={() => setClienteReversoOpen(true)} disabled={clientesUnicos.length === 0}><GitBranch className="w-4 h-4 mr-1" /> Por Cliente</Button>
+            <Button size="sm" variant="outline" onClick={() => setCertLoteOpen(true)} disabled={lotesPADisponiveis.length === 0}><Package className="w-4 h-4 mr-1" /> Certificado do Lote</Button>
+            <Button size="sm" variant="outline" onClick={exportHistoricoCSV} disabled={registros.length === 0}><Download className="w-4 h-4 mr-1" /> Histórico CSV</Button>
             <Dialog open={open} onOpenChange={setOpen}>
               <DialogTrigger asChild><Button size="sm"><Plus className="w-4 h-4 mr-1" /> Novo Registro</Button></DialogTrigger>
               <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
