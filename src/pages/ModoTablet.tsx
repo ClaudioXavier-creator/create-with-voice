@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Factory, Package, ClipboardCheck, Droplets, AlertTriangle, CheckCircle2, ArrowLeft, Play, Settings } from "lucide-react";
+import { Factory, Package, ClipboardCheck, Droplets, AlertTriangle, CheckCircle2, ArrowLeft, Play, Settings, Bug } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,12 +13,13 @@ import { useAuth } from "@/hooks/useAuth";
 import { useEmpresa } from "@/hooks/useEmpresa";
 import { Link } from "react-router-dom";
 
-type Tela = "menu" | "producao" | "recebimento" | "limpeza" | "nc";
+type Tela = "menu" | "producao" | "recebimento" | "limpeza" | "nc" | "pragas";
 
 const MENU_ITEMS = [
   { id: "producao" as Tela, label: "Registrar Produção", icon: Factory, color: "bg-blue-500" },
   { id: "recebimento" as Tela, label: "Recebimento MP", icon: Package, color: "bg-emerald-500" },
   { id: "limpeza" as Tela, label: "Registro Limpeza", icon: Droplets, color: "bg-cyan-500" },
+  { id: "pragas" as Tela, label: "Observação de Pragas", icon: Bug, color: "bg-amber-600" },
   { id: "nc" as Tela, label: "Registrar NC", icon: AlertTriangle, color: "bg-red-500" },
 ];
 
@@ -51,11 +52,18 @@ export default function ModoTablet() {
   const [ncSetor, setNcSetor] = useState("");
   const [ncDescricao, setNcDescricao] = useState("");
 
+  // Pragas — observação chão de fábrica (POP 7.3)
+  const [pragaLocal, setPragaLocal] = useState("");
+  const [pragaTipos, setPragaTipos] = useState({ roedores: false, aves: false, voadores: false, rasteiros: false, outros: false });
+  const [pragaAcao, setPragaAcao] = useState("");
+  const [pragaResp, setPragaResp] = useState("");
+
   const resetAll = () => {
     setProdProduto(""); setProdLote(""); setProdOperador(""); setProdQuantidade("");
     setRecFornecedor(""); setRecMP(""); setRecLote(""); setRecOdor("normal"); setRecInsetos("ausente"); setRecAprovado(true);
     setLimpExecutor(""); setLimpConforme(true); setLimpObs("");
     setNcSetor(""); setNcDescricao("");
+    setPragaLocal(""); setPragaTipos({ roedores: false, aves: false, voadores: false, rasteiros: false, outros: false }); setPragaAcao(""); setPragaResp("");
   };
 
   const salvarProducao = async () => {
@@ -108,6 +116,33 @@ export default function ModoTablet() {
     setSaving(false);
     if (error) { toast({ title: "Erro", description: error.message, variant: "destructive" }); return; }
     toast({ title: "✅ NC registrada!" });
+    resetAll(); setTela("menu");
+  };
+
+  const salvarPraga = async () => {
+    if (!user || !pragaLocal) return;
+    const tipos: string[] = [];
+    if (pragaTipos.roedores) tipos.push("Roedores");
+    if (pragaTipos.aves) tipos.push("Aves/Pássaros");
+    if (pragaTipos.voadores) tipos.push("Insetos voadores");
+    if (pragaTipos.rasteiros) tipos.push("Insetos rasteiros");
+    if (pragaTipos.outros) tipos.push("Outros");
+    if (tipos.length === 0) {
+      toast({ title: "Selecione ao menos um tipo de evidência", variant: "destructive" });
+      return;
+    }
+    setSaving(true);
+    const { error } = await supabase.from("controle_pragas").insert({
+      user_id: user.id, empresa_id: empresaAtiva?.id || null,
+      data: new Date().toISOString().split("T")[0],
+      local: pragaLocal,
+      tipo_praga: tipos.join(", "),
+      acao: pragaAcao || "Inspeção / observação visual",
+      responsavel: pragaResp,
+    });
+    setSaving(false);
+    if (error) { toast({ title: "Erro", description: error.message, variant: "destructive" }); return; }
+    toast({ title: "✅ Observação registrada!", description: "Comunique o RT para investigação." });
     resetAll(); setTela("menu");
   };
 
@@ -242,6 +277,56 @@ export default function ModoTablet() {
             <div><Label className="text-base">Descrição *</Label><Textarea value={ncDescricao} onChange={e => setNcDescricao(e.target.value)} className="text-base mt-1" rows={4} placeholder="Descreva a não conformidade encontrada..." /></div>
             <Button onClick={salvarNC} disabled={saving || !ncSetor || !ncDescricao} className="w-full h-14 text-lg" size="lg" variant="destructive">
               <AlertTriangle className="w-5 h-5 mr-2" /> {saving ? "Salvando..." : "Registrar NC"}
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  if (tela === "pragas") {
+    const ToggleTipo = ({ k, label }: { k: keyof typeof pragaTipos; label: string }) => (
+      <button
+        type="button"
+        onClick={() => setPragaTipos(p => ({ ...p, [k]: !p[k] }))}
+        className={`flex items-center justify-between gap-2 p-4 rounded-xl border-2 text-left transition-all active:scale-95 min-h-[64px] ${
+          pragaTipos[k] ? "border-amber-600 bg-amber-50 dark:bg-amber-950/30" : "border-border bg-card"
+        }`}
+      >
+        <span className="text-base font-medium">{label}</span>
+        <span className={`text-sm font-bold px-2 py-1 rounded ${pragaTipos[k] ? "bg-amber-600 text-white" : "bg-muted text-muted-foreground"}`}>
+          {pragaTipos[k] ? "PRESENÇA" : "Sem evidência"}
+        </span>
+      </button>
+    );
+    return (
+      <div className="max-w-lg mx-auto p-4">
+        <Voltar />
+        <Card>
+          <CardContent className="pt-6 space-y-4">
+            <h2 className="text-xl font-bold flex items-center gap-2"><Bug className="w-6 h-6 text-amber-600" /> Observação de Pragas</h2>
+            <p className="text-xs text-muted-foreground">POP 7.3 — Toque nos itens onde houver evidência (visual, fezes, ninhos, dejetos, vestígios).</p>
+            <div>
+              <Label className="text-base">Local / Área *</Label>
+              <Input value={pragaLocal} onChange={e => setPragaLocal(e.target.value)} className="text-lg h-12 mt-1" placeholder="Ex: Depósito MP, Silo 2, Mistura..." />
+            </div>
+            <div className="grid grid-cols-1 gap-2">
+              <ToggleTipo k="roedores" label="🐀 Roedores" />
+              <ToggleTipo k="aves" label="🐦 Aves / Pássaros" />
+              <ToggleTipo k="voadores" label="🦟 Insetos voadores" />
+              <ToggleTipo k="rasteiros" label="🪳 Insetos rasteiros" />
+              <ToggleTipo k="outros" label="❓ Outros vestígios" />
+            </div>
+            <div>
+              <Label className="text-base">Ação imediata</Label>
+              <Input value={pragaAcao} onChange={e => setPragaAcao(e.target.value)} className="text-lg h-12 mt-1" placeholder="Ex: Limpeza, isca reposta, vedação..." />
+            </div>
+            <div>
+              <Label className="text-base">Responsável *</Label>
+              <Input value={pragaResp} onChange={e => setPragaResp(e.target.value)} className="text-lg h-12 mt-1" placeholder="Seu nome" />
+            </div>
+            <Button onClick={salvarPraga} disabled={saving || !pragaLocal || !pragaResp} className="w-full h-14 text-lg" size="lg">
+              <CheckCircle2 className="w-5 h-5 mr-2" /> {saving ? "Salvando..." : "Salvar Observação"}
             </Button>
           </CardContent>
         </Card>

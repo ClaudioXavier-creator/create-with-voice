@@ -51,6 +51,13 @@ interface BatidaLote {
   quantidade_kg: number;
 }
 
+interface LoteDisponivel {
+  materia_prima: string;
+  lote: string;
+  fornecedor: string | null;
+  data: string;
+}
+
 const VOLUMES_MISTURADOR = [500, 1000, 2000];
 
 export default function FichaProducaoDigital({ ordemId, onClose }: Props) {
@@ -59,6 +66,7 @@ export default function FichaProducaoDigital({ ordemId, onClose }: Props) {
   const [ordem, setOrdem] = useState<Ordem | null>(null);
   const [ingredientes, setIngredientes] = useState<Ingrediente[]>([]);
   const [lotes, setLotes] = useState<BatidaLote[]>([]);
+  const [lotesDisp, setLotesDisp] = useState<LoteDisponivel[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
@@ -101,6 +109,19 @@ export default function FichaProducaoDigital({ ordemId, onClose }: Props) {
     }
     const { data: lts } = await supabase.from("batida_lotes" as any).select("*").eq("ordem_id", ordemId);
     if (lts) setLotes(lts as unknown as BatidaLote[]);
+
+    // Carrega lotes de MP disponíveis (recebimentos aprovados) para sugerir nos campos
+    let recQ = supabase
+      .from("recebimento_mp")
+      .select("materia_prima, lote, fornecedor, data")
+      .eq("aprovado", true)
+      .not("lote", "is", null)
+      .order("data", { ascending: false })
+      .limit(500);
+    if (empresaAtiva) recQ = recQ.eq("empresa_id", empresaAtiva.id);
+    const { data: recs } = await recQ;
+    if (recs) setLotesDisp(recs.filter((r: any) => r.lote && r.lote.trim() !== "") as LoteDisponivel[]);
+
     setLoading(false);
   };
 
@@ -295,15 +316,28 @@ export default function FichaProducaoDigital({ ordemId, onClose }: Props) {
                 {ingredientes.map(ing => {
                   const tot = totalFormula();
                   const qtdPorBatida = tot > 0 ? (Number(ing.quantidade_kg) * volumeMist / tot) : 0;
+                  // Lotes disponíveis (recebimento aprovado) que casam com esta MP — busca por nome contendo
+                  const nomeMp = ing.materia_prima.toLowerCase().trim();
+                  const lotesMp = lotesDisp.filter(l => {
+                    const n = (l.materia_prima || "").toLowerCase().trim();
+                    return n === nomeMp || n.includes(nomeMp) || nomeMp.includes(n);
+                  });
+                  const dlId = `lotes-${ing.id}`;
                   return (
                     <TableRow key={ing.id}>
-                      <TableCell className="font-medium">{ing.materia_prima}</TableCell>
+                      <TableCell className="font-medium">
+                        {ing.materia_prima}
+                        {lotesMp.length > 0 && (
+                          <span className="ml-1 text-[10px] text-muted-foreground">({lotesMp.length} lote{lotesMp.length > 1 ? "s" : ""} disp.)</span>
+                        )}
+                      </TableCell>
                       <TableCell className="text-right text-xs">{Number(ing.quantidade_kg).toFixed(2)}</TableCell>
                       {batidasArr.map(b => (
                         <TableCell key={b} className="p-1">
                           <Input
-                            placeholder="Lote"
+                            placeholder={lotesMp.length > 0 ? "Lote (sugerido)" : "Lote"}
                             className="h-7 text-xs mb-1"
+                            list={dlId}
                             defaultValue={getValor(ing.materia_prima, b, "lote_mp")}
                             onBlur={e => setLoteBatida(ing.materia_prima, b, "lote_mp", e.target.value)}
                           />
@@ -329,6 +363,26 @@ export default function FichaProducaoDigital({ ordemId, onClose }: Props) {
                 </TableRow>
               </TableBody>
             </Table>
+            {/* datalists para autocomplete dos lotes de MP por ingrediente */}
+            {ingredientes.map(ing => {
+              const nomeMp = ing.materia_prima.toLowerCase().trim();
+              const lotesMp = lotesDisp.filter(l => {
+                const n = (l.materia_prima || "").toLowerCase().trim();
+                return n === nomeMp || n.includes(nomeMp) || nomeMp.includes(n);
+              });
+              if (lotesMp.length === 0) return null;
+              // remove duplicatas de lote
+              const unicos = Array.from(new Map(lotesMp.map(l => [l.lote, l])).values());
+              return (
+                <datalist key={ing.id} id={`lotes-${ing.id}`}>
+                  {unicos.map(l => (
+                    <option key={l.lote} value={l.lote}>
+                      {l.fornecedor ? `${l.fornecedor} — ${l.data}` : l.data}
+                    </option>
+                  ))}
+                </datalist>
+              );
+            })}
           </CardContent>
         </Card>
       )}
