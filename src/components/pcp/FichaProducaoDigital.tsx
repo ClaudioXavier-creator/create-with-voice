@@ -109,6 +109,19 @@ export default function FichaProducaoDigital({ ordemId, onClose }: Props) {
     }
     const { data: lts } = await supabase.from("batida_lotes" as any).select("*").eq("ordem_id", ordemId);
     if (lts) setLotes(lts as unknown as BatidaLote[]);
+
+    // Carrega lotes de MP disponíveis (recebimentos aprovados) para sugerir nos campos
+    let recQ = supabase
+      .from("recebimento_mp")
+      .select("materia_prima, lote, fornecedor, data")
+      .eq("aprovado", true)
+      .not("lote", "is", null)
+      .order("data", { ascending: false })
+      .limit(500);
+    if (empresaAtiva) recQ = recQ.eq("empresa_id", empresaAtiva.id);
+    const { data: recs } = await recQ;
+    if (recs) setLotesDisp(recs.filter((r: any) => r.lote && r.lote.trim() !== "") as LoteDisponivel[]);
+
     setLoading(false);
   };
 
