@@ -26,6 +26,11 @@ export interface PopConfig {
    * Exibido na aba do POP como referência de "lançamento único".
    */
   modulos_vinculados?: { rota: string; label: string; descricao: string }[];
+  /**
+   * Planilhas em branco para impressão (registro manual em campo).
+   * Cada item referencia uma função exportada de utils/excelTemplates.
+   */
+  planilhas_impressao?: { label: string; descricao: string; arquivo: string }[];
 }
 
 function diasDoMes(): string[] {
@@ -339,6 +344,18 @@ export const POPS_CONFIG: PopConfig[] = [
       "ANEXO 4: Produtos Recolhidos (Recall) – PL POP 9.4 (módulo /simulacao-recall)",
       "ANEXO 5: Controle de RNC – PL POP 9.5 (módulo /nao-conformidades)",
       "ANEXO 6: Registro de Reclamações de Clientes – PL POP 9.6",
+    ],
+    planilhas_impressao: [
+      {
+        label: "PL POP 9.2 — Expedição (Lista Simples)",
+        descricao: "Modelo manual em branco — data, NF, cliente, produto, lote e quantidade. Imprimir e arquivar 2 anos.",
+        arquivo: "Form_Expedicao_Simples",
+      },
+      {
+        label: "PL POP 9.2 — Expedição Completa por NF",
+        descricao: "Modelo detalhado por nota fiscal — cliente, transporte, motorista, lotes e assinaturas.",
+        arquivo: "Form_Expedicao_Completa",
+      },
     ],
   },
   {

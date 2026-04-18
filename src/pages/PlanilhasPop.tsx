@@ -15,6 +15,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useEmpresa } from "@/hooks/useEmpresa";
 import { POPS_CONFIG, type PopConfig, type PopPeriodicidade } from "@/config/popsConfig";
 import PopPlanilhaForm from "@/components/pop/PopPlanilhaForm";
+import { TEMPLATE_GENERATORS } from "@/utils/excelTemplates";
 
 const MESES = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
 
@@ -236,7 +237,48 @@ export default function PlanilhasPop() {
         </Card>
       )}
 
-      {/* Caso o POP não tenha planilhas próprias (tudo no módulo) */}
+      {/* Planilhas para Impressão (modelos manuais em branco) */}
+      {selectedPop.planilhas_impressao && selectedPop.planilhas_impressao.length > 0 && (
+        <Card className="mb-6 border-primary/40 bg-primary/5">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm flex items-center gap-2">
+              <Download className="w-4 h-4 text-primary" />
+              Planilhas para Impressão (registro manual em campo)
+            </CardTitle>
+            <CardDescription className="text-xs">
+              Modelos em branco para imprimir, preencher à mão e arquivar (mínimo 2 anos — IN 04/2007 MAPA).
+              Para preenchimento digital com assinatura, use os módulos vinculados acima.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+              {selectedPop.planilhas_impressao.map((p) => (
+                <Button
+                  key={p.arquivo}
+                  variant="outline"
+                  size="sm"
+                  className="justify-start h-auto py-2 text-left"
+                  onClick={() => {
+                    const gen = TEMPLATE_GENERATORS[p.arquivo];
+                    if (gen) {
+                      gen();
+                      toast.success("Planilha gerada");
+                    } else {
+                      toast.error("Modelo não encontrado");
+                    }
+                  }}
+                >
+                  <Download className="w-3.5 h-3.5 mr-2 shrink-0 text-primary" />
+                  <span className="flex flex-col items-start">
+                    <span className="font-medium text-xs">{p.label}</span>
+                    <span className="text-[11px] text-muted-foreground font-normal">{p.descricao}</span>
+                  </span>
+                </Button>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
       {selectedPop.periodicidades.length === 0 && (
         <Card className="border-dashed">
           <CardContent className="py-8 text-center">
