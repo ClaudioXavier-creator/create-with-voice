@@ -81,8 +81,9 @@ Deno.serve(async (req) => {
     }
 
     if (action === "grant") {
-      const { empresa_id, dias } = params;
-      if (!empresa_id || !dias) throw new Error("empresa_id e dias são obrigatórios");
+      const { empresa_id, dias, licenca_id, user_id: targetUserId } = params;
+      if (!dias) throw new Error("dias é obrigatório");
+      if (!empresa_id && !licenca_id && !targetUserId) throw new Error("empresa_id, licenca_id ou user_id é obrigatório");
 
       const planoMap: Record<number, string> = {
         30: "trial",
