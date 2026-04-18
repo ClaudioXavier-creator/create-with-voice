@@ -98,45 +98,53 @@ Deno.serve(async (req) => {
 
       const chave = `ADM-${crypto.randomUUID().replace(/-/g, "").slice(0, 16).toUpperCase()}`;
 
-      // Get empresa owner
-      const { data: empresa } = await adminClient
-        .from("empresas")
-        .select("user_id")
-        .eq("id", empresa_id)
-        .single();
+      let ownerUserId: string | null = targetUserId || null;
+      if (empresa_id && !ownerUserId) {
+        const { data: empresa } = await adminClient
+          .from("empresas")
+          .select("user_id")
+          .eq("id", empresa_id)
+          .single();
+        if (!empresa) throw new Error("Empresa não encontrada");
+        ownerUserId = empresa.user_id;
+      }
 
-      if (!empresa) throw new Error("Empresa não encontrada");
+      // Find existing license: by id, by empresa_id, or by user_id with null empresa
+      let existing: { id: string } | null = null;
+      if (licenca_id) {
+        existing = { id: licenca_id };
+      } else if (empresa_id) {
+        const { data } = await adminClient.from("licencas").select("id").eq("empresa_id", empresa_id).maybeSingle();
+        existing = data;
+      } else if (ownerUserId) {
+        const { data } = await adminClient
+          .from("licencas")
+          .select("id")
+          .eq("user_id", ownerUserId)
+          .is("empresa_id", null)
+          .order("created_at", { ascending: false })
+          .limit(1)
+          .maybeSingle();
+        existing = data;
+      }
 
-      // Check existing license for this empresa
-      const { data: existing } = await adminClient
-        .from("licencas")
-        .select("id")
-        .eq("empresa_id", empresa_id)
-        .maybeSingle();
+      const updatePayload = {
+        plano: planoMap[Number(dias)] || `${dias}_dias`,
+        data_inicio: now.toISOString().split("T")[0],
+        data_expiracao: expDate.toISOString().split("T")[0],
+        status: "ativa",
+        chave_licenca: chave,
+        liberado_admin: true,
+      };
 
       if (existing) {
-        const { error } = await adminClient
-          .from("licencas")
-          .update({
-            plano: planoMap[Number(dias)] || `${dias}_dias`,
-            data_inicio: now.toISOString().split("T")[0],
-            data_expiracao: expDate.toISOString().split("T")[0],
-            status: "ativa",
-            chave_licenca: chave,
-            liberado_admin: true,
-          })
-          .eq("id", existing.id);
+        const { error } = await adminClient.from("licencas").update(updatePayload).eq("id", existing.id);
         if (error) throw error;
       } else {
         const { error } = await adminClient.from("licencas").insert({
-          user_id: empresa.user_id,
-          empresa_id,
-          chave_licenca: chave,
-          plano: planoMap[Number(dias)] || `${dias}_dias`,
-          data_inicio: now.toISOString().split("T")[0],
-          data_expiracao: expDate.toISOString().split("T")[0],
-          status: "ativa",
-          liberado_admin: true,
+          user_id: ownerUserId,
+          empresa_id: empresa_id || null,
+          ...updatePayload,
         });
         if (error) throw error;
       }
