@@ -316,15 +316,28 @@ export default function FichaProducaoDigital({ ordemId, onClose }: Props) {
                 {ingredientes.map(ing => {
                   const tot = totalFormula();
                   const qtdPorBatida = tot > 0 ? (Number(ing.quantidade_kg) * volumeMist / tot) : 0;
+                  // Lotes disponíveis (recebimento aprovado) que casam com esta MP — busca por nome contendo
+                  const nomeMp = ing.materia_prima.toLowerCase().trim();
+                  const lotesMp = lotesDisp.filter(l => {
+                    const n = (l.materia_prima || "").toLowerCase().trim();
+                    return n === nomeMp || n.includes(nomeMp) || nomeMp.includes(n);
+                  });
+                  const dlId = `lotes-${ing.id}`;
                   return (
                     <TableRow key={ing.id}>
-                      <TableCell className="font-medium">{ing.materia_prima}</TableCell>
+                      <TableCell className="font-medium">
+                        {ing.materia_prima}
+                        {lotesMp.length > 0 && (
+                          <span className="ml-1 text-[10px] text-muted-foreground">({lotesMp.length} lote{lotesMp.length > 1 ? "s" : ""} disp.)</span>
+                        )}
+                      </TableCell>
                       <TableCell className="text-right text-xs">{Number(ing.quantidade_kg).toFixed(2)}</TableCell>
                       {batidasArr.map(b => (
                         <TableCell key={b} className="p-1">
                           <Input
-                            placeholder="Lote"
+                            placeholder={lotesMp.length > 0 ? "Lote (sugerido)" : "Lote"}
                             className="h-7 text-xs mb-1"
+                            list={dlId}
                             defaultValue={getValor(ing.materia_prima, b, "lote_mp")}
                             onBlur={e => setLoteBatida(ing.materia_prima, b, "lote_mp", e.target.value)}
                           />
