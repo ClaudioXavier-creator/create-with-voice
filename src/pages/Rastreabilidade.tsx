@@ -672,9 +672,7 @@ export default function Rastreabilidade() {
     toast.success("Rastreabilidade reversa exportada!");
   };
 
-  // ──── NOVO 2: Certificado de Rastreabilidade do Lote (PDF via print) ────
-  const [certLoteOpen, setCertLoteOpen] = useState(false);
-  const [certLote, setCertLote] = useState("");
+  // ──── NOVO 2: Certificado de Rastreabilidade do Lote (states no topo) ────
 
   const lotesPADisponiveis = useMemo(() => {
     return Array.from(new Set(registros.map(r => r.lote_produto).filter(Boolean))) as string[];
