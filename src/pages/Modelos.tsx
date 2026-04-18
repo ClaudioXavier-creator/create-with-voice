@@ -54,6 +54,10 @@ const MODELOS: ModeloDoc[] = [
   { nome: "Saúde de Manipuladores", descricao: "Exames admissionais, periódicos e demissionais com ASO", categoria: "formulario", arquivo: "Form_Saude_Manipuladores", novo: true },
   { nome: "Controle de Visitantes", descricao: "Registro de visitantes com EPI e orientação de biosseguridade", categoria: "formulario", arquivo: "Form_Visitantes", novo: true },
 
+  // Expedição (POP 09)
+  { nome: "PL POP 9.2 — Expedição (Lista Simples)", descricao: "Modelo padrão para registro manual de expedição: data, NF, cliente, lote, produto e quantidade. Use no POP-09.", categoria: "planilha", arquivo: "Form_Expedicao_Simples", novo: true },
+  { nome: "Registro de Expedição Completo (por NF)", descricao: "Modelo detalhado por nota fiscal — cliente, transporte, motorista, lotes e assinaturas. Opcional para fábricas que preferem registro completo por NF.", categoria: "formulario", arquivo: "Form_Expedicao_Completa", novo: true },
+
   // Potabilidade da Água (POP 04)
   { nome: "Planilha — Controle Diário de Cloro/pH", descricao: "Registro diário de cloro residual e pH por ponto de coleta (POP 04)", categoria: "formulario", arquivo: "Form_Cloro_Diario", novo: true },
   { nome: "Planilha — Higienização de Reservatório", descricao: "Checklist de 16 itens para limpeza semestral de caixas d'água", categoria: "formulario", arquivo: "Form_Higienizacao_Reservatorio", novo: true },

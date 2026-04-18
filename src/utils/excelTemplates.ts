@@ -632,6 +632,8 @@ export const TEMPLATE_GENERATORS: Record<string, () => void> = {
   "Checklist_Registro_Fabrica": gerarChecklistRegistroFabrica,
   "Ficha_Tecnica_Produto": gerarFichaTecnicaProduto,
   "Modelo_Rotulo": gerarModeloRotulo,
+  "Form_Expedicao_Simples": gerarFormExpedicaoSimples,
+  "Form_Expedicao_Completa": gerarFormExpedicaoCompleta,
 };
 
 // ─── Ficha Técnica de Produto ───
@@ -765,4 +767,70 @@ export function gerarModeloRotulo() {
   const ws = createSheet(data, [32, 20, 15, 12, 12, 12, 12, 12]);
   XLSX.utils.book_append_sheet(wb, ws, "Modelo Rótulo");
   downloadWorkbook(wb, "Modelo_Rotulo_IN22_2009");
+}
+
+// ─── PL POP 9.2 — Expedição (Lista Simples) — modelo padrão para fábricas que registram manual ───
+export function gerarFormExpedicaoSimples() {
+  const wb = XLSX.utils.book_new();
+  const data: (string | number | null)[][] = [
+    ["PL POP 9.2 — REGISTRO DE EXPEDIÇÃO (LISTA SIMPLES)"],
+    ["Lista resumida — dados detalhados de cliente/transporte ficam no cadastro. Arquivar por no mínimo 2 anos (IN 04/2007 MAPA)."],
+    [""],
+    ["Empresa:", "", "", "Mês/Ano:", "", "Folha nº:", ""],
+    [""],
+    ["Data", "Nº NF / Pedido", "Cliente", "Lote", "Produto", "Qtd", "Un.", "Responsável"],
+    ...Array.from({ length: 30 }, () => ["", "", "", "", "", "", "", ""]),
+    [""],
+    ["Em caso de RECALL: localizar o lote nesta lista e identificar todos os clientes que receberam."],
+    [""],
+    ["Responsável pela Expedição:", "", "", "Responsável Técnico (RT):", "", "CRMV:", ""],
+    ["Data:", ""],
+  ];
+  const ws = createSheet(data, [12, 14, 32, 14, 30, 9, 7, 18]);
+  XLSX.utils.book_append_sheet(wb, ws, "Expedição");
+  downloadWorkbook(wb, "PL_POP_9.2_Expedicao_Lista_Simples");
+}
+
+// ─── Registro Detalhado de Expedição por NF (modelo completo opcional) ───
+export function gerarFormExpedicaoCompleta() {
+  const wb = XLSX.utils.book_new();
+  const data: (string | number | null)[][] = [
+    ["REGISTRO DE EXPEDIÇÃO E FATURAMENTO — RASTREABILIDADE DE PRODUTO ACABADO"],
+    ["Conforme IN 04/2007 MAPA e Decreto 12.031/2024 — Retenção mínima: 2 anos"],
+    [""],
+    ["1. IDENTIFICAÇÃO DA EMPRESA"],
+    ["Razão Social:", "", "", "CNPJ:", "", "Reg. MAPA/SIPEAGRO:", ""],
+    ["Endereço:", "", "", "", "", "Data Emissão:", ""],
+    [""],
+    ["2. DADOS DA NOTA FISCAL"],
+    ["Nº NF:", "", "Série:", "", "Data Emissão NF:", "", "Data Saída:", "", "Valor Total (R$):", ""],
+    ["Chave de Acesso (44 dígitos):", ""],
+    [""],
+    ["3. CLIENTE / DESTINATÁRIO"],
+    ["Razão Social:", "", "", "CNPJ:", "", "Insc. Estadual:", ""],
+    ["Endereço:", "", "", "Cidade:", "", "UF:", ""],
+    ["Telefone:", "", "", "E-mail:", ""],
+    [""],
+    ["4. TRANSPORTE"],
+    ["Transportadora:", "", "", "CNPJ Transp.:", "", "Placa:", ""],
+    ["Motorista:", "", "", "CPF Motorista:", "", "UF Veículo:", ""],
+    [""],
+    ["5. PRODUTOS EXPEDIDOS — LOTES (RASTREABILIDADE)"],
+    ["Item", "Código", "Lote", "Produto", "Qtd", "Un.", "Sacos", "Vlr Unit. (R$)", "Vlr Total (R$)", "Data Fabric.", "Validade", "Observações"],
+    ...Array.from({ length: 12 }, (_, i) => [i + 1, "", "", "", "", "", "", "", "", "", "", ""]),
+    ["", "", "", "", "", "", "", "TOTAL GERAL (R$):", "", "", "", ""],
+    [""],
+    ["6. OBSERVAÇÕES GERAIS"],
+    [""], [""], [""],
+    [""],
+    ["7. ASSINATURAS"],
+    ["Responsável pela Expedição:", "", "Conferente / Operador:", "", "Responsável Técnico (RT):", "", "CRMV:", ""],
+    ["Motorista:", "", "", "Cliente / Destinatário (Recebimento):", ""],
+    ["Data:", ""],
+    [""],
+    ["ARQUIVAR ESTE REGISTRO POR NO MÍNIMO 2 ANOS — Documento essencial para rastreabilidade e simulação de recall."],
+  ];
+  const ws = createSheet(data, [5, 12, 12, 26, 8, 7, 8, 12, 14, 12, 12, 18]);
+  XLSX.utils.book_append_sheet(wb, ws, "Expedição NF");
+  downloadWorkbook(wb, "Registro_Expedicao_Completa_por_NF");
 }
