@@ -319,8 +319,21 @@ export default function Expedicao() {
                   <Tabs defaultValue="entrada" className="w-full">
                     <TabsList>
                       <TabsTrigger value="entrada"><Upload className="h-4 w-4 mr-2" />Importar XML NF-e</TabsTrigger>
-                      <TabsTrigger value="manual"><FileText className="h-4 w-4 mr-2" />Entrada Manual</TabsTrigger>
+                      <TabsTrigger value="simples"><Package className="h-4 w-4 mr-2" />Lista Simples</TabsTrigger>
+                      <TabsTrigger value="manual"><FileText className="h-4 w-4 mr-2" />Manual Completo</TabsTrigger>
                     </TabsList>
+
+                    <TabsContent value="simples" className="space-y-3">
+                      <Card className="border-primary/30 bg-primary/5">
+                        <CardContent className="pt-6 text-sm space-y-2">
+                          <p className="font-medium">Registro rápido (PL POP 9.2 — digital)</p>
+                          <p className="text-xs text-muted-foreground">
+                            Preencha apenas <strong>Cliente, NF, Data e Produto/Lote/Qtde</strong> abaixo. Campos de transporte ficam em branco — ideal para pequenas saídas, vendas balcão ou quando não há XML.
+                            A rastreabilidade por lote é gerada normalmente.
+                          </p>
+                        </CardContent>
+                      </Card>
+                    </TabsContent>
 
                     <TabsContent value="entrada" className="space-y-3">
                       <Card>
