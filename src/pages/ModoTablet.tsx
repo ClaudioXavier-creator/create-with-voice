@@ -119,6 +119,33 @@ export default function ModoTablet() {
     resetAll(); setTela("menu");
   };
 
+  const salvarPraga = async () => {
+    if (!user || !pragaLocal) return;
+    const tipos: string[] = [];
+    if (pragaTipos.roedores) tipos.push("Roedores");
+    if (pragaTipos.aves) tipos.push("Aves/Pássaros");
+    if (pragaTipos.voadores) tipos.push("Insetos voadores");
+    if (pragaTipos.rasteiros) tipos.push("Insetos rasteiros");
+    if (pragaTipos.outros) tipos.push("Outros");
+    if (tipos.length === 0) {
+      toast({ title: "Selecione ao menos um tipo de evidência", variant: "destructive" });
+      return;
+    }
+    setSaving(true);
+    const { error } = await supabase.from("controle_pragas").insert({
+      user_id: user.id, empresa_id: empresaAtiva?.id || null,
+      data: new Date().toISOString().split("T")[0],
+      local: pragaLocal,
+      tipo_praga: tipos.join(", "),
+      acao: pragaAcao || "Inspeção / observação visual",
+      responsavel: pragaResp,
+    });
+    setSaving(false);
+    if (error) { toast({ title: "Erro", description: error.message, variant: "destructive" }); return; }
+    toast({ title: "✅ Observação registrada!", description: "Comunique o RT para investigação." });
+    resetAll(); setTela("menu");
+  };
+
   if (tela === "menu") {
     return (
       <div className="min-h-[80vh] flex flex-col items-center justify-center p-4">
