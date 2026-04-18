@@ -1032,6 +1032,182 @@ export type Database = {
           },
         ]
       }
+      expedicao_itens: {
+        Row: {
+          codigo_produto: string | null
+          created_at: string
+          empresa_id: string | null
+          expedicao_id: string
+          id: string
+          lote_produto: string | null
+          observacoes: string | null
+          produto: string
+          quantidade: number
+          rastreabilidade_id: string | null
+          unidade: string | null
+          user_id: string
+          valor_total: number | null
+          valor_unitario: number | null
+        }
+        Insert: {
+          codigo_produto?: string | null
+          created_at?: string
+          empresa_id?: string | null
+          expedicao_id: string
+          id?: string
+          lote_produto?: string | null
+          observacoes?: string | null
+          produto: string
+          quantidade?: number
+          rastreabilidade_id?: string | null
+          unidade?: string | null
+          user_id: string
+          valor_total?: number | null
+          valor_unitario?: number | null
+        }
+        Update: {
+          codigo_produto?: string | null
+          created_at?: string
+          empresa_id?: string | null
+          expedicao_id?: string
+          id?: string
+          lote_produto?: string | null
+          observacoes?: string | null
+          produto?: string
+          quantidade?: number
+          rastreabilidade_id?: string | null
+          unidade?: string | null
+          user_id?: string
+          valor_total?: number | null
+          valor_unitario?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "expedicao_itens_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "expedicao_itens_expedicao_id_fkey"
+            columns: ["expedicao_id"]
+            isOneToOne: false
+            referencedRelation: "expedicoes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      expedicoes: {
+        Row: {
+          chave_acesso: string | null
+          cliente_cep: string | null
+          cliente_cidade: string | null
+          cliente_cnpj: string | null
+          cliente_endereco: string | null
+          cliente_ie: string | null
+          cliente_nome: string
+          cliente_telefone: string | null
+          cliente_uf: string | null
+          created_at: string
+          data_emissao: string | null
+          data_saida: string | null
+          empresa_id: string | null
+          id: string
+          motorista_cpf: string | null
+          motorista_nome: string | null
+          numero_nf: string
+          observacoes: string | null
+          origem: string
+          peso_bruto_kg: number | null
+          peso_liquido_kg: number | null
+          serie_nf: string | null
+          status: string
+          transportadora_cnpj: string | null
+          transportadora_nome: string | null
+          updated_at: string
+          user_id: string
+          valor_total: number | null
+          veiculo_placa: string | null
+          veiculo_uf: string | null
+          xml_content: string | null
+        }
+        Insert: {
+          chave_acesso?: string | null
+          cliente_cep?: string | null
+          cliente_cidade?: string | null
+          cliente_cnpj?: string | null
+          cliente_endereco?: string | null
+          cliente_ie?: string | null
+          cliente_nome: string
+          cliente_telefone?: string | null
+          cliente_uf?: string | null
+          created_at?: string
+          data_emissao?: string | null
+          data_saida?: string | null
+          empresa_id?: string | null
+          id?: string
+          motorista_cpf?: string | null
+          motorista_nome?: string | null
+          numero_nf: string
+          observacoes?: string | null
+          origem?: string
+          peso_bruto_kg?: number | null
+          peso_liquido_kg?: number | null
+          serie_nf?: string | null
+          status?: string
+          transportadora_cnpj?: string | null
+          transportadora_nome?: string | null
+          updated_at?: string
+          user_id: string
+          valor_total?: number | null
+          veiculo_placa?: string | null
+          veiculo_uf?: string | null
+          xml_content?: string | null
+        }
+        Update: {
+          chave_acesso?: string | null
+          cliente_cep?: string | null
+          cliente_cidade?: string | null
+          cliente_cnpj?: string | null
+          cliente_endereco?: string | null
+          cliente_ie?: string | null
+          cliente_nome?: string
+          cliente_telefone?: string | null
+          cliente_uf?: string | null
+          created_at?: string
+          data_emissao?: string | null
+          data_saida?: string | null
+          empresa_id?: string | null
+          id?: string
+          motorista_cpf?: string | null
+          motorista_nome?: string | null
+          numero_nf?: string
+          observacoes?: string | null
+          origem?: string
+          peso_bruto_kg?: number | null
+          peso_liquido_kg?: number | null
+          serie_nf?: string | null
+          status?: string
+          transportadora_cnpj?: string | null
+          transportadora_nome?: string | null
+          updated_at?: string
+          user_id?: string
+          valor_total?: number | null
+          veiculo_placa?: string | null
+          veiculo_uf?: string | null
+          xml_content?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "expedicoes_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       formula_ingredientes: {
         Row: {
           created_at: string
