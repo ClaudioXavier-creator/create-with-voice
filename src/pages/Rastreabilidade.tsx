@@ -123,6 +123,13 @@ export default function Rastreabilidade() {
   const [contraprovosRecebimento, setContraprovosRecebimento] = useState<any[]>([]);
   const [contraprovosProducao, setContraprovosProducao] = useState<any[]>([]);
 
+  // ──── NOVOS: Rastreabilidade reversa por cliente + Certificado por lote ────
+  const [clienteReversoOpen, setClienteReversoOpen] = useState(false);
+  const [clienteReversoSelecionado, setClienteReversoSelecionado] = useState("");
+  const [clienteReversoDias, setClienteReversoDias] = useState("180");
+  const [certLoteOpen, setCertLoteOpen] = useState(false);
+  const [certLote, setCertLote] = useState("");
+
   const resetForm = () => {
     setProduto(""); setLoteProduto(""); setMateriaPrima(""); setLoteMP("");
     setFornecedor(""); setClienteDestino(""); setLocalEntrega("");
@@ -496,42 +503,298 @@ export default function Rastreabilidade() {
     toast.success("Histórico exportado para CSV!");
   };
 
+  // Helper: parse "1.234,56 kg" / "1234.56" → number
+  const parseKg = (v: any): number => {
+    if (v === null || v === undefined) return 0;
+    if (typeof v === "number") return v;
+    const s = String(v).replace(/\./g, "").replace(",", ".").replace(/[^\d.-]/g, "");
+    const n = parseFloat(s);
+    return isNaN(n) ? 0 : n;
+  };
+  const fmtKg = (n: number) => n.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
   const exportBalancoMassa = async () => {
-    const lotes = new Map<string, { produto: string; materias: { mp: string; lote: string; fornecedor: string; qtd: string }[]; vendas: { cliente: string; qtd: string; nf: string; data: string }[] }>();
+    const lotes = new Map<string, { produto: string; materias: { mp: string; lote: string; fornecedor: string; qtd: string; kg: number }[]; vendas: { cliente: string; qtd: string; nf: string; data: string; kg: number }[] }>();
     registros.forEach(r => {
       const lote = r.lote_produto || "SEM_LOTE";
       if (!lotes.has(lote)) lotes.set(lote, { produto: r.produto, materias: [], vendas: [] });
       const entry = lotes.get(lote)!;
       if (!entry.materias.some(m => m.mp === r.materia_prima && m.lote === (r.lote_mp || "")))
-        entry.materias.push({ mp: r.materia_prima, lote: r.lote_mp || "", fornecedor: r.fornecedor || "", qtd: "" });
+        entry.materias.push({ mp: r.materia_prima, lote: r.lote_mp || "", fornecedor: r.fornecedor || "", qtd: "", kg: 0 });
       if (r.cliente_destino && !entry.vendas.some(v => v.cliente === r.cliente_destino && v.nf === (r.nota_fiscal || "")))
-        entry.vendas.push({ cliente: r.cliente_destino || "", qtd: r.quantidade_vendida || "", nf: r.nota_fiscal || "", data: r.data_venda || "" });
+        entry.vendas.push({ cliente: r.cliente_destino || "", qtd: r.quantidade_vendida || "", nf: r.nota_fiscal || "", data: r.data_venda || "", kg: parseKg(r.quantidade_vendida) });
     });
+
+    // Buscar consumo real de MP via batida_lotes + produção PA via ordens_producao/producao
+    const lotesPA = Array.from(lotes.keys()).filter(l => l !== "SEM_LOTE");
+    let batidaData: any[] = [];
+    let ordensData: any[] = [];
+    let producaoData: any[] = [];
+    if (lotesPA.length > 0) {
+      const { data: ord } = await supabase.from("ordens_producao").select("id, lote_produto, quantidade_programada").in("lote_produto", lotesPA);
+      ordensData = ord || [];
+      const ordemIds = ordensData.map((o: any) => o.id);
+      if (ordemIds.length > 0) {
+        const { data: bat } = await supabase.from("batida_lotes").select("ordem_id, materia_prima, lote_mp, quantidade_kg").in("ordem_id", ordemIds);
+        batidaData = bat || [];
+      }
+      const { data: prod } = await supabase.from("producao").select("lote, produto, quantidade").in("lote", lotesPA);
+      producaoData = prod || [];
+    }
+
     const lines: string[] = [
-      "BALANÇO DE MASSA — RASTREABILIDADE", `Data de Geração: ${new Date().toLocaleDateString("pt-BR")}`, `Decreto 12.031/2024 — Fiscalização baseada em risco`, "",
-      "LOTE PA;PRODUTO;MATÉRIA-PRIMA;LOTE MP;FORNECEDOR;CLIENTE DESTINO;QTD VENDIDA;NOTA FISCAL;DATA VENDA",
+      "BALANÇO DE MASSA QUANTITATIVO — RASTREABILIDADE",
+      `Data de Geração: ${new Date().toLocaleDateString("pt-BR")}`,
+      `Decreto 12.031/2024 — Fiscalização baseada em risco`,
+      "",
+      "LOTE PA;PRODUTO;MATÉRIA-PRIMA;LOTE MP;FORNECEDOR;KG MP;CLIENTE DESTINO;QTD VENDIDA;KG EXPEDIDO;NF;DATA VENDA",
     ];
+    let totEntrada = 0, totProduzido = 0, totSaida = 0;
+    const sumario: { lote: string; produto: string; entradaMP: number; produzido: number; expedido: number; saldo: number; rendimento: number; alerta: string }[] = [];
+
     lotes.forEach((data, lote) => {
+      // Soma kg MP por (mp+lote_mp) via batida_lotes
+      const ordensDoLote = ordensData.filter((o: any) => o.lote_produto === lote);
+      const ordemIds = ordensDoLote.map((o: any) => o.id);
+      const batidasDoLote = batidaData.filter((b: any) => ordemIds.includes(b.ordem_id));
+      data.materias.forEach(m => {
+        m.kg = batidasDoLote
+          .filter((b: any) => b.materia_prima === m.mp && (b.lote_mp || "") === m.lote)
+          .reduce((s: number, b: any) => s + (Number(b.quantidade_kg) || 0), 0);
+      });
+
+      const entradaMP = data.materias.reduce((s, m) => s + m.kg, 0);
+      const programado = ordensDoLote.reduce((s: number, o: any) => s + parseKg(o.quantidade_programada), 0);
+      const produzidoReal = producaoData.filter((p: any) => p.lote === lote).reduce((s: number, p: any) => s + parseKg(p.quantidade), 0);
+      const produzido = produzidoReal > 0 ? produzidoReal : programado;
+      const expedido = data.vendas.reduce((s, v) => s + v.kg, 0);
+      const saldo = produzido - expedido;
+      const rendimento = entradaMP > 0 ? (produzido / entradaMP) * 100 : 0;
+      let alerta = "";
+      if (expedido > produzido && produzido > 0) alerta = "⚠ EXPEDIDO > PRODUZIDO";
+      else if (produzido > 0 && entradaMP > 0 && Math.abs(produzido - entradaMP) / entradaMP > 0.05) alerta = "⚠ DIVERGÊNCIA MP×PA >5%";
+
+      totEntrada += entradaMP; totProduzido += produzido; totSaida += expedido;
+      sumario.push({ lote, produto: data.produto, entradaMP, produzido, expedido, saldo, rendimento, alerta });
+
       const maxRows = Math.max(data.materias.length, data.vendas.length, 1);
       for (let i = 0; i < maxRows; i++) {
         const mp = data.materias[i]; const venda = data.vendas[i];
-        lines.push([i === 0 ? lote : "", i === 0 ? data.produto : "", mp?.mp || "", mp?.lote || "", mp?.fornecedor || "", venda?.cliente || "", venda?.qtd || "", venda?.nf || "", venda?.data || ""].join(";"));
+        lines.push([
+          i === 0 ? lote : "",
+          i === 0 ? data.produto : "",
+          mp?.mp || "", mp?.lote || "", mp?.fornecedor || "",
+          mp ? fmtKg(mp.kg) : "",
+          venda?.cliente || "", venda?.qtd || "", venda ? fmtKg(venda.kg) : "",
+          venda?.nf || "", venda?.data || ""
+        ].join(";"));
       }
       lines.push("");
     });
+
+    lines.push("");
+    lines.push("══════ SUMÁRIO QUANTITATIVO POR LOTE ══════");
+    lines.push("LOTE PA;PRODUTO;ENTRADA MP (kg);PRODUZIDO PA (kg);EXPEDIDO (kg);SALDO ESTOQUE (kg);RENDIMENTO %;ALERTA");
+    sumario.forEach(s => {
+      lines.push([s.lote, s.produto, fmtKg(s.entradaMP), fmtKg(s.produzido), fmtKg(s.expedido), fmtKg(s.saldo), s.rendimento.toFixed(1) + "%", s.alerta].join(";"));
+    });
+    lines.push("");
+    lines.push(`TOTAIS;;${fmtKg(totEntrada)};${fmtKg(totProduzido)};${fmtKg(totSaida)};${fmtKg(totProduzido - totSaida)};${totEntrada > 0 ? ((totProduzido / totEntrada) * 100).toFixed(1) + "%" : "—"};`);
     lines.push("", `Total de lotes: ${lotes.size}`, `Total de vínculos MP: ${registros.length}`, `Total de destinos: ${registros.filter(r => r.cliente_destino).length}`);
+    lines.push("", "Alertas:", `• Lotes com Expedido > Produzido: ${sumario.filter(s => s.alerta.includes("EXPEDIDO")).length}`, `• Lotes com divergência MP×PA: ${sumario.filter(s => s.alerta.includes("DIVERGÊNCIA")).length}`);
+
     const csv = lines.join("\n");
     const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
     const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
     link.download = `balanco_massa_${new Date().toISOString().split("T")[0]}.csv`;
     link.click();
-    toast.success("Balanço de massa exportado para fiscalização!");
+    toast.success("Balanço de massa quantitativo exportado!");
     if (user) {
       const dataGeracao = new Date().toISOString().split("T")[0];
-      await supabase.from("relatorios").insert({ user_id: user.id, empresa_id: empresaAtiva?.id || null, titulo: `Balanço de Massa — ${dataGeracao}`, tipo: "digital", modulo: "rastreabilidade", descricao: `Relatório automático de balanço de massa com ${lotes.size} lotes rastreados. Gerado conforme Art. 18 do Decreto 12.031/2024.`, data_geracao: dataGeracao, status: "ativo" });
-      toast.info("Relatório salvo automaticamente no módulo de Relatórios (Decreto 12.031/2024)");
+      await supabase.from("relatorios").insert({ user_id: user.id, empresa_id: empresaAtiva?.id || null, titulo: `Balanço de Massa Quantitativo — ${dataGeracao}`, tipo: "digital", modulo: "rastreabilidade", descricao: `Balanço quantitativo com ${lotes.size} lotes. Entrada: ${fmtKg(totEntrada)} kg | Produzido: ${fmtKg(totProduzido)} kg | Expedido: ${fmtKg(totSaida)} kg. Decreto 12.031/2024 Art. 18.`, data_geracao: dataGeracao, status: "ativo" });
+      toast.info("Relatório salvo no módulo Relatórios (Decreto 12.031/2024)");
     }
+  };
+
+  // ──── NOVO 1: Rastreabilidade Reversa por Cliente (states no topo) ────
+
+  const clientesUnicos = useMemo(() => {
+    const set = new Set<string>();
+    registros.forEach(r => { if (r.cliente_destino) set.add(r.cliente_destino); });
+    return Array.from(set).sort();
+  }, [registros]);
+
+  const lotesPorCliente = useMemo(() => {
+    if (!clienteReversoSelecionado) return [];
+    const dias = parseInt(clienteReversoDias) || 180;
+    const limite = new Date();
+    limite.setDate(limite.getDate() - dias);
+    const recs = registros.filter(r => {
+      if (r.cliente_destino !== clienteReversoSelecionado) return false;
+      if (!r.data_venda) return true;
+      return new Date(r.data_venda) >= limite;
+    });
+    // Agrupar por lote PA
+    const map = new Map<string, { produto: string; lote: string; nfs: Set<string>; datas: string[]; qtdTotal: number; recall: boolean }>();
+    recs.forEach(r => {
+      const key = `${r.produto}|${r.lote_produto || "—"}`;
+      if (!map.has(key)) map.set(key, { produto: r.produto, lote: r.lote_produto || "—", nfs: new Set(), datas: [], qtdTotal: 0, recall: false });
+      const e = map.get(key)!;
+      if (r.nota_fiscal) e.nfs.add(r.nota_fiscal);
+      if (r.data_venda) e.datas.push(r.data_venda);
+      e.qtdTotal += parseKg(r.quantidade_vendida);
+      if (r.recall_ativo) e.recall = true;
+    });
+    return Array.from(map.values()).sort((a, b) => (b.datas[0] || "").localeCompare(a.datas[0] || ""));
+  }, [registros, clienteReversoSelecionado, clienteReversoDias]);
+
+  const exportClienteReversoCSV = () => {
+    if (!clienteReversoSelecionado || lotesPorCliente.length === 0) {
+      toast.error("Selecione um cliente com registros");
+      return;
+    }
+    const lines = [
+      `RASTREABILIDADE REVERSA — Cliente: ${clienteReversoSelecionado}`,
+      `Período: últimos ${clienteReversoDias} dias | Geração: ${new Date().toLocaleDateString("pt-BR")}`,
+      "",
+      "PRODUTO;LOTE PA;NOTAS FISCAIS;DATAS VENDA;QTD TOTAL (kg);RECALL"
+    ];
+    lotesPorCliente.forEach(l => {
+      lines.push([l.produto, l.lote, Array.from(l.nfs).join(" | "), l.datas.join(" | "), fmtKg(l.qtdTotal), l.recall ? "SIM" : "Não"].join(";"));
+    });
+    lines.push("", `Total de lotes entregues: ${lotesPorCliente.length}`, `Lotes em recall: ${lotesPorCliente.filter(l => l.recall).length}`);
+    const blob = new Blob(["\uFEFF" + lines.join("\n")], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = `rastreabilidade_cliente_${clienteReversoSelecionado.replace(/[^a-z0-9]/gi, "_")}_${new Date().toISOString().split("T")[0]}.csv`;
+    link.click();
+    toast.success("Rastreabilidade reversa exportada!");
+  };
+
+  // ──── NOVO 2: Certificado de Rastreabilidade do Lote (states no topo) ────
+
+  const lotesPADisponiveis = useMemo(() => {
+    return Array.from(new Set(registros.map(r => r.lote_produto).filter(Boolean))) as string[];
+  }, [registros]);
+
+  const gerarCertificadoLote = async () => {
+    if (!certLote) { toast.error("Selecione um lote"); return; }
+    const recs = registros.filter(r => r.lote_produto === certLote);
+    if (recs.length === 0) { toast.error("Lote sem registros"); return; }
+    const produto = recs[0].produto;
+
+    // MPs únicas
+    const mps = new Map<string, { mp: string; lote: string; fornecedor: string }>();
+    recs.forEach(r => {
+      const k = `${r.materia_prima}|${r.lote_mp || ""}`;
+      if (!mps.has(k)) mps.set(k, { mp: r.materia_prima, lote: r.lote_mp || "—", fornecedor: r.fornecedor || "—" });
+    });
+    // Destinos únicos
+    const destinos = new Map<string, { cliente: string; nf: string; data: string; qtd: string; local: string }>();
+    recs.forEach(r => {
+      if (!r.cliente_destino) return;
+      const k = `${r.cliente_destino}|${r.nota_fiscal || ""}`;
+      if (!destinos.has(k)) destinos.set(k, { cliente: r.cliente_destino, nf: r.nota_fiscal || "—", data: r.data_venda || "—", qtd: r.quantidade_vendida || "—", local: r.local_entrega || "—" });
+    });
+
+    // Buscar contraprova e dados de produção do lote
+    const { data: prodInfo } = await supabase.from("producao").select("*").eq("lote", certLote).maybeSingle();
+
+    const empresaNome = empresaAtiva?.nome || "—";
+    const rt = empresaAtiva?.responsavel_tecnico || "—";
+    const crmv = empresaAtiva?.crmv || "—";
+    const dataEmissao = new Date().toLocaleString("pt-BR");
+
+    const html = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>Certificado de Rastreabilidade — Lote ${certLote}</title>
+<style>
+  body { font-family: Arial, sans-serif; padding: 30px; color: #1a1a1a; font-size: 12px; }
+  .header { text-align: center; border-bottom: 3px solid #047857; padding-bottom: 12px; margin-bottom: 20px; }
+  .header h1 { color: #047857; margin: 0; font-size: 20px; }
+  .header h2 { margin: 4px 0; font-size: 14px; color: #555; }
+  .selo { display: inline-block; padding: 6px 14px; background: #047857; color: white; border-radius: 4px; font-weight: bold; font-size: 11px; margin-top: 6px; }
+  .box { border: 1px solid #ccc; padding: 12px; margin-bottom: 14px; border-radius: 4px; }
+  .box h3 { margin: 0 0 8px 0; color: #047857; font-size: 13px; border-bottom: 1px solid #e5e5e5; padding-bottom: 4px; }
+  table { width: 100%; border-collapse: collapse; font-size: 11px; }
+  th { background: #047857; color: white; padding: 6px; text-align: left; }
+  td { padding: 6px; border-bottom: 1px solid #e5e5e5; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .label { font-weight: bold; color: #555; }
+  .footer { margin-top: 30px; text-align: center; font-size: 10px; color: #666; border-top: 1px solid #ccc; padding-top: 10px; }
+  .assinatura { margin-top: 40px; display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+  .assinatura div { border-top: 1px solid #333; padding-top: 4px; text-align: center; font-size: 11px; }
+  @media print { body { padding: 15mm; } }
+</style></head><body>
+  <div class="header">
+    <h1>CERTIFICADO DE RASTREABILIDADE</h1>
+    <h2>${empresaNome}</h2>
+    <span class="selo">Decreto 12.031/2024 — Art. 18 | IN 04/2007</span>
+  </div>
+
+  <div class="box">
+    <h3>📦 Identificação do Lote</h3>
+    <div class="grid">
+      <div><span class="label">Produto:</span> ${produto}</div>
+      <div><span class="label">Lote PA:</span> <strong>${certLote}</strong></div>
+      <div><span class="label">Data Fabricação:</span> ${prodInfo?.data ? new Date(prodInfo.data).toLocaleDateString("pt-BR") : "—"}</div>
+      <div><span class="label">Quantidade Produzida:</span> ${prodInfo?.quantidade || "—"}</div>
+      <div><span class="label">Operador:</span> ${prodInfo?.operador || "—"}</div>
+      <div><span class="label">Tempo de Mistura:</span> ${prodInfo?.tempo_mistura || "—"}</div>
+    </div>
+  </div>
+
+  <div class="box">
+    <h3>🌾 Composição (Rastreabilidade Montante)</h3>
+    <table>
+      <thead><tr><th>Matéria-Prima</th><th>Lote MP</th><th>Fornecedor</th></tr></thead>
+      <tbody>
+        ${Array.from(mps.values()).map(m => `<tr><td>${m.mp}</td><td>${m.lote}</td><td>${m.fornecedor}</td></tr>`).join("") || "<tr><td colspan='3'>Sem registros</td></tr>"}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="box">
+    <h3>🚚 Destinos (Rastreabilidade Jusante)</h3>
+    <table>
+      <thead><tr><th>Cliente</th><th>NF</th><th>Data</th><th>Qtd</th><th>Local Entrega</th></tr></thead>
+      <tbody>
+        ${Array.from(destinos.values()).map(d => `<tr><td>${d.cliente}</td><td>${d.nf}</td><td>${d.data !== "—" ? new Date(d.data).toLocaleDateString("pt-BR") : "—"}</td><td>${d.qtd}</td><td>${d.local}</td></tr>`).join("") || "<tr><td colspan='5'>Lote ainda não expedido</td></tr>"}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="box">
+    <h3>🧪 Contraprova Retida</h3>
+    <div class="grid">
+      <div><span class="label">Coletada:</span> ${prodInfo?.contraprova_retida ? "Sim" : "Não"}</div>
+      <div><span class="label">Local:</span> ${prodInfo?.contraprova_local || "—"}</div>
+      <div><span class="label">Quantidade:</span> ${prodInfo?.contraprova_quantidade || "—"}</div>
+      <div><span class="label">Validade:</span> ${prodInfo?.contraprova_validade ? new Date(prodInfo.contraprova_validade).toLocaleDateString("pt-BR") : "—"}</div>
+    </div>
+  </div>
+
+  <div class="assinatura">
+    <div>${rt}<br><small>Responsável Técnico — CRMV ${crmv}</small></div>
+    <div>_____________________________<br><small>Cliente / Auditor</small></div>
+  </div>
+
+  <div class="footer">
+    Documento emitido em ${dataEmissao} pelo sistema BPF_Consult.<br>
+    Conformidade: Decreto 12.031/2024 (Art. 18) • IN 04/2007 (MAPA) • Rastreabilidade bidirecional comprovada.
+  </div>
+</body></html>`;
+
+    const w = window.open("", "_blank", "width=900,height=700");
+    if (!w) { toast.error("Habilite popups para gerar o certificado"); return; }
+    w.document.write(html);
+    w.document.close();
+    setTimeout(() => { w.focus(); w.print(); }, 400);
+
+    if (user) {
+      await supabase.from("relatorios").insert({ user_id: user.id, empresa_id: empresaAtiva?.id || null, titulo: `Certificado de Rastreabilidade — Lote ${certLote}`, tipo: "digital", modulo: "rastreabilidade", descricao: `Certificado formal do lote ${certLote} (${produto}) com ${mps.size} MPs e ${destinos.size} destinos. Decreto 12.031/2024 Art. 18.`, data_geracao: new Date().toISOString().split("T")[0], status: "ativo" });
+    }
+    toast.success("Certificado gerado!");
+    setCertLoteOpen(false);
   };
 
   // ──── MELHORIA 1: Preencher formulário a partir do Recebimento ────
@@ -1445,8 +1708,10 @@ export default function Rastreabilidade() {
             <Input placeholder="Buscar por produto, lote, MP, fornecedor, cliente, NF..." value={busca} onChange={(e) => setBusca(e.target.value)} className="mt-2" />
           </div>
           <div className="flex gap-2 flex-wrap">
-            <Button size="sm" variant="outline" onClick={exportBalancoMassa} disabled={registros.length === 0}><Download className="w-4 h-4 mr-1" /> Balanço de Massa</Button>
-            <Button size="sm" variant="outline" onClick={exportHistoricoCSV} disabled={registros.length === 0}><Download className="w-4 h-4 mr-1" /> Exportar Histórico</Button>
+            <Button size="sm" variant="outline" onClick={exportBalancoMassa} disabled={registros.length === 0}><Download className="w-4 h-4 mr-1" /> Balanço Quantitativo</Button>
+            <Button size="sm" variant="outline" onClick={() => setClienteReversoOpen(true)} disabled={clientesUnicos.length === 0}><GitBranch className="w-4 h-4 mr-1" /> Por Cliente</Button>
+            <Button size="sm" variant="outline" onClick={() => setCertLoteOpen(true)} disabled={lotesPADisponiveis.length === 0}><Package className="w-4 h-4 mr-1" /> Certificado do Lote</Button>
+            <Button size="sm" variant="outline" onClick={exportHistoricoCSV} disabled={registros.length === 0}><Download className="w-4 h-4 mr-1" /> Histórico CSV</Button>
             <Dialog open={open} onOpenChange={setOpen}>
               <DialogTrigger asChild><Button size="sm"><Plus className="w-4 h-4 mr-1" /> Novo Registro</Button></DialogTrigger>
               <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
@@ -1823,6 +2088,95 @@ export default function Rastreabilidade() {
               <div><Label>Quantidade</Label><Input value={vendaQtd} onChange={e => setVendaQtd(e.target.value)} placeholder="Ex: 5 ton" /></div>
             </div>
             <Button onClick={handleVenda} className="w-full" disabled={saving || !vendaCliente}>{saving && <Loader2 className="w-4 h-4 mr-2 animate-spin" />} Salvar Venda</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Dialog: Rastreabilidade Reversa por Cliente */}
+      <Dialog open={clienteReversoOpen} onOpenChange={setClienteReversoOpen}>
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2"><GitBranch className="w-5 h-5 text-primary" /> Rastreabilidade Reversa — Por Cliente</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <p className="text-xs text-muted-foreground">Liste todos os lotes entregues a um cliente específico — essencial para recall direcionado e auditorias.</p>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label>Cliente</Label>
+                <Select value={clienteReversoSelecionado} onValueChange={setClienteReversoSelecionado}>
+                  <SelectTrigger><SelectValue placeholder="Selecione um cliente..." /></SelectTrigger>
+                  <SelectContent>
+                    {clientesUnicos.map(c => (<SelectItem key={c} value={c}>{c}</SelectItem>))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label>Período (dias)</Label>
+                <Input type="number" min="1" value={clienteReversoDias} onChange={e => setClienteReversoDias(e.target.value)} />
+              </div>
+            </div>
+            {clienteReversoSelecionado && (
+              <>
+                <div className="rounded-lg border p-3 bg-muted/30">
+                  <p className="text-sm font-semibold">{lotesPorCliente.length} lote(s) encontrado(s)</p>
+                  <p className="text-xs text-muted-foreground">Total expedido: {fmtKg(lotesPorCliente.reduce((s, l) => s + l.qtdTotal, 0))} kg • Lotes em recall: {lotesPorCliente.filter(l => l.recall).length}</p>
+                </div>
+                <div className="border rounded-lg max-h-[400px] overflow-y-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Produto</TableHead>
+                        <TableHead>Lote PA</TableHead>
+                        <TableHead>NFs</TableHead>
+                        <TableHead>Qtd (kg)</TableHead>
+                        <TableHead>Status</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {lotesPorCliente.length === 0 ? (
+                        <TableRow><TableCell colSpan={5} className="text-center text-muted-foreground">Sem registros no período</TableCell></TableRow>
+                      ) : lotesPorCliente.map((l, i) => (
+                        <TableRow key={i} className={l.recall ? "bg-destructive/10" : ""}>
+                          <TableCell className="text-xs">{l.produto}</TableCell>
+                          <TableCell className="text-xs font-mono">{l.lote}</TableCell>
+                          <TableCell className="text-xs">{Array.from(l.nfs).join(", ") || "—"}</TableCell>
+                          <TableCell className="text-xs">{fmtKg(l.qtdTotal)}</TableCell>
+                          <TableCell>{l.recall ? <Badge variant="destructive">RECALL</Badge> : <Badge variant="outline">OK</Badge>}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+                <Button onClick={exportClienteReversoCSV} disabled={lotesPorCliente.length === 0} className="w-full">
+                  <Download className="w-4 h-4 mr-2" /> Exportar CSV
+                </Button>
+              </>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Dialog: Certificado de Rastreabilidade do Lote */}
+      <Dialog open={certLoteOpen} onOpenChange={setCertLoteOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2"><Package className="w-5 h-5 text-primary" /> Certificado de Rastreabilidade do Lote</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <p className="text-xs text-muted-foreground">Documento formal por lote PA: composição, fornecedores, contraprova, destinos e assinatura RT. Atende Decreto 12.031/2024 (Art. 18) e clientes/auditores que solicitam comprovante.</p>
+            <div>
+              <Label>Lote PA</Label>
+              <Select value={certLote} onValueChange={setCertLote}>
+                <SelectTrigger><SelectValue placeholder="Selecione um lote..." /></SelectTrigger>
+                <SelectContent>
+                  {lotesPADisponiveis.map(l => (<SelectItem key={l} value={l}>{l}</SelectItem>))}
+                </SelectContent>
+              </Select>
+            </div>
+            <Button onClick={gerarCertificadoLote} disabled={!certLote} className="w-full">
+              <Download className="w-4 h-4 mr-2" /> Gerar Certificado (PDF)
+            </Button>
+            <p className="text-[10px] text-muted-foreground">O certificado abrirá em nova janela com diálogo de impressão. Salve como PDF.</p>
           </div>
         </DialogContent>
       </Dialog>
