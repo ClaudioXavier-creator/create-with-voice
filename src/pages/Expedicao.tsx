@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useMemo } from "react";
-import { Plus, Loader2, Truck, Upload, Search, Trash2, FileText, Package, Eye } from "lucide-react";
+import { Plus, Loader2, Truck, Upload, Search, Trash2, FileText, Package, Eye, Download } from "lucide-react";
+import { gerarFormExpedicaoSimples, gerarFormExpedicaoCompleta } from "@/utils/excelTemplates";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
@@ -276,6 +277,23 @@ export default function Expedicao() {
         description="Registro de saída de produto acabado por NF — rastreabilidade completa para recall"
         icon={Truck}
       />
+
+      <Card className="border-primary/20 bg-primary/5">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-base flex items-center gap-2">
+            <Download className="h-4 w-4 text-primary" />
+            Planilhas de Expedição (PL POP 9.2) — para registro manual / arquivamento
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="flex flex-wrap gap-2">
+          <Button variant="outline" size="sm" onClick={() => gerarFormExpedicaoSimples()}>
+            <Download className="h-4 w-4 mr-2" />Lista Simples (cliente, NF, lote)
+          </Button>
+          <Button variant="outline" size="sm" onClick={() => gerarFormExpedicaoCompleta()}>
+            <Download className="h-4 w-4 mr-2" />Completo por NF (com transporte)
+          </Button>
+        </CardContent>
+      </Card>
 
       <Card>
         <CardHeader>
