@@ -509,6 +509,7 @@ export const ORIENTACOES: ModuloOrientacao[] = [
   {
     id: "rastreabilidade",
     codigo: "POP-09",
+    titulo: "Rastreabilidade",
     rota: "/rastreabilidade",
     descricao: "Árvore visual de rastreio MP → Lote → Cliente.",
     base_legal: ["IN 04/2007 Art. 30", "IN 34/2008 — Espécies"],
