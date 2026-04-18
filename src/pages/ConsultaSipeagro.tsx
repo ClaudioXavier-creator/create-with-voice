@@ -35,6 +35,20 @@ export default function ConsultaSipeagro() {
   const [fornecedores, setFornecedores] = useState<Fornecedor[]>([]);
   const [filtro, setFiltro] = useState("");
   const [loading, setLoading] = useState(true);
+  const [buscaBase, setBuscaBase] = useState("");
+
+  const resultadosBase = useMemo(() => {
+    const q = buscaBase.trim();
+    if (q.length < 3) return [];
+    const qDigits = onlyDigits(q);
+    const qNorm = norm(q);
+    return BASE_SIPEAGRO.estabelecimentos
+      .filter((e) => {
+        if (qDigits.length >= 3 && (onlyDigits(e.cnpj).includes(qDigits) || onlyDigits(e.reg).includes(qDigits))) return true;
+        return norm(e.razao).includes(qNorm) || norm(e.reg).includes(qNorm) || norm(e.mun).includes(qNorm);
+      })
+      .slice(0, 50);
+  }, [buscaBase]);
 
   useEffect(() => {
     if (user) carregarFornecedores();
