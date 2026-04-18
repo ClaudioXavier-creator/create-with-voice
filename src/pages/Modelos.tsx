@@ -39,7 +39,7 @@ const MODELOS: ModeloDoc[] = [
   { nome: "PL POP 4.1–4.3 — Água", descricao: "Controle de cloro, reservatórios e laudos laboratoriais", categoria: "planilha", arquivo: "PL_POP_4" },
   { nome: "PL POP 5.1–5.2 — Contaminação Cruzada", descricao: "Checklist de prevenção e monitoramento de limpeza", categoria: "planilha", arquivo: "PL_POP_5" },
   { nome: "PL POP 6.1–6.4 — Manutenção/Calibração", descricao: "Cronograma, calibrações, ordens de serviço e lista de equipamentos", categoria: "planilha", arquivo: "PL_POP_6" },
-  { nome: "PL POP 7.1–7.2 — Pragas", descricao: "Monitoramento semanal e controle mensal de pragas", categoria: "planilha", arquivo: "PL_POP_7" },
+  { nome: "PL POP 7.1–7.3 — Pragas", descricao: "Monitoramento semanal, controle mensal e observação diária para chão de fábrica (presença detectada de roedores, aves e insetos)", categoria: "planilha", arquivo: "PL_POP_7" },
   { nome: "PL POP 8.1 — Resíduos", descricao: "Controle de resíduos e manifestos de transporte", categoria: "planilha", arquivo: "PL_POP_8" },
   { nome: "PL POP 9.1–9.2 — Rastreabilidade", descricao: "Rastreabilidade de lotes, testes e registro de recall", categoria: "planilha", arquivo: "PL_POP_9" },
 
