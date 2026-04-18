@@ -482,7 +482,31 @@ export const ORIENTACOES: ModuloOrientacao[] = [
   },
   // ============ POP 09 ============
   {
-    id: "rastreabilidade",
+    id: "expedicao",
+    codigo: "POP-09",
+    titulo: "Expedição & Faturamento",
+    rota: "/expedicao",
+    descricao: "Registro digital de saída de produto acabado por NF — base da rastreabilidade e do recall.",
+    base_legal: ["IN 04/2007 Art. 30", "Decreto 12.031/2024", "PL POP 9.2"],
+    passos: [
+      { titulo: "1. Importar XML da NF-e", descricao: "Faça upload do XML — sistema extrai automaticamente cliente, CNPJ, transportadora, motorista, placa, produtos e lotes (tag rastro/nLote).", dica: "Modo recomendado: zero digitação, zero erro." },
+      { titulo: "2. Ou Entrada Manual", descricao: "Para vendas sem NF-e (cupom fiscal, transferência), preencha cliente, NF, produtos e lotes manualmente." },
+      { titulo: "3. Conferir lotes carregados", descricao: "Cada item deve ter lote do produto acabado — essencial para rastreabilidade e recall." },
+      { titulo: "4. Planilha em branco para campo", descricao: "Em /planilhas-pop > POP-09 baixe a PL POP 9.2 (Lista Simples ou Completo por NF) para preencher à mão e arquivar 2 anos." },
+      { titulo: "5. Consultar rastro", descricao: "O módulo /rastreabilidade consome os dados de expedição e mostra árvore MP → Lote → Cliente para acionar recall em segundos." },
+    ],
+    campos_simulacao: [
+      { nome: "numero_nf", label: "Número NF", tipo: "text", exemplo: "000123456" },
+      { nome: "cliente_nome", label: "Cliente", tipo: "text", exemplo: "Granja São José Ltda" },
+      { nome: "cliente_cnpj", label: "CNPJ", tipo: "text", exemplo: "12.345.678/0001-90" },
+      { nome: "produto", label: "Produto", tipo: "text", exemplo: "Ração Bovinos Confinamento 18%" },
+      { nome: "lote_produto", label: "Lote", tipo: "text", exemplo: "BOV-CONF-20260418-01" },
+      { nome: "quantidade", label: "Quantidade (kg)", tipo: "number", exemplo: 5000 },
+      { nome: "transportadora_nome", label: "Transportadora", tipo: "text", exemplo: "TransAgro Logística" },
+    ],
+    exemplo_resultado: "NF 123456 registrada — cliente, lotes e transporte vinculados. Rastreabilidade pronta para recall.",
+  },
+  {
     codigo: "POP-09",
     titulo: "Rastreabilidade",
     rota: "/rastreabilidade",
