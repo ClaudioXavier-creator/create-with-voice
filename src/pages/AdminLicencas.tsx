@@ -205,9 +205,9 @@ export default function AdminLicencas() {
 
                   <div className="flex items-center gap-2">
                     <Select
-                      value={selectedDays[e.empresa_id || ""] || ""}
+                      value={selectedDays[e.id] || ""}
                       onValueChange={(v) =>
-                        setSelectedDays((prev) => ({ ...prev, [e.empresa_id || ""]: v }))
+                        setSelectedDays((prev) => ({ ...prev, [e.id]: v }))
                       }
                     >
                       <SelectTrigger className="w-[130px]">
@@ -223,10 +223,10 @@ export default function AdminLicencas() {
 
                     <Button
                       size="sm"
-                      onClick={() => e.empresa_id && handleGrant(e.empresa_id)}
-                      disabled={!e.empresa_id || actionLoading === (e.empresa_id + "-grant")}
+                      onClick={() => handleGrant(e)}
+                      disabled={actionLoading === (e.id + "-grant")}
                     >
-                      {actionLoading === (e.empresa_id + "-grant") ? (
+                      {actionLoading === (e.id + "-grant") ? (
                         <Loader2 className="w-4 h-4 animate-spin" />
                       ) : (
                         <UserCheck className="w-4 h-4 mr-1" />
@@ -237,10 +237,10 @@ export default function AdminLicencas() {
                     <Button
                       size="sm"
                       variant="destructive"
-                      onClick={() => e.empresa_id && handleRevoke(e.empresa_id)}
-                      disabled={!e.empresa_id || !isActive(e) || actionLoading === (e.empresa_id + "-revoke")}
+                      onClick={() => handleRevoke(e)}
+                      disabled={!isActive(e) || actionLoading === (e.id + "-revoke")}
                     >
-                      {actionLoading === (e.empresa_id + "-revoke") ? (
+                      {actionLoading === (e.id + "-revoke") ? (
                         <Loader2 className="w-4 h-4 animate-spin" />
                       ) : (
                         <UserX className="w-4 h-4 mr-1" />
