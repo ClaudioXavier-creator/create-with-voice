@@ -927,6 +927,33 @@ export type Database = {
           },
         ]
       }
+      empresa_pin: {
+        Row: {
+          created_at: string
+          empresa_id: string
+          id: string
+          pin_hash: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          empresa_id: string
+          id?: string
+          pin_hash: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          empresa_id?: string
+          id?: string
+          pin_hash?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       empresas: {
         Row: {
           capacidade: string | null
@@ -965,6 +992,45 @@ export type Database = {
           responsavel_tecnico?: string | null
           tipo_producao?: string[] | null
           updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      execucao_pop_carimbos: {
+        Row: {
+          carimbo_data: string
+          created_at: string
+          empresa_id: string | null
+          execucao_id: string
+          hash_sha256: string
+          id: string
+          ip_address: string | null
+          operador_nome: string
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          carimbo_data?: string
+          created_at?: string
+          empresa_id?: string | null
+          execucao_id: string
+          hash_sha256: string
+          id?: string
+          ip_address?: string | null
+          operador_nome: string
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          carimbo_data?: string
+          created_at?: string
+          empresa_id?: string | null
+          execucao_id?: string
+          hash_sha256?: string
+          id?: string
+          ip_address?: string | null
+          operador_nome?: string
+          user_agent?: string | null
           user_id?: string
         }
         Relationships: []

@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Factory, Package, ClipboardCheck, Droplets, AlertTriangle, CheckCircle2, ArrowLeft, Play, Settings, Bug } from "lucide-react";
+import { Factory, Package, ClipboardCheck, Droplets, AlertTriangle, CheckCircle2, ArrowLeft, Play, Settings, Bug, ShieldCheck, Lock } from "lucide-react";
+import { RegistroPopGenerico } from "@/components/tablet/RegistroPopGenerico";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,7 +14,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useEmpresa } from "@/hooks/useEmpresa";
 import { Link } from "react-router-dom";
 
-type Tela = "menu" | "producao" | "recebimento" | "limpeza" | "nc" | "pragas";
+type Tela = "menu" | "producao" | "recebimento" | "limpeza" | "nc" | "pragas" | "pop_generico";
 
 const MENU_ITEMS = [
   { id: "producao" as Tela, label: "Registrar Produção", icon: Factory, color: "bg-blue-500" },
@@ -21,6 +22,7 @@ const MENU_ITEMS = [
   { id: "limpeza" as Tela, label: "Registro Limpeza", icon: Droplets, color: "bg-cyan-500" },
   { id: "pragas" as Tela, label: "Observação de Pragas", icon: Bug, color: "bg-amber-600" },
   { id: "nc" as Tela, label: "Registrar NC", icon: AlertTriangle, color: "bg-red-500" },
+  { id: "pop_generico" as Tela, label: "Executar POP / IT", icon: ShieldCheck, color: "bg-primary" },
 ];
 
 export default function ModoTablet() {
@@ -170,13 +172,24 @@ export default function ModoTablet() {
           ))}
         </div>
 
-        <Link to="/dashboard" className="mt-8">
-          <Button variant="ghost" size="sm">
-            <Settings className="w-4 h-4 mr-2" /> Voltar ao Painel Completo
-          </Button>
-        </Link>
+        <div className="mt-8 flex flex-col items-center gap-2">
+          <Link to="/configurar-pin">
+            <Button variant="outline" size="sm">
+              <Lock className="w-4 h-4 mr-2" /> Configurar PIN da Empresa
+            </Button>
+          </Link>
+          <Link to="/dashboard">
+            <Button variant="ghost" size="sm">
+              <Settings className="w-4 h-4 mr-2" /> Voltar ao Painel Completo
+            </Button>
+          </Link>
+        </div>
       </div>
     );
+  }
+
+  if (tela === "pop_generico") {
+    return <RegistroPopGenerico onVoltar={() => setTela("menu")} />;
   }
 
   const Voltar = () => (
