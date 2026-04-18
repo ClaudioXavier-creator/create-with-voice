@@ -237,7 +237,48 @@ export default function PlanilhasPop() {
         </Card>
       )}
 
-      {/* Caso o POP não tenha planilhas próprias (tudo no módulo) */}
+      {/* Planilhas para Impressão (modelos manuais em branco) */}
+      {selectedPop.planilhas_impressao && selectedPop.planilhas_impressao.length > 0 && (
+        <Card className="mb-6 border-amber-300/60 bg-amber-50/40 dark:bg-amber-950/10">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm flex items-center gap-2">
+              <Download className="w-4 h-4 text-amber-700 dark:text-amber-400" />
+              Planilhas para Impressão (registro manual em campo)
+            </CardTitle>
+            <CardDescription className="text-xs">
+              Modelos em branco para imprimir, preencher à mão e arquivar (mínimo 2 anos — IN 04/2007 MAPA).
+              Para preenchimento digital com assinatura, use os módulos vinculados acima.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+              {selectedPop.planilhas_impressao.map((p) => (
+                <Button
+                  key={p.arquivo}
+                  variant="outline"
+                  size="sm"
+                  className="justify-start h-auto py-2 text-left"
+                  onClick={() => {
+                    const gen = TEMPLATE_GENERATORS[p.arquivo];
+                    if (gen) {
+                      gen();
+                      toast.success("Planilha gerada");
+                    } else {
+                      toast.error("Modelo não encontrado");
+                    }
+                  }}
+                >
+                  <Download className="w-3.5 h-3.5 mr-2 shrink-0 text-amber-700 dark:text-amber-400" />
+                  <span className="flex flex-col items-start">
+                    <span className="font-medium text-xs">{p.label}</span>
+                    <span className="text-[11px] text-muted-foreground font-normal">{p.descricao}</span>
+                  </span>
+                </Button>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
       {selectedPop.periodicidades.length === 0 && (
         <Card className="border-dashed">
           <CardContent className="py-8 text-center">
