@@ -52,11 +52,18 @@ export default function ModoTablet() {
   const [ncSetor, setNcSetor] = useState("");
   const [ncDescricao, setNcDescricao] = useState("");
 
+  // Pragas — observação chão de fábrica (POP 7.3)
+  const [pragaLocal, setPragaLocal] = useState("");
+  const [pragaTipos, setPragaTipos] = useState({ roedores: false, aves: false, voadores: false, rasteiros: false, outros: false });
+  const [pragaAcao, setPragaAcao] = useState("");
+  const [pragaResp, setPragaResp] = useState("");
+
   const resetAll = () => {
     setProdProduto(""); setProdLote(""); setProdOperador(""); setProdQuantidade("");
     setRecFornecedor(""); setRecMP(""); setRecLote(""); setRecOdor("normal"); setRecInsetos("ausente"); setRecAprovado(true);
     setLimpExecutor(""); setLimpConforme(true); setLimpObs("");
     setNcSetor(""); setNcDescricao("");
+    setPragaLocal(""); setPragaTipos({ roedores: false, aves: false, voadores: false, rasteiros: false, outros: false }); setPragaAcao(""); setPragaResp("");
   };
 
   const salvarProducao = async () => {
