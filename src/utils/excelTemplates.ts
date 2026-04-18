@@ -302,6 +302,27 @@ export function gerarPL_POP_7() {
   const ws2 = createSheet(mensal, [8, 20, 15, 20, 14, 18, 15, 16, 18]);
   XLSX.utils.book_append_sheet(wb, ws2, "7.2 Controle Mensal");
 
+  // 7.3 — Observação Diária de Pragas (formulário físico para chão de fábrica)
+  // Para fixar nas áreas (produção, recebimento, depósito MP, expedição, silos)
+  const observacao = [
+    ["PLANILHA 7.3 — OBSERVAÇÃO DIÁRIA DE PRAGAS (chão de fábrica)"],
+    ["Empresa:", "", "", "Mês/Ano:", "", "Área/Setor:", ""],
+    [""],
+    ["Instruções: Marcar 'X' na coluna correspondente sempre que houver evidência (visual, fezes, ninhos, dejetos, vestígios). Comunicar imediatamente o RT."],
+    [""],
+    ["Data", "Hora", "Roedores", "Aves/Pássaros", "Insetos Voadores", "Insetos Rasteiros", "Outros", "Local exato/observação", "Ação imediata", "Responsável (nome + assinatura)"],
+    ...Array.from({ length: 31 }, (_, i) => [i + 1, "", "☐", "☐", "☐", "☐", "☐", "", "", ""]),
+    [""],
+    ["Legenda: ☐ = sem evidência | X = presença detectada"],
+    ["Tipos de evidência: visual / fezes / pegadas / ninhos / penas / asas / restos / dejetos / odor"],
+    [""],
+    ["Encaminhamento: registros de presença detectada DEVEM gerar registro no módulo POP-07 (Pragas) e Não Conformidade quando aplicável."],
+    [""],
+    ["Verificado por (RT):", "", "CRMV:", "", "Data:", ""],
+  ];
+  const ws3 = createSheet(observacao, [6, 8, 11, 14, 16, 16, 10, 28, 22, 24]);
+  XLSX.utils.book_append_sheet(wb, ws3, "7.3 Observação Diária");
+
   downloadWorkbook(wb, "PL_POP_7_Pragas");
 }
 
