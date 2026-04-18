@@ -288,9 +288,10 @@ export const POPS_CONFIG: PopConfig[] = [
     ],
     periodicidades: [],
     anexos: [
-      "ANEXO 1: Planilha de Monitoramento Semanal de Pragas (módulo /pragas)",
-      "ANEXO 2: Registro de Aplicações Mensais (módulo /pragas)",
+      "ANEXO 1: Planilha de Monitoramento Semanal de Pragas – PL POP 7.1 (módulo /pragas)",
+      "ANEXO 2: Registro de Aplicações Mensais – PL POP 7.2 (módulo /pragas)",
       "ANEXO 3: Mapa de Iscas (módulo /pragas)",
+      "ANEXO 4: Observação Diária de Pragas – PL POP 7.3 (formulário físico afixado em produção, recebimento, depósito MP, expedição e silos; também disponível no Modo Tablet)",
     ],
   },
   {

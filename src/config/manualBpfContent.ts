@@ -181,6 +181,7 @@ export const MANUAL_BPF_SECTIONS: ManualBpfSection[] = [
       "A indústria monitora diariamente o controle integrado de pragas pela inspeção dos ambientes internos e externos.",
       "O controle integrado de pragas é realizado por empresa contratada, devidamente registrada na vigilância sanitária, com execução mensal.",
       "A empresa contratada possui: registro junto aos órgãos de Defesa Sanitária, responsável técnico, EPIs/EPCs específicos, ficha técnica de todos os produtos utilizados e treinamento atualizado.",
+      "Para reforçar a vigilância contínua, é mantida a Planilha 7.3 — Observação Diária de Pragas, formulário físico afixado nas áreas críticas (produção, recebimento, depósito de MP, expedição e silos) onde os colaboradores registram a presença detectada de roedores, aves e insetos. O mesmo registro está disponível no Modo Tablet (Chão de Fábrica) para lançamento digital imediato no módulo /pragas.",
     ],
   },
   {
