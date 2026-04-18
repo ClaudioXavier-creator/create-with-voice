@@ -81,16 +81,23 @@ export default function AdminLicencas() {
     return <Navigate to="/dashboard" replace />;
   }
 
-  const handleGrant = async (empresaId: string) => {
-    const dias = selectedDays[empresaId];
+  const handleGrant = async (entry: LicenseEntry) => {
+    const key = entry.id;
+    const dias = selectedDays[key];
     if (!dias) {
       toast.error("Selecione o período");
       return;
     }
-    setActionLoading(empresaId + "-grant");
+    setActionLoading(key + "-grant");
     try {
       const { error } = await supabase.functions.invoke("admin-licencas", {
-        body: { action: "grant", empresa_id: empresaId, dias: Number(dias) },
+        body: {
+          action: "grant",
+          licenca_id: entry.id,
+          empresa_id: entry.empresa_id,
+          user_id: entry.user_id,
+          dias: Number(dias),
+        },
       });
       if (error) throw error;
       toast.success("Licença concedida com sucesso!");
@@ -102,11 +109,11 @@ export default function AdminLicencas() {
     }
   };
 
-  const handleRevoke = async (empresaId: string) => {
-    setActionLoading(empresaId + "-revoke");
+  const handleRevoke = async (entry: LicenseEntry) => {
+    setActionLoading(entry.id + "-revoke");
     try {
       const { error } = await supabase.functions.invoke("admin-licencas", {
-        body: { action: "revoke", empresa_id: empresaId },
+        body: { action: "revoke", licenca_id: entry.id, empresa_id: entry.empresa_id },
       });
       if (error) throw error;
       toast.success("Acesso revogado!");
@@ -198,9 +205,9 @@ export default function AdminLicencas() {
 
                   <div className="flex items-center gap-2">
                     <Select
-                      value={selectedDays[e.empresa_id || ""] || ""}
+                      value={selectedDays[e.id] || ""}
                       onValueChange={(v) =>
-                        setSelectedDays((prev) => ({ ...prev, [e.empresa_id || ""]: v }))
+                        setSelectedDays((prev) => ({ ...prev, [e.id]: v }))
                       }
                     >
                       <SelectTrigger className="w-[130px]">
@@ -216,10 +223,10 @@ export default function AdminLicencas() {
 
                     <Button
                       size="sm"
-                      onClick={() => e.empresa_id && handleGrant(e.empresa_id)}
-                      disabled={!e.empresa_id || actionLoading === (e.empresa_id + "-grant")}
+                      onClick={() => handleGrant(e)}
+                      disabled={actionLoading === (e.id + "-grant")}
                     >
-                      {actionLoading === (e.empresa_id + "-grant") ? (
+                      {actionLoading === (e.id + "-grant") ? (
                         <Loader2 className="w-4 h-4 animate-spin" />
                       ) : (
                         <UserCheck className="w-4 h-4 mr-1" />
@@ -230,10 +237,10 @@ export default function AdminLicencas() {
                     <Button
                       size="sm"
                       variant="destructive"
-                      onClick={() => e.empresa_id && handleRevoke(e.empresa_id)}
-                      disabled={!e.empresa_id || !isActive(e) || actionLoading === (e.empresa_id + "-revoke")}
+                      onClick={() => handleRevoke(e)}
+                      disabled={!isActive(e) || actionLoading === (e.id + "-revoke")}
                     >
-                      {actionLoading === (e.empresa_id + "-revoke") ? (
+                      {actionLoading === (e.id + "-revoke") ? (
                         <Loader2 className="w-4 h-4 animate-spin" />
                       ) : (
                         <UserX className="w-4 h-4 mr-1" />
