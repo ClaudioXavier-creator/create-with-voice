@@ -2091,6 +2091,95 @@ export default function Rastreabilidade() {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Dialog: Rastreabilidade Reversa por Cliente */}
+      <Dialog open={clienteReversoOpen} onOpenChange={setClienteReversoOpen}>
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2"><GitBranch className="w-5 h-5 text-primary" /> Rastreabilidade Reversa — Por Cliente</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <p className="text-xs text-muted-foreground">Liste todos os lotes entregues a um cliente específico — essencial para recall direcionado e auditorias.</p>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label>Cliente</Label>
+                <Select value={clienteReversoSelecionado} onValueChange={setClienteReversoSelecionado}>
+                  <SelectTrigger><SelectValue placeholder="Selecione um cliente..." /></SelectTrigger>
+                  <SelectContent>
+                    {clientesUnicos.map(c => (<SelectItem key={c} value={c}>{c}</SelectItem>))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label>Período (dias)</Label>
+                <Input type="number" min="1" value={clienteReversoDias} onChange={e => setClienteReversoDias(e.target.value)} />
+              </div>
+            </div>
+            {clienteReversoSelecionado && (
+              <>
+                <div className="rounded-lg border p-3 bg-muted/30">
+                  <p className="text-sm font-semibold">{lotesPorCliente.length} lote(s) encontrado(s)</p>
+                  <p className="text-xs text-muted-foreground">Total expedido: {fmtKg(lotesPorCliente.reduce((s, l) => s + l.qtdTotal, 0))} kg • Lotes em recall: {lotesPorCliente.filter(l => l.recall).length}</p>
+                </div>
+                <div className="border rounded-lg max-h-[400px] overflow-y-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Produto</TableHead>
+                        <TableHead>Lote PA</TableHead>
+                        <TableHead>NFs</TableHead>
+                        <TableHead>Qtd (kg)</TableHead>
+                        <TableHead>Status</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {lotesPorCliente.length === 0 ? (
+                        <TableRow><TableCell colSpan={5} className="text-center text-muted-foreground">Sem registros no período</TableCell></TableRow>
+                      ) : lotesPorCliente.map((l, i) => (
+                        <TableRow key={i} className={l.recall ? "bg-destructive/10" : ""}>
+                          <TableCell className="text-xs">{l.produto}</TableCell>
+                          <TableCell className="text-xs font-mono">{l.lote}</TableCell>
+                          <TableCell className="text-xs">{Array.from(l.nfs).join(", ") || "—"}</TableCell>
+                          <TableCell className="text-xs">{fmtKg(l.qtdTotal)}</TableCell>
+                          <TableCell>{l.recall ? <Badge variant="destructive">RECALL</Badge> : <Badge variant="outline">OK</Badge>}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+                <Button onClick={exportClienteReversoCSV} disabled={lotesPorCliente.length === 0} className="w-full">
+                  <Download className="w-4 h-4 mr-2" /> Exportar CSV
+                </Button>
+              </>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Dialog: Certificado de Rastreabilidade do Lote */}
+      <Dialog open={certLoteOpen} onOpenChange={setCertLoteOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2"><Package className="w-5 h-5 text-primary" /> Certificado de Rastreabilidade do Lote</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <p className="text-xs text-muted-foreground">Documento formal por lote PA: composição, fornecedores, contraprova, destinos e assinatura RT. Atende Decreto 12.031/2024 (Art. 18) e clientes/auditores que solicitam comprovante.</p>
+            <div>
+              <Label>Lote PA</Label>
+              <Select value={certLote} onValueChange={setCertLote}>
+                <SelectTrigger><SelectValue placeholder="Selecione um lote..." /></SelectTrigger>
+                <SelectContent>
+                  {lotesPADisponiveis.map(l => (<SelectItem key={l} value={l}>{l}</SelectItem>))}
+                </SelectContent>
+              </Select>
+            </div>
+            <Button onClick={gerarCertificadoLote} disabled={!certLote} className="w-full">
+              <Download className="w-4 h-4 mr-2" /> Gerar Certificado (PDF)
+            </Button>
+            <p className="text-[10px] text-muted-foreground">O certificado abrirá em nova janela com diálogo de impressão. Salve como PDF.</p>
+          </div>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }
