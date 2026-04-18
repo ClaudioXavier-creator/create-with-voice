@@ -26,6 +26,11 @@ export interface PopConfig {
    * Exibido na aba do POP como referência de "lançamento único".
    */
   modulos_vinculados?: { rota: string; label: string; descricao: string }[];
+  /**
+   * Planilhas em branco para impressão (registro manual em campo).
+   * Cada item referencia uma função exportada de utils/excelTemplates.
+   */
+  planilhas_impressao?: { label: string; descricao: string; arquivo: string }[];
 }
 
 function diasDoMes(): string[] {
