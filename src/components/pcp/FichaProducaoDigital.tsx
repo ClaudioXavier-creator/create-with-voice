@@ -363,6 +363,26 @@ export default function FichaProducaoDigital({ ordemId, onClose }: Props) {
                 </TableRow>
               </TableBody>
             </Table>
+            {/* datalists para autocomplete dos lotes de MP por ingrediente */}
+            {ingredientes.map(ing => {
+              const nomeMp = ing.materia_prima.toLowerCase().trim();
+              const lotesMp = lotesDisp.filter(l => {
+                const n = (l.materia_prima || "").toLowerCase().trim();
+                return n === nomeMp || n.includes(nomeMp) || nomeMp.includes(n);
+              });
+              if (lotesMp.length === 0) return null;
+              // remove duplicatas de lote
+              const unicos = Array.from(new Map(lotesMp.map(l => [l.lote, l])).values());
+              return (
+                <datalist key={ing.id} id={`lotes-${ing.id}`}>
+                  {unicos.map(l => (
+                    <option key={l.lote} value={l.lote}>
+                      {l.fornecedor ? `${l.fornecedor} — ${l.data}` : l.data}
+                    </option>
+                  ))}
+                </datalist>
+              );
+            })}
           </CardContent>
         </Card>
       )}
