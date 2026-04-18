@@ -123,6 +123,13 @@ export default function Rastreabilidade() {
   const [contraprovosRecebimento, setContraprovosRecebimento] = useState<any[]>([]);
   const [contraprovosProducao, setContraprovosProducao] = useState<any[]>([]);
 
+  // ──── NOVOS: Rastreabilidade reversa por cliente + Certificado por lote ────
+  const [clienteReversoOpen, setClienteReversoOpen] = useState(false);
+  const [clienteReversoSelecionado, setClienteReversoSelecionado] = useState("");
+  const [clienteReversoDias, setClienteReversoDias] = useState("180");
+  const [certLoteOpen, setCertLoteOpen] = useState(false);
+  const [certLote, setCertLote] = useState("");
+
   const resetForm = () => {
     setProduto(""); setLoteProduto(""); setMateriaPrima(""); setLoteMP("");
     setFornecedor(""); setClienteDestino(""); setLocalEntrega("");
