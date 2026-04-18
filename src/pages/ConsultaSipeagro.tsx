@@ -104,7 +104,7 @@ export default function ConsultaSipeagro() {
         orientacaoModuloId="consulta-sipeagro"
       />
 
-      {/* Banner: Lista Oficial MAPA (sempre atualizada) */}
+      {/* Banner: Lista Oficial MAPA */}
       <Card className="border-primary/40 bg-primary/5">
         <CardContent className="pt-4 pb-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
           <div className="flex-1">
@@ -112,7 +112,8 @@ export default function ConsultaSipeagro() {
               🏛️ Lista Oficial de Estabelecimentos Registrados — MAPA/SIPEAGRO
             </p>
             <p className="text-xs text-muted-foreground mt-1">
-              A planilha oficial é atualizada semanalmente pelo MAPA. Consulte sempre a versão mais recente diretamente no portal gov.br para validar fornecedores por CNPJ, Razão Social ou nº de registro.
+              Base local embarcada com <strong>{BASE_SIPEAGRO.total.toLocaleString("pt-BR")} estabelecimentos</strong> (snapshot de {format(new Date(BASE_SIPEAGRO.atualizado_em), "dd/MM/yyyy")}).
+              ⚠️ <strong>Sempre verifique a versão mais recente no portal gov.br</strong> — o MAPA pode exigir login gov.br para a consulta on-line.
             </p>
           </div>
           <div className="flex flex-col sm:flex-row gap-2 shrink-0">
@@ -123,7 +124,7 @@ export default function ConsultaSipeagro() {
             >
               <Button size="sm" className="gap-2 w-full">
                 <ExternalLink className="w-4 h-4" />
-                Lista Oficial (XLSX)
+                Lista Oficial Atualizada
               </Button>
             </a>
             <a
@@ -133,10 +134,60 @@ export default function ConsultaSipeagro() {
             >
               <Button size="sm" variant="outline" className="gap-2 w-full">
                 <Search className="w-4 h-4" />
-                Consulta Online
+                Consulta Online (gov.br)
               </Button>
             </a>
           </div>
+        </CardContent>
+      </Card>
+
+      {/* Busca local na base oficial embarcada */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-base">
+            <Database className="w-5 h-5 text-primary" />
+            Buscar na Base Oficial MAPA ({format(new Date(BASE_SIPEAGRO.atualizado_em), "MM/yyyy")})
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <Input
+            placeholder="Digite CNPJ, registro SIPEAGRO, razão social ou município (mín. 3 caracteres)..."
+            value={buscaBase}
+            onChange={(e) => setBuscaBase(e.target.value)}
+          />
+          {buscaBase.trim().length >= 3 && (
+            <div className="space-y-2 max-h-96 overflow-y-auto">
+              {resultadosBase.length === 0 ? (
+                <p className="text-sm text-muted-foreground text-center py-4">
+                  Nenhum estabelecimento encontrado nesta base. Verifique no portal oficial — pode ter sido registrado após {format(new Date(BASE_SIPEAGRO.atualizado_em), "dd/MM/yyyy")}.
+                </p>
+              ) : (
+                <>
+                  <p className="text-xs text-muted-foreground">
+                    {resultadosBase.length} resultado(s){resultadosBase.length === 50 ? " (limitado a 50 — refine a busca)" : ""}
+                  </p>
+                  {resultadosBase.map((e, i) => (
+                    <div key={`${e.reg}-${i}`} className="border rounded-md p-3 text-sm">
+                      <div className="flex items-start justify-between gap-2 flex-wrap">
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium truncate">{e.razao}</p>
+                          <p className="text-xs text-muted-foreground">
+                            Reg.: <strong>{e.reg}</strong> · CNPJ: {e.cnpj || "—"} · {e.mun}/{e.uf}
+                          </p>
+                        </div>
+                        <Badge variant={e.sit.toLowerCase() === "ativo" ? "default" : "destructive"} className="shrink-0">
+                          {e.sit}
+                        </Badge>
+                      </div>
+                    </div>
+                  ))}
+                </>
+              )}
+            </div>
+          )}
+          <p className="text-xs text-muted-foreground border-t pt-2">
+            💡 Esta busca usa o snapshot de <strong>{format(new Date(BASE_SIPEAGRO.atualizado_em), "dd/MM/yyyy")}</strong>. Para confirmação oficial e dados em tempo real, sempre acesse a <a href="https://www.gov.br/agricultura/pt-br/assuntos/insumos-agropecuarios/insumos-pecuarios/alimentacao-animal/arquivos-alimentacao-animal/estabelecimentos-registrados" target="_blank" rel="noopener noreferrer" className="text-primary underline">lista oficial do MAPA</a>.
+          </p>
         </CardContent>
       </Card>
 
