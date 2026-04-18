@@ -155,17 +155,19 @@ Deno.serve(async (req) => {
     }
 
     if (action === "revoke") {
-      const { empresa_id } = params;
-      if (!empresa_id) throw new Error("empresa_id é obrigatório");
+      const { empresa_id, licenca_id } = params;
+      if (!empresa_id && !licenca_id) throw new Error("empresa_id ou licenca_id é obrigatório");
 
-      const { error } = await adminClient
-        .from("licencas")
-        .update({
-          status: "revogada",
-          data_expiracao: new Date().toISOString().split("T")[0],
-          liberado_admin: false,
-        })
-        .eq("empresa_id", empresa_id);
+      const updateData = {
+        status: "revogada",
+        data_expiracao: new Date().toISOString().split("T")[0],
+        liberado_admin: false,
+      };
+
+      const query = adminClient.from("licencas").update(updateData);
+      const { error } = licenca_id
+        ? await query.eq("id", licenca_id)
+        : await query.eq("empresa_id", empresa_id);
 
       if (error) throw error;
 
