@@ -284,5 +284,55 @@ export default function ModoTablet() {
     );
   }
 
+  if (tela === "pragas") {
+    const ToggleTipo = ({ k, label }: { k: keyof typeof pragaTipos; label: string }) => (
+      <button
+        type="button"
+        onClick={() => setPragaTipos(p => ({ ...p, [k]: !p[k] }))}
+        className={`flex items-center justify-between gap-2 p-4 rounded-xl border-2 text-left transition-all active:scale-95 min-h-[64px] ${
+          pragaTipos[k] ? "border-amber-600 bg-amber-50 dark:bg-amber-950/30" : "border-border bg-card"
+        }`}
+      >
+        <span className="text-base font-medium">{label}</span>
+        <span className={`text-sm font-bold px-2 py-1 rounded ${pragaTipos[k] ? "bg-amber-600 text-white" : "bg-muted text-muted-foreground"}`}>
+          {pragaTipos[k] ? "PRESENÇA" : "Sem evidência"}
+        </span>
+      </button>
+    );
+    return (
+      <div className="max-w-lg mx-auto p-4">
+        <Voltar />
+        <Card>
+          <CardContent className="pt-6 space-y-4">
+            <h2 className="text-xl font-bold flex items-center gap-2"><Bug className="w-6 h-6 text-amber-600" /> Observação de Pragas</h2>
+            <p className="text-xs text-muted-foreground">POP 7.3 — Toque nos itens onde houver evidência (visual, fezes, ninhos, dejetos, vestígios).</p>
+            <div>
+              <Label className="text-base">Local / Área *</Label>
+              <Input value={pragaLocal} onChange={e => setPragaLocal(e.target.value)} className="text-lg h-12 mt-1" placeholder="Ex: Depósito MP, Silo 2, Mistura..." />
+            </div>
+            <div className="grid grid-cols-1 gap-2">
+              <ToggleTipo k="roedores" label="🐀 Roedores" />
+              <ToggleTipo k="aves" label="🐦 Aves / Pássaros" />
+              <ToggleTipo k="voadores" label="🦟 Insetos voadores" />
+              <ToggleTipo k="rasteiros" label="🪳 Insetos rasteiros" />
+              <ToggleTipo k="outros" label="❓ Outros vestígios" />
+            </div>
+            <div>
+              <Label className="text-base">Ação imediata</Label>
+              <Input value={pragaAcao} onChange={e => setPragaAcao(e.target.value)} className="text-lg h-12 mt-1" placeholder="Ex: Limpeza, isca reposta, vedação..." />
+            </div>
+            <div>
+              <Label className="text-base">Responsável *</Label>
+              <Input value={pragaResp} onChange={e => setPragaResp(e.target.value)} className="text-lg h-12 mt-1" placeholder="Seu nome" />
+            </div>
+            <Button onClick={salvarPraga} disabled={saving || !pragaLocal || !pragaResp} className="w-full h-14 text-lg" size="lg">
+              <CheckCircle2 className="w-5 h-5 mr-2" /> {saving ? "Salvando..." : "Salvar Observação"}
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   return null;
 }
