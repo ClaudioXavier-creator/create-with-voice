@@ -632,6 +632,8 @@ export const TEMPLATE_GENERATORS: Record<string, () => void> = {
   "Checklist_Registro_Fabrica": gerarChecklistRegistroFabrica,
   "Ficha_Tecnica_Produto": gerarFichaTecnicaProduto,
   "Modelo_Rotulo": gerarModeloRotulo,
+  "Form_Expedicao_Simples": gerarFormExpedicaoSimples,
+  "Form_Expedicao_Completa": gerarFormExpedicaoCompleta,
 };
 
 // ─── Ficha Técnica de Produto ───
