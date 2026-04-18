@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Factory, Package, ClipboardCheck, Droplets, AlertTriangle, CheckCircle2, ArrowLeft, Play, Settings } from "lucide-react";
+import { Factory, Package, ClipboardCheck, Droplets, AlertTriangle, CheckCircle2, ArrowLeft, Play, Settings, Bug } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,12 +13,13 @@ import { useAuth } from "@/hooks/useAuth";
 import { useEmpresa } from "@/hooks/useEmpresa";
 import { Link } from "react-router-dom";
 
-type Tela = "menu" | "producao" | "recebimento" | "limpeza" | "nc";
+type Tela = "menu" | "producao" | "recebimento" | "limpeza" | "nc" | "pragas";
 
 const MENU_ITEMS = [
   { id: "producao" as Tela, label: "Registrar Produção", icon: Factory, color: "bg-blue-500" },
   { id: "recebimento" as Tela, label: "Recebimento MP", icon: Package, color: "bg-emerald-500" },
   { id: "limpeza" as Tela, label: "Registro Limpeza", icon: Droplets, color: "bg-cyan-500" },
+  { id: "pragas" as Tela, label: "Observação de Pragas", icon: Bug, color: "bg-amber-600" },
   { id: "nc" as Tela, label: "Registrar NC", icon: AlertTriangle, color: "bg-red-500" },
 ];
 
