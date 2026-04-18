@@ -281,8 +281,8 @@ export const POP_TEXTOS: PopTexto[] = [
     procedimentos: [
       "Registro diário na Ordem de Produção: lotes de MP, núcleo e embalagens utilizados.",
       "Cada ordem de produção forma um lote com número sequencial de 5 dígitos.",
-      "Na expedição, o conferente registra os lotes carregados na ordem de carregamento.",
-      "Para vendas com cupom fiscal, os lotes são anotados em planilha específica (PL POP 9.2).",
+      "Na expedição, o conferente registra os lotes carregados — preferencialmente importando o XML da NF-e no módulo /expedicao (extrai cliente, transporte, produtos e lotes automaticamente). Para registro manual, usar PL POP 9.2 — Lista Simples (impressão) disponível em /planilhas-pop > POP-09.",
+      "Para vendas com cupom fiscal ou sem NF-e, anotar lotes na PL POP 9.2 (Lista Simples ou Completo por NF) e arquivar por 2 anos.",
       "Não conformidades no recebimento: MP é retida, identificada e devolvida ou segregada.",
       "Não conformidades na produção: produto é retido, avaliado e destinado conforme análise técnica.",
       "Não conformidades de clientes: registrar, analisar, classificar gravidade e definir ações.",
