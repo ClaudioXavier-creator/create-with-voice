@@ -333,7 +333,7 @@ export const POPS_CONFIG: PopConfig[] = [
     ],
     anexos: [
       "ANEXO 1: Ordem diária de Produção – PL POP 9.1 (módulo /pcp)",
-      "ANEXO 2: Expedição por cliente e produto – PL POP 9.2 (módulo /rastreabilidade)",
+      "ANEXO 2: Expedição por cliente e produto – PL POP 9.2 (módulo /rastreabilidade ou modelo manual 'PL POP 9.2 — Expedição Lista Simples' na Biblioteca de Modelos)",
       "ANEXO 3: Fórmula e Inclusão de MP – PL POP 9.3 (módulo /pcp)",
       "ANEXO 4: Produtos Recolhidos (Recall) – PL POP 9.4 (módulo /simulacao-recall)",
       "ANEXO 5: Controle de RNC – PL POP 9.5 (módulo /nao-conformidades)",
