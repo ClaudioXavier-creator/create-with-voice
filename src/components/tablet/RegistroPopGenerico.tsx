@@ -175,11 +175,11 @@ export function RegistroPopGenerico({ onVoltar }: Props) {
           </div>
 
           {pinConfigurado === false && (
-            <div className="rounded-lg border-2 border-amber-500/50 bg-amber-50 dark:bg-amber-950/30 p-3 text-sm">
-              <p className="font-semibold text-amber-900 dark:text-amber-100 flex items-center gap-2">
+            <div className="rounded-lg border-2 border-destructive/40 bg-destructive/5 p-3 text-sm">
+              <p className="font-semibold text-destructive flex items-center gap-2">
                 <Lock className="w-4 h-4" /> PIN da empresa não configurado
               </p>
-              <p className="text-amber-800 dark:text-amber-200 mt-1">
+              <p className="text-muted-foreground mt-1">
                 O Responsável Técnico precisa definir o PIN antes do uso.
               </p>
               <Link to="/configurar-pin">
