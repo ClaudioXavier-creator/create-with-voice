@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useMemo } from "react";
-import { Plus, Loader2, Truck, Upload, Search, Trash2, FileText, Package, Eye } from "lucide-react";
+import { Plus, Loader2, Truck, Upload, Search, Trash2, FileText, Package, Eye, Download } from "lucide-react";
+import { gerarFormExpedicaoSimples, gerarFormExpedicaoCompleta } from "@/utils/excelTemplates";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
