@@ -19,6 +19,7 @@ import Recebimento from "./pages/Recebimento";
 import Producao from "./pages/Producao";
 import PCP from "./pages/PCP";
 import Rastreabilidade from "./pages/Rastreabilidade";
+import Expedicao from "./pages/Expedicao";
 import Pragas from "./pages/Pragas";
 import Treinamentos from "./pages/Treinamentos";
 import Indicadores from "./pages/Indicadores";
@@ -130,6 +131,7 @@ const AppRoutes = () => {
                   <Route path="/producao" element={<Producao />} />
                   <Route path="/pcp" element={<PCP />} />
                   <Route path="/rastreabilidade" element={<Rastreabilidade />} />
+                  <Route path="/expedicao" element={<Expedicao />} />
                   <Route path="/pragas" element={<Pragas />} />
                   <Route path="/treinamentos" element={<Treinamentos />} />
                   <Route path="/indicadores" element={<Indicadores />} />

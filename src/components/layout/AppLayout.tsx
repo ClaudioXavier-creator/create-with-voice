@@ -103,6 +103,7 @@ const NAV_ENTRIES: NavEntry[] = [
     icon: Search,
     items: [
       { path: "/rastreabilidade", label: "Rastreabilidade / Recall", icon: Search },
+      { path: "/expedicao", label: "Expedição & Faturamento", icon: Truck },
       { path: "/simulacao-recall", label: "Simulação Recall", icon: Timer },
     ],
   },
