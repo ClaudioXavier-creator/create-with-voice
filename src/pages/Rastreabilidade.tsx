@@ -617,10 +617,7 @@ export default function Rastreabilidade() {
     }
   };
 
-  // ──── NOVO 1: Rastreabilidade Reversa por Cliente ────
-  const [clienteReversoOpen, setClienteReversoOpen] = useState(false);
-  const [clienteReversoSelecionado, setClienteReversoSelecionado] = useState("");
-  const [clienteReversoDias, setClienteReversoDias] = useState("180");
+  // ──── NOVO 1: Rastreabilidade Reversa por Cliente (states no topo) ────
 
   const clientesUnicos = useMemo(() => {
     const set = new Set<string>();
