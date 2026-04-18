@@ -239,10 +239,10 @@ export default function PlanilhasPop() {
 
       {/* Planilhas para Impressão (modelos manuais em branco) */}
       {selectedPop.planilhas_impressao && selectedPop.planilhas_impressao.length > 0 && (
-        <Card className="mb-6 border-amber-300/60 bg-amber-50/40 dark:bg-amber-950/10">
+        <Card className="mb-6 border-primary/40 bg-primary/5">
           <CardHeader className="pb-3">
             <CardTitle className="text-sm flex items-center gap-2">
-              <Download className="w-4 h-4 text-amber-700 dark:text-amber-400" />
+              <Download className="w-4 h-4 text-primary" />
               Planilhas para Impressão (registro manual em campo)
             </CardTitle>
             <CardDescription className="text-xs">
@@ -268,7 +268,7 @@ export default function PlanilhasPop() {
                     }
                   }}
                 >
-                  <Download className="w-3.5 h-3.5 mr-2 shrink-0 text-amber-700 dark:text-amber-400" />
+                  <Download className="w-3.5 h-3.5 mr-2 shrink-0 text-primary" />
                   <span className="flex flex-col items-start">
                     <span className="font-medium text-xs">{p.label}</span>
                     <span className="text-[11px] text-muted-foreground font-normal">{p.descricao}</span>
