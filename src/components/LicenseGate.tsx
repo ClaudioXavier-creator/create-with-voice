@@ -1,5 +1,13 @@
 import { useState } from "react";
+import { useLocation } from "react-router-dom";
 import { AlertTriangle, CreditCard, Loader2, Clock, ShieldCheck, Mail, MessageCircle, X } from "lucide-react";
+
+// Rotas livres — conteúdo 100% educativo / sandbox.
+// Sempre acessíveis, mesmo sem licença ativa ou empresa selecionada,
+// para que treinamento e onboarding nunca fiquem bloqueados.
+const ROTAS_LIVRES = ["/orientacoes", "/manual", "/guia-pops"];
+const isRotaLivre = (path: string) =>
+  ROTAS_LIVRES.some((r) => path === r || path.startsWith(r + "/"));
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -109,12 +117,16 @@ interface LicenseGateProps {
 export default function LicenseGate({ children, product = "feedbpf" }: LicenseGateProps) {
   const { license, loading, isActive, daysRemaining } = useLicense();
   const { empresaAtiva, loading: empresaLoading } = useEmpresa();
+  const location = useLocation();
   const [checkoutLoading, setCheckoutLoading] = useState<string | null>(null);
   const [nivelSelecionado, setNivelSelecionado] = useState<NivelKey>("intermediario");
 
   const productLabel = PRODUCT_LABELS[product];
   const launchActive = isLaunchActive();
   const nivelAtivo = NIVEIS.find((n) => n.key === nivelSelecionado)!;
+
+  // Conteúdo educativo (Central de Orientações, Manual, Guia de POPs) sempre liberado.
+  if (isRotaLivre(location.pathname)) return <>{children}</>;
 
   if (loading || empresaLoading) {
     return (
