@@ -699,6 +699,56 @@ export type Database = {
           },
         ]
       }
+      convites_empresa: {
+        Row: {
+          aceito_em: string | null
+          aceito_por: string | null
+          convidado_por: string
+          created_at: string
+          email: string
+          empresa_id: string
+          expira_em: string
+          id: string
+          nome: string | null
+          papel: Database["public"]["Enums"]["papel_empresa"]
+          token: string
+        }
+        Insert: {
+          aceito_em?: string | null
+          aceito_por?: string | null
+          convidado_por: string
+          created_at?: string
+          email: string
+          empresa_id: string
+          expira_em?: string
+          id?: string
+          nome?: string | null
+          papel?: Database["public"]["Enums"]["papel_empresa"]
+          token?: string
+        }
+        Update: {
+          aceito_em?: string | null
+          aceito_por?: string | null
+          convidado_por?: string
+          created_at?: string
+          email?: string
+          empresa_id?: string
+          expira_em?: string
+          id?: string
+          nome?: string | null
+          papel?: Database["public"]["Enums"]["papel_empresa"]
+          token?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "convites_empresa_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       cronogramas_higiene: {
         Row: {
           area: string
@@ -920,6 +970,50 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "documentos_bpf_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      empresa_membros: {
+        Row: {
+          ativo: boolean
+          convidado_por: string | null
+          created_at: string
+          empresa_id: string
+          id: string
+          nome: string | null
+          papel: Database["public"]["Enums"]["papel_empresa"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          ativo?: boolean
+          convidado_por?: string | null
+          created_at?: string
+          empresa_id: string
+          id?: string
+          nome?: string | null
+          papel?: Database["public"]["Enums"]["papel_empresa"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          ativo?: boolean
+          convidado_por?: string | null
+          created_at?: string
+          empresa_id?: string
+          id?: string
+          nome?: string | null
+          papel?: Database["public"]["Enums"]["papel_empresa"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "empresa_membros_empresa_id_fkey"
             columns: ["empresa_id"]
             isOneToOne: false
             referencedRelation: "empresas"
@@ -3480,9 +3574,29 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      get_limite_membros_empresa: {
+        Args: { _empresa_id: string }
+        Returns: number
+      }
+      get_papel_empresa: {
+        Args: { _empresa_id: string; _user_id: string }
+        Returns: Database["public"]["Enums"]["papel_empresa"]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
+      is_membro_empresa: {
+        Args: { _empresa_id: string; _user_id: string }
+        Returns: boolean
+      }
+      tem_papel_empresa: {
+        Args: {
+          _empresa_id: string
+          _papel: Database["public"]["Enums"]["papel_empresa"]
           _user_id: string
         }
         Returns: boolean
@@ -3494,6 +3608,7 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
+      papel_empresa: "admin" | "rt" | "operador"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -3622,6 +3737,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "moderator", "user"],
+      papel_empresa: ["admin", "rt", "operador"],
     },
   },
 } as const
