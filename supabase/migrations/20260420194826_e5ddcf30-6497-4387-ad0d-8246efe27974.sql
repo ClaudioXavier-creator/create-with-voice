@@ -1,0 +1,1 @@
+UPDATE public.licencas SET empresa_id = '796a189f-2ce8-40bd-864a-9f77adecd2e5', updated_at = now() WHERE id = '3eabe570-4b67-4b1f-b1ba-4cc605b8f498' AND empresa_id IS NULL;
