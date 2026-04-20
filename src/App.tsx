@@ -48,6 +48,7 @@ import PotabilidadeAgua from "./pages/PotabilidadeAgua";
 import SaudePessoal from "./pages/SaudePessoal";
 import ControleVisitantes from "./pages/ControleVisitantes";
 import Auth from "./pages/Auth";
+import ResetPassword from "./pages/ResetPassword";
 
 import Modelos from "./pages/Modelos";
 import Instalar from "./pages/Instalar";
