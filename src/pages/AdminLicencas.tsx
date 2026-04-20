@@ -238,7 +238,7 @@ export default function AdminLicencas() {
                       size="sm"
                       variant="destructive"
                       onClick={() => handleRevoke(e)}
-                      disabled={!isActive(e) || actionLoading === (e.id + "-revoke")}
+                      disabled={actionLoading === (e.id + "-revoke")}
                     >
                       {actionLoading === (e.id + "-revoke") ? (
                         <Loader2 className="w-4 h-4 animate-spin" />
