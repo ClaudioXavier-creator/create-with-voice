@@ -37,6 +37,7 @@ export default function Auth() {
   const authContent = authConfigs[product as keyof typeof authConfigs] ?? authConfigs.default;
 
   const [isLogin, setIsLogin] = useState(mode !== "signup");
+  const [isForgot, setIsForgot] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [nome, setNome] = useState("");
@@ -53,7 +54,14 @@ export default function Auth() {
     setLoading(true);
 
     try {
-      if (isLogin) {
+      if (isForgot) {
+        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+          redirectTo: `${window.location.origin}/reset-password`,
+        });
+        if (error) throw error;
+        toast.success("E-mail de recuperação enviado! Verifique sua caixa de entrada.");
+        setIsForgot(false);
+      } else if (isLogin) {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
         toast.success("Login realizado com sucesso!");
