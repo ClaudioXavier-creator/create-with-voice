@@ -155,8 +155,31 @@ Deno.serve(async (req) => {
     }
 
     if (action === "revoke") {
-      const { empresa_id, licenca_id } = params;
+      const { empresa_id, licenca_id, force } = params;
       if (!empresa_id && !licenca_id) throw new Error("empresa_id ou licenca_id é obrigatório");
+
+      // Buscar licença para verificar assinatura Stripe ativa paga
+      const { data: licencaAtual } = licenca_id
+        ? await adminClient.from("licencas").select("*").eq("id", licenca_id).maybeSingle()
+        : await adminClient.from("licencas").select("*").eq("empresa_id", empresa_id).maybeSingle();
+
+      // Bloquear revogação se houver assinatura Stripe ativa e paga (não liberada manualmente)
+      const temStripeAtivo =
+        licencaAtual?.stripe_subscription_id &&
+        licencaAtual?.status === "ativa" &&
+        !licencaAtual?.liberado_admin &&
+        new Date(licencaAtual.data_expiracao) > new Date();
+
+      if (temStripeAtivo && !force) {
+        return new Response(
+          JSON.stringify({
+            error:
+              "Esta licença possui assinatura Stripe ativa e paga. Não é possível revogar enquanto o pagamento estiver vigente. Cancele a assinatura no Stripe primeiro.",
+            stripe_protected: true,
+          }),
+          { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
 
       const updateData = {
         status: "revogada",
