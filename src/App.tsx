@@ -48,6 +48,7 @@ import PotabilidadeAgua from "./pages/PotabilidadeAgua";
 import SaudePessoal from "./pages/SaudePessoal";
 import ControleVisitantes from "./pages/ControleVisitantes";
 import Auth from "./pages/Auth";
+import ResetPassword from "./pages/ResetPassword";
 
 import Modelos from "./pages/Modelos";
 import Instalar from "./pages/Instalar";
@@ -108,6 +109,7 @@ const AppRoutes = () => {
     <Routes>
       <Route path="/" element={<Vitrine />} />
       <Route path="/auth" element={<AuthRoute />} />
+      <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/instalar" element={<Instalar />} />
       <Route path="/nutricrm" element={<ProtectedRoute><LicenseGate product="nutricrm"><NutriCRMPage /></LicenseGate></ProtectedRoute>} />
       <Route path="/feedbpf" element={<ProtectedRoute><LicenseGate product="feedbpf"><FeedBPFPage /></LicenseGate></ProtectedRoute>} />

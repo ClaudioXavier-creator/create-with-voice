@@ -163,35 +163,56 @@ export default function Auth() {
                 />
               </div>
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">Senha</Label>
-              <div className="relative">
-                <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="Mínimo 6 caracteres"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="pl-9"
-                  minLength={6}
-                  required
-                />
+            {!isForgot && (
+              <div className="space-y-2">
+                <Label htmlFor="password">Senha</Label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    id="password"
+                    type="password"
+                    placeholder="Mínimo 6 caracteres"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="pl-9"
+                    minLength={6}
+                    required
+                  />
+                </div>
               </div>
-            </div>
+            )}
             <Button type="submit" className="w-full" disabled={loading}>
               {loading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-              {isLogin ? "Entrar" : "Criar conta"}
+              {isForgot ? "Enviar link de recuperação" : isLogin ? "Entrar" : "Criar conta"}
             </Button>
           </form>
-          <div className="mt-4 text-center">
-            <button
-              type="button"
-              onClick={() => setIsLogin(!isLogin)}
-              className="text-sm text-primary hover:underline"
-            >
-              {isLogin ? "Não tem conta? Cadastre-se" : "Já tem conta? Faça login"}
-            </button>
+          <div className="mt-4 text-center space-y-2">
+            {isLogin && !isForgot && (
+              <button
+                type="button"
+                onClick={() => setIsForgot(true)}
+                className="block w-full text-sm text-primary hover:underline"
+              >
+                Esqueci minha senha
+              </button>
+            )}
+            {isForgot ? (
+              <button
+                type="button"
+                onClick={() => setIsForgot(false)}
+                className="text-sm text-muted-foreground hover:underline"
+              >
+                Voltar para o login
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setIsLogin(!isLogin)}
+                className="text-sm text-primary hover:underline"
+              >
+                {isLogin ? "Não tem conta? Cadastre-se" : "Já tem conta? Faça login"}
+              </button>
+            )}
           </div>
         </CardContent>
       </Card>
