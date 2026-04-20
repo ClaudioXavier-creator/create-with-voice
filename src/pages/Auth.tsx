@@ -37,6 +37,7 @@ export default function Auth() {
   const authContent = authConfigs[product as keyof typeof authConfigs] ?? authConfigs.default;
 
   const [isLogin, setIsLogin] = useState(mode !== "signup");
+  const [isForgot, setIsForgot] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [nome, setNome] = useState("");
