@@ -109,6 +109,7 @@ const AppRoutes = () => {
     <Routes>
       <Route path="/" element={<Vitrine />} />
       <Route path="/auth" element={<AuthRoute />} />
+      <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/instalar" element={<Instalar />} />
       <Route path="/nutricrm" element={<ProtectedRoute><LicenseGate product="nutricrm"><NutriCRMPage /></LicenseGate></ProtectedRoute>} />
       <Route path="/feedbpf" element={<ProtectedRoute><LicenseGate product="feedbpf"><FeedBPFPage /></LicenseGate></ProtectedRoute>} />
