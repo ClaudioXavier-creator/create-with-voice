@@ -221,6 +221,7 @@ export default function ConsultaSipeagro() {
   const [latestImport, setLatestImport] = useState<MapaImportacao | null>(null);
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
   const [importFile, setImportFile] = useState<File | null>(null);
+  const [sourceUrl, setSourceUrl] = useState("https://www.gov.br/agricultura/pt-br/assuntos/insumos-agropecuarios/insumos-pecuarios/alimentacao-animal/arquivos-alimentacao-animal/estabelecimentos-registrados");
   const [importing, setImporting] = useState(false);
 
   const usingEmbeddedFallback = baseTotal === 0 && !latestImport;
@@ -484,6 +485,30 @@ export default function ConsultaSipeagro() {
     } finally {
       setImporting(false);
     }
+  };
+
+  const importarPorUrl = async () => {
+    if (!sourceUrl.trim()) {
+      toast.error("Informe a URL oficial para atualização.");
+      return;
+    }
+
+    setImporting(true);
+    const { data, error } = await supabase.functions.invoke("import-sipeagro", {
+      body: { sourceUrl: sourceUrl.trim() },
+    });
+
+    setImporting(false);
+
+    if (error) {
+      toast.error(error.message || "Falha ao importar pela URL oficial.");
+      return;
+    }
+
+    await carregarResumoBase();
+    setBuscaBase("");
+    setResultadosBase([]);
+    toast.success(`Base atualizada por URL com ${data?.totalImportadas ?? 0} estabelecimento(s).`);
   };
 
   const filtrados = fornecedores.filter(
