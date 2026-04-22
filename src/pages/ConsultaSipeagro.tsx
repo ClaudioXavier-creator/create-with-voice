@@ -379,8 +379,7 @@ export default function ConsultaSipeagro() {
     try {
       const buffer = await importFile.arrayBuffer();
       const workbook = XLSX.read(buffer, { type: "array", cellDates: true });
-      const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
-      const rows = XLSX.utils.sheet_to_json<Record<string, unknown>>(firstSheet, { defval: "" });
+      const { rows, titleDate, sheetName } = extractImportRows(workbook);
 
       if (!rows.length) {
         toast.error("A planilha está vazia.");
@@ -406,9 +405,10 @@ export default function ConsultaSipeagro() {
         .map((row, index) => {
           const razaoSocial = String(getCellValue(row, IMPORT_ALIASES.razao_social) || "").trim();
           const registro = String(getCellValue(row, IMPORT_ALIASES.registro_estabelecimento) || "").trim();
-          const cnpj = onlyDigits(String(getCellValue(row, IMPORT_ALIASES.cnpj) || ""));
+          const cnpj = normalizeDocumentNumber(getCellValue(row, IMPORT_ALIASES.cnpj), 14);
 
           if (!razaoSocial && !registro && !cnpj) return null;
+          if ([razaoSocial, registro, cnpj].every((value) => !value || String(value).trim() === "-")) return null;
 
           return {
             fonte_linha_id: String(getCellValue(row, IMPORT_ALIASES.fonte_linha_id) || index + 1),
@@ -424,7 +424,7 @@ export default function ConsultaSipeagro() {
             endereco: String(getCellValue(row, IMPORT_ALIASES.endereco) || "").trim() || null,
             cep: onlyDigits(String(getCellValue(row, IMPORT_ALIASES.cep) || "")) || null,
             data_registro: parseSpreadsheetDate(getCellValue(row, IMPORT_ALIASES.data_registro)),
-            data_atualizacao_fonte: parseSpreadsheetDate(getCellValue(row, IMPORT_ALIASES.data_atualizacao_fonte)),
+            data_atualizacao_fonte: parseSpreadsheetDate(getCellValue(row, IMPORT_ALIASES.data_atualizacao_fonte)) || titleDate,
             importacao_id: importacaoId,
             dados_brutos: row,
           };
@@ -450,7 +450,9 @@ export default function ConsultaSipeagro() {
           status,
           total_importadas: totalImportadas,
           total_rejeitadas: totalRejeitadas,
-          observacoes: totalRejeitadas > 0 ? "Algumas linhas foram ignoradas por falta de dados mínimos." : "Importação concluída com sucesso.",
+          observacoes: totalRejeitadas > 0
+            ? `Importação da aba ${sheetName} concluída com ${totalRejeitadas} linha(s) ignoradas por falta de dados mínimos.`
+            : `Importação da aba ${sheetName} concluída com sucesso.`,
           concluido_em: new Date().toISOString(),
         })
         .eq("id", importacaoId);
