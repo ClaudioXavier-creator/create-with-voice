@@ -756,10 +756,11 @@ export const ORIENTACOES: ModuloOrientacao[] = [
     descricao: "Controle de versão e validade de POPs, ITs e formulários.",
     base_legal: ["IN 04/2007 Art. 7º"],
     passos: [
-      { titulo: "1. Cadastrar documento", descricao: "Código (ex: POP-01), nome, versão e data de revisão." },
+      { titulo: "1. Cadastrar documento", descricao: "Cadastre o POP/IT com o mesmo código operacional usado na execução (ex: POP-02) para liberar o vínculo com o chão de fábrica." },
       { titulo: "2. Definir próxima revisão", descricao: "Padrão MAPA: revisão anual ou a cada mudança significativa." },
-      { titulo: "3. Histórico de versões", descricao: "Cada nova versão registra alterações, motivo e responsável.", dica: "Versão antiga fica arquivada para rastreabilidade." },
-      { titulo: "4. Alerta de vencimento", descricao: "Sistema avisa 60 dias antes da próxima revisão." },
+      { titulo: "3. Vincular antes da execução", descricao: "Enquanto o POP/IT não estiver registrado em Documentos, ele não aparece para nova execução e não consegue gerar planilha operacional automática." , dica: "Fluxo prático: Documentos → registrar POP/IT → executar no tablet/diário operacional." },
+      { titulo: "4. Histórico de versões", descricao: "Cada nova versão registra alterações, motivo e responsável.", dica: "Versão antiga fica arquivada para rastreabilidade." },
+      { titulo: "5. Alerta de vencimento", descricao: "Sistema avisa 60 dias antes da próxima revisão." },
     ],
     campos_simulacao: [
       { nome: "codigo", label: "Código", tipo: "text", exemplo: "POP-01-RECEBIMENTO" },
@@ -779,10 +780,11 @@ export const ORIENTACOES: ModuloOrientacao[] = [
     descricao: "Execução digital dos POPs com até 3 assinaturas (executor, supervisor, RT).",
     base_legal: ["IN 04/2007", "Decreto 12.031/2024"],
     passos: [
-      { titulo: "1. Selecionar POP", descricao: "Escolha POP (POP-01 a POP-10) e mês de execução." },
-      { titulo: "2. Lançar registros", descricao: "Cada item tem responsável, conformidade e observações." },
-      { titulo: "3. Assinar digitalmente", descricao: "Executor → Supervisor → RT (CRMV obrigatório).", dica: "Cada assinatura grava data/hora e usuário." },
-      { titulo: "4. Carimbo anti-fraude", descricao: "Planilha fechada gera SHA-256 — não pode mais ser editada." },
+      { titulo: "1. Garantir documento vinculado", descricao: "Antes de tudo, registre o POP/IT no módulo Documentos com o código correto da atividade operacional." },
+      { titulo: "2. Criar ou localizar a planilha", descricao: "Ao registrar a execução no tablet/diário operacional, o sistema cria automaticamente a planilha do período se o POP/IT já estiver vinculado em Documentos." },
+      { titulo: "3. Lançar registros", descricao: "Cada item tem responsável, conformidade e observações." },
+      { titulo: "4. Assinar digitalmente", descricao: "Executor → Supervisor → RT (CRMV obrigatório).", dica: "Cada assinatura grava data/hora e usuário." },
+      { titulo: "5. Carimbo anti-fraude", descricao: "Planilha fechada gera SHA-256 — não pode mais ser editada." },
     ],
     campos_simulacao: [
       { nome: "pop_codigo", label: "Código POP", tipo: "select", exemplo: "POP-02", opcoes: ["POP-01", "POP-02", "POP-03", "POP-04", "POP-05", "POP-06", "POP-07", "POP-08", "POP-09", "POP-10"] },
@@ -844,10 +846,11 @@ export const ORIENTACOES: ModuloOrientacao[] = [
     base_legal: ["IN 04/2007 Art. 4º", "Decreto 12.031/2024", "IN 15/2009"],
     passos: [
       { titulo: "1. Ver alertas de atraso", descricao: "Painel mostra POPs cuja periodicidade venceu (ex: POP-02 deveria ser semanal e está há 10 dias sem registro).", dica: "Vermelho = ação urgente antes da auditoria." },
-      { titulo: "2. Nova Execução", descricao: "Selecione o POP/IT (vinculado a Documentos), informe executor, setor e status." },
-      { titulo: "3. Preencher checklist específico", descricao: "POP-02 (12 itens triagem + ASO), POP-03 (15 itens limpeza + produto químico), POP-04 (11 itens água + laudo), POP-05 (16 itens higiene pessoal), POP-09 (8 itens veículo) — sistema carrega automaticamente conforme o POP escolhido." },
-      { titulo: "4. Filtrar por período", descricao: "Use Status + POP + Data início/fim para auditoria mensal, trimestral ou por setor." },
-      { titulo: "5. Exportar histórico", descricao: "PDF com carimbo SHA-256 do período filtrado — entregar ao auditor MAPA." },
+      { titulo: "2. Nova Execução", descricao: "Selecione o POP/IT já vinculado em Documentos, informe executor, setor e status." },
+      { titulo: "3. Criação automática da planilha", descricao: "Se o POP/IT estiver cadastrado em Documentos, o registro da execução também cria automaticamente a planilha operacional do mês/período quando ela ainda não existir.", dica: "Se não aparecer opção para executar ou a planilha não nascer, o primeiro lugar para conferir é o módulo Documentos." },
+      { titulo: "4. Preencher checklist específico", descricao: "POP-02 (12 itens triagem + ASO), POP-03 (15 itens limpeza + produto químico), POP-04 (11 itens água + laudo), POP-05 (16 itens higiene pessoal), POP-09 (8 itens veículo) — sistema carrega automaticamente conforme o POP escolhido." },
+      { titulo: "5. Filtrar por período", descricao: "Use Status + POP + Data início/fim para auditoria mensal, trimestral ou por setor." },
+      { titulo: "6. Exportar histórico", descricao: "PDF com carimbo SHA-256 do período filtrado — entregar ao auditor MAPA." },
     ],
     campos_simulacao: [
       { nome: "codigo_pop", label: "Código POP", tipo: "select", exemplo: "POP-002", opcoes: ["POP-001", "POP-002", "POP-003", "POP-004", "POP-005", "POP-006", "POP-007", "POP-008", "POP-009"] },
@@ -857,7 +860,7 @@ export const ORIENTACOES: ModuloOrientacao[] = [
       { nome: "status", label: "Status", tipo: "select", exemplo: "concluido", opcoes: ["pendente", "em_execucao", "concluido", "nao_conforme"] },
       { nome: "observacoes", label: "Observações / Não conformidades", tipo: "textarea", exemplo: "Todos os itens conformes. Cloro 1,2 mg/L." },
     ],
-    exemplo_resultado: "Execução registrada e vinculada ao POP-002. Alerta de atraso removido. Disponível em filtro 'Concluído' do mês 04/2025.",
+    exemplo_resultado: "Execução registrada e vinculada ao POP-002. Se o documento já existir em Documentos, a planilha operacional do período é criada automaticamente. Alerta de atraso removido e histórico disponível no mês 04/2025.",
   },
 ];
 
