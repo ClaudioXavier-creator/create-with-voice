@@ -195,7 +195,6 @@ export default function Auth() {
         <CardContent>
           <div className="space-y-3">
             <Button type="button" variant="outline" className="w-full" onClick={handleGoogleSignIn} disabled={googleLoading || loading}>
-              {(googleLoading || loading === false && false) && <Loader2 className="w-4 h-4 animate-spin" />}
               {googleLoading && <Loader2 className="w-4 h-4 animate-spin" />}
               <svg viewBox="0 0 24 24" aria-hidden="true" className="w-4 h-4">
                 <path fill="currentColor" d="M21.8 12.23c0-.72-.06-1.25-.19-1.8H12.2v3.48h5.52c-.11.86-.7 2.15-2 3.02l-.02.12 2.91 2.25.2.02c1.84-1.7 2.99-4.2 2.99-7.09Z" />
