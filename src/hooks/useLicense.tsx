@@ -1,11 +1,13 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "./useAuth";
 import { useEmpresa } from "./useEmpresa";
+import { resolveLicenseTier, type Tier } from "@/config/tiers";
 
 export interface LicenseInfo {
   id: string;
   plano: string;
+  nivel?: string | null;
   status: string;
   data_inicio: string;
   data_expiracao: string;
@@ -19,6 +21,8 @@ export function useLicense() {
   const { empresaAtiva } = useEmpresa();
   const [license, setLicense] = useState<LicenseInfo | null>(null);
   const [loading, setLoading] = useState(true);
+
+  const tier: Tier = useMemo(() => resolveLicenseTier(license), [license]);
 
   const isExpired = license
     ? new Date(license.data_expiracao) < new Date() || license.status === "expirada"
@@ -86,5 +90,5 @@ export function useLicense() {
     return data;
   };
 
-  return { license, loading, isActive, isExpired, daysRemaining, activateKey };
+  return { license, tier, loading, isActive, isExpired, daysRemaining, activateKey };
 }

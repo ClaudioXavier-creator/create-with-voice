@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useLicense } from "@/hooks/useLicense";
-import { checkAccess, resolveTier, TIER_LABEL } from "@/config/tiers";
+import { checkAccess, TIER_LABEL } from "@/config/tiers";
 import { Link } from "react-router-dom";
 
 interface TierGateProps {
@@ -70,9 +70,8 @@ const HYBRID_SHORTCUTS: Record<string, { templatePath: string; archivePath: stri
  *   mas exibe banner com link para Documentos BPF para arquivamento físico).
  */
 export default function TierGate({ children }: TierGateProps) {
-  const { license } = useLicense();
+  const { tier } = useLicense();
   const location = useLocation();
-  const tier = resolveTier(license?.plano);
   const access = checkAccess(tier, location.pathname);
   const shortcuts = useMemo(
     () => HYBRID_SHORTCUTS[location.pathname] ?? {

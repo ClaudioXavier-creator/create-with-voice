@@ -11,7 +11,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useEmpresa } from "@/hooks/useEmpresa";
 import { useLicense } from "@/hooks/useLicense";
-import { resolveTier, TIER_MAX_EMPRESAS, TIER_LABEL } from "@/config/tiers";
+import { TIER_MAX_EMPRESAS, TIER_LABEL } from "@/config/tiers";
 import { toast } from "sonner";
 
 const TIPOS = ["Ração farelada", "Ração peletizada", "Núcleo", "Premix", "Suplemento mineral", "Sal mineral"];
@@ -31,7 +31,7 @@ const emptyForm: EmpresaForm = { nome: "", cnpj: "", endereco: "", responsavel_t
 export default function Cadastro() {
   const { user } = useAuth();
   const { empresas, recarregar, setEmpresaAtiva } = useEmpresa();
-  const { license } = useLicense();
+  const { tier } = useLicense();
   const [form, setForm] = useState<EmpresaForm>(emptyForm);
   const [editId, setEditId] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
@@ -46,7 +46,6 @@ export default function Cadastro() {
     }));
   };
 
-  const tier = resolveTier(license?.plano);
   const MAX_EMPRESAS = TIER_MAX_EMPRESAS[tier];
   const tierLabel = TIER_LABEL[tier];
   const limitReached = (empresas?.length || 0) >= MAX_EMPRESAS;

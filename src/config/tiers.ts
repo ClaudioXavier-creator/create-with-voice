@@ -151,3 +151,15 @@ export function resolveTier(plano: string | undefined | null): Tier {
   if (p === "trial") return "avancado"; // trial libera tudo
   return "entrada";
 }
+
+export function resolveLicenseTier(
+  license?: { plano?: string | null; nivel?: string | null } | null,
+): Tier {
+  const nivel = license?.nivel?.toLowerCase();
+
+  if (nivel === "avancado") return "avancado";
+  if (nivel === "intermediario") return "intermediario";
+  if (nivel === "entrada") return "entrada";
+
+  return resolveTier(license?.plano);
+}
