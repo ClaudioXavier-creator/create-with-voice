@@ -578,10 +578,24 @@ export default function ConsultaSipeagro() {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
+            <div className="space-y-2 rounded-md border p-3">
+              <p className="text-sm font-medium">Atualização semi-automática por URL oficial</p>
+              <p className="text-sm text-muted-foreground">
+                Informe a página oficial do órgão. O sistema tenta localizar o Excel publicado e atualizar a base automaticamente.
+              </p>
+              <div className="flex flex-col gap-3 lg:flex-row">
+                <Input value={sourceUrl} onChange={(e) => setSourceUrl(e.target.value)} placeholder="https://..." className="flex-1" />
+                <Button onClick={importarPorUrl} disabled={importing || !sourceUrl.trim()} className="gap-2">
+                  <RefreshCw className="w-4 h-4" />
+                  {importing ? "Atualizando..." : "Atualizar por URL"}
+                </Button>
+              </div>
+            </div>
+
             <div className="flex flex-col gap-3 lg:flex-row lg:items-end">
               <div className="flex-1 space-y-2">
                 <p className="text-sm text-muted-foreground">
-                  Envie a planilha oficial do MAPA em Excel. A nova carga substitui a base anterior e registra o histórico da importação.
+                  Se preferir, envie manualmente a planilha oficial em Excel. A nova carga substitui a base anterior e registra o histórico da importação.
                 </p>
                 <Input type="file" accept=".xlsx,.xls" onChange={(e) => setImportFile(e.target.files?.[0] || null)} />
               </div>
