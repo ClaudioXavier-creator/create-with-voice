@@ -222,6 +222,8 @@ export default function AdminLicencas() {
                       <span>·</span>
                       <span>{PLAN_LABELS[e.plano] || e.plano}</span>
                       <span>·</span>
+                      <span>Nível: {ACCESS_LEVEL_LABELS[e.nivel || ""] || "Não definido"}</span>
+                      <span>·</span>
                       <span>Exp: {new Date(e.data_expiracao).toLocaleDateString("pt-BR")}</span>
                       <span>·</span>
                       <span>{daysRemaining(e)} restantes</span>
@@ -235,6 +237,34 @@ export default function AdminLicencas() {
                   </div>
 
                   <div className="flex items-center gap-2">
+                    <Select
+                      value={selectedLevels[e.id] || e.nivel || "entrada"}
+                      onValueChange={(v) =>
+                        setSelectedLevels((prev) => ({ ...prev, [e.id]: v }))
+                      }
+                    >
+                      <SelectTrigger className="w-[150px]">
+                        <SelectValue placeholder="Nível" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="entrada">Entrada</SelectItem>
+                        <SelectItem value="intermediario">Intermediário</SelectItem>
+                        <SelectItem value="avancado">Avançado</SelectItem>
+                      </SelectContent>
+                    </Select>
+
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleUpdateLevel(e)}
+                      disabled={actionLoading === (e.id + "-level")}
+                    >
+                      {actionLoading === (e.id + "-level") ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      ) : null}
+                      Salvar nível
+                    </Button>
+
                     <Select
                       value={selectedDays[e.id] || ""}
                       onValueChange={(v) =>
