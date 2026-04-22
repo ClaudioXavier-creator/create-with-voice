@@ -104,7 +104,6 @@ export function RegistroPopGenerico({ onVoltar }: Props) {
           codigo_pop: popCodigo,
           nome_pop: popSelecionado?.nome || popCodigo,
           executor: operadorNome.trim(),
-          documento_id: itSelecionada ? null : undefined,
           setor: setor || itSelecionada?.titulo || "",
           status: "concluido",
           observacoes: [
@@ -147,12 +146,21 @@ export function RegistroPopGenerico({ onVoltar }: Props) {
         itSelecionada,
       });
 
+      if (planilhaResult.documentoId) {
+        await supabase
+          .from("execucao_pops")
+          .update({ documento_id: planilhaResult.documentoId })
+          .eq("id", execucao.id);
+      }
+
       toast({
         title: "✅ Execução registrada com selo antifraude",
         description: planilhaResult.periodicidade
-          ? planilhaResult.created
+          ? planilhaResult.documentoVinculado
+            ? planilhaResult.created
             ? `Hash: ${carimbo.hash.slice(0, 16)}... • Planilha ${planilhaResult.periodicidade.label} criada automaticamente.`
             : `Hash: ${carimbo.hash.slice(0, 16)}... • Planilha ${planilhaResult.periodicidade.label} já estava disponível.`
+            : `Hash: ${carimbo.hash.slice(0, 16)}... • Cadastre o POP em Documentos para liberar a planilha automática.`
           : `Hash: ${carimbo.hash.slice(0, 16)}...`,
       });
 
