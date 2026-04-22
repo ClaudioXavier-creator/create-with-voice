@@ -190,6 +190,14 @@ export function RegistroPopGenerico({ onVoltar }: Props) {
             </div>
           )}
 
+          <div className="rounded-lg border border-border bg-muted/40 p-3 text-sm text-muted-foreground">
+            <p className="font-medium text-foreground">Antes de registrar uma nova execução</p>
+            <p className="mt-1">
+              Esta aba só mostra atividades depois que o POP/IT for cadastrado no módulo
+              {" "}<span className="font-medium text-foreground">Documentos</span> para a empresa ativa.
+            </p>
+          </div>
+
           <div>
             <Label className="text-base">POP *</Label>
             <Select
