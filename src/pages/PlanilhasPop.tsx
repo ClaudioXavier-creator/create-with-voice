@@ -1,6 +1,6 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { ClipboardList, Plus, Download, Check, FileSpreadsheet, ExternalLink, Info } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -23,7 +23,18 @@ export default function PlanilhasPop() {
   const { user } = useAuth();
   const { empresaAtiva } = useEmpresa();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const initialPopCode = searchParams.get("pop");
   const [selectedPop, setSelectedPop] = useState<PopConfig>(POPS_CONFIG[1]); // POP-02 default
+  const preselectedPop = useMemo(
+    () => POPS_CONFIG.find((p) => p.codigo === initialPopCode) ?? null,
+    [initialPopCode],
+  );
+
+  useEffect(() => {
+    if (preselectedPop) setSelectedPop(preselectedPop);
+  }, [preselectedPop]);
+
   const [selectedPeriodicidade, setSelectedPeriodicidade] = useState<PopPeriodicidade | null>(null);
   const [mes, setMes] = useState(new Date().getMonth() + 1);
   const [ano, setAno] = useState(new Date().getFullYear());

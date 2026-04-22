@@ -47,6 +47,7 @@ import ArmazenamentoTransporte from "./pages/ArmazenamentoTransporte";
 import PotabilidadeAgua from "./pages/PotabilidadeAgua";
 import SaudePessoal from "./pages/SaudePessoal";
 import ControleVisitantes from "./pages/ControleVisitantes";
+import DocumentosBPF from "./pages/DocumentosBPF";
 import Auth from "./pages/Auth";
 import ResetPassword from "./pages/ResetPassword";
 
@@ -127,6 +128,7 @@ const AppRoutes = () => {
                   <Route path="/dashboard" element={<Index />} />
                   <Route path="/cadastro" element={<Cadastro />} />
                   <Route path="/documentos" element={<Documentos />} />
+                  <Route path="/documentos-bpf" element={<DocumentosBPF />} />
                   <Route path="/auditoria" element={<Auditoria />} />
                   <Route path="/nao-conformidades" element={<NaoConformidades />} />
                   <Route path="/recebimento" element={<Recebimento />} />

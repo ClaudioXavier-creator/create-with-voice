@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import { ReactNode, useMemo } from "react";
 import { useLocation } from "react-router-dom";
 import { AlertTriangle, FileDown, Lock } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -12,6 +12,57 @@ interface TierGateProps {
   children: ReactNode;
 }
 
+const HYBRID_SHORTCUTS: Record<string, { templatePath: string; archivePath: string }> = {
+  "/recebimento": {
+    templatePath: "/planilhas-pop?pop=POP-01",
+    archivePath: "/documentos-bpf?upload=1&tipo=planilha&pop=POP-01",
+  },
+  "/fornecedores": {
+    templatePath: "/planilhas-pop?pop=POP-01",
+    archivePath: "/documentos-bpf?upload=1&tipo=planilha&pop=POP-01",
+  },
+  "/higiene": {
+    templatePath: "/planilhas-pop?pop=POP-02",
+    archivePath: "/documentos-bpf?upload=1&tipo=planilha&pop=POP-02",
+  },
+  "/potabilidade-agua": {
+    templatePath: "/planilhas-pop?pop=POP-04",
+    archivePath: "/documentos-bpf?upload=1&tipo=planilha&pop=POP-04",
+  },
+  "/pcp": {
+    templatePath: "/planilhas-pop?pop=POP-05",
+    archivePath: "/documentos-bpf?upload=1&tipo=planilha&pop=POP-05",
+  },
+  "/producao": {
+    templatePath: "/planilhas-pop?pop=POP-05",
+    archivePath: "/documentos-bpf?upload=1&tipo=planilha&pop=POP-05",
+  },
+  "/validacao-limpeza": {
+    templatePath: "/planilhas-pop?pop=POP-05",
+    archivePath: "/documentos-bpf?upload=1&tipo=planilha&pop=POP-05",
+  },
+  "/manutencao": {
+    templatePath: "/planilhas-pop?pop=POP-06",
+    archivePath: "/documentos-bpf?upload=1&tipo=planilha&pop=POP-06",
+  },
+  "/pragas": {
+    templatePath: "/planilhas-pop?pop=POP-07",
+    archivePath: "/documentos-bpf?upload=1&tipo=planilha&pop=POP-07",
+  },
+  "/residuos": {
+    templatePath: "/planilhas-pop?pop=POP-08",
+    archivePath: "/documentos-bpf?upload=1&tipo=planilha&pop=POP-08",
+  },
+  "/armazenamento-transporte": {
+    templatePath: "/planilhas-pop?pop=POP-09",
+    archivePath: "/documentos-bpf?upload=1&tipo=planilha&pop=POP-09",
+  },
+  "/relatorio-producao": {
+    templatePath: "/planilhas-pop?pop=POP-09",
+    archivePath: "/documentos-bpf?upload=1&tipo=planilha&pop=POP-09",
+  },
+};
+
 /**
  * Bloqueio funcional por nível.
  * - Avançado bloqueado: card "Disponível no Avançado".
@@ -23,6 +74,13 @@ export default function TierGate({ children }: TierGateProps) {
   const location = useLocation();
   const tier = resolveTier(license?.plano);
   const access = checkAccess(tier, location.pathname);
+  const shortcuts = useMemo(
+    () => HYBRID_SHORTCUTS[location.pathname] ?? {
+      templatePath: "/planilhas-pop",
+      archivePath: "/documentos-bpf?upload=1&tipo=planilha",
+    },
+    [location.pathname],
+  );
 
   if (!access.allowed) {
     return (
@@ -62,12 +120,12 @@ export default function TierGate({ children }: TierGateProps) {
             <p className="text-muted-foreground">{access.reason}</p>
             <div className="flex flex-wrap gap-2 pt-1">
               <Button asChild size="sm" variant="outline">
-                <Link to="/modelos">
+                <Link to={shortcuts.templatePath}>
                   <FileDown className="w-4 h-4 mr-1" /> Baixar planilha em branco
                 </Link>
               </Button>
               <Button asChild size="sm" variant="outline">
-                <Link to="/documentos-bpf">Arquivar PDF preenchido</Link>
+                <Link to={shortcuts.archivePath}>Arquivar arquivo preenchido</Link>
               </Button>
             </div>
           </div>

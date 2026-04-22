@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
+import { useSearchParams } from "react-router-dom";
 import { FolderOpen, Upload, Trash2, Download, FileText, Filter, Loader2, Calendar, Tag, ClipboardCheck } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -51,6 +52,7 @@ interface DocBPF {
 export default function DocumentosBPF() {
   const { user } = useAuth();
   const { empresaAtiva } = useEmpresa();
+  const [searchParams] = useSearchParams();
   const empresaId = empresaAtiva?.id || null;
   const [docs, setDocs] = useState<DocBPF[]>([]);
   const [loading, setLoading] = useState(true);
@@ -66,6 +68,16 @@ export default function DocumentosBPF() {
   const [descricao, setDescricao] = useState("");
   const [dataDoc, setDataDoc] = useState(new Date().toISOString().split("T")[0]);
   const [file, setFile] = useState<File | null>(null);
+
+  useEffect(() => {
+    const shouldOpenUpload = searchParams.get("upload") === "1";
+    const tipoParam = searchParams.get("tipo");
+    const popParam = searchParams.get("pop");
+
+    if (tipoParam && TIPOS_DOC.some((item) => item.value === tipoParam)) setTipo(tipoParam);
+    if (popParam) setPopCodigo(popParam);
+    if (shouldOpenUpload) setOpenUpload(true);
+  }, [searchParams]);
 
   const fetchDocs = async () => {
     if (!user || !empresaId) return;
@@ -248,10 +260,10 @@ export default function DocumentosBPF() {
                 </div>
                 <div>
                   <Label>Código POP/IT</Label>
-                  <Select value={popCodigo} onValueChange={setPopCodigo}>
+                      <Select value={popCodigo || "__none__"} onValueChange={(value) => setPopCodigo(value === "__none__" ? "" : value)}>
                     <SelectTrigger><SelectValue placeholder="Opcional" /></SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">Nenhum</SelectItem>
+                      <SelectItem value="__none__">Nenhum</SelectItem>
                       {POP_CODIGOS.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
                     </SelectContent>
                   </Select>
