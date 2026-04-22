@@ -1,10 +1,11 @@
 import { useState, useEffect, useMemo } from "react";
-import { Search, Building2, CheckCircle2, XCircle, AlertTriangle, RefreshCw, ExternalLink, Database } from "lucide-react";
+import { Search, Building2, CheckCircle2, XCircle, AlertTriangle, RefreshCw, Database, Upload, FileSpreadsheet } from "lucide-react";
+import * as XLSX from "xlsx";
+import { Link } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import PageHeader from "@/components/PageHeader";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -13,10 +14,14 @@ import { toast } from "sonner";
 import { format } from "date-fns";
 import sipeagroBase from "@/data/sipeagroEstabelecimentos.json";
 
-interface EstabSipeagro { reg: string; razao: string; cnpj: string; sit: string; uf: string; mun: string; }
-const BASE_SIPEAGRO = sipeagroBase as { atualizado_em: string; total: number; estabelecimentos: EstabSipeagro[] };
-const onlyDigits = (s: string) => (s || "").replace(/\D/g, "");
-const norm = (s: string) => (s || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+interface EstabSipeagro {
+  reg: string;
+  razao: string;
+  cnpj: string;
+  sit: string;
+  uf: string;
+  mun: string;
+}
 
 interface Fornecedor {
   id: string;
@@ -29,6 +34,108 @@ interface Fornecedor {
   status_qualificacao: string;
 }
 
+interface MapaEstabelecimento {
+  id: string;
+  cnpj: string | null;
+  registro_estabelecimento: string | null;
+  razao_social: string;
+  nome_fantasia: string | null;
+  situacao: string | null;
+  categoria: string | null;
+  atividade: string | null;
+  municipio: string | null;
+  uf: string | null;
+  data_atualizacao_fonte: string | null;
+}
+
+interface MapaImportacao {
+  id: string;
+  arquivo_nome: string;
+  status: string;
+  total_linhas: number;
+  total_importadas: number;
+  total_rejeitadas: number;
+  observacoes: string | null;
+  created_at: string;
+  concluido_em: string | null;
+}
+
+const BASE_SIPEAGRO = sipeagroBase as {
+  atualizado_em: string;
+  total: number;
+  estabelecimentos: EstabSipeagro[];
+};
+
+const onlyDigits = (s: string) => (s || "").replace(/\D/g, "");
+const norm = (s: string) =>
+  (s || "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim();
+const cleanLikeValue = (s: string) => s.replace(/[%_,]/g, " ").trim();
+
+const normalizeHeader = (value: string) =>
+  norm(value)
+    .replace(/[^a-z0-9]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+const IMPORT_ALIASES = {
+  fonte_linha_id: ["id", "codigo", "código", "linha", "sequencia", "sequência"],
+  cnpj: ["cnpj", "cnpj cpf", "cpf cnpj"],
+  registro_estabelecimento: ["registro", "registro estabelecimento", "registro sipeagro", "registro mapa", "numero registro", "n registro", "nr registro"],
+  razao_social: ["razao social", "razão social", "nome empresarial", "empresa", "estabelecimento"],
+  nome_fantasia: ["nome fantasia", "fantasia"],
+  situacao: ["situacao", "situação", "status", "situacao cadastral", "situação cadastral"],
+  categoria: ["categoria", "tipo estabelecimento", "tipo"],
+  atividade: ["atividade", "atividade principal", "segmento", "classificacao", "classificação"],
+  municipio: ["municipio", "município", "cidade"],
+  uf: ["uf", "estado"],
+  endereco: ["endereco", "endereço", "logradouro"],
+  cep: ["cep"],
+  data_registro: ["data registro", "data de registro", "registro em"],
+  data_atualizacao_fonte: ["data atualizacao", "data atualização", "atualizado em", "ultima atualizacao", "última atualização"],
+} as const;
+
+const statusLabel: Record<string, string> = {
+  processando: "Processando",
+  concluida: "Concluída",
+  concluida_parcial: "Concluída com ressalvas",
+  falhou: "Falhou",
+};
+
+function parseSpreadsheetDate(value: unknown): string | null {
+  if (value === null || value === undefined || value === "") return null;
+  if (typeof value === "number") {
+    const parsed = XLSX.SSF.parse_date_code(value);
+    if (!parsed) return null;
+    return `${String(parsed.y).padStart(4, "0")}-${String(parsed.m).padStart(2, "0")}-${String(parsed.d).padStart(2, "0")}`;
+  }
+  if (value instanceof Date && !Number.isNaN(value.getTime())) {
+    return value.toISOString().split("T")[0];
+  }
+  const text = String(value).trim();
+  if (!text) return null;
+  const iso = text.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (iso) return text;
+  const br = text.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+  if (br) return `${br[3]}-${br[2]}-${br[1]}`;
+  const parsed = new Date(text);
+  return Number.isNaN(parsed.getTime()) ? null : parsed.toISOString().split("T")[0];
+}
+
+function getCellValue(row: Record<string, unknown>, aliases: readonly string[]) {
+  const entries = Object.entries(row);
+  for (const [key, rawValue] of entries) {
+    const normalizedKey = normalizeHeader(key);
+    if (aliases.some((alias) => normalizedKey.includes(normalizeHeader(alias)))) {
+      return rawValue;
+    }
+  }
+  return null;
+}
+
 export default function ConsultaSipeagro() {
   const { user } = useAuth();
   const { empresaAtiva } = useEmpresa();
@@ -36,34 +143,138 @@ export default function ConsultaSipeagro() {
   const [filtro, setFiltro] = useState("");
   const [loading, setLoading] = useState(true);
   const [buscaBase, setBuscaBase] = useState("");
+  const [resultadosBase, setResultadosBase] = useState<MapaEstabelecimento[]>([]);
+  const [baseLoading, setBaseLoading] = useState(false);
+  const [baseTotal, setBaseTotal] = useState(0);
+  const [latestImport, setLatestImport] = useState<MapaImportacao | null>(null);
+  const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
+  const [importFile, setImportFile] = useState<File | null>(null);
+  const [importing, setImporting] = useState(false);
 
-  const resultadosBase = useMemo(() => {
+  const usingEmbeddedFallback = baseTotal === 0 && !latestImport;
+
+  const resultadosFallback = useMemo(() => {
     const q = buscaBase.trim();
-    if (q.length < 3) return [];
+    if (!usingEmbeddedFallback || q.length < 3) return [];
+
     const qDigits = onlyDigits(q);
     const qNorm = norm(q);
+
     return BASE_SIPEAGRO.estabelecimentos
-      .filter((e) => {
-        if (qDigits.length >= 3 && (onlyDigits(e.cnpj).includes(qDigits) || onlyDigits(e.reg).includes(qDigits))) return true;
-        return norm(e.razao).includes(qNorm) || norm(e.reg).includes(qNorm) || norm(e.mun).includes(qNorm);
+      .filter((item) => {
+        if (qDigits.length >= 3 && (onlyDigits(item.cnpj).includes(qDigits) || onlyDigits(item.reg).includes(qDigits))) {
+          return true;
+        }
+        return norm(item.razao).includes(qNorm) || norm(item.reg).includes(qNorm) || norm(item.mun).includes(qNorm);
       })
-      .slice(0, 50);
-  }, [buscaBase]);
+      .slice(0, 50)
+      .map((item, index) => ({
+        id: `${item.reg}-${index}`,
+        cnpj: item.cnpj || null,
+        registro_estabelecimento: item.reg || null,
+        razao_social: item.razao,
+        nome_fantasia: null,
+        situacao: item.sit || null,
+        categoria: null,
+        atividade: null,
+        municipio: item.mun || null,
+        uf: item.uf || null,
+        data_atualizacao_fonte: BASE_SIPEAGRO.atualizado_em,
+      }));
+  }, [buscaBase, usingEmbeddedFallback]);
 
   useEffect(() => {
-    if (user) carregarFornecedores();
+    if (!user) return;
+
+    supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", user.id)
+      .eq("role", "admin")
+      .maybeSingle()
+      .then(({ data }) => setIsAdmin(!!data));
+  }, [user]);
+
+  useEffect(() => {
+    if (!user) return;
+    carregarFornecedores();
+    carregarResumoBase();
   }, [user, empresaAtiva]);
+
+  useEffect(() => {
+    if (usingEmbeddedFallback) {
+      setResultadosBase(resultadosFallback);
+      return;
+    }
+
+    const q = buscaBase.trim();
+    if (q.length < 3) {
+      setResultadosBase([]);
+      return;
+    }
+
+    const timeout = setTimeout(() => {
+      buscarBaseInterna(q);
+    }, 250);
+
+    return () => clearTimeout(timeout);
+  }, [buscaBase, usingEmbeddedFallback, resultadosFallback]);
+
+  const carregarResumoBase = async () => {
+    const [{ count }, { data: importacao }] = await Promise.all([
+      supabase.from("mapa_estabelecimentos").select("id", { count: "exact", head: true }),
+      supabase.from("mapa_importacoes").select("*").order("created_at", { ascending: false }).limit(1).maybeSingle(),
+    ]);
+
+    setBaseTotal(count || 0);
+    setLatestImport((importacao as MapaImportacao | null) || null);
+  };
+
+  const buscarBaseInterna = async (query: string) => {
+    const qDigits = onlyDigits(query);
+    const textQuery = cleanLikeValue(query);
+    const textPattern = `%${textQuery}%`;
+    const digitsPattern = `%${qDigits}%`;
+
+    setBaseLoading(true);
+    const { data, error } = await supabase
+      .from("mapa_estabelecimentos")
+      .select("id, cnpj, registro_estabelecimento, razao_social, nome_fantasia, situacao, categoria, atividade, municipio, uf, data_atualizacao_fonte")
+      .or(
+        [
+          `razao_social.ilike.${textPattern}`,
+          `nome_fantasia.ilike.${textPattern}`,
+          `municipio.ilike.${textPattern}`,
+          `registro_estabelecimento.ilike.${textPattern}`,
+          ...(qDigits.length >= 3 ? [`cnpj.ilike.${digitsPattern}`, `registro_estabelecimento.ilike.${digitsPattern}`] : []),
+        ].join(","),
+      )
+      .order("razao_social")
+      .limit(50);
+
+    setBaseLoading(false);
+
+    if (error) {
+      toast.error("Não foi possível consultar a base interna.");
+      return;
+    }
+
+    setResultadosBase((data as MapaEstabelecimento[]) || []);
+  };
 
   const carregarFornecedores = async () => {
     if (!user) return;
     setLoading(true);
-    let q = supabase
+
+    let query = supabase
       .from("fornecedores")
       .select("id, nome, cnpj, registro_mapa, registro_sipeagro, sipeagro_verificado, sipeagro_data_verificacao, status_qualificacao")
       .eq("user_id", user.id)
       .order("nome");
-    if (empresaAtiva) q = q.eq("empresa_id", empresaAtiva.id);
-    const { data } = await q;
+
+    if (empresaAtiva) query = query.eq("empresa_id", empresaAtiva.id);
+
+    const { data } = await query;
     setFornecedores((data as Fornecedor[]) || []);
     setLoading(false);
   };
@@ -81,102 +292,255 @@ export default function ConsultaSipeagro() {
       toast.error("Erro ao atualizar.");
       return;
     }
-    toast.success(verificado ? "Fornecedor marcado como verificado no SIPEAGRO." : "Verificação removida.");
+
+    toast.success(verificado ? "Fornecedor marcado como verificado na base interna." : "Verificação removida.");
     carregarFornecedores();
   };
 
+  const importarPlanilha = async () => {
+    if (!user || !isAdmin) {
+      toast.error("Somente super admin pode atualizar a base.");
+      return;
+    }
+    if (!importFile) {
+      toast.error("Selecione um arquivo Excel para importar.");
+      return;
+    }
+
+    setImporting(true);
+    let importacaoId: string | null = null;
+
+    try {
+      const buffer = await importFile.arrayBuffer();
+      const workbook = XLSX.read(buffer, { type: "array", cellDates: true });
+      const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+      const rows = XLSX.utils.sheet_to_json<Record<string, unknown>>(firstSheet, { defval: "" });
+
+      if (!rows.length) {
+        toast.error("A planilha está vazia.");
+        setImporting(false);
+        return;
+      }
+
+      const { data: importacao, error: importacaoError } = await supabase
+        .from("mapa_importacoes")
+        .insert({
+          arquivo_nome: importFile.name,
+          status: "processando",
+          total_linhas: rows.length,
+          imported_by: user.id,
+        })
+        .select("id")
+        .single();
+
+      if (importacaoError || !importacao?.id) throw importacaoError || new Error("Não foi possível abrir a importação.");
+      importacaoId = importacao.id;
+
+      const registros = rows
+        .map((row, index) => {
+          const razaoSocial = String(getCellValue(row, IMPORT_ALIASES.razao_social) || "").trim();
+          const registro = String(getCellValue(row, IMPORT_ALIASES.registro_estabelecimento) || "").trim();
+          const cnpj = onlyDigits(String(getCellValue(row, IMPORT_ALIASES.cnpj) || ""));
+
+          if (!razaoSocial && !registro && !cnpj) return null;
+
+          return {
+            fonte_linha_id: String(getCellValue(row, IMPORT_ALIASES.fonte_linha_id) || index + 1),
+            cnpj: cnpj || null,
+            registro_estabelecimento: registro || null,
+            razao_social: razaoSocial || registro || `Linha ${index + 1}`,
+            nome_fantasia: String(getCellValue(row, IMPORT_ALIASES.nome_fantasia) || "").trim() || null,
+            situacao: String(getCellValue(row, IMPORT_ALIASES.situacao) || "").trim() || null,
+            categoria: String(getCellValue(row, IMPORT_ALIASES.categoria) || "").trim() || null,
+            atividade: String(getCellValue(row, IMPORT_ALIASES.atividade) || "").trim() || null,
+            municipio: String(getCellValue(row, IMPORT_ALIASES.municipio) || "").trim() || null,
+            uf: String(getCellValue(row, IMPORT_ALIASES.uf) || "").trim().toUpperCase() || null,
+            endereco: String(getCellValue(row, IMPORT_ALIASES.endereco) || "").trim() || null,
+            cep: onlyDigits(String(getCellValue(row, IMPORT_ALIASES.cep) || "")) || null,
+            data_registro: parseSpreadsheetDate(getCellValue(row, IMPORT_ALIASES.data_registro)),
+            data_atualizacao_fonte: parseSpreadsheetDate(getCellValue(row, IMPORT_ALIASES.data_atualizacao_fonte)),
+            importacao_id: importacaoId,
+            dados_brutos: row,
+          };
+        })
+        .filter(Boolean);
+
+      const totalImportadas = registros.length;
+      const totalRejeitadas = rows.length - totalImportadas;
+
+      await supabase.from("mapa_estabelecimentos").delete().not("id", "is", null);
+
+      const chunkSize = 500;
+      for (let i = 0; i < registros.length; i += chunkSize) {
+        const chunk = registros.slice(i, i + chunkSize);
+        const { error } = await supabase.from("mapa_estabelecimentos").insert(chunk as never);
+        if (error) throw error;
+      }
+
+      const status = totalRejeitadas > 0 ? "concluida_parcial" : "concluida";
+      await supabase
+        .from("mapa_importacoes")
+        .update({
+          status,
+          total_importadas: totalImportadas,
+          total_rejeitadas: totalRejeitadas,
+          observacoes: totalRejeitadas > 0 ? "Algumas linhas foram ignoradas por falta de dados mínimos." : "Importação concluída com sucesso.",
+          concluido_em: new Date().toISOString(),
+        })
+        .eq("id", importacaoId);
+
+      setImportFile(null);
+      setBuscaBase("");
+      setResultadosBase([]);
+      await carregarResumoBase();
+      toast.success(`Base atualizada com ${totalImportadas} estabelecimento(s).`);
+    } catch (error: unknown) {
+      console.error(error);
+      if (importacaoId) {
+        await supabase
+          .from("mapa_importacoes")
+          .update({
+            status: "falhou",
+            observacoes: error instanceof Error ? error.message : "Falha inesperada na importação.",
+            concluido_em: new Date().toISOString(),
+          })
+          .eq("id", importacaoId);
+      }
+      toast.error("Falha ao importar a planilha Excel.");
+    } finally {
+      setImporting(false);
+    }
+  };
+
   const filtrados = fornecedores.filter(
-    (f) =>
-      f.nome.toLowerCase().includes(filtro.toLowerCase()) ||
-      (f.cnpj || "").includes(filtro) ||
-      (f.registro_mapa || "").includes(filtro)
+    (fornecedor) =>
+      fornecedor.nome.toLowerCase().includes(filtro.toLowerCase()) ||
+      (fornecedor.cnpj || "").includes(filtro) ||
+      (fornecedor.registro_mapa || "").includes(filtro) ||
+      (fornecedor.registro_sipeagro || "").includes(filtro),
   );
 
-  const totalVerificados = fornecedores.filter((f) => f.sipeagro_verificado).length;
+  const totalVerificados = fornecedores.filter((fornecedor) => fornecedor.sipeagro_verificado).length;
   const totalPendentes = fornecedores.length - totalVerificados;
+  const referenciaData = latestImport?.concluido_em || latestImport?.created_at || BASE_SIPEAGRO.atualizado_em;
+  const totalExibido = usingEmbeddedFallback ? BASE_SIPEAGRO.total : baseTotal;
 
   return (
     <div className="space-y-6">
       <PageHeader
         title="Consulta SIPEAGRO"
-        description="Verificação de fornecedores no sistema MAPA/SIPEAGRO"
+        description="Base interna pesquisável de estabelecimentos MAPA com atualização por planilha Excel"
         icon={Search}
         orientacaoModuloId="consulta-sipeagro"
       />
 
-      {/* Banner: Lista Oficial MAPA */}
       <Card className="border-primary/40 bg-primary/5">
-        <CardContent className="pt-4 pb-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+        <CardContent className="pt-4 pb-4 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex-1">
             <p className="font-semibold text-sm flex items-center gap-2">
-              🏛️ Lista Oficial de Estabelecimentos Registrados — MAPA/SIPEAGRO
+              <Database className="w-4 h-4 text-primary" />
+              Base interna de estabelecimentos do MAPA
             </p>
             <p className="text-xs text-muted-foreground mt-1">
-              Base local embarcada com <strong>{BASE_SIPEAGRO.total.toLocaleString("pt-BR")} estabelecimentos</strong> (snapshot de {format(new Date(BASE_SIPEAGRO.atualizado_em), "dd/MM/yyyy")}).
-              ⚠️ <strong>Sempre verifique a versão mais recente no portal gov.br</strong> — o MAPA pode exigir login gov.br para a consulta on-line.
+              {usingEmbeddedFallback ? (
+                <>
+                  Usando snapshot embarcado com <strong>{BASE_SIPEAGRO.total.toLocaleString("pt-BR")} registros</strong> até a primeira importação interna.
+                </>
+              ) : (
+                <>
+                  Base interna ativa com <strong>{totalExibido.toLocaleString("pt-BR")} registros</strong>, atualizada em {format(new Date(referenciaData), "dd/MM/yyyy") }.
+                </>
+              )}
             </p>
+            {latestImport && (
+              <div className="flex flex-wrap items-center gap-2 mt-2 text-xs text-muted-foreground">
+                <Badge variant="outline">{statusLabel[latestImport.status] || latestImport.status}</Badge>
+                <span>Arquivo: {latestImport.arquivo_nome}</span>
+                <span>Importados: {latestImport.total_importadas}</span>
+                {latestImport.total_rejeitadas > 0 && <span>Ignorados: {latestImport.total_rejeitadas}</span>}
+              </div>
+            )}
           </div>
-          <div className="flex flex-col sm:flex-row gap-2 shrink-0">
-            <a
-              href="https://www.gov.br/agricultura/pt-br/assuntos/insumos-agropecuarios/insumos-pecuarios/alimentacao-animal/arquivos-alimentacao-animal/estabelecimentos-registrados"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <Button size="sm" className="gap-2 w-full">
-                <ExternalLink className="w-4 h-4" />
-                Lista Oficial Atualizada
-              </Button>
-            </a>
-            <a
-              href="https://sistemasweb.agricultura.gov.br/pages/SIPEAGRO.html"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <Button size="sm" variant="outline" className="gap-2 w-full">
-                <Search className="w-4 h-4" />
-                Consulta Online (gov.br)
-              </Button>
-            </a>
+
+          <div className="flex flex-wrap gap-2 shrink-0">
+            <Button asChild size="sm" variant="outline">
+              <Link to="/fornecedores">Abrir fornecedores</Link>
+            </Button>
           </div>
         </CardContent>
       </Card>
 
-      {/* Busca local na base oficial embarcada */}
+      {isAdmin && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-base">
+              <Upload className="w-5 h-5 text-primary" />
+              Atualizar base por Excel
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div className="flex flex-col gap-3 lg:flex-row lg:items-end">
+              <div className="flex-1 space-y-2">
+                <p className="text-sm text-muted-foreground">
+                  Envie a planilha oficial do MAPA em Excel. A nova carga substitui a base anterior e registra o histórico da importação.
+                </p>
+                <Input type="file" accept=".xlsx,.xls" onChange={(e) => setImportFile(e.target.files?.[0] || null)} />
+              </div>
+              <Button onClick={importarPlanilha} disabled={!importFile || importing} className="gap-2">
+                <FileSpreadsheet className="w-4 h-4" />
+                {importing ? "Importando..." : "Importar Excel"}
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-base">
-            <Database className="w-5 h-5 text-primary" />
-            Buscar na Base Oficial MAPA ({format(new Date(BASE_SIPEAGRO.atualizado_em), "MM/yyyy")})
+            <Search className="w-5 h-5 text-primary" />
+            Buscar na base interna MAPA
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
           <Input
-            placeholder="Digite CNPJ, registro SIPEAGRO, razão social ou município (mín. 3 caracteres)..."
+            placeholder="Digite CNPJ, registro, razão social, fantasia ou município (mín. 3 caracteres)..."
             value={buscaBase}
             onChange={(e) => setBuscaBase(e.target.value)}
           />
+
           {buscaBase.trim().length >= 3 && (
             <div className="space-y-2 max-h-96 overflow-y-auto">
-              {resultadosBase.length === 0 ? (
+              {baseLoading ? (
+                <p className="text-sm text-muted-foreground text-center py-4">Pesquisando na base interna...</p>
+              ) : resultadosBase.length === 0 ? (
                 <p className="text-sm text-muted-foreground text-center py-4">
-                  Nenhum estabelecimento encontrado nesta base. Verifique no portal oficial — pode ter sido registrado após {format(new Date(BASE_SIPEAGRO.atualizado_em), "dd/MM/yyyy")}.
+                  Nenhum estabelecimento encontrado na base interna para esta busca.
                 </p>
               ) : (
                 <>
                   <p className="text-xs text-muted-foreground">
-                    {resultadosBase.length} resultado(s){resultadosBase.length === 50 ? " (limitado a 50 — refine a busca)" : ""}
+                    {resultadosBase.length} resultado(s)
+                    {resultadosBase.length === 50 ? " (limitado a 50 — refine a busca)" : ""}
                   </p>
-                  {resultadosBase.map((e, i) => (
-                    <div key={`${e.reg}-${i}`} className="border rounded-md p-3 text-sm">
+                  {resultadosBase.map((item) => (
+                    <div key={item.id} className="border rounded-md p-3 text-sm">
                       <div className="flex items-start justify-between gap-2 flex-wrap">
                         <div className="flex-1 min-w-0">
-                          <p className="font-medium truncate">{e.razao}</p>
+                          <p className="font-medium truncate">{item.razao_social}</p>
                           <p className="text-xs text-muted-foreground">
-                            Reg.: <strong>{e.reg}</strong> · CNPJ: {e.cnpj || "—"} · {e.mun}/{e.uf}
+                            Reg.: <strong>{item.registro_estabelecimento || "—"}</strong>
+                            {" · "}CNPJ: {item.cnpj || "—"}
+                            {" · "}{item.municipio || "—"}/{item.uf || "—"}
                           </p>
+                          {(item.nome_fantasia || item.categoria || item.atividade) && (
+                            <p className="text-xs text-muted-foreground mt-1">
+                              {[item.nome_fantasia, item.categoria, item.atividade].filter(Boolean).join(" · ")}
+                            </p>
+                          )}
                         </div>
-                        <Badge variant={e.sit.toLowerCase() === "ativo" ? "default" : "destructive"} className="shrink-0">
-                          {e.sit}
+                        <Badge variant={(item.situacao || "").toLowerCase().includes("ativo") ? "default" : "destructive"} className="shrink-0">
+                          {item.situacao || "Sem status"}
                         </Badge>
                       </div>
                     </div>
@@ -185,9 +549,6 @@ export default function ConsultaSipeagro() {
               )}
             </div>
           )}
-          <p className="text-xs text-muted-foreground border-t pt-2">
-            💡 Esta busca usa o snapshot de <strong>{format(new Date(BASE_SIPEAGRO.atualizado_em), "dd/MM/yyyy")}</strong>. Para confirmação oficial e dados em tempo real, sempre acesse a <a href="https://www.gov.br/agricultura/pt-br/assuntos/insumos-agropecuarios/insumos-pecuarios/alimentacao-animal/arquivos-alimentacao-animal/estabelecimentos-registrados" target="_blank" rel="noopener noreferrer" className="text-primary underline">lista oficial do MAPA</a>.
-          </p>
         </CardContent>
       </Card>
 
@@ -239,42 +600,43 @@ export default function ConsultaSipeagro() {
             <p className="text-center text-muted-foreground py-8">Nenhum fornecedor encontrado.</p>
           ) : (
             <div className="space-y-3">
-              {filtrados.map((f) => (
-                <div key={f.id} className="border rounded-lg p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+              {filtrados.map((fornecedor) => (
+                <div key={fornecedor.id} className="border rounded-lg p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
-                      <h4 className="font-medium">{f.nome}</h4>
-                      {f.sipeagro_verificado ? (
+                      <h4 className="font-medium">{fornecedor.nome}</h4>
+                      {fornecedor.sipeagro_verificado ? (
                         <Badge className="bg-green-600 text-white">✓ Verificado</Badge>
                       ) : (
                         <Badge variant="outline" className="text-yellow-600 border-yellow-600">Pendente</Badge>
                       )}
                     </div>
                     <p className="text-sm text-muted-foreground">
-                      CNPJ: {f.cnpj || "—"} · Reg. MAPA: {f.registro_mapa || "—"} · SIPEAGRO: {f.registro_sipeagro || "—"}
+                      CNPJ: {fornecedor.cnpj || "—"} · Reg. MAPA: {fornecedor.registro_mapa || "—"} · SIPEAGRO: {fornecedor.registro_sipeagro || "—"}
                     </p>
-                    {f.sipeagro_data_verificacao && (
+                    {fornecedor.sipeagro_data_verificacao && (
                       <p className="text-xs text-muted-foreground">
-                        Última verificação: {format(new Date(f.sipeagro_data_verificacao), "dd/MM/yyyy")}
+                        Última verificação: {format(new Date(fornecedor.sipeagro_data_verificacao), "dd/MM/yyyy")}
                       </p>
                     )}
                   </div>
-                  <div className="flex gap-2">
-                    <a
-                      href={`https://sistemasweb.agricultura.gov.br/pages/SIPEAGRO.html`}
-                      target="_blank"
-                      rel="noopener noreferrer"
+                  <div className="flex gap-2 flex-wrap">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        setBuscaBase(fornecedor.cnpj || fornecedor.registro_sipeagro || fornecedor.registro_mapa || fornecedor.nome);
+                        window.scrollTo({ top: 0, behavior: "smooth" });
+                      }}
                     >
-                      <Button variant="outline" size="sm">
-                        <ExternalLink className="w-3 h-3 mr-1" /> Consultar SIPEAGRO
-                      </Button>
-                    </a>
-                    {f.sipeagro_verificado ? (
-                      <Button variant="ghost" size="sm" onClick={() => marcarVerificado(f.id, false)}>
+                      <Search className="w-3 h-3 mr-1" /> Buscar na base
+                    </Button>
+                    {fornecedor.sipeagro_verificado ? (
+                      <Button variant="ghost" size="sm" onClick={() => marcarVerificado(fornecedor.id, false)}>
                         <XCircle className="w-3 h-3 mr-1" /> Remover
                       </Button>
                     ) : (
-                      <Button size="sm" onClick={() => marcarVerificado(f.id, true)}>
+                      <Button size="sm" onClick={() => marcarVerificado(fornecedor.id, true)}>
                         <CheckCircle2 className="w-3 h-3 mr-1" /> Marcar Verificado
                       </Button>
                     )}
@@ -287,14 +649,16 @@ export default function ConsultaSipeagro() {
       </Card>
 
       <Card>
-        <CardHeader><CardTitle>Como verificar no SIPEAGRO</CardTitle></CardHeader>
+        <CardHeader>
+          <CardTitle>Como usar a verificação interna</CardTitle>
+        </CardHeader>
         <CardContent className="text-sm space-y-2">
-          <p>1. Clique em "Consultar SIPEAGRO" ao lado do fornecedor.</p>
-          <p>2. No site do MAPA, busque pelo CNPJ ou número de registro do fornecedor.</p>
-          <p>3. Verifique se o estabelecimento está com o registro ativo e válido.</p>
-          <p>4. Após confirmação, clique em "Marcar Verificado" para registrar a consulta no sistema.</p>
+          <p>1. Atualize a base pelo Excel oficial sempre que houver nova publicação.</p>
+          <p>2. Pesquise por CNPJ, registro ou razão social na base interna.</p>
+          <p>3. Use o botão “Buscar na base” a partir do fornecedor cadastrado para localizar o registro rapidamente.</p>
+          <p>4. Depois da conferência, marque o fornecedor como verificado no sistema.</p>
           <p className="text-muted-foreground mt-4">
-            <strong>Nota:</strong> A verificação deve ser realizada periodicamente conforme seu programa de qualificação de fornecedores (IN 04/2007).
+            <strong>Nota:</strong> a base interna facilita a consulta operacional, mas a atualização da planilha deve seguir a rotina do seu programa de qualificação de fornecedores.
           </p>
         </CardContent>
       </Card>

@@ -1943,6 +1943,125 @@ export type Database = {
           },
         ]
       }
+      mapa_estabelecimentos: {
+        Row: {
+          atividade: string | null
+          categoria: string | null
+          cep: string | null
+          cnpj: string | null
+          created_at: string
+          dados_brutos: Json
+          data_atualizacao_fonte: string | null
+          data_registro: string | null
+          endereco: string | null
+          fonte_linha_id: string | null
+          id: string
+          importacao_id: string | null
+          importado_em: string
+          municipio: string | null
+          nome_fantasia: string | null
+          razao_social: string
+          registro_estabelecimento: string | null
+          situacao: string | null
+          uf: string | null
+          updated_at: string
+        }
+        Insert: {
+          atividade?: string | null
+          categoria?: string | null
+          cep?: string | null
+          cnpj?: string | null
+          created_at?: string
+          dados_brutos?: Json
+          data_atualizacao_fonte?: string | null
+          data_registro?: string | null
+          endereco?: string | null
+          fonte_linha_id?: string | null
+          id?: string
+          importacao_id?: string | null
+          importado_em?: string
+          municipio?: string | null
+          nome_fantasia?: string | null
+          razao_social: string
+          registro_estabelecimento?: string | null
+          situacao?: string | null
+          uf?: string | null
+          updated_at?: string
+        }
+        Update: {
+          atividade?: string | null
+          categoria?: string | null
+          cep?: string | null
+          cnpj?: string | null
+          created_at?: string
+          dados_brutos?: Json
+          data_atualizacao_fonte?: string | null
+          data_registro?: string | null
+          endereco?: string | null
+          fonte_linha_id?: string | null
+          id?: string
+          importacao_id?: string | null
+          importado_em?: string
+          municipio?: string | null
+          nome_fantasia?: string | null
+          razao_social?: string
+          registro_estabelecimento?: string | null
+          situacao?: string | null
+          uf?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mapa_estabelecimentos_importacao_id_fkey"
+            columns: ["importacao_id"]
+            isOneToOne: false
+            referencedRelation: "mapa_importacoes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      mapa_importacoes: {
+        Row: {
+          arquivo_nome: string
+          concluido_em: string | null
+          created_at: string
+          id: string
+          imported_by: string
+          observacoes: string | null
+          status: string
+          total_importadas: number
+          total_linhas: number
+          total_rejeitadas: number
+          updated_at: string
+        }
+        Insert: {
+          arquivo_nome: string
+          concluido_em?: string | null
+          created_at?: string
+          id?: string
+          imported_by: string
+          observacoes?: string | null
+          status?: string
+          total_importadas?: number
+          total_linhas?: number
+          total_rejeitadas?: number
+          updated_at?: string
+        }
+        Update: {
+          arquivo_nome?: string
+          concluido_em?: string | null
+          created_at?: string
+          id?: string
+          imported_by?: string
+          observacoes?: string | null
+          status?: string
+          total_importadas?: number
+          total_linhas?: number
+          total_rejeitadas?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       matriz_risco: {
         Row: {
           created_at: string
