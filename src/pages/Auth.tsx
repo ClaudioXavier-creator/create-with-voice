@@ -60,6 +60,7 @@ export default function Auth() {
   );
 
   useEffect(() => {
+    setIsForgot(mode === "forgot");
     setIsLogin(mode !== "signup");
   }, [mode]);
 
@@ -90,11 +91,6 @@ export default function Auth() {
   };
 
   const handleGoogleSignIn = async () => {
-    const nextParams = new URLSearchParams(searchParams);
-    if (!nextParams.get("product")) nextParams.set("product", product);
-    nextParams.set("mode", isLogin ? "login" : "signup");
-    if (redirectTo) nextParams.set("redirect", redirectTo);
-
     setGoogleLoading(true);
     try {
       const { error } = await supabase.auth.signInWithOAuth({
@@ -200,6 +196,7 @@ export default function Auth() {
           <div className="space-y-3">
             <Button type="button" variant="outline" className="w-full" onClick={handleGoogleSignIn} disabled={googleLoading || loading}>
               {(googleLoading || loading === false && false) && <Loader2 className="w-4 h-4 animate-spin" />}
+              {googleLoading && <Loader2 className="w-4 h-4 animate-spin" />}
               <svg viewBox="0 0 24 24" aria-hidden="true" className="w-4 h-4">
                 <path fill="currentColor" d="M21.8 12.23c0-.72-.06-1.25-.19-1.8H12.2v3.48h5.52c-.11.86-.7 2.15-2 3.02l-.02.12 2.91 2.25.2.02c1.84-1.7 2.99-4.2 2.99-7.09Z" />
                 <path fill="currentColor" d="M12.2 22c2.7 0 4.96-.89 6.61-2.43l-3.15-2.44c-.84.59-1.97 1-3.46 1-2.64 0-4.88-1.74-5.68-4.15l-.11.01-3.03 2.34-.04.1A9.98 9.98 0 0 0 12.2 22Z" />
@@ -375,7 +372,28 @@ export default function Auth() {
                 </button>
                 <button
                   type="button"
-                  onClick={handleSubmit as any}
+                  onClick={() => {
+                    void (async () => {
+                      const emailResult = z.string().trim().email().safeParse(email);
+                      if (!emailResult.success) {
+                        toast.error("Digite um e-mail válido.");
+                        return;
+                      }
+
+                      setLoading(true);
+                      try {
+                        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+                          redirectTo: `${window.location.origin}/reset-password`,
+                        });
+                        if (error) throw error;
+                        toast.success("Novo link enviado. Confira sua caixa de entrada e spam.");
+                      } catch (error: any) {
+                        toast.error(getAuthErrorMessage(error));
+                      } finally {
+                        setLoading(false);
+                      }
+                    })();
+                  }}
                   className="block w-full text-sm text-primary hover:underline"
                 >
                   Reenviar link
