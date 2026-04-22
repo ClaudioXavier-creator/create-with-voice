@@ -16,6 +16,7 @@ interface LicenseEntry {
   empresa_id: string | null;
   email: string;
   empresa_nome: string;
+  produto?: string;
   plano: string;
   status: string;
   data_inicio: string;
@@ -29,6 +30,14 @@ const PLAN_LABELS: Record<string, string> = {
   "3_meses": "Trimestral",
   "6_meses": "Semestral",
   "1_ano": "Anual",
+};
+
+const PRODUCT_LABELS: Record<string, string> = {
+  feed_bpf: "Feed_BPF",
+  audits_bpf: "Audits BPF",
+  agrogestao: "AgroGestão",
+  agrogestao_crm: "AgroGestão CRM",
+  nutricrm: "NutriCRM",
 };
 
 const ACCESS_LEVEL_LABELS: Record<string, string> = {
@@ -169,6 +178,14 @@ export default function AdminLicencas() {
       e.email.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const getEntryTitle = (entry: LicenseEntry) => {
+    const empresaNome = entry.empresa_nome?.trim();
+    if (empresaNome && empresaNome !== "—") return empresaNome;
+
+    const produto = entry.produto ? PRODUCT_LABELS[entry.produto] || entry.produto : "Licença sem empresa";
+    return `${produto} · ${entry.email}`;
+  };
+
   const canManage = !!isAdmin;
 
   return (
@@ -218,7 +235,7 @@ export default function AdminLicencas() {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
                       <Building2 className="w-4 h-4 text-muted-foreground shrink-0" />
-                      <p className="font-medium truncate">{e.empresa_nome}</p>
+                      <p className="font-medium truncate">{getEntryTitle(e)}</p>
                     </div>
                     <div className="flex items-center gap-2 mt-1 text-sm text-muted-foreground">
                       <span className="truncate">{e.email}</span>
