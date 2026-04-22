@@ -8,8 +8,10 @@ import {
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import PageHeader from "@/components/PageHeader";
 import { cn } from "@/lib/utils";
+import { DOCUMENTOS_ATIVACAO_CHECKLIST } from "@/config/documentosAtivacaoChecklist";
 
 interface ManualSection {
   id: string;
@@ -416,8 +418,9 @@ const sections: ManualSection[] = [
       { title: "Status do Documento", text: "Controle se o documento está Ativo, Em Revisão ou Obsoleto." },
       { title: "Versionamento", text: "Histórico de versões para rastreabilidade de alterações." },
       { title: "Arquivos BPF", text: "Upload e gestão de arquivos digitalizados vinculados aos documentos do sistema." },
+      { title: "Checklist de Ativação", text: `O manual agora traz o cadastro inicial exato de ${DOCUMENTOS_ATIVACAO_CHECKLIST.length} documentos (POPs + ITs) para liberar as planilhas físicas e digitais.` },
     ],
-    tips: ["Mantenha todos os POPs atualizados antes de uma auditoria oficial."],
+    tips: ["Mantenha todos os POPs atualizados antes de uma auditoria oficial.", "Cadastre primeiro POPs e ITs com o mesmo código operacional usado na execução para liberar os vínculos automáticos."],
   },
   {
     id: "planilhas-pop",
@@ -581,6 +584,34 @@ function SectionCard({ section, isOpen, onToggle }: { section: ManualSection; is
               </div>
             ))}
           </div>
+
+          {section.id === "documentos" && (
+            <div className="space-y-3">
+              <h4 className="text-sm font-semibold text-foreground">Checklist inicial para ativação</h4>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Código</TableHead>
+                    <TableHead>Nome</TableHead>
+                    <TableHead>Versão</TableHead>
+                    <TableHead>Revisão</TableHead>
+                    <TableHead>Próx. revisão</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {DOCUMENTOS_ATIVACAO_CHECKLIST.map((item) => (
+                    <TableRow key={item.codigo}>
+                      <TableCell className="font-medium">{item.codigo}</TableCell>
+                      <TableCell className="text-sm text-muted-foreground">{item.nome}</TableCell>
+                      <TableCell>{item.versao}</TableCell>
+                      <TableCell>{item.dataRevisao}</TableCell>
+                      <TableCell>{item.proximaRevisao}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          )}
 
           {section.tips && section.tips.length > 0 && (
             <div className="bg-muted/50 rounded-lg p-3 space-y-1.5">

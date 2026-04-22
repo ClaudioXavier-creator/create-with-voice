@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils";
 import { POP_TEXTOS } from "@/config/popTextos";
 import { POPS_CONFIG } from "@/config/popsConfig";
 import { INSTRUCOES_TRABALHO } from "@/config/instrucoesTrabalho";
+import { DOCUMENTOS_ATIVACAO_CHECKLIST } from "@/config/documentosAtivacaoChecklist";
 
 interface GuiaSection {
   id: string;
@@ -299,6 +300,36 @@ const docsRegistradosSection: GuiaSection = {
           <Step n={3}>Programe a próxima revisão com <b>12 meses</b> de intervalo ou conforme exigência do MAPA.</Step>
           <Step n={4}>Monitore as datas de validade e próxima revisão para evitar documentos vencidos.</Step>
         </div>
+      </div>
+
+      <div>
+        <h4 className="text-sm font-semibold mb-3">Checklist exato para ativar planilhas físicas e digitais</h4>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Código</TableHead>
+              <TableHead>Nome</TableHead>
+              <TableHead>Versão</TableHead>
+              <TableHead>Revisão</TableHead>
+              <TableHead>Próx. revisão</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead>Responsável</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {DOCUMENTOS_ATIVACAO_CHECKLIST.map((item) => (
+              <TableRow key={item.codigo}>
+                <TableCell className="font-medium">{item.codigo}</TableCell>
+                <TableCell className="text-sm text-muted-foreground">{item.nome}</TableCell>
+                <TableCell>{item.versao}</TableCell>
+                <TableCell>{item.dataRevisao}</TableCell>
+                <TableCell>{item.proximaRevisao}</TableCell>
+                <TableCell>{item.status}</TableCell>
+                <TableCell>{item.responsavel}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
       </div>
 
       <Tip>
