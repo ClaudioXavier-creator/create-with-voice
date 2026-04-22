@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { useLicense } from "@/hooks/useLicense";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
+import { TIER_LABEL } from "@/config/tiers";
 
 const PLAN_LABELS: Record<string, string> = {
   trial: "Teste Grátis (30 dias)",
@@ -15,7 +16,7 @@ const PLAN_LABELS: Record<string, string> = {
 };
 
 export default function AtivarLicenca() {
-  const { license, isActive, isExpired, daysRemaining, activateKey } = useLicense();
+  const { license, tier, isActive, isExpired, daysRemaining, activateKey } = useLicense();
   const { signOut } = useAuth();
   const [chave, setChave] = useState("");
   const [loading, setLoading] = useState(false);
@@ -61,6 +62,7 @@ export default function AtivarLicenca() {
               </div>
               <div className="text-sm space-y-1 text-muted-foreground">
                 <p>Plano: <strong>{PLAN_LABELS[license.plano] || license.plano}</strong></p>
+                <p>Nível: <strong>{TIER_LABEL[tier]}</strong></p>
                 <p>Expira em: <strong>{new Date(license.data_expiracao).toLocaleDateString("pt-BR")}</strong></p>
                 {isActive && (
                   <p className="flex items-center gap-1">
