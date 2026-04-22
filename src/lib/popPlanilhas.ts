@@ -49,6 +49,8 @@ interface GarantirPlanilhaParams {
 
 interface GarantirPlanilhaResult {
   created: boolean;
+  documentoId: string | null;
+  documentoVinculado: boolean;
   periodicidade: PopPeriodicidade | null;
   planilhaId: string | null;
 }
@@ -59,7 +61,20 @@ export async function garantirPlanilhaOperacional(
   const periodicidade = resolverPeriodicidadeOperacional(params.popCodigo, params.itSelecionada);
 
   if (!periodicidade) {
-    return { created: false, periodicidade: null, planilhaId: null };
+    return { created: false, documentoId: null, documentoVinculado: false, periodicidade: null, planilhaId: null };
+  }
+
+  const { data: documento, error: documentoError } = await supabase
+    .from("documentos")
+    .select("id")
+    .eq("empresa_id", params.empresaId)
+    .eq("codigo", params.popCodigo)
+    .maybeSingle();
+
+  if (documentoError) throw documentoError;
+
+  if (!documento) {
+    return { created: false, documentoId: null, documentoVinculado: false, periodicidade, planilhaId: null };
   }
 
   const agora = new Date();
@@ -80,7 +95,7 @@ export async function garantirPlanilhaOperacional(
   if (consultaError) throw consultaError;
 
   if (existente) {
-    return { created: false, periodicidade, planilhaId: existente.id };
+    return { created: false, documentoId: documento.id, documentoVinculado: true, periodicidade, planilhaId: existente.id };
   }
 
   const { data: criada, error: createError } = await supabase
@@ -99,7 +114,7 @@ export async function garantirPlanilhaOperacional(
 
   if (createError) throw createError;
 
-  return { created: true, periodicidade, planilhaId: criada.id };
+  return { created: true, documentoId: documento.id, documentoVinculado: true, periodicidade, planilhaId: criada.id };
 }
 
 export function obterPopConfig(popCodigo: string): PopConfig | null {
