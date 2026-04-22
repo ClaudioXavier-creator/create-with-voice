@@ -30,6 +30,8 @@ export interface ModuloOrientacao {
   exemplo_resultado?: string; // texto explicativo do que acontece após salvar
 }
 
+import { DOCUMENTOS_ATIVACAO_CHECKLIST } from "@/config/documentosAtivacaoChecklist";
+
 export const ORIENTACOES: ModuloOrientacao[] = [
   // ============ POP 01 ============
   {
@@ -757,6 +759,7 @@ export const ORIENTACOES: ModuloOrientacao[] = [
     base_legal: ["IN 04/2007 Art. 7º"],
     passos: [
       { titulo: "1. Cadastrar documento", descricao: "Cadastre o POP/IT com o mesmo código operacional usado na execução (ex: POP-02) para liberar o vínculo com o chão de fábrica." },
+      { titulo: "1A. Ordem inicial recomendada", descricao: `Comece pelo checklist-base de ativação: ${DOCUMENTOS_ATIVACAO_CHECKLIST.slice(0, 10).map((item) => item.codigo).join(", ")}, seguido das ITs obrigatórias do POP correspondente.` , dica: "Esse cadastro inicial libera o fluxo físico e digital com vínculo correto entre Documentos, Guia e execução." },
       { titulo: "2. Definir próxima revisão", descricao: "Padrão MAPA: revisão anual ou a cada mudança significativa." },
       { titulo: "3. Vincular antes da execução", descricao: "Enquanto o POP/IT não estiver registrado em Documentos, ele não aparece para nova execução e não consegue gerar planilha operacional automática." , dica: "Fluxo prático: Documentos → registrar POP/IT → executar no tablet/diário operacional." },
       { titulo: "4. Histórico de versões", descricao: "Cada nova versão registra alterações, motivo e responsável.", dica: "Versão antiga fica arquivada para rastreabilidade." },
