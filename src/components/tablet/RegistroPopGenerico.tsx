@@ -12,6 +12,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useEmpresa } from "@/hooks/useEmpresa";
 import { POPS_CONFIG } from "@/config/popsConfig";
 import { INSTRUCOES_TRABALHO } from "@/config/instrucoesTrabalho";
+import { garantirPlanilhaOperacional } from "@/lib/popPlanilhas";
 import { sha256, gerarCarimbo } from "@/utils/carimboHash";
 import { Link } from "react-router-dom";
 
@@ -137,9 +138,30 @@ export function RegistroPopGenerico({ onVoltar }: Props) {
         carimbo_data: carimbo.timestamp,
       });
 
+      const planilhaResult = await garantirPlanilhaOperacional({
+        userId: user.id,
+        empresaId: empresaAtiva.id,
+        popCodigo,
+        popNome: popSelecionado?.nome || popCodigo,
+        itSelecionada,
+      });
+
+      if (planilhaResult.documentoId) {
+        await supabase
+          .from("execucao_pops")
+          .update({ documento_id: planilhaResult.documentoId })
+          .eq("id", execucao.id);
+      }
+
       toast({
         title: "✅ Execução registrada com selo antifraude",
-        description: `Hash: ${carimbo.hash.slice(0, 16)}...`,
+        description: planilhaResult.periodicidade
+          ? planilhaResult.documentoVinculado
+            ? planilhaResult.created
+            ? `Hash: ${carimbo.hash.slice(0, 16)}... • Planilha ${planilhaResult.periodicidade.label} criada automaticamente.`
+            : `Hash: ${carimbo.hash.slice(0, 16)}... • Planilha ${planilhaResult.periodicidade.label} já estava disponível.`
+            : `Hash: ${carimbo.hash.slice(0, 16)}... • Cadastre o POP em Documentos para liberar a planilha automática.`
+          : `Hash: ${carimbo.hash.slice(0, 16)}...`,
       });
 
       // Reset
