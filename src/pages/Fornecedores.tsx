@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { Users, Plus, Loader2, Star, AlertCircle, CheckCircle2, Clock, FileText, Download, Printer, ExternalLink, Search } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -233,12 +234,8 @@ export default function Fornecedores() {
             </p>
           </div>
           <div className="flex flex-col sm:flex-row gap-2 shrink-0">
-            <a href="https://www.gov.br/agricultura/pt-br/assuntos/insumos-agropecuarios/insumos-pecuarios/alimentacao-animal/arquivos-alimentacao-animal/estabelecimentos-registrados" target="_blank" rel="noopener noreferrer">
-              <Button size="sm" className="gap-2 w-full"><ExternalLink className="w-4 h-4" />Lista Oficial (XLSX)</Button>
-            </a>
-            <a href="https://sistemasweb.agricultura.gov.br/pages/SIPEAGRO.html" target="_blank" rel="noopener noreferrer">
-              <Button size="sm" variant="outline" className="gap-2 w-full"><Search className="w-4 h-4" />Consulta Online</Button>
-            </a>
+            <Button asChild size="sm" className="gap-2 w-full"><Link to="/consulta-sipeagro"><ExternalLink className="w-4 h-4" />Base interna MAPA</Link></Button>
+            <Button asChild size="sm" variant="outline" className="gap-2 w-full"><Link to="/consulta-sipeagro"><Search className="w-4 h-4" />Consultar no sistema</Link></Button>
           </div>
         </CardContent>
       </Card>
