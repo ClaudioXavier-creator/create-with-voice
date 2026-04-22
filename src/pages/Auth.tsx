@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { Mail, Lock, User, Loader2, Building2, Briefcase, Eye, EyeOff } from "lucide-react";
+import { Mail, Lock, User, Loader2, Building2, Briefcase, Eye, EyeOff, AlertTriangle, MailCheck } from "lucide-react";
 import logoImg from "@/assets/logo.png";
 import logoFeedBpf from "@/assets/logo-feed-bpf.png";
 import logoAuditsBpf from "@/assets/logo-audits-bpf.png";
@@ -49,7 +49,14 @@ export default function Auth() {
   const [googleLoading, setGoogleLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [capsLockOn, setCapsLockOn] = useState(false);
+  const [pendingConfirmationEmail, setPendingConfirmationEmail] = useState<string | null>(null);
   const navigate = useNavigate();
+
+  const resolvedRedirect = useMemo(() => {
+    if (redirectTo && redirectTo !== "/") return redirectTo;
+    return sessionStorage.getItem("post_login_redirect") || "/dashboard";
+  }, [redirectTo]);
 
   const passwordChecks = useMemo(
     () => [
@@ -64,6 +71,15 @@ export default function Auth() {
     setIsForgot(mode === "forgot");
     setIsLogin(mode !== "signup");
   }, [mode]);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) {
+        const postLoginRedirect = sessionStorage.getItem("post_login_redirect");
+        navigate(postLoginRedirect || resolvedRedirect, { replace: true });
+      }
+    });
+  }, [navigate, resolvedRedirect]);
 
   const updateAuthMode = (next: { login?: boolean; forgot?: boolean }) => {
     const nextIsForgot = next.forgot ?? isForgot;
@@ -91,6 +107,36 @@ export default function Auth() {
     return error.message || "Erro na autenticação.";
   };
 
+  const handlePasswordKeyState = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    setCapsLockOn(event.getModifierState("CapsLock"));
+  };
+
+  const resendConfirmationEmail = async () => {
+    const emailResult = z.string().trim().email().safeParse(pendingConfirmationEmail || email);
+    if (!emailResult.success) {
+      toast.error("Digite um e-mail válido.");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const { error } = await supabase.auth.resend({
+        type: "signup",
+        email: emailResult.data,
+        options: {
+          emailRedirectTo: window.location.origin,
+        },
+      });
+
+      if (error) throw error;
+      toast.success("E-mail de confirmação reenviado.");
+    } catch (error: any) {
+      toast.error(getAuthErrorMessage(error));
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleGoogleSignIn = async () => {
     setGoogleLoading(true);
     try {
@@ -104,7 +150,8 @@ export default function Auth() {
       if (result.error) throw result.error;
 
       if (!result.redirected) {
-        toast.success("Login com Google iniciado com sucesso!");
+        const postLoginRedirect = sessionStorage.getItem("post_login_redirect");
+        navigate(postLoginRedirect || resolvedRedirect, { replace: true });
       }
     } catch (error: any) {
       toast.error(getAuthErrorMessage(error));
@@ -161,7 +208,9 @@ export default function Auth() {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
         toast.success("Login realizado com sucesso!");
-        navigate(redirectTo, { replace: true });
+        const postLoginRedirect = sessionStorage.getItem("post_login_redirect");
+        if (postLoginRedirect) sessionStorage.removeItem("post_login_redirect");
+        navigate(postLoginRedirect || resolvedRedirect, { replace: true });
       } else {
         const { error } = await supabase.auth.signUp({
           email,
@@ -172,6 +221,7 @@ export default function Auth() {
           },
         });
         if (error) throw error;
+        setPendingConfirmationEmail(email);
         toast.success("Conta criada! Verifique seu e-mail para confirmar.");
         updateAuthMode({ login: true, forgot: false });
       }
@@ -196,6 +246,22 @@ export default function Auth() {
         </CardHeader>
         <CardContent>
           <div className="space-y-3">
+            {pendingConfirmationEmail && !isForgot && isLogin && (
+              <div className="rounded-lg border border-border bg-secondary/60 p-3 text-sm">
+                <div className="flex items-start gap-3">
+                  <MailCheck className="mt-0.5 h-4 w-4 text-primary" />
+                  <div className="space-y-2">
+                    <p className="font-medium">Confirme seu e-mail para entrar</p>
+                    <p className="text-muted-foreground">
+                      Enviamos um link para <span className="text-foreground">{pendingConfirmationEmail}</span>. Se não encontrar, verifique o spam.
+                    </p>
+                    <button type="button" onClick={resendConfirmationEmail} className="text-primary hover:underline" disabled={loading}>
+                      Reenviar e-mail de confirmação
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
             <Button type="button" variant="outline" className="w-full" onClick={handleGoogleSignIn} disabled={googleLoading || loading}>
               {googleLoading && <Loader2 className="w-4 h-4 animate-spin" />}
               <svg viewBox="0 0 24 24" aria-hidden="true" className="w-4 h-4">
@@ -292,6 +358,7 @@ export default function Auth() {
                     placeholder={isLogin ? "Digite sua senha" : "Crie uma senha segura"}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
+                    onKeyUp={handlePasswordKeyState}
                     className="pl-9 pr-10"
                     minLength={isLogin ? 1 : 8}
                     required
@@ -305,6 +372,12 @@ export default function Auth() {
                     {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
                 </div>
+                {capsLockOn && (
+                  <div className="flex items-center gap-2 text-xs text-accent-foreground">
+                    <AlertTriangle className="h-3.5 w-3.5 text-accent" />
+                    <span className="text-muted-foreground">Caps Lock está ativado.</span>
+                  </div>
+                )}
                 {!isLogin && (
                   <ul className="space-y-1 text-xs text-muted-foreground">
                     {passwordChecks.map((item) => (
@@ -327,6 +400,7 @@ export default function Auth() {
                     placeholder="Repita a senha"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
+                    onKeyUp={handlePasswordKeyState}
                     className="pl-9 pr-10"
                     minLength={8}
                     required
