@@ -23,6 +23,10 @@ interface LicenseEntry {
   data_expiracao: string;
   liberado_admin: boolean;
   nivel?: string | null;
+  origem?: "direta" | "consultor";
+  licenca_id?: string;
+  ativo?: boolean;
+  excedente?: boolean;
 }
 
 const PLAN_LABELS: Record<string, string> = {
@@ -95,7 +99,7 @@ export default function AdminLicencas() {
   }
 
   const handleGrant = async (entry: LicenseEntry) => {
-    const key = entry.id;
+    const key = entry.licenca_id || entry.id;
     const dias = selectedDays[key];
     if (!dias) {
       toast.error("Selecione o período");
@@ -106,7 +110,7 @@ export default function AdminLicencas() {
       const { error } = await supabase.functions.invoke("admin-licencas", {
         body: {
           action: "grant",
-          licenca_id: entry.id,
+          licenca_id: entry.licenca_id || entry.id,
           empresa_id: entry.empresa_id,
           user_id: entry.user_id,
           dias: Number(dias),
@@ -124,13 +128,14 @@ export default function AdminLicencas() {
   };
 
   const handleUpdateLevel = async (entry: LicenseEntry) => {
-    const nivel = selectedLevels[entry.id] || entry.nivel || "entrada";
-    setActionLoading(entry.id + "-level");
+    const targetId = entry.licenca_id || entry.id;
+    const nivel = selectedLevels[targetId] || entry.nivel || "entrada";
+    setActionLoading(targetId + "-level");
     try {
       const { error } = await supabase.functions.invoke("admin-licencas", {
         body: {
           action: "update_level",
-          licenca_id: entry.id,
+          licenca_id: targetId,
           empresa_id: entry.empresa_id,
           nivel,
         },
@@ -146,10 +151,11 @@ export default function AdminLicencas() {
   };
 
   const handleRevoke = async (entry: LicenseEntry) => {
-    setActionLoading(entry.id + "-revoke");
+      const targetId = entry.licenca_id || entry.id;
+      setActionLoading(targetId + "-revoke");
     try {
       const { error } = await supabase.functions.invoke("admin-licencas", {
-        body: { action: "revoke", licenca_id: entry.id, empresa_id: entry.empresa_id },
+        body: { action: "revoke", licenca_id: targetId, empresa_id: entry.empresa_id },
       });
       if (error) throw error;
       toast.success("Acesso revogado!");
@@ -250,18 +256,24 @@ export default function AdminLicencas() {
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-2">
+                     <div className="flex items-center gap-2">
                     <Badge variant={isActive(e) ? "default" : "destructive"}>
                       {e.liberado_admin ? "Admin" : isActive(e) ? "Ativa" : e.status === "revogada" ? "Revogada" : "Expirada"}
                     </Badge>
+                     {e.origem === "consultor" && <Badge variant="outline">Consultor</Badge>}
+                     {e.excedente && <Badge variant="secondary">Excedente</Badge>}
                     {!canManage && <Badge variant="outline">Somente leitura</Badge>}
                   </div>
 
                   <div className="flex items-center gap-2">
+                     {(() => {
+                       const targetId = e.licenca_id || e.id;
+                       return (
+                         <>
                     <Select
-                      value={selectedLevels[e.id] || e.nivel || "entrada"}
+                       value={selectedLevels[targetId] || e.nivel || "entrada"}
                       onValueChange={(v) =>
-                        setSelectedLevels((prev) => ({ ...prev, [e.id]: v }))
+                         setSelectedLevels((prev) => ({ ...prev, [targetId]: v }))
                       }
                     >
                       <SelectTrigger className="w-[150px]">
@@ -278,18 +290,18 @@ export default function AdminLicencas() {
                       size="sm"
                       variant="outline"
                       onClick={() => handleUpdateLevel(e)}
-                      disabled={!canManage || actionLoading === (e.id + "-level")}
+                       disabled={!canManage || actionLoading === (targetId + "-level")}
                     >
-                      {actionLoading === (e.id + "-level") ? (
+                       {actionLoading === (targetId + "-level") ? (
                         <Loader2 className="w-4 h-4 animate-spin" />
                       ) : null}
                       Salvar nível
                     </Button>
 
                     <Select
-                      value={selectedDays[e.id] || ""}
+                       value={selectedDays[targetId] || ""}
                       onValueChange={(v) =>
-                        setSelectedDays((prev) => ({ ...prev, [e.id]: v }))
+                         setSelectedDays((prev) => ({ ...prev, [targetId]: v }))
                       }
                     >
                       <SelectTrigger className="w-[130px]">
@@ -306,9 +318,9 @@ export default function AdminLicencas() {
                     <Button
                       size="sm"
                       onClick={() => handleGrant(e)}
-                      disabled={!canManage || actionLoading === (e.id + "-grant")}
+                       disabled={!canManage || actionLoading === (targetId + "-grant")}
                     >
-                      {actionLoading === (e.id + "-grant") ? (
+                       {actionLoading === (targetId + "-grant") ? (
                         <Loader2 className="w-4 h-4 animate-spin" />
                       ) : (
                         <UserCheck className="w-4 h-4 mr-1" />
@@ -320,15 +332,18 @@ export default function AdminLicencas() {
                       size="sm"
                       variant="destructive"
                       onClick={() => handleRevoke(e)}
-                      disabled={!canManage || actionLoading === (e.id + "-revoke")}
+                       disabled={!canManage || actionLoading === (targetId + "-revoke")}
                     >
-                      {actionLoading === (e.id + "-revoke") ? (
+                       {actionLoading === (targetId + "-revoke") ? (
                         <Loader2 className="w-4 h-4 animate-spin" />
                       ) : (
                         <UserX className="w-4 h-4 mr-1" />
                       )}
                       Revogar
                     </Button>
+                         </>
+                       );
+                     })()}
                   </div>
                 </CardContent>
               </Card>
