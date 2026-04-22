@@ -585,6 +585,34 @@ function SectionCard({ section, isOpen, onToggle }: { section: ManualSection; is
             ))}
           </div>
 
+          {section.id === "documentos" && (
+            <div className="space-y-3">
+              <h4 className="text-sm font-semibold text-foreground">Checklist inicial para ativação</h4>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Código</TableHead>
+                    <TableHead>Nome</TableHead>
+                    <TableHead>Versão</TableHead>
+                    <TableHead>Revisão</TableHead>
+                    <TableHead>Próx. revisão</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {DOCUMENTOS_ATIVACAO_CHECKLIST.map((item) => (
+                    <TableRow key={item.codigo}>
+                      <TableCell className="font-medium">{item.codigo}</TableCell>
+                      <TableCell className="text-sm text-muted-foreground">{item.nome}</TableCell>
+                      <TableCell>{item.versao}</TableCell>
+                      <TableCell>{item.dataRevisao}</TableCell>
+                      <TableCell>{item.proximaRevisao}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          )}
+
           {section.tips && section.tips.length > 0 && (
             <div className="bg-muted/50 rounded-lg p-3 space-y-1.5">
               <div className="flex items-center gap-2 text-sm font-semibold text-foreground">

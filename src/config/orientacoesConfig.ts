@@ -2,6 +2,8 @@
 // para todos os módulos do sistema BPF_Consult.
 // Cada módulo possui: passos de tutorial + dados fictícios para simulação sandbox.
 
+import { DOCUMENTOS_ATIVACAO_CHECKLIST } from "@/config/documentosAtivacaoChecklist";
+
 export interface CampoSimulacao {
   nome: string;
   label: string;
@@ -29,8 +31,6 @@ export interface ModuloOrientacao {
   campos_simulacao: CampoSimulacao[];
   exemplo_resultado?: string; // texto explicativo do que acontece após salvar
 }
-
-import { DOCUMENTOS_ATIVACAO_CHECKLIST } from "@/config/documentosAtivacaoChecklist";
 
 export const ORIENTACOES: ModuloOrientacao[] = [
   // ============ POP 01 ============

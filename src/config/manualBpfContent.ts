@@ -1,11 +1,11 @@
+import { DOCUMENTOS_ATIVACAO_CHECKLIST } from "@/config/documentosAtivacaoChecklist";
+
 export interface ManualBpfSection {
   id: string;
   numero: string;
   titulo: string;
   conteudo: string[];
 }
-
-import { DOCUMENTOS_ATIVACAO_CHECKLIST } from "@/config/documentosAtivacaoChecklist";
 
 export const MANUAL_BPF_SECTIONS: ManualBpfSection[] = [
   {
