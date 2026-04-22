@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import { Search, Building2, CheckCircle2, XCircle, AlertTriangle, RefreshCw, Database, Upload, FileSpreadsheet } from "lucide-react";
+import { Search, Building2, CheckCircle2, XCircle, AlertTriangle, RefreshCw, Database, Upload, FileSpreadsheet, ExternalLink } from "lucide-react";
 import * as XLSX from "xlsx";
 import { Link } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -169,6 +169,12 @@ function extractImportRows(workbook: XLSX.WorkBook) {
   });
 
   return { rows, titleDate, sheetName };
+}
+
+function buildExternalSipeagroSearchUrl(query: string) {
+  const cleanedQuery = query.trim();
+  const target = cleanedQuery || "SIPEAGRO alimentação animal estabelecimentos";
+  return `https://www.google.com/search?q=${encodeURIComponent(`site:gov.br SIPEAGRO ${target}`)}`;
 }
 
 function parseSpreadsheetDate(value: unknown): string | null {
@@ -571,11 +577,23 @@ export default function ConsultaSipeagro() {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
-          <Input
-            placeholder="Digite CNPJ, registro, razão social, fantasia ou município (mín. 3 caracteres)..."
-            value={buscaBase}
-            onChange={(e) => setBuscaBase(e.target.value)}
-          />
+          <div className="flex flex-col gap-2 sm:flex-row">
+            <Input
+              placeholder="Digite CNPJ, registro, razão social, fantasia ou município (mín. 3 caracteres)..."
+              value={buscaBase}
+              onChange={(e) => setBuscaBase(e.target.value)}
+              className="flex-1"
+            />
+            <Button asChild variant="outline" className="gap-2 sm:w-auto">
+              <a href={buildExternalSipeagroSearchUrl(buscaBase)} target="_blank" rel="noopener noreferrer">
+                <ExternalLink className="w-4 h-4" />
+                Pesquisar externo
+              </a>
+            </Button>
+          </div>
+          <p className="text-xs text-muted-foreground">
+            A busca principal usa a base interna do Excel importado; o botão externo abre uma pesquisa complementar em páginas oficiais do gov.br.
+          </p>
 
           {buscaBase.trim().length >= 3 && (
             <div className="space-y-2 max-h-96 overflow-y-auto">
