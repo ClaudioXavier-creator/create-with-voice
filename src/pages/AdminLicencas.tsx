@@ -21,6 +21,7 @@ interface LicenseEntry {
   data_inicio: string;
   data_expiracao: string;
   liberado_admin: boolean;
+  nivel?: string | null;
 }
 
 const PLAN_LABELS: Record<string, string> = {
@@ -30,12 +31,19 @@ const PLAN_LABELS: Record<string, string> = {
   "1_ano": "Anual",
 };
 
+const ACCESS_LEVEL_LABELS: Record<string, string> = {
+  entrada: "Entrada",
+  intermediario: "Intermediário",
+  avancado: "Avançado",
+};
+
 export default function AdminLicencas() {
   const { user, loading: authLoading } = useAuth();
   const [entries, setEntries] = useState<LicenseEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [selectedDays, setSelectedDays] = useState<Record<string, string>>({});
+  const [selectedLevels, setSelectedLevels] = useState<Record<string, string>>({});
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
 
