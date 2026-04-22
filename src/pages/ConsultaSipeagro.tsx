@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import { Search, Building2, CheckCircle2, XCircle, AlertTriangle, RefreshCw, Database, Upload, FileSpreadsheet } from "lucide-react";
+import { Search, Building2, CheckCircle2, XCircle, AlertTriangle, RefreshCw, Database, Upload, FileSpreadsheet, ExternalLink } from "lucide-react";
 import * as XLSX from "xlsx";
 import { Link } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -169,6 +169,12 @@ function extractImportRows(workbook: XLSX.WorkBook) {
   });
 
   return { rows, titleDate, sheetName };
+}
+
+function buildExternalSipeagroSearchUrl(query: string) {
+  const cleanedQuery = query.trim();
+  const target = cleanedQuery || "SIPEAGRO alimentação animal estabelecimentos";
+  return `https://www.google.com/search?q=${encodeURIComponent(`site:gov.br SIPEAGRO ${target}`)}`;
 }
 
 function parseSpreadsheetDate(value: unknown): string | null {
