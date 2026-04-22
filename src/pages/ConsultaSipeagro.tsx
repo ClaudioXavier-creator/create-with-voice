@@ -577,11 +577,23 @@ export default function ConsultaSipeagro() {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
-          <Input
-            placeholder="Digite CNPJ, registro, razão social, fantasia ou município (mín. 3 caracteres)..."
-            value={buscaBase}
-            onChange={(e) => setBuscaBase(e.target.value)}
-          />
+          <div className="flex flex-col gap-2 sm:flex-row">
+            <Input
+              placeholder="Digite CNPJ, registro, razão social, fantasia ou município (mín. 3 caracteres)..."
+              value={buscaBase}
+              onChange={(e) => setBuscaBase(e.target.value)}
+              className="flex-1"
+            />
+            <Button asChild variant="outline" className="gap-2 sm:w-auto">
+              <a href={buildExternalSipeagroSearchUrl(buscaBase)} target="_blank" rel="noopener noreferrer">
+                <ExternalLink className="w-4 h-4" />
+                Pesquisar externo
+              </a>
+            </Button>
+          </div>
+          <p className="text-xs text-muted-foreground">
+            A busca principal usa a base interna do Excel importado; o botão externo abre uma pesquisa complementar em páginas oficiais do gov.br.
+          </p>
 
           {buscaBase.trim().length >= 3 && (
             <div className="space-y-2 max-h-96 overflow-y-auto">
