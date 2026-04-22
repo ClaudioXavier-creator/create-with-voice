@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { Shield, UserCheck, UserX, Loader2, RefreshCw, Building2, Search } from "lucide-react";
+import { canAccessLicenseAdmin } from "@/config/adminAccess";
 
 interface LicenseEntry {
   id: string;
@@ -62,6 +63,11 @@ export default function AdminLicencas() {
 
   useEffect(() => {
     if (!user) return;
+    if (!canAccessLicenseAdmin(user.id)) {
+      setIsAdmin(false);
+      return;
+    }
+
     supabase
       .from("user_roles")
       .select("role")
@@ -96,6 +102,10 @@ export default function AdminLicencas() {
         <Loader2 className="w-8 h-8 animate-spin text-primary" />
       </div>
     );
+  }
+
+  if (!user || !canAccessLicenseAdmin(user.id) || !isAdmin) {
+    return <Navigate to="/dashboard" replace />;
   }
 
   const handleGrant = async (entry: LicenseEntry) => {
@@ -192,7 +202,7 @@ export default function AdminLicencas() {
     return `${produto} · ${entry.email}`;
   };
 
-  const canManage = !!isAdmin;
+  const canManage = true;
 
   return (
     <div className="min-h-screen bg-background p-4 md:p-8">
@@ -202,9 +212,6 @@ export default function AdminLicencas() {
             <Shield className="w-7 h-7 text-primary" />
             <div>
               <h1 className="text-2xl font-bold">Licenças por Empresa</h1>
-              {!canManage && (
-                <p className="text-sm text-muted-foreground">Visualização liberada para todos os usuários autenticados.</p>
-              )}
             </div>
           </div>
           <Button variant="outline" size="sm" onClick={fetchEntries} disabled={loading}>
@@ -262,7 +269,6 @@ export default function AdminLicencas() {
                     </Badge>
                      {e.origem === "consultor" && <Badge variant="outline">Consultor</Badge>}
                      {e.excedente && <Badge variant="secondary">Excedente</Badge>}
-                    {!canManage && <Badge variant="outline">Somente leitura</Badge>}
                   </div>
 
                   <div className="flex items-center gap-2">

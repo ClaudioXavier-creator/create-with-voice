@@ -15,6 +15,7 @@ import EmpresaSelector from "@/components/EmpresaSelector";
 import LicenseGate from "@/components/LicenseGate";
 import TierGate from "@/components/TierGate";
 import logoImg from "@/assets/logo-feed-bpf.png";
+import { canAccessLicenseAdmin } from "@/config/adminAccess";
 
 interface NavItem {
   path: string;
@@ -138,11 +139,11 @@ const NAV_ENTRIES: NavEntry[] = [
   { path: "/modo-tablet", label: "🏭 Modo Tablet", icon: Tablet },
 ];
 
-function SidebarNav({ currentPath, onNavigate }: { currentPath: string; onNavigate?: () => void }) {
+function SidebarNav({ currentPath, entries, onNavigate }: { currentPath: string; entries: NavEntry[]; onNavigate?: () => void }) {
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>(() => {
     // Auto-open the group that contains the current route
     const initial: Record<string, boolean> = {};
-    NAV_ENTRIES.forEach((entry) => {
+    entries.forEach((entry) => {
       if (isGroup(entry)) {
         if (entry.items.some((item) => item.path === currentPath)) {
           initial[entry.label] = true;
@@ -158,7 +159,7 @@ function SidebarNav({ currentPath, onNavigate }: { currentPath: string; onNaviga
 
   return (
     <nav className="flex-1 py-4 px-3 space-y-1 overflow-y-auto">
-      {NAV_ENTRIES.map((entry) => {
+      {entries.map((entry) => {
         if (!isGroup(entry)) {
           const isActive = currentPath === entry.path;
           return (
@@ -241,6 +242,11 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
   const { user, signOut } = useAuth();
+  const visibleEntries = NAV_ENTRIES.filter((entry) => {
+    if (isGroup(entry)) return true;
+    if (entry.path !== "/admin-licencas") return true;
+    return canAccessLicenseAdmin(user?.id);
+  });
 
   return (
     <div className="flex min-h-screen">
@@ -253,7 +259,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             <p className="text-xs text-sidebar-foreground/60">by CLXN</p>
           </div>
         </div>
-        <SidebarNav currentPath={location.pathname} />
+          <SidebarNav currentPath={location.pathname} entries={visibleEntries} />
         <div className="px-4 py-3 border-t border-sidebar-border space-y-3">
           <EmpresaSelector />
           <p className="text-xs text-sidebar-foreground/60 truncate">{user?.email}</p>
@@ -284,7 +290,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       {mobileOpen && (
         <div className="lg:hidden fixed inset-0 z-40 bg-black/50" onClick={() => setMobileOpen(false)}>
           <aside className="w-64 h-full bg-sidebar text-sidebar-foreground pt-16 flex flex-col" onClick={(e) => e.stopPropagation()}>
-            <SidebarNav currentPath={location.pathname} onNavigate={() => setMobileOpen(false)} />
+            <SidebarNav currentPath={location.pathname} entries={visibleEntries} onNavigate={() => setMobileOpen(false)} />
             <div className="px-4 py-3 border-t border-sidebar-border">
               <p className="text-xs text-sidebar-foreground/60 truncate px-3 mb-2">{user?.email}</p>
               <Button
