@@ -105,6 +105,72 @@ const statusLabel: Record<string, string> = {
   falhou: "Falhou",
 };
 
+const MAIN_SHEET_HINTS = ["estabelecimentos"];
+
+function parseDateFromText(value: string): string | null {
+  const match = value.match(/(\d{2})\/(\d{2})\/(\d{4})/);
+  if (!match) return null;
+  return `${match[3]}-${match[2]}-${match[1]}`;
+}
+
+function normalizeDocumentNumber(value: unknown, length: number) {
+  const digits = onlyDigits(String(value || ""));
+  if (!digits) return null;
+  if (digits.length >= length) return digits;
+  return digits.padStart(length, "0");
+}
+
+function resolveImportSheet(workbook: XLSX.WorkBook) {
+  return (
+    workbook.SheetNames.find((name) => MAIN_SHEET_HINTS.some((hint) => normalizeHeader(name).includes(hint))) ||
+    workbook.SheetNames[0]
+  );
+}
+
+function resolveHeaderRowIndex(rows: unknown[][]) {
+  const requiredGroups = [
+    IMPORT_ALIASES.razao_social,
+    IMPORT_ALIASES.cnpj,
+    IMPORT_ALIASES.registro_estabelecimento,
+    IMPORT_ALIASES.municipio,
+    IMPORT_ALIASES.uf,
+  ];
+
+  let bestIndex = 0;
+  let bestScore = -1;
+
+  for (let index = 0; index < Math.min(rows.length, 12); index += 1) {
+    const row = rows[index] || [];
+    const normalizedCells = row.map((cell) => normalizeHeader(String(cell || "")));
+    const score = requiredGroups.reduce((total, aliases) => {
+      const hasMatch = aliases.some((alias) => normalizedCells.some((cell) => cell.includes(normalizeHeader(alias))));
+      return total + (hasMatch ? 1 : 0);
+    }, 0);
+
+    if (score > bestScore) {
+      bestScore = score;
+      bestIndex = index;
+    }
+  }
+
+  return bestIndex;
+}
+
+function extractImportRows(workbook: XLSX.WorkBook) {
+  const sheetName = resolveImportSheet(workbook);
+  const sheet = workbook.Sheets[sheetName];
+  const matrix = XLSX.utils.sheet_to_json<unknown[]>(sheet, { header: 1, defval: "", raw: false });
+  const headerRowIndex = resolveHeaderRowIndex(matrix);
+  const titleDate = parseDateFromText(String(matrix[0]?.[0] || ""));
+  const rows = XLSX.utils.sheet_to_json<Record<string, unknown>>(sheet, {
+    range: headerRowIndex,
+    defval: "",
+    raw: false,
+  });
+
+  return { rows, titleDate, sheetName };
+}
+
 function parseSpreadsheetDate(value: unknown): string | null {
   if (value === null || value === undefined || value === "") return null;
   if (typeof value === "number") {
@@ -313,8 +379,7 @@ export default function ConsultaSipeagro() {
     try {
       const buffer = await importFile.arrayBuffer();
       const workbook = XLSX.read(buffer, { type: "array", cellDates: true });
-      const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
-      const rows = XLSX.utils.sheet_to_json<Record<string, unknown>>(firstSheet, { defval: "" });
+      const { rows, titleDate, sheetName } = extractImportRows(workbook);
 
       if (!rows.length) {
         toast.error("A planilha está vazia.");
@@ -340,9 +405,10 @@ export default function ConsultaSipeagro() {
         .map((row, index) => {
           const razaoSocial = String(getCellValue(row, IMPORT_ALIASES.razao_social) || "").trim();
           const registro = String(getCellValue(row, IMPORT_ALIASES.registro_estabelecimento) || "").trim();
-          const cnpj = onlyDigits(String(getCellValue(row, IMPORT_ALIASES.cnpj) || ""));
+          const cnpj = normalizeDocumentNumber(getCellValue(row, IMPORT_ALIASES.cnpj), 14);
 
           if (!razaoSocial && !registro && !cnpj) return null;
+          if ([razaoSocial, registro, cnpj].every((value) => !value || String(value).trim() === "-")) return null;
 
           return {
             fonte_linha_id: String(getCellValue(row, IMPORT_ALIASES.fonte_linha_id) || index + 1),
@@ -358,7 +424,7 @@ export default function ConsultaSipeagro() {
             endereco: String(getCellValue(row, IMPORT_ALIASES.endereco) || "").trim() || null,
             cep: onlyDigits(String(getCellValue(row, IMPORT_ALIASES.cep) || "")) || null,
             data_registro: parseSpreadsheetDate(getCellValue(row, IMPORT_ALIASES.data_registro)),
-            data_atualizacao_fonte: parseSpreadsheetDate(getCellValue(row, IMPORT_ALIASES.data_atualizacao_fonte)),
+            data_atualizacao_fonte: parseSpreadsheetDate(getCellValue(row, IMPORT_ALIASES.data_atualizacao_fonte)) || titleDate,
             importacao_id: importacaoId,
             dados_brutos: row,
           };
@@ -384,7 +450,9 @@ export default function ConsultaSipeagro() {
           status,
           total_importadas: totalImportadas,
           total_rejeitadas: totalRejeitadas,
-          observacoes: totalRejeitadas > 0 ? "Algumas linhas foram ignoradas por falta de dados mínimos." : "Importação concluída com sucesso.",
+          observacoes: totalRejeitadas > 0
+            ? `Importação da aba ${sheetName} concluída com ${totalRejeitadas} linha(s) ignoradas por falta de dados mínimos.`
+            : `Importação da aba ${sheetName} concluída com sucesso.`,
           concluido_em: new Date().toISOString(),
         })
         .eq("id", importacaoId);
