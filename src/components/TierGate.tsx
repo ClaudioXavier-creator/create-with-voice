@@ -125,7 +125,7 @@ export default function TierGate({ children }: TierGateProps) {
                 </Link>
               </Button>
               <Button asChild size="sm" variant="outline">
-                <Link to={shortcuts.archivePath}>Arquivar PDF preenchido</Link>
+                <Link to={shortcuts.archivePath}>Arquivar arquivo preenchido</Link>
               </Button>
             </div>
           </div>
