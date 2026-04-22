@@ -139,11 +139,11 @@ const NAV_ENTRIES: NavEntry[] = [
   { path: "/modo-tablet", label: "🏭 Modo Tablet", icon: Tablet },
 ];
 
-function SidebarNav({ currentPath, onNavigate }: { currentPath: string; onNavigate?: () => void }) {
+function SidebarNav({ currentPath, entries, onNavigate }: { currentPath: string; entries: NavEntry[]; onNavigate?: () => void }) {
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>(() => {
     // Auto-open the group that contains the current route
     const initial: Record<string, boolean> = {};
-    NAV_ENTRIES.forEach((entry) => {
+    entries.forEach((entry) => {
       if (isGroup(entry)) {
         if (entry.items.some((item) => item.path === currentPath)) {
           initial[entry.label] = true;
@@ -159,7 +159,7 @@ function SidebarNav({ currentPath, onNavigate }: { currentPath: string; onNaviga
 
   return (
     <nav className="flex-1 py-4 px-3 space-y-1 overflow-y-auto">
-      {NAV_ENTRIES.map((entry) => {
+      {entries.map((entry) => {
         if (!isGroup(entry)) {
           const isActive = currentPath === entry.path;
           return (
