@@ -54,28 +54,59 @@ Deno.serve(async (req) => {
     const { action, ...params } = await req.json();
 
     if (action === "list") {
-      // List all licenses with empresa info
-      const { data: licenses, error } = await adminClient
-        .from("licencas")
-        .select("*, empresas(nome)")
-        .order("created_at", { ascending: false });
+      const [licensesRes, vinculosRes, authUsersRes] = await Promise.all([
+        adminClient
+          .from("licencas")
+          .select("*, empresas(nome)")
+          .order("created_at", { ascending: false }),
+        adminClient
+          .from("licenca_empresas")
+          .select("id, ativo, excedente, vinculado_em, desvinculado_em, empresa_id, licenca_id, user_id, stripe_invoice_id, empresas(nome), licencas(*)")
+          .order("vinculado_em", { ascending: false }),
+        adminClient.auth.admin.listUsers({ perPage: 1000 }),
+      ]);
 
-      if (error) throw error;
+      if (licensesRes.error) throw licensesRes.error;
+      if (vinculosRes.error) throw vinculosRes.error;
+      if (authUsersRes.error) throw authUsersRes.error;
 
-      // Get user emails
-      const { data: { users: authUsers }, error: authError } = await adminClient.auth.admin.listUsers({ perPage: 1000 });
-      if (authError) throw authError;
+      const authUsers = authUsersRes.data.users || [];
 
-      const enriched = (licenses || []).map((lic: any) => {
-        const authUser = authUsers?.find((u: any) => u.id === lic.user_id);
+      const diretas = (licensesRes.data || []).map((lic: any) => {
+        const authUser = authUsers.find((u: any) => u.id === lic.user_id);
         return {
           ...lic,
           email: authUser?.email || "—",
           empresa_nome: lic.empresas?.nome || "—",
+          origem: "direta",
         };
       });
 
-      return new Response(JSON.stringify(enriched), {
+      const consultor = (vinculosRes.data || []).map((vinculo: any) => {
+        const lic = vinculo.licencas || {};
+        const authUser = authUsers.find((u: any) => u.id === lic.user_id || u.id === vinculo.user_id);
+
+        return {
+          id: vinculo.id,
+          user_id: lic.user_id || vinculo.user_id,
+          empresa_id: vinculo.empresa_id,
+          email: authUser?.email || "—",
+          empresa_nome: vinculo.empresas?.nome || "—",
+          produto: lic.produto,
+          plano: lic.plano || "consultor",
+          status: vinculo.ativo ? lic.status || "ativa" : "revogada",
+          data_inicio: lic.data_inicio || vinculo.vinculado_em,
+          data_expiracao: lic.data_expiracao,
+          liberado_admin: lic.liberado_admin || false,
+          nivel: lic.nivel || null,
+          origem: "consultor",
+          licenca_id: vinculo.licenca_id,
+          excedente: vinculo.excedente || false,
+          ativo: vinculo.ativo,
+        };
+      });
+
+      return new Response(JSON.stringify([...consultor, ...diretas]), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
