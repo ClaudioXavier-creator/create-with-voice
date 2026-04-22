@@ -8,8 +8,10 @@ import {
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import PageHeader from "@/components/PageHeader";
 import { cn } from "@/lib/utils";
+import { DOCUMENTOS_ATIVACAO_CHECKLIST } from "@/config/documentosAtivacaoChecklist";
 
 interface ManualSection {
   id: string;
@@ -416,8 +418,9 @@ const sections: ManualSection[] = [
       { title: "Status do Documento", text: "Controle se o documento está Ativo, Em Revisão ou Obsoleto." },
       { title: "Versionamento", text: "Histórico de versões para rastreabilidade de alterações." },
       { title: "Arquivos BPF", text: "Upload e gestão de arquivos digitalizados vinculados aos documentos do sistema." },
+      { title: "Checklist de Ativação", text: `O manual agora traz o cadastro inicial exato de ${DOCUMENTOS_ATIVACAO_CHECKLIST.length} documentos (POPs + ITs) para liberar as planilhas físicas e digitais.` },
     ],
-    tips: ["Mantenha todos os POPs atualizados antes de uma auditoria oficial."],
+    tips: ["Mantenha todos os POPs atualizados antes de uma auditoria oficial.", "Cadastre primeiro POPs e ITs com o mesmo código operacional usado na execução para liberar os vínculos automáticos."],
   },
   {
     id: "planilhas-pop",

@@ -5,6 +5,8 @@ export interface ManualBpfSection {
   conteudo: string[];
 }
 
+import { DOCUMENTOS_ATIVACAO_CHECKLIST } from "@/config/documentosAtivacaoChecklist";
+
 export const MANUAL_BPF_SECTIONS: ManualBpfSection[] = [
   {
     id: "identificacao",
@@ -448,6 +450,18 @@ export const MANUAL_BPF_SECTIONS: ManualBpfSection[] = [
       "• Filtros de período: status, POP/IT, data início e data fim — permitindo gerar relatórios mensais, trimestrais ou por setor para auditoria.",
       "• Carimbo anti-fraude: cada execução exportada em PDF recebe selo SHA-256 + data/hora conforme MP 2.200-2/2001.",
       "Recomenda-se ao Responsável Técnico revisar este painel diariamente e não permitir que nenhum POP fique com status de atraso por mais de 48h.",
+    ],
+  },
+  {
+    id: "cadastro_inicial_documentos",
+    numero: "7.1",
+    titulo: "Checklist Inicial de Documentos para Ativação das Planilhas",
+    conteudo: [
+      "Antes de iniciar qualquer planilha física ou digital, o estabelecimento deve cadastrar no módulo Documentos os POPs e ITs com o mesmo código operacional utilizado na execução.",
+      "O preenchimento padrão recomendado é: versão 01, data de revisão 2026-04-22, próxima revisão 2027-04-22, status Ativo e responsável 'Responsável Técnico / Qualidade'.",
+      `Checklist-base: ${DOCUMENTOS_ATIVACAO_CHECKLIST.map((item) => `${item.codigo} — ${item.nome}`).join(" | ")}`,
+      "Este cadastro inicial habilita os vínculos automáticos entre Documentos, Guia de POPs/ITs, planilhas físicas impressas, planilhas digitais e diário operacional.",
+      "As impressões devem manter o carimbo de impressão e os PDFs/exportações devem preservar o carimbo anti-fraude SHA-256 para rastreabilidade documental.",
     ],
   },
   {
