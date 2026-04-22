@@ -105,10 +105,33 @@ export default function AdminLicencas() {
           empresa_id: entry.empresa_id,
           user_id: entry.user_id,
           dias: Number(dias),
+          nivel: selectedLevels[entry.id] || entry.nivel || "entrada",
         },
       });
       if (error) throw error;
       toast.success("Licença concedida com sucesso!");
+      fetchEntries();
+    } catch (err: any) {
+      toast.error(err.message);
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  const handleUpdateLevel = async (entry: LicenseEntry) => {
+    const nivel = selectedLevels[entry.id] || entry.nivel || "entrada";
+    setActionLoading(entry.id + "-level");
+    try {
+      const { error } = await supabase.functions.invoke("admin-licencas", {
+        body: {
+          action: "update_level",
+          licenca_id: entry.id,
+          empresa_id: entry.empresa_id,
+          nivel,
+        },
+      });
+      if (error) throw error;
+      toast.success("Nível de acesso atualizado!");
       fetchEntries();
     } catch (err: any) {
       toast.error(err.message);
