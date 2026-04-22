@@ -21,6 +21,7 @@ interface LicenseEntry {
   data_inicio: string;
   data_expiracao: string;
   liberado_admin: boolean;
+  nivel?: string | null;
 }
 
 const PLAN_LABELS: Record<string, string> = {
@@ -30,12 +31,19 @@ const PLAN_LABELS: Record<string, string> = {
   "1_ano": "Anual",
 };
 
+const ACCESS_LEVEL_LABELS: Record<string, string> = {
+  entrada: "Entrada",
+  intermediario: "Intermediário",
+  avancado: "Avançado",
+};
+
 export default function AdminLicencas() {
   const { user, loading: authLoading } = useAuth();
   const [entries, setEntries] = useState<LicenseEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [selectedDays, setSelectedDays] = useState<Record<string, string>>({});
+  const [selectedLevels, setSelectedLevels] = useState<Record<string, string>>({});
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -97,10 +105,33 @@ export default function AdminLicencas() {
           empresa_id: entry.empresa_id,
           user_id: entry.user_id,
           dias: Number(dias),
+          nivel: selectedLevels[entry.id] || entry.nivel || "entrada",
         },
       });
       if (error) throw error;
       toast.success("Licença concedida com sucesso!");
+      fetchEntries();
+    } catch (err: any) {
+      toast.error(err.message);
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  const handleUpdateLevel = async (entry: LicenseEntry) => {
+    const nivel = selectedLevels[entry.id] || entry.nivel || "entrada";
+    setActionLoading(entry.id + "-level");
+    try {
+      const { error } = await supabase.functions.invoke("admin-licencas", {
+        body: {
+          action: "update_level",
+          licenca_id: entry.id,
+          empresa_id: entry.empresa_id,
+          nivel,
+        },
+      });
+      if (error) throw error;
+      toast.success("Nível de acesso atualizado!");
       fetchEntries();
     } catch (err: any) {
       toast.error(err.message);
@@ -191,6 +222,8 @@ export default function AdminLicencas() {
                       <span>·</span>
                       <span>{PLAN_LABELS[e.plano] || e.plano}</span>
                       <span>·</span>
+                      <span>Nível: {ACCESS_LEVEL_LABELS[e.nivel || ""] || "Não definido"}</span>
+                      <span>·</span>
                       <span>Exp: {new Date(e.data_expiracao).toLocaleDateString("pt-BR")}</span>
                       <span>·</span>
                       <span>{daysRemaining(e)} restantes</span>
@@ -204,6 +237,34 @@ export default function AdminLicencas() {
                   </div>
 
                   <div className="flex items-center gap-2">
+                    <Select
+                      value={selectedLevels[e.id] || e.nivel || "entrada"}
+                      onValueChange={(v) =>
+                        setSelectedLevels((prev) => ({ ...prev, [e.id]: v }))
+                      }
+                    >
+                      <SelectTrigger className="w-[150px]">
+                        <SelectValue placeholder="Nível" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="entrada">Entrada</SelectItem>
+                        <SelectItem value="intermediario">Intermediário</SelectItem>
+                        <SelectItem value="avancado">Avançado</SelectItem>
+                      </SelectContent>
+                    </Select>
+
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleUpdateLevel(e)}
+                      disabled={actionLoading === (e.id + "-level")}
+                    >
+                      {actionLoading === (e.id + "-level") ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      ) : null}
+                      Salvar nível
+                    </Button>
+
                     <Select
                       value={selectedDays[e.id] || ""}
                       onValueChange={(v) =>

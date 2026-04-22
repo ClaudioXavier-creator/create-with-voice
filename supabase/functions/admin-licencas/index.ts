@@ -81,7 +81,7 @@ Deno.serve(async (req) => {
     }
 
     if (action === "grant") {
-      const { empresa_id, dias, licenca_id, user_id: targetUserId } = params;
+      const { empresa_id, dias, licenca_id, user_id: targetUserId, nivel } = params;
       if (!dias) throw new Error("dias é obrigatório");
       if (!empresa_id && !licenca_id && !targetUserId) throw new Error("empresa_id, licenca_id ou user_id é obrigatório");
 
@@ -128,8 +128,13 @@ Deno.serve(async (req) => {
         existing = data;
       }
 
+      const normalizedNivel = typeof nivel === "string" && ["entrada", "intermediario", "avancado"].includes(nivel.toLowerCase())
+        ? nivel.toLowerCase()
+        : undefined;
+
       const updatePayload = {
         plano: planoMap[Number(dias)] || `${dias}_dias`,
+        ...(normalizedNivel ? { nivel: normalizedNivel } : {}),
         data_inicio: now.toISOString().split("T")[0],
         data_expiracao: expDate.toISOString().split("T")[0],
         status: "ativa",
@@ -148,6 +153,28 @@ Deno.serve(async (req) => {
         });
         if (error) throw error;
       }
+
+      return new Response(JSON.stringify({ success: true }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    if (action === "update_level") {
+      const { empresa_id, licenca_id, nivel } = params;
+      if (!empresa_id && !licenca_id) throw new Error("empresa_id ou licenca_id é obrigatório");
+      if (!nivel) throw new Error("nivel é obrigatório");
+
+      const normalizedNivel = String(nivel).toLowerCase();
+      if (!["entrada", "intermediario", "avancado"].includes(normalizedNivel)) {
+        throw new Error("Nível inválido. Use entrada, intermediario ou avancado");
+      }
+
+      const query = adminClient.from("licencas").update({ nivel: normalizedNivel, updated_at: new Date().toISOString() });
+      const { error } = licenca_id
+        ? await query.eq("id", licenca_id)
+        : await query.eq("empresa_id", empresa_id);
+
+      if (error) throw error;
 
       return new Response(JSON.stringify({ success: true }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
