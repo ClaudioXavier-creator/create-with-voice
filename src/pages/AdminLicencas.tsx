@@ -85,10 +85,6 @@ export default function AdminLicencas() {
     );
   }
 
-  if (!isAdmin) {
-    return <Navigate to="/dashboard" replace />;
-  }
-
   const handleGrant = async (entry: LicenseEntry) => {
     const key = entry.id;
     const dias = selectedDays[key];
@@ -173,13 +169,20 @@ export default function AdminLicencas() {
       e.email.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const canManage = !!isAdmin;
+
   return (
     <div className="min-h-screen bg-background p-4 md:p-8">
       <div className="max-w-5xl mx-auto space-y-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Shield className="w-7 h-7 text-primary" />
-            <h1 className="text-2xl font-bold">Painel Admin — Licenças por Empresa</h1>
+            <div>
+              <h1 className="text-2xl font-bold">Licenças por Empresa</h1>
+              {!canManage && (
+                <p className="text-sm text-muted-foreground">Visualização liberada para todos os usuários autenticados.</p>
+              )}
+            </div>
           </div>
           <Button variant="outline" size="sm" onClick={fetchEntries} disabled={loading}>
             <RefreshCw className={`w-4 h-4 mr-2 ${loading ? "animate-spin" : ""}`} />
@@ -234,6 +237,7 @@ export default function AdminLicencas() {
                     <Badge variant={isActive(e) ? "default" : "destructive"}>
                       {e.liberado_admin ? "Admin" : isActive(e) ? "Ativa" : e.status === "revogada" ? "Revogada" : "Expirada"}
                     </Badge>
+                    {!canManage && <Badge variant="outline">Somente leitura</Badge>}
                   </div>
 
                   <div className="flex items-center gap-2">
@@ -257,7 +261,7 @@ export default function AdminLicencas() {
                       size="sm"
                       variant="outline"
                       onClick={() => handleUpdateLevel(e)}
-                      disabled={actionLoading === (e.id + "-level")}
+                      disabled={!canManage || actionLoading === (e.id + "-level")}
                     >
                       {actionLoading === (e.id + "-level") ? (
                         <Loader2 className="w-4 h-4 animate-spin" />
@@ -285,7 +289,7 @@ export default function AdminLicencas() {
                     <Button
                       size="sm"
                       onClick={() => handleGrant(e)}
-                      disabled={actionLoading === (e.id + "-grant")}
+                      disabled={!canManage || actionLoading === (e.id + "-grant")}
                     >
                       {actionLoading === (e.id + "-grant") ? (
                         <Loader2 className="w-4 h-4 animate-spin" />
@@ -299,7 +303,7 @@ export default function AdminLicencas() {
                       size="sm"
                       variant="destructive"
                       onClick={() => handleRevoke(e)}
-                      disabled={actionLoading === (e.id + "-revoke")}
+                      disabled={!canManage || actionLoading === (e.id + "-revoke")}
                     >
                       {actionLoading === (e.id + "-revoke") ? (
                         <Loader2 className="w-4 h-4 animate-spin" />
