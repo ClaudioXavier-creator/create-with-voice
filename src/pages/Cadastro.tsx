@@ -15,6 +15,7 @@ import { TIER_MAX_EMPRESAS, TIER_LABEL } from "@/config/tiers";
 import { toast } from "sonner";
 
 const TIPOS = ["Ração farelada", "Ração peletizada", "Núcleo", "Premix", "Suplemento mineral", "Sal mineral"];
+const UNLIMITED_COMPANY_USER_IDS = ["cf25d544-de0b-4bff-8e84-809a66014859"];
 
 interface EmpresaForm {
   nome: string;
@@ -46,7 +47,8 @@ export default function Cadastro() {
     }));
   };
 
-  const MAX_EMPRESAS = TIER_MAX_EMPRESAS[tier];
+  const unlimitedCompanies = !!user?.id && UNLIMITED_COMPANY_USER_IDS.includes(user.id);
+  const MAX_EMPRESAS = unlimitedCompanies ? Number.POSITIVE_INFINITY : TIER_MAX_EMPRESAS[tier];
   const tierLabel = TIER_LABEL[tier];
   const limitReached = (empresas?.length || 0) >= MAX_EMPRESAS;
 
@@ -125,7 +127,7 @@ export default function Cadastro() {
 
       <div className="flex items-center justify-between mb-4">
         <span className="text-sm text-muted-foreground">
-          {empresas?.length || 0} / {MAX_EMPRESAS} empresas — plano {tierLabel}
+          {empresas?.length || 0} / {unlimitedCompanies ? "∞" : MAX_EMPRESAS} empresas — plano {tierLabel}{unlimitedCompanies ? " · consultor" : ""}
         </span>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
