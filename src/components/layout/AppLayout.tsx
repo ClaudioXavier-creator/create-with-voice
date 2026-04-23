@@ -16,6 +16,7 @@ import logoImg from "@/assets/logo-feed-bpf.png";
 import { canAccessLicenseAdmin } from "@/config/adminAccess";
 import { SidebarNav } from "@/components/layout/SidebarNav";
 import { NAV_ENTRIES, isGroup } from "@/components/layout/nav-config";
+import OfflineBanner from "@/components/OfflineBanner";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const location = useLocation();
@@ -127,6 +128,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
       {/* Main content */}
       <main className="flex-1 lg:ml-0 mt-14 lg:mt-0 overflow-auto">
+        <OfflineBanner />
         <div className="p-4 md:p-6 lg:p-8 max-w-7xl mx-auto">
           <LicenseGate>
             <TierGate>{children}</TierGate>
