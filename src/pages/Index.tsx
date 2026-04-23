@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { type ElementType, useEffect, useState } from "react";
 import {
   LayoutDashboard, AlertTriangle, ClipboardCheck, GraduationCap, CheckCircle2,
   CalendarDays, Bell, Wrench, FileText, Droplets, Search, ShieldCheck,
@@ -44,6 +44,18 @@ interface AlertItem {
 
 interface NCPorMes { mes: string; abertas: number; fechadas: number }
 interface ConformidadePorMes { mes: string; percentual: number }
+interface AcaoPrioritaria {
+  titulo: string;
+  detalhe: string;
+  criticidade: "critico" | "atencao" | "estavel";
+  link: string;
+}
+interface SaudeOperacionalItem {
+  label: string;
+  valor: number;
+  descricao: string;
+  link: string;
+}
 
 interface DashboardData {
   ncAbertas: number;
@@ -59,8 +71,29 @@ interface DashboardData {
   atividadesProximas: { atividade: string; proxima_execucao: string; categoria: string; dias: number }[];
   calibracoesVencidas: number;
   docsVencidos: number;
+  acoesPrioritarias: AcaoPrioritaria[];
+  saudeOperacional: SaudeOperacionalItem[];
   loading: boolean;
 }
+
+const getPeriodoCutoff = (periodo: string) => {
+  if (periodo === "todos") return null;
+
+  const base = new Date();
+  const cutoff = new Date(base);
+
+  if (periodo === "mes") cutoff.setMonth(base.getMonth() - 1);
+  if (periodo === "trimestre") cutoff.setMonth(base.getMonth() - 3);
+  if (periodo === "semestre") cutoff.setMonth(base.getMonth() - 6);
+  if (periodo === "ano") cutoff.setFullYear(base.getFullYear() - 1);
+
+  return cutoff.toISOString().split("T")[0];
+};
+
+const progressFromOverdue = (overdue: number, total: number) => {
+  if (total <= 0) return 100;
+  return Math.max(0, Math.round(((total - overdue) / total) * 100));
+};
 
 export default function Index() {
   const { user } = useAuth();
