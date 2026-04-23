@@ -491,6 +491,66 @@ export default function Index() {
         ))}
       </div>
 
+      <div className="grid grid-cols-1 xl:grid-cols-[1.2fr_0.8fr] gap-6 mb-6">
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="font-display text-lg flex items-center gap-2">
+              <ShieldCheck className="w-5 h-5 text-primary" />
+              Prioridades do dia
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {data.loading ? (
+              Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-20 w-full" />)
+            ) : (
+              data.acoesPrioritarias.map((acao) => {
+                const config = criticidadeConfig[acao.criticidade];
+                return (
+                  <Link key={`${acao.link}-${acao.titulo}`} to={acao.link}>
+                    <div className={`rounded-lg border p-4 transition-colors hover:bg-muted/50 ${config.container}`}>
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="space-y-1 min-w-0">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <p className="font-medium text-sm">{acao.titulo}</p>
+                            <Badge variant={config.badge}>{config.label}</Badge>
+                          </div>
+                          <p className="text-sm text-muted-foreground">{acao.detalhe}</p>
+                        </div>
+                        <ArrowRight className={`w-4 h-4 shrink-0 ${config.text}`} />
+                      </div>
+                    </div>
+                  </Link>
+                );
+              })
+            )}
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="font-display text-lg">Saúde operacional</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {data.loading ? (
+              Array.from({ length: 3 }).map((_, i) => (
+                <div key={i} className="space-y-2"><Skeleton className="h-4 w-40" /><Skeleton className="h-2 w-full" /></div>
+              ))
+            ) : (
+              data.saudeOperacional.map((item) => (
+                <Link key={item.label} to={item.link} className="block rounded-lg border border-border p-3 transition-colors hover:bg-muted/40">
+                  <div className="flex items-center justify-between gap-3 mb-2">
+                    <p className="text-sm font-medium">{item.label}</p>
+                    <span className="text-sm font-semibold">{item.valor}%</span>
+                  </div>
+                  <Progress value={item.valor} className="h-2 mb-2" />
+                  <p className="text-xs text-muted-foreground">{item.descricao}</p>
+                </Link>
+              ))
+            )}
+          </CardContent>
+        </Card>
+      </div>
+
       {/* Painel de Alertas de Vencimento */}
       {!data.loading && data.alertasVencimento.length > 0 && (
         <Card className="mb-6 border-warning/50 bg-warning/5">
