@@ -15,7 +15,6 @@ import { TIER_MAX_EMPRESAS, TIER_LABEL } from "@/config/tiers";
 import { toast } from "sonner";
 
 const TIPOS = ["Ração farelada", "Ração peletizada", "Núcleo", "Premix", "Suplemento mineral", "Sal mineral"];
-const UNLIMITED_COMPANY_USER_IDS = ["cf25d544-de0b-4bff-8e84-809a66014859"];
 
 interface EmpresaForm {
   nome: string;
@@ -30,7 +29,7 @@ interface EmpresaForm {
 const emptyForm: EmpresaForm = { nome: "", cnpj: "", endereco: "", responsavel_tecnico: "", crmv: "", capacidade: "", tipo_producao: [] };
 
 export default function Cadastro() {
-  const { user } = useAuth();
+  const { user, userType } = useAuth();
   const { empresas, recarregar, setEmpresaAtiva } = useEmpresa();
   const { tier } = useLicense();
   const [form, setForm] = useState<EmpresaForm>(emptyForm);
@@ -47,7 +46,7 @@ export default function Cadastro() {
     }));
   };
 
-  const unlimitedCompanies = !!user?.id && UNLIMITED_COMPANY_USER_IDS.includes(user.id);
+  const unlimitedCompanies = userType === "consultoria";
   const MAX_EMPRESAS = unlimitedCompanies ? Number.POSITIVE_INFINITY : TIER_MAX_EMPRESAS[tier];
   const tierLabel = TIER_LABEL[tier];
   const limitReached = (empresas?.length || 0) >= MAX_EMPRESAS;
