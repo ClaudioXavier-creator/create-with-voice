@@ -9,6 +9,8 @@ import {
   Droplets,
   Factory,
   FileUp,
+  GitBranch,
+  ListChecks,
   Lock,
   Package,
   RotateCcw,
@@ -18,6 +20,7 @@ import {
   Truck,
   Wifi,
   WifiOff,
+  Workflow,
 } from "lucide-react";
 import { z } from "zod";
 import { RegistroPopGenerico } from "@/components/tablet/RegistroPopGenerico";
@@ -37,9 +40,30 @@ import { useSessionDraft } from "@/hooks/useSessionDraft";
 import { registrarAuditLog } from "@/utils/auditLog";
 import { sha256 } from "@/utils/carimboHash";
 
-type Tela = "menu" | "producao" | "recebimento" | "limpeza" | "nc" | "pragas" | "expedicao" | "pop_generico";
-type OfflineTable = "producao" | "recebimento_mp" | "registros_limpeza" | "nao_conformidades" | "controle_pragas" | "expedicoes";
-type OfflineOperation = "insert" | "expedicao";
+type Tela =
+  | "menu"
+  | "producao"
+  | "recebimento"
+  | "limpeza"
+  | "nc"
+  | "pragas"
+  | "expedicao"
+  | "ordem_batida"
+  | "rastreabilidade"
+  | "pre_operacao"
+  | "pop_generico";
+
+type OfflineTable =
+  | "producao"
+  | "recebimento_mp"
+  | "registros_limpeza"
+  | "nao_conformidades"
+  | "controle_pragas"
+  | "expedicoes"
+  | "rastreabilidade"
+  | "checklist_items";
+
+type OfflineOperation = "insert" | "expedicao" | "ordem_batida";
 
 type ExpedicaoAttachment = {
   fileName: string;
@@ -70,14 +94,81 @@ type ExpedicaoQueuePayload = {
   };
 };
 
+type OrdemBatidaQueuePayload = {
+  empresaId: string;
+  userId: string;
+  ordemId?: string;
+  ordem?: {
+    numeroOrdem: string;
+    produto: string;
+    loteProduto: string;
+    quantidadeProgramada: string;
+    numeroBatidas: number;
+    proximoProduto: string;
+    necessitaFlushing: boolean;
+    materialFlushing: string;
+    observacoes: string;
+  };
+  batida: {
+    numeroBatida: number;
+    operador: string;
+    horaInicio: string;
+    horaFim: string;
+    tempoMisturaMinutos: number | null;
+    temperatura: string;
+    observacoes: string;
+  };
+  consumos: Array<{
+    materiaPrima: string;
+    loteMp: string;
+    fornecedor: string;
+    quantidadeKg: number;
+  }>;
+};
+
 type OfflineQueueItem = {
   id: string;
   operation: OfflineOperation;
   table?: OfflineTable;
   label: string;
   successTitle: string;
-  payload: Record<string, unknown>;
+  payload: unknown;
   createdAt: string;
+};
+
+type OrdemResumo = {
+  id: string;
+  numero_ordem: string;
+  produto: string;
+  lote_produto?: string | null;
+  numero_batidas?: number | null;
+  proximo_produto?: string | null;
+  necessita_flushing?: boolean | null;
+  material_flushing?: string | null;
+  status?: string | null;
+};
+
+type MatrizSensibilidadeRow = {
+  produto_anterior: string;
+  produto_seguinte: string;
+  requer_flushing: boolean;
+};
+
+type CalibracaoResumo = {
+  equipamento: string;
+  proxima_calibracao?: string | null;
+  status?: string | null;
+};
+
+type CronogramaResumo = {
+  area: string;
+  status?: string | null;
+};
+
+type ManutencaoResumo = {
+  equipamento: string;
+  data_programada?: string | null;
+  status?: string | null;
 };
 
 const MENU_ITEMS = [
@@ -87,6 +178,9 @@ const MENU_ITEMS = [
   { id: "pragas" as Tela, label: "Observação de Pragas", icon: Bug, tone: "bg-muted text-foreground" },
   { id: "nc" as Tela, label: "Registrar NC", icon: ShieldAlert, tone: "bg-destructive text-destructive-foreground" },
   { id: "expedicao" as Tela, label: "Registrar Expedição", icon: Truck, tone: "bg-primary text-primary-foreground" },
+  { id: "ordem_batida" as Tela, label: "Ordem / Batida", icon: Workflow, tone: "bg-secondary text-secondary-foreground" },
+  { id: "rastreabilidade" as Tela, label: "Rastreabilidade", icon: GitBranch, tone: "bg-accent text-accent-foreground" },
+  { id: "pre_operacao" as Tela, label: "Pré-operação", icon: ListChecks, tone: "bg-muted text-foreground" },
   { id: "pop_generico" as Tela, label: "Executar POP / IT", icon: ShieldCheck, tone: "bg-primary text-primary-foreground" },
 ];
 
@@ -102,6 +196,47 @@ const expedicaoSchema = z.object({
   observacoes: z.string().trim().max(500, "Observações muito longas"),
   operadorNome: z.string().trim().min(2, "Informe o operador").max(120, "Nome muito longo"),
   pin: z.string().trim().regex(/^\d{4,10}$/, "PIN deve ter entre 4 e 10 dígitos"),
+});
+
+const ordemBatidaSchema = z
+  .object({
+    existingOrderId: z.string().trim().optional(),
+    numeroOrdem: z.string().trim().max(50, "Número da ordem muito longo").optional(),
+    produto: z.string().trim().max(120, "Produto muito longo").optional(),
+    loteProduto: z.string().trim().max(60, "Lote muito longo").optional(),
+    quantidadeProgramada: z.string().trim().max(20, "Quantidade muito longa").optional(),
+    numeroBatidasPlanejadas: z.string().trim().max(4, "Quantidade de batidas inválida").optional(),
+    proximoProduto: z.string().trim().max(120, "Próximo produto muito longo").optional(),
+    operador: z.string().trim().min(2, "Informe o operador").max(120, "Operador muito longo"),
+    batidaNumero: z.string().trim().min(1, "Informe o número da batida").max(4, "Batida inválida"),
+    horaInicio: z.string().trim().max(8, "Hora inválida"),
+    horaFim: z.string().trim().max(8, "Hora inválida"),
+    tempoMistura: z.string().trim().max(4, "Tempo inválido"),
+    temperatura: z.string().trim().max(20, "Temperatura muito longa"),
+    observacoes: z.string().trim().max(500, "Observações muito longas"),
+    materiaPrima: z.string().trim().max(120, "Matéria-prima muito longa"),
+    loteMp: z.string().trim().max(60, "Lote MP muito longo"),
+    fornecedor: z.string().trim().max(120, "Fornecedor muito longo"),
+    quantidadeKg: z.string().trim().max(20, "Quantidade inválida"),
+  })
+  .superRefine((value, ctx) => {
+    if (!value.existingOrderId && (!value.numeroOrdem || !value.produto)) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Selecione uma ordem ou informe número e produto para criar uma nova." });
+    }
+  });
+
+const rastreabilidadeSchema = z.object({
+  produto: z.string().trim().min(2, "Informe o produto").max(120, "Produto muito longo"),
+  loteProduto: z.string().trim().min(1, "Informe o lote do produto").max(60, "Lote muito longo"),
+  materiaPrima: z.string().trim().min(2, "Informe a matéria-prima").max(120, "Matéria-prima muito longa"),
+  loteMp: z.string().trim().min(1, "Informe o lote da MP").max(60, "Lote MP muito longo"),
+  fornecedor: z.string().trim().max(120, "Fornecedor muito longo"),
+});
+
+const preOperacaoSchema = z.object({
+  area: z.string().trim().min(2, "Informe a área").max(120, "Área muito longa"),
+  responsavel: z.string().trim().min(2, "Informe o responsável").max(120, "Responsável muito longo"),
+  observacoes: z.string().trim().max(500, "Observações muito longas"),
 });
 
 const MAX_EXPEDICAO_FILE_MB = 5;
@@ -189,6 +324,45 @@ type ExpedicaoDraft = {
   pin: string;
 };
 
+type OrdemBatidaDraft = {
+  existingOrderId: string;
+  numeroOrdem: string;
+  produto: string;
+  loteProduto: string;
+  quantidadeProgramada: string;
+  numeroBatidasPlanejadas: string;
+  proximoProduto: string;
+  operador: string;
+  batidaNumero: string;
+  horaInicio: string;
+  horaFim: string;
+  tempoMistura: string;
+  temperatura: string;
+  observacoes: string;
+  materiaPrima: string;
+  loteMp: string;
+  fornecedor: string;
+  quantidadeKg: string;
+};
+
+type RastreabilidadeDraft = {
+  produto: string;
+  loteProduto: string;
+  materiaPrima: string;
+  loteMp: string;
+  fornecedor: string;
+};
+
+type PreOperacaoDraft = {
+  area: string;
+  responsavel: string;
+  limpezaOk: boolean;
+  balancaOk: boolean;
+  epiOk: boolean;
+  linhaLiberada: boolean;
+  observacoes: string;
+};
+
 type PragaDraft = {
   local: string;
   tipos: {
@@ -226,6 +400,42 @@ const INITIAL_EXPEDICAO: ExpedicaoDraft = {
   operadorNome: "",
   pin: "",
 };
+const INITIAL_ORDEM_BATIDA: OrdemBatidaDraft = {
+  existingOrderId: "",
+  numeroOrdem: "",
+  produto: "",
+  loteProduto: "",
+  quantidadeProgramada: "",
+  numeroBatidasPlanejadas: "1",
+  proximoProduto: "",
+  operador: "",
+  batidaNumero: "1",
+  horaInicio: "",
+  horaFim: "",
+  tempoMistura: "",
+  temperatura: "",
+  observacoes: "",
+  materiaPrima: "",
+  loteMp: "",
+  fornecedor: "",
+  quantidadeKg: "",
+};
+const INITIAL_RASTREABILIDADE: RastreabilidadeDraft = {
+  produto: "",
+  loteProduto: "",
+  materiaPrima: "",
+  loteMp: "",
+  fornecedor: "",
+};
+const INITIAL_PRE_OPERACAO: PreOperacaoDraft = {
+  area: "Misturador / linha principal",
+  responsavel: "",
+  limpezaOk: true,
+  balancaOk: true,
+  epiOk: true,
+  linhaLiberada: true,
+  observacoes: "",
+};
 const INITIAL_PRAGA: PragaDraft = {
   local: "",
   tipos: { roedores: false, aves: false, voadores: false, rasteiros: false, outros: false },
@@ -244,6 +454,11 @@ export default function ModoTablet() {
   const [pinHashCache, setPinHashCache] = useState<string | null>(null);
   const [pinConfigurado, setPinConfigurado] = useState<boolean | null>(null);
   const [expedicaoAttachment, setExpedicaoAttachment] = useState<ExpedicaoAttachment | null>(null);
+  const [ordensDisponiveis, setOrdensDisponiveis] = useState<OrdemResumo[]>([]);
+  const [matrizSensibilidade, setMatrizSensibilidade] = useState<MatrizSensibilidadeRow[]>([]);
+  const [calibracoesResumo, setCalibracoesResumo] = useState<CalibracaoResumo[]>([]);
+  const [cronogramasResumo, setCronogramasResumo] = useState<CronogramaResumo[]>([]);
+  const [manutencoesResumo, setManutencoesResumo] = useState<ManutencaoResumo[]>([]);
   const empresaKey = empresaAtiva?.id ?? "sem-empresa";
   const queueStorageKey = useMemo(() => `tablet_offline_queue_${user?.id ?? "anonimo"}`, [user?.id]);
   const pinCacheStorageKey = useMemo(() => `empresa_pin_cache_${empresaKey}`, [empresaKey]);
@@ -255,6 +470,9 @@ export default function ModoTablet() {
   const [ncDraft, setNcDraft, clearNcDraft] = useSessionDraft(`tablet_nc_${empresaKey}`, INITIAL_NC);
   const [pragaDraft, setPragaDraft, clearPragaDraft] = useSessionDraft(`tablet_pragas_${empresaKey}`, INITIAL_PRAGA);
   const [expedicaoDraft, setExpedicaoDraft, clearExpedicaoDraft] = useSessionDraft(`tablet_expedicao_${empresaKey}`, INITIAL_EXPEDICAO);
+  const [ordemBatidaDraft, setOrdemBatidaDraft, clearOrdemBatidaDraft] = useSessionDraft(`tablet_ordem_batida_${empresaKey}`, INITIAL_ORDEM_BATIDA);
+  const [rastreabilidadeDraft, setRastreabilidadeDraft, clearRastreabilidadeDraft] = useSessionDraft(`tablet_rastreabilidade_${empresaKey}`, INITIAL_RASTREABILIDADE);
+  const [preOperacaoDraft, setPreOperacaoDraft, clearPreOperacaoDraft] = useSessionDraft(`tablet_pre_operacao_${empresaKey}`, INITIAL_PRE_OPERACAO);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -331,6 +549,33 @@ export default function ModoTablet() {
     };
   }, []);
 
+  const fetchOperationalContext = useCallback(async () => {
+    if (!user || !empresaAtiva?.id) return;
+
+    const [ordensRes, matrizRes, calibracoesRes, cronogramasRes, manutencoesRes] = await Promise.all([
+      supabase
+        .from("ordens_producao")
+        .select("id, numero_ordem, produto, lote_produto, numero_batidas, proximo_produto, necessita_flushing, material_flushing, status")
+        .eq("empresa_id", empresaAtiva.id)
+        .order("data_programada", { ascending: false })
+        .limit(30),
+      supabase.from("matriz_sensibilidade").select("produto_anterior, produto_seguinte, requer_flushing").eq("empresa_id", empresaAtiva.id),
+      supabase.from("calibracoes").select("equipamento, proxima_calibracao, status").eq("empresa_id", empresaAtiva.id).order("proxima_calibracao", { ascending: true }).limit(10),
+      supabase.from("cronogramas_higiene").select("area, status").eq("empresa_id", empresaAtiva.id).order("area").limit(10),
+      supabase.from("manutencoes").select("equipamento, data_programada, status").eq("empresa_id", empresaAtiva.id).order("data_programada", { ascending: true }).limit(10),
+    ]);
+
+    setOrdensDisponiveis((ordensRes.data || []) as OrdemResumo[]);
+    setMatrizSensibilidade((matrizRes.data || []) as MatrizSensibilidadeRow[]);
+    setCalibracoesResumo((calibracoesRes.data || []) as CalibracaoResumo[]);
+    setCronogramasResumo((cronogramasRes.data || []) as CronogramaResumo[]);
+    setManutencoesResumo((manutencoesRes.data || []) as ManutencaoResumo[]);
+  }, [empresaAtiva?.id, user]);
+
+  useEffect(() => {
+    void fetchOperationalContext();
+  }, [fetchOperationalContext]);
+
   const clearExpedicaoAttachment = useCallback(() => {
     setExpedicaoAttachment((current) => {
       if (current?.previewUrl?.startsWith("blob:")) {
@@ -346,6 +591,21 @@ export default function ModoTablet() {
     clearExpedicaoDraft();
     clearExpedicaoAttachment();
   }, [clearExpedicaoAttachment, clearExpedicaoDraft, setExpedicaoDraft]);
+
+  const resetOrdemBatida = useCallback(() => {
+    setOrdemBatidaDraft(INITIAL_ORDEM_BATIDA);
+    clearOrdemBatidaDraft();
+  }, [clearOrdemBatidaDraft, setOrdemBatidaDraft]);
+
+  const resetRastreabilidade = useCallback(() => {
+    setRastreabilidadeDraft(INITIAL_RASTREABILIDADE);
+    clearRastreabilidadeDraft();
+  }, [clearRastreabilidadeDraft, setRastreabilidadeDraft]);
+
+  const resetPreOperacao = useCallback(() => {
+    setPreOperacaoDraft(INITIAL_PRE_OPERACAO);
+    clearPreOperacaoDraft();
+  }, [clearPreOperacaoDraft, setPreOperacaoDraft]);
 
   const draftStatus = useMemo<Record<Exclude<Tela, "menu" | "pop_generico">, boolean>>(
     () => ({
@@ -365,6 +625,28 @@ export default function ModoTablet() {
           expedicaoDraft.operadorNome ||
           expedicaoAttachment
       ),
+      ordem_batida: Boolean(
+        ordemBatidaDraft.existingOrderId ||
+          ordemBatidaDraft.numeroOrdem ||
+          ordemBatidaDraft.produto ||
+          ordemBatidaDraft.operador ||
+          ordemBatidaDraft.batidaNumero ||
+          ordemBatidaDraft.materiaPrima
+      ),
+      rastreabilidade: Boolean(
+        rastreabilidadeDraft.produto ||
+          rastreabilidadeDraft.loteProduto ||
+          rastreabilidadeDraft.materiaPrima ||
+          rastreabilidadeDraft.loteMp
+      ),
+      pre_operacao: Boolean(
+        preOperacaoDraft.responsavel ||
+          preOperacaoDraft.observacoes ||
+          !preOperacaoDraft.limpezaOk ||
+          !preOperacaoDraft.balancaOk ||
+          !preOperacaoDraft.epiOk ||
+          !preOperacaoDraft.linhaLiberada
+      ),
     }),
     [
       expedicaoAttachment,
@@ -380,14 +662,30 @@ export default function ModoTablet() {
       limpezaDraft.observacoes,
       ncDraft.descricao,
       ncDraft.setor,
+      ordemBatidaDraft.batidaNumero,
+      ordemBatidaDraft.existingOrderId,
+      ordemBatidaDraft.materiaPrima,
+      ordemBatidaDraft.numeroOrdem,
+      ordemBatidaDraft.operador,
+      ordemBatidaDraft.produto,
       pragaDraft.acao,
       pragaDraft.local,
       pragaDraft.responsavel,
       pragaDraft.tipos,
+      preOperacaoDraft.balancaOk,
+      preOperacaoDraft.epiOk,
+      preOperacaoDraft.limpezaOk,
+      preOperacaoDraft.linhaLiberada,
+      preOperacaoDraft.observacoes,
+      preOperacaoDraft.responsavel,
       producaoDraft.lote,
       producaoDraft.operador,
       producaoDraft.produto,
       producaoDraft.quantidade,
+      rastreabilidadeDraft.loteMp,
+      rastreabilidadeDraft.loteProduto,
+      rastreabilidadeDraft.materiaPrima,
+      rastreabilidadeDraft.produto,
       recebimentoDraft.fornecedor,
       recebimentoDraft.lote,
       recebimentoDraft.materiaPrima,
@@ -403,6 +701,47 @@ export default function ModoTablet() {
     () => pendingQueue.slice(0, 3).map((item) => `${item.label} • ${new Date(item.createdAt).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}`),
     [pendingQueue]
   );
+
+  const ordemSelecionada = useMemo(
+    () => ordensDisponiveis.find((ordem) => ordem.id === ordemBatidaDraft.existingOrderId) || null,
+    [ordemBatidaDraft.existingOrderId, ordensDisponiveis]
+  );
+
+  const produtoBaseOrdem = ordemSelecionada?.produto || ordemBatidaDraft.produto;
+  const proximoProdutoBase = ordemSelecionada?.proximo_produto || ordemBatidaDraft.proximoProduto;
+
+  const flushRecomendado = useMemo(() => {
+    if (!produtoBaseOrdem || !proximoProdutoBase) return null;
+
+    const match = matrizSensibilidade.find(
+      (row) =>
+        row.produto_anterior.toLowerCase() === produtoBaseOrdem.toLowerCase() &&
+        row.produto_seguinte.toLowerCase() === proximoProdutoBase.toLowerCase()
+    );
+
+    if (match) return match;
+    if (ordemSelecionada?.necessita_flushing) {
+      return {
+        produto_anterior: produtoBaseOrdem,
+        produto_seguinte: proximoProdutoBase,
+        requer_flushing: true,
+      };
+    }
+
+    return null;
+  }, [matrizSensibilidade, ordemSelecionada?.necessita_flushing, produtoBaseOrdem, proximoProdutoBase]);
+
+  const calibracoesVencendo = useMemo(() => {
+    const hoje = new Date();
+    return calibracoesResumo.filter((item) => item.proxima_calibracao && new Date(item.proxima_calibracao) <= hoje).length;
+  }, [calibracoesResumo]);
+
+  const manutencoesPendentes = useMemo(() => {
+    const hoje = new Date();
+    return manutencoesResumo.filter((item) => item.data_programada && new Date(item.data_programada) <= hoje && item.status !== "concluida").length;
+  }, [manutencoesResumo]);
+
+  const cronogramasInativos = useMemo(() => cronogramasResumo.filter((item) => item.status && item.status !== "ativo").length, [cronogramasResumo]);
 
   const requireContext = () => {
     if (!user) {
@@ -509,6 +848,92 @@ export default function ModoTablet() {
     });
   }, [uploadExpedicaoAttachment]);
 
+  const persistOrdemBatida = useCallback(async (payload: OrdemBatidaQueuePayload, syncOrigem: "online" | "offline_queue") => {
+    let ordemId = payload.ordemId;
+
+    if (!ordemId && payload.ordem) {
+      const { data: ordem, error: ordemError } = await supabase
+        .from("ordens_producao")
+        .insert({
+          user_id: payload.userId,
+          empresa_id: payload.empresaId,
+          numero_ordem: payload.ordem.numeroOrdem,
+          produto: payload.ordem.produto,
+          lote_produto: payload.ordem.loteProduto,
+          quantidade_programada: payload.ordem.quantidadeProgramada,
+          numero_batidas: payload.ordem.numeroBatidas,
+          proximo_produto: payload.ordem.proximoProduto || null,
+          necessita_flushing: payload.ordem.necessitaFlushing,
+          material_flushing: payload.ordem.materialFlushing || null,
+          observacoes: payload.ordem.observacoes || null,
+          data_programada: new Date().toISOString().split("T")[0],
+          status: "em_producao",
+          tipo_ordem: "normal",
+        })
+        .select("id")
+        .single();
+
+      if (ordemError || !ordem) throw ordemError || new Error("Falha ao criar ordem");
+      ordemId = ordem.id;
+    }
+
+    if (!ordemId) throw new Error("Ordem não encontrada para registrar a batida");
+
+    const { data: batida, error: batidaError } = await supabase
+      .from("batidas_producao")
+      .insert({
+        user_id: payload.userId,
+        empresa_id: payload.empresaId,
+        ordem_id: ordemId,
+        numero_batida: payload.batida.numeroBatida,
+        operador: payload.batida.operador,
+        hora_inicio: payload.batida.horaInicio || null,
+        hora_fim: payload.batida.horaFim || null,
+        tempo_mistura_minutos: payload.batida.tempoMisturaMinutos,
+        temperatura: payload.batida.temperatura,
+        status: "concluida",
+        observacoes: `[${syncOrigem === "offline_queue" ? "FILA OFFLINE" : "REGISTRO ONLINE"}] ${payload.batida.observacoes}`.trim(),
+      })
+      .select("id")
+      .single();
+
+    if (batidaError || !batida) throw batidaError || new Error("Falha ao registrar batida");
+
+    if (payload.consumos.length > 0) {
+      const { error: consumoError } = await supabase.from("batida_lotes").insert(
+        payload.consumos.map((item) => ({
+          user_id: payload.userId,
+          empresa_id: payload.empresaId,
+          ordem_id: ordemId,
+          numero_batida: payload.batida.numeroBatida,
+          materia_prima: item.materiaPrima,
+          lote_mp: item.loteMp,
+          fornecedor: item.fornecedor,
+          quantidade_kg: item.quantidadeKg,
+        })) as any
+      );
+
+      if (consumoError) throw consumoError;
+    }
+
+    await supabase.from("ordens_producao").update({ status: "em_producao" } as any).eq("id", ordemId);
+
+    await registrarAuditLog({
+      userId: payload.userId,
+      empresaId: payload.empresaId,
+      tabela: "batidas_producao",
+      registroId: batida.id,
+      acao: "criar",
+      dadosNovos: {
+        ordem_id: ordemId,
+        numero_batida: payload.batida.numeroBatida,
+        operador: payload.batida.operador,
+        consumos: payload.consumos.length,
+        sync_origem: syncOrigem,
+      },
+    });
+  }, []);
+
   const flushQueue = useCallback(async () => {
     if (!isOnline || syncingQueue || pendingQueue.length === 0) return;
 
@@ -522,8 +947,10 @@ export default function ModoTablet() {
       try {
         if (item.operation === "expedicao") {
           await persistExpedicao(item.payload as ExpedicaoQueuePayload, "offline_queue");
+        } else if (item.operation === "ordem_batida") {
+          await persistOrdemBatida(item.payload as OrdemBatidaQueuePayload, "offline_queue");
         } else {
-          const { error } = await (supabase.from(item.table as never) as any).insert(item.payload);
+          const { error } = await (supabase.from(item.table as never) as any).insert(item.payload as any);
           if (error) throw error;
         }
 
@@ -546,12 +973,13 @@ export default function ModoTablet() {
     setSyncingQueue(false);
 
     if (syncedCount > 0) {
+      await fetchOperationalContext();
       toast({
         title: syncedCount === 1 ? "1 registro sincronizado" : `${syncedCount} registros sincronizados`,
         description: remaining.length > 0 ? "Alguns itens seguirão na fila até a próxima tentativa." : "Todos os registros pendentes foram enviados.",
       });
     }
-  }, [isOnline, pendingQueue, persistExpedicao, syncingQueue]);
+  }, [fetchOperationalContext, isOnline, pendingQueue, persistExpedicao, persistOrdemBatida, syncingQueue]);
 
   useEffect(() => {
     if (isOnline && pendingQueue.length > 0 && !syncingQueue) {
@@ -567,7 +995,7 @@ export default function ModoTablet() {
     onSuccess,
   }: {
     table: OfflineTable;
-    payload: Record<string, unknown>;
+    payload: unknown;
     label: string;
     successTitle: string;
     onSuccess: () => void;
@@ -587,7 +1015,7 @@ export default function ModoTablet() {
     setSaving(true);
 
     try {
-      const { error } = await (supabase.from(table as never) as any).insert(payload);
+      const { error } = await (supabase.from(table as never) as any).insert(payload as any);
 
       if (error) {
         if (isNetworkError(error.message)) {
@@ -604,6 +1032,7 @@ export default function ModoTablet() {
         return;
       }
 
+      await fetchOperationalContext();
       toast({ title: successTitle });
       onSuccess();
     } catch {
@@ -616,7 +1045,7 @@ export default function ModoTablet() {
     } finally {
       setSaving(false);
     }
-  }, [enqueueOfflineItem, isOnline]);
+  }, [enqueueOfflineItem, fetchOperationalContext, isOnline]);
 
   const resolvePinHash = useCallback(async () => {
     if (!empresaAtiva?.id) return null;
@@ -902,6 +1331,7 @@ export default function ModoTablet() {
       }
 
       await persistExpedicao(payloadComAnexo, "online");
+      await fetchOperationalContext();
       resetExpedicao();
       setTela("menu");
       toast({
@@ -949,6 +1379,185 @@ export default function ModoTablet() {
     } finally {
       setSaving(false);
     }
+  };
+
+  const salvarOrdemBatida = async () => {
+    if (!requireContext()) return;
+
+    const parsed = ordemBatidaSchema.safeParse(ordemBatidaDraft);
+    if (!parsed.success) {
+      toast({ title: "Revise os campos", description: parsed.error.issues[0]?.message, variant: "destructive" });
+      return;
+    }
+
+    if (!ordemBatidaDraft.existingOrderId && (!ordemBatidaDraft.numeroOrdem || !ordemBatidaDraft.produto)) {
+      toast({ title: "Informe a ordem", description: "Selecione uma ordem existente ou preencha número e produto.", variant: "destructive" });
+      return;
+    }
+
+    const payload: OrdemBatidaQueuePayload = {
+      empresaId: empresaAtiva!.id,
+      userId: user!.id,
+      ordemId: ordemBatidaDraft.existingOrderId || undefined,
+      ordem: ordemBatidaDraft.existingOrderId
+        ? undefined
+        : {
+            numeroOrdem: ordemBatidaDraft.numeroOrdem.trim(),
+            produto: ordemBatidaDraft.produto.trim(),
+            loteProduto: ordemBatidaDraft.loteProduto.trim(),
+            quantidadeProgramada: ordemBatidaDraft.quantidadeProgramada.trim(),
+            numeroBatidas: Number(ordemBatidaDraft.numeroBatidasPlanejadas || "1") || 1,
+            proximoProduto: ordemBatidaDraft.proximoProduto.trim(),
+            necessitaFlushing: Boolean(flushRecomendado?.requer_flushing),
+            materialFlushing: flushRecomendado?.requer_flushing ? "Verificar POP de flushing" : "",
+            observacoes: ordemBatidaDraft.observacoes.trim(),
+          },
+      batida: {
+        numeroBatida: Number(ordemBatidaDraft.batidaNumero || "1") || 1,
+        operador: ordemBatidaDraft.operador.trim(),
+        horaInicio: ordemBatidaDraft.horaInicio.trim(),
+        horaFim: ordemBatidaDraft.horaFim.trim(),
+        tempoMisturaMinutos: ordemBatidaDraft.tempoMistura ? Number(ordemBatidaDraft.tempoMistura) || null : null,
+        temperatura: ordemBatidaDraft.temperatura.trim(),
+        observacoes: [
+          flushRecomendado?.requer_flushing
+            ? `Flushing recomendado entre ${flushRecomendado.produto_anterior} e ${flushRecomendado.produto_seguinte}.`
+            : null,
+          ordemBatidaDraft.observacoes.trim() || null,
+        ]
+          .filter(Boolean)
+          .join(" "),
+      },
+      consumos: ordemBatidaDraft.materiaPrima
+        ? [
+            {
+              materiaPrima: ordemBatidaDraft.materiaPrima.trim(),
+              loteMp: ordemBatidaDraft.loteMp.trim(),
+              fornecedor: ordemBatidaDraft.fornecedor.trim(),
+              quantidadeKg: Number(ordemBatidaDraft.quantidadeKg.replace(",", ".")) || 0,
+            },
+          ]
+        : [],
+    };
+
+    setSaving(true);
+    try {
+      if (!isOnline) {
+        enqueueOfflineItem({
+          operation: "ordem_batida",
+          payload,
+          label: "Ordem / batida",
+          successTitle: "✅ Batida registrada!",
+        });
+        resetOrdemBatida();
+        setTela("menu");
+        toast({ title: "Batida salva na fila", description: "A ordem, a batida e o consumo de MP serão sincronizados quando a conexão voltar." });
+        return;
+      }
+
+      await persistOrdemBatida(payload, "online");
+      await fetchOperationalContext();
+      resetOrdemBatida();
+      setTela("menu");
+      toast({ title: "✅ Batida registrada!", description: payload.consumos.length > 0 ? "Batida e consumo de MP gravados com sucesso." : "Batida gravada com sucesso." });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Erro ao registrar ordem/batida";
+      if (isNetworkError(message)) {
+        enqueueOfflineItem({
+          operation: "ordem_batida",
+          payload,
+          label: "Ordem / batida",
+          successTitle: "✅ Batida registrada!",
+        });
+        resetOrdemBatida();
+        setTela("menu");
+        toast({ title: "Batida salva na fila", description: "A conexão oscilou. O sistema vai reenviar automaticamente." });
+        return;
+      }
+      toast({ title: "Erro", description: message, variant: "destructive" });
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const salvarRastreabilidade = async () => {
+    if (!requireContext()) return;
+
+    const parsed = rastreabilidadeSchema.safeParse(rastreabilidadeDraft);
+    if (!parsed.success) {
+      toast({ title: "Revise os campos", description: parsed.error.issues[0]?.message, variant: "destructive" });
+      return;
+    }
+
+    await saveOrQueue({
+      table: "rastreabilidade",
+      label: "Rastreabilidade",
+      successTitle: "✅ Vínculo de rastreabilidade salvo!",
+      payload: {
+        user_id: user!.id,
+        empresa_id: empresaAtiva!.id,
+        produto: rastreabilidadeDraft.produto.trim(),
+        lote_produto: rastreabilidadeDraft.loteProduto.trim(),
+        materia_prima: rastreabilidadeDraft.materiaPrima.trim(),
+        lote_mp: rastreabilidadeDraft.loteMp.trim(),
+        fornecedor: rastreabilidadeDraft.fornecedor.trim(),
+      },
+      onSuccess: () => {
+        resetRastreabilidade();
+        setTela("menu");
+      },
+    });
+  };
+
+  const salvarPreOperacao = async () => {
+    if (!requireContext()) return;
+
+    const parsed = preOperacaoSchema.safeParse({
+      area: preOperacaoDraft.area,
+      responsavel: preOperacaoDraft.responsavel,
+      observacoes: preOperacaoDraft.observacoes,
+    });
+
+    if (!parsed.success) {
+      toast({ title: "Revise os campos", description: parsed.error.issues[0]?.message, variant: "destructive" });
+      return;
+    }
+
+    const observacaoBase = [
+      `Responsável: ${preOperacaoDraft.responsavel.trim()}`,
+      preOperacaoDraft.observacoes.trim() || null,
+      calibracoesVencendo > 0 ? `${calibracoesVencendo} calibração(ões) vencendo.` : null,
+      manutencoesPendentes > 0 ? `${manutencoesPendentes} manutenção(ões) pendentes.` : null,
+      cronogramasInativos > 0 ? `${cronogramasInativos} cronograma(s) fora do status ativo.` : null,
+    ]
+      .filter(Boolean)
+      .join(" | ");
+
+    const checklistRows = [
+      { item: "Limpeza da linha", conforme: preOperacaoDraft.limpezaOk },
+      { item: "Balança / instrumentos liberados", conforme: preOperacaoDraft.balancaOk },
+      { item: "EPI obrigatório conferido", conforme: preOperacaoDraft.epiOk },
+      { item: "Linha liberada para partida", conforme: preOperacaoDraft.linhaLiberada },
+    ].map((row) => ({
+      user_id: user!.id,
+      empresa_id: empresaAtiva!.id,
+      area: `Pré-operação — ${preOperacaoDraft.area.trim()}`,
+      item: row.item,
+      conforme: row.conforme,
+      observacao: observacaoBase,
+      auditoria_data: new Date().toISOString().split("T")[0],
+    }));
+
+    await saveOrQueue({
+      table: "checklist_items",
+      label: "Pré-operação",
+      successTitle: "✅ Checklist pré-operação salvo!",
+      payload: checklistRows,
+      onSuccess: () => {
+        resetPreOperacao();
+        setTela("menu");
+      },
+    });
   };
 
   const handleExpedicaoAttachmentChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -1354,6 +1963,207 @@ export default function ModoTablet() {
 
             <Button onClick={salvarExpedicao} disabled={saving || !pinConfigurado} className="w-full h-14 text-lg" size="lg">
               <CheckCircle2 className="w-5 h-5 mr-2" /> {saving ? "Salvando..." : isOnline ? "Salvar Expedição" : "Salvar na fila"}
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  if (tela === "ordem_batida") {
+    return (
+      <div className="max-w-lg mx-auto p-4">
+        <Voltar onClearDraft={resetOrdemBatida} />
+        <StatusBanner />
+        <Card>
+          <CardContent className="pt-6 space-y-4">
+            <CardHeader title="Ordem / Batida" subtitle="Apontamento rápido da produção e consumo real de matéria-prima." icon={Workflow} />
+
+            <div>
+              <Label className="text-base">Ordem existente</Label>
+              <Select
+                value={ordemBatidaDraft.existingOrderId}
+                onValueChange={(value) => {
+                  const ordem = ordensDisponiveis.find((item) => item.id === value);
+                  setOrdemBatidaDraft({
+                    ...ordemBatidaDraft,
+                    existingOrderId: value,
+                    numeroOrdem: ordem?.numero_ordem || ordemBatidaDraft.numeroOrdem,
+                    produto: ordem?.produto || ordemBatidaDraft.produto,
+                    loteProduto: ordem?.lote_produto || ordemBatidaDraft.loteProduto,
+                    numeroBatidasPlanejadas: String(ordem?.numero_batidas || ordemBatidaDraft.numeroBatidasPlanejadas || "1"),
+                    proximoProduto: ordem?.proximo_produto || ordemBatidaDraft.proximoProduto,
+                  });
+                }}
+              >
+                <SelectTrigger className="h-12 text-base mt-1"><SelectValue placeholder="Criar nova ordem" /></SelectTrigger>
+                <SelectContent>
+                  {ordensDisponiveis.map((ordem) => (
+                    <SelectItem key={ordem.id} value={ordem.id}>{ordem.numero_ordem} • {ordem.produto}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label className="text-base">Nº ordem {!ordemBatidaDraft.existingOrderId ? "*" : ""}</Label>
+                <Input value={ordemBatidaDraft.numeroOrdem} onChange={(e) => setOrdemBatidaDraft({ ...ordemBatidaDraft, numeroOrdem: e.target.value.slice(0, 50) })} className="text-lg h-12 mt-1" placeholder="OP-001" disabled={Boolean(ordemBatidaDraft.existingOrderId)} />
+              </div>
+              <div>
+                <Label className="text-base">Batida *</Label>
+                <Input value={ordemBatidaDraft.batidaNumero} onChange={(e) => setOrdemBatidaDraft({ ...ordemBatidaDraft, batidaNumero: e.target.value.replace(/\D/g, "").slice(0, 4) })} className="text-lg h-12 mt-1" placeholder="1" inputMode="numeric" />
+              </div>
+            </div>
+
+            <div>
+              <Label className="text-base">Produto {!ordemBatidaDraft.existingOrderId ? "*" : ""}</Label>
+              <Input value={ordemBatidaDraft.produto} onChange={(e) => setOrdemBatidaDraft({ ...ordemBatidaDraft, produto: e.target.value.slice(0, 120) })} className="text-lg h-12 mt-1" placeholder="Produto em processo" disabled={Boolean(ordemBatidaDraft.existingOrderId)} />
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label className="text-base">Lote PA</Label>
+                <Input value={ordemBatidaDraft.loteProduto} onChange={(e) => setOrdemBatidaDraft({ ...ordemBatidaDraft, loteProduto: e.target.value.slice(0, 60) })} className="text-lg h-12 mt-1" placeholder="Lote final" disabled={Boolean(ordemBatidaDraft.existingOrderId)} />
+              </div>
+              <div>
+                <Label className="text-base">Qtd programada</Label>
+                <Input value={ordemBatidaDraft.quantidadeProgramada} onChange={(e) => setOrdemBatidaDraft({ ...ordemBatidaDraft, quantidadeProgramada: e.target.value.slice(0, 20) })} className="text-lg h-12 mt-1" placeholder="kg" disabled={Boolean(ordemBatidaDraft.existingOrderId)} />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label className="text-base">Batidas planejadas</Label>
+                <Input value={ordemBatidaDraft.numeroBatidasPlanejadas} onChange={(e) => setOrdemBatidaDraft({ ...ordemBatidaDraft, numeroBatidasPlanejadas: e.target.value.replace(/\D/g, "").slice(0, 4) })} className="text-lg h-12 mt-1" inputMode="numeric" disabled={Boolean(ordemBatidaDraft.existingOrderId)} />
+              </div>
+              <div>
+                <Label className="text-base">Próximo produto</Label>
+                <Input value={ordemBatidaDraft.proximoProduto} onChange={(e) => setOrdemBatidaDraft({ ...ordemBatidaDraft, proximoProduto: e.target.value.slice(0, 120) })} className="text-lg h-12 mt-1" placeholder="Ajuda no flushing" disabled={Boolean(ordemBatidaDraft.existingOrderId)} />
+              </div>
+            </div>
+
+            {flushRecomendado ? (
+              <div className="rounded-lg border border-primary/30 bg-primary/5 p-3 text-sm">
+                <p className="font-medium text-foreground">Flushing recomendado</p>
+                <p className="mt-1 text-muted-foreground">Entre {flushRecomendado.produto_anterior} e {flushRecomendado.produto_seguinte} a matriz indica limpeza de linha antes desta sequência.</p>
+              </div>
+            ) : null}
+
+            <div>
+              <Label className="text-base">Operador *</Label>
+              <Input value={ordemBatidaDraft.operador} onChange={(e) => setOrdemBatidaDraft({ ...ordemBatidaDraft, operador: e.target.value.slice(0, 120) })} className="text-lg h-12 mt-1" placeholder="Quem executou" />
+            </div>
+
+            <div className="grid grid-cols-3 gap-3">
+              <div>
+                <Label className="text-base">Início</Label>
+                <Input value={ordemBatidaDraft.horaInicio} onChange={(e) => setOrdemBatidaDraft({ ...ordemBatidaDraft, horaInicio: e.target.value.slice(0, 8) })} className="text-lg h-12 mt-1" placeholder="07:30" />
+              </div>
+              <div>
+                <Label className="text-base">Fim</Label>
+                <Input value={ordemBatidaDraft.horaFim} onChange={(e) => setOrdemBatidaDraft({ ...ordemBatidaDraft, horaFim: e.target.value.slice(0, 8) })} className="text-lg h-12 mt-1" placeholder="08:10" />
+              </div>
+              <div>
+                <Label className="text-base">Mistura (min)</Label>
+                <Input value={ordemBatidaDraft.tempoMistura} onChange={(e) => setOrdemBatidaDraft({ ...ordemBatidaDraft, tempoMistura: e.target.value.replace(/\D/g, "").slice(0, 4) })} className="text-lg h-12 mt-1" inputMode="numeric" />
+              </div>
+            </div>
+
+            <div>
+              <Label className="text-base">Temperatura</Label>
+              <Input value={ordemBatidaDraft.temperatura} onChange={(e) => setOrdemBatidaDraft({ ...ordemBatidaDraft, temperatura: e.target.value.slice(0, 20) })} className="text-lg h-12 mt-1" placeholder="Ex: 28°C" />
+            </div>
+
+            <div className="rounded-lg border border-border bg-muted/30 p-3 space-y-3">
+              <p className="text-sm font-medium text-foreground">Consumo real de MP desta batida</p>
+              <div><Label className="text-base">Matéria-prima</Label><Input value={ordemBatidaDraft.materiaPrima} onChange={(e) => setOrdemBatidaDraft({ ...ordemBatidaDraft, materiaPrima: e.target.value.slice(0, 120) })} className="text-lg h-12 mt-1" placeholder="Opcional, para rastreabilidade real" /></div>
+              <div className="grid grid-cols-2 gap-3">
+                <div><Label className="text-base">Lote MP</Label><Input value={ordemBatidaDraft.loteMp} onChange={(e) => setOrdemBatidaDraft({ ...ordemBatidaDraft, loteMp: e.target.value.slice(0, 60) })} className="text-lg h-12 mt-1" /></div>
+                <div><Label className="text-base">Quantidade (kg)</Label><Input value={ordemBatidaDraft.quantidadeKg} onChange={(e) => setOrdemBatidaDraft({ ...ordemBatidaDraft, quantidadeKg: e.target.value.slice(0, 20) })} className="text-lg h-12 mt-1" inputMode="decimal" /></div>
+              </div>
+              <div><Label className="text-base">Fornecedor</Label><Input value={ordemBatidaDraft.fornecedor} onChange={(e) => setOrdemBatidaDraft({ ...ordemBatidaDraft, fornecedor: e.target.value.slice(0, 120) })} className="text-lg h-12 mt-1" /></div>
+            </div>
+
+            <div>
+              <Label className="text-base">Observações</Label>
+              <Textarea value={ordemBatidaDraft.observacoes} onChange={(e) => setOrdemBatidaDraft({ ...ordemBatidaDraft, observacoes: e.target.value.slice(0, 500) })} className="text-base mt-1" rows={3} placeholder="Ex: peneira ok, limpeza entre lotes, variação de tempo..." />
+            </div>
+
+            <Button onClick={salvarOrdemBatida} disabled={saving || !ordemBatidaDraft.operador} className="w-full h-14 text-lg" size="lg">
+              <CheckCircle2 className="w-5 h-5 mr-2" /> {saving ? "Salvando..." : isOnline ? "Salvar Batida" : "Salvar na fila"}
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  if (tela === "rastreabilidade") {
+    return (
+      <div className="max-w-lg mx-auto p-4">
+        <Voltar onClearDraft={resetRastreabilidade} />
+        <StatusBanner />
+        <Card>
+          <CardContent className="pt-6 space-y-4">
+            <CardHeader title="Rastreabilidade rápida" subtitle="Vincule lote final com MP usada para consultas e recall." icon={GitBranch} />
+            <div><Label className="text-base">Produto *</Label><Input value={rastreabilidadeDraft.produto} onChange={(e) => setRastreabilidadeDraft({ ...rastreabilidadeDraft, produto: e.target.value.slice(0, 120) })} className="text-lg h-12 mt-1" placeholder="Produto acabado" /></div>
+            <div><Label className="text-base">Lote do produto *</Label><Input value={rastreabilidadeDraft.loteProduto} onChange={(e) => setRastreabilidadeDraft({ ...rastreabilidadeDraft, loteProduto: e.target.value.slice(0, 60) })} className="text-lg h-12 mt-1" placeholder="Lote PA" /></div>
+            <div><Label className="text-base">Matéria-prima *</Label><Input value={rastreabilidadeDraft.materiaPrima} onChange={(e) => setRastreabilidadeDraft({ ...rastreabilidadeDraft, materiaPrima: e.target.value.slice(0, 120) })} className="text-lg h-12 mt-1" placeholder="Ingrediente crítico" /></div>
+            <div className="grid grid-cols-2 gap-3">
+              <div><Label className="text-base">Lote MP *</Label><Input value={rastreabilidadeDraft.loteMp} onChange={(e) => setRastreabilidadeDraft({ ...rastreabilidadeDraft, loteMp: e.target.value.slice(0, 60) })} className="text-lg h-12 mt-1" /></div>
+              <div><Label className="text-base">Fornecedor</Label><Input value={rastreabilidadeDraft.fornecedor} onChange={(e) => setRastreabilidadeDraft({ ...rastreabilidadeDraft, fornecedor: e.target.value.slice(0, 120) })} className="text-lg h-12 mt-1" /></div>
+            </div>
+            <Button onClick={salvarRastreabilidade} disabled={saving || !rastreabilidadeDraft.produto || !rastreabilidadeDraft.loteProduto || !rastreabilidadeDraft.materiaPrima || !rastreabilidadeDraft.loteMp} className="w-full h-14 text-lg" size="lg">
+              <CheckCircle2 className="w-5 h-5 mr-2" /> {saving ? "Salvando..." : isOnline ? "Salvar vínculo" : "Salvar na fila"}
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  if (tela === "pre_operacao") {
+    return (
+      <div className="max-w-lg mx-auto p-4">
+        <Voltar onClearDraft={resetPreOperacao} />
+        <StatusBanner />
+        <Card>
+          <CardContent className="pt-6 space-y-4">
+            <CardHeader title="Checklist pré-operação" subtitle="Liberação rápida antes de iniciar a produção." icon={ListChecks} />
+
+            <div className="grid grid-cols-3 gap-3 text-xs">
+              <div className="rounded-lg border border-border bg-muted/30 p-3">
+                <p className="text-muted-foreground">Calibrações</p>
+                <p className="mt-1 text-lg font-semibold text-foreground">{calibracoesVencendo}</p>
+                <p className="text-muted-foreground">vencendo</p>
+              </div>
+              <div className="rounded-lg border border-border bg-muted/30 p-3">
+                <p className="text-muted-foreground">Manutenções</p>
+                <p className="mt-1 text-lg font-semibold text-foreground">{manutencoesPendentes}</p>
+                <p className="text-muted-foreground">pendentes</p>
+              </div>
+              <div className="rounded-lg border border-border bg-muted/30 p-3">
+                <p className="text-muted-foreground">Cronogramas</p>
+                <p className="mt-1 text-lg font-semibold text-foreground">{cronogramasInativos}</p>
+                <p className="text-muted-foreground">fora do ativo</p>
+              </div>
+            </div>
+
+            <div><Label className="text-base">Área *</Label><Input value={preOperacaoDraft.area} onChange={(e) => setPreOperacaoDraft({ ...preOperacaoDraft, area: e.target.value.slice(0, 120) })} className="text-lg h-12 mt-1" /></div>
+            <div><Label className="text-base">Responsável *</Label><Input value={preOperacaoDraft.responsavel} onChange={(e) => setPreOperacaoDraft({ ...preOperacaoDraft, responsavel: e.target.value.slice(0, 120) })} className="text-lg h-12 mt-1" placeholder="Quem liberou a partida" /></div>
+
+            <div className="space-y-3 rounded-lg border border-border bg-muted/30 p-3">
+              <div className="flex items-center gap-3"><Checkbox checked={preOperacaoDraft.limpezaOk} onCheckedChange={(c) => setPreOperacaoDraft({ ...preOperacaoDraft, limpezaOk: !!c })} id="pre-limpeza" /><Label htmlFor="pre-limpeza" className="text-base font-medium cursor-pointer">Linha limpa e sem resíduos</Label></div>
+              <div className="flex items-center gap-3"><Checkbox checked={preOperacaoDraft.balancaOk} onCheckedChange={(c) => setPreOperacaoDraft({ ...preOperacaoDraft, balancaOk: !!c })} id="pre-balanca" /><Label htmlFor="pre-balanca" className="text-base font-medium cursor-pointer">Balança e instrumentos liberados</Label></div>
+              <div className="flex items-center gap-3"><Checkbox checked={preOperacaoDraft.epiOk} onCheckedChange={(c) => setPreOperacaoDraft({ ...preOperacaoDraft, epiOk: !!c })} id="pre-epi" /><Label htmlFor="pre-epi" className="text-base font-medium cursor-pointer">EPI obrigatório conferido</Label></div>
+              <div className="flex items-center gap-3"><Checkbox checked={preOperacaoDraft.linhaLiberada} onCheckedChange={(c) => setPreOperacaoDraft({ ...preOperacaoDraft, linhaLiberada: !!c })} id="pre-linha" /><Label htmlFor="pre-linha" className="text-base font-medium cursor-pointer">Linha liberada para iniciar</Label></div>
+            </div>
+
+            <div><Label className="text-base">Observações</Label><Textarea value={preOperacaoDraft.observacoes} onChange={(e) => setPreOperacaoDraft({ ...preOperacaoDraft, observacoes: e.target.value.slice(0, 500) })} className="text-base mt-1" rows={3} placeholder="Ex: aferição da balança 0,0 kg, área liberada pelo líder..." /></div>
+
+            <Button onClick={salvarPreOperacao} disabled={saving || !preOperacaoDraft.responsavel} className="w-full h-14 text-lg" size="lg">
+              <CheckCircle2 className="w-5 h-5 mr-2" /> {saving ? "Salvando..." : isOnline ? "Salvar checklist" : "Salvar na fila"}
             </Button>
           </CardContent>
         </Card>
