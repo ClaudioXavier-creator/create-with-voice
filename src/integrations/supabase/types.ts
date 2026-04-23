@@ -1194,6 +1194,7 @@ export type Database = {
       }
       expedicao_itens: {
         Row: {
+          assinatura_data: string | null
           codigo_produto: string | null
           created_at: string
           empresa_id: string | null
@@ -1201,6 +1202,8 @@ export type Database = {
           id: string
           lote_produto: string | null
           observacoes: string | null
+          operador_nome: string | null
+          pin_hash_confirmacao: string | null
           produto: string
           quantidade: number
           rastreabilidade_id: string | null
@@ -1210,6 +1213,7 @@ export type Database = {
           valor_unitario: number | null
         }
         Insert: {
+          assinatura_data?: string | null
           codigo_produto?: string | null
           created_at?: string
           empresa_id?: string | null
@@ -1217,6 +1221,8 @@ export type Database = {
           id?: string
           lote_produto?: string | null
           observacoes?: string | null
+          operador_nome?: string | null
+          pin_hash_confirmacao?: string | null
           produto: string
           quantidade?: number
           rastreabilidade_id?: string | null
@@ -1226,6 +1232,7 @@ export type Database = {
           valor_unitario?: number | null
         }
         Update: {
+          assinatura_data?: string | null
           codigo_produto?: string | null
           created_at?: string
           empresa_id?: string | null
@@ -1233,6 +1240,8 @@ export type Database = {
           id?: string
           lote_produto?: string | null
           observacoes?: string | null
+          operador_nome?: string | null
+          pin_hash_confirmacao?: string | null
           produto?: string
           quantidade?: number
           rastreabilidade_id?: string | null
@@ -1260,6 +1269,7 @@ export type Database = {
       }
       expedicoes: {
         Row: {
+          assinatura_data: string | null
           chave_acesso: string | null
           cliente_cep: string | null
           cliente_cidade: string | null
@@ -1269,6 +1279,8 @@ export type Database = {
           cliente_nome: string
           cliente_telefone: string | null
           cliente_uf: string | null
+          comprovante_arquivo_nome: string | null
+          comprovante_arquivo_path: string | null
           created_at: string
           data_emissao: string | null
           data_saida: string | null
@@ -1278,11 +1290,14 @@ export type Database = {
           motorista_nome: string | null
           numero_nf: string
           observacoes: string | null
+          operador_nome: string | null
           origem: string
           peso_bruto_kg: number | null
           peso_liquido_kg: number | null
+          pin_hash_confirmacao: string | null
           serie_nf: string | null
           status: string
+          sync_origem: string
           transportadora_cnpj: string | null
           transportadora_nome: string | null
           updated_at: string
@@ -1293,6 +1308,7 @@ export type Database = {
           xml_content: string | null
         }
         Insert: {
+          assinatura_data?: string | null
           chave_acesso?: string | null
           cliente_cep?: string | null
           cliente_cidade?: string | null
@@ -1302,6 +1318,8 @@ export type Database = {
           cliente_nome: string
           cliente_telefone?: string | null
           cliente_uf?: string | null
+          comprovante_arquivo_nome?: string | null
+          comprovante_arquivo_path?: string | null
           created_at?: string
           data_emissao?: string | null
           data_saida?: string | null
@@ -1311,11 +1329,14 @@ export type Database = {
           motorista_nome?: string | null
           numero_nf: string
           observacoes?: string | null
+          operador_nome?: string | null
           origem?: string
           peso_bruto_kg?: number | null
           peso_liquido_kg?: number | null
+          pin_hash_confirmacao?: string | null
           serie_nf?: string | null
           status?: string
+          sync_origem?: string
           transportadora_cnpj?: string | null
           transportadora_nome?: string | null
           updated_at?: string
@@ -1326,6 +1347,7 @@ export type Database = {
           xml_content?: string | null
         }
         Update: {
+          assinatura_data?: string | null
           chave_acesso?: string | null
           cliente_cep?: string | null
           cliente_cidade?: string | null
@@ -1335,6 +1357,8 @@ export type Database = {
           cliente_nome?: string
           cliente_telefone?: string | null
           cliente_uf?: string | null
+          comprovante_arquivo_nome?: string | null
+          comprovante_arquivo_path?: string | null
           created_at?: string
           data_emissao?: string | null
           data_saida?: string | null
@@ -1344,11 +1368,14 @@ export type Database = {
           motorista_nome?: string | null
           numero_nf?: string
           observacoes?: string | null
+          operador_nome?: string | null
           origem?: string
           peso_bruto_kg?: number | null
           peso_liquido_kg?: number | null
+          pin_hash_confirmacao?: string | null
           serie_nf?: string | null
           status?: string
+          sync_origem?: string
           transportadora_cnpj?: string | null
           transportadora_nome?: string | null
           updated_at?: string
