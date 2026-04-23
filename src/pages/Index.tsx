@@ -104,25 +104,27 @@ export default function Index() {
     ncAbertas: 0, auditoriasRealizadas: 0, treinamentosPendentes: 0, conformidadeBPF: 0,
     recentNCs: [], conformidadePorArea: [], ncPorMes: [], conformidadePorMes: [],
     alertasVencimento: [], atividadesVencidas: [], atividadesProximas: [],
-    calibracoesVencidas: 0, docsVencidos: 0, loading: true,
+    calibracoesVencidas: 0, docsVencidos: 0, acoesPrioritarias: [], saudeOperacional: [], loading: true,
   });
 
   useEffect(() => {
     if (!user) return;
 
     async function fetchDashboard() {
-      const addEmpresa = (q: any) => {
+      const cutoff = getPeriodoCutoff(periodoFiltro);
+      const addEmpresa = (q: any, dateField?: string) => {
         let r = q.eq("user_id", user!.id);
         if (empresaAtiva) r = r.eq("empresa_id", empresaAtiva.id);
+        if (cutoff && dateField) r = r.gte(dateField, cutoff);
         return r;
       };
       const [ncsRes, ncsFullRes, checklistRes, checklistDatesRes, treinamentosRes, recentNcsRes, planejamentoRes, calibracoesRes, documentosRes] = await Promise.all([
         addEmpresa(supabase.from("nao_conformidades").select("status")),
-        addEmpresa(supabase.from("nao_conformidades").select("data, status")),
+        addEmpresa(supabase.from("nao_conformidades").select("data, status"), "data"),
         addEmpresa(supabase.from("checklist_items").select("area, conforme")),
-        addEmpresa(supabase.from("checklist_items").select("auditoria_data, conforme")),
+        addEmpresa(supabase.from("checklist_items").select("auditoria_data, conforme"), "auditoria_data"),
         addEmpresa(supabase.from("treinamentos").select("funcionario, treinamento, validade")),
-        addEmpresa(supabase.from("nao_conformidades").select("setor, descricao, status")).order("data", { ascending: false }).limit(5),
+        addEmpresa(supabase.from("nao_conformidades").select("setor, descricao, status"), "data").order("data", { ascending: false }).limit(5),
         addEmpresa(supabase.from("planejamento_anual").select("atividade, proxima_execucao, categoria")).not("proxima_execucao", "is", null),
         addEmpresa(supabase.from("calibracoes").select("equipamento, proxima_calibracao, status")),
         addEmpresa(supabase.from("documentos").select("nome, codigo, proxima_revisao, validade_revisao, status")),
@@ -281,16 +283,88 @@ export default function Index() {
         .filter(p => { if (!p.proxima_execucao) return false; const dias = differenceInDays(parseISO(p.proxima_execucao), now); return dias >= 0 && dias <= 7; })
         .map(p => ({ atividade: p.atividade, proxima_execucao: p.proxima_execucao, categoria: p.categoria, dias: differenceInDays(parseISO(p.proxima_execucao), now) }));
 
+      const acoesPrioritarias: AcaoPrioritaria[] = [];
+      if (calibracoesVencidas > 0) {
+        acoesPrioritarias.push({
+          titulo: "Regularizar calibrações vencidas",
+          detalhe: `${calibracoesVencidas} equipamento(s) exigem ação imediata.`,
+          criticidade: "critico",
+          link: "/manutencao",
+        });
+      }
+      if (docsVencidos > 0) {
+        acoesPrioritarias.push({
+          titulo: "Revisar documentos obrigatórios",
+          detalhe: `${docsVencidos} documento(s) estão vencidos ou fora da revisão.`,
+          criticidade: "critico",
+          link: "/documentos",
+        });
+      }
+      if (treinamentosPendentes > 0) {
+        acoesPrioritarias.push({
+          titulo: "Atualizar treinamentos da equipe",
+          detalhe: `${treinamentosPendentes} treinamento(s) vencem em até 30 dias.`,
+          criticidade: treinamentosPendentes >= 5 ? "critico" : "atencao",
+          link: "/treinamentos",
+        });
+      }
+      if (ncAbertas > 0) {
+        acoesPrioritarias.push({
+          titulo: "Fechar não conformidades em aberto",
+          detalhe: `${ncAbertas} ocorrência(s) impactando a rotina de BPF.`,
+          criticidade: ncAbertas >= 5 ? "critico" : "atencao",
+          link: "/nao-conformidades",
+        });
+      }
+      if (atividadesVencidas.length > 0) {
+        acoesPrioritarias.push({
+          titulo: "Reprogramar atividades do plano anual",
+          detalhe: `${atividadesVencidas.length} atividade(s) já passaram da data prevista.`,
+          criticidade: "atencao",
+          link: "/planejamento-anual",
+        });
+      }
+      if (acoesPrioritarias.length === 0) {
+        acoesPrioritarias.push({
+          titulo: "Operação estável",
+          detalhe: "Nenhum ponto crítico encontrado para a empresa ativa.",
+          criticidade: "estavel",
+          link: "/qualidade-total",
+        });
+      }
+
+      const totalAlertas = alertas.length;
+      const saudeOperacional: SaudeOperacionalItem[] = [
+        {
+          label: "Agenda regulatória",
+          valor: progressFromOverdue(calibracoesVencidas + docsVencidos, Math.max(totalAlertas, 1)),
+          descricao: `${totalAlertas} alerta(s) monitorado(s) entre vencimentos e revisões.`,
+          link: "/documentos",
+        },
+        {
+          label: "Treinamento da equipe",
+          valor: progressFromOverdue(treinamentosPendentes, Math.max(treinamentos.length, 1)),
+          descricao: `${treinamentosPendentes} pendência(s) com validade próxima ou ausente.`,
+          link: "/treinamentos",
+        },
+        {
+          label: "Resposta a desvios",
+          valor: progressFromOverdue(ncAbertas, Math.max(ncs.length, 1)),
+          descricao: `${ncAbertas} NC(s) aberta(s) ou em andamento.`,
+          link: "/nao-conformidades",
+        },
+      ];
+
       setData({
         ncAbertas, auditoriasRealizadas, treinamentosPendentes, conformidadeBPF,
         recentNCs, conformidadePorArea, ncPorMes, conformidadePorMes,
         alertasVencimento: alertas, atividadesVencidas, atividadesProximas,
-        calibracoesVencidas, docsVencidos, loading: false,
+        calibracoesVencidas, docsVencidos, acoesPrioritarias, saudeOperacional, loading: false,
       });
     }
 
     fetchDashboard();
-  }, [user, empresaAtiva]);
+  }, [user, empresaAtiva, periodoFiltro]);
 
   const stats = [
     { label: "Conformidade BPF", value: data.loading ? "..." : `${data.conformidadeBPF}%`, icon: CheckCircle2, color: "text-primary", link: "/auditoria" },
@@ -301,12 +375,33 @@ export default function Index() {
     { label: "Docs p/ Revisão", value: data.loading ? "..." : `${data.docsVencidos}`, icon: FileText, color: "text-muted-foreground", link: "/documentos" },
   ];
 
-  const alertaIconMap: Record<string, React.ElementType> = {
+  const alertaIconMap: Record<string, ElementType> = {
     calibracao: Wrench,
     treinamento: GraduationCap,
     documento: FileText,
     aso: Droplets,
     planejamento: CalendarDays,
+  };
+
+  const criticidadeConfig = {
+    critico: {
+      badge: "destructive" as const,
+      container: "border-destructive/40 bg-destructive/5",
+      text: "text-destructive",
+      label: "Crítico",
+    },
+    atencao: {
+      badge: "secondary" as const,
+      container: "border-warning/40 bg-warning/5",
+      text: "text-warning-foreground",
+      label: "Atenção",
+    },
+    estavel: {
+      badge: "outline" as const,
+      container: "border-primary/30 bg-primary/5",
+      text: "text-primary",
+      label: "Estável",
+    },
   };
 
   const alertaTipoLabel: Record<string, string> = {
