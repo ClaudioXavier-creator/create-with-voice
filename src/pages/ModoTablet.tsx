@@ -490,6 +490,7 @@ export default function ModoTablet() {
 
     try {
       window.localStorage.setItem(queueStorageKey, JSON.stringify(pendingQueue));
+      window.dispatchEvent(new CustomEvent("offline-queue-updated"));
     } catch {
     }
   }, [pendingQueue, queueStorageKey]);
