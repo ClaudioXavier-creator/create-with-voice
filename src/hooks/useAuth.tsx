@@ -6,6 +6,7 @@ interface AuthContextType {
   session: Session | null;
   user: User | null;
   roles: string[];
+  userType: string | null;
   loading: boolean;
   signOut: () => Promise<void>;
 }
@@ -14,6 +15,7 @@ const AuthContext = createContext<AuthContextType>({
   session: null,
   user: null,
   roles: [],
+  userType: null,
   loading: true,
   signOut: async () => {},
 });
@@ -21,33 +23,36 @@ const AuthContext = createContext<AuthContextType>({
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [roles, setRoles] = useState<string[]>([]);
+  const [userType, setUserType] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const loadRoles = async (userId?: string) => {
+    const loadAccessContext = async (userId?: string) => {
       if (!userId) {
         setRoles([]);
+        setUserType(null);
         return;
       }
 
-      const { data } = await supabase
-        .from("user_roles")
-        .select("role")
-        .eq("user_id", userId);
+      const [{ data: rolesData }, { data: profileData }] = await Promise.all([
+        supabase.from("user_roles").select("role").eq("user_id", userId),
+        supabase.from("profiles").select("tipo_usuario").eq("user_id", userId).maybeSingle(),
+      ]);
 
-      setRoles((data ?? []).map((item) => item.role));
+      setRoles((rolesData ?? []).map((item) => item.role));
+      setUserType(profileData?.tipo_usuario ?? null);
     };
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (_event, session) => {
         setSession(session);
-        void loadRoles(session?.user?.id).finally(() => setLoading(false));
+        void loadAccessContext(session?.user?.id).finally(() => setLoading(false));
       }
     );
 
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
-      void loadRoles(session?.user?.id).finally(() => setLoading(false));
+      void loadAccessContext(session?.user?.id).finally(() => setLoading(false));
     });
 
     return () => subscription.unsubscribe();
@@ -58,7 +63,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ session, user: session?.user ?? null, roles, loading, signOut }}>
+    <AuthContext.Provider value={{ session, user: session?.user ?? null, roles, userType, loading, signOut }}>
       {children}
     </AuthContext.Provider>
   );
