@@ -178,6 +178,7 @@ export default function MatrizRisco() {
     medidas_controle: string;
   }>>([]);
   const [riskLoaded, setRiskLoaded] = useState(false);
+  const [aiLoadingIdx, setAiLoadingIdx] = useState<number | null>(null);
 
   // Load sensitivity data
   useEffect(() => {
@@ -324,8 +325,6 @@ export default function MatrizRisco() {
   const removeRisk = (idx: number) => {
     setRisks(prev => prev.filter((_, i) => i !== idx));
   };
-
-  const [aiLoadingIdx, setAiLoadingIdx] = useState<number | null>(null);
 
   const sugerirIA = async (idx: number) => {
     const r = risks[idx];
