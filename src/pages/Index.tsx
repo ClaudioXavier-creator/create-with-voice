@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { type ElementType, useEffect, useState } from "react";
 import {
   LayoutDashboard, AlertTriangle, ClipboardCheck, GraduationCap, CheckCircle2,
   CalendarDays, Bell, Wrench, FileText, Droplets, Search, ShieldCheck,
@@ -44,6 +44,18 @@ interface AlertItem {
 
 interface NCPorMes { mes: string; abertas: number; fechadas: number }
 interface ConformidadePorMes { mes: string; percentual: number }
+interface AcaoPrioritaria {
+  titulo: string;
+  detalhe: string;
+  criticidade: "critico" | "atencao" | "estavel";
+  link: string;
+}
+interface SaudeOperacionalItem {
+  label: string;
+  valor: number;
+  descricao: string;
+  link: string;
+}
 
 interface DashboardData {
   ncAbertas: number;
@@ -59,8 +71,29 @@ interface DashboardData {
   atividadesProximas: { atividade: string; proxima_execucao: string; categoria: string; dias: number }[];
   calibracoesVencidas: number;
   docsVencidos: number;
+  acoesPrioritarias: AcaoPrioritaria[];
+  saudeOperacional: SaudeOperacionalItem[];
   loading: boolean;
 }
+
+const getPeriodoCutoff = (periodo: string) => {
+  if (periodo === "todos") return null;
+
+  const base = new Date();
+  const cutoff = new Date(base);
+
+  if (periodo === "mes") cutoff.setMonth(base.getMonth() - 1);
+  if (periodo === "trimestre") cutoff.setMonth(base.getMonth() - 3);
+  if (periodo === "semestre") cutoff.setMonth(base.getMonth() - 6);
+  if (periodo === "ano") cutoff.setFullYear(base.getFullYear() - 1);
+
+  return cutoff.toISOString().split("T")[0];
+};
+
+const progressFromOverdue = (overdue: number, total: number) => {
+  if (total <= 0) return 100;
+  return Math.max(0, Math.round(((total - overdue) / total) * 100));
+};
 
 export default function Index() {
   const { user } = useAuth();
@@ -71,25 +104,27 @@ export default function Index() {
     ncAbertas: 0, auditoriasRealizadas: 0, treinamentosPendentes: 0, conformidadeBPF: 0,
     recentNCs: [], conformidadePorArea: [], ncPorMes: [], conformidadePorMes: [],
     alertasVencimento: [], atividadesVencidas: [], atividadesProximas: [],
-    calibracoesVencidas: 0, docsVencidos: 0, loading: true,
+    calibracoesVencidas: 0, docsVencidos: 0, acoesPrioritarias: [], saudeOperacional: [], loading: true,
   });
 
   useEffect(() => {
     if (!user) return;
 
     async function fetchDashboard() {
-      const addEmpresa = (q: any) => {
+      const cutoff = getPeriodoCutoff(periodoFiltro);
+      const addEmpresa = (q: any, dateField?: string) => {
         let r = q.eq("user_id", user!.id);
         if (empresaAtiva) r = r.eq("empresa_id", empresaAtiva.id);
+        if (cutoff && dateField) r = r.gte(dateField, cutoff);
         return r;
       };
       const [ncsRes, ncsFullRes, checklistRes, checklistDatesRes, treinamentosRes, recentNcsRes, planejamentoRes, calibracoesRes, documentosRes] = await Promise.all([
         addEmpresa(supabase.from("nao_conformidades").select("status")),
-        addEmpresa(supabase.from("nao_conformidades").select("data, status")),
+        addEmpresa(supabase.from("nao_conformidades").select("data, status"), "data"),
         addEmpresa(supabase.from("checklist_items").select("area, conforme")),
-        addEmpresa(supabase.from("checklist_items").select("auditoria_data, conforme")),
+        addEmpresa(supabase.from("checklist_items").select("auditoria_data, conforme"), "auditoria_data"),
         addEmpresa(supabase.from("treinamentos").select("funcionario, treinamento, validade")),
-        addEmpresa(supabase.from("nao_conformidades").select("setor, descricao, status")).order("data", { ascending: false }).limit(5),
+        addEmpresa(supabase.from("nao_conformidades").select("setor, descricao, status"), "data").order("data", { ascending: false }).limit(5),
         addEmpresa(supabase.from("planejamento_anual").select("atividade, proxima_execucao, categoria")).not("proxima_execucao", "is", null),
         addEmpresa(supabase.from("calibracoes").select("equipamento, proxima_calibracao, status")),
         addEmpresa(supabase.from("documentos").select("nome, codigo, proxima_revisao, validade_revisao, status")),
@@ -248,16 +283,88 @@ export default function Index() {
         .filter(p => { if (!p.proxima_execucao) return false; const dias = differenceInDays(parseISO(p.proxima_execucao), now); return dias >= 0 && dias <= 7; })
         .map(p => ({ atividade: p.atividade, proxima_execucao: p.proxima_execucao, categoria: p.categoria, dias: differenceInDays(parseISO(p.proxima_execucao), now) }));
 
+      const acoesPrioritarias: AcaoPrioritaria[] = [];
+      if (calibracoesVencidas > 0) {
+        acoesPrioritarias.push({
+          titulo: "Regularizar calibrações vencidas",
+          detalhe: `${calibracoesVencidas} equipamento(s) exigem ação imediata.`,
+          criticidade: "critico",
+          link: "/manutencao",
+        });
+      }
+      if (docsVencidos > 0) {
+        acoesPrioritarias.push({
+          titulo: "Revisar documentos obrigatórios",
+          detalhe: `${docsVencidos} documento(s) estão vencidos ou fora da revisão.`,
+          criticidade: "critico",
+          link: "/documentos",
+        });
+      }
+      if (treinamentosPendentes > 0) {
+        acoesPrioritarias.push({
+          titulo: "Atualizar treinamentos da equipe",
+          detalhe: `${treinamentosPendentes} treinamento(s) vencem em até 30 dias.`,
+          criticidade: treinamentosPendentes >= 5 ? "critico" : "atencao",
+          link: "/treinamentos",
+        });
+      }
+      if (ncAbertas > 0) {
+        acoesPrioritarias.push({
+          titulo: "Fechar não conformidades em aberto",
+          detalhe: `${ncAbertas} ocorrência(s) impactando a rotina de BPF.`,
+          criticidade: ncAbertas >= 5 ? "critico" : "atencao",
+          link: "/nao-conformidades",
+        });
+      }
+      if (atividadesVencidas.length > 0) {
+        acoesPrioritarias.push({
+          titulo: "Reprogramar atividades do plano anual",
+          detalhe: `${atividadesVencidas.length} atividade(s) já passaram da data prevista.`,
+          criticidade: "atencao",
+          link: "/planejamento-anual",
+        });
+      }
+      if (acoesPrioritarias.length === 0) {
+        acoesPrioritarias.push({
+          titulo: "Operação estável",
+          detalhe: "Nenhum ponto crítico encontrado para a empresa ativa.",
+          criticidade: "estavel",
+          link: "/qualidade-total",
+        });
+      }
+
+      const totalAlertas = alertas.length;
+      const saudeOperacional: SaudeOperacionalItem[] = [
+        {
+          label: "Agenda regulatória",
+          valor: progressFromOverdue(calibracoesVencidas + docsVencidos, Math.max(totalAlertas, 1)),
+          descricao: `${totalAlertas} alerta(s) monitorado(s) entre vencimentos e revisões.`,
+          link: "/documentos",
+        },
+        {
+          label: "Treinamento da equipe",
+          valor: progressFromOverdue(treinamentosPendentes, Math.max(treinamentos.length, 1)),
+          descricao: `${treinamentosPendentes} pendência(s) com validade próxima ou ausente.`,
+          link: "/treinamentos",
+        },
+        {
+          label: "Resposta a desvios",
+          valor: progressFromOverdue(ncAbertas, Math.max(ncs.length, 1)),
+          descricao: `${ncAbertas} NC(s) aberta(s) ou em andamento.`,
+          link: "/nao-conformidades",
+        },
+      ];
+
       setData({
         ncAbertas, auditoriasRealizadas, treinamentosPendentes, conformidadeBPF,
         recentNCs, conformidadePorArea, ncPorMes, conformidadePorMes,
         alertasVencimento: alertas, atividadesVencidas, atividadesProximas,
-        calibracoesVencidas, docsVencidos, loading: false,
+        calibracoesVencidas, docsVencidos, acoesPrioritarias, saudeOperacional, loading: false,
       });
     }
 
     fetchDashboard();
-  }, [user, empresaAtiva]);
+  }, [user, empresaAtiva, periodoFiltro]);
 
   const stats = [
     { label: "Conformidade BPF", value: data.loading ? "..." : `${data.conformidadeBPF}%`, icon: CheckCircle2, color: "text-primary", link: "/auditoria" },
@@ -268,12 +375,33 @@ export default function Index() {
     { label: "Docs p/ Revisão", value: data.loading ? "..." : `${data.docsVencidos}`, icon: FileText, color: "text-muted-foreground", link: "/documentos" },
   ];
 
-  const alertaIconMap: Record<string, React.ElementType> = {
+  const alertaIconMap: Record<string, ElementType> = {
     calibracao: Wrench,
     treinamento: GraduationCap,
     documento: FileText,
     aso: Droplets,
     planejamento: CalendarDays,
+  };
+
+  const criticidadeConfig = {
+    critico: {
+      badge: "destructive" as const,
+      container: "border-destructive/40 bg-destructive/5",
+      text: "text-destructive",
+      label: "Crítico",
+    },
+    atencao: {
+      badge: "secondary" as const,
+      container: "border-warning/40 bg-warning/5",
+      text: "text-warning-foreground",
+      label: "Atenção",
+    },
+    estavel: {
+      badge: "outline" as const,
+      container: "border-primary/30 bg-primary/5",
+      text: "text-primary",
+      label: "Estável",
+    },
   };
 
   const alertaTipoLabel: Record<string, string> = {
@@ -361,6 +489,66 @@ export default function Index() {
             </Card>
           </Link>
         ))}
+      </div>
+
+      <div className="grid grid-cols-1 xl:grid-cols-[1.2fr_0.8fr] gap-6 mb-6">
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="font-display text-lg flex items-center gap-2">
+              <ShieldCheck className="w-5 h-5 text-primary" />
+              Prioridades do dia
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {data.loading ? (
+              Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-20 w-full" />)
+            ) : (
+              data.acoesPrioritarias.map((acao) => {
+                const config = criticidadeConfig[acao.criticidade];
+                return (
+                  <Link key={`${acao.link}-${acao.titulo}`} to={acao.link}>
+                    <div className={`rounded-lg border p-4 transition-colors hover:bg-muted/50 ${config.container}`}>
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="space-y-1 min-w-0">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <p className="font-medium text-sm">{acao.titulo}</p>
+                            <Badge variant={config.badge}>{config.label}</Badge>
+                          </div>
+                          <p className="text-sm text-muted-foreground">{acao.detalhe}</p>
+                        </div>
+                        <ArrowRight className={`w-4 h-4 shrink-0 ${config.text}`} />
+                      </div>
+                    </div>
+                  </Link>
+                );
+              })
+            )}
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="font-display text-lg">Saúde operacional</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {data.loading ? (
+              Array.from({ length: 3 }).map((_, i) => (
+                <div key={i} className="space-y-2"><Skeleton className="h-4 w-40" /><Skeleton className="h-2 w-full" /></div>
+              ))
+            ) : (
+              data.saudeOperacional.map((item) => (
+                <Link key={item.label} to={item.link} className="block rounded-lg border border-border p-3 transition-colors hover:bg-muted/40">
+                  <div className="flex items-center justify-between gap-3 mb-2">
+                    <p className="text-sm font-medium">{item.label}</p>
+                    <span className="text-sm font-semibold">{item.valor}%</span>
+                  </div>
+                  <Progress value={item.valor} className="h-2 mb-2" />
+                  <p className="text-xs text-muted-foreground">{item.descricao}</p>
+                </Link>
+              ))
+            )}
+          </CardContent>
+        </Card>
       </div>
 
       {/* Painel de Alertas de Vencimento */}
