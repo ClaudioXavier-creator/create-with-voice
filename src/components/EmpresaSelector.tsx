@@ -97,7 +97,7 @@ export default function EmpresaSelector() {
               {empresas.map((e) => (
                 <CommandItem
                   key={e.id}
-                  value={`${e.nome} ${e.cnpj || ""} ${e.cidade || ""}`}
+                  value={`${e.nome} ${e.cnpj || ""}`}
                   onSelect={() => {
                     setEmpresaAtiva(e);
                     setOpen(false);
