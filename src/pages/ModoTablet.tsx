@@ -436,7 +436,7 @@ export default function ModoTablet() {
   }
 
   if (tela === "pragas") {
-    const ToggleTipo = ({ k, label }: { k: keyof typeof pragaTipos; label: string }) => (
+    const ToggleTipo = ({ k, label }: { k: keyof PragaDraft["tipos"]; label: string }) => (
       <button
         type="button"
         onClick={() => setPragaDraft({ ...pragaDraft, tipos: { ...pragaDraft.tipos, [k]: !pragaDraft.tipos[k] } })}
