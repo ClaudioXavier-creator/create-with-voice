@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   AlertTriangle,
   ArrowLeft,
@@ -8,15 +8,18 @@ import {
   ClipboardCheck,
   Droplets,
   Factory,
+  FileUp,
   Lock,
   Package,
   RotateCcw,
   Settings,
   ShieldAlert,
   ShieldCheck,
+  Truck,
   Wifi,
   WifiOff,
 } from "lucide-react";
+import { z } from "zod";
 import { RegistroPopGenerico } from "@/components/tablet/RegistroPopGenerico";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -31,13 +34,46 @@ import { useAuth } from "@/hooks/useAuth";
 import { useEmpresa } from "@/hooks/useEmpresa";
 import { Link } from "react-router-dom";
 import { useSessionDraft } from "@/hooks/useSessionDraft";
+import { registrarAuditLog } from "@/utils/auditLog";
+import { sha256 } from "@/utils/carimboHash";
 
-type Tela = "menu" | "producao" | "recebimento" | "limpeza" | "nc" | "pragas" | "pop_generico";
-type OfflineTable = "producao" | "recebimento_mp" | "registros_limpeza" | "nao_conformidades" | "controle_pragas";
+type Tela = "menu" | "producao" | "recebimento" | "limpeza" | "nc" | "pragas" | "expedicao" | "pop_generico";
+type OfflineTable = "producao" | "recebimento_mp" | "registros_limpeza" | "nao_conformidades" | "controle_pragas" | "expedicoes";
+type OfflineOperation = "insert" | "expedicao";
+
+type ExpedicaoAttachment = {
+  fileName: string;
+  mimeType: string;
+  previewUrl: string | null;
+  dataUrl?: string;
+};
+
+type ExpedicaoQueuePayload = {
+  empresaId: string;
+  userId: string;
+  numeroNF: string;
+  clienteNome: string;
+  clienteCnpj: string;
+  motoristaNome: string;
+  veiculoPlaca: string;
+  produto: string;
+  loteProduto: string;
+  quantidade: string;
+  observacoes: string;
+  operadorNome: string;
+  pinHashConfirmacao: string;
+  assinaturaData: string;
+  attachment?: {
+    dataUrl: string;
+    fileName: string;
+    mimeType: string;
+  };
+};
 
 type OfflineQueueItem = {
   id: string;
-  table: OfflineTable;
+  operation: OfflineOperation;
+  table?: OfflineTable;
   label: string;
   successTitle: string;
   payload: Record<string, unknown>;
@@ -50,8 +86,67 @@ const MENU_ITEMS = [
   { id: "limpeza" as Tela, label: "Registro Limpeza", icon: Droplets, tone: "bg-accent text-accent-foreground" },
   { id: "pragas" as Tela, label: "Observação de Pragas", icon: Bug, tone: "bg-muted text-foreground" },
   { id: "nc" as Tela, label: "Registrar NC", icon: ShieldAlert, tone: "bg-destructive text-destructive-foreground" },
+  { id: "expedicao" as Tela, label: "Registrar Expedição", icon: Truck, tone: "bg-primary text-primary-foreground" },
   { id: "pop_generico" as Tela, label: "Executar POP / IT", icon: ShieldCheck, tone: "bg-primary text-primary-foreground" },
 ];
+
+const expedicaoSchema = z.object({
+  numeroNF: z.string().trim().min(1, "Informe o número da NF").max(40, "NF muito longa"),
+  clienteNome: z.string().trim().min(2, "Informe o cliente").max(120, "Cliente muito longo"),
+  clienteCnpj: z.string().trim().max(20, "CNPJ muito longo"),
+  motoristaNome: z.string().trim().min(2, "Informe o motorista").max(120, "Motorista muito longo"),
+  veiculoPlaca: z.string().trim().min(5, "Informe a placa").max(16, "Placa muito longa"),
+  produto: z.string().trim().min(2, "Informe o produto").max(120, "Produto muito longo"),
+  loteProduto: z.string().trim().min(1, "Informe o lote").max(60, "Lote muito longo"),
+  quantidade: z.string().trim().min(1, "Informe a quantidade").max(20, "Quantidade muito longa"),
+  observacoes: z.string().trim().max(500, "Observações muito longas"),
+  operadorNome: z.string().trim().min(2, "Informe o operador").max(120, "Nome muito longo"),
+  pin: z.string().trim().regex(/^\d{4,10}$/, "PIN deve ter entre 4 e 10 dígitos"),
+});
+
+const MAX_EXPEDICAO_FILE_MB = 5;
+
+function isNetworkError(message?: string) {
+  if (!message) return false;
+  const normalized = message.toLowerCase();
+  return normalized.includes("failed to fetch") || normalized.includes("network") || normalized.includes("fetch");
+}
+
+function sanitizeFileName(name: string) {
+  return name.replace(/[^a-zA-Z0-9._-]/g, "_");
+}
+
+function getFileExtension(fileName: string) {
+  const ext = fileName.split(".").pop()?.toLowerCase();
+  return ext || "bin";
+}
+
+function buildExpedicaoFilePath(userId: string, empresaId: string, fileName: string) {
+  const ext = getFileExtension(fileName);
+  return `${userId}/${empresaId}/tablet-expedicao/${Date.now()}_${sanitizeFileName(fileName.replace(/\.[^.]+$/, ""))}.${ext}`;
+}
+
+function fileToDataUrl(file: File) {
+  return new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result));
+    reader.onerror = () => reject(new Error("Falha ao ler o arquivo"));
+    reader.readAsDataURL(file);
+  });
+}
+
+function dataUrlToFile(dataUrl: string, fileName: string, mimeType: string) {
+  const [meta, base64] = dataUrl.split(",");
+  const finalMime = mimeType || meta.match(/data:(.*?);base64/)?.[1] || "application/octet-stream";
+  const bytes = atob(base64 || "");
+  const array = new Uint8Array(bytes.length);
+
+  for (let i = 0; i < bytes.length; i += 1) {
+    array[i] = bytes.charCodeAt(i);
+  }
+
+  return new File([array], fileName, { type: finalMime });
+}
 
 type ProducaoDraft = {
   produto: string;
@@ -80,6 +175,20 @@ type NaoConformidadeDraft = {
   descricao: string;
 };
 
+type ExpedicaoDraft = {
+  numeroNF: string;
+  clienteNome: string;
+  clienteCnpj: string;
+  motoristaNome: string;
+  veiculoPlaca: string;
+  produto: string;
+  loteProduto: string;
+  quantidade: string;
+  observacoes: string;
+  operadorNome: string;
+  pin: string;
+};
+
 type PragaDraft = {
   local: string;
   tipos: {
@@ -104,17 +213,24 @@ const INITIAL_RECEBIMENTO: RecebimentoDraft = {
 };
 const INITIAL_LIMPEZA: LimpezaDraft = { executor: "", conforme: true, observacoes: "" };
 const INITIAL_NC: NaoConformidadeDraft = { setor: "", descricao: "" };
+const INITIAL_EXPEDICAO: ExpedicaoDraft = {
+  numeroNF: "",
+  clienteNome: "",
+  clienteCnpj: "",
+  motoristaNome: "",
+  veiculoPlaca: "",
+  produto: "",
+  loteProduto: "",
+  quantidade: "",
+  observacoes: "",
+  operadorNome: "",
+  pin: "",
+};
 const INITIAL_PRAGA: PragaDraft = {
   local: "",
   tipos: { roedores: false, aves: false, voadores: false, rasteiros: false, outros: false },
   acao: "",
   responsavel: "",
-};
-
-const isNetworkError = (message?: string) => {
-  if (!message) return false;
-  const normalized = message.toLowerCase();
-  return normalized.includes("failed to fetch") || normalized.includes("network") || normalized.includes("fetch");
 };
 
 export default function ModoTablet() {
@@ -125,14 +241,20 @@ export default function ModoTablet() {
   const [isOnline, setIsOnline] = useState(typeof navigator === "undefined" ? true : navigator.onLine);
   const [syncingQueue, setSyncingQueue] = useState(false);
   const [pendingQueue, setPendingQueue] = useState<OfflineQueueItem[]>([]);
+  const [pinHashCache, setPinHashCache] = useState<string | null>(null);
+  const [pinConfigurado, setPinConfigurado] = useState<boolean | null>(null);
+  const [expedicaoAttachment, setExpedicaoAttachment] = useState<ExpedicaoAttachment | null>(null);
   const empresaKey = empresaAtiva?.id ?? "sem-empresa";
   const queueStorageKey = useMemo(() => `tablet_offline_queue_${user?.id ?? "anonimo"}`, [user?.id]);
+  const pinCacheStorageKey = useMemo(() => `empresa_pin_cache_${empresaKey}`, [empresaKey]);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const [producaoDraft, setProducaoDraft, clearProducaoDraft] = useSessionDraft(`tablet_producao_${empresaKey}`, INITIAL_PRODUCAO);
   const [recebimentoDraft, setRecebimentoDraft, clearRecebimentoDraft] = useSessionDraft(`tablet_recebimento_${empresaKey}`, INITIAL_RECEBIMENTO);
   const [limpezaDraft, setLimpezaDraft, clearLimpezaDraft] = useSessionDraft(`tablet_limpeza_${empresaKey}`, INITIAL_LIMPEZA);
   const [ncDraft, setNcDraft, clearNcDraft] = useSessionDraft(`tablet_nc_${empresaKey}`, INITIAL_NC);
   const [pragaDraft, setPragaDraft, clearPragaDraft] = useSessionDraft(`tablet_pragas_${empresaKey}`, INITIAL_PRAGA);
+  const [expedicaoDraft, setExpedicaoDraft, clearExpedicaoDraft] = useSessionDraft(`tablet_expedicao_${empresaKey}`, INITIAL_EXPEDICAO);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -151,9 +273,48 @@ export default function ModoTablet() {
     try {
       window.localStorage.setItem(queueStorageKey, JSON.stringify(pendingQueue));
     } catch {
-      // ignore persistence failures
     }
   }, [pendingQueue, queueStorageKey]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    try {
+      const cachedHash = window.localStorage.getItem(pinCacheStorageKey);
+      setPinHashCache(cachedHash || null);
+      setPinConfigurado(Boolean(cachedHash));
+    } catch {
+      setPinHashCache(null);
+      setPinConfigurado(null);
+    }
+  }, [pinCacheStorageKey]);
+
+  useEffect(() => {
+    if (!empresaAtiva?.id) {
+      setPinConfigurado(null);
+      return;
+    }
+
+    supabase
+      .from("empresa_pin")
+      .select("pin_hash")
+      .eq("empresa_id", empresaAtiva.id)
+      .maybeSingle()
+      .then(({ data, error }) => {
+        if (error) return;
+        const nextHash = data?.pin_hash || null;
+        setPinHashCache(nextHash);
+        setPinConfigurado(Boolean(nextHash));
+
+        if (typeof window !== "undefined") {
+          if (nextHash) {
+            window.localStorage.setItem(pinCacheStorageKey, nextHash);
+          } else {
+            window.localStorage.removeItem(pinCacheStorageKey);
+          }
+        }
+      });
+  }, [empresaAtiva?.id, pinCacheStorageKey]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -170,6 +331,22 @@ export default function ModoTablet() {
     };
   }, []);
 
+  const clearExpedicaoAttachment = useCallback(() => {
+    setExpedicaoAttachment((current) => {
+      if (current?.previewUrl?.startsWith("blob:")) {
+        URL.revokeObjectURL(current.previewUrl);
+      }
+      return null;
+    });
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  }, []);
+
+  const resetExpedicao = useCallback(() => {
+    setExpedicaoDraft(INITIAL_EXPEDICAO);
+    clearExpedicaoDraft();
+    clearExpedicaoAttachment();
+  }, [clearExpedicaoAttachment, clearExpedicaoDraft, setExpedicaoDraft]);
+
   const draftStatus = useMemo<Record<Exclude<Tela, "menu" | "pop_generico">, boolean>>(
     () => ({
       producao: Boolean(producaoDraft.produto || producaoDraft.lote || producaoDraft.operador || producaoDraft.quantidade),
@@ -177,13 +354,54 @@ export default function ModoTablet() {
       limpeza: Boolean(limpezaDraft.executor || limpezaDraft.observacoes),
       nc: Boolean(ncDraft.setor || ncDraft.descricao),
       pragas: Boolean(pragaDraft.local || pragaDraft.acao || pragaDraft.responsavel || Object.values(pragaDraft.tipos).some(Boolean)),
+      expedicao: Boolean(
+        expedicaoDraft.numeroNF ||
+          expedicaoDraft.clienteNome ||
+          expedicaoDraft.motoristaNome ||
+          expedicaoDraft.veiculoPlaca ||
+          expedicaoDraft.produto ||
+          expedicaoDraft.loteProduto ||
+          expedicaoDraft.quantidade ||
+          expedicaoDraft.operadorNome ||
+          expedicaoAttachment
+      ),
     }),
-    [limpezaDraft.executor, limpezaDraft.observacoes, ncDraft.descricao, ncDraft.setor, pragaDraft.acao, pragaDraft.local, pragaDraft.responsavel, pragaDraft.tipos, producaoDraft.lote, producaoDraft.operador, producaoDraft.produto, producaoDraft.quantidade, recebimentoDraft.fornecedor, recebimentoDraft.lote, recebimentoDraft.materiaPrima]
+    [
+      expedicaoAttachment,
+      expedicaoDraft.clienteNome,
+      expedicaoDraft.loteProduto,
+      expedicaoDraft.motoristaNome,
+      expedicaoDraft.numeroNF,
+      expedicaoDraft.operadorNome,
+      expedicaoDraft.produto,
+      expedicaoDraft.quantidade,
+      expedicaoDraft.veiculoPlaca,
+      limpezaDraft.executor,
+      limpezaDraft.observacoes,
+      ncDraft.descricao,
+      ncDraft.setor,
+      pragaDraft.acao,
+      pragaDraft.local,
+      pragaDraft.responsavel,
+      pragaDraft.tipos,
+      producaoDraft.lote,
+      producaoDraft.operador,
+      producaoDraft.produto,
+      producaoDraft.quantidade,
+      recebimentoDraft.fornecedor,
+      recebimentoDraft.lote,
+      recebimentoDraft.materiaPrima,
+    ]
   );
 
   const primeiroRascunho = useMemo(
     () => MENU_ITEMS.find((item) => item.id !== "pop_generico" && item.id !== "menu" && draftStatus[item.id as Exclude<Tela, "menu" | "pop_generico">]),
     [draftStatus]
+  );
+
+  const filaResumo = useMemo(
+    () => pendingQueue.slice(0, 3).map((item) => `${item.label} • ${new Date(item.createdAt).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}`),
+    [pendingQueue]
   );
 
   const requireContext = () => {
@@ -209,6 +427,88 @@ export default function ModoTablet() {
     return queuedItem;
   }, []);
 
+  const uploadExpedicaoAttachment = useCallback(async (attachment: ExpedicaoQueuePayload["attachment"], userId: string, empresaId: string) => {
+    if (!attachment) return { comprovanteArquivoNome: "", comprovanteArquivoPath: "" };
+
+    const file = dataUrlToFile(attachment.dataUrl, attachment.fileName, attachment.mimeType);
+    const filePath = buildExpedicaoFilePath(userId, empresaId, attachment.fileName);
+    const { error } = await supabase.storage.from("feed-bpf").upload(filePath, file, {
+      cacheControl: "3600",
+      upsert: false,
+    });
+
+    if (error) throw error;
+
+    return {
+      comprovanteArquivoNome: attachment.fileName,
+      comprovanteArquivoPath: filePath,
+    };
+  }, []);
+
+  const persistExpedicao = useCallback(async (payload: ExpedicaoQueuePayload, syncOrigem: "online" | "offline_queue") => {
+    const uploadData = await uploadExpedicaoAttachment(payload.attachment, payload.userId, payload.empresaId);
+
+    const { data: expedicao, error: expedicaoError } = await supabase
+      .from("expedicoes")
+      .insert({
+        user_id: payload.userId,
+        empresa_id: payload.empresaId,
+        numero_nf: payload.numeroNF,
+        cliente_nome: payload.clienteNome,
+        cliente_cnpj: payload.clienteCnpj,
+        motorista_nome: payload.motoristaNome,
+        veiculo_placa: payload.veiculoPlaca.toUpperCase(),
+        data_saida: new Date().toISOString().split("T")[0],
+        data_emissao: new Date().toISOString().split("T")[0],
+        operador_nome: payload.operadorNome,
+        pin_hash_confirmacao: payload.pinHashConfirmacao,
+        assinatura_data: payload.assinaturaData,
+        comprovante_arquivo_nome: uploadData.comprovanteArquivoNome,
+        comprovante_arquivo_path: uploadData.comprovanteArquivoPath,
+        sync_origem: syncOrigem,
+        origem: "tablet",
+        observacoes: payload.observacoes,
+        status: "emitida",
+      })
+      .select("id")
+      .single();
+
+    if (expedicaoError || !expedicao) throw expedicaoError || new Error("Falha ao salvar expedição");
+
+    const quantidadeNumerica = Number(payload.quantidade.replace(",", "."));
+    const { error: itemError } = await supabase.from("expedicao_itens").insert({
+      user_id: payload.userId,
+      empresa_id: payload.empresaId,
+      expedicao_id: expedicao.id,
+      produto: payload.produto,
+      lote_produto: payload.loteProduto,
+      quantidade: Number.isFinite(quantidadeNumerica) ? quantidadeNumerica : 0,
+      unidade: "kg",
+      operador_nome: payload.operadorNome,
+      pin_hash_confirmacao: payload.pinHashConfirmacao,
+      assinatura_data: payload.assinaturaData,
+    });
+
+    if (itemError) throw itemError;
+
+    await registrarAuditLog({
+      userId: payload.userId,
+      empresaId: payload.empresaId,
+      tabela: "expedicoes",
+      registroId: expedicao.id,
+      acao: "criar",
+      dadosNovos: {
+        numero_nf: payload.numeroNF,
+        cliente_nome: payload.clienteNome,
+        produto: payload.produto,
+        lote_produto: payload.loteProduto,
+        quantidade: payload.quantidade,
+        sync_origem: syncOrigem,
+        comprovante_arquivo_nome: uploadData.comprovanteArquivoNome || null,
+      },
+    });
+  }, [uploadExpedicaoAttachment]);
+
   const flushQueue = useCallback(async () => {
     if (!isOnline || syncingQueue || pendingQueue.length === 0) return;
 
@@ -220,23 +520,24 @@ export default function ModoTablet() {
       const item = pendingQueue[index];
 
       try {
-        const { error } = await (supabase.from(item.table as never) as any).insert(item.payload);
-
-        if (error) {
-          remaining.push(item, ...pendingQueue.slice(index + 1));
-          if (!isNetworkError(error.message)) {
-            toast({
-              title: `Falha ao sincronizar ${item.label}`,
-              description: error.message,
-              variant: "destructive",
-            });
-          }
-          break;
+        if (item.operation === "expedicao") {
+          await persistExpedicao(item.payload as ExpedicaoQueuePayload, "offline_queue");
+        } else {
+          const { error } = await (supabase.from(item.table as never) as any).insert(item.payload);
+          if (error) throw error;
         }
 
         syncedCount += 1;
       } catch (error) {
+        const message = error instanceof Error ? error.message : undefined;
         remaining.push(item, ...pendingQueue.slice(index + 1));
+        if (!isNetworkError(message)) {
+          toast({
+            title: `Falha ao sincronizar ${item.label}`,
+            description: message || "Tente novamente em instantes.",
+            variant: "destructive",
+          });
+        }
         break;
       }
     }
@@ -250,7 +551,7 @@ export default function ModoTablet() {
         description: remaining.length > 0 ? "Alguns itens seguirão na fila até a próxima tentativa." : "Todos os registros pendentes foram enviados.",
       });
     }
-  }, [isOnline, pendingQueue, syncingQueue]);
+  }, [isOnline, pendingQueue, persistExpedicao, syncingQueue]);
 
   useEffect(() => {
     if (isOnline && pendingQueue.length > 0 && !syncingQueue) {
@@ -274,7 +575,7 @@ export default function ModoTablet() {
     if (!requireContext()) return;
 
     if (!isOnline) {
-      enqueueOfflineItem({ table, payload, label, successTitle });
+      enqueueOfflineItem({ operation: "insert", table, payload, label, successTitle });
       onSuccess();
       toast({
         title: `${label} salvo na fila`,
@@ -290,7 +591,7 @@ export default function ModoTablet() {
 
       if (error) {
         if (isNetworkError(error.message)) {
-          enqueueOfflineItem({ table, payload, label, successTitle });
+          enqueueOfflineItem({ operation: "insert", table, payload, label, successTitle });
           onSuccess();
           toast({
             title: `${label} salvo na fila`,
@@ -306,7 +607,7 @@ export default function ModoTablet() {
       toast({ title: successTitle });
       onSuccess();
     } catch {
-      enqueueOfflineItem({ table, payload, label, successTitle });
+      enqueueOfflineItem({ operation: "insert", table, payload, label, successTitle });
       onSuccess();
       toast({
         title: `${label} salvo na fila`,
@@ -316,6 +617,87 @@ export default function ModoTablet() {
       setSaving(false);
     }
   }, [enqueueOfflineItem, isOnline]);
+
+  const resolvePinHash = useCallback(async () => {
+    if (!empresaAtiva?.id) return null;
+    if (pinHashCache) return pinHashCache;
+
+    const { data, error } = await supabase.from("empresa_pin").select("pin_hash").eq("empresa_id", empresaAtiva.id).maybeSingle();
+    if (error || !data?.pin_hash) return null;
+
+    setPinHashCache(data.pin_hash);
+    setPinConfigurado(true);
+    if (typeof window !== "undefined") window.localStorage.setItem(pinCacheStorageKey, data.pin_hash);
+    return data.pin_hash;
+  }, [empresaAtiva?.id, pinCacheStorageKey, pinHashCache]);
+
+  const validarPin = useCallback(async (pinDigitado: string) => {
+    const expectedHash = await resolvePinHash();
+    if (!empresaAtiva?.id || !expectedHash) {
+      toast({
+        title: "PIN não configurado",
+        description: "Configure o PIN da empresa antes de registrar a expedição.",
+        variant: "destructive",
+      });
+      return null;
+    }
+
+    const currentHash = await sha256(`${empresaAtiva.id}:${pinDigitado.trim()}`);
+    if (currentHash !== expectedHash) {
+      toast({ title: "PIN incorreto", variant: "destructive" });
+      return null;
+    }
+
+    return currentHash;
+  }, [empresaAtiva?.id, resolvePinHash]);
+
+  const criarPayloadExpedicao = useCallback(async (pinHashConfirmacao: string) => {
+    if (!user || !empresaAtiva?.id) return null;
+
+    const assinaturaData = new Date().toISOString();
+    let attachment: ExpedicaoQueuePayload["attachment"] | undefined;
+
+    if (expedicaoAttachment?.dataUrl && expedicaoAttachment.fileName) {
+      attachment = {
+        dataUrl: expedicaoAttachment.dataUrl,
+        fileName: expedicaoAttachment.fileName,
+        mimeType: expedicaoAttachment.mimeType,
+      };
+    }
+
+    return {
+      empresaId: empresaAtiva.id,
+      userId: user.id,
+      numeroNF: expedicaoDraft.numeroNF.trim(),
+      clienteNome: expedicaoDraft.clienteNome.trim(),
+      clienteCnpj: expedicaoDraft.clienteCnpj.trim(),
+      motoristaNome: expedicaoDraft.motoristaNome.trim(),
+      veiculoPlaca: expedicaoDraft.veiculoPlaca.trim().toUpperCase(),
+      produto: expedicaoDraft.produto.trim(),
+      loteProduto: expedicaoDraft.loteProduto.trim(),
+      quantidade: expedicaoDraft.quantidade.trim(),
+      observacoes: expedicaoDraft.observacoes.trim(),
+      operadorNome: expedicaoDraft.operadorNome.trim(),
+      pinHashConfirmacao,
+      assinaturaData,
+      attachment,
+    } satisfies ExpedicaoQueuePayload;
+  }, [empresaAtiva?.id, expedicaoAttachment, expedicaoDraft, user]);
+
+  const prepararAnexoParaFila = useCallback(async () => {
+    if (!expedicaoAttachment?.previewUrl || expedicaoAttachment.dataUrl || !fileInputRef.current?.files?.[0]) {
+      return expedicaoAttachment;
+    }
+
+    const selectedFile = fileInputRef.current.files[0];
+    const dataUrl = await fileToDataUrl(selectedFile);
+    const nextAttachment = {
+      ...expedicaoAttachment,
+      dataUrl,
+    };
+    setExpedicaoAttachment(nextAttachment);
+    return nextAttachment;
+  }, [expedicaoAttachment]);
 
   const salvarProducao = async () => {
     if (!producaoDraft.produto || !user || !empresaAtiva?.id) {
@@ -459,6 +841,147 @@ export default function ModoTablet() {
     });
   };
 
+  const salvarExpedicao = async () => {
+    if (!requireContext()) return;
+
+    const parsed = expedicaoSchema.safeParse({
+      numeroNF: expedicaoDraft.numeroNF,
+      clienteNome: expedicaoDraft.clienteNome,
+      clienteCnpj: expedicaoDraft.clienteCnpj,
+      motoristaNome: expedicaoDraft.motoristaNome,
+      veiculoPlaca: expedicaoDraft.veiculoPlaca,
+      produto: expedicaoDraft.produto,
+      loteProduto: expedicaoDraft.loteProduto,
+      quantidade: expedicaoDraft.quantidade,
+      observacoes: expedicaoDraft.observacoes,
+      operadorNome: expedicaoDraft.operadorNome,
+      pin: expedicaoDraft.pin,
+    });
+
+    if (!parsed.success) {
+      toast({ title: "Revise os campos", description: parsed.error.issues[0]?.message, variant: "destructive" });
+      return;
+    }
+
+    const pinHashConfirmacao = await validarPin(expedicaoDraft.pin);
+    if (!pinHashConfirmacao) return;
+
+    setSaving(true);
+
+    try {
+      const preparedAttachment = await prepararAnexoParaFila();
+      const payload = await criarPayloadExpedicao(pinHashConfirmacao);
+      if (!payload) return;
+
+      const payloadComAnexo: ExpedicaoQueuePayload = preparedAttachment?.dataUrl
+        ? {
+            ...payload,
+            attachment: {
+              dataUrl: preparedAttachment.dataUrl,
+              fileName: preparedAttachment.fileName,
+              mimeType: preparedAttachment.mimeType,
+            },
+          }
+        : payload;
+
+      if (!isOnline) {
+        enqueueOfflineItem({
+          operation: "expedicao",
+          table: "expedicoes",
+          payload: payloadComAnexo,
+          label: "Expedição",
+          successTitle: "✅ Expedição registrada!",
+        });
+        resetExpedicao();
+        setTela("menu");
+        toast({
+          title: "Expedição salva na fila",
+          description: "A assinatura por PIN e o comprovante serão sincronizados automaticamente quando a conexão voltar.",
+        });
+        return;
+      }
+
+      await persistExpedicao(payloadComAnexo, "online");
+      resetExpedicao();
+      setTela("menu");
+      toast({
+        title: "✅ Expedição registrada!",
+        description: payloadComAnexo.attachment?.fileName
+          ? "Assinatura validada e comprovante anexado com sucesso."
+          : "Assinatura validada com sucesso.",
+      });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Erro ao registrar expedição";
+
+      if (isNetworkError(message)) {
+        const preparedAttachment = await prepararAnexoParaFila();
+        const payload = await criarPayloadExpedicao(pinHashConfirmacao);
+        if (payload) {
+          const payloadComAnexo: ExpedicaoQueuePayload = preparedAttachment?.dataUrl
+            ? {
+                ...payload,
+                attachment: {
+                  dataUrl: preparedAttachment.dataUrl,
+                  fileName: preparedAttachment.fileName,
+                  mimeType: preparedAttachment.mimeType,
+                },
+              }
+            : payload;
+
+          enqueueOfflineItem({
+            operation: "expedicao",
+            table: "expedicoes",
+            payload: payloadComAnexo,
+            label: "Expedição",
+            successTitle: "✅ Expedição registrada!",
+          });
+          resetExpedicao();
+          setTela("menu");
+          toast({
+            title: "Expedição salva na fila",
+            description: "A conexão oscilou. O registro será reenviado automaticamente.",
+          });
+          return;
+        }
+      }
+
+      toast({ title: "Erro", description: message, variant: "destructive" });
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleExpedicaoAttachmentChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > MAX_EXPEDICAO_FILE_MB * 1024 * 1024) {
+      toast({
+        title: "Arquivo muito grande",
+        description: `Use arquivos com até ${MAX_EXPEDICAO_FILE_MB}MB no chão de fábrica.`,
+        variant: "destructive",
+      });
+      event.target.value = "";
+      return;
+    }
+
+    clearExpedicaoAttachment();
+
+    const isImage = file.type.startsWith("image/");
+    const previewUrl = isImage ? URL.createObjectURL(file) : null;
+    const nextAttachment: ExpedicaoAttachment = {
+      fileName: file.name,
+      mimeType: file.type || "application/octet-stream",
+      previewUrl,
+    };
+
+    if (!isOnline) {
+      nextAttachment.dataUrl = await fileToDataUrl(file);
+    }
+
+    setExpedicaoAttachment(nextAttachment);
+  };
+
   const Voltar = ({ onClearDraft }: { onClearDraft?: () => void }) => (
     <div className="mb-4 flex items-center justify-between gap-2">
       <Button variant="ghost" onClick={() => setTela("menu")}>
@@ -484,6 +1007,13 @@ export default function ModoTablet() {
               ? `${pendingQueue.length} registro(s) aguardando envio automático quando a internet voltar.`
               : "Os novos lançamentos serão guardados na fila deste aparelho até a conexão voltar."}
           </p>
+          {filaResumo.length > 0 ? (
+            <ul className="mt-2 space-y-1 text-xs text-muted-foreground">
+              {filaResumo.map((linha) => (
+                <li key={linha}>• {linha}</li>
+              ))}
+            </ul>
+          ) : null}
         </div>
       );
     }
@@ -508,6 +1038,13 @@ export default function ModoTablet() {
                 <BadgeCheck className="w-4 h-4 text-primary" /> Fila pronta para sincronizar
               </p>
               <p className="mt-1 text-muted-foreground">Há {pendingQueue.length} registro(s) pendente(s) salvos neste aparelho.</p>
+              {filaResumo.length > 0 ? (
+                <ul className="mt-2 space-y-1 text-xs text-muted-foreground">
+                  {filaResumo.map((linha) => (
+                    <li key={linha}>• {linha}</li>
+                  ))}
+                </ul>
+              ) : null}
             </div>
             <Button type="button" size="sm" variant="outline" onClick={() => void flushQueue()}>
               Sincronizar agora
@@ -703,6 +1240,120 @@ export default function ModoTablet() {
             <div><Label className="text-base">Descrição *</Label><Textarea value={ncDraft.descricao} onChange={e => setNcDraft({ ...ncDraft, descricao: e.target.value })} className="text-base mt-1" rows={4} placeholder="Descreva a não conformidade encontrada..." /></div>
             <Button onClick={salvarNC} disabled={saving || !ncDraft.setor || !ncDraft.descricao} className="w-full h-14 text-lg" size="lg" variant="destructive">
               <AlertTriangle className="w-5 h-5 mr-2" /> {saving ? "Salvando..." : isOnline ? "Registrar NC" : "Salvar na fila"}
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  if (tela === "expedicao") {
+    return (
+      <div className="max-w-lg mx-auto p-4">
+        <Voltar onClearDraft={resetExpedicao} />
+        <StatusBanner />
+        <Card>
+          <CardContent className="pt-6 space-y-4">
+            <CardHeader title="Registrar Expedição" subtitle="Saída rápida com assinatura por PIN, comprovante e fila auditável." icon={Truck} />
+
+            {pinConfigurado === false ? (
+              <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive">
+                <p className="font-medium flex items-center gap-2"><Lock className="w-4 h-4" /> PIN da empresa não configurado</p>
+                <p className="mt-1 text-muted-foreground">Configure o PIN antes de liberar expedições neste dispositivo.</p>
+              </div>
+            ) : null}
+
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label className="text-base">Número NF *</Label>
+                <Input value={expedicaoDraft.numeroNF} onChange={(e) => setExpedicaoDraft({ ...expedicaoDraft, numeroNF: e.target.value.slice(0, 40) })} className="text-lg h-12 mt-1" placeholder="12345" />
+              </div>
+              <div>
+                <Label className="text-base">Placa *</Label>
+                <Input value={expedicaoDraft.veiculoPlaca} onChange={(e) => setExpedicaoDraft({ ...expedicaoDraft, veiculoPlaca: e.target.value.toUpperCase().slice(0, 16) })} className="text-lg h-12 mt-1" placeholder="ABC1D23" />
+              </div>
+            </div>
+
+            <div>
+              <Label className="text-base">Cliente *</Label>
+              <Input value={expedicaoDraft.clienteNome} onChange={(e) => setExpedicaoDraft({ ...expedicaoDraft, clienteNome: e.target.value.slice(0, 120) })} className="text-lg h-12 mt-1" placeholder="Nome do cliente" />
+            </div>
+
+            <div>
+              <Label className="text-base">CNPJ cliente</Label>
+              <Input value={expedicaoDraft.clienteCnpj} onChange={(e) => setExpedicaoDraft({ ...expedicaoDraft, clienteCnpj: e.target.value.slice(0, 20) })} className="text-lg h-12 mt-1" placeholder="00.000.000/0000-00" />
+            </div>
+
+            <div>
+              <Label className="text-base">Motorista *</Label>
+              <Input value={expedicaoDraft.motoristaNome} onChange={(e) => setExpedicaoDraft({ ...expedicaoDraft, motoristaNome: e.target.value.slice(0, 120) })} className="text-lg h-12 mt-1" placeholder="Nome do motorista" />
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label className="text-base">Produto *</Label>
+                <Input value={expedicaoDraft.produto} onChange={(e) => setExpedicaoDraft({ ...expedicaoDraft, produto: e.target.value.slice(0, 120) })} className="text-lg h-12 mt-1" placeholder="Produto expedido" />
+              </div>
+              <div>
+                <Label className="text-base">Lote *</Label>
+                <Input value={expedicaoDraft.loteProduto} onChange={(e) => setExpedicaoDraft({ ...expedicaoDraft, loteProduto: e.target.value.slice(0, 60) })} className="text-lg h-12 mt-1" placeholder="Lote final" />
+              </div>
+            </div>
+
+            <div>
+              <Label className="text-base">Quantidade (kg) *</Label>
+              <Input value={expedicaoDraft.quantidade} onChange={(e) => setExpedicaoDraft({ ...expedicaoDraft, quantidade: e.target.value.slice(0, 20) })} className="text-lg h-12 mt-1" placeholder="0" inputMode="decimal" />
+            </div>
+
+            <div>
+              <Label className="text-base">Observações</Label>
+              <Textarea value={expedicaoDraft.observacoes} onChange={(e) => setExpedicaoDraft({ ...expedicaoDraft, observacoes: e.target.value.slice(0, 500) })} className="text-base mt-1" rows={3} placeholder="Ex: lacre conferido, temperatura do veículo, restrições..." />
+            </div>
+
+            <div className="rounded-lg border border-border bg-muted/30 p-3 space-y-3">
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <p className="text-sm font-medium text-foreground">Comprovante da expedição</p>
+                  <p className="text-xs text-muted-foreground">Foto ou PDF até {MAX_EXPEDICAO_FILE_MB}MB. Offline, o arquivo entra junto na fila.</p>
+                </div>
+                <Button type="button" variant="outline" size="sm" onClick={() => fileInputRef.current?.click()}>
+                  <FileUp className="w-4 h-4 mr-2" /> Anexar
+                </Button>
+              </div>
+              <input ref={fileInputRef} type="file" accept="image/*,application/pdf" className="hidden" onChange={handleExpedicaoAttachmentChange} />
+              {expedicaoAttachment ? (
+                <div className="rounded-lg border border-border bg-background p-3">
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <p className="text-sm font-medium text-foreground">{expedicaoAttachment.fileName}</p>
+                      <p className="text-xs text-muted-foreground">{isOnline ? "Pronto para enviar" : "Guardado localmente para sincronizar"}</p>
+                    </div>
+                    <Button type="button" variant="ghost" size="sm" onClick={clearExpedicaoAttachment}>Remover</Button>
+                  </div>
+                  {expedicaoAttachment.previewUrl ? (
+                    <img src={expedicaoAttachment.previewUrl} alt="Comprovante da expedição" className="mt-3 max-h-48 w-full rounded-lg object-contain" />
+                  ) : null}
+                </div>
+              ) : null}
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label className="text-base">Operador *</Label>
+                <Input value={expedicaoDraft.operadorNome} onChange={(e) => setExpedicaoDraft({ ...expedicaoDraft, operadorNome: e.target.value.slice(0, 120) })} className="text-lg h-12 mt-1" placeholder="Nome do operador" />
+              </div>
+              <div>
+                <Label className="text-base">PIN *</Label>
+                <Input value={expedicaoDraft.pin} onChange={(e) => setExpedicaoDraft({ ...expedicaoDraft, pin: e.target.value.replace(/\D/g, "").slice(0, 10) })} type="password" inputMode="numeric" className="text-lg h-12 mt-1 tracking-widest" placeholder="••••" />
+              </div>
+            </div>
+
+            <div className="rounded-lg border border-border bg-muted/40 p-3 text-xs text-muted-foreground">
+              O registro salva a expedição, o item expedido, a confirmação por PIN e mantém a origem online/offline para auditoria.
+            </div>
+
+            <Button onClick={salvarExpedicao} disabled={saving || !pinConfigurado} className="w-full h-14 text-lg" size="lg">
+              <CheckCircle2 className="w-5 h-5 mr-2" /> {saving ? "Salvando..." : isOnline ? "Salvar Expedição" : "Salvar na fila"}
             </Button>
           </CardContent>
         </Card>
