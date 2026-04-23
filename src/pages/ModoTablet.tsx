@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   AlertTriangle,
   ArrowLeft,
@@ -14,6 +14,7 @@ import {
   Settings,
   ShieldAlert,
   ShieldCheck,
+  Wifi,
   WifiOff,
 } from "lucide-react";
 import { RegistroPopGenerico } from "@/components/tablet/RegistroPopGenerico";
@@ -32,6 +33,16 @@ import { Link } from "react-router-dom";
 import { useSessionDraft } from "@/hooks/useSessionDraft";
 
 type Tela = "menu" | "producao" | "recebimento" | "limpeza" | "nc" | "pragas" | "pop_generico";
+type OfflineTable = "producao" | "recebimento_mp" | "registros_limpeza" | "nao_conformidades" | "controle_pragas";
+
+type OfflineQueueItem = {
+  id: string;
+  table: OfflineTable;
+  label: string;
+  successTitle: string;
+  payload: Record<string, unknown>;
+  createdAt: string;
+};
 
 const MENU_ITEMS = [
   { id: "producao" as Tela, label: "Registrar Produção", icon: Factory, tone: "bg-primary text-primary-foreground" },
@@ -100,12 +111,22 @@ const INITIAL_PRAGA: PragaDraft = {
   responsavel: "",
 };
 
+const isNetworkError = (message?: string) => {
+  if (!message) return false;
+  const normalized = message.toLowerCase();
+  return normalized.includes("failed to fetch") || normalized.includes("network") || normalized.includes("fetch");
+};
+
 export default function ModoTablet() {
   const { user } = useAuth();
   const { empresaAtiva } = useEmpresa();
   const [tela, setTela] = useState<Tela>("menu");
   const [saving, setSaving] = useState(false);
+  const [isOnline, setIsOnline] = useState(typeof navigator === "undefined" ? true : navigator.onLine);
+  const [syncingQueue, setSyncingQueue] = useState(false);
+  const [pendingQueue, setPendingQueue] = useState<OfflineQueueItem[]>([]);
   const empresaKey = empresaAtiva?.id ?? "sem-empresa";
+  const queueStorageKey = useMemo(() => `tablet_offline_queue_${user?.id ?? "anonimo"}`, [user?.id]);
 
   const [producaoDraft, setProducaoDraft, clearProducaoDraft] = useSessionDraft(`tablet_producao_${empresaKey}`, INITIAL_PRODUCAO);
   const [recebimentoDraft, setRecebimentoDraft, clearRecebimentoDraft] = useSessionDraft(`tablet_recebimento_${empresaKey}`, INITIAL_RECEBIMENTO);
@@ -113,7 +134,41 @@ export default function ModoTablet() {
   const [ncDraft, setNcDraft, clearNcDraft] = useSessionDraft(`tablet_nc_${empresaKey}`, INITIAL_NC);
   const [pragaDraft, setPragaDraft, clearPragaDraft] = useSessionDraft(`tablet_pragas_${empresaKey}`, INITIAL_PRAGA);
 
-  const temConexao = typeof navigator === "undefined" ? true : navigator.onLine;
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    try {
+      const raw = window.localStorage.getItem(queueStorageKey);
+      setPendingQueue(raw ? (JSON.parse(raw) as OfflineQueueItem[]) : []);
+    } catch {
+      setPendingQueue([]);
+    }
+  }, [queueStorageKey]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    try {
+      window.localStorage.setItem(queueStorageKey, JSON.stringify(pendingQueue));
+    } catch {
+      // ignore persistence failures
+    }
+  }, [pendingQueue, queueStorageKey]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
+
+    window.addEventListener("online", handleOnline);
+    window.addEventListener("offline", handleOffline);
+
+    return () => {
+      window.removeEventListener("online", handleOnline);
+      window.removeEventListener("offline", handleOffline);
+    };
+  }, []);
 
   const draftStatus = useMemo<Record<Exclude<Tela, "menu" | "pop_generico">, boolean>>(
     () => ({
@@ -143,94 +198,265 @@ export default function ModoTablet() {
     return true;
   };
 
-  const salvarProducao = async () => {
-    if (!requireContext() || !producaoDraft.produto) return;
+  const enqueueOfflineItem = useCallback((item: Omit<OfflineQueueItem, "id" | "createdAt">) => {
+    const queuedItem: OfflineQueueItem = {
+      ...item,
+      id: typeof crypto !== "undefined" && "randomUUID" in crypto ? crypto.randomUUID() : `${Date.now()}_${Math.random().toString(36).slice(2)}`,
+      createdAt: new Date().toISOString(),
+    };
+
+    setPendingQueue((current) => [...current, queuedItem]);
+    return queuedItem;
+  }, []);
+
+  const flushQueue = useCallback(async () => {
+    if (!isOnline || syncingQueue || pendingQueue.length === 0) return;
+
+    setSyncingQueue(true);
+    let syncedCount = 0;
+    const remaining: OfflineQueueItem[] = [];
+
+    for (let index = 0; index < pendingQueue.length; index += 1) {
+      const item = pendingQueue[index];
+
+      try {
+        const { error } = await (supabase.from(item.table as never) as any).insert(item.payload);
+
+        if (error) {
+          remaining.push(item, ...pendingQueue.slice(index + 1));
+          if (!isNetworkError(error.message)) {
+            toast({
+              title: `Falha ao sincronizar ${item.label}`,
+              description: error.message,
+              variant: "destructive",
+            });
+          }
+          break;
+        }
+
+        syncedCount += 1;
+      } catch (error) {
+        remaining.push(item, ...pendingQueue.slice(index + 1));
+        break;
+      }
+    }
+
+    setPendingQueue(remaining);
+    setSyncingQueue(false);
+
+    if (syncedCount > 0) {
+      toast({
+        title: syncedCount === 1 ? "1 registro sincronizado" : `${syncedCount} registros sincronizados`,
+        description: remaining.length > 0 ? "Alguns itens seguirão na fila até a próxima tentativa." : "Todos os registros pendentes foram enviados.",
+      });
+    }
+  }, [isOnline, pendingQueue, syncingQueue]);
+
+  useEffect(() => {
+    if (isOnline && pendingQueue.length > 0 && !syncingQueue) {
+      void flushQueue();
+    }
+  }, [flushQueue, isOnline, pendingQueue.length, syncingQueue]);
+
+  const saveOrQueue = useCallback(async ({
+    table,
+    payload,
+    label,
+    successTitle,
+    onSuccess,
+  }: {
+    table: OfflineTable;
+    payload: Record<string, unknown>;
+    label: string;
+    successTitle: string;
+    onSuccess: () => void;
+  }) => {
+    if (!requireContext()) return;
+
+    if (!isOnline) {
+      enqueueOfflineItem({ table, payload, label, successTitle });
+      onSuccess();
+      toast({
+        title: `${label} salvo na fila`,
+        description: "O registro será enviado automaticamente quando a conexão voltar.",
+      });
+      return;
+    }
+
     setSaving(true);
-    const { error } = await supabase.from("producao").insert({
-      user_id: user!.id, empresa_id: empresaAtiva!.id,
-      produto: producaoDraft.produto, lote: producaoDraft.lote, operador: producaoDraft.operador, quantidade: producaoDraft.quantidade,
+
+    try {
+      const { error } = await (supabase.from(table as never) as any).insert(payload);
+
+      if (error) {
+        if (isNetworkError(error.message)) {
+          enqueueOfflineItem({ table, payload, label, successTitle });
+          onSuccess();
+          toast({
+            title: `${label} salvo na fila`,
+            description: "A conexão oscilou. O registro será reenviado automaticamente.",
+          });
+          return;
+        }
+
+        toast({ title: "Erro", description: error.message, variant: "destructive" });
+        return;
+      }
+
+      toast({ title: successTitle });
+      onSuccess();
+    } catch {
+      enqueueOfflineItem({ table, payload, label, successTitle });
+      onSuccess();
+      toast({
+        title: `${label} salvo na fila`,
+        description: "Não foi possível enviar agora. O sistema tentará novamente quando voltar a conexão.",
+      });
+    } finally {
+      setSaving(false);
+    }
+  }, [enqueueOfflineItem, isOnline]);
+
+  const salvarProducao = async () => {
+    if (!producaoDraft.produto || !user || !empresaAtiva?.id) {
+      requireContext();
+      return;
+    }
+
+    await saveOrQueue({
+      table: "producao",
+      label: "Produção",
+      successTitle: "✅ Produção registrada!",
+      payload: {
+        user_id: user.id,
+        empresa_id: empresaAtiva.id,
+        produto: producaoDraft.produto,
+        lote: producaoDraft.lote,
+        operador: producaoDraft.operador,
+        quantidade: producaoDraft.quantidade,
+      },
+      onSuccess: () => {
+        setProducaoDraft(INITIAL_PRODUCAO);
+        clearProducaoDraft();
+        setTela("menu");
+      },
     });
-    setSaving(false);
-    if (error) { toast({ title: "Erro", description: error.message, variant: "destructive" }); return; }
-    toast({ title: "✅ Produção registrada!" });
-    setProducaoDraft(INITIAL_PRODUCAO);
-    clearProducaoDraft();
-    setTela("menu");
   };
 
   const salvarRecebimento = async () => {
-    if (!requireContext() || !recebimentoDraft.fornecedor || !recebimentoDraft.materiaPrima) return;
-    setSaving(true);
-    const { error } = await supabase.from("recebimento_mp").insert({
-      user_id: user!.id, empresa_id: empresaAtiva!.id,
-      fornecedor: recebimentoDraft.fornecedor, materia_prima: recebimentoDraft.materiaPrima, lote: recebimentoDraft.lote,
-      odor: recebimentoDraft.odor, insetos: recebimentoDraft.insetos, aprovado: recebimentoDraft.aprovado,
+    if (!recebimentoDraft.fornecedor || !recebimentoDraft.materiaPrima || !user || !empresaAtiva?.id) {
+      requireContext();
+      return;
+    }
+
+    await saveOrQueue({
+      table: "recebimento_mp",
+      label: "Recebimento",
+      successTitle: "✅ Recebimento registrado!",
+      payload: {
+        user_id: user.id,
+        empresa_id: empresaAtiva.id,
+        fornecedor: recebimentoDraft.fornecedor,
+        materia_prima: recebimentoDraft.materiaPrima,
+        lote: recebimentoDraft.lote,
+        odor: recebimentoDraft.odor,
+        insetos: recebimentoDraft.insetos,
+        aprovado: recebimentoDraft.aprovado,
+      },
+      onSuccess: () => {
+        setRecebimentoDraft(INITIAL_RECEBIMENTO);
+        clearRecebimentoDraft();
+        setTela("menu");
+      },
     });
-    setSaving(false);
-    if (error) { toast({ title: "Erro", description: error.message, variant: "destructive" }); return; }
-    toast({ title: "✅ Recebimento registrado!" });
-    setRecebimentoDraft(INITIAL_RECEBIMENTO);
-    clearRecebimentoDraft();
-    setTela("menu");
   };
 
   const salvarLimpeza = async () => {
-    if (!requireContext() || !limpezaDraft.executor) return;
-    setSaving(true);
-    const { error } = await supabase.from("registros_limpeza").insert({
-      user_id: user!.id, empresa_id: empresaAtiva!.id,
-      executor: limpezaDraft.executor, conforme: limpezaDraft.conforme, observacoes: limpezaDraft.observacoes,
+    if (!limpezaDraft.executor || !user || !empresaAtiva?.id) {
+      requireContext();
+      return;
+    }
+
+    await saveOrQueue({
+      table: "registros_limpeza",
+      label: "Limpeza",
+      successTitle: "✅ Limpeza registrada!",
+      payload: {
+        user_id: user.id,
+        empresa_id: empresaAtiva.id,
+        executor: limpezaDraft.executor,
+        conforme: limpezaDraft.conforme,
+        observacoes: limpezaDraft.observacoes,
+      },
+      onSuccess: () => {
+        setLimpezaDraft(INITIAL_LIMPEZA);
+        clearLimpezaDraft();
+        setTela("menu");
+      },
     });
-    setSaving(false);
-    if (error) { toast({ title: "Erro", description: error.message, variant: "destructive" }); return; }
-    toast({ title: "✅ Limpeza registrada!" });
-    setLimpezaDraft(INITIAL_LIMPEZA);
-    clearLimpezaDraft();
-    setTela("menu");
   };
 
   const salvarNC = async () => {
-    if (!requireContext() || !ncDraft.setor || !ncDraft.descricao) return;
-    setSaving(true);
-    const { error } = await supabase.from("nao_conformidades").insert({
-      user_id: user!.id, empresa_id: empresaAtiva!.id,
-      setor: ncDraft.setor, descricao: ncDraft.descricao,
+    if (!ncDraft.setor || !ncDraft.descricao || !user || !empresaAtiva?.id) {
+      requireContext();
+      return;
+    }
+
+    await saveOrQueue({
+      table: "nao_conformidades",
+      label: "Não conformidade",
+      successTitle: "✅ NC registrada!",
+      payload: {
+        user_id: user.id,
+        empresa_id: empresaAtiva.id,
+        setor: ncDraft.setor,
+        descricao: ncDraft.descricao,
+      },
+      onSuccess: () => {
+        setNcDraft(INITIAL_NC);
+        clearNcDraft();
+        setTela("menu");
+      },
     });
-    setSaving(false);
-    if (error) { toast({ title: "Erro", description: error.message, variant: "destructive" }); return; }
-    toast({ title: "✅ NC registrada!" });
-    setNcDraft(INITIAL_NC);
-    clearNcDraft();
-    setTela("menu");
   };
 
   const salvarPraga = async () => {
-    if (!requireContext() || !pragaDraft.local || !pragaDraft.responsavel) return;
+    if (!pragaDraft.local || !pragaDraft.responsavel || !user || !empresaAtiva?.id) {
+      requireContext();
+      return;
+    }
+
     const tipos: string[] = [];
     if (pragaDraft.tipos.roedores) tipos.push("Roedores");
     if (pragaDraft.tipos.aves) tipos.push("Aves/Pássaros");
     if (pragaDraft.tipos.voadores) tipos.push("Insetos voadores");
     if (pragaDraft.tipos.rasteiros) tipos.push("Insetos rasteiros");
     if (pragaDraft.tipos.outros) tipos.push("Outros");
+
     if (tipos.length === 0) {
       toast({ title: "Selecione ao menos um tipo de evidência", variant: "destructive" });
       return;
     }
-    setSaving(true);
-    const { error } = await supabase.from("controle_pragas").insert({
-      user_id: user!.id, empresa_id: empresaAtiva!.id,
-      data: new Date().toISOString().split("T")[0],
-      local: pragaDraft.local,
-      tipo_praga: tipos.join(", "),
-      acao: pragaDraft.acao || "Inspeção / observação visual",
-      responsavel: pragaDraft.responsavel,
+
+    await saveOrQueue({
+      table: "controle_pragas",
+      label: "Observação de pragas",
+      successTitle: "✅ Observação registrada!",
+      payload: {
+        user_id: user.id,
+        empresa_id: empresaAtiva.id,
+        data: new Date().toISOString().split("T")[0],
+        local: pragaDraft.local,
+        tipo_praga: tipos.join(", "),
+        acao: pragaDraft.acao || "Inspeção / observação visual",
+        responsavel: pragaDraft.responsavel,
+      },
+      onSuccess: () => {
+        setPragaDraft(INITIAL_PRAGA);
+        clearPragaDraft();
+        setTela("menu");
+      },
     });
-    setSaving(false);
-    if (error) { toast({ title: "Erro", description: error.message, variant: "destructive" }); return; }
-    toast({ title: "✅ Observação registrada!", description: "Comunique o RT para investigação." });
-    setPragaDraft(INITIAL_PRAGA);
-    clearPragaDraft();
-    setTela("menu");
   };
 
   const Voltar = ({ onClearDraft }: { onClearDraft?: () => void }) => (
@@ -245,6 +471,54 @@ export default function ModoTablet() {
       ) : null}
     </div>
   );
+
+  const StatusBanner = () => {
+    if (!isOnline) {
+      return (
+        <div className="mb-4 w-full rounded-lg border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive">
+          <p className="flex items-center gap-2 font-medium">
+            <WifiOff className="w-4 h-4" /> Sem conexão no momento
+          </p>
+          <p className="mt-1 text-muted-foreground">
+            {pendingQueue.length > 0
+              ? `${pendingQueue.length} registro(s) aguardando envio automático quando a internet voltar.`
+              : "Os novos lançamentos serão guardados na fila deste aparelho até a conexão voltar."}
+          </p>
+        </div>
+      );
+    }
+
+    if (syncingQueue) {
+      return (
+        <div className="mb-4 w-full rounded-lg border border-primary/30 bg-primary/5 p-3 text-sm text-foreground">
+          <p className="flex items-center gap-2 font-medium">
+            <Wifi className="w-4 h-4 text-primary" /> Sincronizando registros pendentes
+          </p>
+          <p className="mt-1 text-muted-foreground">Enviando {pendingQueue.length} item(ns) assim que o backend responder.</p>
+        </div>
+      );
+    }
+
+    if (pendingQueue.length > 0) {
+      return (
+        <div className="mb-4 w-full rounded-lg border border-border bg-card p-3 text-sm text-foreground">
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <p className="flex items-center gap-2 font-medium">
+                <BadgeCheck className="w-4 h-4 text-primary" /> Fila pronta para sincronizar
+              </p>
+              <p className="mt-1 text-muted-foreground">Há {pendingQueue.length} registro(s) pendente(s) salvos neste aparelho.</p>
+            </div>
+            <Button type="button" size="sm" variant="outline" onClick={() => void flushQueue()}>
+              Sincronizar agora
+            </Button>
+          </div>
+        </div>
+      );
+    }
+
+    return null;
+  };
 
   const CardHeader = ({ title, subtitle, icon: Icon }: { title: string; subtitle: string; icon: typeof Factory }) => (
     <div className="space-y-3">
@@ -274,12 +548,9 @@ export default function ModoTablet() {
           <p className="text-sm text-foreground mt-3">{empresaAtiva?.nome || "Nenhuma empresa ativa selecionada"}</p>
         </div>
 
-        {!temConexao ? (
-          <div className="mb-4 w-full max-w-md rounded-lg border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive">
-            <p className="font-medium flex items-center gap-2"><WifiOff className="w-4 h-4" /> Sem conexão no momento</p>
-            <p className="mt-1 text-muted-foreground">Os rascunhos ficam salvos neste aparelho até a conexão voltar.</p>
-          </div>
-        ) : null}
+        <div className="w-full max-w-md">
+          <StatusBanner />
+        </div>
 
         {primeiroRascunho ? (
           <div className="mb-4 w-full max-w-md rounded-lg border border-border bg-card p-4">
@@ -340,6 +611,7 @@ export default function ModoTablet() {
     return (
       <div className="max-w-lg mx-auto p-4">
         <Voltar onClearDraft={() => { setProducaoDraft(INITIAL_PRODUCAO); clearProducaoDraft(); }} />
+        <StatusBanner />
         <Card>
           <CardContent className="pt-6 space-y-4">
             <CardHeader title="Registrar Produção" subtitle="Lançamento rápido do lote produzido." icon={Factory} />
@@ -348,7 +620,7 @@ export default function ModoTablet() {
             <div><Label className="text-base">Operador</Label><Input value={producaoDraft.operador} onChange={e => setProducaoDraft({ ...producaoDraft, operador: e.target.value })} className="text-lg h-12 mt-1" placeholder="Nome do operador" /></div>
             <div><Label className="text-base">Quantidade (kg)</Label><Input value={producaoDraft.quantidade} onChange={e => setProducaoDraft({ ...producaoDraft, quantidade: e.target.value })} className="text-lg h-12 mt-1" placeholder="0" type="number" inputMode="decimal" /></div>
             <Button onClick={salvarProducao} disabled={saving || !producaoDraft.produto} className="w-full h-14 text-lg" size="lg">
-              <CheckCircle2 className="w-5 h-5 mr-2" /> {saving ? "Salvando..." : "Salvar Produção"}
+              <CheckCircle2 className="w-5 h-5 mr-2" /> {saving ? "Salvando..." : isOnline ? "Salvar Produção" : "Salvar na fila"}
             </Button>
           </CardContent>
         </Card>
@@ -360,6 +632,7 @@ export default function ModoTablet() {
     return (
       <div className="max-w-lg mx-auto p-4">
         <Voltar onClearDraft={() => { setRecebimentoDraft(INITIAL_RECEBIMENTO); clearRecebimentoDraft(); }} />
+        <StatusBanner />
         <Card>
           <CardContent className="pt-6 space-y-4">
             <CardHeader title="Recebimento MP" subtitle="Inspeção rápida de matéria-prima na chegada." icon={Package} />
@@ -387,7 +660,7 @@ export default function ModoTablet() {
               <Label htmlFor="aprovado" className="text-base font-medium cursor-pointer">Material Aprovado</Label>
             </div>
             <Button onClick={salvarRecebimento} disabled={saving || !recebimentoDraft.fornecedor || !recebimentoDraft.materiaPrima} className="w-full h-14 text-lg" size="lg">
-              <CheckCircle2 className="w-5 h-5 mr-2" /> {saving ? "Salvando..." : "Salvar Recebimento"}
+              <CheckCircle2 className="w-5 h-5 mr-2" /> {saving ? "Salvando..." : isOnline ? "Salvar Recebimento" : "Salvar na fila"}
             </Button>
           </CardContent>
         </Card>
@@ -399,6 +672,7 @@ export default function ModoTablet() {
     return (
       <div className="max-w-lg mx-auto p-4">
         <Voltar onClearDraft={() => { setLimpezaDraft(INITIAL_LIMPEZA); clearLimpezaDraft(); }} />
+        <StatusBanner />
         <Card>
           <CardContent className="pt-6 space-y-4">
             <CardHeader title="Registro de Limpeza" subtitle="Confirmação operacional ao final da higienização." icon={Droplets} />
@@ -409,7 +683,7 @@ export default function ModoTablet() {
             </div>
             <div><Label className="text-base">Observações</Label><Textarea value={limpezaDraft.observacoes} onChange={e => setLimpezaDraft({ ...limpezaDraft, observacoes: e.target.value })} className="text-base mt-1" rows={3} /></div>
             <Button onClick={salvarLimpeza} disabled={saving || !limpezaDraft.executor} className="w-full h-14 text-lg" size="lg">
-              <CheckCircle2 className="w-5 h-5 mr-2" /> {saving ? "Salvando..." : "Salvar Limpeza"}
+              <CheckCircle2 className="w-5 h-5 mr-2" /> {saving ? "Salvando..." : isOnline ? "Salvar Limpeza" : "Salvar na fila"}
             </Button>
           </CardContent>
         </Card>
@@ -421,13 +695,14 @@ export default function ModoTablet() {
     return (
       <div className="max-w-lg mx-auto p-4">
         <Voltar onClearDraft={() => { setNcDraft(INITIAL_NC); clearNcDraft(); }} />
+        <StatusBanner />
         <Card>
           <CardContent className="pt-6 space-y-4">
             <CardHeader title="Registrar NC" subtitle="Notifique o desvio assim que ele for identificado." icon={ShieldAlert} />
             <div><Label className="text-base">Setor *</Label><Input value={ncDraft.setor} onChange={e => setNcDraft({ ...ncDraft, setor: e.target.value })} className="text-lg h-12 mt-1" placeholder="Ex: Mistura, Envase..." /></div>
             <div><Label className="text-base">Descrição *</Label><Textarea value={ncDraft.descricao} onChange={e => setNcDraft({ ...ncDraft, descricao: e.target.value })} className="text-base mt-1" rows={4} placeholder="Descreva a não conformidade encontrada..." /></div>
             <Button onClick={salvarNC} disabled={saving || !ncDraft.setor || !ncDraft.descricao} className="w-full h-14 text-lg" size="lg" variant="destructive">
-              <AlertTriangle className="w-5 h-5 mr-2" /> {saving ? "Salvando..." : "Registrar NC"}
+              <AlertTriangle className="w-5 h-5 mr-2" /> {saving ? "Salvando..." : isOnline ? "Registrar NC" : "Salvar na fila"}
             </Button>
           </CardContent>
         </Card>
@@ -453,6 +728,7 @@ export default function ModoTablet() {
     return (
       <div className="max-w-lg mx-auto p-4">
         <Voltar onClearDraft={() => { setPragaDraft(INITIAL_PRAGA); clearPragaDraft(); }} />
+        <StatusBanner />
         <Card>
           <CardContent className="pt-6 space-y-4">
             <CardHeader title="Observação de Pragas" subtitle="Registro imediato de evidências no chão de fábrica." icon={Bug} />
@@ -477,7 +753,7 @@ export default function ModoTablet() {
               <Input value={pragaDraft.responsavel} onChange={e => setPragaDraft({ ...pragaDraft, responsavel: e.target.value })} className="text-lg h-12 mt-1" placeholder="Seu nome" />
             </div>
             <Button onClick={salvarPraga} disabled={saving || !pragaDraft.local || !pragaDraft.responsavel} className="w-full h-14 text-lg" size="lg">
-              <CheckCircle2 className="w-5 h-5 mr-2" /> {saving ? "Salvando..." : "Salvar Observação"}
+              <CheckCircle2 className="w-5 h-5 mr-2" /> {saving ? "Salvando..." : isOnline ? "Salvar Observação" : "Salvar na fila"}
             </Button>
           </CardContent>
         </Card>
