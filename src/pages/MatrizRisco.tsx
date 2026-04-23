@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Plus, Trash2, Save, AlertTriangle, ClipboardCheck } from "lucide-react";
+import { Plus, Trash2, Save, AlertTriangle, ClipboardCheck, Sparkles, Loader2 } from "lucide-react";
 import PageHeader from "@/components/PageHeader";
 import QuestionarioRisco from "@/components/risco/QuestionarioRisco";
 
@@ -178,6 +178,7 @@ export default function MatrizRisco() {
     medidas_controle: string;
   }>>([]);
   const [riskLoaded, setRiskLoaded] = useState(false);
+  const [aiLoadingIdx, setAiLoadingIdx] = useState<number | null>(null);
 
   // Load sensitivity data
   useEffect(() => {
@@ -323,6 +324,44 @@ export default function MatrizRisco() {
 
   const removeRisk = (idx: number) => {
     setRisks(prev => prev.filter((_, i) => i !== idx));
+  };
+
+  const sugerirIA = async (idx: number) => {
+    const r = risks[idx];
+    if (!r.etapa_processo || !r.perigo_identificado) {
+      toast.error("Preencha a etapa e o perigo antes de pedir sugestão.");
+      return;
+    }
+    setAiLoadingIdx(idx);
+    try {
+      const { data, error } = await supabase.functions.invoke("classificar-risco", {
+        body: {
+          etapa_processo: r.etapa_processo,
+          perigo_identificado: r.perigo_identificado,
+          tipo_perigo: r.tipo_perigo,
+        },
+      });
+      if (error) { toast.error("Erro ao classificar: " + error.message); setAiLoadingIdx(null); return; }
+      if (data?.error) { toast.error(data.error); setAiLoadingIdx(null); return; }
+      const result = data?.data;
+      if (result) {
+        setRisks(prev => {
+          const copy = [...prev];
+          copy[idx] = {
+            ...copy[idx],
+            probabilidade: result.probabilidade || copy[idx].probabilidade,
+            severidade: result.severidade || copy[idx].severidade,
+            nivel_risco: result.nivel_risco || calcRisk(result.probabilidade, result.severidade),
+            medidas_controle: result.medidas_controle || copy[idx].medidas_controle,
+          };
+          return copy;
+        });
+        toast.success("Classificação sugerida pela IA!", {
+          description: result.justificativa,
+        });
+      }
+    } catch { toast.error("Erro ao conectar com IA"); }
+    setAiLoadingIdx(null);
   };
 
   return (
@@ -569,9 +608,21 @@ export default function MatrizRisco() {
                           <Input value={r.medidas_controle} onChange={e => updateRisk(idx, "medidas_controle", e.target.value)} className="text-xs h-8" />
                         </TableCell>
                         <TableCell>
-                          <Button variant="ghost" size="icon" onClick={() => removeRisk(idx)} className="h-7 w-7 text-destructive">
-                            <Trash2 className="w-4 h-4" />
-                          </Button>
+                          <div className="flex gap-1">
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => sugerirIA(idx)}
+                              disabled={aiLoadingIdx === idx}
+                              className="h-7 w-7 text-primary"
+                              title="Sugerir classificação com IA"
+                            >
+                              {aiLoadingIdx === idx ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
+                            </Button>
+                            <Button variant="ghost" size="icon" onClick={() => removeRisk(idx)} className="h-7 w-7 text-destructive">
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </div>
                         </TableCell>
                       </TableRow>
                     ))}

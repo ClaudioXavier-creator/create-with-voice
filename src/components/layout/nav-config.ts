@@ -146,6 +146,7 @@ export const NAV_ENTRIES: NavEntry[] = [
       { path: "/legislacao", label: "Legislação & IA", icon: Globe },
       { path: "/analise-tendencias", label: "Tendências IA", icon: Brain },
       { path: "/geracao-manual-bpf", label: "Gerar Manual BPF", icon: BookOpen },
+      { path: "/gerador-pop-ia", label: "Gerar POP por IA", icon: Brain },
       { path: "/consulta-sipeagro", label: "Consulta SIPEAGRO", icon: FileSearch },
       { path: "/busca-global", label: "Busca Global", icon: Search },
     ],
