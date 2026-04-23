@@ -1,5 +1,5 @@
-export const LICENSE_MANAGER_USER_ID = "40d41e11-4ab8-4af2-bcc6-3f94bef7495b";
+export const LICENSE_ADMIN_ROLE = "admin" as const;
 
-export function canAccessLicenseAdmin(userId?: string | null) {
-  return userId === LICENSE_MANAGER_USER_ID;
+export function canAccessLicenseAdmin(roles?: string[] | null) {
+  return !!roles?.includes(LICENSE_ADMIN_ROLE);
 }

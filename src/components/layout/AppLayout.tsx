@@ -241,11 +241,11 @@ function SidebarNav({ currentPath, entries, onNavigate }: { currentPath: string;
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
-  const { user, signOut } = useAuth();
+  const { user, roles, signOut } = useAuth();
   const visibleEntries = NAV_ENTRIES.filter((entry) => {
     if (isGroup(entry)) return true;
     if (entry.path !== "/admin-licencas") return true;
-    return canAccessLicenseAdmin(user?.id);
+    return canAccessLicenseAdmin(roles);
   });
 
   return (

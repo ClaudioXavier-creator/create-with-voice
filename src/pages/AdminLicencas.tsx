@@ -52,7 +52,7 @@ const ACCESS_LEVEL_LABELS: Record<string, string> = {
 };
 
 export default function AdminLicencas() {
-  const { user, loading: authLoading } = useAuth();
+  const { user, roles, loading: authLoading } = useAuth();
   const [entries, setEntries] = useState<LicenseEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
@@ -63,19 +63,13 @@ export default function AdminLicencas() {
 
   useEffect(() => {
     if (!user) return;
-    if (!canAccessLicenseAdmin(user.id)) {
+    if (!canAccessLicenseAdmin(roles)) {
       setIsAdmin(false);
       return;
     }
 
-    supabase
-      .from("user_roles")
-      .select("role")
-      .eq("user_id", user.id)
-      .eq("role", "admin")
-      .maybeSingle()
-      .then(({ data }) => setIsAdmin(!!data));
-  }, [user]);
+    setIsAdmin(true);
+  }, [roles, user]);
 
   const fetchEntries = useCallback(async () => {
     setLoading(true);
@@ -104,7 +98,7 @@ export default function AdminLicencas() {
     );
   }
 
-  if (!user || !canAccessLicenseAdmin(user.id) || !isAdmin) {
+  if (!user || !canAccessLicenseAdmin(roles) || !isAdmin) {
     return <Navigate to="/dashboard" replace />;
   }
 

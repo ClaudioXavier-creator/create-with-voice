@@ -29,7 +29,7 @@ interface EmpresaForm {
 const emptyForm: EmpresaForm = { nome: "", cnpj: "", endereco: "", responsavel_tecnico: "", crmv: "", capacidade: "", tipo_producao: [] };
 
 export default function Cadastro() {
-  const { user } = useAuth();
+  const { user, userType } = useAuth();
   const { empresas, recarregar, setEmpresaAtiva } = useEmpresa();
   const { tier } = useLicense();
   const [form, setForm] = useState<EmpresaForm>(emptyForm);
@@ -46,7 +46,8 @@ export default function Cadastro() {
     }));
   };
 
-  const MAX_EMPRESAS = TIER_MAX_EMPRESAS[tier];
+  const unlimitedCompanies = userType === "consultoria";
+  const MAX_EMPRESAS = unlimitedCompanies ? Number.POSITIVE_INFINITY : TIER_MAX_EMPRESAS[tier];
   const tierLabel = TIER_LABEL[tier];
   const limitReached = (empresas?.length || 0) >= MAX_EMPRESAS;
 
@@ -125,7 +126,7 @@ export default function Cadastro() {
 
       <div className="flex items-center justify-between mb-4">
         <span className="text-sm text-muted-foreground">
-          {empresas?.length || 0} / {MAX_EMPRESAS} empresas — plano {tierLabel}
+          {empresas?.length || 0} / {unlimitedCompanies ? "∞" : MAX_EMPRESAS} empresas — plano {tierLabel}{unlimitedCompanies ? " · consultor" : ""}
         </span>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
