@@ -1,5 +1,5 @@
-import { useMemo, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useEffect, useMemo, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   LayoutGrid,
   LogOut,
@@ -19,6 +19,7 @@ import { NAV_ENTRIES, isGroup } from "@/components/layout/nav-config";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const location = useLocation();
+  const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);
   const { user, roles, signOut } = useAuth();
   const visibleEntries = useMemo(
@@ -30,6 +31,25 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       }),
     [roles],
   );
+
+  useEffect(() => {
+    const handleShortcut = (event: KeyboardEvent) => {
+      const target = event.target as HTMLElement | null;
+      const isTyping = !!target && (["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName) || target.isContentEditable);
+
+      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k") {
+        event.preventDefault();
+        if (location.pathname !== "/busca-global") {
+          navigate("/busca-global");
+        }
+      }
+
+      if (isTyping) return;
+    };
+
+    window.addEventListener("keydown", handleShortcut);
+    return () => window.removeEventListener("keydown", handleShortcut);
+  }, [location.pathname, navigate]);
 
   return (
     <div className="flex min-h-screen">
