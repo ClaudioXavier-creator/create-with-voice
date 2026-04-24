@@ -31,6 +31,7 @@ interface ManualSalvo {
   titulo: string;
   arquivo_path: string | null;
   arquivo_nome: string | null;
+  conteudo: string;
   hash_sha256: string;
   total_pops: number;
   total_its: number;
@@ -39,6 +40,12 @@ interface ManualSalvo {
   total_produtos: number;
   total_calibracoes: number;
   created_at: string;
+  status: string;
+  resp_legal_nome: string | null;
+  resp_legal_assinado_em: string | null;
+  resp_tecnico_nome: string | null;
+  resp_tecnico_crmv: string | null;
+  resp_tecnico_assinado_em: string | null;
 }
 
 async function sha256Hex(text: string): Promise<string> {
