@@ -7,6 +7,7 @@ import logoFeedBpf from "@/assets/logo-feed-bpf.png";
 import logoAuditsBpf from "@/assets/logo-audits-bpf.png";
 import logoNutricrm from "@/assets/logo-nutricrm.png";
 import logoAgrogestao from "@/assets/logo-agrogestao.png";
+import logoAgrorc from "@/assets/logo-agrorc.png";
 
 const produtos = [
   {
@@ -62,6 +63,20 @@ const produtos = [
     trial: "7 dias grátis",
     trialLink: "/auth?product=agrogestao&mode=signup&redirect=%2Fagrogestao",
     preco: "A partir de R$ 97/mês",
+  },
+  {
+    nome: "Agro RC CRM",
+    logo: logoAgrorc,
+    desc: "Plataforma de gestão para Representantes Comerciais do agronegócio. Controle de clientes, metas, visitas, pipeline de oportunidades Kanban e painel RC com margens e scores.",
+    destaques: ["Painel RC", "Pipeline Kanban", "Metas Comerciais", "Visitas a Campo", "Clientes & Carteira", "Scores de Desempenho"],
+    link: "https://soil-to-client.lovable.app/",
+    gradient: "from-[hsl(270,70%,45%)] to-[hsl(290,80%,30%)]",
+    bgCard: "bg-gradient-to-br from-purple-50 to-violet-50 dark:from-purple-950/30 dark:to-violet-950/30",
+    borderColor: "border-purple-200 dark:border-purple-800",
+    trial: "7 dias grátis",
+    trialLink: "https://soil-to-client.lovable.app/",
+    preco: "A partir de R$ 97/mês",
+    external: true,
   },
 ];
 
