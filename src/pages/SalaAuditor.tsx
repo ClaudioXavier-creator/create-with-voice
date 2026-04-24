@@ -16,6 +16,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
+import GerarLinkAuditor from "@/components/auditor/GerarLinkAuditor";
 
 interface ModuleStatus {
   label: string;
@@ -157,11 +158,16 @@ export default function SalaAuditor() {
 
       <Progress value={pct} className="h-3 mb-6" />
 
-      <Tabs defaultValue="checklist" className="space-y-4">
+      <Tabs defaultValue="acesso_externo" className="space-y-4">
         <TabsList className="flex flex-wrap">
+          <TabsTrigger value="acesso_externo">🔗 Acesso do Auditor</TabsTrigger>
           <TabsTrigger value="checklist">📋 Checklist Decreto 12.031</TabsTrigger>
           <TabsTrigger value="modulos">📂 Módulos do Sistema</TabsTrigger>
         </TabsList>
+
+        <TabsContent value="acesso_externo">
+          <GerarLinkAuditor />
+        </TabsContent>
 
         {/* TAB: Checklist */}
         <TabsContent value="checklist" className="space-y-4">

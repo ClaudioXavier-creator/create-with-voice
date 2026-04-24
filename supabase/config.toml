@@ -1,1 +1,4 @@
 project_id = "uyrcxfypdzasdminxizq"
+
+[functions.auditor-portal]
+verify_jwt = false
