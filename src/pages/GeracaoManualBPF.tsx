@@ -175,6 +175,7 @@ export default function GeracaoManualBPF() {
   const [progress, setProgress] = useState(0);
   const [manualData, setManualData] = useState<ManualData | null>(null);
   const [historico, setHistorico] = useState<ManualSalvo[]>([]);
+  const [assinaturaAberta, setAssinaturaAberta] = useState<{ manual: ManualSalvo; papel: PapelAssinatura } | null>(null);
 
   const validacao = useMemo(() => validarManual(manualData), [manualData]);
   const erros = validacao.filter((v) => v.nivel === "erro");
