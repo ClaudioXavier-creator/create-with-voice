@@ -216,6 +216,27 @@ export default function Documentos() {
     setVersoesOpen(true);
   };
 
+  const abrirAprovacao = (doc: DocRow, status: "em_revisao" | "vigente" | "obsoleto") => {
+    setAprovarDoc(doc);
+    setAprovarStatus(status);
+    setAprovarOpen(true);
+  };
+
+  const handleNovaVersao = async (doc: DocRow) => {
+    if (!user) return;
+    const novaVersao = String(parseInt(doc.versao || "01") + 1).padStart(2, "0");
+    const motivo = window.prompt(`Criar nova versão (v${novaVersao}) em rascunho?\nInforme o motivo da revisão:`);
+    if (motivo === null) return;
+    const { data, error } = await (supabase.rpc as any)("criar_nova_versao_pop", {
+      _documento_pai_id: doc.id, _nova_versao: novaVersao, _motivo: motivo || null,
+    });
+    if (error) { toast.error(error.message); return; }
+    const result = data as { ok: boolean; error?: string };
+    if (!result.ok) { toast.error(result.error || "Falha"); return; }
+    toast.success(`Nova versão v${novaVersao} criada como rascunho`);
+    fetchData();
+  };
+
 
   const handleAddCalibracao = async () => {
     if (!calEquipamento || !user) return;
