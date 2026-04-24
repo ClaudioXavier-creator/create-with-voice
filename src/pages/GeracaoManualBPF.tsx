@@ -1,9 +1,10 @@
-import { useState, useEffect } from "react";
-import { BookOpen, Download, Loader2, Building2, FileText, ClipboardCheck, History, Save, Trash2, ShieldCheck } from "lucide-react";
+import { useState, useEffect, useMemo } from "react";
+import { BookOpen, Download, Loader2, Building2, FileText, ClipboardCheck, History, Save, Trash2, ShieldCheck, AlertTriangle, AlertCircle, CheckCircle2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import PageHeader from "@/components/PageHeader";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -47,6 +48,117 @@ async function sha256Hex(text: string): Promise<string> {
     .join("");
 }
 
+interface ValidacaoIssue {
+  nivel: "erro" | "aviso";
+  categoria: string;
+  mensagem: string;
+}
+
+function validarManual(md: ManualData | null): ValidacaoIssue[] {
+  const issues: ValidacaoIssue[] = [];
+  if (!md) {
+    issues.push({ nivel: "erro", categoria: "Dados", mensagem: "Nenhum dado coletado." });
+    return issues;
+  }
+
+  // 1. Empresa — campos obrigatórios
+  const e = md.empresa || {};
+  const camposEmpresa: Array<[string, string]> = [
+    ["nome", "Nome da empresa"],
+    ["cnpj", "CNPJ"],
+    ["endereco", "Endereço"],
+    ["responsavel_tecnico", "Responsável Técnico"],
+    ["crmv", "CRMV"],
+  ];
+  camposEmpresa.forEach(([k, label]) => {
+    if (!e[k] || String(e[k]).trim() === "") {
+      issues.push({ nivel: "erro", categoria: "Empresa", mensagem: `${label} não preenchido. Complete em Cadastro da Empresa.` });
+    }
+  });
+  if (!Array.isArray(e.tipo_producao) || e.tipo_producao.length === 0) {
+    issues.push({ nivel: "aviso", categoria: "Empresa", mensagem: "Tipo de produção não definido." });
+  }
+  if (!e.capacidade || String(e.capacidade).trim() === "") {
+    issues.push({ nivel: "aviso", categoria: "Empresa", mensagem: "Capacidade produtiva não informada." });
+  }
+
+  // 2. POPs vigentes — todos os 10 obrigatórios da IN 04/2007
+  const codigosVigentes = new Set(
+    md.popsVigentes.map((p: any) => String(p.codigo || "").toUpperCase().trim())
+  );
+  POPS_CONFIG.forEach((pop) => {
+    const cod = pop.codigo.toUpperCase();
+    if (!codigosVigentes.has(cod)) {
+      issues.push({
+        nivel: "erro",
+        categoria: "POPs",
+        mensagem: `${pop.codigo} (${pop.nome}) não possui versão vigente aprovada. Acesse Documentos e aprove uma versão.`,
+      });
+    }
+  });
+
+  // 3. POPs vigentes — consistência de campos
+  md.popsVigentes.forEach((p: any) => {
+    if (!p.versao || String(p.versao).trim() === "") {
+      issues.push({ nivel: "erro", categoria: "POPs", mensagem: `${p.codigo}: versão em branco.` });
+    }
+    if (!p.aprovado_em) {
+      issues.push({ nivel: "erro", categoria: "POPs", mensagem: `${p.codigo}: data de aprovação ausente.` });
+    }
+    if (!p.aprovador_nome || String(p.aprovador_nome).trim() === "") {
+      issues.push({ nivel: "erro", categoria: "POPs", mensagem: `${p.codigo}: nome do aprovador ausente.` });
+    }
+    if (!p.aprovacao_hash) {
+      issues.push({ nivel: "aviso", categoria: "POPs", mensagem: `${p.codigo}: hash de aprovação ausente.` });
+    }
+    // Validade vencida
+    if (p.proxima_revisao) {
+      const prox = new Date(p.proxima_revisao);
+      if (!isNaN(prox.getTime()) && prox < new Date()) {
+        issues.push({
+          nivel: "aviso",
+          categoria: "POPs",
+          mensagem: `${p.codigo}: revisão vencida em ${prox.toLocaleDateString("pt-BR")}.`,
+        });
+      }
+    }
+  });
+
+  // 4. Instruções de Trabalho — consistência por POP
+  POPS_CONFIG.forEach((pop) => {
+    const its = INSTRUCOES_TRABALHO.filter((it) => it.popCodigo === pop.codigo);
+    its.forEach((it) => {
+      if (!it.titulo || it.titulo.trim() === "") {
+        issues.push({ nivel: "erro", categoria: "ITs", mensagem: `IT ${it.id}: título ausente.` });
+      }
+      if (!it.frequencia || it.frequencia.trim() === "") {
+        issues.push({ nivel: "aviso", categoria: "ITs", mensagem: `IT ${it.id} (${pop.codigo}): frequência não definida.` });
+      }
+    });
+    // POP vigente sem nenhuma IT vinculada (apenas aviso — nem todo POP exige IT)
+    if (codigosVigentes.has(pop.codigo.toUpperCase()) && its.length === 0) {
+      issues.push({
+        nivel: "aviso",
+        categoria: "ITs",
+        mensagem: `${pop.codigo} vigente, mas sem Instruções de Trabalho vinculadas.`,
+      });
+    }
+  });
+
+  // 5. Avisos gerais
+  if (md.fornecedores.length === 0) {
+    issues.push({ nivel: "aviso", categoria: "Fornecedores", mensagem: "Nenhum fornecedor cadastrado." });
+  }
+  if (md.produtos.length === 0) {
+    issues.push({ nivel: "aviso", categoria: "Produtos", mensagem: "Nenhum produto registrado." });
+  }
+  if (md.calibracoes.length === 0) {
+    issues.push({ nivel: "aviso", categoria: "Calibração", mensagem: "Programa de calibração vazio." });
+  }
+
+  return issues;
+}
+
 export default function GeracaoManualBPF() {
   const { user } = useAuth();
   const { empresaAtiva } = useEmpresa();
@@ -55,6 +167,10 @@ export default function GeracaoManualBPF() {
   const [progress, setProgress] = useState(0);
   const [manualData, setManualData] = useState<ManualData | null>(null);
   const [historico, setHistorico] = useState<ManualSalvo[]>([]);
+
+  const validacao = useMemo(() => validarManual(manualData), [manualData]);
+  const erros = validacao.filter((v) => v.nivel === "erro");
+  const avisos = validacao.filter((v) => v.nivel === "aviso");
 
   const carregarHistorico = async () => {
     if (!user) return;
@@ -223,6 +339,11 @@ export default function GeracaoManualBPF() {
 
   const salvarManual = async () => {
     if (!manualData || !user) return;
+    const erros = validacao.filter((v) => v.nivel === "erro");
+    if (erros.length > 0) {
+      toast.error(`Não é possível salvar: ${erros.length} erro(s) de validação. Corrija antes de prosseguir.`);
+      return;
+    }
     setSalvando(true);
     try {
       const texto = gerarTexto();
@@ -369,12 +490,69 @@ export default function GeracaoManualBPF() {
             </Card>
           </div>
 
+          {/* Painel de validação */}
+          {erros.length === 0 && avisos.length === 0 ? (
+            <Alert className="border-primary/40">
+              <CheckCircle2 className="h-4 w-4 text-primary" />
+              <AlertTitle>Validação OK</AlertTitle>
+              <AlertDescription>Todos os POPs vigentes, ITs e dados da empresa estão completos e consistentes.</AlertDescription>
+            </Alert>
+          ) : (
+            <Card className={erros.length > 0 ? "border-destructive" : "border-yellow-500"}>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-base">
+                  {erros.length > 0 ? (
+                    <AlertCircle className="w-5 h-5 text-destructive" />
+                  ) : (
+                    <AlertTriangle className="w-5 h-5 text-yellow-600" />
+                  )}
+                  Validação pré-salvamento
+                  {erros.length > 0 && <Badge variant="destructive">{erros.length} erro(s)</Badge>}
+                  {avisos.length > 0 && <Badge variant="secondary">{avisos.length} aviso(s)</Badge>}
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                {erros.length > 0 && (
+                  <div>
+                    <p className="text-sm font-semibold text-destructive mb-2">Erros — bloqueiam o salvamento:</p>
+                    <ul className="space-y-1 text-sm max-h-48 overflow-y-auto">
+                      {erros.map((iss, i) => (
+                        <li key={`e-${i}`} className="flex gap-2">
+                          <Badge variant="outline" className="shrink-0 text-xs">{iss.categoria}</Badge>
+                          <span>{iss.mensagem}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+                {avisos.length > 0 && (
+                  <div>
+                    <p className="text-sm font-semibold text-yellow-700 dark:text-yellow-500 mb-2">Avisos — recomendado revisar:</p>
+                    <ul className="space-y-1 text-sm max-h-48 overflow-y-auto">
+                      {avisos.map((iss, i) => (
+                        <li key={`a-${i}`} className="flex gap-2">
+                          <Badge variant="outline" className="shrink-0 text-xs">{iss.categoria}</Badge>
+                          <span className="text-muted-foreground">{iss.mensagem}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          )}
+
           <Card>
             <CardHeader>
               <div className="flex items-center justify-between flex-wrap gap-2">
                 <CardTitle>Prévia do Manual</CardTitle>
                 <div className="flex gap-2">
-                  <Button onClick={salvarManual} disabled={salvando} variant="default">
+                  <Button
+                    onClick={salvarManual}
+                    disabled={salvando || erros.length > 0}
+                    variant="default"
+                    title={erros.length > 0 ? "Corrija os erros de validação para salvar" : "Salvar nova versão"}
+                  >
                     {salvando ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
                     Salvar versão
                   </Button>
