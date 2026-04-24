@@ -16,6 +16,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useEmpresa } from "@/hooks/useEmpresa";
 import { toast } from "sonner";
+import AnaliseLaudoIA from "@/components/laboratorio/AnaliseLaudoIA";
+import { Sparkles } from "lucide-react";
 
 interface AnaliseRow {
   id: string;
@@ -254,6 +256,15 @@ export default function AnalisesLaboratorio() {
                                 <TableCell className="text-xs">{a.data_analise || "—"}</TableCell>
                                 <TableCell>
                                   <div className="flex gap-1">
+                                    <AnaliseLaudoIA
+                                      analise={a}
+                                      onNCCriada={fetchData}
+                                      trigger={
+                                        <Button variant="ghost" size="sm" title="Analisar com IA">
+                                          <Sparkles className="w-4 h-4 text-primary" />
+                                        </Button>
+                                      }
+                                    />
                                     <Button variant="ghost" size="sm" onClick={() => { setSelectedAnalise(a); setDetailOpen(true); }}>
                                       <Eye className="w-4 h-4" />
                                     </Button>
