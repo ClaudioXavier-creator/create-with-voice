@@ -2,7 +2,7 @@ import { type ElementType, useEffect, useState } from "react";
 import {
   LayoutDashboard, AlertTriangle, ClipboardCheck, GraduationCap, CheckCircle2,
   CalendarDays, Bell, Wrench, FileText, Droplets, Search, ShieldCheck,
-  ArrowRight, Timer, BarChart as BarChartIcon
+  ArrowRight, Timer, BarChart as BarChartIcon, HelpCircle
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -98,7 +98,7 @@ const progressFromOverdue = (overdue: number, total: number) => {
 export default function Index() {
   const { user } = useAuth();
   const { empresaAtiva } = useEmpresa();
-  const { showOnboarding, fecharTour } = useOnboarding();
+  const { showOnboarding, iniciarTour, fecharTour } = useOnboarding();
   const [periodoFiltro, setPeriodoFiltro] = useState("todos");
   const [data, setData] = useState<DashboardData>({
     ncAbertas: 0, auditoriasRealizadas: 0, treinamentosPendentes: 0, conformidadeBPF: 0,
@@ -414,18 +414,23 @@ export default function Index() {
 
   return (
     <>
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-4 gap-3 flex-wrap">
         <PageHeader icon={LayoutDashboard} title="Dashboard" description="Visão geral do sistema FeedBPF" />
-        <Select value={periodoFiltro} onValueChange={setPeriodoFiltro}>
-          <SelectTrigger className="w-[180px]"><SelectValue placeholder="Período" /></SelectTrigger>
-          <SelectContent>
-            <SelectItem value="todos">Todo período</SelectItem>
-            <SelectItem value="mes">Último mês</SelectItem>
-            <SelectItem value="trimestre">Último trimestre</SelectItem>
-            <SelectItem value="semestre">Último semestre</SelectItem>
-            <SelectItem value="ano">Último ano</SelectItem>
-          </SelectContent>
-        </Select>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" size="sm" onClick={iniciarTour} title="Reiniciar tour de boas-vindas">
+            <HelpCircle className="w-4 h-4 mr-1" /> Tour
+          </Button>
+          <Select value={periodoFiltro} onValueChange={setPeriodoFiltro}>
+            <SelectTrigger className="w-[180px]"><SelectValue placeholder="Período" /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="todos">Todo período</SelectItem>
+              <SelectItem value="mes">Último mês</SelectItem>
+              <SelectItem value="trimestre">Último trimestre</SelectItem>
+              <SelectItem value="semestre">Último semestre</SelectItem>
+              <SelectItem value="ano">Último ano</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
       {/* Alertas do Planejamento Anual */}
