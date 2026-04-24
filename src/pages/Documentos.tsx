@@ -707,6 +707,18 @@ export default function Documentos() {
           )}
         </DialogContent>
       </Dialog>
+
+      {aprovarDoc && (
+        <AprovarPopDialog
+          open={aprovarOpen}
+          onOpenChange={setAprovarOpen}
+          documentoId={aprovarDoc.id}
+          documentoNome={`${aprovarDoc.codigo} — ${aprovarDoc.nome}`}
+          versao={aprovarDoc.versao || "01"}
+          novoStatus={aprovarStatus}
+          onSuccess={fetchData}
+        />
+      )}
     </>
   );
 }
