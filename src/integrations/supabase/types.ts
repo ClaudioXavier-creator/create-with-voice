@@ -2096,6 +2096,72 @@ export type Database = {
           },
         ]
       }
+      manuais_bpf: {
+        Row: {
+          arquivo_nome: string | null
+          arquivo_path: string | null
+          conteudo: string
+          created_at: string
+          empresa_id: string | null
+          gerado_por_nome: string | null
+          hash_sha256: string
+          id: string
+          observacoes: string | null
+          titulo: string
+          total_calibracoes: number
+          total_documentos: number
+          total_fornecedores: number
+          total_its: number
+          total_pops: number
+          total_produtos: number
+          updated_at: string
+          user_id: string
+          versao: number
+        }
+        Insert: {
+          arquivo_nome?: string | null
+          arquivo_path?: string | null
+          conteudo: string
+          created_at?: string
+          empresa_id?: string | null
+          gerado_por_nome?: string | null
+          hash_sha256: string
+          id?: string
+          observacoes?: string | null
+          titulo?: string
+          total_calibracoes?: number
+          total_documentos?: number
+          total_fornecedores?: number
+          total_its?: number
+          total_pops?: number
+          total_produtos?: number
+          updated_at?: string
+          user_id: string
+          versao?: number
+        }
+        Update: {
+          arquivo_nome?: string | null
+          arquivo_path?: string | null
+          conteudo?: string
+          created_at?: string
+          empresa_id?: string | null
+          gerado_por_nome?: string | null
+          hash_sha256?: string
+          id?: string
+          observacoes?: string | null
+          titulo?: string
+          total_calibracoes?: number
+          total_documentos?: number
+          total_fornecedores?: number
+          total_its?: number
+          total_pops?: number
+          total_produtos?: number
+          updated_at?: string
+          user_id?: string
+          versao?: number
+        }
+        Relationships: []
+      }
       manutencoes: {
         Row: {
           codigo_equipamento: string | null
