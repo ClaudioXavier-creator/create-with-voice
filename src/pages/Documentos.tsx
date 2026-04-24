@@ -61,6 +61,8 @@ interface DocRow {
   id: string; codigo: string; nome: string; versao: string | null;
   data_revisao: string | null; responsavel: string | null; status: string | null;
   validade_revisao: string | null; proxima_revisao: string | null;
+  workflow_status?: string | null; documento_pai_id?: string | null;
+  aprovador_nome?: string | null; aprovado_em?: string | null;
 }
 
 interface ArquivoBpf {
