@@ -414,18 +414,23 @@ export default function Index() {
 
   return (
     <>
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-4 gap-3 flex-wrap">
         <PageHeader icon={LayoutDashboard} title="Dashboard" description="Visão geral do sistema FeedBPF" />
-        <Select value={periodoFiltro} onValueChange={setPeriodoFiltro}>
-          <SelectTrigger className="w-[180px]"><SelectValue placeholder="Período" /></SelectTrigger>
-          <SelectContent>
-            <SelectItem value="todos">Todo período</SelectItem>
-            <SelectItem value="mes">Último mês</SelectItem>
-            <SelectItem value="trimestre">Último trimestre</SelectItem>
-            <SelectItem value="semestre">Último semestre</SelectItem>
-            <SelectItem value="ano">Último ano</SelectItem>
-          </SelectContent>
-        </Select>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" size="sm" onClick={iniciarTour} title="Reiniciar tour de boas-vindas">
+            <HelpCircle className="w-4 h-4 mr-1" /> Tour
+          </Button>
+          <Select value={periodoFiltro} onValueChange={setPeriodoFiltro}>
+            <SelectTrigger className="w-[180px]"><SelectValue placeholder="Período" /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="todos">Todo período</SelectItem>
+              <SelectItem value="mes">Último mês</SelectItem>
+              <SelectItem value="trimestre">Último trimestre</SelectItem>
+              <SelectItem value="semestre">Último semestre</SelectItem>
+              <SelectItem value="ano">Último ano</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
       {/* Alertas do Planejamento Anual */}
