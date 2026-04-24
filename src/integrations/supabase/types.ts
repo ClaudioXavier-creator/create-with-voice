@@ -2107,6 +2107,16 @@ export type Database = {
           hash_sha256: string
           id: string
           observacoes: string | null
+          resp_legal_assinado_em: string | null
+          resp_legal_hash: string | null
+          resp_legal_nome: string | null
+          resp_legal_user_id: string | null
+          resp_tecnico_assinado_em: string | null
+          resp_tecnico_crmv: string | null
+          resp_tecnico_hash: string | null
+          resp_tecnico_nome: string | null
+          resp_tecnico_user_id: string | null
+          status: string
           titulo: string
           total_calibracoes: number
           total_documentos: number
@@ -2128,6 +2138,16 @@ export type Database = {
           hash_sha256: string
           id?: string
           observacoes?: string | null
+          resp_legal_assinado_em?: string | null
+          resp_legal_hash?: string | null
+          resp_legal_nome?: string | null
+          resp_legal_user_id?: string | null
+          resp_tecnico_assinado_em?: string | null
+          resp_tecnico_crmv?: string | null
+          resp_tecnico_hash?: string | null
+          resp_tecnico_nome?: string | null
+          resp_tecnico_user_id?: string | null
+          status?: string
           titulo?: string
           total_calibracoes?: number
           total_documentos?: number
@@ -2149,6 +2169,16 @@ export type Database = {
           hash_sha256?: string
           id?: string
           observacoes?: string | null
+          resp_legal_assinado_em?: string | null
+          resp_legal_hash?: string | null
+          resp_legal_nome?: string | null
+          resp_legal_user_id?: string | null
+          resp_tecnico_assinado_em?: string | null
+          resp_tecnico_crmv?: string | null
+          resp_tecnico_hash?: string | null
+          resp_tecnico_nome?: string | null
+          resp_tecnico_user_id?: string | null
+          status?: string
           titulo?: string
           total_calibracoes?: number
           total_documentos?: number
