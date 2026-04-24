@@ -68,7 +68,10 @@ export function useOnboarding() {
     }
   }, []);
 
-  const iniciarTour = () => setShowOnboarding(true);
+  const iniciarTour = () => {
+    localStorage.removeItem(STORAGE_KEY);
+    setShowOnboarding(true);
+  };
   const fecharTour = () => {
     setShowOnboarding(false);
     localStorage.setItem(STORAGE_KEY, "true");
