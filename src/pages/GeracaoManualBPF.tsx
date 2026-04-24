@@ -380,6 +380,7 @@ export default function GeracaoManualBPF() {
         arquivo_nome: arquivoNome,
         conteudo: texto,
         hash_sha256: hash,
+        status: "aguardando_rt",
         total_pops: manualData.popsVigentes.length,
         total_its: totalIts,
         total_documentos: manualData.documentos.length,
@@ -390,7 +391,10 @@ export default function GeracaoManualBPF() {
       });
       if (insErr) throw insErr;
 
-      toast.success(`Manual v${proximaVersao} salvo com hash de auditoria.`);
+      toast.success(
+        `Manual v${proximaVersao} salvo como RASCUNHO PENDENTE. Solicite as assinaturas do RT e do Responsável Legal no histórico abaixo para torná-lo VIGENTE.`,
+        { duration: 6000 }
+      );
       await carregarHistorico();
     } catch (err: any) {
       toast.error("Erro ao salvar: " + (err.message || ""));
