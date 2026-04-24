@@ -335,6 +335,11 @@ export default function GeracaoManualBPF() {
 
   const salvarManual = async () => {
     if (!manualData || !user) return;
+    const erros = validacao.filter((v) => v.nivel === "erro");
+    if (erros.length > 0) {
+      toast.error(`Não é possível salvar: ${erros.length} erro(s) de validação. Corrija antes de prosseguir.`);
+      return;
+    }
     setSalvando(true);
     try {
       const texto = gerarTexto();
