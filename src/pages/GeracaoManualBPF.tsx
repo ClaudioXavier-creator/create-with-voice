@@ -680,6 +680,20 @@ export default function GeracaoManualBPF() {
           )}
         </CardContent>
       </Card>
+
+      {assinaturaAberta && (
+        <AssinarManualDialog
+          open={!!assinaturaAberta}
+          onOpenChange={(v) => !v && setAssinaturaAberta(null)}
+          manualId={assinaturaAberta.manual.id}
+          manualTitulo={assinaturaAberta.manual.titulo}
+          versao={assinaturaAberta.manual.versao}
+          papel={assinaturaAberta.papel}
+          empresaId={empresaAtiva?.id || null}
+          conteudo={assinaturaAberta.manual.conteudo}
+          onSuccess={carregarHistorico}
+        />
+      )}
     </div>
   );
 }
