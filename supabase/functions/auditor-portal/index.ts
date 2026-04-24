@@ -63,7 +63,6 @@ async function logAccess(
     .from("auditor_tokens")
     .update({ ultimo_acesso_em: new Date().toISOString() })
     .eq("id", token_id);
-  await supabase.rpc as unknown; // noop placeholder removed below
 }
 
 async function incrementHit(token_id: string) {
