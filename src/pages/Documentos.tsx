@@ -122,6 +122,12 @@ export default function Documentos() {
   const [versoes, setVersoes] = useState<any[]>([]);
   const [versoesOpen, setVersoesOpen] = useState(false);
   const [versoesDocNome, setVersoesDocNome] = useState("");
+
+  // Workflow de aprovação
+  const [aprovarOpen, setAprovarOpen] = useState(false);
+  const [aprovarDoc, setAprovarDoc] = useState<DocRow | null>(null);
+  const [aprovarStatus, setAprovarStatus] = useState<"em_revisao" | "vigente" | "obsoleto">("vigente");
+
   // Arquivo BPF form
   const [arqOpen, setArqOpen] = useState(false);
   const [arqTitulo, setArqTitulo] = useState("");
