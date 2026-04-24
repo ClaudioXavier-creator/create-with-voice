@@ -168,6 +168,10 @@ export default function GeracaoManualBPF() {
   const [manualData, setManualData] = useState<ManualData | null>(null);
   const [historico, setHistorico] = useState<ManualSalvo[]>([]);
 
+  const validacao = useMemo(() => validarManual(manualData), [manualData]);
+  const erros = validacao.filter((v) => v.nivel === "erro");
+  const avisos = validacao.filter((v) => v.nivel === "aviso");
+
   const carregarHistorico = async () => {
     if (!user) return;
     let q = supabase.from("manuais_bpf").select("*").eq("user_id", user.id);
