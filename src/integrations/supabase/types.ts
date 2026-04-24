@@ -918,6 +918,65 @@ export type Database = {
           },
         ]
       }
+      documento_aprovacoes: {
+        Row: {
+          aprovador_nome: string
+          aprovador_user_id: string
+          created_at: string
+          documento_id: string
+          empresa_id: string | null
+          hash_assinatura: string
+          id: string
+          ip_address: string | null
+          motivo: string | null
+          status_anterior: string
+          status_novo: string
+          user_agent: string | null
+          user_id: string
+          versao: string | null
+        }
+        Insert: {
+          aprovador_nome: string
+          aprovador_user_id: string
+          created_at?: string
+          documento_id: string
+          empresa_id?: string | null
+          hash_assinatura: string
+          id?: string
+          ip_address?: string | null
+          motivo?: string | null
+          status_anterior: string
+          status_novo: string
+          user_agent?: string | null
+          user_id: string
+          versao?: string | null
+        }
+        Update: {
+          aprovador_nome?: string
+          aprovador_user_id?: string
+          created_at?: string
+          documento_id?: string
+          empresa_id?: string | null
+          hash_assinatura?: string
+          id?: string
+          ip_address?: string | null
+          motivo?: string | null
+          status_anterior?: string
+          status_novo?: string
+          user_agent?: string | null
+          user_id?: string
+          versao?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "documento_aprovacoes_documento_id_fkey"
+            columns: ["documento_id"]
+            isOneToOne: false
+            referencedRelation: "documentos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       documento_versoes: {
         Row: {
           alteracoes: string | null
@@ -977,11 +1036,17 @@ export type Database = {
       }
       documentos: {
         Row: {
+          aprovacao_hash: string | null
+          aprovado_em: string | null
+          aprovado_por: string | null
+          aprovador_nome: string | null
           codigo: string
           created_at: string
           data_revisao: string | null
+          documento_pai_id: string | null
           empresa_id: string | null
           id: string
+          motivo_revisao: string | null
           nome: string
           proxima_revisao: string | null
           responsavel: string | null
@@ -990,13 +1055,20 @@ export type Database = {
           user_id: string
           validade_revisao: string | null
           versao: string | null
+          workflow_status: string
         }
         Insert: {
+          aprovacao_hash?: string | null
+          aprovado_em?: string | null
+          aprovado_por?: string | null
+          aprovador_nome?: string | null
           codigo: string
           created_at?: string
           data_revisao?: string | null
+          documento_pai_id?: string | null
           empresa_id?: string | null
           id?: string
+          motivo_revisao?: string | null
           nome: string
           proxima_revisao?: string | null
           responsavel?: string | null
@@ -1005,13 +1077,20 @@ export type Database = {
           user_id: string
           validade_revisao?: string | null
           versao?: string | null
+          workflow_status?: string
         }
         Update: {
+          aprovacao_hash?: string | null
+          aprovado_em?: string | null
+          aprovado_por?: string | null
+          aprovador_nome?: string | null
           codigo?: string
           created_at?: string
           data_revisao?: string | null
+          documento_pai_id?: string | null
           empresa_id?: string | null
           id?: string
+          motivo_revisao?: string | null
           nome?: string
           proxima_revisao?: string | null
           responsavel?: string | null
@@ -1020,8 +1099,16 @@ export type Database = {
           user_id?: string
           validade_revisao?: string | null
           versao?: string | null
+          workflow_status?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "documentos_documento_pai_id_fkey"
+            columns: ["documento_pai_id"]
+            isOneToOne: false
+            referencedRelation: "documentos"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "documentos_empresa_id_fkey"
             columns: ["empresa_id"]
@@ -3794,6 +3881,26 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      aprovar_documento_pop: {
+        Args: {
+          _aprovador_nome: string
+          _documento_id: string
+          _ip?: string
+          _motivo?: string
+          _novo_status: string
+          _pin_hash: string
+          _user_agent?: string
+        }
+        Returns: Json
+      }
+      criar_nova_versao_pop: {
+        Args: {
+          _documento_pai_id: string
+          _motivo?: string
+          _nova_versao: string
+        }
+        Returns: Json
+      }
       desvincular_empresa_licenca_consultor: {
         Args: { _vinculo_id: string }
         Returns: Json
