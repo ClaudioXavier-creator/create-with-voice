@@ -1,9 +1,10 @@
-import { useState, useEffect } from "react";
-import { BookOpen, Download, Loader2, Building2, FileText, ClipboardCheck, History, Save, Trash2, ShieldCheck } from "lucide-react";
+import { useState, useEffect, useMemo } from "react";
+import { BookOpen, Download, Loader2, Building2, FileText, ClipboardCheck, History, Save, Trash2, ShieldCheck, AlertTriangle, AlertCircle, CheckCircle2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import PageHeader from "@/components/PageHeader";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
