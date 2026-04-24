@@ -132,9 +132,9 @@ export const NAV_ENTRIES: NavEntry[] = [
       { path: "/matriz-risco", label: "Matriz de Risco", icon: Radar },
       { path: "/qualidade-total", label: "Qualidade Total", icon: ClipboardList },
       { path: "/checklist-pre-auditoria", label: "Checklist Pré-Auditoria", icon: ShieldCheck },
-      { path: "/sala-auditor", label: "Sala do Auditor", icon: ClipboardCheck },
     ],
   },
+  { path: "/sala-auditor", label: "🔍 Sala do Auditor", icon: ClipboardCheck, keywords: ["auditor", "fiscal", "mapa"] },
   {
     label: "Gestão & Relatórios",
     icon: BarChart3,
