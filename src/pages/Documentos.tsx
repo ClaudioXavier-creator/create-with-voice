@@ -407,29 +407,58 @@ export default function Documentos() {
                 <Table>
                   <TableHeader><TableRow>
                     <TableHead>Código</TableHead><TableHead>Nome</TableHead><TableHead>Versão</TableHead>
-                    <TableHead>Revisão</TableHead><TableHead>Validade</TableHead><TableHead>Próx. Revisão</TableHead><TableHead>Responsável</TableHead><TableHead>Status</TableHead><TableHead className="w-32">Ações</TableHead>
+                    <TableHead>Workflow</TableHead>
+                    <TableHead>Aprovação</TableHead>
+                    <TableHead>Validade</TableHead><TableHead>Próx. Revisão</TableHead><TableHead>Responsável</TableHead><TableHead className="w-56">Ações</TableHead>
                   </TableRow></TableHeader>
                   <TableBody>
                     {docs.map(d => {
                       const today = new Date().toISOString().split("T")[0];
                       const vencido = d.validade_revisao && d.validade_revisao < today;
                       const proximoVencer = d.proxima_revisao && d.proxima_revisao <= new Date(Date.now() + 30 * 86400000).toISOString().split("T")[0];
+                      const wf = (d.workflow_status || "vigente") as WorkflowStatus;
                       return (
-                      <TableRow key={d.id}>
+                      <TableRow key={d.id} className={wf === "obsoleto" ? "opacity-60" : ""}>
                         <TableCell className="font-mono text-sm">{d.codigo}</TableCell>
-                        <TableCell>{d.nome}</TableCell><TableCell>{d.versao}</TableCell>
-                        <TableCell>{d.data_revisao}</TableCell>
+                        <TableCell>
+                          {d.nome}
+                          {d.documento_pai_id && <span className="ml-1 text-[10px] text-muted-foreground">(revisão)</span>}
+                        </TableCell>
+                        <TableCell>v{d.versao}</TableCell>
+                        <TableCell><WorkflowBadge status={wf} /></TableCell>
+                        <TableCell className="text-xs">
+                          {d.aprovador_nome ? (
+                            <div>
+                              <div className="font-medium">{d.aprovador_nome}</div>
+                              <div className="text-muted-foreground">{d.aprovado_em ? new Date(d.aprovado_em).toLocaleDateString("pt-BR") : ""}</div>
+                            </div>
+                          ) : <span className="text-muted-foreground">—</span>}
+                        </TableCell>
                         <TableCell className={vencido ? "text-destructive font-medium" : ""}>{d.validade_revisao || "—"}</TableCell>
                         <TableCell className={proximoVencer ? "text-yellow-600 font-medium" : ""}>{d.proxima_revisao || "—"}</TableCell>
                         <TableCell>{d.responsavel}</TableCell>
-                        <TableCell><Badge className={statusBadge[d.status || "ativo"]}>{d.status === "em_revisao" ? "Em revisão" : d.status === "obsoleto" ? "Obsoleto" : "Ativo"}</Badge></TableCell>
                         <TableCell>
-                          <div className="flex gap-1">
-                            <Button variant="outline" size="sm" className="h-7 text-xs" onClick={() => {
-                              setVersaoDocId(d.id); setVersaoDocCodigo(d.codigo); setVersaoAnterior(d.versao || "01");
-                              const next = String(parseInt(d.versao || "01") + 1).padStart(2, "0");
-                              setVersaoNova(next); setVersaoOpen(true);
-                            }}>Revisar</Button>
+                          <div className="flex flex-wrap gap-1">
+                            {wf === "rascunho" && (
+                              <Button variant="outline" size="sm" className="h-7 text-xs gap-1" onClick={() => abrirAprovacao(d, "em_revisao")}>
+                                <Send className="w-3 h-3" /> Enviar revisão
+                              </Button>
+                            )}
+                            {wf === "em_revisao" && (
+                              <Button size="sm" className="h-7 text-xs gap-1" onClick={() => abrirAprovacao(d, "vigente")}>
+                                <CheckCircle2 className="w-3 h-3" /> Aprovar
+                              </Button>
+                            )}
+                            {wf === "vigente" && (
+                              <>
+                                <Button variant="outline" size="sm" className="h-7 text-xs gap-1" onClick={() => handleNovaVersao(d)}>
+                                  <GitBranch className="w-3 h-3" /> Nova versão
+                                </Button>
+                                <Button variant="ghost" size="sm" className="h-7 text-xs" onClick={() => abrirAprovacao(d, "obsoleto")}>
+                                  <Archive className="w-3 h-3" />
+                                </Button>
+                              </>
+                            )}
                             <Button variant="ghost" size="sm" className="h-7 text-xs gap-1" onClick={() => handleVerHistorico(d.id, `${d.codigo} — ${d.nome}`)}>
                               <History className="w-3 h-3" />
                             </Button>
