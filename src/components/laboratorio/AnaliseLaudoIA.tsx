@@ -27,6 +27,9 @@ interface AnaliseRow {
 
 interface Parecer {
   conforme: boolean;
+  conforme_legislacao: boolean;
+  conforme_rotulo: "conforme" | "nao_conforme" | "nao_avaliado";
+  comparacao_rotulo: string;
   classificacao_risco: "baixo" | "medio" | "alto" | "critico";
   parecer_tecnico: string;
   causa_provavel: string;
@@ -85,6 +88,20 @@ export default function AnaliseLaudoIA({ analise, trigger, onNCCriada }: Props) 
     setLoading(true);
     setParecer(null);
     try {
+      // Busca o rótulo do produto analisado (match por nome, mesmo user/empresa)
+      let rotulo: any = undefined;
+      if (analise.produto && user) {
+        let q = supabase
+          .from("produtos")
+          .select("nome, marca, classificacao, especie_alvo, categoria_animal, registro_mapa, niveis_garantia")
+          .eq("user_id", user.id)
+          .ilike("nome", analise.produto.trim())
+          .limit(1);
+        if (empresaAtiva) q = q.eq("empresa_id", empresaAtiva.id);
+        const { data: prod } = await q.maybeSingle();
+        if (prod) rotulo = prod;
+      }
+
       const { data, error } = await supabase.functions.invoke("analisar-laudo-ia", {
         body: {
           tipo_analise: analise.tipo_analise,
@@ -98,6 +115,7 @@ export default function AnaliseLaudoIA({ analise, trigger, onNCCriada }: Props) 
           metodo: analise.metodo,
           observacoes: analise.observacoes,
           pdf_base64: pdfBase64 || undefined,
+          rotulo,
         },
       });
       if (error) throw error;
@@ -209,6 +227,28 @@ export default function AnaliseLaudoIA({ analise, trigger, onNCCriada }: Props) 
                 </Badge>
                 <Badge variant="outline" className="text-xs">{parecer.referencia_legal}</Badge>
               </div>
+
+              <div className="grid grid-cols-2 gap-2 text-xs">
+                <div className={`p-2 rounded border ${parecer.conforme_legislacao ? "bg-primary/10 border-primary/30" : "bg-destructive/10 border-destructive/30"}`}>
+                  <p className="font-semibold mb-0.5">Legislação MAPA</p>
+                  <p>{parecer.conforme_legislacao ? "✓ Conforme" : "✗ Não conforme"}</p>
+                </div>
+                <div className={`p-2 rounded border ${
+                  parecer.conforme_rotulo === "conforme" ? "bg-primary/10 border-primary/30" :
+                  parecer.conforme_rotulo === "nao_conforme" ? "bg-destructive/10 border-destructive/30" :
+                  "bg-muted/50 border-border"
+                }`}>
+                  <p className="font-semibold mb-0.5">Rótulo declarado</p>
+                  <p>
+                    {parecer.conforme_rotulo === "conforme" && "✓ Dentro da garantia"}
+                    {parecer.conforme_rotulo === "nao_conforme" && "✗ Fora da garantia"}
+                    {parecer.conforme_rotulo === "nao_avaliado" && "— Não avaliado"}
+                  </p>
+                </div>
+              </div>
+              {parecer.comparacao_rotulo && (
+                <p className="text-xs text-muted-foreground italic px-1">{parecer.comparacao_rotulo}</p>
+              )}
 
               <div>
                 <Label className="text-xs font-semibold">Parecer Técnico</Label>
