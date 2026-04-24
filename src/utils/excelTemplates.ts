@@ -1,4 +1,5 @@
 import * as XLSX from "xlsx";
+import { DESVIOS_CBAA_2017 } from "@/config/desviosAnaliticos";
 
 // Helper to create a styled worksheet with proper column widths and formatting
 function createSheet(data: (string | number | boolean | null)[][], colWidths: number[]): XLSX.WorkSheet {
@@ -655,7 +656,79 @@ export const TEMPLATE_GENERATORS: Record<string, () => void> = {
   "Modelo_Rotulo": gerarModeloRotulo,
   "Form_Expedicao_Simples": gerarFormExpedicaoSimples,
   "Form_Expedicao_Completa": gerarFormExpedicaoCompleta,
+  "Tabela_Desvios_Analiticos_CBAA": gerarTabelaDesviosAnaliticos,
 };
+
+// ─── Tabela de Desvios Analíticos CBAA 2017 ───
+export function gerarTabelaDesviosAnaliticos() {
+  const wb = XLSX.utils.book_new();
+
+  const cabecalho: (string | number)[][] = [
+    ["TABELA DE DESVIOS ANALÍTICOS — CBAA 2017"],
+    ["Fonte: Compêndio Brasileiro de Alimentação Animal (Sindirações) — DESVIOS ANALÍTICOS E INCERTEZA NAS MEDIÇÕES"],
+    ["Estudos interlaboratoriais MAPA + privados (1987-2007). Vitaminas A e E: Diretiva CE 45/2000 (15% repetibilidade)."],
+    ["Aplicar a tolerância ANTES de classificar um resultado como NÃO CONFORME do rótulo."],
+    [""],
+    ["COMO USAR:"],
+    ["1) Localize o parâmetro analisado e a unidade do laudo."],
+    ["2) Verifique se o resultado obtido (X) está dentro do intervalo de validação."],
+    ["3) Calcule o CV(%) — fixo ou pela fórmula a/X + b."],
+    ["4) Tolerância absoluta = (CV/100) × X. Faixa aceitável = X ± Tolerância."],
+    ["5) Se o valor declarado no rótulo cair dentro da faixa, NÃO há não conformidade analítica."],
+    [""],
+    [
+      "Parâmetro",
+      "Aliases (sinônimos)",
+      "Unidade",
+      "Intervalo Mín",
+      "Intervalo Máx",
+      "Tipo Fórmula",
+      "CV fixo (%)",
+      "Coef. a",
+      "Coef. b",
+      "Fórmula CV(%)",
+      "Observação",
+    ],
+  ];
+
+  const linhas = DESVIOS_CBAA_2017.map((d) => {
+    const isFixo = d.formula.tipo === "fixo";
+    const cvFixo = isFixo ? (d.formula as { cv_pct: number }).cv_pct : "";
+    const a = !isFixo ? (d.formula as { a: number; b: number }).a : "";
+    const b = !isFixo ? (d.formula as { a: number; b: number }).b : "";
+    const formulaStr = isFixo
+      ? `CV = ${cvFixo}% (constante)`
+      : `CV = ${a}/X + (${b})`;
+    return [
+      d.nome,
+      d.aliases.join(", "),
+      d.unidade,
+      d.intervalo[0],
+      d.intervalo[1],
+      d.formula.tipo,
+      cvFixo,
+      a,
+      b,
+      formulaStr,
+      d.obs || "",
+    ];
+  });
+
+  const exemplo = [
+    [""],
+    ["EXEMPLO PRÁTICO:"],
+    ["Proteína Bruta declarada no rótulo: 200 g/kg (mín). Resultado laboratorial: 188 g/kg."],
+    ["Fórmula: CV(%) = 209/188 + 1 = 2,11%. Tolerância = 2,11% × 188 = 3,97 g/kg."],
+    ["Faixa aceitável: 184,03 — 191,97 g/kg. Como 188 está acima de 184, ESTÁ DENTRO da tolerância."],
+    [""],
+    ["Assinatura RT:", "", "", "CRMV:", "", "Data:", ""],
+  ];
+
+  const dados = [...cabecalho, ...linhas, ...exemplo];
+  const ws = createSheet(dados, [32, 36, 12, 12, 12, 12, 10, 10, 10, 28, 30]);
+  XLSX.utils.book_append_sheet(wb, ws, "Desvios CBAA 2017");
+  downloadWorkbook(wb, "Tabela_Desvios_Analiticos_CBAA_2017");
+}
 
 // ─── Ficha Técnica de Produto ───
 export function gerarFichaTecnicaProduto() {
