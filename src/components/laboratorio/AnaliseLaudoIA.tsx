@@ -55,7 +55,7 @@ export default function AnaliseLaudoIA({ analise, trigger, onNCCriada }: Props) 
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [parecer, setParecer] = useState<Parecer | null>(null);
-  const [pdfText, setPdfText] = useState("");
+  const [pdfBase64, setPdfBase64] = useState("");
   const [pdfNome, setPdfNome] = useState("");
   const [criandoNC, setCriandoNC] = useState(false);
 
@@ -64,26 +64,21 @@ export default function AnaliseLaudoIA({ analise, trigger, onNCCriada }: Props) 
       toast.error("Envie um arquivo PDF.");
       return;
     }
-    setPdfNome(file.name);
-    try {
-      // Extração simples no cliente via pdf.js (lazy load)
-      const pdfjsLib: any = await import("pdfjs-dist/build/pdf.mjs");
-      const workerSrc = (await import("pdfjs-dist/build/pdf.worker.mjs?url")).default;
-      pdfjsLib.GlobalWorkerOptions.workerSrc = workerSrc;
-      const buf = await file.arrayBuffer();
-      const pdf = await pdfjsLib.getDocument({ data: buf }).promise;
-      let text = "";
-      for (let i = 1; i <= Math.min(pdf.numPages, 10); i++) {
-        const page = await pdf.getPage(i);
-        const content = await page.getTextContent();
-        text += content.items.map((it: any) => it.str).join(" ") + "\n";
-      }
-      setPdfText(text);
-      toast.success(`PDF lido (${pdf.numPages} pág.)`);
-    } catch (e) {
-      console.error(e);
-      toast.error("Não foi possível ler o PDF. Você pode prosseguir só com os campos.");
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error("PDF muito grande (máx 10MB).");
+      return;
     }
+    setPdfNome(file.name);
+    const reader = new FileReader();
+    reader.onload = () => {
+      const result = reader.result as string;
+      // remove prefix data:application/pdf;base64,
+      const b64 = result.split(",")[1] || "";
+      setPdfBase64(b64);
+      toast.success("PDF carregado");
+    };
+    reader.onerror = () => toast.error("Erro ao ler PDF");
+    reader.readAsDataURL(file);
   };
 
   const analisar = async () => {
@@ -102,7 +97,7 @@ export default function AnaliseLaudoIA({ analise, trigger, onNCCriada }: Props) 
           laboratorio: analise.laboratorio,
           metodo: analise.metodo,
           observacoes: analise.observacoes,
-          pdf_text: pdfText || undefined,
+          pdf_base64: pdfBase64 || undefined,
         },
       });
       if (error) throw error;

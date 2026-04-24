@@ -17,7 +17,7 @@ interface RequestBody {
   laboratorio?: string;
   metodo?: string;
   observacoes?: string;
-  pdf_text?: string; // texto extraído do PDF (opcional)
+  pdf_base64?: string; // PDF inteiro em base64 (opcional)
 }
 
 Deno.serve(async (req: Request) => {
@@ -40,13 +40,21 @@ DADOS DO LAUDO INFORMADOS PELO USUÁRIO:
 - Laboratório: ${body.laboratorio || "não informado"}
 - Método: ${body.metodo || "não informado"}
 - Observações: ${body.observacoes || "—"}
-
-${body.pdf_text ? `\nCONTEÚDO EXTRAÍDO DO PDF DO LAUDO:\n${body.pdf_text.slice(0, 8000)}` : ""}
 `.trim();
 
     const systemPrompt = `Você é um especialista em qualidade de fábricas de ração animal e legislação MAPA (IN 04/2007, IN 13/2004, IN 15/2009, RDC ANVISA, Decreto 12.031/2024).
 Analise o laudo laboratorial e produza um parecer técnico objetivo, classificando a conformidade e sugerindo ações corretivas concretas conforme APPCC/HACCP.
-Use linguagem técnica brasileira, cite a normativa quando aplicável, e seja conciso.`;
+Use linguagem técnica brasileira, cite a normativa quando aplicável, e seja conciso.
+${body.pdf_base64 ? "O PDF do laudo original foi anexado — extraia também os dados relevantes dele (parâmetros, métodos, valores, datas) e considere-os no parecer." : ""}`;
+
+    // Monta mensagem do usuário (texto + opcionalmente PDF como image_url base64 para multimodal)
+    const userContent: any[] = [{ type: "text", text: contexto }];
+    if (body.pdf_base64) {
+      userContent.push({
+        type: "image_url",
+        image_url: { url: `data:application/pdf;base64,${body.pdf_base64}` },
+      });
+    }
 
     const aiResp = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -55,10 +63,10 @@ Use linguagem técnica brasileira, cite a normativa quando aplicável, e seja co
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
+        model: "google/gemini-2.5-pro",
         messages: [
           { role: "system", content: systemPrompt },
-          { role: "user", content: contexto },
+          { role: "user", content: userContent },
         ],
         tools: [
           {
