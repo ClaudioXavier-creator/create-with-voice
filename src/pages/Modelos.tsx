@@ -87,6 +87,9 @@ const MODELOS: ModeloDoc[] = [
   // Checklist de Registro
   { nome: "Checklist — Registro de Fábrica de Rações (MAPA)", descricao: "Checklist completo com 14 áreas para registro de estabelecimento no MAPA/SIPEAGRO", categoria: "auditoria", arquivo: "Checklist_Registro_Fabrica", novo: true },
 
+  // Referências Técnicas Laboratoriais
+  { nome: "Tabela de Desvios Analíticos — CBAA 2017", descricao: "Tolerâncias analíticas oficiais (Sindirações) para 38 parâmetros (PB, FB, minerais, vitaminas, micotoxinas). Aplicar antes de classificar não conformidade de rótulo.", categoria: "formulario", arquivo: "Tabela_Desvios_Analiticos_CBAA", novo: true },
+
   // Instruções de Trabalho (ITs)
   { nome: "IT-01-01 — Avaliação e Qualificação de Fornecedor", descricao: "Qualificação inicial com SIPEAGRO, documentação e nota de avaliação", categoria: "instrucao", arquivo: "IT-01-01", novo: true },
   { nome: "IT-01-02 — Recebimento de MP a Granel", descricao: "Inspeção de grãos: umidade, odor, insetos e contraprova", categoria: "instrucao", arquivo: "IT-01-02", novo: true },

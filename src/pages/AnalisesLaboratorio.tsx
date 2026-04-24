@@ -18,6 +18,7 @@ import { useEmpresa } from "@/hooks/useEmpresa";
 import { toast } from "sonner";
 import AnaliseLaudoIA from "@/components/laboratorio/AnaliseLaudoIA";
 import { Sparkles } from "lucide-react";
+import { calcularTolerancia } from "@/config/desviosAnaliticos";
 
 interface AnaliseRow {
   id: string;
@@ -246,7 +247,25 @@ export default function AnalisesLaboratorio() {
                                 </TableCell>
                                 <TableCell className="text-sm">{a.parametro}</TableCell>
                                 <TableCell className="font-mono text-sm">{a.resultado || "—"} {a.unidade || ""}</TableCell>
-                                <TableCell className="text-xs text-muted-foreground">{a.limite_referencia || "—"}</TableCell>
+                                <TableCell className="text-xs text-muted-foreground">
+                                  <div>{a.limite_referencia || "—"}</div>
+                                  {(() => {
+                                    const valor = parseFloat((a.resultado || "").replace(",", "."));
+                                    if (!a.parametro || isNaN(valor)) return null;
+                                    const tol = calcularTolerancia(a.parametro, a.unidade || undefined, valor);
+                                    if (!tol) return null;
+                                    const fmt = (n: number) => n.toLocaleString("pt-BR", { maximumFractionDigits: 2 });
+                                    return (
+                                      <div
+                                        className="mt-1 text-[10px] text-primary/80"
+                                        title={`CBAA 2017 — ${tol.desvio.nome} | CV ${tol.cv_pct.toFixed(1)}%${tol.desvio.obs ? " (" + tol.desvio.obs + ")" : ""}`}
+                                      >
+                                        Tol. CBAA: {fmt(tol.faixa_min)}–{fmt(tol.faixa_max)} {a.unidade}
+                                        {tol.fora_intervalo_validacao && <span className="text-yellow-600"> ⚠</span>}
+                                      </div>
+                                    );
+                                  })()}
+                                </TableCell>
                                 <TableCell>
                                   {a.conforme === true && <CheckCircle2 className="w-4 h-4 text-primary" />}
                                   {a.conforme === false && <XCircle className="w-4 h-4 text-destructive" />}
