@@ -13,6 +13,7 @@ import { toast } from "sonner";
 import { POPS_CONFIG } from "@/config/popsConfig";
 import { MANUAL_BPF_SECTIONS } from "@/config/manualBpfContent";
 import { INSTRUCOES_TRABALHO } from "@/config/instrucoesTrabalho";
+import { AssinarManualDialog, PapelAssinatura } from "@/components/manual-bpf/AssinarManualDialog";
 
 interface ManualData {
   empresa: any;
