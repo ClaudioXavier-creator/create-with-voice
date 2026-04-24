@@ -198,6 +198,113 @@ export type Database = {
           },
         ]
       }
+      auditor_acessos: {
+        Row: {
+          acessado_em: string
+          empresa_id: string
+          id: string
+          ip_address: string | null
+          modulo: string
+          recurso_id: string | null
+          token_id: string
+          user_agent: string | null
+        }
+        Insert: {
+          acessado_em?: string
+          empresa_id: string
+          id?: string
+          ip_address?: string | null
+          modulo: string
+          recurso_id?: string | null
+          token_id: string
+          user_agent?: string | null
+        }
+        Update: {
+          acessado_em?: string
+          empresa_id?: string
+          id?: string
+          ip_address?: string | null
+          modulo?: string
+          recurso_id?: string | null
+          token_id?: string
+          user_agent?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "auditor_acessos_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "auditor_acessos_token_id_fkey"
+            columns: ["token_id"]
+            isOneToOne: false
+            referencedRelation: "auditor_tokens"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      auditor_tokens: {
+        Row: {
+          ativo: boolean
+          created_at: string
+          criado_por: string
+          empresa_id: string
+          expira_em: string
+          id: string
+          nome_auditor: string | null
+          observacoes: string | null
+          orgao_fiscalizador: string | null
+          revogado_em: string | null
+          token: string
+          total_acessos: number
+          ultimo_acesso_em: string | null
+          updated_at: string
+        }
+        Insert: {
+          ativo?: boolean
+          created_at?: string
+          criado_por: string
+          empresa_id: string
+          expira_em: string
+          id?: string
+          nome_auditor?: string | null
+          observacoes?: string | null
+          orgao_fiscalizador?: string | null
+          revogado_em?: string | null
+          token?: string
+          total_acessos?: number
+          ultimo_acesso_em?: string | null
+          updated_at?: string
+        }
+        Update: {
+          ativo?: boolean
+          created_at?: string
+          criado_por?: string
+          empresa_id?: string
+          expira_em?: string
+          id?: string
+          nome_auditor?: string | null
+          observacoes?: string | null
+          orgao_fiscalizador?: string | null
+          revogado_em?: string | null
+          token?: string
+          total_acessos?: number
+          ultimo_acesso_em?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "auditor_tokens_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       batida_lotes: {
         Row: {
           created_at: string
