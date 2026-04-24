@@ -7,6 +7,7 @@ import logoFeedBpf from "@/assets/logo-feed-bpf.png";
 import logoAuditsBpf from "@/assets/logo-audits-bpf.png";
 import logoNutricrm from "@/assets/logo-nutricrm.png";
 import logoAgrogestao from "@/assets/logo-agrogestao.png";
+import logoAgrorc from "@/assets/logo-agrorc.png";
 
 const produtos = [
   {
@@ -62,6 +63,20 @@ const produtos = [
     trial: "7 dias grátis",
     trialLink: "/auth?product=agrogestao&mode=signup&redirect=%2Fagrogestao",
     preco: "A partir de R$ 97/mês",
+  },
+  {
+    nome: "Agro RC CRM",
+    logo: logoAgrorc,
+    desc: "Plataforma de gestão para Representantes Comerciais do agronegócio. Controle de clientes, metas, visitas, pipeline de oportunidades Kanban e painel RC com margens e scores.",
+    destaques: ["Painel RC", "Pipeline Kanban", "Metas Comerciais", "Visitas a Campo", "Clientes & Carteira", "Scores de Desempenho"],
+    link: "https://soil-to-client.lovable.app/",
+    gradient: "from-[hsl(270,70%,45%)] to-[hsl(290,80%,30%)]",
+    bgCard: "bg-gradient-to-br from-purple-50 to-violet-50 dark:from-purple-950/30 dark:to-violet-950/30",
+    borderColor: "border-purple-200 dark:border-purple-800",
+    trial: "7 dias grátis",
+    trialLink: "https://soil-to-client.lovable.app/",
+    preco: "A partir de R$ 97/mês",
+    external: true,
   },
 ];
 
@@ -135,16 +150,16 @@ export default function Vitrine() {
             Nossos Programas
           </Badge>
           <h2 className="text-3xl sm:text-4xl font-bold font-display text-foreground mb-3">
-            Quatro soluções, um ecossistema completo
+            Cinco soluções, um ecossistema completo
           </h2>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
             Clique em cada programa para ver o tutorial completo, funcionalidades e planos de preço.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-5 gap-6">
           {produtos.map((p) => (
-            <div key={p.nome} className="group cursor-pointer" onClick={() => navigate(p.link)}>
+            <div key={p.nome} className="group cursor-pointer" onClick={() => p.external ? window.open(p.link, "_blank", "noopener,noreferrer") : navigate(p.link)}>
               <div className={`h-full rounded-2xl border-2 ${p.borderColor} ${p.bgCard} p-1 transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 hover:scale-[1.02]`}>
                 <div className="h-full rounded-xl bg-card/80 backdrop-blur-sm p-6 sm:p-8 flex flex-col">
                   {/* Logo */}
