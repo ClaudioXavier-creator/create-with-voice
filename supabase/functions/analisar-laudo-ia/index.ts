@@ -1,10 +1,30 @@
 // Edge function: analisa laudo laboratorial e retorna parecer técnico + ações corretivas
-// Usa Lovable AI Gateway (gemini-2.5-flash) com tool calling para output estruturado.
+// Compara o resultado tanto com a legislação MAPA quanto com os níveis de garantia declarados no rótulo do produto.
+// Usa Lovable AI Gateway (gemini-2.5-pro) com tool calling para output estruturado.
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
+
+interface NivelGarantia {
+  parametro?: string;
+  nome?: string;
+  valor?: string | number;
+  unidade?: string;
+  tipo?: string; // "min" | "max"
+  min_max?: string;
+}
+
+interface RotuloInfo {
+  nome?: string;
+  marca?: string;
+  classificacao?: string;
+  especie_alvo?: string;
+  categoria_animal?: string;
+  registro_mapa?: string;
+  niveis_garantia?: NivelGarantia[] | Record<string, unknown> | string | null;
+}
 
 interface RequestBody {
   tipo_analise?: string;
@@ -18,6 +38,42 @@ interface RequestBody {
   metodo?: string;
   observacoes?: string;
   pdf_base64?: string; // PDF inteiro em base64 (opcional)
+  rotulo?: RotuloInfo; // dados do rótulo do produto analisado (opcional)
+}
+
+function formatarNiveisGarantia(rotulo?: RotuloInfo): string {
+  if (!rotulo) return "Não disponível (produto não encontrado no cadastro).";
+  const linhas: string[] = [];
+  linhas.push(`Produto cadastrado: ${rotulo.nome || "—"}${rotulo.marca ? ` (${rotulo.marca})` : ""}`);
+  if (rotulo.classificacao) linhas.push(`Classificação: ${rotulo.classificacao}`);
+  if (rotulo.especie_alvo) linhas.push(`Espécie-alvo: ${rotulo.especie_alvo}`);
+  if (rotulo.categoria_animal) linhas.push(`Categoria animal: ${rotulo.categoria_animal}`);
+  if (rotulo.registro_mapa) linhas.push(`Registro MAPA: ${rotulo.registro_mapa}`);
+
+  const ng = rotulo.niveis_garantia;
+  if (!ng) {
+    linhas.push("Níveis de garantia declarados no rótulo: NÃO INFORMADOS.");
+    return linhas.join("\n");
+  }
+  if (typeof ng === "string") {
+    linhas.push(`Níveis de garantia (texto livre):\n${ng}`);
+    return linhas.join("\n");
+  }
+  if (Array.isArray(ng)) {
+    linhas.push("Níveis de garantia declarados no rótulo:");
+    ng.forEach((n: any) => {
+      const nome = n.parametro || n.nome || "—";
+      const valor = n.valor ?? "";
+      const unid = n.unidade || "";
+      const tipo = n.tipo || n.min_max || "";
+      linhas.push(`  • ${nome}: ${valor} ${unid} ${tipo ? `(${tipo})` : ""}`.trim());
+    });
+    return linhas.join("\n");
+  }
+  // objeto genérico
+  linhas.push("Níveis de garantia (rótulo):");
+  Object.entries(ng).forEach(([k, v]) => linhas.push(`  • ${k}: ${JSON.stringify(v)}`));
+  return linhas.join("\n");
 }
 
 Deno.serve(async (req: Request) => {
@@ -29,6 +85,8 @@ Deno.serve(async (req: Request) => {
 
     const body: RequestBody = await req.json();
 
+    const blocoRotulo = formatarNiveisGarantia(body.rotulo);
+
     const contexto = `
 DADOS DO LAUDO INFORMADOS PELO USUÁRIO:
 - Tipo de análise: ${body.tipo_analise || "não informado"}
@@ -36,16 +94,26 @@ DADOS DO LAUDO INFORMADOS PELO USUÁRIO:
 - Lote: ${body.lote || "não informado"}
 - Parâmetro: ${body.parametro || "não informado"}
 - Resultado: ${body.resultado || "não informado"} ${body.unidade || ""}
-- Limite de referência: ${body.limite_referencia || "não informado"}
+- Limite de referência (legislação): ${body.limite_referencia || "não informado"}
 - Laboratório: ${body.laboratorio || "não informado"}
 - Método: ${body.metodo || "não informado"}
 - Observações: ${body.observacoes || "—"}
+
+DADOS DO RÓTULO DO PRODUTO (paralelo obrigatório):
+${blocoRotulo}
 `.trim();
 
-    const systemPrompt = `Você é um especialista em qualidade de fábricas de ração animal e legislação MAPA (IN 04/2007, IN 13/2004, IN 15/2009, RDC ANVISA, Decreto 12.031/2024).
-Analise o laudo laboratorial e produza um parecer técnico objetivo, classificando a conformidade e sugerindo ações corretivas concretas conforme APPCC/HACCP.
-Use linguagem técnica brasileira, cite a normativa quando aplicável, e seja conciso.
-${body.pdf_base64 ? "O PDF do laudo original foi anexado — extraia também os dados relevantes dele (parâmetros, métodos, valores, datas) e considere-os no parecer." : ""}`;
+    const systemPrompt = `Você é um especialista em qualidade de fábricas de ração animal e legislação MAPA (IN 04/2007, IN 13/2004, IN 15/2009, IN 22/2009, RDC ANVISA, Decreto 12.031/2024).
+Analise o laudo laboratorial e produza um parecer técnico objetivo, fazendo SEMPRE DUAS COMPARAÇÕES EM PARALELO:
+  1) Resultado vs. limite legal/normativo (legislação MAPA aplicável).
+  2) Resultado vs. nível de garantia declarado no RÓTULO do produto (quando disponível).
+
+Regras importantes:
+- Um produto pode estar dentro do limite legal mas FORA do declarado no rótulo — isso configura NÃO CONFORMIDADE de rotulagem (IN 22/2009 / IN 30/2009), com risco regulatório e comercial.
+- Se o nível de garantia do rótulo não estiver disponível, indique isso explicitamente em "comparacao_rotulo" e classifique como "nao_avaliado".
+- Para parâmetros "Mín" (ex.: PB mín), o resultado deve ser ≥ valor garantido. Para "Máx" (ex.: umidade máx, FB máx), deve ser ≤ valor garantido. Aplique tolerâncias usuais do MAPA quando pertinente, mas sempre cite.
+- Use linguagem técnica brasileira, cite a normativa, seja conciso.
+${body.pdf_base64 ? "O PDF do laudo original foi anexado — extraia também os dados relevantes dele e considere-os no parecer." : ""}`;
 
     // Monta mensagem do usuário (texto + opcionalmente PDF como image_url base64 para multimodal)
     const userContent: any[] = [{ type: "text", text: contexto }];
@@ -73,31 +141,44 @@ ${body.pdf_base64 ? "O PDF do laudo original foi anexado — extraia também os 
             type: "function",
             function: {
               name: "emitir_parecer_laudo",
-              description: "Emite parecer técnico estruturado sobre o laudo laboratorial.",
+              description: "Emite parecer técnico estruturado sobre o laudo laboratorial, comparando contra legislação E rótulo.",
               parameters: {
                 type: "object",
                 properties: {
                   conforme: {
                     type: "boolean",
-                    description: "true se o resultado está conforme o limite legal/referência; false caso contrário.",
+                    description: "true se o resultado está conforme tanto o limite legal quanto o rótulo (ou se o rótulo não foi avaliado, considera apenas o legal).",
+                  },
+                  conforme_legislacao: {
+                    type: "boolean",
+                    description: "true se o resultado atende ao limite da legislação MAPA aplicável.",
+                  },
+                  conforme_rotulo: {
+                    type: "string",
+                    enum: ["conforme", "nao_conforme", "nao_avaliado"],
+                    description: "'conforme' se atende ao nível de garantia do rótulo; 'nao_conforme' se está fora; 'nao_avaliado' se o rótulo não estava disponível ou não tinha esse parâmetro.",
+                  },
+                  comparacao_rotulo: {
+                    type: "string",
+                    description: "Frase curta explicando como o resultado se compara ao nível de garantia declarado no rótulo (ex.: 'PB declarada 18% mín; resultado 16,4% — abaixo do garantido em 1,6 p.p.'). Se 'nao_avaliado', explique o motivo.",
                   },
                   classificacao_risco: {
                     type: "string",
                     enum: ["baixo", "medio", "alto", "critico"],
-                    description: "Risco sanitário do desvio (baixo se conforme).",
+                    description: "Risco sanitário/regulatório do desvio (considera ambos os eixos).",
                   },
                   parecer_tecnico: {
                     type: "string",
-                    description: "Parecer técnico em 2-4 parágrafos: interpretação do resultado, comparação com limite legal, citação da normativa MAPA aplicável e impacto sanitário.",
+                    description: "Parecer técnico em 2-4 parágrafos: interpretação do resultado, comparação com limite legal, comparação com rótulo, citação da normativa MAPA aplicável e impacto sanitário/regulatório.",
                   },
                   causa_provavel: {
                     type: "string",
-                    description: "Causa raiz mais provável do desvio (vazio se conforme).",
+                    description: "Causa raiz mais provável do desvio (vazio se totalmente conforme).",
                   },
                   acoes_corretivas: {
                     type: "array",
                     items: { type: "string" },
-                    description: "Lista de ações corretivas concretas e objetivas (3-6 itens). Vazia se conforme.",
+                    description: "Lista de ações corretivas concretas (3-6 itens). Vazia se conforme.",
                   },
                   prazo_recomendado_dias: {
                     type: "integer",
@@ -105,15 +186,18 @@ ${body.pdf_base64 ? "O PDF do laudo original foi anexado — extraia também os 
                   },
                   setor_responsavel: {
                     type: "string",
-                    description: "Setor sugerido como responsável (ex: Recebimento, Produção, Controle de Qualidade, Manutenção, Limpeza).",
+                    description: "Setor sugerido como responsável (ex: Recebimento, Produção, Controle de Qualidade, Manutenção, Limpeza, Formulação).",
                   },
                   referencia_legal: {
                     type: "string",
-                    description: "Normativa principal aplicável (ex: 'IN 15/2009 MAPA - Anexo II').",
+                    description: "Normativa principal aplicável (ex: 'IN 15/2009 MAPA - Anexo II' ou 'IN 22/2009 - Rotulagem').",
                   },
                 },
                 required: [
                   "conforme",
+                  "conforme_legislacao",
+                  "conforme_rotulo",
+                  "comparacao_rotulo",
                   "classificacao_risco",
                   "parecer_tecnico",
                   "causa_provavel",
