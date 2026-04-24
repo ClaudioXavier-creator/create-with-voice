@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { FileText, Plus, Loader2, Wrench, Gauge, AlertCircle, ExternalLink, Upload, FolderOpen, Trash2, History } from "lucide-react";
+import { FileText, Plus, Loader2, Wrench, Gauge, AlertCircle, ExternalLink, Upload, FolderOpen, Trash2, History, GitBranch, Send, CheckCircle2, Archive } from "lucide-react";
 import { registrarAuditLog, registrarVersaoDocumento } from "@/utils/auditLog";
+import { WorkflowBadge, type WorkflowStatus } from "@/components/documentos/WorkflowBadge";
+import { AprovarPopDialog } from "@/components/documentos/AprovarPopDialog";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
