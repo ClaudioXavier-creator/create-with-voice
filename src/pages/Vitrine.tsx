@@ -150,14 +150,14 @@ export default function Vitrine() {
             Nossos Programas
           </Badge>
           <h2 className="text-3xl sm:text-4xl font-bold font-display text-foreground mb-3">
-            Quatro soluções, um ecossistema completo
+            Cinco soluções, um ecossistema completo
           </h2>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
             Clique em cada programa para ver o tutorial completo, funcionalidades e planos de preço.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-5 gap-6">
           {produtos.map((p) => (
             <div key={p.nome} className="group cursor-pointer" onClick={() => navigate(p.link)}>
               <div className={`h-full rounded-2xl border-2 ${p.borderColor} ${p.bgCard} p-1 transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 hover:scale-[1.02]`}>
