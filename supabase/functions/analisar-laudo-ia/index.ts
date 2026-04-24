@@ -26,6 +26,19 @@ interface RotuloInfo {
   niveis_garantia?: NivelGarantia[] | Record<string, unknown> | string | null;
 }
 
+interface ToleranciaInfo {
+  cv_pct?: number;
+  tolerancia_absoluta?: number;
+  faixa_min?: number;
+  faixa_max?: number;
+  unidade?: string;
+  referencia?: string;
+  formula?: string;
+  intervalo_validacao?: [number, number];
+  fora_intervalo_validacao?: boolean;
+  obs?: string;
+}
+
 interface RequestBody {
   tipo_analise?: string;
   produto?: string;
@@ -37,8 +50,29 @@ interface RequestBody {
   laboratorio?: string;
   metodo?: string;
   observacoes?: string;
-  pdf_base64?: string; // PDF inteiro em base64 (opcional)
-  rotulo?: RotuloInfo; // dados do rótulo do produto analisado (opcional)
+  pdf_base64?: string;
+  rotulo?: RotuloInfo;
+  tolerancia?: ToleranciaInfo;
+}
+
+function formatarTolerancia(t?: ToleranciaInfo): string {
+  if (!t) {
+    return "Tolerância analítica: NÃO DISPONÍVEL para este parâmetro/unidade no CBAA 2017. Avaliar conformidade sem desvio.";
+  }
+  const linhas: string[] = [];
+  linhas.push(`Referência: ${t.referencia || "CBAA 2017"}`);
+  linhas.push(`Fórmula CV: ${t.formula || "—"}`);
+  linhas.push(`CV calculado: ${t.cv_pct?.toFixed(2)}%`);
+  linhas.push(`Tolerância (+/-): ${t.tolerancia_absoluta} ${t.unidade || ""}`);
+  linhas.push(`Faixa aceitável: ${t.faixa_min} a ${t.faixa_max} ${t.unidade || ""}`);
+  if (t.intervalo_validacao) {
+    linhas.push(`Intervalo de validação da fórmula: ${t.intervalo_validacao[0]} - ${t.intervalo_validacao[1]} ${t.unidade || ""}`);
+  }
+  if (t.fora_intervalo_validacao) {
+    linhas.push(`⚠ ATENÇÃO: o resultado está FORA do intervalo de validação da fórmula — use a tolerância com cautela.`);
+  }
+  if (t.obs) linhas.push(`Obs: ${t.obs}`);
+  return linhas.join("\n");
 }
 
 function formatarNiveisGarantia(rotulo?: RotuloInfo): string {
@@ -86,6 +120,7 @@ Deno.serve(async (req: Request) => {
     const body: RequestBody = await req.json();
 
     const blocoRotulo = formatarNiveisGarantia(body.rotulo);
+    const blocoTolerancia = formatarTolerancia(body.tolerancia);
 
     const contexto = `
 DADOS DO LAUDO INFORMADOS PELO USUÁRIO:
@@ -101,18 +136,26 @@ DADOS DO LAUDO INFORMADOS PELO USUÁRIO:
 
 DADOS DO RÓTULO DO PRODUTO (paralelo obrigatório):
 ${blocoRotulo}
+
+TOLERÂNCIA ANALÍTICA APLICÁVEL (CBAA 2017 — Compêndio Brasileiro de Alimentação Animal):
+${blocoTolerancia}
 `.trim();
 
-    const systemPrompt = `Você é um especialista em qualidade de fábricas de ração animal e legislação MAPA (IN 04/2007, IN 13/2004, IN 15/2009, IN 22/2009, RDC ANVISA, Decreto 12.031/2024).
-Analise o laudo laboratorial e produza um parecer técnico objetivo, fazendo SEMPRE DUAS COMPARAÇÕES EM PARALELO:
+    const systemPrompt = `Você é um especialista em qualidade de fábricas de ração animal e legislação MAPA (IN 04/2007, IN 13/2004, IN 15/2009, IN 22/2009, RDC ANVISA, Decreto 12.031/2024) e no Compêndio Brasileiro de Alimentação Animal (CBAA 2017 — Sindirações).
+Analise o laudo laboratorial e produza um parecer técnico objetivo, fazendo SEMPRE TRÊS COMPARAÇÕES EM PARALELO:
   1) Resultado vs. limite legal/normativo (legislação MAPA aplicável).
   2) Resultado vs. nível de garantia declarado no RÓTULO do produto (quando disponível).
+  3) Resultado vs. TOLERÂNCIA ANALÍTICA do CBAA 2017 (desvio interlaboratorial aceitável).
 
-Regras importantes:
-- Um produto pode estar dentro do limite legal mas FORA do declarado no rótulo — isso configura NÃO CONFORMIDADE de rotulagem (IN 22/2009 / IN 30/2009), com risco regulatório e comercial.
-- Se o nível de garantia do rótulo não estiver disponível, indique isso explicitamente em "comparacao_rotulo" e classifique como "nao_avaliado".
-- Para parâmetros "Mín" (ex.: PB mín), o resultado deve ser ≥ valor garantido. Para "Máx" (ex.: umidade máx, FB máx), deve ser ≤ valor garantido. Aplique tolerâncias usuais do MAPA quando pertinente, mas sempre cite.
-- Use linguagem técnica brasileira, cite a normativa, seja conciso.
+REGRAS CRÍTICAS DE INTERPRETAÇÃO:
+- A tolerância analítica do CBAA 2017 representa a variabilidade NATURAL do método entre laboratórios. Um desvio DENTRO da tolerância NÃO é não conformidade técnica — é variação esperada.
+- Para parâmetros "Mín" (PB mín, Ca mín, etc.): só classifique como "nao_conforme" do rótulo se o resultado for MENOR que (valor declarado − tolerância absoluta).
+- Para parâmetros "Máx" (umidade máx, FB máx, etc.): só classifique como "nao_conforme" do rótulo se o resultado for MAIOR que (valor declarado + tolerância absoluta).
+- Se o resultado está fora do declarado mas DENTRO da faixa de tolerância, classifique "conforme" no rótulo e mencione no parecer que o desvio é aceitável pelo CBAA 2017.
+- Para legislação MAPA: aplique o mesmo raciocínio quando o limite for declarado pelo fabricante; para limites máximos absolutos (contaminantes, micotoxinas), NÃO aplique tolerância — o limite é estrito.
+- Se a tolerância NÃO estiver disponível (parâmetro fora da tabela CBAA 2017), avalie sem ela e mencione isso.
+- Sempre cite a tolerância usada (CV% e faixa absoluta) no parecer técnico.
+- Use linguagem técnica brasileira, cite a normativa e seja conciso.
 ${body.pdf_base64 ? "O PDF do laudo original foi anexado — extraia também os dados relevantes dele e considere-os no parecer." : ""}`;
 
     // Monta mensagem do usuário (texto + opcionalmente PDF como image_url base64 para multimodal)
@@ -156,11 +199,16 @@ ${body.pdf_base64 ? "O PDF do laudo original foi anexado — extraia também os 
                   conforme_rotulo: {
                     type: "string",
                     enum: ["conforme", "nao_conforme", "nao_avaliado"],
-                    description: "'conforme' se atende ao nível de garantia do rótulo; 'nao_conforme' se está fora; 'nao_avaliado' se o rótulo não estava disponível ou não tinha esse parâmetro.",
+                    description: "'conforme' se atende ao nível de garantia do rótulo (CONSIDERANDO a tolerância analítica CBAA 2017); 'nao_conforme' se está fora mesmo após aplicar a tolerância; 'nao_avaliado' se o rótulo não estava disponível.",
+                  },
+                  dentro_tolerancia_analitica: {
+                    type: "string",
+                    enum: ["sim", "nao", "nao_aplicavel"],
+                    description: "'sim' se o resultado está dentro da faixa de tolerância CBAA 2017 em relação ao valor declarado/limite; 'nao' se ultrapassa a tolerância; 'nao_aplicavel' se não há tolerância CBAA para o parâmetro.",
                   },
                   comparacao_rotulo: {
                     type: "string",
-                    description: "Frase curta explicando como o resultado se compara ao nível de garantia declarado no rótulo (ex.: 'PB declarada 18% mín; resultado 16,4% — abaixo do garantido em 1,6 p.p.'). Se 'nao_avaliado', explique o motivo.",
+                    description: "Frase curta explicando como o resultado se compara ao rótulo, citando a tolerância CBAA quando aplicável (ex.: 'PB declarada 18% mín; resultado 16,4%; tolerância CBAA ±0,98 p.p. — desvio de 1,6 p.p. EXCEDE a tolerância').",
                   },
                   classificacao_risco: {
                     type: "string",
@@ -197,6 +245,7 @@ ${body.pdf_base64 ? "O PDF do laudo original foi anexado — extraia também os 
                   "conforme",
                   "conforme_legislacao",
                   "conforme_rotulo",
+                  "dentro_tolerancia_analitica",
                   "comparacao_rotulo",
                   "classificacao_risco",
                   "parecer_tecnico",

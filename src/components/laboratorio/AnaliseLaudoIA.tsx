@@ -10,6 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useEmpresa } from "@/hooks/useEmpresa";
 import { toast } from "sonner";
+import { calcularTolerancia } from "@/config/desviosAnaliticos";
 
 interface AnaliseRow {
   id: string;
@@ -29,6 +30,7 @@ interface Parecer {
   conforme: boolean;
   conforme_legislacao: boolean;
   conforme_rotulo: "conforme" | "nao_conforme" | "nao_avaliado";
+  dentro_tolerancia_analitica?: "sim" | "nao" | "nao_aplicavel";
   comparacao_rotulo: string;
   classificacao_risco: "baixo" | "medio" | "alto" | "critico";
   parecer_tecnico: string;
@@ -102,6 +104,29 @@ export default function AnaliseLaudoIA({ analise, trigger, onNCCriada }: Props) 
         if (prod) rotulo = prod;
       }
 
+      // Calcula tolerância CBAA 2017 (desvio analítico aceitável) localmente
+      let tolerancia: any = undefined;
+      const valorNum = parseFloat(String(analise.resultado || "").replace(",", "."));
+      if (!isNaN(valorNum) && analise.parametro) {
+        const tol = calcularTolerancia(analise.parametro, analise.unidade || undefined, valorNum);
+        if (tol) {
+          tolerancia = {
+            cv_pct: Number(tol.cv_pct.toFixed(2)),
+            tolerancia_absoluta: Number(tol.tolerancia_absoluta.toFixed(4)),
+            faixa_min: Number(tol.faixa_min.toFixed(4)),
+            faixa_max: Number(tol.faixa_max.toFixed(4)),
+            unidade: analise.unidade,
+            referencia: `CBAA 2017 — ${tol.desvio.nome}`,
+            formula: tol.desvio.formula.tipo === "fixo"
+              ? `CV fixo ${tol.desvio.formula.cv_pct}%`
+              : `CV(%) = ${tol.desvio.formula.a}/X ${tol.desvio.formula.b >= 0 ? "+" : "-"} ${Math.abs(tol.desvio.formula.b)}`,
+            intervalo_validacao: tol.desvio.intervalo,
+            fora_intervalo_validacao: tol.fora_intervalo_validacao,
+            obs: tol.desvio.obs,
+          };
+        }
+      }
+
       const { data, error } = await supabase.functions.invoke("analisar-laudo-ia", {
         body: {
           tipo_analise: analise.tipo_analise,
@@ -116,6 +141,7 @@ export default function AnaliseLaudoIA({ analise, trigger, onNCCriada }: Props) 
           observacoes: analise.observacoes,
           pdf_base64: pdfBase64 || undefined,
           rotulo,
+          tolerancia,
         },
       });
       if (error) throw error;
@@ -246,6 +272,16 @@ export default function AnaliseLaudoIA({ analise, trigger, onNCCriada }: Props) 
                   </p>
                 </div>
               </div>
+              {parecer.dentro_tolerancia_analitica && parecer.dentro_tolerancia_analitica !== "nao_aplicavel" && (
+                <div className={`p-2 rounded border text-xs ${
+                  parecer.dentro_tolerancia_analitica === "sim"
+                    ? "bg-primary/10 border-primary/30"
+                    : "bg-orange-500/10 border-orange-500/30"
+                }`}>
+                  <p className="font-semibold">Tolerância analítica CBAA 2017</p>
+                  <p>{parecer.dentro_tolerancia_analitica === "sim" ? "✓ Dentro do desvio aceitável" : "✗ Excede o desvio aceitável"}</p>
+                </div>
+              )}
               {parecer.comparacao_rotulo && (
                 <p className="text-xs text-muted-foreground italic px-1">{parecer.comparacao_rotulo}</p>
               )}
