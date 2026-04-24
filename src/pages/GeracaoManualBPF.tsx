@@ -490,12 +490,69 @@ export default function GeracaoManualBPF() {
             </Card>
           </div>
 
+          {/* Painel de validação */}
+          {erros.length === 0 && avisos.length === 0 ? (
+            <Alert className="border-primary/40">
+              <CheckCircle2 className="h-4 w-4 text-primary" />
+              <AlertTitle>Validação OK</AlertTitle>
+              <AlertDescription>Todos os POPs vigentes, ITs e dados da empresa estão completos e consistentes.</AlertDescription>
+            </Alert>
+          ) : (
+            <Card className={erros.length > 0 ? "border-destructive" : "border-yellow-500"}>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-base">
+                  {erros.length > 0 ? (
+                    <AlertCircle className="w-5 h-5 text-destructive" />
+                  ) : (
+                    <AlertTriangle className="w-5 h-5 text-yellow-600" />
+                  )}
+                  Validação pré-salvamento
+                  {erros.length > 0 && <Badge variant="destructive">{erros.length} erro(s)</Badge>}
+                  {avisos.length > 0 && <Badge variant="secondary">{avisos.length} aviso(s)</Badge>}
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                {erros.length > 0 && (
+                  <div>
+                    <p className="text-sm font-semibold text-destructive mb-2">Erros — bloqueiam o salvamento:</p>
+                    <ul className="space-y-1 text-sm max-h-48 overflow-y-auto">
+                      {erros.map((iss, i) => (
+                        <li key={`e-${i}`} className="flex gap-2">
+                          <Badge variant="outline" className="shrink-0 text-xs">{iss.categoria}</Badge>
+                          <span>{iss.mensagem}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+                {avisos.length > 0 && (
+                  <div>
+                    <p className="text-sm font-semibold text-yellow-700 dark:text-yellow-500 mb-2">Avisos — recomendado revisar:</p>
+                    <ul className="space-y-1 text-sm max-h-48 overflow-y-auto">
+                      {avisos.map((iss, i) => (
+                        <li key={`a-${i}`} className="flex gap-2">
+                          <Badge variant="outline" className="shrink-0 text-xs">{iss.categoria}</Badge>
+                          <span className="text-muted-foreground">{iss.mensagem}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          )}
+
           <Card>
             <CardHeader>
               <div className="flex items-center justify-between flex-wrap gap-2">
                 <CardTitle>Prévia do Manual</CardTitle>
                 <div className="flex gap-2">
-                  <Button onClick={salvarManual} disabled={salvando} variant="default">
+                  <Button
+                    onClick={salvarManual}
+                    disabled={salvando || erros.length > 0}
+                    variant="default"
+                    title={erros.length > 0 ? "Corrija os erros de validação para salvar" : "Salvar nova versão"}
+                  >
                     {salvando ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
                     Salvar versão
                   </Button>
