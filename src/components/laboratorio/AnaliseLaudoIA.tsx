@@ -272,6 +272,16 @@ export default function AnaliseLaudoIA({ analise, trigger, onNCCriada }: Props) 
                   </p>
                 </div>
               </div>
+              {parecer.dentro_tolerancia_analitica && parecer.dentro_tolerancia_analitica !== "nao_aplicavel" && (
+                <div className={`p-2 rounded border text-xs ${
+                  parecer.dentro_tolerancia_analitica === "sim"
+                    ? "bg-primary/10 border-primary/30"
+                    : "bg-orange-500/10 border-orange-500/30"
+                }`}>
+                  <p className="font-semibold">Tolerância analítica CBAA 2017</p>
+                  <p>{parecer.dentro_tolerancia_analitica === "sim" ? "✓ Dentro do desvio aceitável" : "✗ Excede o desvio aceitável"}</p>
+                </div>
+              )}
               {parecer.comparacao_rotulo && (
                 <p className="text-xs text-muted-foreground italic px-1">{parecer.comparacao_rotulo}</p>
               )}
