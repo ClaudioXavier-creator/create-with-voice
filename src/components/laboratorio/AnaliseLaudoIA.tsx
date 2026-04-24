@@ -30,6 +30,7 @@ interface Parecer {
   conforme: boolean;
   conforme_legislacao: boolean;
   conforme_rotulo: "conforme" | "nao_conforme" | "nao_avaliado";
+  dentro_tolerancia_analitica?: "sim" | "nao" | "nao_aplicavel";
   comparacao_rotulo: string;
   classificacao_risco: "baixo" | "medio" | "alto" | "critico";
   parecer_tecnico: string;

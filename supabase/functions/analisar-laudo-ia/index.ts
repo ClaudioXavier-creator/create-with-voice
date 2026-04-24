@@ -199,11 +199,16 @@ ${body.pdf_base64 ? "O PDF do laudo original foi anexado — extraia também os 
                   conforme_rotulo: {
                     type: "string",
                     enum: ["conforme", "nao_conforme", "nao_avaliado"],
-                    description: "'conforme' se atende ao nível de garantia do rótulo; 'nao_conforme' se está fora; 'nao_avaliado' se o rótulo não estava disponível ou não tinha esse parâmetro.",
+                    description: "'conforme' se atende ao nível de garantia do rótulo (CONSIDERANDO a tolerância analítica CBAA 2017); 'nao_conforme' se está fora mesmo após aplicar a tolerância; 'nao_avaliado' se o rótulo não estava disponível.",
+                  },
+                  dentro_tolerancia_analitica: {
+                    type: "string",
+                    enum: ["sim", "nao", "nao_aplicavel"],
+                    description: "'sim' se o resultado está dentro da faixa de tolerância CBAA 2017 em relação ao valor declarado/limite; 'nao' se ultrapassa a tolerância; 'nao_aplicavel' se não há tolerância CBAA para o parâmetro.",
                   },
                   comparacao_rotulo: {
                     type: "string",
-                    description: "Frase curta explicando como o resultado se compara ao nível de garantia declarado no rótulo (ex.: 'PB declarada 18% mín; resultado 16,4% — abaixo do garantido em 1,6 p.p.'). Se 'nao_avaliado', explique o motivo.",
+                    description: "Frase curta explicando como o resultado se compara ao rótulo, citando a tolerância CBAA quando aplicável (ex.: 'PB declarada 18% mín; resultado 16,4%; tolerância CBAA ±0,98 p.p. — desvio de 1,6 p.p. EXCEDE a tolerância').",
                   },
                   classificacao_risco: {
                     type: "string",
@@ -240,6 +245,7 @@ ${body.pdf_base64 ? "O PDF do laudo original foi anexado — extraia também os 
                   "conforme",
                   "conforme_legislacao",
                   "conforme_rotulo",
+                  "dentro_tolerancia_analitica",
                   "comparacao_rotulo",
                   "classificacao_risco",
                   "parecer_tecnico",
