@@ -13,6 +13,7 @@ import { toast } from "sonner";
 import { POPS_CONFIG } from "@/config/popsConfig";
 import { MANUAL_BPF_SECTIONS } from "@/config/manualBpfContent";
 import { INSTRUCOES_TRABALHO } from "@/config/instrucoesTrabalho";
+import { AssinarManualDialog, PapelAssinatura } from "@/components/manual-bpf/AssinarManualDialog";
 
 interface ManualData {
   empresa: any;
@@ -30,6 +31,7 @@ interface ManualSalvo {
   titulo: string;
   arquivo_path: string | null;
   arquivo_nome: string | null;
+  conteudo: string;
   hash_sha256: string;
   total_pops: number;
   total_its: number;
@@ -38,6 +40,12 @@ interface ManualSalvo {
   total_produtos: number;
   total_calibracoes: number;
   created_at: string;
+  status: string;
+  resp_legal_nome: string | null;
+  resp_legal_assinado_em: string | null;
+  resp_tecnico_nome: string | null;
+  resp_tecnico_crmv: string | null;
+  resp_tecnico_assinado_em: string | null;
 }
 
 async function sha256Hex(text: string): Promise<string> {
@@ -167,6 +175,7 @@ export default function GeracaoManualBPF() {
   const [progress, setProgress] = useState(0);
   const [manualData, setManualData] = useState<ManualData | null>(null);
   const [historico, setHistorico] = useState<ManualSalvo[]>([]);
+  const [assinaturaAberta, setAssinaturaAberta] = useState<{ manual: ManualSalvo; papel: PapelAssinatura } | null>(null);
 
   const validacao = useMemo(() => validarManual(manualData), [manualData]);
   const erros = validacao.filter((v) => v.nivel === "erro");
@@ -371,6 +380,7 @@ export default function GeracaoManualBPF() {
         arquivo_nome: arquivoNome,
         conteudo: texto,
         hash_sha256: hash,
+        status: "aguardando_rt",
         total_pops: manualData.popsVigentes.length,
         total_its: totalIts,
         total_documentos: manualData.documentos.length,
@@ -381,7 +391,10 @@ export default function GeracaoManualBPF() {
       });
       if (insErr) throw insErr;
 
-      toast.success(`Manual v${proximaVersao} salvo com hash de auditoria.`);
+      toast.success(
+        `Manual v${proximaVersao} salvo como RASCUNHO PENDENTE. Solicite as assinaturas do RT e do Responsável Legal no histórico abaixo para torná-lo VIGENTE.`,
+        { duration: 6000 }
+      );
       await carregarHistorico();
     } catch (err: any) {
       toast.error("Erro ao salvar: " + (err.message || ""));
@@ -586,35 +599,101 @@ export default function GeracaoManualBPF() {
             </p>
           ) : (
             <div className="space-y-2">
-              {historico.map((m) => (
-                <div key={m.id} className="flex items-center justify-between gap-2 p-3 border rounded-lg hover:bg-muted/50">
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <Badge>v{m.versao}</Badge>
-                      <span className="font-medium truncate">{m.titulo}</span>
+              {historico.map((m) => {
+                const temRT = !!m.resp_tecnico_assinado_em;
+                const temLegal = !!m.resp_legal_assinado_em;
+                const vigente = m.status === "vigente";
+                return (
+                  <div key={m.id} className="flex flex-col gap-2 p-3 border rounded-lg hover:bg-muted/50">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <Badge>v{m.versao}</Badge>
+                          <span className="font-medium truncate">{m.titulo}</span>
+                          {vigente ? (
+                            <Badge className="bg-green-600 hover:bg-green-700">VIGENTE</Badge>
+                          ) : (
+                            <Badge variant="destructive">RASCUNHO PENDENTE</Badge>
+                          )}
+                        </div>
+                        <div className="text-xs text-muted-foreground mt-1 flex flex-wrap gap-3">
+                          <span>{new Date(m.created_at).toLocaleString("pt-BR")}</span>
+                          <span>POPs: {m.total_pops} • ITs: {m.total_its} • Docs: {m.total_documentos} • Forn.: {m.total_fornecedores}</span>
+                        </div>
+                        <div className="text-[10px] text-muted-foreground font-mono mt-1 flex items-center gap-1">
+                          <ShieldCheck className="w-3 h-3" /> {m.hash_sha256.slice(0, 24)}...
+                        </div>
+                      </div>
+                      <div className="flex gap-1 shrink-0">
+                        <Button size="sm" variant="outline" onClick={() => baixarSalvo(m)} disabled={!m.arquivo_path}>
+                          <Download className="w-4 h-4" />
+                        </Button>
+                        <Button size="sm" variant="ghost" onClick={() => excluirSalvo(m)} disabled={vigente}>
+                          <Trash2 className="w-4 h-4 text-destructive" />
+                        </Button>
+                      </div>
                     </div>
-                    <div className="text-xs text-muted-foreground mt-1 flex flex-wrap gap-3">
-                      <span>{new Date(m.created_at).toLocaleString("pt-BR")}</span>
-                      <span>POPs: {m.total_pops} • ITs: {m.total_its} • Docs: {m.total_documentos} • Forn.: {m.total_fornecedores}</span>
-                    </div>
-                    <div className="text-[10px] text-muted-foreground font-mono mt-1 flex items-center gap-1">
-                      <ShieldCheck className="w-3 h-3" /> {m.hash_sha256.slice(0, 24)}...
+
+                    {/* Linha de assinaturas */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2 pt-2 border-t">
+                      <div className="flex items-center justify-between gap-2 text-xs">
+                        <div className="flex items-center gap-1.5">
+                          {temRT ? <CheckCircle2 className="w-4 h-4 text-green-600" /> : <AlertCircle className="w-4 h-4 text-muted-foreground" />}
+                          <div>
+                            <p className="font-semibold">Resp. Técnico</p>
+                            {temRT ? (
+                              <p className="text-muted-foreground">{m.resp_tecnico_nome} — {m.resp_tecnico_crmv}</p>
+                            ) : (
+                              <p className="text-muted-foreground italic">Aguardando assinatura</p>
+                            )}
+                          </div>
+                        </div>
+                        {!temRT && !vigente && (
+                          <Button size="sm" variant="secondary" onClick={() => setAssinaturaAberta({ manual: m, papel: "rt" })}>
+                            Assinar
+                          </Button>
+                        )}
+                      </div>
+                      <div className="flex items-center justify-between gap-2 text-xs">
+                        <div className="flex items-center gap-1.5">
+                          {temLegal ? <CheckCircle2 className="w-4 h-4 text-green-600" /> : <AlertCircle className="w-4 h-4 text-muted-foreground" />}
+                          <div>
+                            <p className="font-semibold">Resp. Legal</p>
+                            {temLegal ? (
+                              <p className="text-muted-foreground">{m.resp_legal_nome}</p>
+                            ) : (
+                              <p className="text-muted-foreground italic">Aguardando assinatura</p>
+                            )}
+                          </div>
+                        </div>
+                        {!temLegal && !vigente && (
+                          <Button size="sm" variant="secondary" onClick={() => setAssinaturaAberta({ manual: m, papel: "legal" })}>
+                            Assinar
+                          </Button>
+                        )}
+                      </div>
                     </div>
                   </div>
-                  <div className="flex gap-1 shrink-0">
-                    <Button size="sm" variant="outline" onClick={() => baixarSalvo(m)} disabled={!m.arquivo_path}>
-                      <Download className="w-4 h-4" />
-                    </Button>
-                    <Button size="sm" variant="ghost" onClick={() => excluirSalvo(m)}>
-                      <Trash2 className="w-4 h-4 text-destructive" />
-                    </Button>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </CardContent>
       </Card>
+
+      {assinaturaAberta && (
+        <AssinarManualDialog
+          open={!!assinaturaAberta}
+          onOpenChange={(v) => !v && setAssinaturaAberta(null)}
+          manualId={assinaturaAberta.manual.id}
+          manualTitulo={assinaturaAberta.manual.titulo}
+          versao={assinaturaAberta.manual.versao}
+          papel={assinaturaAberta.papel}
+          empresaId={empresaAtiva?.id || null}
+          conteudo={assinaturaAberta.manual.conteudo}
+          onSuccess={carregarHistorico}
+        />
+      )}
     </div>
   );
 }
