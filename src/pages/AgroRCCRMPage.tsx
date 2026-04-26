@@ -1,8 +1,11 @@
 import { Link } from "react-router-dom";
-import { ArrowLeft, Sparkles, Users, Target, BarChart3, FileText, MapPin, Award, ShieldCheck, Lock, Kanban, TrendingUp } from "lucide-react";
+import { useState } from "react";
+import { ArrowLeft, Sparkles, Users, Target, BarChart3, FileText, MapPin, Award, ShieldCheck, Lock, Kanban, TrendingUp, Loader2 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 import logoAgrorc from "@/assets/logo-agrorc.png";
 import logoBpfConsult from "@/assets/logo-bpf-consult.png";
 
