@@ -137,27 +137,40 @@ export default function AgroRCCRMPage() {
             <p className="text-muted-foreground">Por usuário • Escolha o plano ideal</p>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-4xl mx-auto">
-            {[
-              { periodo: "Mensal", preco: "R$ 97", sub: "/mês", nota: "Sem compromisso de fidelidade", destaque: false },
-              { periodo: "Semestral", preco: "R$ 497", sub: "", nota: "≈ R$ 83/mês • 14% OFF", destaque: true, badge: "Mais Popular" },
-              { periodo: "Anual", preco: "R$ 897", sub: "", nota: "≈ R$ 75/mês • 23% OFF", destaque: true, badge: "Melhor Custo" },
-            ].map((plan) => (
-              <Card key={plan.periodo} className={`transition-all hover:shadow-xl ${plan.destaque ? "border-primary/50 bg-primary/5 scale-[1.02]" : "border-border"} relative`}>
-                {plan.badge && (
-                  <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground text-xs shadow-lg">
-                    {plan.badge}
-                  </Badge>
-                )}
-                <CardContent className="p-6 text-center space-y-3">
-                  <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">{plan.periodo}</p>
-                  <div>
-                    <span className="text-3xl font-bold text-foreground">{plan.preco}</span>
-                    <span className="text-muted-foreground">{plan.sub}</span>
-                  </div>
-                  <p className="text-xs text-muted-foreground">{plan.nota}</p>
-                </CardContent>
-              </Card>
-            ))}
+            {([
+              { periodo: "Mensal", planoKey: "mensal" as const, preco: "R$ 97", sub: "/mês", nota: "Sem compromisso de fidelidade", destaque: false, badge: undefined },
+              { periodo: "Semestral", planoKey: "semestral" as const, preco: "R$ 497", sub: "", nota: "≈ R$ 83/mês • 14% OFF", destaque: true, badge: "Mais Popular" },
+              { periodo: "Anual", planoKey: "anual" as const, preco: "R$ 897", sub: "", nota: "≈ R$ 75/mês • 23% OFF", destaque: true, badge: "Melhor Custo" },
+            ]).map((plan) => {
+              const key = `individual-${plan.planoKey}`;
+              const isLoading = loadingPlan === key;
+              return (
+                <Card key={plan.periodo} className={`transition-all hover:shadow-xl ${plan.destaque ? "border-primary/50 bg-primary/5 scale-[1.02]" : "border-border"} relative`}>
+                  {plan.badge && (
+                    <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground text-xs shadow-lg">
+                      {plan.badge}
+                    </Badge>
+                  )}
+                  <CardContent className="p-6 text-center space-y-3">
+                    <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">{plan.periodo}</p>
+                    <div>
+                      <span className="text-3xl font-bold text-foreground">{plan.preco}</span>
+                      <span className="text-muted-foreground">{plan.sub}</span>
+                    </div>
+                    <p className="text-xs text-muted-foreground">{plan.nota}</p>
+                    <Button
+                      size="sm"
+                      className="w-full gap-2 mt-2"
+                      disabled={isLoading}
+                      onClick={() => handleCheckout("individual", plan.planoKey)}
+                    >
+                      {isLoading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Sparkles className="h-3.5 w-3.5" />}
+                      Assinar {plan.periodo}
+                    </Button>
+                  </CardContent>
+                </Card>
+              );
+            })}
           </div>
         </section>
 
@@ -168,22 +181,36 @@ export default function AgroRCCRMPage() {
             <p className="text-muted-foreground">Ideal para equipes e cooperativas</p>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-4xl mx-auto">
-            {[
-              { periodo: "Mensal", preco: "R$ 497", sub: "/mês", nota: "≈ R$ 25/usuário/mês" },
-              { periodo: "Semestral", preco: "R$ 2.535", sub: "", nota: "≈ R$ 21/usuário/mês" },
-              { periodo: "Anual", preco: "R$ 4.500", sub: "", nota: "≈ R$ 19/usuário/mês" },
-            ].map((plan) => (
-              <Card key={plan.periodo} className="border-border hover:shadow-xl transition-all">
-                <CardContent className="p-6 text-center space-y-3">
-                  <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">{plan.periodo}</p>
-                  <div>
-                    <span className="text-3xl font-bold text-foreground">{plan.preco}</span>
-                    <span className="text-muted-foreground">{plan.sub}</span>
-                  </div>
-                  <p className="text-xs text-muted-foreground">{plan.nota}</p>
-                </CardContent>
-              </Card>
-            ))}
+            {([
+              { periodo: "Mensal", planoKey: "mensal" as const, preco: "R$ 497", sub: "/mês", nota: "≈ R$ 25/usuário/mês" },
+              { periodo: "Semestral", planoKey: "semestral" as const, preco: "R$ 2.535", sub: "", nota: "≈ R$ 21/usuário/mês" },
+              { periodo: "Anual", planoKey: "anual" as const, preco: "R$ 4.500", sub: "", nota: "≈ R$ 19/usuário/mês" },
+            ]).map((plan) => {
+              const key = `grupo-${plan.planoKey}`;
+              const isLoading = loadingPlan === key;
+              return (
+                <Card key={plan.periodo} className="border-border hover:shadow-xl transition-all">
+                  <CardContent className="p-6 text-center space-y-3">
+                    <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">{plan.periodo}</p>
+                    <div>
+                      <span className="text-3xl font-bold text-foreground">{plan.preco}</span>
+                      <span className="text-muted-foreground">{plan.sub}</span>
+                    </div>
+                    <p className="text-xs text-muted-foreground">{plan.nota}</p>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="w-full gap-2 mt-2"
+                      disabled={isLoading}
+                      onClick={() => handleCheckout("grupo", plan.planoKey)}
+                    >
+                      {isLoading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Sparkles className="h-3.5 w-3.5" />}
+                      Assinar {plan.periodo}
+                    </Button>
+                  </CardContent>
+                </Card>
+              );
+            })}
           </div>
           <div className="mt-12 text-center">
             <h3 className="text-xl font-bold font-display text-foreground mb-3">Experimente grátis por 7 dias!</h3>
