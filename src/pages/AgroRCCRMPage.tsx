@@ -26,6 +26,25 @@ const diferenciais = [
 ];
 
 export default function AgroRCCRMPage() {
+  const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
+
+  const handleCheckout = async (tipo: "individual" | "grupo", plano: "mensal" | "semestral" | "anual") => {
+    const key = `${tipo}-${plano}`;
+    setLoadingPlan(key);
+    try {
+      const { data, error } = await supabase.functions.invoke("create-checkout-agrorc", {
+        body: { tipo, plano },
+      });
+      if (error) throw error;
+      if (!data?.url) throw new Error("URL de checkout não retornada");
+      window.open(data.url, "_blank", "noopener,noreferrer");
+    } catch (e: any) {
+      toast.error(e?.message || "Erro ao abrir checkout");
+    } finally {
+      setLoadingPlan(null);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <header className="relative overflow-hidden">
