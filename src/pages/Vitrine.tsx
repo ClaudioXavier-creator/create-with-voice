@@ -198,7 +198,7 @@ export default function Vitrine() {
 
                   {/* CTAs */}
                   <div className="space-y-2">
-                    {p.external ? (
+                    {p.external || (p as any).trialExternal ? (
                       <a href={p.trialLink} target="_blank" rel="noopener noreferrer" className="block" onClick={(e) => e.stopPropagation()}>
                         <Button size="sm" className="w-full gap-2 shadow-sm">
                           <Sparkles className="h-3.5 w-3.5" />
