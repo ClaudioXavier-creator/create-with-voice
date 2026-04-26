@@ -69,14 +69,15 @@ const produtos = [
     logo: logoAgrorc,
     desc: "Plataforma de gestão para Representantes Comerciais do agronegócio. Controle de clientes, metas, visitas, pipeline de oportunidades Kanban e painel RC com margens e scores.",
     destaques: ["Painel RC", "Pipeline Kanban", "Metas Comerciais", "Visitas a Campo", "Clientes & Carteira", "Scores de Desempenho"],
-    link: "https://soil-to-client.lovable.app/",
+    link: "/agro-rc",
     gradient: "from-[hsl(270,70%,45%)] to-[hsl(290,80%,30%)]",
     bgCard: "bg-gradient-to-br from-purple-50 to-violet-50 dark:from-purple-950/30 dark:to-violet-950/30",
     borderColor: "border-purple-200 dark:border-purple-800",
     trial: "7 dias grátis",
     trialLink: "https://soil-to-client.lovable.app/",
     preco: "A partir de R$ 97/mês",
-    external: true,
+    external: false,
+    trialExternal: true,
   },
 ];
 
@@ -197,7 +198,7 @@ export default function Vitrine() {
 
                   {/* CTAs */}
                   <div className="space-y-2">
-                    {p.external ? (
+                    {p.external || (p as any).trialExternal ? (
                       <a href={p.trialLink} target="_blank" rel="noopener noreferrer" className="block" onClick={(e) => e.stopPropagation()}>
                         <Button size="sm" className="w-full gap-2 shadow-sm">
                           <Sparkles className="h-3.5 w-3.5" />
