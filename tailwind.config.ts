@@ -23,6 +23,9 @@ export default {
         sans: ['Inter', 'sans-serif'],
         display: ['Sora', 'sans-serif'],
       },
+      gridTemplateColumns: {
+        "13": "repeat(13, minmax(0, 1fr))",
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
