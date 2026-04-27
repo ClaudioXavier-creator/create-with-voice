@@ -218,6 +218,13 @@ export default function Vitrine() {
                         </Button>
                       </Link>
                     )}
+                    {(p as any).demoLink && (
+                      <Link to={(p as any).demoLink} onClick={(e) => e.stopPropagation()}>
+                        <Button size="sm" variant="outline" className="w-full gap-2">
+                          Ver demonstração
+                        </Button>
+                      </Link>
+                    )}
                     <div className="flex items-center justify-center gap-2 text-primary font-semibold text-sm group-hover:gap-3 transition-all">
                       Ver detalhes e preços
                       <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
