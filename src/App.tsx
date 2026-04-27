@@ -73,6 +73,7 @@ import GeradorPopIA from "./pages/GeradorPopIA";
 import ConsultaSipeagro from "./pages/ConsultaSipeagro";
 import ConfigurarPin from "./pages/ConfigurarPin";
 import AuditorPortal from "./pages/AuditorPortal";
+import DemoPage from "./pages/DemoPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -126,6 +127,7 @@ const AppRoutes = () => {
       <Route path="/auth" element={<AuthRoute />} />
       <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/auditor/:token" element={<AuditorPortal />} />
+      <Route path="/demo/:produto" element={<DemoPage />} />
       <Route path="/instalar" element={<Instalar />} />
       <Route path="/nutricrm" element={<ProtectedRoute><LicenseGate product="nutricrm"><NutriCRMPage /></LicenseGate></ProtectedRoute>} />
       <Route path="/feedbpf" element={<ProtectedRoute><LicenseGate product="feedbpf"><FeedBPFPage /></LicenseGate></ProtectedRoute>} />
