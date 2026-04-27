@@ -11,9 +11,20 @@ import logoNutriCrm from "@/assets/logo-nutricrm.png";
 import logoAgroGestao from "@/assets/logo-agrogestao.png";
 import logoAgroRc from "@/assets/logo-agrorc.png";
 
-import previewFeed from "@/assets/feedbpf-dashboard-preview.jpg";
 import previewAudits from "@/assets/auditsbpf-dashboard-preview.jpg";
 import previewNutri from "@/assets/nutricrm-dashboard-preview.jpg";
+
+// Screenshots reais do Feed_BPF (capturadas do sistema em produção)
+import feed01 from "@/assets/demo/01-dashboard.png";
+import feed02 from "@/assets/demo/02-documentos-pops.png";
+import feed03 from "@/assets/demo/03-rastreabilidade.png";
+import feed04 from "@/assets/demo/04-recall.png";
+import feed05 from "@/assets/demo/05-auditoria.png";
+import feed06 from "@/assets/demo/06-recebimento.png";
+import feed07 from "@/assets/demo/07-producao.png";
+import feed08 from "@/assets/demo/08-matriz-risco.png";
+import feed09 from "@/assets/demo/09-planejamento.png";
+import feed10 from "@/assets/demo/10-manual.png";
 
 interface Slide {
   title: string;
@@ -45,20 +56,62 @@ const DEMOS: Record<string, DemoConfig> = {
       {
         title: "Dashboard de Conformidade",
         description:
-          "Visão consolidada dos 10 POPs obrigatórios da IN 04/2007, com alertas automáticos de vencimento, KPIs de produção e status de auditoria.",
-        image: previewFeed,
+          "Visão consolidada dos 10 POPs obrigatórios da IN 04/2007: % de conformidade BPF, NCs abertas, calibrações vencidas, treinamentos pendentes e alertas do planejamento anual.",
+        image: feed01,
       },
       {
-        title: "Execução digital de POPs",
+        title: "Documentos & POPs Obrigatórios",
         description:
-          "Planilhas digitais com assinatura, anexos de fotos/laudos e trilha de auditoria SHA-256 — prontas para fiscalização do MAPA.",
-        image: previewFeed,
+          "Os 10 POPs exigidos pelo MAPA (IN 04/2007 + Decreto 12.031/2024) já mapeados ao módulo correspondente — um clique e você está no formulário operacional.",
+        image: feed02,
       },
       {
-        title: "Rastreabilidade e Recall",
+        title: "Rastreabilidade — MP → PA → Venda → Recall",
         description:
-          "Árvore visual de rastreabilidade do lote, simulação anual de recall (Decreto 12.031/2024) e alertas de espécies restritas (IN 34/2008).",
-        image: previewFeed,
+          "Cadeia completa rastreada por lote, com cobertura visual, segregação por espécie (IN 34/2008) e controle digital de quarentena conforme IN 15/2009.",
+        image: feed03,
+      },
+      {
+        title: "Simulação de Recall (Decreto 12.031/2024)",
+        description:
+          "Exercício anual obrigatório com cronômetro e 10 etapas pré-configuradas — da identificação do problema até a destinação final, com auto-registro como NC.",
+        image: feed04,
+      },
+      {
+        title: "Auditoria BPF — 80 itens do Decreto 12.031",
+        description:
+          "Checklist oficial com Conforme/NC por item, observações, score automático de conformidade e categorização de risco (Art. 79-86).",
+        image: feed05,
+      },
+      {
+        title: "Recebimento de Matérias-Primas (POP-01)",
+        description:
+          "Inspeção sensorial, certificado de análise, lote, fornecedor, registro MAPA e exportação CSV — tudo conforme IN 15/2009.",
+        image: feed06,
+      },
+      {
+        title: "Controle de Produção",
+        description:
+          "Registro de fabricação, tempo mínimo de mistura (3 min — IN 04/2007), controle de sobras/vassouras (IN 15/2009) e integração com PCP/ordens.",
+        image: feed07,
+      },
+      {
+        title: "Matriz de Sensibilidade e Risco (APPCC)",
+        description:
+          "Questionário de 27 perguntas em 7 categorias gera automaticamente a matriz de risco e a análise de perigos APPCC para sua fábrica.",
+        image: feed08,
+      },
+      {
+        title: "Planejamento Anual de Atividades",
+        description:
+          "Cronograma inteligente de análises, treinamentos e atividades obrigatórias com alertas de vencimento, % de conformidade e visões em Cards/Timeline.",
+        image: feed09,
+      },
+      {
+        title: "Manual Feed_BPF Interativo",
+        description:
+          "Guia completo de utilização organizado pela sequência dos 10 POPs — cada módulo do sistema explicado com vínculo direto à norma MAPA.",
+        image: feed10,
       },
     ],
   },
