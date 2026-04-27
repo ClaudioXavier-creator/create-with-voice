@@ -11,55 +11,124 @@ import logoNutriCrm from "@/assets/logo-nutricrm.png";
 import logoAgroGestao from "@/assets/logo-agrogestao.png";
 import logoAgroRc from "@/assets/logo-agrorc.png";
 
-// Mockups Audits_BPF (dados fictícios — Fábrica Demo Ltda)
-import audits01 from "@/assets/demo/auditsbpf-01-dashboard.jpg";
-import audits02 from "@/assets/demo/auditsbpf-02-checklist.jpg";
-import audits03 from "@/assets/demo/auditsbpf-03-sala-auditor.jpg";
-import audits04 from "@/assets/demo/auditsbpf-04-plano-acao.jpg";
-import audits05 from "@/assets/demo/auditsbpf-05-relatorio.jpg";
-import audits06 from "@/assets/demo/auditsbpf-06-historico.jpg";
-
-// Mockups AgroGestão CRM (dados fictícios)
-import agro01 from "@/assets/demo/agrogestao-01-dashboard.jpg";
-import agro02 from "@/assets/demo/agrogestao-02-clientes.jpg";
-import agro03 from "@/assets/demo/agrogestao-03-regioes.jpg";
-import agro04 from "@/assets/demo/agrogestao-04-metas.jpg";
-import agro05 from "@/assets/demo/agrogestao-05-visitas.jpg";
-import agro06 from "@/assets/demo/agrogestao-06-relatorios.jpg";
-
-// Mockups Feed_BPF (dados fictícios — Fábrica Demo Ltda)
-import feed01 from "@/assets/demo/feedbpf-01-dashboard.jpg";
-import feed02 from "@/assets/demo/feedbpf-02-documentos.jpg";
-import feed03 from "@/assets/demo/feedbpf-03-rastreabilidade.jpg";
-import feed04 from "@/assets/demo/feedbpf-04-recall.jpg";
-import feed05 from "@/assets/demo/feedbpf-05-auditoria.jpg";
-import feed06 from "@/assets/demo/feedbpf-06-recebimento.jpg";
-import feed07 from "@/assets/demo/feedbpf-07-producao.jpg";
-import feed08 from "@/assets/demo/feedbpf-08-matriz-risco.jpg";
-import feed09 from "@/assets/demo/feedbpf-09-planejamento.jpg";
-import feed10 from "@/assets/demo/feedbpf-10-manual.jpg";
-
-// Mockups Agro RC CRM (dados fictícios)
-import agrorc01 from "@/assets/demo/agrorc-01-dashboard.jpg";
-import agrorc02 from "@/assets/demo/agrorc-02-kanban.jpg";
-import agrorc03 from "@/assets/demo/agrorc-03-clientes.jpg";
-import agrorc04 from "@/assets/demo/agrorc-04-visitas.jpg";
-import agrorc05 from "@/assets/demo/agrorc-05-metas.jpg";
-import agrorc06 from "@/assets/demo/agrorc-06-admin.jpg";
-
-// Mockups NutriCRM (dados fictícios)
-import nutri01 from "@/assets/demo/nutricrm-01-dashboard.jpg";
-import nutri02 from "@/assets/demo/nutricrm-02-clientes.jpg";
-import nutri03 from "@/assets/demo/nutricrm-03-pipeline.jpg";
-import nutri04 from "@/assets/demo/nutricrm-04-visita.jpg";
-import nutri05 from "@/assets/demo/nutricrm-05-relatorios.jpg";
-import nutri06 from "@/assets/demo/nutricrm-06-cliente-detail.jpg";
+// Mockups HTML em português correto (dados fictícios — Fábrica Demo Ltda)
+import {
+  FeedDashboard, FeedDocumentos, FeedRastreabilidade, FeedRecall, FeedAuditoria,
+  FeedRecebimento, FeedProducao, FeedMatrizRisco, FeedPlanejamento, FeedManual,
+  AuditsDashboard, AuditsChecklist, AuditsSala, AuditsPlano, AuditsRelatorio, AuditsHistorico,
+  AgroRcDashboard, AgroRcKanban, AgroRcClientes, AgroRcVisitas, AgroRcMetas, AgroRcAdmin,
+  AgroDashboard, AgroClientes, AgroRegioes, AgroMetas, AgroVisitas, AgroRelatorios,
+  NutriDashboard, NutriClientes, NutriPipeline, NutriVisita, NutriRelatorios, NutriClienteDetail,
+} from "@/components/demo/MockScreens";
 
 interface Slide {
   title: string;
   description: string;
-  image: string;
+  render: () => JSX.Element;
 }
+
+interface DemoConfig {
+  key: string;
+  productSlug: string;
+  brand: string;
+  tagline: string;
+  logo: string;
+  accent: string;
+  ctaTrialLabel: string;
+  slides: Slide[];
+}
+
+const DEMOS: Record<string, DemoConfig> = {
+  feedbpf: {
+    key: "feedbpf",
+    productSlug: "feedbpf",
+    brand: "Feed_BPF",
+    tagline: "Boas Práticas de Fabricação para Nutrição Animal",
+    logo: logoFeedBpf,
+    accent: "from-emerald-500 to-emerald-700",
+    ctaTrialLabel: "Iniciar trial de 7 dias",
+    slides: [
+      { title: "Dashboard de Conformidade", description: "Visão consolidada dos 10 POPs obrigatórios da IN 04/2007: % de conformidade BPF, NCs abertas, calibrações vencidas, treinamentos pendentes e alertas do planejamento anual.", render: FeedDashboard },
+      { title: "Documentos & POPs Obrigatórios", description: "Os 10 POPs exigidos pelo MAPA (IN 04/2007 + Decreto 12.031/2024) já mapeados ao módulo correspondente — um clique e você está no formulário operacional.", render: FeedDocumentos },
+      { title: "Rastreabilidade — MP → PA → Venda → Recall", description: "Cadeia completa rastreada por lote, com cobertura visual, segregação por espécie (IN 34/2008) e controle digital de quarentena conforme IN 15/2009.", render: FeedRastreabilidade },
+      { title: "Simulação de Recall (Decreto 12.031/2024)", description: "Exercício anual obrigatório com cronômetro e 10 etapas pré-configuradas — da identificação do problema até a destinação final, com auto-registro como NC.", render: FeedRecall },
+      { title: "Auditoria BPF — 80 itens do Decreto 12.031", description: "Checklist oficial com Conforme/NC por item, observações, score automático de conformidade e categorização de risco (Art. 79-86).", render: FeedAuditoria },
+      { title: "Recebimento de Matérias-Primas (POP-01)", description: "Inspeção sensorial, certificado de análise, lote, fornecedor, registro MAPA e exportação CSV — tudo conforme IN 15/2009.", render: FeedRecebimento },
+      { title: "Controle de Produção", description: "Registro de fabricação, tempo mínimo de mistura (3 min — IN 04/2007), controle de sobras/vassouras (IN 15/2009) e integração com PCP/ordens.", render: FeedProducao },
+      { title: "Matriz de Sensibilidade e Risco (APPCC)", description: "Questionário de 27 perguntas em 7 categorias gera automaticamente a matriz de risco e a análise de perigos APPCC para sua fábrica.", render: FeedMatrizRisco },
+      { title: "Planejamento Anual de Atividades", description: "Cronograma inteligente de análises, treinamentos e atividades obrigatórias com alertas de vencimento, % de conformidade e visões em Cards/Timeline.", render: FeedPlanejamento },
+      { title: "Manual Feed_BPF Interativo", description: "Guia completo de utilização organizado pela sequência dos 10 POPs — cada módulo do sistema explicado com vínculo direto à norma MAPA.", render: FeedManual },
+    ],
+  },
+  auditsbpf: {
+    key: "auditsbpf",
+    productSlug: "auditsbpf",
+    brand: "Audits_BPF",
+    tagline: "Auditoria interna BPF para nutrição animal",
+    logo: logoAuditsBpf,
+    accent: "from-blue-500 to-blue-700",
+    ctaTrialLabel: "Iniciar trial Audits_BPF",
+    slides: [
+      { title: "Dashboard de Auditorias", description: "Visão consolidada das auditorias internas: score médio, NCs abertas, próxima auditoria e conformidade por área (Decreto 12.031/2024). Dados ilustrativos.", render: AuditsDashboard },
+      { title: "Checklist BPF — 80 itens (Decreto 12.031/2024)", description: "Itens marcados como Conforme/NC/N.A. com observações, evidências e cálculo automático de score parcial e final.", render: AuditsChecklist },
+      { title: "Sala do Auditor — Portal Externo", description: "Acesso restrito (read-only) para auditores externos consultarem POPs, manuais, laudos e certificados sem entrar na operação.", render: AuditsSala },
+      { title: "Plano de Ação 5W2H", description: "Tratativa de NCs com responsável, prazo, custo e status. Integrado às auditorias e ao módulo de NCs do Feed_BPF.", render: AuditsPlano },
+      { title: "Relatório Profissional de Auditoria", description: "PDF com identidade da consultoria, score gauge, classificação de risco, radar por área e linha de evolução trimestral.", render: AuditsRelatorio },
+      { title: "Histórico e Evolução", description: "Linha do tempo de todas as auditorias realizadas, com comparativo de scores e taxa de tratamento de NCs por período.", render: AuditsHistorico },
+    ],
+  },
+  nutricrm: {
+    key: "nutricrm",
+    productSlug: "nutricrm",
+    brand: "NutriCRM",
+    tagline: "CRM especializado em nutrição animal",
+    logo: logoNutriCrm,
+    accent: "from-orange-500 to-rose-600",
+    ctaTrialLabel: "Iniciar trial NutriCRM",
+    slides: [
+      { title: "Dashboard do Representante", description: "Visão consolidada da carteira: clientes ativos, visitas técnicas no mês, propostas em aberto e taxa de conversão por espécie. Dados ilustrativos.", render: NutriDashboard },
+      { title: "Carteira de Clientes (multi-tenant)", description: "Cada representante visualiza apenas seus próprios clientes — privacidade total entre carteiras.", render: NutriClientes },
+      { title: "Pipeline Comercial em Funil", description: "Acompanhe propostas, visitas técnicas, amostragens e fechamentos em um funil dedicado ao agro.", render: NutriPipeline },
+      { title: "Visita Técnica com GPS", description: "Registro com geolocalização, avaliação do rebanho e recomendações nutricionais.", render: NutriVisita },
+      { title: "Relatórios e Indicadores", description: "KPIs de faturamento, ticket médio, conversão. Exportação em PDF e Excel.", render: NutriRelatorios },
+      { title: "Histórico Completo do Cliente", description: "Linha do tempo de visitas, vendas e recomendações técnicas por propriedade.", render: NutriClienteDetail },
+    ],
+  },
+  agrogestao: {
+    key: "agrogestao",
+    productSlug: "agrogestao",
+    brand: "AgroGestão CRM",
+    tagline: "Gestão comercial agrícola por região",
+    logo: logoAgroGestao,
+    accent: "from-lime-500 to-green-700",
+    ctaTrialLabel: "Iniciar trial AgroGestão",
+    slides: [
+      { title: "Dashboard Regional", description: "Visão consolidada do gerente: faturamento, meta atingida, clientes ativos e visitas no mês — com mapa do Brasil por região. Dados ilustrativos.", render: AgroDashboard },
+      { title: "Carteira de Clientes", description: "Cadastro completo por cidade/UF, região, cultura, ticket médio e última compra. Filtros por região e segmento.", render: AgroClientes },
+      { title: "Mapa de Regiões e Performance", description: "Mapa do Brasil colorido por desempenho com cards de faturamento, RCs e clientes ativos por região (Norte, Nordeste, Centro-Oeste, Sudeste, Sul).", render: AgroRegioes },
+      { title: "Metas Comerciais por Representante", description: "Acompanhamento individual de metas trimestrais com barras de progresso, badges de superação e ranking dos top RCs.", render: AgroMetas },
+      { title: "Visitas a Campo com GPS", description: "Calendário com check-in/check-out por geolocalização, fotos e taxa de cumprimento da meta mensal de visitas.", render: AgroVisitas },
+      { title: "Relatórios Gerenciais", description: "Evolução mensal de vendas, distribuição por cultura (donut), top clientes e exportação em PDF/Excel.", render: AgroRelatorios },
+    ],
+  },
+  agrorc: {
+    key: "agrorc",
+    productSlug: "agrorc",
+    brand: "Agro RC CRM",
+    tagline: "CRM para Representantes Comerciais do agro",
+    logo: logoAgroRc,
+    accent: "from-purple-500 to-violet-700",
+    ctaTrialLabel: "Iniciar trial Agro RC",
+    slides: [
+      { title: "Painel do RC", description: "Visão exclusiva do Representante: carteira, meta do mês, visitas e ranking. Dados ilustrativos.", render: AgroRcDashboard },
+      { title: "Pipeline Kanban", description: "Gestão visual de oportunidades (prospecção → proposta → negociação → fechamento) com arrastar e soltar.", render: AgroRcKanban },
+      { title: "Carteira de Clientes", description: "Cadastro, histórico, ticket médio e score por cliente. Filtros por região e segmento.", render: AgroRcClientes },
+      { title: "Visitas a Campo com GPS", description: "Planejamento semanal com check-in/check-out por geolocalização, fotos e taxa de cumprimento.", render: AgroRcVisitas },
+      { title: "Metas Comerciais", description: "Acompanhamento de metas mensais, trimestrais e anuais com ranking dos top RCs.", render: AgroRcMetas },
+      { title: "Painel Regional (Admin)", description: "Visão exclusiva do administrador: faturamento, margem bruta/líquida e performance por RC. Não visível aos RCs.", render: AgroRcAdmin },
+    ],
+  },
+};
 
 interface DemoConfig {
   key: string;
