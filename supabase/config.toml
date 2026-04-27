@@ -2,3 +2,9 @@ project_id = "uyrcxfypdzasdminxizq"
 
 [functions.auditor-portal]
 verify_jwt = false
+
+[functions.notify-new-lead]
+verify_jwt = false
+
+[functions.process-email-queue]
+verify_jwt = true
