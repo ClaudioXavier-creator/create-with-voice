@@ -60,6 +60,7 @@ import AuditsBPFPlanos from "./pages/AuditsBPFPlanos";
 import AgroGestaoCRMPage from "./pages/AgroGestaoCRMPage";
 import AgroRCCRMPage from "./pages/AgroRCCRMPage";
 import AdminLicencas from "./pages/AdminLicencas";
+import AdminLeads from "./pages/AdminLeads";
 // DocumentosBPF integrado como aba em Documentos — rota standalone removida
 import ChecklistPreAuditoria from "./pages/ChecklistPreAuditoria";
 import SimulacaoRecall from "./pages/SimulacaoRecall";
@@ -136,6 +137,7 @@ const AppRoutes = () => {
       <Route path="/agrogestao" element={<AgroGestaoCRMPage />} />
       <Route path="/agro-rc" element={<AgroRCCRMPage />} />
       <Route path="/admin-licencas" element={<ProtectedRoute><AdminLicencas /></ProtectedRoute>} />
+      <Route path="/admin-leads" element={<ProtectedRoute><AdminLeads /></ProtectedRoute>} />
       <Route
         path="/*"
         element={
