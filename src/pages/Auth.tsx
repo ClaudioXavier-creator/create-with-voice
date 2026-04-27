@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { Mail, Lock, User, Loader2, Building2, Briefcase, Eye, EyeOff, AlertTriangle, MailCheck } from "lucide-react";
+import { Mail, Lock, User, Loader2, Building2, Briefcase, Eye, EyeOff, AlertTriangle, MailCheck, Phone } from "lucide-react";
 import logoImg from "@/assets/logo.png";
 import logoFeedBpf from "@/assets/logo-feed-bpf.png";
 import logoAuditsBpf from "@/assets/logo-audits-bpf.png";
@@ -44,6 +44,7 @@ export default function Auth() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [nome, setNome] = useState("");
+  const [telefone, setTelefone] = useState("");
   const [tipoUsuario, setTipoUsuario] = useState<"cliente" | "consultoria">("cliente");
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
