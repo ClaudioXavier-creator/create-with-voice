@@ -354,6 +354,25 @@ export default function Auth() {
                     />
                   </div>
                 </div>
+                <div className="space-y-2">
+                  <Label htmlFor="telefone">Telefone / WhatsApp</Label>
+                  <div className="relative">
+                    <Phone className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      id="telefone"
+                      type="tel"
+                      inputMode="tel"
+                      placeholder="(11) 99999-9999"
+                      value={telefone}
+                      onChange={(e) => setTelefone(e.target.value)}
+                      className="pl-9"
+                      required
+                    />
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Usado apenas para contato comercial e suporte.
+                  </p>
+                </div>
               </>
             )}
               <div className="space-y-2">
