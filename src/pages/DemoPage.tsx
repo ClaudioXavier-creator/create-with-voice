@@ -11,7 +11,21 @@ import logoNutriCrm from "@/assets/logo-nutricrm.png";
 import logoAgroGestao from "@/assets/logo-agrogestao.png";
 import logoAgroRc from "@/assets/logo-agrorc.png";
 
-import previewAudits from "@/assets/auditsbpf-dashboard-preview.jpg";
+// Mockups Audits_BPF (dados fictícios — Fábrica Demo Ltda)
+import audits01 from "@/assets/demo/auditsbpf-01-dashboard.jpg";
+import audits02 from "@/assets/demo/auditsbpf-02-checklist.jpg";
+import audits03 from "@/assets/demo/auditsbpf-03-sala-auditor.jpg";
+import audits04 from "@/assets/demo/auditsbpf-04-plano-acao.jpg";
+import audits05 from "@/assets/demo/auditsbpf-05-relatorio.jpg";
+import audits06 from "@/assets/demo/auditsbpf-06-historico.jpg";
+
+// Mockups AgroGestão CRM (dados fictícios)
+import agro01 from "@/assets/demo/agrogestao-01-dashboard.jpg";
+import agro02 from "@/assets/demo/agrogestao-02-clientes.jpg";
+import agro03 from "@/assets/demo/agrogestao-03-regioes.jpg";
+import agro04 from "@/assets/demo/agrogestao-04-metas.jpg";
+import agro05 from "@/assets/demo/agrogestao-05-visitas.jpg";
+import agro06 from "@/assets/demo/agrogestao-06-relatorios.jpg";
 
 // Mockups Feed_BPF (dados fictícios — Fábrica Demo Ltda)
 import feed01 from "@/assets/demo/feedbpf-01-dashboard.jpg";
@@ -139,24 +153,12 @@ const DEMOS: Record<string, DemoConfig> = {
     accent: "from-blue-500 to-blue-700",
     ctaTrialLabel: "Iniciar trial Audits_BPF",
     slides: [
-      {
-        title: "Checklists baseados no Decreto 12.031/2024",
-        description:
-          "Modelos prontos cobrindo as 14 áreas regulatórias, com pontuação automática e plano de ação 5W2H.",
-        image: previewAudits,
-      },
-      {
-        title: "Sala do Auditor",
-        description:
-          "Portal independente para auditores externos consultarem documentos vigentes sem acessar a operação.",
-        image: previewAudits,
-      },
-      {
-        title: "Relatórios profissionais",
-        description:
-          "Exportação em PDF com identidade da consultoria, gráficos de evolução e classificação de risco.",
-        image: previewAudits,
-      },
+      { title: "Dashboard de Auditorias", description: "Visão consolidada das auditorias internas: score médio, NCs abertas, próxima auditoria e conformidade por área (Decreto 12.031/2024). Dados ilustrativos.", image: audits01 },
+      { title: "Checklist BPF — 80 itens (Decreto 12.031/2024)", description: "Itens marcados como Conforme/NC/N.A. com observações, evidências e cálculo automático de score parcial e final.", image: audits02 },
+      { title: "Sala do Auditor — Portal Externo", description: "Acesso restrito (read-only) para auditores externos consultarem POPs, manuais, laudos e certificados sem entrar na operação.", image: audits03 },
+      { title: "Plano de Ação 5W2H", description: "Tratativa de NCs com responsável, prazo, custo e status. Integrado às auditorias e ao módulo de NCs do Feed_BPF.", image: audits04 },
+      { title: "Relatório Profissional de Auditoria", description: "PDF com identidade da consultoria, score gauge, classificação de risco, radar por área e linha de evolução trimestral.", image: audits05 },
+      { title: "Histórico e Evolução", description: "Linha do tempo de todas as auditorias realizadas, com comparativo de scores e taxa de tratamento de NCs por período.", image: audits06 },
     ],
   },
   nutricrm: {
@@ -185,9 +187,12 @@ const DEMOS: Record<string, DemoConfig> = {
     accent: "from-lime-500 to-green-700",
     ctaTrialLabel: "Iniciar trial AgroGestão",
     slides: [
-      { title: "Mapa de regiões", description: "Distribuição de carteira por região, com indicadores de cobertura e performance.", image: nutri01 },
-      { title: "Acompanhamento de safra", description: "Histórico de visitas, recomendações técnicas e produtos vendidos por propriedade.", image: nutri06 },
-      { title: "Relatórios gerenciais", description: "Exporte relatórios de vendas, metas e produtividade por consultor.", image: nutri05 },
+      { title: "Dashboard Regional", description: "Visão consolidada do gerente: faturamento, meta atingida, clientes ativos e visitas no mês — com mapa do Brasil por região. Dados ilustrativos.", image: agro01 },
+      { title: "Carteira de Clientes", description: "Cadastro completo por cidade/UF, região, cultura, ticket médio e última compra. Filtros por região e segmento.", image: agro02 },
+      { title: "Mapa de Regiões e Performance", description: "Mapa do Brasil colorido por desempenho com cards de faturamento, RCs e clientes ativos por região (Norte, Nordeste, Centro-Oeste, Sudeste, Sul).", image: agro03 },
+      { title: "Metas Comerciais por Representante", description: "Acompanhamento individual de metas trimestrais com barras de progresso, badges de superação e ranking dos top RCs.", image: agro04 },
+      { title: "Visitas a Campo com GPS", description: "Calendário com check-in/check-out por geolocalização, fotos e taxa de cumprimento da meta mensal de visitas.", image: agro05 },
+      { title: "Relatórios Gerenciais", description: "Evolução mensal de vendas, distribuição por cultura (donut), top clientes e exportação em PDF/Excel.", image: agro06 },
     ],
   },
   agrorc: {
