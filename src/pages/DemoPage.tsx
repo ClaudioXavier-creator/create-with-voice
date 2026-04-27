@@ -12,19 +12,34 @@ import logoAgroGestao from "@/assets/logo-agrogestao.png";
 import logoAgroRc from "@/assets/logo-agrorc.png";
 
 import previewAudits from "@/assets/auditsbpf-dashboard-preview.jpg";
-import previewNutri from "@/assets/nutricrm-dashboard-preview.jpg";
 
-// Screenshots reais do Feed_BPF (capturadas do sistema em produção)
-import feed01 from "@/assets/demo/01-dashboard.png";
-import feed02 from "@/assets/demo/02-documentos-pops.png";
-import feed03 from "@/assets/demo/03-rastreabilidade.png";
-import feed04 from "@/assets/demo/04-recall.png";
-import feed05 from "@/assets/demo/05-auditoria.png";
-import feed06 from "@/assets/demo/06-recebimento.png";
-import feed07 from "@/assets/demo/07-producao.png";
-import feed08 from "@/assets/demo/08-matriz-risco.png";
-import feed09 from "@/assets/demo/09-planejamento.png";
-import feed10 from "@/assets/demo/10-manual.png";
+// Mockups Feed_BPF (dados fictícios — Fábrica Demo Ltda)
+import feed01 from "@/assets/demo/feedbpf-01-dashboard.jpg";
+import feed02 from "@/assets/demo/feedbpf-02-documentos.jpg";
+import feed03 from "@/assets/demo/feedbpf-03-rastreabilidade.jpg";
+import feed04 from "@/assets/demo/feedbpf-04-recall.jpg";
+import feed05 from "@/assets/demo/feedbpf-05-auditoria.jpg";
+import feed06 from "@/assets/demo/feedbpf-06-recebimento.jpg";
+import feed07 from "@/assets/demo/feedbpf-07-producao.jpg";
+import feed08 from "@/assets/demo/feedbpf-08-matriz-risco.jpg";
+import feed09 from "@/assets/demo/feedbpf-09-planejamento.jpg";
+import feed10 from "@/assets/demo/feedbpf-10-manual.jpg";
+
+// Mockups Agro RC CRM (dados fictícios)
+import agrorc01 from "@/assets/demo/agrorc-01-dashboard.jpg";
+import agrorc02 from "@/assets/demo/agrorc-02-kanban.jpg";
+import agrorc03 from "@/assets/demo/agrorc-03-clientes.jpg";
+import agrorc04 from "@/assets/demo/agrorc-04-visitas.jpg";
+import agrorc05 from "@/assets/demo/agrorc-05-metas.jpg";
+import agrorc06 from "@/assets/demo/agrorc-06-admin.jpg";
+
+// Mockups NutriCRM (dados fictícios)
+import nutri01 from "@/assets/demo/nutricrm-01-dashboard.jpg";
+import nutri02 from "@/assets/demo/nutricrm-02-clientes.jpg";
+import nutri03 from "@/assets/demo/nutricrm-03-pipeline.jpg";
+import nutri04 from "@/assets/demo/nutricrm-04-visita.jpg";
+import nutri05 from "@/assets/demo/nutricrm-05-relatorios.jpg";
+import nutri06 from "@/assets/demo/nutricrm-06-cliente-detail.jpg";
 
 interface Slide {
   title: string;
