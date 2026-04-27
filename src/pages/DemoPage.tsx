@@ -168,24 +168,12 @@ const DEMOS: Record<string, DemoConfig> = {
     accent: "from-orange-500 to-rose-600",
     ctaTrialLabel: "Iniciar trial NutriCRM",
     slides: [
-      {
-        title: "Carteira do representante",
-        description:
-          "Cada representante visualiza apenas seus clientes — privacidade total entre carteiras.",
-        image: previewNutri,
-      },
-      {
-        title: "Pipeline comercial",
-        description:
-          "Acompanhe propostas, visitas técnicas, amostragens e fechamentos em um funil dedicado ao agro.",
-        image: previewNutri,
-      },
-      {
-        title: "Indicadores de performance",
-        description:
-          "KPIs de conversão, ticket médio por espécie e ranking de representantes.",
-        image: previewNutri,
-      },
+      { title: "Dashboard do Representante", description: "Visão consolidada da carteira: clientes ativos, visitas técnicas no mês, propostas em aberto e taxa de conversão por espécie. Dados ilustrativos.", image: nutri01 },
+      { title: "Carteira de Clientes (multi-tenant)", description: "Cada representante visualiza apenas seus próprios clientes — privacidade total entre carteiras.", image: nutri02 },
+      { title: "Pipeline Comercial em Funil", description: "Acompanhe propostas, visitas técnicas, amostragens e fechamentos em um funil dedicado ao agro.", image: nutri03 },
+      { title: "Visita Técnica com GPS", description: "Registro com geolocalização, avaliação do rebanho e recomendações nutricionais.", image: nutri04 },
+      { title: "Relatórios e Indicadores", description: "KPIs de faturamento, ticket médio, conversão. Exportação em PDF e Excel.", image: nutri05 },
+      { title: "Histórico Completo do Cliente", description: "Linha do tempo de visitas, vendas e recomendações técnicas por propriedade.", image: nutri06 },
     ],
   },
   agrogestao: {
@@ -197,53 +185,26 @@ const DEMOS: Record<string, DemoConfig> = {
     accent: "from-lime-500 to-green-700",
     ctaTrialLabel: "Iniciar trial AgroGestão",
     slides: [
-      {
-        title: "Mapa de regiões",
-        description:
-          "Distribuição de carteira por região, com indicadores de cobertura e performance.",
-        image: previewNutri,
-      },
-      {
-        title: "Acompanhamento de safra",
-        description:
-          "Histórico de visitas, recomendações técnicas e produtos vendidos por propriedade.",
-        image: previewNutri,
-      },
-      {
-        title: "Relatórios gerenciais",
-        description:
-          "Exporte relatórios de vendas, metas e produtividade por consultor.",
-        image: previewNutri,
-      },
+      { title: "Mapa de regiões", description: "Distribuição de carteira por região, com indicadores de cobertura e performance.", image: nutri01 },
+      { title: "Acompanhamento de safra", description: "Histórico de visitas, recomendações técnicas e produtos vendidos por propriedade.", image: nutri06 },
+      { title: "Relatórios gerenciais", description: "Exporte relatórios de vendas, metas e produtividade por consultor.", image: nutri05 },
     ],
   },
   agrorc: {
     key: "agrorc",
     productSlug: "agrorc",
     brand: "Agro RC CRM",
-    tagline: "CRM de relacionamento e cobrança no agro",
+    tagline: "CRM para Representantes Comerciais do agro",
     logo: logoAgroRc,
-    accent: "from-amber-500 to-orange-700",
+    accent: "from-purple-500 to-violet-700",
     ctaTrialLabel: "Iniciar trial Agro RC",
     slides: [
-      {
-        title: "Painel de relacionamento",
-        description:
-          "Acompanhe interações, status de pagamento e histórico financeiro de cada cliente.",
-        image: previewNutri,
-      },
-      {
-        title: "Régua de cobrança",
-        description:
-          "Automação de mensagens (WhatsApp/e-mail) por estágio de inadimplência.",
-        image: previewNutri,
-      },
-      {
-        title: "Indicadores de carteira",
-        description:
-          "Aging, recuperação e conversão consolidados em um único dashboard.",
-        image: previewNutri,
-      },
+      { title: "Painel do RC", description: "Visão exclusiva do Representante: carteira, meta do mês, visitas e ranking. Dados ilustrativos.", image: agrorc01 },
+      { title: "Pipeline Kanban", description: "Gestão visual de oportunidades (prospecção → proposta → negociação → fechamento) com arrastar e soltar.", image: agrorc02 },
+      { title: "Carteira de Clientes", description: "Cadastro, histórico, ticket médio e score por cliente. Filtros por região e segmento.", image: agrorc03 },
+      { title: "Visitas a Campo com GPS", description: "Planejamento semanal com check-in/check-out por geolocalização, fotos e taxa de cumprimento.", image: agrorc04 },
+      { title: "Metas Comerciais", description: "Acompanhamento de metas mensais, trimestrais e anuais com ranking dos top RCs.", image: agrorc05 },
+      { title: "Painel Regional (Admin)", description: "Visão exclusiva do administrador: faturamento, margem bruta/líquida e performance por RC. Não visível aos RCs.", image: agrorc06 },
     ],
   },
 };
