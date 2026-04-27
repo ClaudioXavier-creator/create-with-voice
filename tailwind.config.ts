@@ -3,6 +3,12 @@ import type { Config } from "tailwindcss";
 export default {
   darkMode: ["class"],
   content: ["./pages/**/*.{ts,tsx}", "./components/**/*.{ts,tsx}", "./app/**/*.{ts,tsx}", "./src/**/*.{ts,tsx}"],
+  // Safelist para classes dinâmicas usadas nos mockups de demo (MockScreens.tsx)
+  safelist: [
+    {
+      pattern: /(bg|text|border|from|to)-(emerald|amber|rose|blue|orange|slate|lime|green|purple)-(50|100|200|300|400|500|600|700|800|900)/,
+    },
+  ],
   prefix: "",
   theme: {
     container: {
