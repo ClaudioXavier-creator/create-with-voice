@@ -236,13 +236,8 @@ export default function DemoPage() {
         </div>
 
         <Card className="overflow-hidden">
-          <div className="relative bg-muted">
-            <img
-              src={slide!.image}
-              alt={slide!.title}
-              className="w-full h-auto object-cover max-h-[520px]"
-              loading="eager"
-            />
+          <div className="relative bg-muted p-2 sm:p-4">
+            {slide!.render()}
             <div className="absolute top-3 right-3">
               <Badge className="bg-black/60 hover:bg-black/60 text-white border-none">
                 <Lock className="h-3 w-3 mr-1" /> Modo demonstração
