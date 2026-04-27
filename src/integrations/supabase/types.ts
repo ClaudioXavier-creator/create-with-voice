@@ -1882,6 +1882,42 @@ export type Database = {
           },
         ]
       }
+      leads: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          nome: string
+          notificado: boolean
+          origem: string | null
+          produto_interesse: string | null
+          telefone: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          nome: string
+          notificado?: boolean
+          origem?: string | null
+          produto_interesse?: string | null
+          telefone: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          nome?: string
+          notificado?: boolean
+          origem?: string | null
+          produto_interesse?: string | null
+          telefone?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       leads_contato: {
         Row: {
           cidade: string | null

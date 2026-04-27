@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { Mail, Lock, User, Loader2, Building2, Briefcase, Eye, EyeOff, AlertTriangle, MailCheck } from "lucide-react";
+import { Mail, Lock, User, Loader2, Building2, Briefcase, Eye, EyeOff, AlertTriangle, MailCheck, Phone } from "lucide-react";
 import logoImg from "@/assets/logo.png";
 import logoFeedBpf from "@/assets/logo-feed-bpf.png";
 import logoAuditsBpf from "@/assets/logo-audits-bpf.png";
@@ -44,6 +44,7 @@ export default function Auth() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [nome, setNome] = useState("");
+  const [telefone, setTelefone] = useState("");
   const [tipoUsuario, setTipoUsuario] = useState<"cliente" | "consultoria">("cliente");
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
@@ -171,6 +172,12 @@ export default function Auth() {
     if (!isForgot && !isLogin) {
       const signUpSchema = z.object({
         nome: z.string().trim().min(3, "Informe seu nome completo.").max(120, "Nome muito longo."),
+        telefone: z
+          .string()
+          .trim()
+          .min(8, "Informe um telefone/WhatsApp válido.")
+          .max(30, "Telefone muito longo.")
+          .refine((v) => v.replace(/\D/g, "").length >= 8, "Informe um telefone/WhatsApp válido."),
         password: z
           .string()
           .min(8, "A senha deve ter pelo menos 8 caracteres.")
@@ -182,7 +189,7 @@ export default function Auth() {
         path: ["confirmPassword"],
       });
 
-      const parsed = signUpSchema.safeParse({ nome, password, confirmPassword });
+      const parsed = signUpSchema.safeParse({ nome, telefone, password, confirmPassword });
       if (!parsed.success) {
         toast.error(parsed.error.issues[0]?.message || "Revise os dados informados.");
         return;
@@ -212,15 +219,32 @@ export default function Auth() {
         if (postLoginRedirect) sessionStorage.removeItem("post_login_redirect");
         navigate(postLoginRedirect || resolvedRedirect, { replace: true });
       } else {
-        const { error } = await supabase.auth.signUp({
+        const { data: signUpData, error } = await supabase.auth.signUp({
           email,
           password,
           options: {
-            data: { nome: nome.trim(), tipo_usuario: tipoUsuario },
+            data: { nome: nome.trim(), telefone: telefone.trim(), tipo_usuario: tipoUsuario },
             emailRedirectTo: window.location.origin,
           },
         });
         if (error) throw error;
+
+        // Registra lead + envia notificação por e-mail (não bloqueante)
+        try {
+          await supabase.functions.invoke("notify-new-lead", {
+            body: {
+              nome: nome.trim(),
+              email: email.trim(),
+              telefone: telefone.trim(),
+              produto: product !== "default" ? product : "plataforma",
+              origem: window.location.pathname + window.location.search,
+              user_id: signUpData.user?.id,
+            },
+          });
+        } catch (err) {
+          console.warn("notify-new-lead falhou (não bloqueante):", err);
+        }
+
         setPendingConfirmationEmail(email);
         toast.success("Conta criada! Verifique seu e-mail para confirmar.");
         updateAuthMode({ login: true, forgot: false });
@@ -329,6 +353,25 @@ export default function Auth() {
                       required
                     />
                   </div>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="telefone">Telefone / WhatsApp</Label>
+                  <div className="relative">
+                    <Phone className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      id="telefone"
+                      type="tel"
+                      inputMode="tel"
+                      placeholder="(11) 99999-9999"
+                      value={telefone}
+                      onChange={(e) => setTelefone(e.target.value)}
+                      className="pl-9"
+                      required
+                    />
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Usado apenas para contato comercial e suporte.
+                  </p>
                 </div>
               </>
             )}
