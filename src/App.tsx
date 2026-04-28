@@ -125,6 +125,7 @@ const AppRoutes = () => {
   return (
     <Routes>
       <Route path="/" element={<Vitrine />} />
+      <Route path="/vitrine" element={<Vitrine />} />
       <Route path="/auth" element={<AuthRoute />} />
       <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/auditor/:token" element={<AuditorPortal />} />
