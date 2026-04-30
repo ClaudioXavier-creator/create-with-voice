@@ -79,7 +79,7 @@ import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
-function ProtectedRoute({ children }: { children: React.ReactNode }) {
+const ProtectedRoute = React.forwardRef<HTMLDivElement, { children: React.ReactNode }>(({ children }, _ref) => {
   const { session, loading } = useAuth();
   const location = useLocation();
 
@@ -103,15 +103,15 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
     return <Navigate to={`/auth?redirect=${redirect}`} replace />;
   }
   return <>{children}</>;
-}
+});
+ProtectedRoute.displayName = "ProtectedRoute";
 
-
-
-function AuthRoute() {
+const AuthRoute = React.forwardRef<HTMLDivElement>((_props, _ref) => {
   return <Auth />;
-}
+});
+AuthRoute.displayName = "AuthRoute";
 
-const AppRoutes = () => {
+const AppRoutes = React.forwardRef<HTMLDivElement>((_props, _ref) => {
   const { session, loading } = useAuth();
 
   if (loading) {
