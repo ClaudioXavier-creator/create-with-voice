@@ -1,3 +1,4 @@
+import React from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Route, Routes, Navigate, useLocation } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -79,7 +80,7 @@ import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
-function ProtectedRoute({ children }: { children: React.ReactNode }) {
+const ProtectedRoute = React.forwardRef<HTMLDivElement, { children: React.ReactNode }>(({ children }, _ref) => {
   const { session, loading } = useAuth();
   const location = useLocation();
 
@@ -103,15 +104,15 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
     return <Navigate to={`/auth?redirect=${redirect}`} replace />;
   }
   return <>{children}</>;
-}
+});
+ProtectedRoute.displayName = "ProtectedRoute";
 
-
-
-function AuthRoute() {
+const AuthRoute = React.forwardRef<HTMLDivElement>((_props, _ref) => {
   return <Auth />;
-}
+});
+AuthRoute.displayName = "AuthRoute";
 
-const AppRoutes = () => {
+const AppRoutes = React.forwardRef<HTMLDivElement>((_props, _ref) => {
   const { session, loading } = useAuth();
 
   if (loading) {
@@ -206,7 +207,8 @@ const AppRoutes = () => {
       />
     </Routes>
   );
-};
+});
+AppRoutes.displayName = "AppRoutes";
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
