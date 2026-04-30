@@ -1,5 +1,7 @@
 import { Link } from "react-router-dom";
 import { ArrowLeft, Sparkles, Users, MapPin, BarChart3, FileText, Target, HeadsetIcon, ShieldCheck, Lock, Globe, TrendingUp } from "lucide-react";
+
+const EXTERNAL_APP = "https://agrocrm-gtijlihc.manus.space/";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -44,18 +46,18 @@ export default function AgroGestaoCRMPage() {
                 Plataforma de gestão regional de vendas no agronegócio. Controle clientes, territórios e metas comerciais em um só lugar.
               </p>
               <div className="flex flex-col sm:flex-row gap-3">
-                <Link to="/auth?product=agrogestao&mode=signup&redirect=%2Fdashboard">
+                <a href={EXTERNAL_APP} target="_blank" rel="noopener noreferrer">
                   <Button size="lg" className="gap-2 shadow-lg shadow-primary/20">
                     <Sparkles className="h-4 w-4" />
                     Testar grátis por 7 dias
                   </Button>
-                </Link>
-                <Link to="/auth?product=agrogestao&redirect=%2Fdashboard">
+                </a>
+                <a href={EXTERNAL_APP} target="_blank" rel="noopener noreferrer">
                   <Button size="lg" variant="outline" className="gap-2">
                     <Lock className="h-4 w-4" />
                     Já é cadastrado? Acesse o Sistema
                   </Button>
-                </Link>
+                </a>
               </div>
               <p className="text-xs text-muted-foreground mt-2">Sem cartão de crédito • Acesso completo</p>
             </div>
@@ -164,12 +166,12 @@ export default function AgroGestaoCRMPage() {
           <div className="mt-12 text-center">
             <h3 className="text-xl font-bold font-display text-foreground mb-3">Experimente grátis por 7 dias!</h3>
             <p className="text-muted-foreground mb-6">Crie sua conta e tenha acesso completo ao AgroGestão CRM durante o período trial.</p>
-            <Link to="/auth?product=agrogestao&mode=signup&redirect=%2Fdashboard">
+            <a href={EXTERNAL_APP} target="_blank" rel="noopener noreferrer">
               <Button size="lg" className="gap-2 shadow-lg shadow-primary/25">
                 <Sparkles className="h-4 w-4" />
                 Começar Trial Grátis
               </Button>
-            </Link>
+            </a>
           </div>
         </section>
       </main>
