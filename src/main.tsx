@@ -2,38 +2,39 @@ import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
 import "./index.css";
 
-async function resetPreviewCacheIfNeeded() {
+// Unregister any leftover service workers and clear caches in preview/iframe
+// contexts to avoid stale assets. Never reload — reloading inside the Lovable
+// preview iframe causes infinite loops.
+function cleanupStaleServiceWorkers() {
   if (typeof window === "undefined") return;
 
-  const isLovablePreview = window.location.hostname.includes("lovableproject.com");
-  if (!isLovablePreview) return;
-
-  const hasServiceWorker = "serviceWorker" in navigator;
-  const hasCacheApi = "caches" in window;
-  const reloadFlag = "preview-cache-reset-v1";
-
-  if (hasServiceWorker) {
-    const registrations = await navigator.serviceWorker.getRegistrations();
-
-    if (registrations.length > 0) {
-      await Promise.all(registrations.map((registration) => registration.unregister()));
-    }
+  let isInIframe = false;
+  try {
+    isInIframe = window.self !== window.top;
+  } catch {
+    isInIframe = true;
   }
 
-  if (hasCacheApi) {
-    const cacheKeys = await window.caches.keys();
-    await Promise.all(cacheKeys.map((key) => window.caches.delete(key)));
+  const isPreviewHost =
+    window.location.hostname.includes("lovableproject.com") ||
+    window.location.hostname.includes("id-preview--");
+
+  if (!isInIframe && !isPreviewHost) return;
+
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker
+      .getRegistrations()
+      .then((regs) => regs.forEach((r) => r.unregister()))
+      .catch(() => {});
   }
 
-  if (!sessionStorage.getItem(reloadFlag)) {
-    sessionStorage.setItem(reloadFlag, "done");
-    window.location.reload();
-    return;
+  if ("caches" in window) {
+    window.caches
+      .keys()
+      .then((keys) => keys.forEach((k) => window.caches.delete(k)))
+      .catch(() => {});
   }
-
-  sessionStorage.removeItem(reloadFlag);
 }
 
-resetPreviewCacheIfNeeded().finally(() => {
-  createRoot(document.getElementById("root")!).render(<App />);
-});
+cleanupStaleServiceWorkers();
+createRoot(document.getElementById("root")!).render(<App />);
