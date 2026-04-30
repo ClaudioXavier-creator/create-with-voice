@@ -1,3 +1,4 @@
+import React from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Route, Routes, Navigate, useLocation } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -206,7 +207,8 @@ const AppRoutes = React.forwardRef<HTMLDivElement>((_props, _ref) => {
       />
     </Routes>
   );
-};
+});
+AppRoutes.displayName = "AppRoutes";
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
