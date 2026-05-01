@@ -57,6 +57,18 @@ export default function FichaTecnica({ produtoId }: Props) {
     return String(value);
   }
 
+  // Safe text renderer — never lets an object reach JSX
+  function s(value: any): string {
+    if (value == null) return "";
+    if (typeof value === "object") {
+      // Try formatNivel first (handles {min,max,unit})
+      const formatted = formatNivel(value);
+      if (formatted) return formatted;
+      try { return JSON.stringify(value); } catch { return ""; }
+    }
+    return String(value);
+  }
+
   function handlePrint() {
     const niveis = (produto?.niveis_garantia as Record<string, any>) || {};
     const niveisRows = Object.entries(niveis).map(([key, value]) => [key, formatNivel(value)]).filter(([_, v]) => v).map(([key, value]) =>
@@ -163,31 +175,31 @@ ${carimboHTML(gerarCarimboSync({
       <Card>
         <CardContent className="pt-6">
           <div className="header text-center mb-6">
-            {empresa && <p className="text-xs text-muted-foreground">{empresa.nome} — CNPJ: {empresa.cnpj}</p>}
+            {empresa && <p className="text-xs text-muted-foreground">{s(empresa.nome)} — CNPJ: {s(empresa.cnpj)}</p>}
             <h1 className="text-xl font-bold text-foreground mt-1">FICHA TÉCNICA DE PRODUTO</h1>
-            <p className="text-sm text-muted-foreground">{produto.nome}</p>
+            <p className="text-sm text-muted-foreground">{s(produto.nome)}</p>
           </div>
 
           <h2 className="text-sm font-semibold border-b border-border pb-1 mb-3 text-foreground">1. Identificação do Produto</h2>
           <div className="overflow-x-auto">
             <table className="w-full text-sm border border-border">
               <tbody>
-                <tr><th className="bg-muted/50 px-3 py-2 text-foreground w-[40%]">Nome do Produto</th><td className="px-3 py-2">{produto.nome}</td></tr>
-                <tr><th className="bg-muted/50 px-3 py-2 text-foreground">Marca</th><td className="px-3 py-2">{produto.marca}</td></tr>
-                <tr><th className="bg-muted/50 px-3 py-2 text-foreground">Classificação</th><td className="px-3 py-2"><Badge variant="secondary">{CLASSIFICACAO_LABELS[produto.classificacao] || produto.classificacao}</Badge></td></tr>
-                <tr><th className="bg-muted/50 px-3 py-2 text-foreground">Espécie Alvo</th><td className="px-3 py-2">{produto.especie_alvo}</td></tr>
-                <tr><th className="bg-muted/50 px-3 py-2 text-foreground">Categoria Animal</th><td className="px-3 py-2">{produto.categoria_animal}</td></tr>
-                <tr><th className="bg-muted/50 px-3 py-2 text-foreground">Registro MAPA</th><td className="px-3 py-2 font-mono">{produto.registro_mapa}</td></tr>
-                <tr><th className="bg-muted/50 px-3 py-2 text-foreground">Forma Física</th><td className="px-3 py-2">{produto.forma_fisica}</td></tr>
-                <tr><th className="bg-muted/50 px-3 py-2 text-foreground">Peso Líquido</th><td className="px-3 py-2">{produto.peso_liquido} {produto.unidade_peso}</td></tr>
-                <tr><th className="bg-muted/50 px-3 py-2 text-foreground">Embalagem</th><td className="px-3 py-2">{produto.embalagem}</td></tr>
-                <tr><th className="bg-muted/50 px-3 py-2 text-foreground">Validade</th><td className="px-3 py-2">{produto.validade_meses} meses</td></tr>
+                <tr><th className="bg-muted/50 px-3 py-2 text-foreground w-[40%]">Nome do Produto</th><td className="px-3 py-2">{s(produto.nome)}</td></tr>
+                <tr><th className="bg-muted/50 px-3 py-2 text-foreground">Marca</th><td className="px-3 py-2">{s(produto.marca)}</td></tr>
+                <tr><th className="bg-muted/50 px-3 py-2 text-foreground">Classificação</th><td className="px-3 py-2"><Badge variant="secondary">{CLASSIFICACAO_LABELS[produto.classificacao] || s(produto.classificacao)}</Badge></td></tr>
+                <tr><th className="bg-muted/50 px-3 py-2 text-foreground">Espécie Alvo</th><td className="px-3 py-2">{s(produto.especie_alvo)}</td></tr>
+                <tr><th className="bg-muted/50 px-3 py-2 text-foreground">Categoria Animal</th><td className="px-3 py-2">{s(produto.categoria_animal)}</td></tr>
+                <tr><th className="bg-muted/50 px-3 py-2 text-foreground">Registro MAPA</th><td className="px-3 py-2 font-mono">{s(produto.registro_mapa)}</td></tr>
+                <tr><th className="bg-muted/50 px-3 py-2 text-foreground">Forma Física</th><td className="px-3 py-2">{s(produto.forma_fisica)}</td></tr>
+                <tr><th className="bg-muted/50 px-3 py-2 text-foreground">Peso Líquido</th><td className="px-3 py-2">{s(produto.peso_liquido)} {s(produto.unidade_peso)}</td></tr>
+                <tr><th className="bg-muted/50 px-3 py-2 text-foreground">Embalagem</th><td className="px-3 py-2">{s(produto.embalagem)}</td></tr>
+                <tr><th className="bg-muted/50 px-3 py-2 text-foreground">Validade</th><td className="px-3 py-2">{s(produto.validade_meses)} meses</td></tr>
               </tbody>
             </table>
           </div>
 
           <h2 className="text-sm font-semibold border-b border-border pb-1 mb-3 mt-6 text-foreground">2. Composição</h2>
-          <p className="text-sm text-foreground">{produto.composicao || "—"}</p>
+          <p className="text-sm text-foreground">{s(produto.composicao) || "—"}</p>
 
           <h2 className="text-sm font-semibold border-b border-border pb-1 mb-3 mt-6 text-foreground">3. Níveis de Garantia</h2>
           <div className="overflow-x-auto">
@@ -207,22 +219,22 @@ ${carimboHTML(gerarCarimboSync({
           </div>
 
           <h2 className="text-sm font-semibold border-b border-border pb-1 mb-3 mt-6 text-foreground">4. Indicações de Uso</h2>
-          <p className="text-sm text-foreground">{produto.indicacoes || "—"}</p>
+          <p className="text-sm text-foreground">{s(produto.indicacoes) || "—"}</p>
 
           <h2 className="text-sm font-semibold border-b border-border pb-1 mb-3 mt-6 text-foreground">5. Modo de Uso / Preparo</h2>
-          <p className="text-sm text-foreground">{produto.modo_uso || "—"}</p>
-          {produto.modo_preparo && <p className="text-sm text-foreground mt-1"><strong>Preparo:</strong> {produto.modo_preparo}</p>}
+          <p className="text-sm text-foreground">{s(produto.modo_uso) || "—"}</p>
+          {produto.modo_preparo && <p className="text-sm text-foreground mt-1"><strong>Preparo:</strong> {s(produto.modo_preparo)}</p>}
 
           <h2 className="text-sm font-semibold border-b border-border pb-1 mb-3 mt-6 text-foreground">6. Precauções e Restrições</h2>
-          <p className="text-sm text-foreground">{produto.precaucoes || "—"}</p>
+          <p className="text-sm text-foreground">{s(produto.precaucoes) || "—"}</p>
 
           <h2 className="text-sm font-semibold border-b border-border pb-1 mb-3 mt-6 text-foreground">7. Armazenamento</h2>
-          <p className="text-sm text-foreground">{produto.armazenamento || "—"}</p>
+          <p className="text-sm text-foreground">{s(produto.armazenamento) || "—"}</p>
 
           {produto.diferenciais && (
             <>
               <h2 className="text-sm font-semibold border-b border-border pb-1 mb-3 mt-6 text-foreground">8. Diferenciais do Produto</h2>
-              <p className="text-sm text-foreground">{produto.diferenciais}</p>
+              <p className="text-sm text-foreground">{s(produto.diferenciais)}</p>
             </>
           )}
 
@@ -232,10 +244,10 @@ ${carimboHTML(gerarCarimboSync({
               <div className="overflow-x-auto">
                 <table className="w-full text-sm border border-border">
                   <tbody>
-                    <tr><th className="bg-muted/50 px-3 py-2 text-foreground w-[40%]">Razão Social</th><td className="px-3 py-2">{empresa.nome}</td></tr>
-                    <tr><th className="bg-muted/50 px-3 py-2 text-foreground">CNPJ</th><td className="px-3 py-2">{empresa.cnpj}</td></tr>
-                    <tr><th className="bg-muted/50 px-3 py-2 text-foreground">Endereço</th><td className="px-3 py-2">{empresa.endereco}</td></tr>
-                    <tr><th className="bg-muted/50 px-3 py-2 text-foreground">Resp. Técnico</th><td className="px-3 py-2">{empresa.responsavel_tecnico} — CRMV: {empresa.crmv}</td></tr>
+                    <tr><th className="bg-muted/50 px-3 py-2 text-foreground w-[40%]">Razão Social</th><td className="px-3 py-2">{s(empresa.nome)}</td></tr>
+                    <tr><th className="bg-muted/50 px-3 py-2 text-foreground">CNPJ</th><td className="px-3 py-2">{s(empresa.cnpj)}</td></tr>
+                    <tr><th className="bg-muted/50 px-3 py-2 text-foreground">Endereço</th><td className="px-3 py-2">{s(empresa.endereco)}</td></tr>
+                    <tr><th className="bg-muted/50 px-3 py-2 text-foreground">Resp. Técnico</th><td className="px-3 py-2">{s(empresa.responsavel_tecnico)} — CRMV: {s(empresa.crmv)}</td></tr>
                   </tbody>
                 </table>
               </div>
