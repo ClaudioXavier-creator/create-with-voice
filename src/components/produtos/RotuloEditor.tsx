@@ -64,6 +64,49 @@ interface ZebraConfig {
   porta: number;
 }
 
+function objectNivelToText(value: unknown): string {
+  if (value == null) return "";
+  if (typeof value === "object") {
+    const v = value as { min?: string | number; max?: string | number; unit?: string };
+    const unit = v.unit ? ` ${v.unit}` : "";
+    if (v.min != null && v.max != null && `${v.min}` && `${v.max}`) return `mín. ${v.min}${unit}; máx. ${v.max}${unit}`;
+    if (v.min != null && `${v.min}`) return `mín. ${v.min}${unit}`;
+    if (v.max != null && `${v.max}`) return `máx. ${v.max}${unit}`;
+    try { return JSON.stringify(value); } catch { return ""; }
+  }
+  return String(value);
+}
+
+function sanitizeRotuloDraft(input: Partial<RotuloData> | null | undefined): Partial<RotuloData> {
+  if (!input) return {};
+  return {
+    ...input,
+    nome_comercial: objectNivelToText(input.nome_comercial),
+    classificacao_label: objectNivelToText(input.classificacao_label),
+    especie_categoria: objectNivelToText(input.especie_categoria),
+    composicao_ingredientes: objectNivelToText(input.composicao_ingredientes),
+    eventuais_substitutivos: objectNivelToText(input.eventuais_substitutivos),
+    niveis_garantia_texto: objectNivelToText(input.niveis_garantia_texto),
+    indicacoes_uso: objectNivelToText(input.indicacoes_uso),
+    modo_usar: objectNivelToText(input.modo_usar),
+    precaucoes_restricoes: objectNivelToText(input.precaucoes_restricoes),
+    peso_liquido: objectNivelToText(input.peso_liquido),
+    prazo_validade: objectNivelToText(input.prazo_validade),
+    armazenamento: objectNivelToText(input.armazenamento),
+    lote_placeholder: objectNivelToText(input.lote_placeholder),
+    fabricacao_placeholder: objectNivelToText(input.fabricacao_placeholder),
+    registro_mapa: objectNivelToText(input.registro_mapa),
+    razao_social: objectNivelToText(input.razao_social),
+    cnpj: objectNivelToText(input.cnpj),
+    endereco: objectNivelToText(input.endereco),
+    rt_nome: objectNivelToText(input.rt_nome),
+    rt_crmv: objectNivelToText(input.rt_crmv),
+    sac_contato: objectNivelToText(input.sac_contato),
+    lote: objectNivelToText(input.lote),
+    data_fabricacao: objectNivelToText(input.data_fabricacao),
+  };
+}
+
 const EMPTY_ROTULO: RotuloData = {
   tipo_rotulo: "racao",
   nome_comercial: "", classificacao_label: "", especie_categoria: "",
@@ -814,7 +857,7 @@ export default function RotuloEditor({ produtoId, produtoNome }: Props) {
 
   const [rotulo, setRotulo] = useState<RotuloData>(() => {
     const draft = sessionStorage.getItem(sessionKey);
-    if (draft) { try { return JSON.parse(draft); } catch {} }
+    if (draft) { try { return { ...EMPTY_ROTULO, ...sanitizeRotuloDraft(JSON.parse(draft)) }; } catch {} }
     return { ...EMPTY_ROTULO, nome_comercial: produtoNome };
   });
   const [rotuloId, setRotuloId] = useState<string | null>(null);
@@ -859,6 +902,8 @@ export default function RotuloEditor({ produtoId, produtoNome }: Props) {
       setRotuloId(data.id);
       const autoTabela = prod ? shouldShowConsumptionTable(prod.classificacao, prod.especie_alvo || "") : false;
       setRotulo({
+        ...EMPTY_ROTULO,
+        ...sanitizeRotuloDraft({
         tipo_rotulo: data.tipo_rotulo || "racao",
         nome_comercial: data.nome_comercial || produtoNome,
         classificacao_label: data.classificacao_label || "",
@@ -887,6 +932,7 @@ export default function RotuloEditor({ produtoId, produtoNome }: Props) {
         lote: "",
         data_fabricacao: "",
         validade_dias: prod?.validade_meses ? prod.validade_meses * 30 : 180,
+        }),
       });
     } else {
       await syncFromProduto(true);
@@ -898,7 +944,7 @@ export default function RotuloEditor({ produtoId, produtoNome }: Props) {
     setSyncing(true);
     const { data: prod } = await supabase.from("produtos").select("*").eq("id", produtoId).single();
     if (prod) {
-      const extracted = extractFromProduto(prod);
+      const extracted = sanitizeRotuloDraft(extractFromProduto(prod));
       setRotulo((prev) => ({ ...prev, ...extracted }));
       setNiveisObj((prod.niveis_garantia as Record<string, any>) || {});
       if (!silent) toast.success("Dados sincronizados do cadastro do produto!");
