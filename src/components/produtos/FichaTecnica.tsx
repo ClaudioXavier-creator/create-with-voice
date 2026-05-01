@@ -44,9 +44,22 @@ export default function FichaTecnica({ produtoId }: Props) {
     setLoading(false);
   }
 
+  function formatNivel(value: any): string {
+    if (value == null) return "";
+    if (typeof value === "object") {
+      const { min, max, unit } = value as { min?: string; max?: string; unit?: string };
+      const u = unit ? ` ${unit}` : "";
+      if (min && max) return `${min} – ${max}${u}`;
+      if (min) return `mín. ${min}${u}`;
+      if (max) return `máx. ${max}${u}`;
+      return "";
+    }
+    return String(value);
+  }
+
   function handlePrint() {
-    const niveis = (produto?.niveis_garantia as Record<string, string>) || {};
-    const niveisRows = Object.entries(niveis).filter(([_, v]) => v).map(([key, value]) =>
+    const niveis = (produto?.niveis_garantia as Record<string, any>) || {};
+    const niveisRows = Object.entries(niveis).map(([key, value]) => [key, formatNivel(value)]).filter(([_, v]) => v).map(([key, value]) =>
       `<tr><td style="border:1px solid #999;padding:4px 8px;font-size:9pt">${NIVEIS_LABELS[key] || key}</td><td style="border:1px solid #999;padding:4px 8px;font-size:9pt;font-family:monospace">${value}</td></tr>`
     ).join("");
 
@@ -183,7 +196,7 @@ ${carimboHTML(gerarCarimboSync({
                 <tr><th className="bg-muted/50 px-3 py-2 text-foreground">Parâmetro</th><th className="bg-muted/50 px-3 py-2 text-foreground">Valor</th></tr>
               </thead>
               <tbody>
-                {Object.entries(niveis).filter(([_, v]) => v).map(([key, value]) => (
+                {Object.entries(niveis).map(([key, value]) => [key, formatNivel(value)] as const).filter(([_, v]) => v).map(([key, value]) => (
                   <tr key={key}>
                     <td className="px-3 py-1.5">{NIVEIS_LABELS[key] || key}</td>
                     <td className="px-3 py-1.5 font-mono">{value}</td>
