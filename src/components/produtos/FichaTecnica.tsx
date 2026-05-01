@@ -196,7 +196,7 @@ ${carimboHTML(gerarCarimboSync({
                 <tr><th className="bg-muted/50 px-3 py-2 text-foreground">Parâmetro</th><th className="bg-muted/50 px-3 py-2 text-foreground">Valor</th></tr>
               </thead>
               <tbody>
-                {Object.entries(niveis).filter(([_, v]) => v).map(([key, value]) => (
+                {Object.entries(niveis).map(([key, value]) => [key, formatNivel(value)] as const).filter(([_, v]) => v).map(([key, value]) => (
                   <tr key={key}>
                     <td className="px-3 py-1.5">{NIVEIS_LABELS[key] || key}</td>
                     <td className="px-3 py-1.5 font-mono">{value}</td>
