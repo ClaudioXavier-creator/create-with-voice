@@ -57,6 +57,18 @@ export default function FichaTecnica({ produtoId }: Props) {
     return String(value);
   }
 
+  // Safe text renderer — never lets an object reach JSX
+  function s(value: any): string {
+    if (value == null) return "";
+    if (typeof value === "object") {
+      // Try formatNivel first (handles {min,max,unit})
+      const formatted = formatNivel(value);
+      if (formatted) return formatted;
+      try { return JSON.stringify(value); } catch { return ""; }
+    }
+    return String(value);
+  }
+
   function handlePrint() {
     const niveis = (produto?.niveis_garantia as Record<string, any>) || {};
     const niveisRows = Object.entries(niveis).map(([key, value]) => [key, formatNivel(value)]).filter(([_, v]) => v).map(([key, value]) =>
