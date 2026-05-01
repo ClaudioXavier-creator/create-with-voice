@@ -44,9 +44,22 @@ export default function FichaTecnica({ produtoId }: Props) {
     setLoading(false);
   }
 
+  function formatNivel(value: any): string {
+    if (value == null) return "";
+    if (typeof value === "object") {
+      const { min, max, unit } = value as { min?: string; max?: string; unit?: string };
+      const u = unit ? ` ${unit}` : "";
+      if (min && max) return `${min} – ${max}${u}`;
+      if (min) return `mín. ${min}${u}`;
+      if (max) return `máx. ${max}${u}`;
+      return "";
+    }
+    return String(value);
+  }
+
   function handlePrint() {
-    const niveis = (produto?.niveis_garantia as Record<string, string>) || {};
-    const niveisRows = Object.entries(niveis).filter(([_, v]) => v).map(([key, value]) =>
+    const niveis = (produto?.niveis_garantia as Record<string, any>) || {};
+    const niveisRows = Object.entries(niveis).map(([key, value]) => [key, formatNivel(value)]).filter(([_, v]) => v).map(([key, value]) =>
       `<tr><td style="border:1px solid #999;padding:4px 8px;font-size:9pt">${NIVEIS_LABELS[key] || key}</td><td style="border:1px solid #999;padding:4px 8px;font-size:9pt;font-family:monospace">${value}</td></tr>`
     ).join("");
 
