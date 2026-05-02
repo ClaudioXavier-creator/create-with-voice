@@ -243,7 +243,14 @@ export function RegistroPopGenerico({ onVoltar }: Props) {
           </div>
 
           <div>
-            <Label className="text-base">Instrução de Trabalho (IT) *</Label>
+            <Label className="text-base">
+              Instrução de Trabalho (IT) *
+              {popCodigo && (
+                <span className="ml-2 text-[10px] text-muted-foreground font-normal">
+                  exibindo apenas ITs do {popCodigo}
+                </span>
+              )}
+            </Label>
             <Select value={itId} onValueChange={setItId} disabled={!popCodigo}>
               <SelectTrigger className="h-12 text-base mt-1">
                 <SelectValue placeholder={popCodigo ? "Selecione a IT" : "Escolha o POP primeiro"} />
@@ -251,7 +258,7 @@ export function RegistroPopGenerico({ onVoltar }: Props) {
               <SelectContent>
                 {itsDoPop.map((it) => (
                   <SelectItem key={it.id} value={it.id}>
-                    {it.id} — {it.titulo}
+                    [{it.popCodigo}] {it.id} — {it.titulo}
                   </SelectItem>
                 ))}
                 {itsDoPop.length === 0 && popCodigo && (
@@ -264,7 +271,14 @@ export function RegistroPopGenerico({ onVoltar }: Props) {
           </div>
 
           {itSelecionada && (
-            <div className="rounded-lg bg-muted/50 p-3 text-xs space-y-1">
+            <div className="rounded-lg border-l-4 border-primary bg-muted/50 p-3 text-xs space-y-1">
+              <p className="flex items-center gap-2 mb-1">
+                <span className="inline-flex items-center px-2 py-0.5 rounded bg-primary text-primary-foreground text-[10px] font-bold">
+                  {itSelecionada.popCodigo}
+                </span>
+                <span className="font-mono text-[10px] text-muted-foreground">{itSelecionada.id}</span>
+                <span className="font-semibold">{itSelecionada.titulo}</span>
+              </p>
               <p><span className="font-semibold">Objetivo:</span> {itSelecionada.objetivo}</p>
               <p><span className="font-semibold">Frequência:</span> {itSelecionada.frequencia}</p>
             </div>

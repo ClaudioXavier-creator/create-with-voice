@@ -288,14 +288,16 @@ export default function GeracaoManualBPF() {
         sections.push(`⚠ Nenhum POP vigente cadastrado para este código.`);
       }
 
-      // Instruções de Trabalho vinculadas
+      // Instruções de Trabalho vinculadas EXCLUSIVAMENTE a este POP
       const its = INSTRUCOES_TRABALHO.filter((it) => it.popCodigo === pop.codigo);
       if (its.length > 0) {
-        sections.push(`\n  Instruções de Trabalho (${its.length}):`);
+        sections.push(`\n  ▸ Instruções de Trabalho exclusivas do ${pop.codigo} (${its.length}):`);
         its.forEach((it) => {
-          sections.push(`  • ${it.id} — ${it.titulo}`);
-          sections.push(`    Frequência: ${it.frequencia}`);
+          sections.push(`     [${it.popCodigo}] ${it.id} — ${it.titulo}`);
+          sections.push(`        Frequência: ${it.frequencia}`);
         });
+      } else {
+        sections.push(`\n  ▸ Nenhuma IT cadastrada exclusivamente para ${pop.codigo}.`);
       }
     });
 

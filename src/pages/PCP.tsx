@@ -15,6 +15,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useEmpresa } from "@/hooks/useEmpresa";
 import FichaProducaoDigital from "@/components/pcp/FichaProducaoDigital";
+import PlanejamentoDoDia from "@/components/pcp/PlanejamentoDoDia";
 import { toast } from "sonner";
 
 interface OrdemProd {
@@ -406,7 +407,23 @@ export default function PCP() {
         </CardContent></Card>
       </div>
 
-      {/* ── SEQUENCIAMENTO DE PRODUÇÃO — PREVENÇÃO CONTAMINAÇÃO CRUZADA ── */}
+      {/* ── PLANEJAMENTO DO DIA — PRODUÇÃO GERAL + SEQUENCIAMENTO AUTOMÁTICO ── */}
+      <PlanejamentoDoDia
+        ordens={ordens.map((o) => ({
+          id: o.id,
+          numero_ordem: o.numero_ordem,
+          produto: o.produto,
+          prioridade: o.prioridade,
+          status: o.status,
+          data_programada: o.data_programada,
+          formula_nome: o.formula_nome,
+          quantidade_programada: o.quantidade_programada,
+        }))}
+        matriz={matrizSensibilidade as any}
+        onAplicado={fetchData}
+      />
+
+      {/* ── SEQUENCIAMENTO DE PRODUÇÃO — PREVENÇÃO CONTAMINAÇÃO CRUZADA (visão geral) ── */}
       <Card className="mb-6 border-yellow-500/20">
         <CardHeader className="flex flex-row items-center justify-between">
           <div>
