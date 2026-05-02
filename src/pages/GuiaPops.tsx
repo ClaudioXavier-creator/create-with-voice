@@ -134,16 +134,20 @@ function PopContent({ codigo }: { codigo: string }) {
           <div>
             <h4 className="text-sm font-semibold mb-3 flex items-center gap-2">
               <ListChecks className="w-4 h-4 text-primary" />
-              10. Instruções de Trabalho (ITs)
+              10. Instruções de Trabalho (ITs) — exclusivas do {codigo}
               <Badge variant="secondary" className="text-xs">{its.length} IT(s)</Badge>
             </h4>
+            <p className="text-[11px] text-muted-foreground mb-3">
+              Todas as instruções abaixo pertencem exclusivamente a <strong>{codigo}</strong>. ITs de outros POPs aparecem nas abas correspondentes.
+            </p>
             <div className="space-y-4">
               {its.map((it) => (
-                <div key={it.id} className="border rounded-lg p-4 bg-muted/20 space-y-3">
+                <div key={it.id} className="border-l-4 border-primary rounded-lg p-4 bg-muted/20 space-y-3">
                   <div className="flex items-start justify-between gap-2">
                     <div>
-                      <p className="font-semibold text-sm flex items-center gap-2">
-                        <Badge className="bg-primary/20 text-primary text-xs">{it.id}</Badge>
+                      <p className="font-semibold text-sm flex items-center gap-2 flex-wrap">
+                        <Badge className="bg-primary text-primary-foreground text-[10px]">{it.popCodigo}</Badge>
+                        <Badge variant="outline" className="text-xs font-mono">{it.id}</Badge>
                         {it.titulo}
                       </p>
                       <p className="text-xs text-muted-foreground mt-1">{it.objetivo}</p>
