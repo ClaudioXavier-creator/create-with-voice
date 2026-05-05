@@ -117,6 +117,8 @@ interface LicenseGateProps {
 export default function LicenseGate({ children, product = "feedbpf" }: LicenseGateProps) {
   const { license, loading, isActive, daysRemaining } = useLicense();
   const { empresaAtiva, loading: empresaLoading } = useEmpresa();
+  const { roles } = useAuth();
+  const isSuperAdmin = roles?.includes("admin");
   const location = useLocation();
   const [checkoutLoading, setCheckoutLoading] = useState<string | null>(null);
   const [nivelSelecionado, setNivelSelecionado] = useState<NivelKey>("intermediario");
@@ -135,6 +137,8 @@ export default function LicenseGate({ children, product = "feedbpf" }: LicenseGa
       </div>
     );
   }
+
+  if (isSuperAdmin) return <>{children}</>;
 
   if (!empresaAtiva) return <>{children}</>;
 
