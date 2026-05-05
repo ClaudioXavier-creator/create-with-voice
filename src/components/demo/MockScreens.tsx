@@ -1251,196 +1251,256 @@ export const NutriClienteDetail = () => (
 );
 
 // =================================================================
-// ROTULOS_BPF — 6 telas
+// NUTRI_AGRO LABELS — 6 telas (replica o programa real, tema escuro)
 // =================================================================
 
-export const RotulosDashboard = () => (
-  <Frame title="rotulos.bpfconsult.com.br/dashboard — Fábrica Demo Ltda">
-    <div className="flex items-center justify-between mb-4">
-      <div>
-        <h3 className="text-base font-bold">Editor de Rótulos & Fichas Técnicas</h3>
-        <p className="text-xs text-slate-500">Conforme IN 04/2007 e regras de rotulagem MAPA</p>
+const NALShell = ({ active, title, children, preview }: { active: string; title: string; children: React.ReactNode; preview?: React.ReactNode }) => {
+  const groups: { label: string; items: { id: string; name: string; off?: boolean }[] }[] = [
+    { label: "CADASTRO", items: [{ id: "empresa", name: "Empresa" }, { id: "produto", name: "Produto" }] },
+    { label: "COMPOSIÇÃO", items: [{ id: "ingredientes", name: "Ingredientes" }, { id: "niveis", name: "Níveis de Garantia" }] },
+    { label: "ADITIVOS", items: [{ id: "minerais", name: "Minerais" }, { id: "vitaminas", name: "Vitaminas" }, { id: "outros", name: "Outros Aditivos" }] },
+    { label: "INFORMAÇÕES", items: [{ id: "consumo", name: "Tabela de Consumo" }, { id: "legislacao", name: "Legislação" }] },
+    { label: "GESTÃO", items: [{ id: "banco", name: "Banco de Dados", off: true }, { id: "salvos", name: "Rótulos Salvos" }] },
+  ];
+  return (
+    <Frame title="bpf-solutions-suite.lovable.app — Nutri_Agro Labels">
+      <div className="bg-slate-950 text-slate-100 rounded-lg overflow-hidden border border-slate-800">
+        {/* Top bar */}
+        <div className="flex items-center justify-between px-3 py-2 border-b border-slate-800 bg-slate-900">
+          <div className="flex items-center gap-2 text-xs font-mono">
+            <div className="w-6 h-6 rounded bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400 text-[10px] font-bold">GR</div>
+            <span className="font-bold">Gerador de Rótulo</span>
+            <span className="px-2 py-0.5 rounded border border-emerald-500/40 text-emerald-400 text-[10px]">Alimentos para Animais</span>
+            <span className="px-2 py-0.5 rounded border border-cyan-500/40 text-cyan-400 text-[10px]">Decreto 7.045/2009</span>
+            <span className="px-2 py-0.5 rounded border border-cyan-500/40 text-cyan-400 text-[10px]">IN 12/2004</span>
+          </div>
+          <span className="text-[10px] text-slate-500">Desenvolvido por <span className="text-emerald-400">BPF_Consult</span></span>
+        </div>
+        <div className="grid grid-cols-12 min-h-[280px]">
+          {/* Sidebar */}
+          <aside className="col-span-3 bg-slate-900/60 border-r border-slate-800 p-2 text-[11px]">
+            {groups.map((g) => (
+              <div key={g.label} className="mb-2">
+                <div className="text-[9px] tracking-widest text-slate-500 px-2 py-1">{g.label}</div>
+                {g.items.map((it) => (
+                  <div key={it.id} className={`flex items-center justify-between px-2 py-1.5 rounded ${active === it.id ? "bg-emerald-500/15 text-emerald-300 border-l-2 border-emerald-400" : "text-slate-300"}`}>
+                    <span>{it.name}</span>
+                    {it.off && <span className="text-[9px] text-slate-500 border border-slate-700 px-1 rounded">off</span>}
+                  </div>
+                ))}
+              </div>
+            ))}
+          </aside>
+          {/* Main */}
+          <main className={`${preview ? "col-span-6" : "col-span-9"} p-3`}>
+            <div className="flex items-center justify-between mb-3">
+              <div className="text-xs font-mono font-bold">{title}</div>
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] text-amber-400 border border-amber-500/40 px-2 py-0.5 rounded">● Obrigatório</span>
+                <button className="text-[10px] bg-emerald-600 text-white px-2 py-1 rounded">💾 Salvar</button>
+              </div>
+            </div>
+            {children}
+          </main>
+          {/* Preview painel */}
+          {preview && (
+            <aside className="col-span-3 bg-slate-900/40 border-l border-slate-800 p-2 flex flex-col">
+              <div className="flex items-center justify-between text-[10px] mb-2">
+                <span className="text-slate-300">👁 Preview do Rótulo</span>
+                <span className="text-emerald-400">● ao vivo</span>
+              </div>
+              <div className="flex-1">{preview}</div>
+              <div className="grid grid-cols-2 gap-1 mt-2">
+                <button className="bg-emerald-600 text-white text-[10px] py-1 rounded">💾 Salvar</button>
+                <button className="bg-cyan-600 text-white text-[10px] py-1 rounded">🖨 Imprimir</button>
+                <button className="bg-slate-800 border border-slate-700 text-slate-200 text-[10px] py-1 rounded">📊 CSV</button>
+                <button className="bg-slate-800 border border-slate-700 text-slate-200 text-[10px] py-1 rounded">📄 Word</button>
+                <button className="col-span-2 bg-slate-800 border border-slate-700 text-emerald-400 text-[10px] py-1 rounded">⚡ ZPL Zebra</button>
+              </div>
+            </aside>
+          )}
+        </div>
       </div>
-      <Pill tone="emerald">18/18 campos RTPI</Pill>
+    </Frame>
+  );
+};
+
+const PreviewRotulo = ({ produto = "Produto não informado", forma = "Farelado", empresa = "Empresa", uf = "SP" }: { produto?: string; forma?: string; empresa?: string; uf?: string }) => (
+  <div className="bg-white text-slate-900 rounded p-2 text-[10px] h-full">
+    <div className="text-[9px] text-slate-500">Empresa</div>
+    <div className="font-bold text-sm leading-tight mb-1">{produto}</div>
+    <div className="border-t border-slate-300 my-1" />
+    <div><span className="font-semibold">Forma:</span> {forma}</div>
+    <div className="border-t border-slate-300 my-1" />
+    <div className="text-slate-500">{empresa}</div>
+    <div>{uf}</div>
+    <div className="text-[8px] text-slate-400 mt-2">Desenvolvido por BPF_Consult</div>
+  </div>
+);
+
+export const RotulosDashboard = () => (
+  <NALShell active="empresa" title="🏢 Cadastro da Empresa" preview={<PreviewRotulo />}>
+    <div className="bg-cyan-500/5 border border-cyan-500/30 rounded p-2 text-[10px] text-cyan-200 mb-3">
+      <strong>Art. 3º do Dec. 7.045/2009:</strong> Nome e endereço do fabricante/importador devem constar obrigatoriamente no rótulo. CNPJ e Inscrição Estadual exigidos para registro junto ao MAPA.
     </div>
-    <div className="grid grid-cols-4 gap-3 mb-4">
-      <Kpi icon={FileText} label="Rótulos Ativos" value="42" tone="emerald" />
-      <Kpi icon={ClipboardCheck} label="Fichas Técnicas" value="38" tone="emerald" sub="aprovadas" />
-      <Kpi icon={AlertTriangle} label="Pendentes" value="4" tone="amber" sub="revisão" />
-      <Kpi icon={Package} label="Versões" value="127" tone="emerald" sub="histórico" />
+    <div className="border border-slate-800 rounded p-2 mb-2">
+      <div className="text-[10px] font-mono text-emerald-400 mb-2">| DADOS DA EMPRESA FABRICANTE</div>
+      <div className="space-y-1.5">
+        <div>
+          <div className="text-[10px] text-slate-400 mb-0.5">Razão Social *</div>
+          <div className="bg-slate-900 border border-slate-700 rounded px-2 py-1 text-[10px] text-slate-500">Nome completo da empresa</div>
+        </div>
+        <div className="grid grid-cols-2 gap-2">
+          <div>
+            <div className="text-[10px] text-slate-400 mb-0.5">CNPJ *</div>
+            <div className="bg-slate-900 border border-slate-700 rounded px-2 py-1 text-[10px] text-slate-500">00.000.000/0000-00</div>
+          </div>
+          <div>
+            <div className="text-[10px] text-slate-400 mb-0.5">Inscrição Estadual</div>
+            <div className="bg-slate-900 border border-slate-700 rounded px-2 py-1 text-[10px] text-slate-500">Número</div>
+          </div>
+        </div>
+        <div>
+          <div className="text-[10px] text-slate-400 mb-0.5">Registro MAPA / SIPEAGRO *</div>
+          <div className="bg-slate-900 border border-slate-700 rounded px-2 py-1 text-[10px] text-slate-500">Ex: BR 00/0000/DEF-RS</div>
+        </div>
+      </div>
     </div>
-    <div className="bg-white p-3 rounded border border-slate-200">
-      <div className="text-xs font-semibold mb-2">Últimos rótulos editados</div>
-      <ul className="space-y-1.5 text-xs">
-        <li className="flex justify-between"><span>Ração Bovinos Confinamento 22% PB</span><span className="text-slate-500">Hoje · v3</span></li>
-        <li className="flex justify-between"><span>Premix Mineral Vacas Leiteiras</span><span className="text-slate-500">Ontem · v2</span></li>
-        <li className="flex justify-between"><span>Suplemento Aves Postura</span><span className="text-slate-500">28/04 · v1</span></li>
-        <li className="flex justify-between"><span>Sal Mineral Cria & Recria</span><span className="text-slate-500">25/04 · v4</span></li>
-      </ul>
+    <div className="border border-slate-800 rounded p-2">
+      <div className="text-[10px] font-mono text-emerald-400 mb-2">| ENDEREÇO</div>
+      <div className="grid grid-cols-3 gap-2 text-[10px]">
+        <div className="bg-slate-900 border border-slate-700 rounded px-2 py-1 text-slate-500">Rua, Av…</div>
+        <div className="bg-slate-900 border border-slate-700 rounded px-2 py-1 text-slate-500">Cidade</div>
+        <div className="bg-slate-900 border border-slate-700 rounded px-2 py-1 text-slate-500">SP ▾</div>
+      </div>
     </div>
-  </Frame>
+  </NALShell>
 );
 
 export const RotulosEditor = () => (
-  <Frame title="rotulos.bpfconsult.com.br/editor/ração-bovinos">
-    <div className="grid grid-cols-3 gap-3">
-      <div className="col-span-2 bg-white p-3 rounded border border-slate-200">
-        <div className="text-xs font-semibold mb-2">Pré-visualização do rótulo</div>
-        <div className="border-2 border-slate-800 p-3 rounded bg-slate-50 text-[10px] space-y-1">
-          <div className="font-bold text-sm">RAÇÃO BOVINOS CONFINAMENTO 22% PB</div>
-          <div>Fábrica Demo Ltda · CNPJ 00.000.000/0001-00</div>
-          <div>Reg. MAPA: SP-12345/2024</div>
-          <div className="border-t border-slate-300 my-1"></div>
-          <div className="font-semibold">Composição básica:</div>
-          <div>Milho moído, farelo de soja, calcário, sal, núcleo mineral.</div>
-          <div className="font-semibold mt-1">Níveis de garantia (por kg):</div>
-          <div>PB mín. 220g · EE mín. 30g · FB máx. 80g · Ca 8-12g · P mín. 5g</div>
-          <div className="border-t border-slate-300 my-1"></div>
-          <div>Lote: L240501 · Fab: 01/05/2026 · Val: 01/08/2026</div>
-          <div>Peso líquido: 40 kg</div>
+  <NALShell active="produto" title="📦 Cadastro do Produto" preview={<PreviewRotulo produto="RAÇÃO BOVINOS CONF. 22% PB" forma="Farelado" empresa="Fábrica Demo Ltda" uf="SP" />}>
+    <div className="border border-slate-800 rounded p-2 mb-2">
+      <div className="text-[10px] font-mono text-emerald-400 mb-2">| IDENTIFICAÇÃO DO PRODUTO</div>
+      <div className="space-y-1.5 text-[10px]">
+        <div>
+          <div className="text-slate-400 mb-0.5">Nome comercial *</div>
+          <div className="bg-slate-900 border border-emerald-600/40 rounded px-2 py-1">Ração Bovinos Confinamento 22% PB</div>
         </div>
-      </div>
-      <div className="space-y-2">
-        <div className="bg-white p-2 rounded border border-slate-200 text-xs">
-          <div className="font-semibold mb-1">Campos RTPI</div>
-          <div className="space-y-0.5">
-            <div className="flex justify-between"><span>Identificação</span><CheckCircle2 className="h-3 w-3 text-emerald-600" /></div>
-            <div className="flex justify-between"><span>Composição</span><CheckCircle2 className="h-3 w-3 text-emerald-600" /></div>
-            <div className="flex justify-between"><span>Garantias</span><CheckCircle2 className="h-3 w-3 text-emerald-600" /></div>
-            <div className="flex justify-between"><span>Lote/Validade</span><CheckCircle2 className="h-3 w-3 text-emerald-600" /></div>
-            <div className="flex justify-between"><span>Reg. MAPA</span><CheckCircle2 className="h-3 w-3 text-emerald-600" /></div>
-          </div>
+        <div className="grid grid-cols-3 gap-2">
+          <div><div className="text-slate-400 mb-0.5">Categoria</div><div className="bg-slate-900 border border-slate-700 rounded px-2 py-1">Ração completa ▾</div></div>
+          <div><div className="text-slate-400 mb-0.5">Espécie</div><div className="bg-slate-900 border border-slate-700 rounded px-2 py-1">Bovinos corte ▾</div></div>
+          <div><div className="text-slate-400 mb-0.5">Forma física</div><div className="bg-slate-900 border border-slate-700 rounded px-2 py-1">Farelado ▾</div></div>
         </div>
-        <div className="bg-emerald-50 p-2 rounded border border-emerald-200 text-[10px] text-emerald-800">
-          <strong>✓ Rótulo conforme</strong><br/>Pronto para impressão
+        <div className="grid grid-cols-2 gap-2">
+          <div><div className="text-slate-400 mb-0.5">Lote</div><div className="bg-slate-900 border border-slate-700 rounded px-2 py-1">L240501</div></div>
+          <div><div className="text-slate-400 mb-0.5">Validade</div><div className="bg-slate-900 border border-slate-700 rounded px-2 py-1">01/08/2026</div></div>
         </div>
       </div>
     </div>
-  </Frame>
+    <div className="bg-emerald-500/10 border border-emerald-500/40 rounded p-2 text-[10px] text-emerald-300">
+      ✓ 18/18 campos obrigatórios da RTPI preenchidos — pronto para impressão
+    </div>
+  </NALShell>
 );
 
 export const RotulosFichaTecnica = () => (
-  <Frame title="rotulos.bpfconsult.com.br/ficha-tecnica/premix-mineral">
-    <div className="bg-white p-3 rounded border border-slate-200">
-      <div className="flex justify-between items-start mb-3">
-        <div>
-          <div className="font-bold text-sm">FICHA TÉCNICA — RTPI</div>
-          <div className="text-xs text-slate-500">Premix Mineral Vacas Leiteiras · v2 · 02/05/2026</div>
-        </div>
-        <Pill tone="emerald">Aprovada</Pill>
-      </div>
-      <div className="grid grid-cols-2 gap-3 text-xs">
-        <div>
-          <div className="font-semibold mb-1">Identificação</div>
-          <table className="w-full text-[11px]">
-            <tbody>
-              <tr><td className="text-slate-500 py-0.5">Categoria</td><td>Suplemento mineral</td></tr>
-              <tr><td className="text-slate-500 py-0.5">Espécie</td><td>Bovinos leite</td></tr>
-              <tr><td className="text-slate-500 py-0.5">Reg. MAPA</td><td>SP-09876/2023</td></tr>
-              <tr><td className="text-slate-500 py-0.5">Forma física</td><td>Pó/farelado</td></tr>
-            </tbody>
-          </table>
-        </div>
-        <div>
-          <div className="font-semibold mb-1">Garantias (por kg)</div>
-          <table className="w-full text-[11px]">
-            <tbody>
-              <tr><td className="text-slate-500 py-0.5">Cálcio (mín.)</td><td>180 g</td></tr>
-              <tr><td className="text-slate-500 py-0.5">Fósforo (mín.)</td><td>80 g</td></tr>
-              <tr><td className="text-slate-500 py-0.5">Zinco (mín.)</td><td>3.500 mg</td></tr>
-              <tr><td className="text-slate-500 py-0.5">Selênio (mín.)</td><td>20 mg</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-      <div className="mt-3 pt-2 border-t text-[11px] text-slate-600">
-        <strong>Modo de uso:</strong> Fornecer 100g/animal/dia, à vontade no cocho coberto.
-      </div>
-    </div>
-  </Frame>
-);
-
-export const RotulosNiveisGarantia = () => (
-  <Frame title="rotulos.bpfconsult.com.br/niveis-garantia">
-    <div className="text-xs mb-2 font-semibold">Calculadora de Níveis de Garantia (conversão automática g↔mg)</div>
-    <div className="bg-white rounded border border-slate-200 overflow-hidden">
-      <table className="w-full text-xs">
-        <thead className="bg-slate-100 text-[11px]">
-          <tr>
-            <th className="text-left px-2 py-1.5">Nutriente</th>
-            <th className="text-right px-2 py-1.5">Valor</th>
-            <th className="text-left px-2 py-1.5">Unidade</th>
-            <th className="text-left px-2 py-1.5">Tipo</th>
-            <th className="text-right px-2 py-1.5">Status</th>
-          </tr>
+  <NALShell active="ingredientes" title="🌾 Composição — Ingredientes" preview={<PreviewRotulo produto="PREMIX MINERAL VACAS LEITE" forma="Pó" empresa="Fábrica Demo Ltda" uf="SP" />}>
+    <div className="border border-slate-800 rounded overflow-hidden">
+      <table className="w-full text-[10px]">
+        <thead className="bg-slate-900 text-slate-400">
+          <tr><th className="text-left px-2 py-1.5">Ingrediente</th><th className="text-right px-2 py-1.5">% inclusão</th><th className="text-left px-2 py-1.5">Origem</th><th className="text-right px-2 py-1.5">Ação</th></tr>
         </thead>
-        <tbody className="text-[11px]">
-          <tr className="border-t"><td className="px-2 py-1">Proteína Bruta</td><td className="text-right">22,0</td><td>%</td><td>Mín.</td><td className="text-right"><CheckCircle2 className="h-3 w-3 text-emerald-600 inline" /></td></tr>
-          <tr className="border-t"><td className="px-2 py-1">Cálcio</td><td className="text-right">8.000</td><td>mg/kg → 8 g/kg</td><td>Mín-Máx</td><td className="text-right"><CheckCircle2 className="h-3 w-3 text-emerald-600 inline" /></td></tr>
-          <tr className="border-t"><td className="px-2 py-1">Fitase</td><td className="text-right">500</td><td className="text-amber-600">FTU/kg</td><td>Mín.</td><td className="text-right"><CheckCircle2 className="h-3 w-3 text-emerald-600 inline" /></td></tr>
-          <tr className="border-t"><td className="px-2 py-1">Lactobacillus</td><td className="text-right">1,0×10⁹</td><td className="text-amber-600">UFC/g</td><td>Mín.</td><td className="text-right"><CheckCircle2 className="h-3 w-3 text-emerald-600 inline" /></td></tr>
-          <tr className="border-t"><td className="px-2 py-1">Vitamina A</td><td className="text-right">10.000</td><td className="text-amber-600">UI/kg</td><td>Mín.</td><td className="text-right"><CheckCircle2 className="h-3 w-3 text-emerald-600 inline" /></td></tr>
+        <tbody>
+          {[
+            { i: "Calcário calcítico", p: "42,0", o: "Mineral" },
+            { i: "Fosfato bicálcico", p: "28,0", o: "Mineral" },
+            { i: "Cloreto de sódio", p: "15,0", o: "Mineral" },
+            { i: "Sulfato de zinco", p: "0,8", o: "Mineral" },
+            { i: "Selenito de sódio", p: "0,02", o: "Mineral" },
+          ].map((r) => (
+            <tr key={r.i} className="border-t border-slate-800">
+              <td className="px-2 py-1">{r.i}</td>
+              <td className="px-2 py-1 text-right text-emerald-400">{r.p}</td>
+              <td className="px-2 py-1 text-slate-400">{r.o}</td>
+              <td className="px-2 py-1 text-right text-slate-500">✎ 🗑</td>
+            </tr>
+          ))}
         </tbody>
       </table>
     </div>
-    <div className="mt-2 text-[11px] text-slate-600 bg-amber-50 border border-amber-200 p-2 rounded">
-      ⚠ Unidades destacadas (UFC, FTU, UI, KUI) não sofrem conversão g↔mg — são apresentadas conforme cadastro.
+    <button className="mt-2 w-full border border-dashed border-emerald-500/40 text-emerald-400 text-[10px] py-1.5 rounded">+ Adicionar ingrediente</button>
+  </NALShell>
+);
+
+export const RotulosNiveisGarantia = () => (
+  <NALShell active="niveis" title="📊 Níveis de Garantia (conversão automática g↔mg)" preview={<PreviewRotulo produto="RAÇÃO BOVINOS CONF. 22% PB" forma="Farelado" empresa="Fábrica Demo Ltda" uf="SP" />}>
+    <div className="border border-slate-800 rounded overflow-hidden">
+      <table className="w-full text-[10px]">
+        <thead className="bg-slate-900 text-slate-400">
+          <tr><th className="text-left px-2 py-1.5">Nutriente</th><th className="text-right px-2 py-1.5">Valor</th><th className="text-left px-2 py-1.5">Unidade</th><th className="text-left px-2 py-1.5">Tipo</th></tr>
+        </thead>
+        <tbody>
+          <tr className="border-t border-slate-800"><td className="px-2 py-1">Proteína Bruta</td><td className="text-right text-emerald-400">22,0</td><td>%</td><td className="text-slate-400">Mín.</td></tr>
+          <tr className="border-t border-slate-800"><td className="px-2 py-1">Cálcio</td><td className="text-right text-emerald-400">8.000</td><td className="text-cyan-400">mg/kg → 8 g/kg</td><td className="text-slate-400">Mín-Máx</td></tr>
+          <tr className="border-t border-slate-800"><td className="px-2 py-1">Fitase</td><td className="text-right text-emerald-400">500</td><td className="text-amber-400">FTU/kg</td><td className="text-slate-400">Mín.</td></tr>
+          <tr className="border-t border-slate-800"><td className="px-2 py-1">Lactobacillus</td><td className="text-right text-emerald-400">1,0×10⁹</td><td className="text-amber-400">UFC/g</td><td className="text-slate-400">Mín.</td></tr>
+          <tr className="border-t border-slate-800"><td className="px-2 py-1">Vitamina A</td><td className="text-right text-emerald-400">10.000</td><td className="text-amber-400">UI/kg</td><td className="text-slate-400">Mín.</td></tr>
+        </tbody>
+      </table>
     </div>
-  </Frame>
+    <div className="mt-2 text-[10px] text-amber-300 bg-amber-500/10 border border-amber-500/30 p-2 rounded">
+      ⚠ Unidades destacadas (UFC, FTU, UI, KUI) não sofrem conversão g↔mg — apresentadas conforme cadastro.
+    </div>
+  </NALShell>
 );
 
 export const RotulosExportacao = () => (
-  <Frame title="rotulos.bpfconsult.com.br/exportar/L240501">
-    <div className="text-xs mb-3 font-semibold">Exportação para impressão</div>
-    <div className="grid grid-cols-3 gap-3">
-      <div className="bg-white p-3 rounded border border-slate-200 text-center">
-        <div className="h-16 flex items-center justify-center bg-slate-100 rounded mb-2 text-[10px] text-slate-500">[ Preview PDF ]</div>
-        <div className="font-semibold text-xs">PDF Alta Resolução</div>
-        <div className="text-[10px] text-slate-500 mb-2">300 DPI · CMYK</div>
-        <button className="w-full bg-emerald-600 text-white text-[10px] py-1 rounded">Baixar PDF</button>
+  <NALShell active="salvos" title="💾 Rótulos Salvos — Exportação" preview={<PreviewRotulo produto="RAÇÃO BOVINOS CONF. 22% PB" forma="Farelado" empresa="Fábrica Demo Ltda" uf="SP" />}>
+    <div className="grid grid-cols-3 gap-2 mb-2">
+      <div className="bg-slate-900 border border-slate-700 rounded p-2 text-center">
+        <div className="h-12 flex items-center justify-center bg-slate-950 rounded mb-1 text-[9px] text-slate-500">[ Preview PDF ]</div>
+        <div className="text-[10px] font-semibold">PDF 300dpi</div>
+        <button className="w-full bg-emerald-600 text-white text-[9px] py-1 rounded mt-1">Baixar</button>
       </div>
-      <div className="bg-white p-3 rounded border border-slate-200 text-center">
-        <div className="h-16 flex items-center justify-center bg-slate-900 text-emerald-400 rounded mb-2 text-[10px] font-mono">^XA ^FO50 ^XZ</div>
-        <div className="font-semibold text-xs">ZPL (Zebra)</div>
-        <div className="text-[10px] text-slate-500 mb-2">Impressora térmica</div>
-        <button className="w-full bg-slate-800 text-white text-[10px] py-1 rounded">Baixar .zpl</button>
+      <div className="bg-slate-900 border border-slate-700 rounded p-2 text-center">
+        <div className="h-12 flex items-center justify-center bg-black text-emerald-400 rounded mb-1 text-[8px] font-mono">^XA^FO50,50^XZ</div>
+        <div className="text-[10px] font-semibold">ZPL Zebra</div>
+        <button className="w-full bg-slate-700 text-white text-[9px] py-1 rounded mt-1">Baixar .zpl</button>
       </div>
-      <div className="bg-white p-3 rounded border border-slate-200 text-center">
-        <div className="h-16 flex items-center justify-center bg-slate-100 rounded mb-2">
-          <div className="grid grid-cols-5 gap-px">{Array.from({length:25}).map((_,i)=><span key={i} className={`w-1.5 h-1.5 ${Math.random()>0.5?'bg-slate-900':'bg-white'}`}/>)}</div>
+      <div className="bg-slate-900 border border-slate-700 rounded p-2 text-center">
+        <div className="h-12 flex items-center justify-center bg-slate-950 rounded mb-1">
+          <div className="grid grid-cols-5 gap-px">{Array.from({length:25}).map((_,i)=><span key={i} className={`w-1 h-1 ${i%3===0?'bg-white':'bg-slate-700'}`}/>)}</div>
         </div>
-        <div className="font-semibold text-xs">QR Code Lote</div>
-        <div className="text-[10px] text-slate-500 mb-2">Rastreabilidade</div>
-        <button className="w-full bg-emerald-600 text-white text-[10px] py-1 rounded">Baixar PNG</button>
+        <div className="text-[10px] font-semibold">QR Code</div>
+        <button className="w-full bg-emerald-600 text-white text-[9px] py-1 rounded mt-1">Baixar PNG</button>
       </div>
     </div>
-    <div className="mt-3 bg-emerald-50 border border-emerald-200 p-2 rounded text-[11px] text-emerald-800">
+    <div className="bg-emerald-500/10 border border-emerald-500/40 rounded p-2 text-[10px] text-emerald-300">
       ✓ Lote L240501 — Pronto para impressão · 5.000 unidades programadas
     </div>
-  </Frame>
+  </NALShell>
 );
 
 export const RotulosVersionamento = () => (
-  <Frame title="rotulos.bpfconsult.com.br/versoes/ração-bovinos-22pb">
-    <div className="text-xs mb-3 font-semibold">Histórico de versões — Ração Bovinos Confinamento 22% PB</div>
-    <div className="space-y-2">
+  <NALShell active="salvos" title="🗂 Rótulos Salvos — Histórico de Versões" preview={<PreviewRotulo produto="RAÇÃO BOVINOS CONF. 22% PB" forma="Farelado" empresa="Fábrica Demo Ltda" uf="SP" />}>
+    <div className="space-y-1.5">
       {[
-        { v: "v3", data: "02/05/2026", autor: "Carlos Mendes", obs: "Atualização de Reg. MAPA e níveis de Ca/P", status: "Ativa" },
-        { v: "v2", data: "15/02/2026", autor: "Ana Paula", obs: "Correção de FB máx. (80g)", status: "Obsoleta" },
+        { v: "v3", data: "02/05/2026", autor: "Carlos Mendes", obs: "Atualização de Reg. MAPA e níveis Ca/P", status: "Ativa" },
+        { v: "v2", data: "15/02/2026", autor: "Ana Paula", obs: "Correção FB máx. (80g)", status: "Obsoleta" },
         { v: "v1", data: "10/01/2026", autor: "Carlos Mendes", obs: "Versão inicial", status: "Obsoleta" },
       ].map((r) => (
-        <div key={r.v} className="bg-white p-3 rounded border border-slate-200 flex items-center gap-3 text-xs">
-          <div className={`px-2 py-1 rounded font-bold text-[11px] ${r.status === "Ativa" ? "bg-emerald-100 text-emerald-700" : "bg-slate-100 text-slate-500"}`}>{r.v}</div>
+        <div key={r.v} className="bg-slate-900 border border-slate-800 rounded p-2 flex items-center gap-2 text-[10px]">
+          <div className={`px-2 py-0.5 rounded font-bold ${r.status === "Ativa" ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/40" : "bg-slate-800 text-slate-500 border border-slate-700"}`}>{r.v}</div>
           <div className="flex-1">
-            <div className="font-semibold">{r.obs}</div>
-            <div className="text-[11px] text-slate-500">{r.autor} · {r.data}</div>
+            <div className="font-semibold text-slate-200">{r.obs}</div>
+            <div className="text-slate-500 text-[9px]">{r.autor} · {r.data}</div>
           </div>
-          <Pill tone={r.status === "Ativa" ? "emerald" : "slate" as any}>{r.status}</Pill>
+          <span className={`text-[9px] px-1.5 py-0.5 rounded ${r.status === "Ativa" ? "text-emerald-300 border border-emerald-500/40" : "text-slate-500 border border-slate-700"}`}>{r.status}</span>
         </div>
       ))}
     </div>
-    <div className="mt-3 text-[11px] text-slate-600 bg-slate-50 border border-slate-200 p-2 rounded">
-      🔒 Cada versão fica selada com hash SHA-256 (Decreto 12.031/2024) — histórico imutável para auditoria.
+    <div className="mt-2 text-[10px] text-cyan-300 bg-cyan-500/10 border border-cyan-500/30 p-2 rounded">
+      🔒 Cada versão selada com hash SHA-256 (Decreto 12.031/2024) — histórico imutável para auditoria.
     </div>
-  </Frame>
+  </NALShell>
 );
