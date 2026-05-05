@@ -138,6 +138,8 @@ export default function LicenseGate({ children, product = "feedbpf" }: LicenseGa
     );
   }
 
+  if (isSuperAdmin) return <>{children}</>;
+
   if (!empresaAtiva) return <>{children}</>;
 
   if (isActive) {
