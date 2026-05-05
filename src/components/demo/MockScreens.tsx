@@ -1249,3 +1249,198 @@ export const NutriClienteDetail = () => (
     </div>
   </Frame>
 );
+
+// =================================================================
+// ROTULOS_BPF — 6 telas
+// =================================================================
+
+export const RotulosDashboard = () => (
+  <Frame title="rotulos.bpfconsult.com.br/dashboard — Fábrica Demo Ltda">
+    <div className="flex items-center justify-between mb-4">
+      <div>
+        <h3 className="text-base font-bold">Editor de Rótulos & Fichas Técnicas</h3>
+        <p className="text-xs text-slate-500">Conforme IN 04/2007 e regras de rotulagem MAPA</p>
+      </div>
+      <Pill tone="emerald">18/18 campos RTPI</Pill>
+    </div>
+    <div className="grid grid-cols-4 gap-3 mb-4">
+      <Kpi icon={FileText} label="Rótulos Ativos" value="42" tone="emerald" />
+      <Kpi icon={ClipboardCheck} label="Fichas Técnicas" value="38" tone="emerald" sub="aprovadas" />
+      <Kpi icon={AlertTriangle} label="Pendentes" value="4" tone="amber" sub="revisão" />
+      <Kpi icon={Package} label="Versões" value="127" tone="emerald" sub="histórico" />
+    </div>
+    <div className="bg-white p-3 rounded border border-slate-200">
+      <div className="text-xs font-semibold mb-2">Últimos rótulos editados</div>
+      <ul className="space-y-1.5 text-xs">
+        <li className="flex justify-between"><span>Ração Bovinos Confinamento 22% PB</span><span className="text-slate-500">Hoje · v3</span></li>
+        <li className="flex justify-between"><span>Premix Mineral Vacas Leiteiras</span><span className="text-slate-500">Ontem · v2</span></li>
+        <li className="flex justify-between"><span>Suplemento Aves Postura</span><span className="text-slate-500">28/04 · v1</span></li>
+        <li className="flex justify-between"><span>Sal Mineral Cria & Recria</span><span className="text-slate-500">25/04 · v4</span></li>
+      </ul>
+    </div>
+  </Frame>
+);
+
+export const RotulosEditor = () => (
+  <Frame title="rotulos.bpfconsult.com.br/editor/ração-bovinos">
+    <div className="grid grid-cols-3 gap-3">
+      <div className="col-span-2 bg-white p-3 rounded border border-slate-200">
+        <div className="text-xs font-semibold mb-2">Pré-visualização do rótulo</div>
+        <div className="border-2 border-slate-800 p-3 rounded bg-slate-50 text-[10px] space-y-1">
+          <div className="font-bold text-sm">RAÇÃO BOVINOS CONFINAMENTO 22% PB</div>
+          <div>Fábrica Demo Ltda · CNPJ 00.000.000/0001-00</div>
+          <div>Reg. MAPA: SP-12345/2024</div>
+          <div className="border-t border-slate-300 my-1"></div>
+          <div className="font-semibold">Composição básica:</div>
+          <div>Milho moído, farelo de soja, calcário, sal, núcleo mineral.</div>
+          <div className="font-semibold mt-1">Níveis de garantia (por kg):</div>
+          <div>PB mín. 220g · EE mín. 30g · FB máx. 80g · Ca 8-12g · P mín. 5g</div>
+          <div className="border-t border-slate-300 my-1"></div>
+          <div>Lote: L240501 · Fab: 01/05/2026 · Val: 01/08/2026</div>
+          <div>Peso líquido: 40 kg</div>
+        </div>
+      </div>
+      <div className="space-y-2">
+        <div className="bg-white p-2 rounded border border-slate-200 text-xs">
+          <div className="font-semibold mb-1">Campos RTPI</div>
+          <div className="space-y-0.5">
+            <div className="flex justify-between"><span>Identificação</span><CheckCircle2 className="h-3 w-3 text-emerald-600" /></div>
+            <div className="flex justify-between"><span>Composição</span><CheckCircle2 className="h-3 w-3 text-emerald-600" /></div>
+            <div className="flex justify-between"><span>Garantias</span><CheckCircle2 className="h-3 w-3 text-emerald-600" /></div>
+            <div className="flex justify-between"><span>Lote/Validade</span><CheckCircle2 className="h-3 w-3 text-emerald-600" /></div>
+            <div className="flex justify-between"><span>Reg. MAPA</span><CheckCircle2 className="h-3 w-3 text-emerald-600" /></div>
+          </div>
+        </div>
+        <div className="bg-emerald-50 p-2 rounded border border-emerald-200 text-[10px] text-emerald-800">
+          <strong>✓ Rótulo conforme</strong><br/>Pronto para impressão
+        </div>
+      </div>
+    </div>
+  </Frame>
+);
+
+export const RotulosFichaTecnica = () => (
+  <Frame title="rotulos.bpfconsult.com.br/ficha-tecnica/premix-mineral">
+    <div className="bg-white p-3 rounded border border-slate-200">
+      <div className="flex justify-between items-start mb-3">
+        <div>
+          <div className="font-bold text-sm">FICHA TÉCNICA — RTPI</div>
+          <div className="text-xs text-slate-500">Premix Mineral Vacas Leiteiras · v2 · 02/05/2026</div>
+        </div>
+        <Pill tone="emerald">Aprovada</Pill>
+      </div>
+      <div className="grid grid-cols-2 gap-3 text-xs">
+        <div>
+          <div className="font-semibold mb-1">Identificação</div>
+          <table className="w-full text-[11px]">
+            <tbody>
+              <tr><td className="text-slate-500 py-0.5">Categoria</td><td>Suplemento mineral</td></tr>
+              <tr><td className="text-slate-500 py-0.5">Espécie</td><td>Bovinos leite</td></tr>
+              <tr><td className="text-slate-500 py-0.5">Reg. MAPA</td><td>SP-09876/2023</td></tr>
+              <tr><td className="text-slate-500 py-0.5">Forma física</td><td>Pó/farelado</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div>
+          <div className="font-semibold mb-1">Garantias (por kg)</div>
+          <table className="w-full text-[11px]">
+            <tbody>
+              <tr><td className="text-slate-500 py-0.5">Cálcio (mín.)</td><td>180 g</td></tr>
+              <tr><td className="text-slate-500 py-0.5">Fósforo (mín.)</td><td>80 g</td></tr>
+              <tr><td className="text-slate-500 py-0.5">Zinco (mín.)</td><td>3.500 mg</td></tr>
+              <tr><td className="text-slate-500 py-0.5">Selênio (mín.)</td><td>20 mg</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div className="mt-3 pt-2 border-t text-[11px] text-slate-600">
+        <strong>Modo de uso:</strong> Fornecer 100g/animal/dia, à vontade no cocho coberto.
+      </div>
+    </div>
+  </Frame>
+);
+
+export const RotulosNiveisGarantia = () => (
+  <Frame title="rotulos.bpfconsult.com.br/niveis-garantia">
+    <div className="text-xs mb-2 font-semibold">Calculadora de Níveis de Garantia (conversão automática g↔mg)</div>
+    <div className="bg-white rounded border border-slate-200 overflow-hidden">
+      <table className="w-full text-xs">
+        <thead className="bg-slate-100 text-[11px]">
+          <tr>
+            <th className="text-left px-2 py-1.5">Nutriente</th>
+            <th className="text-right px-2 py-1.5">Valor</th>
+            <th className="text-left px-2 py-1.5">Unidade</th>
+            <th className="text-left px-2 py-1.5">Tipo</th>
+            <th className="text-right px-2 py-1.5">Status</th>
+          </tr>
+        </thead>
+        <tbody className="text-[11px]">
+          <tr className="border-t"><td className="px-2 py-1">Proteína Bruta</td><td className="text-right">22,0</td><td>%</td><td>Mín.</td><td className="text-right"><CheckCircle2 className="h-3 w-3 text-emerald-600 inline" /></td></tr>
+          <tr className="border-t"><td className="px-2 py-1">Cálcio</td><td className="text-right">8.000</td><td>mg/kg → 8 g/kg</td><td>Mín-Máx</td><td className="text-right"><CheckCircle2 className="h-3 w-3 text-emerald-600 inline" /></td></tr>
+          <tr className="border-t"><td className="px-2 py-1">Fitase</td><td className="text-right">500</td><td className="text-amber-600">FTU/kg</td><td>Mín.</td><td className="text-right"><CheckCircle2 className="h-3 w-3 text-emerald-600 inline" /></td></tr>
+          <tr className="border-t"><td className="px-2 py-1">Lactobacillus</td><td className="text-right">1,0×10⁹</td><td className="text-amber-600">UFC/g</td><td>Mín.</td><td className="text-right"><CheckCircle2 className="h-3 w-3 text-emerald-600 inline" /></td></tr>
+          <tr className="border-t"><td className="px-2 py-1">Vitamina A</td><td className="text-right">10.000</td><td className="text-amber-600">UI/kg</td><td>Mín.</td><td className="text-right"><CheckCircle2 className="h-3 w-3 text-emerald-600 inline" /></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div className="mt-2 text-[11px] text-slate-600 bg-amber-50 border border-amber-200 p-2 rounded">
+      ⚠ Unidades destacadas (UFC, FTU, UI, KUI) não sofrem conversão g↔mg — são apresentadas conforme cadastro.
+    </div>
+  </Frame>
+);
+
+export const RotulosExportacao = () => (
+  <Frame title="rotulos.bpfconsult.com.br/exportar/L240501">
+    <div className="text-xs mb-3 font-semibold">Exportação para impressão</div>
+    <div className="grid grid-cols-3 gap-3">
+      <div className="bg-white p-3 rounded border border-slate-200 text-center">
+        <div className="h-16 flex items-center justify-center bg-slate-100 rounded mb-2 text-[10px] text-slate-500">[ Preview PDF ]</div>
+        <div className="font-semibold text-xs">PDF Alta Resolução</div>
+        <div className="text-[10px] text-slate-500 mb-2">300 DPI · CMYK</div>
+        <button className="w-full bg-emerald-600 text-white text-[10px] py-1 rounded">Baixar PDF</button>
+      </div>
+      <div className="bg-white p-3 rounded border border-slate-200 text-center">
+        <div className="h-16 flex items-center justify-center bg-slate-900 text-emerald-400 rounded mb-2 text-[10px] font-mono">^XA ^FO50 ^XZ</div>
+        <div className="font-semibold text-xs">ZPL (Zebra)</div>
+        <div className="text-[10px] text-slate-500 mb-2">Impressora térmica</div>
+        <button className="w-full bg-slate-800 text-white text-[10px] py-1 rounded">Baixar .zpl</button>
+      </div>
+      <div className="bg-white p-3 rounded border border-slate-200 text-center">
+        <div className="h-16 flex items-center justify-center bg-slate-100 rounded mb-2">
+          <div className="grid grid-cols-5 gap-px">{Array.from({length:25}).map((_,i)=><span key={i} className={`w-1.5 h-1.5 ${Math.random()>0.5?'bg-slate-900':'bg-white'}`}/>)}</div>
+        </div>
+        <div className="font-semibold text-xs">QR Code Lote</div>
+        <div className="text-[10px] text-slate-500 mb-2">Rastreabilidade</div>
+        <button className="w-full bg-emerald-600 text-white text-[10px] py-1 rounded">Baixar PNG</button>
+      </div>
+    </div>
+    <div className="mt-3 bg-emerald-50 border border-emerald-200 p-2 rounded text-[11px] text-emerald-800">
+      ✓ Lote L240501 — Pronto para impressão · 5.000 unidades programadas
+    </div>
+  </Frame>
+);
+
+export const RotulosVersionamento = () => (
+  <Frame title="rotulos.bpfconsult.com.br/versoes/ração-bovinos-22pb">
+    <div className="text-xs mb-3 font-semibold">Histórico de versões — Ração Bovinos Confinamento 22% PB</div>
+    <div className="space-y-2">
+      {[
+        { v: "v3", data: "02/05/2026", autor: "Carlos Mendes", obs: "Atualização de Reg. MAPA e níveis de Ca/P", status: "Ativa" },
+        { v: "v2", data: "15/02/2026", autor: "Ana Paula", obs: "Correção de FB máx. (80g)", status: "Obsoleta" },
+        { v: "v1", data: "10/01/2026", autor: "Carlos Mendes", obs: "Versão inicial", status: "Obsoleta" },
+      ].map((r) => (
+        <div key={r.v} className="bg-white p-3 rounded border border-slate-200 flex items-center gap-3 text-xs">
+          <div className={`px-2 py-1 rounded font-bold text-[11px] ${r.status === "Ativa" ? "bg-emerald-100 text-emerald-700" : "bg-slate-100 text-slate-500"}`}>{r.v}</div>
+          <div className="flex-1">
+            <div className="font-semibold">{r.obs}</div>
+            <div className="text-[11px] text-slate-500">{r.autor} · {r.data}</div>
+          </div>
+          <Pill tone={r.status === "Ativa" ? "emerald" : "slate" as any}>{r.status}</Pill>
+        </div>
+      ))}
+    </div>
+    <div className="mt-3 text-[11px] text-slate-600 bg-slate-50 border border-slate-200 p-2 rounded">
+      🔒 Cada versão fica selada com hash SHA-256 (Decreto 12.031/2024) — histórico imutável para auditoria.
+    </div>
+  </Frame>
+);
