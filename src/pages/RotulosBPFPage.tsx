@@ -3,16 +3,16 @@ import { ArrowLeft, Sparkles, Tag, FileText, Printer, ShieldCheck, Lock, Layers,
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import logoRotulos from "@/assets/logo-rotulos-bpf.png";
+import logoRotulos from "@/assets/logo-nutri-agro-labels.png";
 import logoBpfConsult from "@/assets/logo-bpf-consult.png";
 
-const EXTERNAL_APP = "https://rotulos.bpfconsult.com.br";
+const EXTERNAL_APP = "https://bpf-solutions-suite.lovable.app";
 
 const funcionalidades = [
   { icon: Tag, title: "Editor de Rótulos", desc: "Crie e edite rótulos comerciais com 18 campos obrigatórios da RTPI, conforme exigências do MAPA." },
   { icon: FileText, title: "Ficha Técnica (RTPI)", desc: "Geração automática da Ficha Técnica do produto com todos os campos regulatórios." },
   { icon: Layers, title: "Níveis de Garantia", desc: "Cálculo e conversão automática (g↔mg) com tratamento de exceções (UFC, FTU, UI, KUI)." },
-  { icon: Printer, title: "Exportação ZPL & PDF", desc: "Exporte direto para impressoras Zebra (ZPL) ou PDF de alta qualidade." },
+  { icon: Printer, title: "Impressão Zebra, Word & Excel", desc: "Exporte direto para impressoras Zebra (ZPL), documentos Word e planilhas Excel." },
   { icon: QrCode, title: "QR Code & Lote", desc: "Inclua QR Code de rastreabilidade e codificação de lote/validade automaticamente." },
   { icon: Palette, title: "Templates Customizáveis", desc: "Modelos prontos para ração, premix, suplementos, sal mineral e produtos veterinários." },
 ];
@@ -35,27 +35,27 @@ export default function RotulosBPFPage() {
           <div className="flex flex-col sm:flex-row items-center gap-8">
             <div className="relative shrink-0">
               <div className="absolute -inset-4 rounded-full bg-teal-500/10 blur-2xl" />
-              <img src={logoRotulos} alt="Rótulos BPF Logo" width={512} height={512} className="relative w-36 h-36 sm:w-48 sm:h-48 object-contain drop-shadow-xl" />
+              <img src={logoRotulos} alt="Nutri_Agro Labels Logo" width={512} height={512} className="relative w-36 h-36 sm:w-48 sm:h-48 object-contain drop-shadow-xl" />
             </div>
             <div>
-              <Badge variant="secondary" className="mb-3 text-xs tracking-widest uppercase">Editor de Rótulos & Fichas Técnicas</Badge>
+              <Badge variant="secondary" className="mb-3 text-xs tracking-widest uppercase">Gerador de Rótulos para Nutrição Animal</Badge>
               <h1 className="text-4xl sm:text-5xl font-bold font-display text-foreground mb-4 tracking-tight">
-                Rótulos<span className="text-primary">_BPF</span>
+                Nutri_Agro <span className="text-primary">Labels</span>
               </h1>
               <p className="text-lg text-muted-foreground max-w-xl leading-relaxed mb-6">
-                Crie rótulos comerciais e fichas técnicas (RTPI) 100% conformes com MAPA, em minutos. Exporte para ZPL, PDF e gere QR Code de rastreabilidade.
+                Gerador de rótulos para impressão em Zebra, Word e Excel — desenvolvido para nutrição animal, fábricas de rações e suplementos.
               </p>
               <div className="flex flex-col sm:flex-row gap-3">
                 <a href={EXTERNAL_APP} target="_blank" rel="noopener noreferrer">
                   <Button size="lg" className="gap-2 shadow-lg shadow-primary/20">
                     <Sparkles className="h-4 w-4" />
-                    Testar grátis por 7 dias
+                    Começar — 7 dias grátis
                   </Button>
                 </a>
                 <a href={EXTERNAL_APP} target="_blank" rel="noopener noreferrer">
                   <Button size="lg" variant="outline" className="gap-2">
                     <Lock className="h-4 w-4" />
-                    Já é cadastrado? Acessar
+                    Já sou cliente
                   </Button>
                 </a>
               </div>
@@ -90,7 +90,7 @@ export default function RotulosBPFPage() {
         <section className="mb-20">
           <div className="text-center mb-10">
             <Badge variant="outline" className="mb-3 text-xs tracking-widest uppercase px-4 py-1">Diferenciais</Badge>
-            <h2 className="text-3xl font-bold font-display text-foreground mb-2">Por que escolher o Rótulos_BPF?</h2>
+            <h2 className="text-3xl font-bold font-display text-foreground mb-2">Por que escolher o Nutri_Agro Labels?</h2>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 max-w-3xl mx-auto">
             {diferenciais.map((d) => (
@@ -138,7 +138,7 @@ export default function RotulosBPFPage() {
           </div>
           <div className="mt-12 text-center">
             <h3 className="text-xl font-bold font-display text-foreground mb-3">Experimente grátis por 7 dias!</h3>
-            <p className="text-muted-foreground mb-6">Crie sua conta e tenha acesso completo ao Rótulos_BPF durante o período trial.</p>
+            <p className="text-muted-foreground mb-6">Crie sua conta e tenha acesso completo ao Nutri_Agro Labels durante o período trial.</p>
             <a href={EXTERNAL_APP} target="_blank" rel="noopener noreferrer">
               <Button size="lg" className="gap-2 shadow-lg shadow-primary/25">
                 <Sparkles className="h-4 w-4" />
@@ -151,7 +151,7 @@ export default function RotulosBPFPage() {
 
       <footer className="border-t border-border py-8 text-center">
         <img src={logoBpfConsult} alt="BPF_Consult" width={40} height={40} loading="lazy" className="mx-auto w-10 h-10 object-contain mb-2 opacity-60" />
-        <p className="text-sm text-muted-foreground">Rótulos_BPF © {new Date().getFullYear()} — by BPF_Consult</p>
+        <p className="text-sm text-muted-foreground">Nutri_Agro Labels © {new Date().getFullYear()} — by BPF_Consult</p>
       </footer>
     </div>
   );
