@@ -6,7 +6,7 @@ import logoBpfConsult from "@/assets/logo-bpf-consult.png";
 import logoFeedBpf from "@/assets/logo-feed-bpf.png";
 import logoAuditsBpf from "@/assets/logo-audits-bpf.png";
 import logoAgrorc from "@/assets/logo-agrorc.png";
-import logoRotulos from "@/assets/logo-rotulos-bpf.png";
+import logoRotulos from "@/assets/logo-nutri-agro-labels.png";
 
 const produtos = [
   {
@@ -55,7 +55,7 @@ const produtos = [
     trialExternal: true,
   },
   {
-    nome: "Rótulos_BPF",
+    nome: "Nutri_Agro Labels",
     logo: logoRotulos,
     desc: "Editor de rótulos comerciais e fichas técnicas (RTPI) 100% conforme MAPA. Crie, edite e exporte para ZPL e PDF, com QR Code de rastreabilidade.",
     destaques: ["Editor de Rótulos", "Ficha Técnica RTPI", "Níveis de Garantia", "Exportação ZPL/PDF", "QR Code & Lote", "Templates Customizáveis"],
@@ -64,7 +64,7 @@ const produtos = [
     bgCard: "bg-gradient-to-br from-teal-50 to-emerald-50 dark:from-teal-950/30 dark:to-emerald-950/30",
     borderColor: "border-teal-200 dark:border-teal-800",
     trial: "7 dias grátis",
-    trialLink: "https://rotulos.bpfconsult.com.br",
+    trialLink: "https://bpf-solutions-suite.lovable.app",
     demoLink: "/demo/rotulos",
     preco: "A partir de R$ 97/mês",
     external: true,

@@ -10,7 +10,7 @@ import logoAuditsBpf from "@/assets/logo-audits-bpf.png";
 import logoNutriCrm from "@/assets/logo-nutricrm.png";
 import logoAgroGestao from "@/assets/logo-agrogestao.png";
 import logoAgroRc from "@/assets/logo-agrorc.png";
-import logoRotulos from "@/assets/logo-rotulos-bpf.png";
+import logoRotulos from "@/assets/logo-nutri-agro-labels.png";
 
 // Mockups HTML em português correto (dados fictícios — Fábrica Demo Ltda)
 import {
@@ -133,11 +133,11 @@ const DEMOS: Record<string, DemoConfig> = {
   rotulos: {
     key: "rotulos",
     productSlug: "rotulos",
-    brand: "Rótulos_BPF",
+    brand: "Nutri_Agro Labels",
     tagline: "Editor de rótulos e fichas técnicas (RTPI) conforme MAPA",
     logo: logoRotulos,
     accent: "from-teal-500 to-emerald-700",
-    ctaTrialLabel: "Iniciar trial Rótulos_BPF",
+    ctaTrialLabel: "Começar — 7 dias grátis",
     slides: [
       { title: "Dashboard de Rótulos", description: "Visão geral dos rótulos ativos, fichas técnicas aprovadas, pendências de revisão e histórico de versões. Dados ilustrativos da Fábrica Demo Ltda.", render: RotulosDashboard },
       { title: "Editor de Rótulos com Pré-visualização", description: "Editor visual com checklist automático dos 18 campos obrigatórios da RTPI — composição, garantias, lote, validade e Reg. MAPA validados em tempo real.", render: RotulosEditor },
