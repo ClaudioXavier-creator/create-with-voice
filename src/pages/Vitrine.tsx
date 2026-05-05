@@ -8,6 +8,7 @@ import logoAuditsBpf from "@/assets/logo-audits-bpf.png";
 import logoNutricrm from "@/assets/logo-nutricrm.png";
 import logoAgrogestao from "@/assets/logo-agrogestao.png";
 import logoAgrorc from "@/assets/logo-agrorc.png";
+import logoRotulos from "@/assets/logo-rotulos-bpf.png";
 
 const produtos = [
   {
@@ -83,6 +84,21 @@ const produtos = [
     trialLink: "/auth?product=agrogestao&mode=signup&redirect=%2Fagrogestao",
     demoLink: "/demo/agrogestao",
     preco: "A partir de R$ 97/mês",
+  },
+  {
+    nome: "Rótulos_BPF",
+    logo: logoRotulos,
+    desc: "Editor de rótulos comerciais e fichas técnicas (RTPI) 100% conforme MAPA. Crie, edite e exporte para ZPL e PDF, com QR Code de rastreabilidade.",
+    destaques: ["Editor de Rótulos", "Ficha Técnica RTPI", "Níveis de Garantia", "Exportação ZPL/PDF", "QR Code & Lote", "Templates Customizáveis"],
+    link: "/rotulos",
+    gradient: "from-[hsl(170,70%,40%)] to-[hsl(180,80%,25%)]",
+    bgCard: "bg-gradient-to-br from-teal-50 to-emerald-50 dark:from-teal-950/30 dark:to-emerald-950/30",
+    borderColor: "border-teal-200 dark:border-teal-800",
+    trial: "7 dias grátis",
+    trialLink: "https://rotulos.bpfconsult.com.br",
+    demoLink: "/demo/rotulos",
+    preco: "A partir de R$ 97/mês",
+    external: true,
   },
 ];
 
