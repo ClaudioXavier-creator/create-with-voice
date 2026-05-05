@@ -10,6 +10,7 @@ import logoAuditsBpf from "@/assets/logo-audits-bpf.png";
 import logoNutriCrm from "@/assets/logo-nutricrm.png";
 import logoAgroGestao from "@/assets/logo-agrogestao.png";
 import logoAgroRc from "@/assets/logo-agrorc.png";
+import logoRotulos from "@/assets/logo-rotulos-bpf.png";
 
 // Mockups HTML em português correto (dados fictícios — Fábrica Demo Ltda)
 import {
@@ -19,6 +20,7 @@ import {
   AgroRcDashboard, AgroRcKanban, AgroRcClientes, AgroRcVisitas, AgroRcMetas, AgroRcAdmin,
   AgroDashboard, AgroClientes, AgroRegioes, AgroMetas, AgroVisitas, AgroRelatorios,
   NutriDashboard, NutriClientes, NutriPipeline, NutriVisita, NutriRelatorios, NutriClienteDetail,
+  RotulosDashboard, RotulosEditor, RotulosFichaTecnica, RotulosNiveisGarantia, RotulosExportacao, RotulosVersionamento,
 } from "@/components/demo/MockScreens";
 
 interface Slide {
@@ -126,6 +128,23 @@ const DEMOS: Record<string, DemoConfig> = {
       { title: "Visitas a Campo com GPS", description: "Planejamento semanal com check-in/check-out por geolocalização, fotos e taxa de cumprimento.", render: AgroRcVisitas },
       { title: "Metas Comerciais", description: "Acompanhamento de metas mensais, trimestrais e anuais com ranking dos top RCs.", render: AgroRcMetas },
       { title: "Painel Regional (Admin)", description: "Visão exclusiva do administrador: faturamento, margem bruta/líquida e performance por RC. Não visível aos RCs.", render: AgroRcAdmin },
+    ],
+  },
+  rotulos: {
+    key: "rotulos",
+    productSlug: "rotulos",
+    brand: "Rótulos_BPF",
+    tagline: "Editor de rótulos e fichas técnicas (RTPI) conforme MAPA",
+    logo: logoRotulos,
+    accent: "from-teal-500 to-emerald-700",
+    ctaTrialLabel: "Iniciar trial Rótulos_BPF",
+    slides: [
+      { title: "Dashboard de Rótulos", description: "Visão geral dos rótulos ativos, fichas técnicas aprovadas, pendências de revisão e histórico de versões. Dados ilustrativos da Fábrica Demo Ltda.", render: RotulosDashboard },
+      { title: "Editor de Rótulos com Pré-visualização", description: "Editor visual com checklist automático dos 18 campos obrigatórios da RTPI — composição, garantias, lote, validade e Reg. MAPA validados em tempo real.", render: RotulosEditor },
+      { title: "Ficha Técnica RTPI Completa", description: "Geração da Ficha Técnica do produto com identificação, garantias, modo de uso e versionamento — pronta para envio ao MAPA e ao cliente.", render: RotulosFichaTecnica },
+      { title: "Níveis de Garantia (Conversão Automática)", description: "Calculadora com conversão automática g↔mg e tratamento de exceções (UFC, FTU, UI, KUI) que não sofrem conversão, conforme regras MAPA.", render: RotulosNiveisGarantia },
+      { title: "Exportação PDF, ZPL e QR Code", description: "Exporte para PDF de alta resolução (300 DPI/CMYK), ZPL para impressoras Zebra e QR Code de rastreabilidade do lote em um clique.", render: RotulosExportacao },
+      { title: "Versionamento com Selo SHA-256", description: "Histórico imutável de versões com selo digital (Decreto 12.031/2024) — cada alteração fica registrada com autor, data e observação para auditoria.", render: RotulosVersionamento },
     ],
   },
 };
