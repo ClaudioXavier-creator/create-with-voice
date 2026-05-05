@@ -5,8 +5,6 @@ import { Badge } from "@/components/ui/badge";
 import logoBpfConsult from "@/assets/logo-bpf-consult.png";
 import logoFeedBpf from "@/assets/logo-feed-bpf.png";
 import logoAuditsBpf from "@/assets/logo-audits-bpf.png";
-import logoNutricrm from "@/assets/logo-nutricrm.png";
-import logoAgrogestao from "@/assets/logo-agrogestao.png";
 import logoAgrorc from "@/assets/logo-agrorc.png";
 import logoRotulos from "@/assets/logo-rotulos-bpf.png";
 
@@ -41,21 +39,6 @@ const produtos = [
     external: true,
   },
   {
-    nome: "NutriCRM",
-    logo: logoNutricrm,
-    desc: "CRM especializado para profissionais de nutrição animal. Gestão completa de clientes, prospects, visitas técnicas, acompanhamentos e relatórios de performance.",
-    destaques: ["Gestão de Clientes", "Visitas Técnicas", "Dashboard Inteligente", "Relatórios", "Prospects & Pipeline", "Suporte Dedicado"],
-    link: "/nutricrm",
-    gradient: "from-[hsl(30,80%,45%)] to-[hsl(20,70%,35%)]",
-    bgCard: "bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-950/30 dark:to-orange-950/30",
-    borderColor: "border-amber-200 dark:border-amber-800",
-    trial: "7 dias grátis",
-    trialLink: "https://nutricrm.onrender.com/register",
-    demoLink: "/demo/nutricrm",
-    preco: "A partir de R$ 97/mês",
-    external: true,
-  },
-  {
     nome: "Agro RC CRM",
     logo: logoAgrorc,
     desc: "Plataforma de gestão para Representantes Comerciais do agronegócio. Controle de clientes, metas, visitas, pipeline de oportunidades Kanban e painel RC com margens e scores.",
@@ -70,20 +53,6 @@ const produtos = [
     preco: "A partir de R$ 97/mês",
     external: false,
     trialExternal: true,
-  },
-  {
-    nome: "AgroGestão CRM",
-    logo: logoAgrogestao,
-    desc: "Plataforma de gestão regional de vendas no agronegócio. Controle de clientes, territórios, metas comerciais, visitas a campo e relatórios de desempenho por região.",
-    destaques: ["Gestão Regional", "Carteira de Clientes", "Metas Comerciais", "Visitas a Campo", "Relatórios por Região", "Dashboard de Vendas"],
-    link: "/agrogestao",
-    gradient: "from-[hsl(150,70%,35%)] to-[hsl(170,60%,25%)]",
-    bgCard: "bg-gradient-to-br from-green-50 to-teal-50 dark:from-green-950/30 dark:to-teal-950/30",
-    borderColor: "border-green-200 dark:border-green-800",
-    trial: "7 dias grátis",
-    trialLink: "/auth?product=agrogestao&mode=signup&redirect=%2Fagrogestao",
-    demoLink: "/demo/agrogestao",
-    preco: "A partir de R$ 97/mês",
   },
   {
     nome: "Rótulos_BPF",
