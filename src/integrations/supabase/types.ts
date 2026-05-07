@@ -856,6 +856,207 @@ export type Database = {
           },
         ]
       }
+      crm_emails_enviados: {
+        Row: {
+          assunto: string
+          corpo_html: string
+          created_at: string
+          enviado_por: string
+          enviado_por_nome: string | null
+          erro: string | null
+          id: string
+          message_id: string | null
+          para_email: string
+          pipeline_id: string
+          status: string
+        }
+        Insert: {
+          assunto: string
+          corpo_html: string
+          created_at?: string
+          enviado_por: string
+          enviado_por_nome?: string | null
+          erro?: string | null
+          id?: string
+          message_id?: string | null
+          para_email: string
+          pipeline_id: string
+          status?: string
+        }
+        Update: {
+          assunto?: string
+          corpo_html?: string
+          created_at?: string
+          enviado_por?: string
+          enviado_por_nome?: string | null
+          erro?: string | null
+          id?: string
+          message_id?: string | null
+          para_email?: string
+          pipeline_id?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "crm_emails_enviados_pipeline_id_fkey"
+            columns: ["pipeline_id"]
+            isOneToOne: false
+            referencedRelation: "crm_pipeline"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      crm_interacoes: {
+        Row: {
+          autor_id: string
+          autor_nome: string | null
+          created_at: string
+          descricao: string
+          id: string
+          pipeline_id: string
+          tipo: string
+        }
+        Insert: {
+          autor_id: string
+          autor_nome?: string | null
+          created_at?: string
+          descricao: string
+          id?: string
+          pipeline_id: string
+          tipo: string
+        }
+        Update: {
+          autor_id?: string
+          autor_nome?: string | null
+          created_at?: string
+          descricao?: string
+          id?: string
+          pipeline_id?: string
+          tipo?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "crm_interacoes_pipeline_id_fkey"
+            columns: ["pipeline_id"]
+            isOneToOne: false
+            referencedRelation: "crm_pipeline"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      crm_pipeline: {
+        Row: {
+          created_at: string
+          email: string | null
+          empresa: string | null
+          etapa: string
+          ganho_em: string | null
+          id: string
+          lead_id: string | null
+          lead_origem: string
+          motivo_perda: string | null
+          nome: string
+          observacoes: string | null
+          perdido_em: string | null
+          produto_interesse: string | null
+          responsavel_id: string | null
+          responsavel_nome: string | null
+          telefone: string | null
+          updated_at: string
+          valor_estimado: number | null
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          empresa?: string | null
+          etapa?: string
+          ganho_em?: string | null
+          id?: string
+          lead_id?: string | null
+          lead_origem: string
+          motivo_perda?: string | null
+          nome: string
+          observacoes?: string | null
+          perdido_em?: string | null
+          produto_interesse?: string | null
+          responsavel_id?: string | null
+          responsavel_nome?: string | null
+          telefone?: string | null
+          updated_at?: string
+          valor_estimado?: number | null
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          empresa?: string | null
+          etapa?: string
+          ganho_em?: string | null
+          id?: string
+          lead_id?: string | null
+          lead_origem?: string
+          motivo_perda?: string | null
+          nome?: string
+          observacoes?: string | null
+          perdido_em?: string | null
+          produto_interesse?: string | null
+          responsavel_id?: string | null
+          responsavel_nome?: string | null
+          telefone?: string | null
+          updated_at?: string
+          valor_estimado?: number | null
+        }
+        Relationships: []
+      }
+      crm_tarefas: {
+        Row: {
+          concluida_em: string | null
+          created_at: string
+          descricao: string | null
+          id: string
+          pipeline_id: string
+          responsavel_id: string | null
+          responsavel_nome: string | null
+          status: string
+          titulo: string
+          updated_at: string
+          vencimento: string
+        }
+        Insert: {
+          concluida_em?: string | null
+          created_at?: string
+          descricao?: string | null
+          id?: string
+          pipeline_id: string
+          responsavel_id?: string | null
+          responsavel_nome?: string | null
+          status?: string
+          titulo: string
+          updated_at?: string
+          vencimento: string
+        }
+        Update: {
+          concluida_em?: string | null
+          created_at?: string
+          descricao?: string | null
+          id?: string
+          pipeline_id?: string
+          responsavel_id?: string | null
+          responsavel_nome?: string | null
+          status?: string
+          titulo?: string
+          updated_at?: string
+          vencimento?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "crm_tarefas_pipeline_id_fkey"
+            columns: ["pipeline_id"]
+            isOneToOne: false
+            referencedRelation: "crm_pipeline"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       cronogramas_higiene: {
         Row: {
           area: string
@@ -4136,6 +4337,7 @@ export type Database = {
         }
         Returns: Json
       }
+      can_access_crm: { Args: { _user_id: string }; Returns: boolean }
       criar_nova_versao_pop: {
         Args: {
           _documento_pai_id: string
