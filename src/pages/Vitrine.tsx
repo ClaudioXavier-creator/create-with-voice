@@ -226,7 +226,7 @@ export default function Vitrine() {
       <section className="border-t border-border bg-muted/30">
         <div className="max-w-7xl mx-auto px-4 py-16 sm:py-24">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold font-display text-foreground mb-3">Por que escolher a BPF_Consult?</h2>
+            <h2 className="text-3xl font-bold font-display text-foreground mb-3">Por que escolher a <span translate="no" className="notranslate">BPF_Consult</span>?</h2>
             <p className="text-muted-foreground max-w-xl mx-auto">Tecnologia e expertise unidas para garantir a conformidade da sua fábrica</p>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
