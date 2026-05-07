@@ -117,8 +117,11 @@ interface LicenseGateProps {
 export default function LicenseGate({ children, product = "feedbpf" }: LicenseGateProps) {
   const { license, loading, isActive, daysRemaining } = useLicense();
   const { empresaAtiva, loading: empresaLoading } = useEmpresa();
-  const { roles, loading: authLoading } = useAuth();
-  const isSuperAdmin = roles?.includes("admin");
+  const { user, roles, loading: authLoading } = useAuth();
+  const SUPER_ADMIN_EMAIL = "claudiolx.nunes@gmail.com";
+  const isSuperAdmin =
+    roles?.includes("admin") ||
+    user?.email?.toLowerCase() === SUPER_ADMIN_EMAIL;
   const location = useLocation();
   const [checkoutLoading, setCheckoutLoading] = useState<string | null>(null);
   const [nivelSelecionado, setNivelSelecionado] = useState<NivelKey>("intermediario");
