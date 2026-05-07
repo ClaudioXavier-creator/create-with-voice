@@ -99,7 +99,7 @@ export default function Vitrine() {
             <Badge variant="secondary" className="mb-5 text-xs tracking-widest uppercase px-4 py-1.5 rounded-full">
               Consultoria & Sistemas para Nutrição Animal
             </Badge>
-            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold font-display text-foreground mb-5 tracking-tight leading-tight">
+            <h1 translate="no" className="text-5xl sm:text-6xl lg:text-7xl font-bold font-display text-foreground mb-5 tracking-tight leading-tight notranslate">
               BPF_<span className="text-primary">Consult</span>
             </h1>
             <p className="text-lg sm:text-xl text-muted-foreground max-w-3xl mx-auto mb-10 leading-relaxed">
