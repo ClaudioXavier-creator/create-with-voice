@@ -28,6 +28,7 @@ import {
   ShieldAlert,
   ShieldCheck,
   Tablet,
+  Tag,
   Timer,
   Truck,
   UserCheck,
