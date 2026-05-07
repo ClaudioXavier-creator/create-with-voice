@@ -23,6 +23,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);
   const { user, roles, signOut } = useAuth();
+  const canCRM = !!roles?.includes("admin") || !!roles?.includes("comercial");
   const visibleEntries = useMemo(
     () =>
       NAV_ENTRIES.filter((entry) => {
@@ -30,9 +31,10 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         if (entry.path === "/admin-licencas" || entry.path === "/admin-leads") {
           return canAccessLicenseAdmin(roles);
         }
+        if (entry.path === "/crm") return canCRM;
         return true;
       }),
-    [roles],
+    [roles, canCRM],
   );
 
   useEffect(() => {

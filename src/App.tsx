@@ -77,6 +77,7 @@ import ConsultaSipeagro from "./pages/ConsultaSipeagro";
 import ConfigurarPin from "./pages/ConfigurarPin";
 import AuditorPortal from "./pages/AuditorPortal";
 import DemoPage from "./pages/DemoPage";
+import CRM from "./pages/CRM";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -200,6 +201,7 @@ const AppRoutes = React.forwardRef<HTMLDivElement>((_props, _ref) => {
                   <Route path="/rotulos" element={<RotulosBPFPage />} />
                   <Route path="/admin-licencas" element={<AdminLicencas />} />
                   <Route path="/admin-leads" element={<AdminLeads />} />
+                  <Route path="/crm" element={<CRM />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
                 </LicenseGate>
