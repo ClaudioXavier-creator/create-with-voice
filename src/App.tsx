@@ -139,9 +139,6 @@ const AppRoutes = React.forwardRef<HTMLDivElement>((_props, _ref) => {
       <Route path="/audits-bpf" element={<ProtectedRoute><LicenseGate product="auditsbpf"><AuditsBPFPage /></LicenseGate></ProtectedRoute>} />
       <Route path="/agrogestao" element={<AgroGestaoCRMPage />} />
       <Route path="/agro-rc" element={<AgroRCCRMPage />} />
-      <Route path="/rotulos" element={<RotulosBPFPage />} />
-      <Route path="/admin-licencas" element={<ProtectedRoute><AdminLicencas /></ProtectedRoute>} />
-      <Route path="/admin-leads" element={<ProtectedRoute><AdminLeads /></ProtectedRoute>} />
       <Route
         path="/*"
         element={
@@ -200,6 +197,9 @@ const AppRoutes = React.forwardRef<HTMLDivElement>((_props, _ref) => {
                   <Route path="/gerador-pop-ia" element={<GeradorPopIA />} />
                   <Route path="/consulta-sipeagro" element={<ConsultaSipeagro />} />
                   <Route path="/configurar-pin" element={<ConfigurarPin />} />
+                  <Route path="/rotulos" element={<RotulosBPFPage />} />
+                  <Route path="/admin-licencas" element={<AdminLicencas />} />
+                  <Route path="/admin-leads" element={<AdminLeads />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
                 </LicenseGate>
