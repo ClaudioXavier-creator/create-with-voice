@@ -99,7 +99,7 @@ export default function Vitrine() {
             <Badge variant="secondary" className="mb-5 text-xs tracking-widest uppercase px-4 py-1.5 rounded-full">
               Consultoria & Sistemas para Nutrição Animal
             </Badge>
-            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold font-display text-foreground mb-5 tracking-tight leading-tight">
+            <h1 translate="no" className="text-5xl sm:text-6xl lg:text-7xl font-bold font-display text-foreground mb-5 tracking-tight leading-tight notranslate">
               BPF_<span className="text-primary">Consult</span>
             </h1>
             <p className="text-lg sm:text-xl text-muted-foreground max-w-3xl mx-auto mb-10 leading-relaxed">
@@ -226,7 +226,7 @@ export default function Vitrine() {
       <section className="border-t border-border bg-muted/30">
         <div className="max-w-7xl mx-auto px-4 py-16 sm:py-24">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold font-display text-foreground mb-3">Por que escolher a BPF_Consult?</h2>
+            <h2 className="text-3xl font-bold font-display text-foreground mb-3">Por que escolher a <span translate="no" className="notranslate">BPF_Consult</span>?</h2>
             <p className="text-muted-foreground max-w-xl mx-auto">Tecnologia e expertise unidas para garantir a conformidade da sua fábrica</p>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -251,7 +251,7 @@ export default function Vitrine() {
       {/* Footer */}
       <footer className="border-t border-border py-8 text-center">
         <img src={logoBpfConsult} alt="BPF_Consult" className="mx-auto w-12 h-12 object-contain mb-3 opacity-60" />
-        <p className="text-sm text-muted-foreground">BPF_Consult © {new Date().getFullYear()} — Soluções em BPF para Nutrição Animal</p>
+        <p className="text-sm text-muted-foreground"><span translate="no" className="notranslate">BPF_Consult</span> © {new Date().getFullYear()} — Soluções em BPF para Nutrição Animal</p>
       </footer>
     </div>
   );
