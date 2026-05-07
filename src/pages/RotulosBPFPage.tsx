@@ -6,7 +6,8 @@ import { Badge } from "@/components/ui/badge";
 import logoRotulos from "@/assets/logo-nutri-agro-labels.png";
 import logoBpfConsult from "@/assets/logo-bpf-consult.png";
 
-const EXTERNAL_APP = "https://bpf-solutions-suite.lovable.app";
+const LOGIN_URL = "/auth?redirect=/rotulos";
+const SIGNUP_URL = "/auth?mode=signup&redirect=/rotulos";
 
 const funcionalidades = [
   { icon: Tag, title: "Editor de Rótulos", desc: "Crie e edite rótulos comerciais com 18 campos obrigatórios da RTPI, conforme exigências do MAPA." },
