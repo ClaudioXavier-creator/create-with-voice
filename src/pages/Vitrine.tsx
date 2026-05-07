@@ -251,7 +251,7 @@ export default function Vitrine() {
       {/* Footer */}
       <footer className="border-t border-border py-8 text-center">
         <img src={logoBpfConsult} alt="BPF_Consult" className="mx-auto w-12 h-12 object-contain mb-3 opacity-60" />
-        <p className="text-sm text-muted-foreground">BPF_Consult © {new Date().getFullYear()} — Soluções em BPF para Nutrição Animal</p>
+        <p className="text-sm text-muted-foreground"><span translate="no" className="notranslate">BPF_Consult</span> © {new Date().getFullYear()} — Soluções em BPF para Nutrição Animal</p>
       </footer>
     </div>
   );
