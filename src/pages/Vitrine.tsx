@@ -82,8 +82,25 @@ const estatisticas = [
 
 export default function Vitrine() {
   const navigate = useNavigate();
+  const { user, roles } = useAuth();
+  const isAdmin = canAccessLicenseAdmin(roles);
   return (
     <div className="min-h-screen bg-background">
+      {isAdmin && (
+        <div className="fixed top-4 right-4 z-50 flex gap-2">
+          <Link to="/admin-licencas">
+            <Button size="sm" variant="default" className="gap-2 shadow-lg">
+              <ShieldCheck className="h-4 w-4" />
+              Admin · Licenças
+            </Button>
+          </Link>
+          <Link to="/admin-leads">
+            <Button size="sm" variant="outline" className="gap-2 shadow-lg bg-background">
+              Leads
+            </Button>
+          </Link>
+        </div>
+      )}
       {/* Hero Section */}
       <header className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/15 via-primary/5 to-accent/10" />
