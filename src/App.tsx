@@ -197,6 +197,9 @@ const AppRoutes = React.forwardRef<HTMLDivElement>((_props, _ref) => {
                   <Route path="/gerador-pop-ia" element={<GeradorPopIA />} />
                   <Route path="/consulta-sipeagro" element={<ConsultaSipeagro />} />
                   <Route path="/configurar-pin" element={<ConfigurarPin />} />
+                  <Route path="/rotulos" element={<RotulosBPFPage />} />
+                  <Route path="/admin-licencas" element={<AdminLicencas />} />
+                  <Route path="/admin-leads" element={<AdminLeads />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
                 </LicenseGate>
