@@ -154,6 +154,7 @@ export const NAV_ENTRIES: NavEntry[] = [
     ],
   },
   { path: "/admin-licencas", label: "Licenças & Plano", icon: ShieldCheck },
+  { path: "/admin-leads", label: "Leads (Admin)", icon: ClipboardList },
   { path: "/modelos", label: "📁 Modelos", icon: FolderOpen },
   { path: "/modo-tablet", label: "🏭 Modo Tablet", icon: Tablet },
 ];
