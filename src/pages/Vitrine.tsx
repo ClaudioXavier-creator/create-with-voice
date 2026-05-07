@@ -66,10 +66,10 @@ const produtos = [
     bgCard: "bg-gradient-to-br from-teal-50 to-emerald-50 dark:from-teal-950/30 dark:to-emerald-950/30",
     borderColor: "border-teal-200 dark:border-teal-800",
     trial: "7 dias grátis",
-    trialLink: "https://bpf-solutions-suite.lovable.app",
+    trialLink: "/auth?mode=signup&redirect=/rotulos",
     demoLink: "/demo/rotulos",
     preco: "A partir de R$ 97/mês",
-    external: true,
+    external: false,
   },
 ];
 
