@@ -47,13 +47,13 @@ export default function RotulosBPFPage() {
                 Gerador de rótulos para impressão em Zebra, Word e Excel — desenvolvido para nutrição animal, fábricas de rações e suplementos.
               </p>
               <div className="flex flex-col sm:flex-row gap-3">
-                <a href={EXTERNAL_APP} target="_blank" rel="noopener noreferrer">
+                <a href={SIGNUP_URL}>
                   <Button size="lg" className="gap-2 shadow-lg shadow-primary/20">
                     <Sparkles className="h-4 w-4" />
                     Começar — 7 dias grátis
                   </Button>
                 </a>
-                <a href={EXTERNAL_APP} target="_blank" rel="noopener noreferrer">
+                <a href={LOGIN_URL}>
                   <Button size="lg" variant="outline" className="gap-2">
                     <Lock className="h-4 w-4" />
                     Já sou cliente
