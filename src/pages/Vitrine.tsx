@@ -87,18 +87,31 @@ export default function Vitrine() {
   return (
     <div className="min-h-screen bg-background">
       {isAdmin && (
-        <div className="fixed top-4 right-4 z-50 flex gap-2">
-          <Link to="/admin-licencas">
-            <Button size="sm" variant="default" className="gap-2 shadow-lg">
+        <div className="sticky top-0 z-50 w-full bg-primary text-primary-foreground shadow-md">
+          <div className="max-w-7xl mx-auto px-4 py-2 flex flex-wrap items-center justify-between gap-2">
+            <div className="flex items-center gap-2 text-sm font-medium">
               <ShieldCheck className="h-4 w-4" />
-              Admin · Licenças
-            </Button>
-          </Link>
-          <Link to="/admin-leads">
-            <Button size="sm" variant="outline" className="gap-2 shadow-lg bg-background">
-              Leads
-            </Button>
-          </Link>
+              Modo Super Admin · acesso total às licenças e leads
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <Link to="/admin-licencas">
+                <Button size="sm" variant="secondary" className="gap-2">
+                  <ShieldCheck className="h-4 w-4" />
+                  Admin · Licenças
+                </Button>
+              </Link>
+              <Link to="/admin-leads">
+                <Button size="sm" variant="secondary" className="gap-2">
+                  Leads
+                </Button>
+              </Link>
+              <Link to="/feedbpf">
+                <Button size="sm" variant="secondary" className="gap-2">
+                  Abrir Feed_BPF
+                </Button>
+              </Link>
+            </div>
+          </div>
         </div>
       )}
       {/* Hero Section */}
