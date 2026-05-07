@@ -130,7 +130,7 @@ export default function LicenseGate({ children, product = "feedbpf" }: LicenseGa
   // Conteúdo educativo (Central de Orientações, Manual, Guia de POPs) sempre liberado.
   if (isRotaLivre(location.pathname)) return <>{children}</>;
 
-  if (loading || empresaLoading) {
+  if (loading || empresaLoading || authLoading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
         <Loader2 className="w-8 h-8 animate-spin text-primary" />
