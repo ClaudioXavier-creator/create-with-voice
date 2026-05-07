@@ -1,6 +1,8 @@
 import { Link, useNavigate } from "react-router-dom";
 import { ArrowRight, Lock, ShieldCheck, Factory, Beaker, BarChart3, GraduationCap, ClipboardCheck, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/hooks/useAuth";
+import { canAccessLicenseAdmin } from "@/config/adminAccess";
 import { Badge } from "@/components/ui/badge";
 import logoBpfConsult from "@/assets/logo-bpf-consult.png";
 import logoFeedBpf from "@/assets/logo-feed-bpf.png";
