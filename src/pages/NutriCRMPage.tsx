@@ -45,18 +45,18 @@ export default function NutriCRMPage() {
                 CRM especializado para profissionais de nutrição animal. Gerencie clientes, visitas e acompanhamentos em um só lugar.
               </p>
               <div className="flex flex-col sm:flex-row gap-3">
-                <a href="https://nutricrm.onrender.com/register" target="_blank" rel="noopener noreferrer">
+                <Link to="/auth?product=nutricrm&mode=signup&redirect=%2Fnutricrm">
                   <Button size="lg" className="gap-2 shadow-lg shadow-primary/20">
                     <Sparkles className="h-4 w-4" />
                     Testar grátis por 7 dias
                   </Button>
-                </a>
-                <a href="https://nutricrm.onrender.com/login" target="_blank" rel="noopener noreferrer">
+                </Link>
+                <Link to="/auth?product=nutricrm&mode=login&redirect=%2Fnutricrm">
                   <Button size="lg" variant="outline" className="gap-2">
                     <Lock className="h-4 w-4" />
                     Já é cadastrado? Acesse o Sistema
                   </Button>
-                </a>
+                </Link>
               </div>
               <p className="text-xs text-muted-foreground mt-2">Sem cartão de crédito • Acesso completo</p>
             </div>
@@ -180,12 +180,12 @@ export default function NutriCRMPage() {
           <div className="mt-12 text-center">
             <h3 className="text-xl font-bold font-display text-foreground mb-3">Experimente grátis por 7 dias!</h3>
             <p className="text-muted-foreground mb-6">Crie sua conta e tenha acesso completo ao NutriCRM durante o período trial.</p>
-            <a href="https://nutricrm.onrender.com/register" target="_blank" rel="noopener noreferrer">
+            <Link to="/auth?product=nutricrm&mode=signup&redirect=%2Fnutricrm">
               <Button size="lg" className="gap-2 shadow-lg shadow-primary/25">
                 <Sparkles className="h-4 w-4" />
                 Começar Trial Grátis
               </Button>
-            </a>
+            </Link>
           </div>
         </section>
       </main>
