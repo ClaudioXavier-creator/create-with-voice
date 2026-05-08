@@ -138,8 +138,8 @@ const AppRoutes = React.forwardRef<HTMLDivElement>((_props, _ref) => {
       <Route path="/feedbpf" element={<ProtectedRoute><LicenseGate product="feedbpf"><FeedBPFPage /></LicenseGate></ProtectedRoute>} />
       <Route path="/audits-bpf/planos" element={<ProtectedRoute><AuditsBPFPlanos /></ProtectedRoute>} />
       <Route path="/audits-bpf" element={<ProtectedRoute><LicenseGate product="auditsbpf"><AuditsBPFPage /></LicenseGate></ProtectedRoute>} />
-      <Route path="/agrogestao" element={<AgroGestaoCRMPage />} />
-      <Route path="/agro-rc" element={<AgroRCCRMPage />} />
+      <Route path="/agrogestao" element={<ProtectedRoute><LicenseGate product="agrogestao"><AgroGestaoCRMPage /></LicenseGate></ProtectedRoute>} />
+      <Route path="/agro-rc" element={<ProtectedRoute><LicenseGate product="agrogestao"><AgroRCCRMPage /></LicenseGate></ProtectedRoute>} />
       <Route
         path="/*"
         element={
