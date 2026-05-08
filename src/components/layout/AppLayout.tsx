@@ -5,6 +5,7 @@ import {
   LogOut,
   Menu,
   Sparkles,
+  Target,
   X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
