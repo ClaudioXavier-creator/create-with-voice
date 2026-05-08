@@ -32,10 +32,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         if (entry.path === "/admin-licencas" || entry.path === "/admin-leads") {
           return canAccessLicenseAdmin(roles);
         }
-        if (entry.path === "/crm") return canCRM;
         return true;
       }),
-    [roles, canCRM],
+    [roles],
   );
 
   useEffect(() => {
