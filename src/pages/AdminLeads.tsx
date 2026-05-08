@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/table";
 import { Loader2, RefreshCw, Search, Download, MessageCircle, Mail } from "lucide-react";
 import { toast } from "sonner";
-import { canAccessLicenseAdmin } from "@/config/adminAccess";
+import { canAccessLeadsAdmin } from "@/config/adminAccess";
 
 interface Lead {
   id: string;
@@ -68,7 +68,7 @@ export default function AdminLeads() {
   };
 
   useEffect(() => {
-    if (!authLoading && user && canAccessLicenseAdmin(roles)) {
+    if (!authLoading && user && canAccessLeadsAdmin(roles)) {
       void load();
     }
   }, [authLoading, user, roles]);
@@ -114,7 +114,7 @@ export default function AdminLeads() {
   }
 
   if (!user) return <Navigate to="/auth?redirect=/admin-leads" replace />;
-  if (!canAccessLicenseAdmin(roles)) return <Navigate to="/" replace />;
+  if (!canAccessLeadsAdmin(roles)) return <Navigate to="/" replace />;
 
   return (
     <div className="min-h-screen bg-background p-4 md:p-8">

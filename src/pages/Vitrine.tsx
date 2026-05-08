@@ -83,7 +83,7 @@ const estatisticas = [
 export default function Vitrine() {
   const navigate = useNavigate();
   const { user, roles } = useAuth();
-  const isAdmin = canAccessLicenseAdmin(roles);
+  const isAdmin = canAccessLicenseAdmin(roles, user?.email);
   return (
     <div className="min-h-screen bg-background">
       {isAdmin && (

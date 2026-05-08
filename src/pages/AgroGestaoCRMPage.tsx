@@ -46,18 +46,18 @@ export default function AgroGestaoCRMPage() {
                 Plataforma de gestão regional de vendas no agronegócio. Controle clientes, territórios e metas comerciais em um só lugar.
               </p>
               <div className="flex flex-col sm:flex-row gap-3">
-                <a href={EXTERNAL_APP} target="_blank" rel="noopener noreferrer">
+                <Link to="/auth?product=agrogestao&mode=signup&redirect=%2Fagrogestao">
                   <Button size="lg" className="gap-2 shadow-lg shadow-primary/20">
                     <Sparkles className="h-4 w-4" />
                     Testar grátis por 7 dias
                   </Button>
-                </a>
-                <a href={EXTERNAL_APP} target="_blank" rel="noopener noreferrer">
+                </Link>
+                <Link to="/auth?product=agrogestao&mode=login&redirect=%2Fagrogestao">
                   <Button size="lg" variant="outline" className="gap-2">
                     <Lock className="h-4 w-4" />
                     Já é cadastrado? Acesse o Sistema
                   </Button>
-                </a>
+                </Link>
               </div>
               <p className="text-xs text-muted-foreground mt-2">Sem cartão de crédito • Acesso completo</p>
             </div>
@@ -166,12 +166,12 @@ export default function AgroGestaoCRMPage() {
           <div className="mt-12 text-center">
             <h3 className="text-xl font-bold font-display text-foreground mb-3">Experimente grátis por 7 dias!</h3>
             <p className="text-muted-foreground mb-6">Crie sua conta e tenha acesso completo ao AgroGestão CRM durante o período trial.</p>
-            <a href={EXTERNAL_APP} target="_blank" rel="noopener noreferrer">
+            <Link to="/auth?product=agrogestao&mode=signup&redirect=%2Fagrogestao">
               <Button size="lg" className="gap-2 shadow-lg shadow-primary/25">
                 <Sparkles className="h-4 w-4" />
                 Começar Trial Grátis
               </Button>
-            </a>
+            </Link>
           </div>
         </section>
       </main>

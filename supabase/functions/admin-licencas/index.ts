@@ -36,6 +36,8 @@ Deno.serve(async (req) => {
 
     const adminClient = createClient(supabaseUrl, supabaseServiceKey);
 
+    const isSuperAdminEmail = user.email?.toLowerCase() === "claudiolx.nunes@gmail.com";
+
     const { data: roleData } = await adminClient
       .from("user_roles")
       .select("role")
@@ -43,7 +45,7 @@ Deno.serve(async (req) => {
       .eq("role", "admin")
       .maybeSingle();
 
-    if (!roleData) {
+    if (!roleData && !isSuperAdminEmail) {
       return new Response(JSON.stringify({ error: "Acesso negado" }), {
         status: 403,
         headers: { ...corsHeaders, "Content-Type": "application/json" },

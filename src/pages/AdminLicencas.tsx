@@ -63,7 +63,7 @@ export default function AdminLicencas() {
 
   useEffect(() => {
     if (!user) return;
-    if (!canAccessLicenseAdmin(roles)) {
+    if (!canAccessLicenseAdmin(roles, user?.email)) {
       setIsAdmin(false);
       return;
     }
@@ -98,7 +98,7 @@ export default function AdminLicencas() {
     );
   }
 
-  if (!user || !canAccessLicenseAdmin(roles) || !isAdmin) {
+  if (!user || !canAccessLicenseAdmin(roles, user.email) || !isAdmin) {
     return <Navigate to="/dashboard" replace />;
   }
 

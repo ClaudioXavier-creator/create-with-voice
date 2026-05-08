@@ -14,7 +14,7 @@ import EmpresaSelector from "@/components/EmpresaSelector";
 import LicenseGate from "@/components/LicenseGate";
 import TierGate from "@/components/TierGate";
 import logoImg from "@/assets/logo-feed-bpf.png";
-import { canAccessLicenseAdmin } from "@/config/adminAccess";
+import { canAccessLeadsAdmin, canAccessLicenseAdmin } from "@/config/adminAccess";
 import { SidebarNav } from "@/components/layout/SidebarNav";
 import { NAV_ENTRIES, isGroup } from "@/components/layout/nav-config";
 import OfflineBanner from "@/components/OfflineBanner";
@@ -29,8 +29,11 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     () =>
       NAV_ENTRIES.filter((entry) => {
         if (isGroup(entry)) return true;
-        if (entry.path === "/admin-licencas" || entry.path === "/admin-leads") {
-          return canAccessLicenseAdmin(roles);
+        if (entry.path === "/admin-licencas") {
+          return canAccessLicenseAdmin(roles, user?.email);
+        }
+        if (entry.path === "/admin-leads") {
+          return canAccessLeadsAdmin(roles);
         }
         return true;
       }),
