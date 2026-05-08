@@ -30,7 +30,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       NAV_ENTRIES.filter((entry) => {
         if (isGroup(entry)) return true;
         if (entry.path === "/admin-licencas" || entry.path === "/admin-leads") {
-          return canAccessLicenseAdmin(roles);
+          return canAccessLicenseAdmin(roles, user?.email);
         }
         return true;
       }),
