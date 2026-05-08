@@ -134,12 +134,12 @@ const AppRoutes = React.forwardRef<HTMLDivElement>((_props, _ref) => {
       <Route path="/auditor/:token" element={<AuditorPortal />} />
       <Route path="/demo/:produto" element={<DemoPage />} />
       <Route path="/instalar" element={<Instalar />} />
-      <Route path="/nutricrm" element={<ProtectedRoute><LicenseGate product="nutricrm"><NutriCRMPage /></LicenseGate></ProtectedRoute>} />
-      <Route path="/feedbpf" element={<ProtectedRoute><LicenseGate product="feedbpf"><FeedBPFPage /></LicenseGate></ProtectedRoute>} />
+      <Route path="/nutricrm" element={<NutriCRMPage />} />
+      <Route path="/feedbpf" element={<FeedBPFPage />} />
       <Route path="/audits-bpf/planos" element={<ProtectedRoute><AuditsBPFPlanos /></ProtectedRoute>} />
-      <Route path="/audits-bpf" element={<ProtectedRoute><LicenseGate product="auditsbpf"><AuditsBPFPage /></LicenseGate></ProtectedRoute>} />
-      <Route path="/agrogestao" element={<ProtectedRoute><LicenseGate product="agrogestao"><AgroGestaoCRMPage /></LicenseGate></ProtectedRoute>} />
-      <Route path="/agro-rc" element={<ProtectedRoute><LicenseGate product="agrogestao"><AgroRCCRMPage /></LicenseGate></ProtectedRoute>} />
+      <Route path="/audits-bpf" element={<AuditsBPFPage />} />
+      <Route path="/agrogestao" element={<AgroGestaoCRMPage />} />
+      <Route path="/agro-rc" element={<AgroRCCRMPage />} />
       <Route
         path="/*"
         element={
