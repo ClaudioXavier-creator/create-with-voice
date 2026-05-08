@@ -153,7 +153,6 @@ export const NAV_ENTRIES: NavEntry[] = [
       { path: "/busca-global", label: "Busca Global", icon: Search },
     ],
   },
-  { path: "/crm", label: "🎯 CRM Comercial", icon: BarChart3, keywords: ["leads", "vendas", "funil", "pipeline"] },
   { path: "/admin-licencas", label: "Licenças & Plano", icon: ShieldCheck },
   { path: "/admin-leads", label: "Leads (Admin)", icon: ClipboardList },
   { path: "/modelos", label: "📁 Modelos", icon: FolderOpen },
