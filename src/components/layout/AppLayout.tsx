@@ -5,6 +5,7 @@ import {
   LogOut,
   Menu,
   Sparkles,
+  Target,
   X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -31,10 +32,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         if (entry.path === "/admin-licencas" || entry.path === "/admin-leads") {
           return canAccessLicenseAdmin(roles);
         }
-        if (entry.path === "/crm") return canCRM;
         return true;
       }),
-    [roles, canCRM],
+    [roles],
   );
 
   useEffect(() => {
@@ -139,6 +139,19 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           </LicenseGate>
         </div>
       </main>
+
+      {/* Botão flutuante CRM (apenas admin/comercial) */}
+      {canCRM && location.pathname !== "/crm" && (
+        <Button
+          onClick={() => navigate("/crm")}
+          size="icon"
+          className="fixed bottom-6 right-6 z-50 h-12 w-12 rounded-full shadow-lg bg-primary hover:bg-primary/90"
+          title="CRM Comercial"
+          aria-label="Abrir CRM Comercial"
+        >
+          <Target className="h-5 w-5" />
+        </Button>
+      )}
     </div>
   );
 }
