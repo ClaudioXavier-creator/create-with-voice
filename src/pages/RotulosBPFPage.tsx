@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import logoRotulos from "@/assets/logo-nutri-agro-labels.png";
 import logoBpfConsult from "@/assets/logo-bpf-consult.png";
+import SuperAdminBanner from "@/components/SuperAdminBanner";
 
 const LOGIN_URL = "/auth?redirect=/rotulos";
 const SIGNUP_URL = "/auth?mode=signup&redirect=/rotulos";
