@@ -4,6 +4,10 @@ import { Mail, Lock, User, Loader2, Building2, Briefcase, Eye, EyeOff, AlertTria
 import logoImg from "@/assets/logo.png";
 import logoFeedBpf from "@/assets/logo-feed-bpf.png";
 import logoAuditsBpf from "@/assets/logo-audits-bpf.png";
+import logoNutricrm from "@/assets/logo-nutricrm.png";
+import logoAgrogestao from "@/assets/logo-agrogestao.png";
+import logoAgrorc from "@/assets/logo-agrorc.png";
+import logoRotulos from "@/assets/logo-rotulos-bpf.png";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -28,6 +32,26 @@ const authConfigs = {
     logo: logoAuditsBpf,
     title: "Audits_BPF",
     subtitle: "Sistema de auditoria interna para BPF em nutrição animal",
+  },
+  nutricrm: {
+    logo: logoNutricrm,
+    title: "NutriCRM",
+    subtitle: "CRM especializado para nutrição animal",
+  },
+  agrogestao: {
+    logo: logoAgrogestao,
+    title: "AgroGestão CRM",
+    subtitle: "CRM para gestão regional de vendas no agronegócio",
+  },
+  "agro-rc": {
+    logo: logoAgrorc,
+    title: "Agro RC CRM",
+    subtitle: "CRM para Representantes Comerciais do agronegócio",
+  },
+  rotulos: {
+    logo: logoRotulos,
+    title: "Nutri_Agro Labels",
+    subtitle: "Gerador de rótulos para nutrição animal",
   },
 } as const;
 
