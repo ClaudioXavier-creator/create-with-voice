@@ -27,6 +27,7 @@ const diferenciais = [
 export default function RotulosBPFPage() {
   return (
     <div className="min-h-screen bg-background">
+      <SuperAdminBanner programa="Nutri_Agro Labels" />
       <header className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-teal-500/10 via-emerald-500/5 to-primary/10" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,hsl(170,70%,40%,0.08),transparent_60%)]" />
