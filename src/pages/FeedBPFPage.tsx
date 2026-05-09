@@ -7,6 +7,7 @@ import logoFeedBpf from "@/assets/logo-feed-bpf.png";
 import logoBpfConsult from "@/assets/logo-bpf-consult.png";
 import dashboardPreview from "@/assets/feedbpf-dashboard-preview.jpg";
 import SuperAdminBanner from "@/components/SuperAdminBanner";
+import { useAuth } from "@/hooks/useAuth";
 
 const funcionalidades = [
   { icon: BookOpen, title: "Manual BPF Completo", desc: "Manual de Boas Práticas de Fabricação com todos os capítulos exigidos pela IN 04/2007." },
