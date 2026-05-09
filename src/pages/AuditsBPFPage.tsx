@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import logoAuditsBpf from "@/assets/logo-audits-bpf.png";
 import logoBpfConsult from "@/assets/logo-bpf-consult.png";
 import dashboardPreview from "@/assets/auditsbpf-dashboard-preview.jpg";
+import SuperAdminBanner from "@/components/SuperAdminBanner";
 
 const funcionalidades = [
   { icon: ClipboardCheck, title: "Checklist Completo", desc: "Checklist de auditoria interna baseado integralmente no Decreto 12.031/2024, com todos os itens exigidos pelo MAPA." },
@@ -28,6 +29,7 @@ export default function AuditsBPFPage() {
 
   return (
     <div className="min-h-screen bg-background">
+      <SuperAdminBanner programa="Audits_BPF" />
       <header className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 via-green-500/5 to-primary/10" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,hsl(140,60%,40%,0.08),transparent_60%)]" />

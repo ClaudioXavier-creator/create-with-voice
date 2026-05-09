@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import logoFeedBpf from "@/assets/logo-feed-bpf.png";
 import logoBpfConsult from "@/assets/logo-bpf-consult.png";
 import dashboardPreview from "@/assets/feedbpf-dashboard-preview.jpg";
+import SuperAdminBanner from "@/components/SuperAdminBanner";
 
 const funcionalidades = [
   { icon: BookOpen, title: "Manual BPF Completo", desc: "Manual de Boas Práticas de Fabricação com todos os capítulos exigidos pela IN 04/2007." },
@@ -33,6 +34,7 @@ export default function FeedBPFPage() {
 
   return (
     <div className="min-h-screen bg-background">
+      <SuperAdminBanner programa="Feed_BPF" />
       {/* Hero */}
       <header className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-sky-500/10 via-blue-500/5 to-primary/10" />
