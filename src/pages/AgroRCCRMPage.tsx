@@ -48,6 +48,7 @@ export default function AgroRCCRMPage() {
 
   return (
     <div className="min-h-screen bg-background">
+      <SuperAdminBanner programa="Agro RC CRM" />
       <header className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 via-violet-500/5 to-primary/10" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,hsl(270,70%,45%,0.08),transparent_60%)]" />
