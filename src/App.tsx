@@ -140,6 +140,7 @@ const AppRoutes = React.forwardRef<HTMLDivElement>((_props, _ref) => {
       <Route path="/audits-bpf" element={<AuditsBPFPage />} />
       <Route path="/agrogestao" element={<AgroGestaoCRMPage />} />
       <Route path="/agro-rc" element={<AgroRCCRMPage />} />
+      <Route path="/rotulos" element={<RotulosBPFPage />} />
       <Route
         path="/*"
         element={
