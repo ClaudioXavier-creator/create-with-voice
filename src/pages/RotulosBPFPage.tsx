@@ -6,9 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import logoRotulos from "@/assets/logo-nutri-agro-labels.png";
 import logoBpfConsult from "@/assets/logo-bpf-consult.png";
 import SuperAdminBanner from "@/components/SuperAdminBanner";
-
-const LOGIN_URL = "/auth?redirect=/rotulos";
-const SIGNUP_URL = "/auth?mode=signup&redirect=/rotulos";
+import { useAuth } from "@/hooks/useAuth";
 
 const funcionalidades = [
   { icon: Tag, title: "Editor de Rótulos", desc: "Crie e edite rótulos comerciais com 18 campos obrigatórios da RTPI, conforme exigências do MAPA." },
@@ -25,6 +23,10 @@ const diferenciais = [
 ];
 
 export default function RotulosBPFPage() {
+  const { session } = useAuth();
+  const signupLink = session ? "/dashboard" : "/auth?product=rotulos&mode=signup&redirect=%2Fdashboard";
+  const loginLink = session ? "/dashboard" : "/auth?product=rotulos&mode=login&redirect=%2Fdashboard";
+
   return (
     <div className="min-h-screen bg-background">
       <SuperAdminBanner programa="Nutri_Agro Labels" />
@@ -49,18 +51,18 @@ export default function RotulosBPFPage() {
                 Gerador de rótulos para impressão em Zebra, Word e Excel — desenvolvido para nutrição animal, fábricas de rações e suplementos.
               </p>
               <div className="flex flex-col sm:flex-row gap-3">
-                <a href={SIGNUP_URL}>
+                <Link to={signupLink}>
                   <Button size="lg" className="gap-2 shadow-lg shadow-primary/20">
                     <Sparkles className="h-4 w-4" />
                     Começar — 7 dias grátis
                   </Button>
-                </a>
-                <a href={LOGIN_URL}>
+                </Link>
+                <Link to={loginLink}>
                   <Button size="lg" variant="outline" className="gap-2">
                     <Lock className="h-4 w-4" />
                     Já sou cliente
                   </Button>
-                </a>
+                </Link>
               </div>
               <p className="text-xs text-muted-foreground mt-2">Sem cartão de crédito • Acesso completo</p>
             </div>

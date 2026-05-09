@@ -9,8 +9,7 @@ import { toast } from "sonner";
 import logoAgrorc from "@/assets/logo-agrorc.png";
 import logoBpfConsult from "@/assets/logo-bpf-consult.png";
 import SuperAdminBanner from "@/components/SuperAdminBanner";
-
-const EXTERNAL_APP = "https://soil-to-client.lovable.app/";
+import { useAuth } from "@/hooks/useAuth";
 
 const funcionalidades = [
   { icon: BarChart3, title: "Painel RC", desc: "Painel exclusivo do Representante Comercial com margens, comissões, scores de desempenho e ranking." },
@@ -28,6 +27,9 @@ const diferenciais = [
 
 export default function AgroRCCRMPage() {
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
+  const { session } = useAuth();
+  const signupLink = session ? "/dashboard" : "/auth?product=agro-rc&mode=signup&redirect=%2Fdashboard";
+  const loginLink = session ? "/dashboard" : "/auth?product=agro-rc&mode=login&redirect=%2Fdashboard";
 
   const handleCheckout = async (tipo: "individual" | "grupo", plano: "mensal" | "semestral" | "anual") => {
     const key = `${tipo}-${plano}`;
@@ -70,13 +72,13 @@ export default function AgroRCCRMPage() {
                 Plataforma de gestão para Representantes Comerciais do agronegócio. Controle clientes, metas, visitas e pipeline de oportunidades em um só lugar.
               </p>
               <div className="flex flex-col sm:flex-row gap-3">
-                <Link to="/auth?product=agrogestao&mode=signup&redirect=%2Fagro-rc">
+                <Link to={signupLink}>
                   <Button size="lg" className="gap-2 shadow-lg shadow-primary/20">
                     <Sparkles className="h-4 w-4" />
                     Testar grátis por 7 dias
                   </Button>
                 </Link>
-                <Link to="/auth?product=agrogestao&mode=login&redirect=%2Fagro-rc">
+                <Link to={loginLink}>
                   <Button size="lg" variant="outline" className="gap-2">
                     <Lock className="h-4 w-4" />
                     Já é cadastrado? Acesse o Sistema

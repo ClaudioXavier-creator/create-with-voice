@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import logoAgrogestao from "@/assets/logo-agrogestao.png";
 import logoBpfConsult from "@/assets/logo-bpf-consult.png";
 import SuperAdminBanner from "@/components/SuperAdminBanner";
+import { useAuth } from "@/hooks/useAuth";
 
 const funcionalidades = [
   { icon: Users, title: "Carteira de Clientes", desc: "Cadastro completo de clientes e prospects com dados regionais, histórico de compras e perfil produtivo." },
@@ -24,6 +25,10 @@ const diferenciais = [
 ];
 
 export default function AgroGestaoCRMPage() {
+  const { session } = useAuth();
+  const signupLink = session ? "/dashboard" : "/auth?product=agrogestao&mode=signup&redirect=%2Fdashboard";
+  const loginLink = session ? "/dashboard" : "/auth?product=agrogestao&mode=login&redirect=%2Fdashboard";
+
   return (
     <div className="min-h-screen bg-background">
       <SuperAdminBanner programa="AgroGestão CRM" />
@@ -48,13 +53,13 @@ export default function AgroGestaoCRMPage() {
                 Plataforma de gestão regional de vendas no agronegócio. Controle clientes, territórios e metas comerciais em um só lugar.
               </p>
               <div className="flex flex-col sm:flex-row gap-3">
-                <Link to="/auth?product=agrogestao&mode=signup&redirect=%2Fagrogestao">
+                <Link to={signupLink}>
                   <Button size="lg" className="gap-2 shadow-lg shadow-primary/20">
                     <Sparkles className="h-4 w-4" />
                     Testar grátis por 7 dias
                   </Button>
                 </Link>
-                <Link to="/auth?product=agrogestao&mode=login&redirect=%2Fagrogestao">
+                <Link to={loginLink}>
                   <Button size="lg" variant="outline" className="gap-2">
                     <Lock className="h-4 w-4" />
                     Já é cadastrado? Acesse o Sistema

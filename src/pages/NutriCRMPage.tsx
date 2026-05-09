@@ -7,6 +7,7 @@ import logoNutricrm from "@/assets/logo-nutricrm.png";
 import logoBpfConsult from "@/assets/logo-bpf-consult.png";
 import dashboardPreview from "@/assets/nutricrm-dashboard-preview.jpg";
 import SuperAdminBanner from "@/components/SuperAdminBanner";
+import { useAuth } from "@/hooks/useAuth";
 
 const funcionalidades = [
   { icon: Users, title: "Gestão de Clientes", desc: "Cadastro completo de clientes e prospects com histórico de interações, contratos e dados técnicos." },
@@ -23,6 +24,10 @@ const diferenciais = [
 ];
 
 export default function NutriCRMPage() {
+  const { session } = useAuth();
+  const signupLink = session ? "/dashboard" : "/auth?product=nutricrm&mode=signup&redirect=%2Fdashboard";
+  const loginLink = session ? "/dashboard" : "/auth?product=nutricrm&mode=login&redirect=%2Fdashboard";
+
   return (
     <div className="min-h-screen bg-background">
       <SuperAdminBanner programa="NutriCRM" />
@@ -47,13 +52,13 @@ export default function NutriCRMPage() {
                 CRM especializado para profissionais de nutrição animal. Gerencie clientes, visitas e acompanhamentos em um só lugar.
               </p>
               <div className="flex flex-col sm:flex-row gap-3">
-                <Link to="/auth?product=nutricrm&mode=signup&redirect=%2Fnutricrm">
+                <Link to={signupLink}>
                   <Button size="lg" className="gap-2 shadow-lg shadow-primary/20">
                     <Sparkles className="h-4 w-4" />
                     Testar grátis por 7 dias
                   </Button>
                 </Link>
-                <Link to="/auth?product=nutricrm&mode=login&redirect=%2Fnutricrm">
+                <Link to={loginLink}>
                   <Button size="lg" variant="outline" className="gap-2">
                     <Lock className="h-4 w-4" />
                     Já é cadastrado? Acesse o Sistema
