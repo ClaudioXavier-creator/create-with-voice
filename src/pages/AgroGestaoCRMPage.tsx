@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import logoAgrogestao from "@/assets/logo-agrogestao.png";
 import logoBpfConsult from "@/assets/logo-bpf-consult.png";
+import SuperAdminBanner from "@/components/SuperAdminBanner";
 
 const funcionalidades = [
   { icon: Users, title: "Carteira de Clientes", desc: "Cadastro completo de clientes e prospects com dados regionais, histórico de compras e perfil produtivo." },
