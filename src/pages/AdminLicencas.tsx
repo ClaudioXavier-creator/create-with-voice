@@ -43,6 +43,8 @@ const PRODUCT_LABELS: Record<string, string> = {
   agrogestao: "AgroGestão",
   agrogestao_crm: "AgroGestão CRM",
   nutricrm: "NutriCRM",
+  agro_rc_crm: "Agro RC CRM",
+  rotulos: "Nutri_Agro Labels",
 };
 
 const ACCESS_LEVEL_LABELS: Record<string, string> = {

@@ -34,6 +34,8 @@ const PRODUTO_LABEL: Record<string, string> = {
   agrogestao: "AgroGestão",
   agro_rc: "Agro RC",
   "agro-rc": "Agro RC",
+  agro_rc_crm: "Agro RC CRM",
+  rotulos: "Nutri_Agro Labels",
   plataforma: "Plataforma",
 };
 
