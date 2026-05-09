@@ -7,6 +7,7 @@ import logoFeedBpf from "@/assets/logo-feed-bpf.png";
 import logoBpfConsult from "@/assets/logo-bpf-consult.png";
 import dashboardPreview from "@/assets/feedbpf-dashboard-preview.jpg";
 import SuperAdminBanner from "@/components/SuperAdminBanner";
+import { useAuth } from "@/hooks/useAuth";
 
 const funcionalidades = [
   { icon: BookOpen, title: "Manual BPF Completo", desc: "Manual de Boas Práticas de Fabricação com todos os capítulos exigidos pela IN 04/2007." },
@@ -29,8 +30,9 @@ const diferenciais = [
 ];
 
 export default function FeedBPFPage() {
-  const signupLink = "/auth?product=feedbpf&mode=signup&redirect=%2Fdashboard";
-  const loginLink = "/auth?product=feedbpf&mode=login&redirect=%2Fdashboard";
+  const { session } = useAuth();
+  const signupLink = session ? "/dashboard" : "/auth?product=feedbpf&mode=signup&redirect=%2Fdashboard";
+  const loginLink = session ? "/dashboard" : "/auth?product=feedbpf&mode=login&redirect=%2Fdashboard";
 
   return (
     <div className="min-h-screen bg-background">
