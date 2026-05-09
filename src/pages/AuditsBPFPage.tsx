@@ -7,6 +7,7 @@ import logoAuditsBpf from "@/assets/logo-audits-bpf.png";
 import logoBpfConsult from "@/assets/logo-bpf-consult.png";
 import dashboardPreview from "@/assets/auditsbpf-dashboard-preview.jpg";
 import SuperAdminBanner from "@/components/SuperAdminBanner";
+import { useAuth } from "@/hooks/useAuth";
 
 const funcionalidades = [
   { icon: ClipboardCheck, title: "Checklist Completo", desc: "Checklist de auditoria interna baseado integralmente no Decreto 12.031/2024, com todos os itens exigidos pelo MAPA." },
@@ -23,9 +24,9 @@ const diferenciais = [
 ];
 
 export default function AuditsBPFPage() {
-  const auditsAppAuthLink = "https://friendly-flame-igniter.lovable.app/auth";
-  const signupLink = auditsAppAuthLink;
-  const loginLink = auditsAppAuthLink;
+  const { session } = useAuth();
+  const signupLink = session ? "/dashboard" : "/auth?product=audits-bpf&mode=signup&redirect=%2Fdashboard";
+  const loginLink = session ? "/dashboard" : "/auth?product=audits-bpf&mode=login&redirect=%2Fdashboard";
 
   return (
     <div className="min-h-screen bg-background">
@@ -51,18 +52,18 @@ export default function AuditsBPFPage() {
                 Sistema completo de auditoria interna para BPF em nutrição animal, conforme <strong className="text-foreground">Decreto 12.031/2024</strong>.
               </p>
               <div className="flex flex-col sm:flex-row gap-3">
-                <a href={signupLink} target="_blank" rel="noopener noreferrer">
+                <Link to={signupLink}>
                   <Button size="lg" className="gap-2 shadow-lg shadow-primary/20">
                     <Sparkles className="h-4 w-4" />
                     Testar grátis por 7 dias
                   </Button>
-                </a>
-                <a href={loginLink} target="_blank" rel="noopener noreferrer">
+                </Link>
+                <Link to={loginLink}>
                   <Button size="lg" variant="outline" className="gap-2">
                     <LogIn className="h-4 w-4" />
                     Já é cadastrado? Acesse o Sistema
                   </Button>
-                </a>
+                </Link>
               </div>
               <p className="text-xs text-muted-foreground mt-2">Sem cartão de crédito • Acesso completo</p>
             </div>
