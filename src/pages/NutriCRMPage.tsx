@@ -25,6 +25,7 @@ const diferenciais = [
 export default function NutriCRMPage() {
   return (
     <div className="min-h-screen bg-background">
+      <SuperAdminBanner programa="NutriCRM" />
       <header className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-amber-500/10 via-orange-500/5 to-primary/10" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,hsl(30,80%,50%,0.08),transparent_60%)]" />
