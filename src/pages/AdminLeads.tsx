@@ -73,14 +73,19 @@ export default function AdminLeads() {
     }
   }, [authLoading, user, roles]);
 
+  const HIDDEN_PRODUCTS = new Set(["nutricrm", "agrogestao"]);
+  const visibleLeads = useMemo(
+    () => leads.filter((l) => !HIDDEN_PRODUCTS.has((l.produto_interesse ?? "").toLowerCase())),
+    [leads],
+  );
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
-    if (!q) return leads;
-    return leads.filter((l) =>
+    if (!q) return visibleLeads;
+    return visibleLeads.filter((l) =>
       [l.nome, l.email, l.telefone, l.produto_interesse ?? "", l.origem ?? ""]
         .some((v) => v.toLowerCase().includes(q)),
     );
-  }, [leads, search]);
+  }, [visibleLeads, search]);
 
   const exportCsv = () => {
     const header = ["Data", "Nome", "Email", "Telefone", "Produto", "Origem", "Notificado"];
