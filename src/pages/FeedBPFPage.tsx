@@ -29,8 +29,6 @@ const diferenciais = [
   { icon: Lock, title: "Dados Seguros & Isolados", desc: "Cada empresa acessa apenas seus próprios dados, com criptografia e backup automático na nuvem." },
 ];
 
-import { useAuth } from "@/hooks/useAuth";
-
 export default function FeedBPFPage() {
   const { session } = useAuth();
   const signupLink = session ? "/dashboard" : "/auth?product=feedbpf&mode=signup&redirect=%2Fdashboard";
