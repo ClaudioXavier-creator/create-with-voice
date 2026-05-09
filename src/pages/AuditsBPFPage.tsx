@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import logoAuditsBpf from "@/assets/logo-audits-bpf.png";
 import logoBpfConsult from "@/assets/logo-bpf-consult.png";
 import dashboardPreview from "@/assets/auditsbpf-dashboard-preview.jpg";
+import SuperAdminBanner from "@/components/SuperAdminBanner";
 
 const funcionalidades = [
   { icon: ClipboardCheck, title: "Checklist Completo", desc: "Checklist de auditoria interna baseado integralmente no Decreto 12.031/2024, com todos os itens exigidos pelo MAPA." },
