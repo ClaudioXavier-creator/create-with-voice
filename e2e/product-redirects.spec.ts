@@ -4,12 +4,12 @@ const PROJECT_REF = "uyrcxfypdzasdminxizq";
 const STORAGE_KEY = `sb-${PROJECT_REF}-auth-token`;
 
 const products = [
-  { path: "/feedbpf", product: "feedbpf", destino: "/dashboard" },
-  { path: "/audits-bpf", product: "audits-bpf", destino: "/auditoria" },
-  { path: "/agrogestao", product: "agrogestao", destino: "/crm" },
-  { path: "/agro-rc", product: "agro-rc", destino: "/crm" },
-  { path: "/rotulos", product: "rotulos", destino: "/produtos" },
-  { path: "/nutricrm", product: "nutricrm", destino: "/crm" },
+  { path: "/feedbpf", product: "feedbpf", destino: "/feedbpf" },
+  { path: "/audits-bpf", product: "audits-bpf", destino: "/audits-bpf" },
+  { path: "/agrogestao", product: "agrogestao", destino: "/agrogestao" },
+  { path: "/agro-rc", product: "agro-rc", destino: "/agro-rc" },
+  { path: "/rotulos", product: "rotulos", destino: "/rotulos" },
+  { path: "/nutricrm", product: "nutricrm", destino: "/nutricrm" },
 ];
 
 function fakeJwt(expSecondsFromNow = 3600) {
