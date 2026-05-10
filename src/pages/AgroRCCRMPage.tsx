@@ -28,8 +28,9 @@ const diferenciais = [
 export default function AgroRCCRMPage() {
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
   const { session } = useAuth();
-  const signupLink = session ? "/dashboard" : "/auth?product=agro-rc&mode=signup&redirect=%2Fdashboard";
-  const loginLink = session ? "/dashboard" : "/auth?product=agro-rc&mode=login&redirect=%2Fdashboard";
+  const destino = "/crm";
+  const signupLink = session ? destino : `/auth?product=agro-rc&mode=signup&redirect=%2Fcrm`;
+  const loginLink = session ? destino : `/auth?product=agro-rc&mode=login&redirect=%2Fcrm`;
 
   const handleCheckout = async (tipo: "individual" | "grupo", plano: "mensal" | "semestral" | "anual") => {
     const key = `${tipo}-${plano}`;

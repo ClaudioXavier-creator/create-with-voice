@@ -25,8 +25,9 @@ const diferenciais = [
 
 export default function AuditsBPFPage() {
   const { session } = useAuth();
-  const signupLink = session ? "/dashboard" : "/auth?product=audits-bpf&mode=signup&redirect=%2Fdashboard";
-  const loginLink = session ? "/dashboard" : "/auth?product=audits-bpf&mode=login&redirect=%2Fdashboard";
+  const destino = "/auditoria";
+  const signupLink = session ? destino : `/auth?product=audits-bpf&mode=signup&redirect=%2Fauditoria`;
+  const loginLink = session ? destino : `/auth?product=audits-bpf&mode=login&redirect=%2Fauditoria`;
 
   return (
     <div className="min-h-screen bg-background">

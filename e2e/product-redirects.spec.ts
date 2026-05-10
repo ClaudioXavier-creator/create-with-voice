@@ -4,12 +4,12 @@ const PROJECT_REF = "uyrcxfypdzasdminxizq";
 const STORAGE_KEY = `sb-${PROJECT_REF}-auth-token`;
 
 const products = [
-  { path: "/feedbpf", product: "feedbpf" },
-  { path: "/audits-bpf", product: "auditsbpf" },
-  { path: "/agrogestao", product: "agrogestao" },
-  { path: "/agro-rc", product: "agro-rc" },
-  { path: "/rotulos", product: "rotulos" },
-  { path: "/nutricrm", product: "nutricrm" },
+  { path: "/feedbpf", product: "feedbpf", destino: "/dashboard" },
+  { path: "/audits-bpf", product: "audits-bpf", destino: "/auditoria" },
+  { path: "/agrogestao", product: "agrogestao", destino: "/crm" },
+  { path: "/agro-rc", product: "agro-rc", destino: "/crm" },
+  { path: "/rotulos", product: "rotulos", destino: "/produtos" },
+  { path: "/nutricrm", product: "nutricrm", destino: "/crm" },
 ];
 
 function fakeJwt(expSecondsFromNow = 3600) {
@@ -58,9 +58,10 @@ async function seedFakeSession(page: Page) {
 }
 
 test.describe("Páginas de produto - usuário deslogado", () => {
-  for (const { path, product } of products) {
-    test(`${path} envia para /auth com product=${product}`, async ({ page }) => {
+  for (const { path, product, destino } of products) {
+    test(`${path} envia para /auth com product=${product} e redirect=${destino}`, async ({ page }) => {
       await page.goto(path);
+      const encoded = encodeURIComponent(destino);
 
       const signupHref = await page
         .getByRole("link", { name: /testar.*7 dias|trial|grátis/i })
@@ -74,11 +75,12 @@ test.describe("Páginas de produto - usuário deslogado", () => {
       expect(signupHref).toContain("/auth");
       expect(signupHref).toContain(`product=${product}`);
       expect(signupHref).toContain("mode=signup");
-      expect(signupHref).toContain("redirect=%2Fdashboard");
+      expect(signupHref).toContain(`redirect=${encoded}`);
 
       expect(loginHref).toContain("/auth");
       expect(loginHref).toContain(`product=${product}`);
       expect(loginHref).toContain("mode=login");
+      expect(loginHref).toContain(`redirect=${encoded}`);
     });
   }
 });
@@ -88,25 +90,26 @@ test.describe("Páginas de produto - usuário logado", () => {
     await seedFakeSession(page);
   });
 
-  for (const { path } of products) {
-    test(`${path} aponta CTAs direto para /dashboard`, async ({ page }) => {
+  for (const { path, destino } of products) {
+    test(`${path} aponta CTAs direto para ${destino}`, async ({ page }) => {
       await page.goto(path);
 
-      // Aguarda o AuthProvider hidratar a sessão a partir do localStorage.
       await expect
-        .poll(async () => {
-          return await page
-            .getByRole("link", { name: /testar.*7 dias|trial|grátis/i })
-            .first()
-            .getAttribute("href");
-        }, { timeout: 5000 })
-        .toBe("/dashboard");
+        .poll(
+          async () =>
+            await page
+              .getByRole("link", { name: /testar.*7 dias|trial|grátis/i })
+              .first()
+              .getAttribute("href"),
+          { timeout: 5000 },
+        )
+        .toBe(destino);
 
       const loginHref = await page
         .getByRole("link", { name: /já.*cadastrad|acesse.*sistema|entrar|login/i })
         .first()
         .getAttribute("href");
-      expect(loginHref).toBe("/dashboard");
+      expect(loginHref).toBe(destino);
     });
   }
 });
