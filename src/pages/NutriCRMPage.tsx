@@ -25,8 +25,9 @@ const diferenciais = [
 
 export default function NutriCRMPage() {
   const { session } = useAuth();
-  const signupLink = session ? "/dashboard" : "/auth?product=nutricrm&mode=signup&redirect=%2Fdashboard";
-  const loginLink = session ? "/dashboard" : "/auth?product=nutricrm&mode=login&redirect=%2Fdashboard";
+  const destino = "/crm";
+  const signupLink = session ? destino : `/auth?product=nutricrm&mode=signup&redirect=%2Fcrm`;
+  const loginLink = session ? destino : `/auth?product=nutricrm&mode=login&redirect=%2Fcrm`;
 
   return (
     <div className="min-h-screen bg-background">
