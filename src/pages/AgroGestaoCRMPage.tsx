@@ -26,9 +26,9 @@ const diferenciais = [
 
 export default function AgroGestaoCRMPage() {
   const { session } = useAuth();
-  const destino = "/crm";
-  const signupLink = session ? destino : `/auth?product=agrogestao&mode=signup&redirect=%2Fcrm`;
-  const loginLink = session ? destino : `/auth?product=agrogestao&mode=login&redirect=%2Fcrm`;
+  const destino = "/agrogestao";
+  const signupLink = session ? destino : `/auth?product=agrogestao&mode=signup&redirect=%2Fagrogestao`;
+  const loginLink = session ? destino : `/auth?product=agrogestao&mode=login&redirect=%2Fagrogestao`;
 
   return (
     <div className="min-h-screen bg-background">
