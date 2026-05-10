@@ -24,9 +24,9 @@ const diferenciais = [
 
 export default function RotulosBPFPage() {
   const { session } = useAuth();
-  const destino = "/produtos";
-  const signupLink = session ? destino : `/auth?product=rotulos&mode=signup&redirect=%2Fprodutos`;
-  const loginLink = session ? destino : `/auth?product=rotulos&mode=login&redirect=%2Fprodutos`;
+  const destino = "/rotulos";
+  const signupLink = session ? destino : `/auth?product=rotulos&mode=signup&redirect=%2Frotulos`;
+  const loginLink = session ? destino : `/auth?product=rotulos&mode=login&redirect=%2Frotulos`;
 
   return (
     <div className="min-h-screen bg-background">
