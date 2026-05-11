@@ -80,12 +80,12 @@ export default function Auth() {
 
   const resolvedRedirect = useMemo(() => {
     if (redirectTo && redirectTo !== "/") return redirectTo;
-    return sessionStorage.getItem("post_login_redirect") || "/";
+    return "/";
   }, [redirectTo]);
 
   const preferredRedirect = useMemo(() => {
     if (redirectTo && redirectTo !== "/") return redirectTo;
-    return sessionStorage.getItem("post_login_redirect") || "/";
+    return "/";
   }, [redirectTo]);
 
   const passwordChecks = useMemo(
