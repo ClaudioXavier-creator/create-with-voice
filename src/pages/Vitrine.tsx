@@ -72,6 +72,7 @@ const produtos = [
     demoLink: "/demo/rotulos",
     preco: "A partir de R$ 97/mês",
     external: false,
+  },
   {
     nome: "NutriCRM",
     logo: logoNutriCrm,
