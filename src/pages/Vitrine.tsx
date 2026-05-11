@@ -9,6 +9,8 @@ import logoFeedBpf from "@/assets/logo-feed-bpf.png";
 import logoAuditsBpf from "@/assets/logo-audits-bpf.png";
 import logoAgrorc from "@/assets/logo-agrorc.png";
 import logoRotulos from "@/assets/logo-nutri-agro-labels.png";
+import logoNutriCrm from "@/assets/logo-nutricrm.png";
+import logoAgroGestao from "@/assets/logo-agrogestao.png";
 
 const produtos = [
   {
@@ -70,6 +72,37 @@ const produtos = [
     demoLink: "/demo/rotulos",
     preco: "A partir de R$ 97/mês",
     external: false,
+  },
+  {
+    nome: "NutriCRM",
+    logo: logoNutriCrm,
+    desc: "CRM especializado para nutricionistas e representantes técnicos do agronegócio. Gestão de clientes, visitas, recomendações e acompanhamento de campo.",
+    destaques: ["Gestão de Clientes", "Visitas Técnicas", "Recomendações", "Pipeline de Vendas", "Painel do Representante", "Relatórios"],
+    link: "/nutricrm",
+    gradient: "from-[hsl(20,80%,45%)] to-[hsl(35,90%,35%)]",
+    bgCard: "bg-gradient-to-br from-orange-50 to-amber-50 dark:from-orange-950/30 dark:to-amber-950/30",
+    borderColor: "border-orange-200 dark:border-orange-800",
+    trial: "7 dias grátis",
+    trialLink: "/auth?product=nutricrm&mode=signup&redirect=%2Fnutricrm",
+    demoLink: "/demo/nutricrm",
+    preco: "A partir de R$ 97/mês",
+    external: false,
+  },
+  {
+    nome: "AgroGestão CRM",
+    logo: logoAgroGestao,
+    desc: "Plataforma de CRM e gestão para o agronegócio. Controle completo de carteira, oportunidades, equipe comercial e indicadores de desempenho.",
+    destaques: ["CRM Completo", "Carteira de Clientes", "Pipeline Comercial", "Equipe & Metas", "Indicadores", "Painel Gerencial"],
+    link: "https://regional-fixer-charm.lovable.app",
+    gradient: "from-[hsl(220,70%,45%)] to-[hsl(240,80%,30%)]",
+    bgCard: "bg-gradient-to-br from-indigo-50 to-blue-50 dark:from-indigo-950/30 dark:to-blue-950/30",
+    borderColor: "border-indigo-200 dark:border-indigo-800",
+    trial: "7 dias grátis",
+    trialLink: "https://regional-fixer-charm.lovable.app",
+    demoLink: "/demo/agrogestao",
+    preco: "A partir de R$ 97/mês",
+    external: true,
+    trialExternal: true,
   },
 ];
 
