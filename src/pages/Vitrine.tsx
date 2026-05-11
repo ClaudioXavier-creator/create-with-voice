@@ -9,6 +9,8 @@ import logoFeedBpf from "@/assets/logo-feed-bpf.png";
 import logoAuditsBpf from "@/assets/logo-audits-bpf.png";
 import logoAgrorc from "@/assets/logo-agrorc.png";
 import logoRotulos from "@/assets/logo-nutri-agro-labels.png";
+import logoNutriCrm from "@/assets/logo-nutricrm.png";
+import logoAgroGestao from "@/assets/logo-agrogestao.png";
 
 const produtos = [
   {
