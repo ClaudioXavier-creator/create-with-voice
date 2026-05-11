@@ -59,7 +59,7 @@ export default function Auth() {
   const [searchParams, setSearchParams] = useSearchParams();
   const product = searchParams.get("product") ?? "default";
   const mode = searchParams.get("mode");
-  const redirectTo = searchParams.get("redirect") || "/dashboard";
+  const redirectTo = searchParams.get("redirect") || "/";
   const authContent = authConfigs[product as keyof typeof authConfigs] ?? authConfigs.default;
 
   const [isLogin, setIsLogin] = useState(mode !== "signup");
@@ -80,7 +80,7 @@ export default function Auth() {
 
   const resolvedRedirect = useMemo(() => {
     if (redirectTo && redirectTo !== "/") return redirectTo;
-    return sessionStorage.getItem("post_login_redirect") || "/dashboard";
+    return sessionStorage.getItem("post_login_redirect") || "/";
   }, [redirectTo]);
 
   const passwordChecks = useMemo(
