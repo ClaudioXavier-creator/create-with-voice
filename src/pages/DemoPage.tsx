@@ -32,6 +32,8 @@ interface Slide {
 interface DemoConfig {
   key: string;
   productSlug: string;
+  authProduct: string;
+  redirectPath: string;
   brand: string;
   tagline: string;
   logo: string;
@@ -44,6 +46,8 @@ const DEMOS: Record<string, DemoConfig> = {
   feedbpf: {
     key: "feedbpf",
     productSlug: "feedbpf",
+    authProduct: "feedbpf",
+    redirectPath: "/feedbpf",
     brand: "Feed_BPF",
     tagline: "Boas Práticas de Fabricação para Nutrição Animal",
     logo: logoFeedBpf,
@@ -65,6 +69,8 @@ const DEMOS: Record<string, DemoConfig> = {
   auditsbpf: {
     key: "auditsbpf",
     productSlug: "auditsbpf",
+    authProduct: "audits-bpf",
+    redirectPath: "/audits-bpf",
     brand: "Audits_BPF",
     tagline: "Auditoria interna BPF para nutrição animal",
     logo: logoAuditsBpf,
@@ -82,6 +88,8 @@ const DEMOS: Record<string, DemoConfig> = {
   nutricrm: {
     key: "nutricrm",
     productSlug: "nutricrm",
+    authProduct: "nutricrm",
+    redirectPath: "/nutricrm",
     brand: "NutriCRM",
     tagline: "CRM especializado em nutrição animal",
     logo: logoNutriCrm,
@@ -99,6 +107,8 @@ const DEMOS: Record<string, DemoConfig> = {
   agrogestao: {
     key: "agrogestao",
     productSlug: "agrogestao",
+    authProduct: "agrogestao",
+    redirectPath: "/agrogestao",
     brand: "AgroGestão CRM",
     tagline: "Gestão comercial agrícola por região",
     logo: logoAgroGestao,
@@ -116,6 +126,8 @@ const DEMOS: Record<string, DemoConfig> = {
   agrorc: {
     key: "agrorc",
     productSlug: "agrorc",
+    authProduct: "agro-rc",
+    redirectPath: "/agro-rc",
     brand: "Agro RC CRM",
     tagline: "CRM para Representantes Comerciais do agro",
     logo: logoAgroRc,
@@ -133,6 +145,8 @@ const DEMOS: Record<string, DemoConfig> = {
   rotulos: {
     key: "rotulos",
     productSlug: "rotulos",
+    authProduct: "rotulos",
+    redirectPath: "/rotulos",
     brand: "Nutri_Agro Labels",
     tagline: "Editor de rótulos e fichas técnicas (RTPI) conforme MAPA",
     logo: logoRotulos,
@@ -189,7 +203,7 @@ export default function DemoPage() {
   const goNext = () => setIndex((i) => (i + 1) % totalSlides);
 
   const handleTrial = () => {
-    navigate(`/auth?mode=signup&product=${config.productSlug}&redirect=/dashboard`);
+    navigate(`/auth?mode=signup&product=${config.authProduct}&redirect=${encodeURIComponent(config.redirectPath)}`);
   };
 
   return (

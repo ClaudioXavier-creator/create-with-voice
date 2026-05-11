@@ -80,7 +80,12 @@ export default function Auth() {
 
   const resolvedRedirect = useMemo(() => {
     if (redirectTo && redirectTo !== "/") return redirectTo;
-    return sessionStorage.getItem("post_login_redirect") || "/";
+    return "/";
+  }, [redirectTo]);
+
+  const preferredRedirect = useMemo(() => {
+    if (redirectTo && redirectTo !== "/") return redirectTo;
+    return "/";
   }, [redirectTo]);
 
   const passwordChecks = useMemo(
@@ -100,11 +105,10 @@ export default function Auth() {
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session) {
-        const postLoginRedirect = sessionStorage.getItem("post_login_redirect");
-        navigate(postLoginRedirect || resolvedRedirect, { replace: true });
+        navigate(preferredRedirect, { replace: true });
       }
     });
-  }, [navigate, resolvedRedirect]);
+  }, [navigate, preferredRedirect]);
 
   const updateAuthMode = (next: { login?: boolean; forgot?: boolean }) => {
     const nextIsForgot = next.forgot ?? isForgot;
@@ -174,10 +178,9 @@ export default function Auth() {
 
       if (result.error) throw result.error;
 
-      if (!result.redirected) {
-        const postLoginRedirect = sessionStorage.getItem("post_login_redirect");
-        navigate(postLoginRedirect || resolvedRedirect, { replace: true });
-      }
+       if (!result.redirected) {
+         navigate(preferredRedirect, { replace: true });
+       }
     } catch (error: any) {
       toast.error(getAuthErrorMessage(error));
       setGoogleLoading(false);
@@ -241,7 +244,7 @@ export default function Auth() {
         toast.success("Login realizado com sucesso!");
         const postLoginRedirect = sessionStorage.getItem("post_login_redirect");
         if (postLoginRedirect) sessionStorage.removeItem("post_login_redirect");
-        navigate(postLoginRedirect || resolvedRedirect, { replace: true });
+        navigate(preferredRedirect, { replace: true });
       } else {
         const { data: signUpData, error } = await supabase.auth.signUp({
           email,

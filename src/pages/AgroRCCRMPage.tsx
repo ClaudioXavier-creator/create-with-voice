@@ -220,7 +220,7 @@ export default function AgroRCCRMPage() {
           <div className="mt-12 text-center">
             <h3 className="text-xl font-bold font-display text-foreground mb-3">Experimente grátis por 7 dias!</h3>
             <p className="text-muted-foreground mb-6">Acesse o sistema completo do Agro RC CRM durante o período trial.</p>
-            <Link to="/auth?product=agrogestao&mode=signup&redirect=%2Fagro-rc">
+            <Link to="/auth?product=agro-rc&mode=signup&redirect=%2Fagro-rc">
               <Button size="lg" className="gap-2 shadow-lg shadow-primary/25">
                 <Sparkles className="h-4 w-4" />
                 Começar Trial Grátis
