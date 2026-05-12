@@ -166,6 +166,80 @@ export default function RotulosBPFPage() {
               </Card>
             ))}
           </div>
+          <div className="mt-20">
+            <div className="text-center mb-10">
+              <Badge variant="outline" className="mb-3 text-xs tracking-widest uppercase px-4 py-1 border-teal-500/40 text-teal-700 dark:text-teal-300">
+                <Building2 className="h-3 w-3 mr-1 inline" /> Exclusivo Consultores e Empresas de Etiquetas
+              </Badge>
+              <h2 className="text-3xl font-bold font-display text-foreground mb-2">Planos em Grupo</h2>
+              <p className="text-muted-foreground">Gerencie múltiplas empresas com um único acesso</p>
+            </div>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 max-w-5xl mx-auto">
+              {[
+                {
+                  tipo: "grupo10" as const,
+                  titulo: "Grupo 10 empresas",
+                  base: "R$ 457/mês",
+                  destaque: false,
+                  planos: [
+                    { plano: "mensal" as const, label: "Mensal", preco: "R$ 457,00", sub: "/mês", nota: "Recorrente" },
+                    { plano: "semestral" as const, label: "Semestral", preco: "R$ 2.330,70", sub: "", nota: "15% OFF • Pagamento único" },
+                    { plano: "anual" as const, label: "Anual", preco: "R$ 4.113,00", sub: "", nota: "25% OFF • Pagamento único" },
+                  ],
+                },
+                {
+                  tipo: "grupo20" as const,
+                  titulo: "Grupo 20 empresas",
+                  base: "R$ 857/mês",
+                  destaque: true,
+                  planos: [
+                    { plano: "mensal" as const, label: "Mensal", preco: "R$ 857,00", sub: "/mês", nota: "Recorrente" },
+                    { plano: "semestral" as const, label: "Semestral", preco: "R$ 4.370,70", sub: "", nota: "15% OFF • Pagamento único" },
+                    { plano: "anual" as const, label: "Anual", preco: "R$ 7.713,00", sub: "", nota: "25% OFF • Pagamento único" },
+                  ],
+                },
+              ].map((grupo) => (
+                <Card key={grupo.tipo} className={`${grupo.destaque ? "border-teal-500/50 bg-teal-500/5" : "border-border"} relative`}>
+                  {grupo.destaque && (
+                    <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-teal-600 text-white text-xs shadow-lg">
+                      Melhor escolha
+                    </Badge>
+                  )}
+                  <CardContent className="p-6 space-y-4">
+                    <div className="text-center pb-3 border-b border-border">
+                      <h3 className="text-lg font-bold font-display text-foreground">{grupo.titulo}</h3>
+                      <p className="text-xs text-muted-foreground">A partir de {grupo.base}</p>
+                    </div>
+                    <div className="space-y-3">
+                      {grupo.planos.map((p) => {
+                        const key = `${grupo.tipo}-${p.plano}`;
+                        const loading = loadingKey === key;
+                        return (
+                          <div key={p.plano} className="flex items-center justify-between gap-3 p-3 rounded-lg border border-border bg-background hover:border-primary/40 transition-colors">
+                            <div className="flex-1 min-w-0">
+                              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{p.label}</p>
+                              <p className="text-foreground"><span className="text-lg font-bold">{p.preco}</span><span className="text-xs text-muted-foreground">{p.sub}</span></p>
+                              <p className="text-[10px] text-muted-foreground">{p.nota}</p>
+                            </div>
+                            <Button
+                              size="sm"
+                              variant={grupo.destaque ? "default" : "outline"}
+                              disabled={loading}
+                              onClick={() => handleCheckout(grupo.tipo, p.plano)}
+                              className="shrink-0"
+                            >
+                              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Assinar"}
+                            </Button>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+
           <div className="mt-12 text-center">
             <h3 className="text-xl font-bold font-display text-foreground mb-3">Experimente grátis por 7 dias!</h3>
             <p className="text-muted-foreground mb-6">Crie sua conta e tenha acesso completo ao Nutri_Agro Labels durante o período trial.</p>
