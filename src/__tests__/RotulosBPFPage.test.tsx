@@ -44,9 +44,9 @@ describe("RotulosBPFPage", () => {
   it("deve renderizar a página inicial corretamente", () => {
     renderWithRouter(<RotulosBPFPage />);
     
-    // Usar getAllByText ou ser mais específico para evitar erros de múltiplos elementos
+    // Verificamos a existência de elementos chave na landing page
     expect(screen.getAllByText(/Nutri_Agro/i).length).toBeGreaterThan(0);
-    expect(screen.getByRole("heading", { name: /Labels/i })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { level: 1, name: /Nutri_Agro Labels/i })).toBeInTheDocument();
     expect(screen.getByText(/Acessar Gerador Nutri_Agro Labels/i)).toBeInTheDocument();
   });
 
@@ -54,8 +54,11 @@ describe("RotulosBPFPage", () => {
     renderWithRouter(<RotulosBPFPage />, { route: "/rotulos?checkout=success&tipo=grupo10&plano=mensal" });
     
     expect(toast.success).toHaveBeenCalledWith(expect.stringContaining("Pagamento confirmado"), expect.any(Object));
+    // Procurar especificamente no card de boas-vindas
     expect(screen.getByRole("heading", { name: /Bem-vindo ao Nutri_Agro Labels/i })).toBeInTheDocument();
-    expect(screen.getByText(/Grupo 10 empresas/i)).toBeInTheDocument();
+    // No card de sucesso, o título do plano aparece em um <p> específico
+    const successCard = screen.getByText(/Recebemos seu pagamento/i).closest("div");
+    expect(successCard).toHaveTextContent(/Grupo 10 empresas/i);
   });
 
   it("deve exibir card de erro quando o checkout for cancelado", () => {
