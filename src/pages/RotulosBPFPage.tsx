@@ -1,6 +1,6 @@
-import { Link } from "react-router-dom";
-import { useState } from "react";
-import { ArrowLeft, Sparkles, Tag, FileText, Printer, ShieldCheck, Lock, Layers, Palette, QrCode, Building2, Loader2 } from "lucide-react";
+import { Link, useSearchParams, useNavigate } from "react-router-dom";
+import { useState, useEffect, useMemo } from "react";
+import { ArrowLeft, Sparkles, Tag, FileText, Printer, ShieldCheck, Lock, Layers, Palette, QrCode, Building2, Loader2, CheckCircle2, XCircle, Mail } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -10,6 +10,15 @@ import SuperAdminBanner from "@/components/SuperAdminBanner";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+
+const PLANOS_INFO: Record<string, { titulo: string; preco: string; periodo: string; nota: string }> = {
+  "grupo10-mensal":    { titulo: "Grupo 10 empresas", preco: "R$ 457,00",   periodo: "Mensal",    nota: "Assinatura recorrente mensal" },
+  "grupo10-semestral": { titulo: "Grupo 10 empresas", preco: "R$ 2.330,70", periodo: "Semestral", nota: "Pagamento único • 15% OFF" },
+  "grupo10-anual":     { titulo: "Grupo 10 empresas", preco: "R$ 4.113,00", periodo: "Anual",     nota: "Pagamento único • 25% OFF" },
+  "grupo20-mensal":    { titulo: "Grupo 20 empresas", preco: "R$ 857,00",   periodo: "Mensal",    nota: "Assinatura recorrente mensal" },
+  "grupo20-semestral": { titulo: "Grupo 20 empresas", preco: "R$ 4.370,70", periodo: "Semestral", nota: "Pagamento único • 15% OFF" },
+  "grupo20-anual":     { titulo: "Grupo 20 empresas", preco: "R$ 7.713,00", periodo: "Anual",     nota: "Pagamento único • 25% OFF" },
+};
 
 const funcionalidades = [
   { icon: Tag, title: "Editor de Rótulos", desc: "Crie e edite rótulos comerciais com 18 campos obrigatórios da RTPI, conforme exigências do MAPA." },
@@ -31,6 +40,35 @@ export default function RotulosBPFPage() {
   const signupLink = session ? destino : `/auth?product=rotulos&mode=signup&redirect=%2Frotulos`;
   const loginLink = session ? destino : `/auth?product=rotulos&mode=login&redirect=%2Frotulos`;
   const [loadingKey, setLoadingKey] = useState<string | null>(null);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
+
+  const checkoutStatus = searchParams.get("checkout");
+  const checkoutTipo = searchParams.get("tipo");
+  const checkoutPlano = searchParams.get("plano");
+  const planoInfo = useMemo(() => {
+    if (!checkoutTipo || !checkoutPlano) return null;
+    return PLANOS_INFO[`${checkoutTipo}-${checkoutPlano}`] || null;
+  }, [checkoutTipo, checkoutPlano]);
+
+  useEffect(() => {
+    if (checkoutStatus === "success") {
+      toast.success("Pagamento confirmado! 🎉", {
+        description: planoInfo ? `${planoInfo.titulo} • ${planoInfo.periodo}` : undefined,
+      });
+      try { window.scrollTo({ top: 0, behavior: "smooth" }); } catch {}
+    } else if (checkoutStatus === "canceled") {
+      toast.error("Checkout cancelado", { description: "Você pode tentar novamente quando quiser." });
+    }
+  }, [checkoutStatus, planoInfo]);
+
+  const limparStatus = () => {
+    const next = new URLSearchParams(searchParams);
+    next.delete("checkout");
+    next.delete("tipo");
+    next.delete("plano");
+    setSearchParams(next, { replace: true });
+  };
 
   const handleCheckout = async (tipo: "grupo10" | "grupo20", plano: "mensal" | "semestral" | "anual") => {
     const key = `${tipo}-${plano}`;
@@ -55,6 +93,87 @@ export default function RotulosBPFPage() {
   return (
     <div className="min-h-screen bg-background">
       <SuperAdminBanner programa="Nutri_Agro Labels" />
+
+      {checkoutStatus && (
+        <section className="max-w-6xl mx-auto px-4 pt-6">
+          {checkoutStatus === "success" ? (
+            <Card className="border-emerald-500/40 bg-gradient-to-br from-emerald-500/10 via-teal-500/5 to-transparent shadow-lg">
+              <CardContent className="p-6 sm:p-8">
+                <div className="flex flex-col sm:flex-row items-start gap-5">
+                  <div className="flex items-center justify-center h-14 w-14 rounded-full bg-emerald-500/15 shrink-0">
+                    <CheckCircle2 className="h-8 w-8 text-emerald-600 dark:text-emerald-400" />
+                  </div>
+                  <div className="flex-1 min-w-0 space-y-3">
+                    <div>
+                      <Badge className="bg-emerald-600 text-white mb-2">Pagamento confirmado</Badge>
+                      <h2 className="text-2xl font-bold font-display text-foreground">Bem-vindo ao Nutri_Agro Labels! 🎉</h2>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        Recebemos seu pagamento e seu acesso será liberado em instantes.
+                      </p>
+                    </div>
+
+                    {planoInfo && (
+                      <div className="rounded-lg border border-emerald-500/30 bg-background/60 p-4 grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm">
+                        <div>
+                          <p className="text-[11px] uppercase tracking-wider text-muted-foreground">Plano</p>
+                          <p className="font-semibold text-foreground">{planoInfo.titulo}</p>
+                        </div>
+                        <div>
+                          <p className="text-[11px] uppercase tracking-wider text-muted-foreground">Periodicidade</p>
+                          <p className="font-semibold text-foreground">{planoInfo.periodo}</p>
+                        </div>
+                        <div>
+                          <p className="text-[11px] uppercase tracking-wider text-muted-foreground">Valor</p>
+                          <p className="font-semibold text-foreground">{planoInfo.preco}</p>
+                          <p className="text-[11px] text-muted-foreground">{planoInfo.nota}</p>
+                        </div>
+                      </div>
+                    )}
+
+                    <div className="flex items-start gap-2 text-xs text-muted-foreground">
+                      <Mail className="h-4 w-4 mt-0.5 shrink-0" />
+                      <p>O recibo foi enviado por e-mail. Em caso de dúvida, fale com <a href="mailto:contato@bpfconsult.com.br" className="text-primary underline">contato@bpfconsult.com.br</a>.</p>
+                    </div>
+
+                    <div className="flex flex-col sm:flex-row gap-3 pt-1">
+                      <Button onClick={() => navigate(session ? "/" : signupLink)} className="gap-2">
+                        <Sparkles className="h-4 w-4" /> {session ? "Acessar plataforma" : "Criar minha conta"}
+                      </Button>
+                      <Button variant="outline" onClick={limparStatus}>Fechar</Button>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ) : (
+            <Card className="border-destructive/40 bg-destructive/5">
+              <CardContent className="p-6 sm:p-8">
+                <div className="flex flex-col sm:flex-row items-start gap-5">
+                  <div className="flex items-center justify-center h-14 w-14 rounded-full bg-destructive/15 shrink-0">
+                    <XCircle className="h-8 w-8 text-destructive" />
+                  </div>
+                  <div className="flex-1 min-w-0 space-y-3">
+                    <div>
+                      <Badge variant="destructive" className="mb-2">Checkout cancelado</Badge>
+                      <h2 className="text-2xl font-bold font-display text-foreground">Você cancelou o pagamento</h2>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        Nenhum valor foi cobrado. {planoInfo ? `Você tentou contratar o ${planoInfo.titulo} ${planoInfo.periodo} (${planoInfo.preco}).` : "Você pode escolher outro plano abaixo."}
+                      </p>
+                    </div>
+                    <div className="flex flex-col sm:flex-row gap-3">
+                      <Button onClick={limparStatus} className="gap-2">Ver planos novamente</Button>
+                      <Button variant="outline" asChild>
+                        <a href="mailto:contato@bpfconsult.com.br"><Mail className="h-4 w-4 mr-2" /> Falar com vendas</a>
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+        </section>
+      )}
+
       <header className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-teal-500/10 via-emerald-500/5 to-primary/10" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,hsl(170,70%,40%,0.08),transparent_60%)]" />
