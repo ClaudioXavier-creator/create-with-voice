@@ -70,8 +70,8 @@ serve(async (req) => {
       customer_email: customerId ? undefined : userEmail,
       line_items: [{ price: priceConfig.id, quantity: 1 }],
       mode: priceConfig.mode,
-      success_url: `${origin}/rotulos?checkout=success`,
-      cancel_url: `${origin}/rotulos?checkout=canceled`,
+      success_url: `${origin}/rotulos?checkout=success&tipo=${tipoKey}&plano=${planoKey}`,
+      cancel_url: `${origin}/rotulos?checkout=canceled&tipo=${tipoKey}&plano=${planoKey}`,
       allow_promotion_codes: true,
       metadata: {
         produto: "nutri_agro_labels",
