@@ -56,9 +56,10 @@ describe("RotulosBPFPage", () => {
     expect(toast.success).toHaveBeenCalledWith(expect.stringContaining("Pagamento confirmado"), expect.any(Object));
     // Procurar especificamente no card de boas-vindas
     expect(screen.getByRole("heading", { name: /Bem-vindo ao Nutri_Agro Labels/i })).toBeInTheDocument();
-    // No card de sucesso, o título do plano aparece em um <p> específico
-    const successCard = screen.getByText(/Recebemos seu pagamento/i).closest("div");
-    expect(successCard).toHaveTextContent(/Grupo 10 empresas/i);
+    // No card de sucesso, o título do plano aparece em um <p> específico dentro do grid de informações
+    const successContainer = screen.getByRole("heading", { name: /Bem-vindo ao Nutri_Agro Labels/i }).parentElement?.parentElement;
+    expect(successContainer).toHaveTextContent(/Grupo 10 empresas/i);
+    expect(successContainer).toHaveTextContent(/R\$ 457,00/i);
   });
 
   it("deve exibir card de erro quando o checkout for cancelado", () => {
