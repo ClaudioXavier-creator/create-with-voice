@@ -44,8 +44,9 @@ describe("RotulosBPFPage", () => {
   it("deve renderizar a página inicial corretamente", () => {
     renderWithRouter(<RotulosBPFPage />);
     
-    expect(screen.getByText(/Nutri_Agro/i)).toBeInTheDocument();
-    expect(screen.getByText(/Labels/i)).toBeInTheDocument();
+    // Usar getAllByText ou ser mais específico para evitar erros de múltiplos elementos
+    expect(screen.getAllByText(/Nutri_Agro/i).length).toBeGreaterThan(0);
+    expect(screen.getByRole("heading", { name: /Labels/i })).toBeInTheDocument();
     expect(screen.getByText(/Acessar Gerador Nutri_Agro Labels/i)).toBeInTheDocument();
   });
 
@@ -53,7 +54,7 @@ describe("RotulosBPFPage", () => {
     renderWithRouter(<RotulosBPFPage />, { route: "/rotulos?checkout=success&tipo=grupo10&plano=mensal" });
     
     expect(toast.success).toHaveBeenCalledWith(expect.stringContaining("Pagamento confirmado"), expect.any(Object));
-    expect(screen.getByText(/Bem-vindo ao Nutri_Agro Labels/i)).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: /Bem-vindo ao Nutri_Agro Labels/i })).toBeInTheDocument();
     expect(screen.getByText(/Grupo 10 empresas/i)).toBeInTheDocument();
   });
 
@@ -61,7 +62,7 @@ describe("RotulosBPFPage", () => {
     renderWithRouter(<RotulosBPFPage />, { route: "/rotulos?checkout=canceled" });
     
     expect(toast.error).toHaveBeenCalledWith("Checkout cancelado", expect.any(Object));
-    expect(screen.getByText(/Você cancelou o pagamento/i)).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: /Você cancelou o pagamento/i })).toBeInTheDocument();
   });
 
   it("deve chamar a função de checkout ao clicar em um plano", async () => {
@@ -70,15 +71,13 @@ describe("RotulosBPFPage", () => {
       error: null,
     });
     
-    // Mock do window.open
     const windowOpenSpy = vi.spyOn(window, "open").mockImplementation(() => null);
 
     renderWithRouter(<RotulosBPFPage />);
     
-    // Encontrar o botão do plano mensal no Grupo 10
-    // O botão está dentro do card de planos
+    // Selecionar o botão de assinar do Grupo 10 Mensal especificamente
     const buttons = screen.getAllByRole("button", { name: /Assinar/i });
-    fireEvent.click(buttons[0]); // Primeiro botão de "Assinar" (Grupo 10 Mensal)
+    fireEvent.click(buttons[0]); 
 
     await waitFor(() => {
       expect(supabase.functions.invoke).toHaveBeenCalledWith("create-checkout-nutriagrolabels", {
