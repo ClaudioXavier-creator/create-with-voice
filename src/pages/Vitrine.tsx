@@ -12,7 +12,24 @@ import logoRotulos from "@/assets/logo-nutri-agro-labels.png";
 import logoNutriCrm from "@/assets/logo-nutricrm.png";
 import logoAgroGestao from "@/assets/logo-agrogestao.png";
 
-const produtos = [
+type ProdutoCard = {
+  nome: string;
+  logo: string;
+  desc: string;
+  destaques: string[];
+  link: string;
+  gradient: string;
+  bgCard: string;
+  borderColor: string;
+  trial: string;
+  trialLink: string;
+  demoLink?: string;
+  preco: string;
+  external?: boolean;
+  trialExternal?: boolean;
+};
+
+const produtos: ProdutoCard[] = [
   {
     nome: "Feed_BPF",
     logo: logoFeedBpf,
@@ -40,7 +57,8 @@ const produtos = [
     trialLink: "https://friendly-flame-igniter.lovable.app/auth",
     demoLink: "/demo/auditsbpf",
     preco: "A partir de R$ 249/mês",
-    external: true,
+    external: false,
+    trialExternal: true,
   },
   {
     nome: "Agro RC CRM",
@@ -52,11 +70,9 @@ const produtos = [
     bgCard: "bg-gradient-to-br from-purple-50 to-violet-50 dark:from-purple-950/30 dark:to-violet-950/30",
     borderColor: "border-purple-200 dark:border-purple-800",
     trial: "7 dias grátis",
-    trialLink: "https://soil-to-client.lovable.app/",
+    trialLink: "/auth?product=agro-rc&mode=signup&redirect=%2Fagro-rc",
     demoLink: "/demo/agrorc",
     preco: "A partir de R$ 97/mês",
-    external: false,
-    trialExternal: true,
   },
   {
     nome: "Nutri_Agro Labels",
@@ -68,10 +84,9 @@ const produtos = [
     bgCard: "bg-gradient-to-br from-teal-50 to-emerald-50 dark:from-teal-950/30 dark:to-emerald-950/30",
     borderColor: "border-teal-200 dark:border-teal-800",
     trial: "7 dias grátis",
-    trialLink: "/auth?mode=signup&redirect=/rotulos",
+    trialLink: "/auth?product=rotulos&mode=signup&redirect=%2Frotulos",
     demoLink: "/demo/rotulos",
     preco: "A partir de R$ 97/mês",
-    external: false,
   },
   {
     nome: "NutriCRM",
@@ -86,23 +101,20 @@ const produtos = [
     trialLink: "/auth?product=nutricrm&mode=signup&redirect=%2Fnutricrm",
     demoLink: "/demo/nutricrm",
     preco: "A partir de R$ 97/mês",
-    external: false,
   },
   {
     nome: "AgroGestão CRM",
     logo: logoAgroGestao,
     desc: "Plataforma de CRM e gestão para o agronegócio. Controle completo de carteira, oportunidades, equipe comercial e indicadores de desempenho.",
     destaques: ["CRM Completo", "Carteira de Clientes", "Pipeline Comercial", "Equipe & Metas", "Indicadores", "Painel Gerencial"],
-    link: "https://regional-fixer-charm.lovable.app",
+    link: "/agrogestao",
     gradient: "from-[hsl(220,70%,45%)] to-[hsl(240,80%,30%)]",
     bgCard: "bg-gradient-to-br from-indigo-50 to-blue-50 dark:from-indigo-950/30 dark:to-blue-950/30",
     borderColor: "border-indigo-200 dark:border-indigo-800",
     trial: "7 dias grátis",
-    trialLink: "https://regional-fixer-charm.lovable.app",
+    trialLink: "/auth?product=agrogestao&mode=signup&redirect=%2Fagrogestao",
     demoLink: "/demo/agrogestao",
     preco: "A partir de R$ 97/mês",
-    external: true,
-    trialExternal: true,
   },
 ];
 
@@ -206,7 +218,7 @@ export default function Vitrine() {
             Nossos Programas
           </Badge>
           <h2 className="text-3xl sm:text-4xl font-bold font-display text-foreground mb-3">
-            Quatro soluções, um ecossistema completo
+            Seis soluções, um ecossistema completo
           </h2>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
             Clique em cada programa para ver o tutorial completo, funcionalidades e planos de preço.
@@ -253,7 +265,7 @@ export default function Vitrine() {
 
                   {/* CTAs */}
                   <div className="space-y-2">
-                    {p.external || (p as any).trialExternal ? (
+                    {p.trialExternal ? (
                       <a href={p.trialLink} target="_blank" rel="noopener noreferrer" className="block" onClick={(e) => e.stopPropagation()}>
                         <Button size="sm" className="w-full gap-2 shadow-sm">
                           <Sparkles className="h-3.5 w-3.5" />
@@ -268,8 +280,8 @@ export default function Vitrine() {
                         </Button>
                       </Link>
                     )}
-                    {(p as any).demoLink && (
-                      <Link to={(p as any).demoLink} onClick={(e) => e.stopPropagation()}>
+                    {p.demoLink && (
+                      <Link to={p.demoLink} onClick={(e) => e.stopPropagation()}>
                         <Button size="sm" variant="outline" className="w-full gap-2">
                           Ver demonstração
                         </Button>

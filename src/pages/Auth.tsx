@@ -84,7 +84,9 @@ export default function Auth() {
   }, [redirectTo]);
 
   const preferredRedirect = useMemo(() => {
+    const postLoginRedirect = sessionStorage.getItem("post_login_redirect");
     if (redirectTo && redirectTo !== "/") return redirectTo;
+    if (postLoginRedirect && postLoginRedirect !== "/auth") return postLoginRedirect;
     return "/";
   }, [redirectTo]);
 
@@ -105,6 +107,8 @@ export default function Auth() {
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session) {
+        const postLoginRedirect = sessionStorage.getItem("post_login_redirect");
+        if (postLoginRedirect) sessionStorage.removeItem("post_login_redirect");
         navigate(preferredRedirect, { replace: true });
       }
     });
@@ -170,7 +174,7 @@ export default function Auth() {
     setGoogleLoading(true);
     try {
       const result = await lovable.auth.signInWithOAuth("google", {
-        redirect_uri: window.location.origin,
+        redirect_uri: `${window.location.origin}/auth?product=${encodeURIComponent(product)}&redirect=${encodeURIComponent(preferredRedirect)}`,
         extraParams: {
           prompt: "select_account",
         },
