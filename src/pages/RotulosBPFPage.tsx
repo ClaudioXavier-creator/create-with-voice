@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
-import { ArrowLeft, Sparkles, Tag, FileText, Printer, ShieldCheck, Lock, Layers, Palette, QrCode } from "lucide-react";
+import { useState } from "react";
+import { ArrowLeft, Sparkles, Tag, FileText, Printer, ShieldCheck, Lock, Layers, Palette, QrCode, Building2, Loader2 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -7,6 +8,8 @@ import logoRotulos from "@/assets/logo-nutri-agro-labels.png";
 import logoBpfConsult from "@/assets/logo-bpf-consult.png";
 import SuperAdminBanner from "@/components/SuperAdminBanner";
 import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 const funcionalidades = [
   { icon: Tag, title: "Editor de Rótulos", desc: "Crie e edite rótulos comerciais com 18 campos obrigatórios da RTPI, conforme exigências do MAPA." },
