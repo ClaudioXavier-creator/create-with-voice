@@ -1,6 +1,6 @@
-import { Link } from "react-router-dom";
-import { useState } from "react";
-import { ArrowLeft, Sparkles, Tag, FileText, Printer, ShieldCheck, Lock, Layers, Palette, QrCode, Building2, Loader2 } from "lucide-react";
+import { Link, useSearchParams, useNavigate } from "react-router-dom";
+import { useState, useEffect, useMemo } from "react";
+import { ArrowLeft, Sparkles, Tag, FileText, Printer, ShieldCheck, Lock, Layers, Palette, QrCode, Building2, Loader2, CheckCircle2, XCircle, Mail } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -10,6 +10,15 @@ import SuperAdminBanner from "@/components/SuperAdminBanner";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+
+const PLANOS_INFO: Record<string, { titulo: string; preco: string; periodo: string; nota: string }> = {
+  "grupo10-mensal":    { titulo: "Grupo 10 empresas", preco: "R$ 457,00",   periodo: "Mensal",    nota: "Assinatura recorrente mensal" },
+  "grupo10-semestral": { titulo: "Grupo 10 empresas", preco: "R$ 2.330,70", periodo: "Semestral", nota: "Pagamento único • 15% OFF" },
+  "grupo10-anual":     { titulo: "Grupo 10 empresas", preco: "R$ 4.113,00", periodo: "Anual",     nota: "Pagamento único • 25% OFF" },
+  "grupo20-mensal":    { titulo: "Grupo 20 empresas", preco: "R$ 857,00",   periodo: "Mensal",    nota: "Assinatura recorrente mensal" },
+  "grupo20-semestral": { titulo: "Grupo 20 empresas", preco: "R$ 4.370,70", periodo: "Semestral", nota: "Pagamento único • 15% OFF" },
+  "grupo20-anual":     { titulo: "Grupo 20 empresas", preco: "R$ 7.713,00", periodo: "Anual",     nota: "Pagamento único • 25% OFF" },
+};
 
 const funcionalidades = [
   { icon: Tag, title: "Editor de Rótulos", desc: "Crie e edite rótulos comerciais com 18 campos obrigatórios da RTPI, conforme exigências do MAPA." },
