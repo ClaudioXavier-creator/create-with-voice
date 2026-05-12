@@ -122,9 +122,9 @@ export default function AgroGestaoCRMPage() {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-4xl mx-auto">
             {[
-              { periodo: "Mensal", preco: "R$ 297", sub: "/mês", nota: "Cobrança recorrente", destaque: false },
-              { periodo: "Semestral", preco: "R$ 1.514,70", sub: "", nota: "Pagamento único • acesso 6 meses • 15% OFF", destaque: true, badge: "Mais Popular" },
-              { periodo: "Anual", preco: "R$ 2.673,00", sub: "", nota: "Pagamento único • acesso 12 meses • 25% OFF", destaque: true, badge: "Melhor Custo" },
+              { periodo: "Mensal", preco: "R$ 97", sub: "/mês", nota: "Cobrança recorrente", destaque: false },
+              { periodo: "Semestral", preco: "R$ 494,70", sub: "", nota: "Pagamento único • acesso 6 meses • 15% OFF", destaque: true, badge: "Mais Popular" },
+              { periodo: "Anual", preco: "R$ 873,00", sub: "", nota: "Pagamento único • acesso 12 meses • 25% OFF", destaque: true, badge: "Melhor Custo" },
             ].map((plan) => (
               <Card key={plan.periodo} className={`transition-all hover:shadow-xl ${plan.destaque ? "border-primary/50 bg-primary/5 scale-[1.02]" : "border-border"} relative`}>
                 {plan.badge && (
@@ -145,17 +145,40 @@ export default function AgroGestaoCRMPage() {
           </div>
         </section>
 
-        {/* Preços Grupo */}
-        <section>
+        {/* Preços Grupo 10 */}
+        <section className="mb-16">
+          <div className="text-center mb-10">
+            <h2 className="text-2xl font-bold font-display text-foreground mb-2">Planos de Grupo (10 usuários)</h2>
+            <p className="text-muted-foreground">Equipes pequenas e médias</p>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-4xl mx-auto mb-16">
+            {[
+              { periodo: "Mensal", preco: "R$ 297", sub: "/mês", nota: "≈ R$ 29,70/usuário/mês" },
+              { periodo: "Semestral", preco: "R$ 1.514,70", sub: "", nota: "Pagamento único • 6 meses • 15% OFF" },
+              { periodo: "Anual", preco: "R$ 2.673,00", sub: "", nota: "Pagamento único • 12 meses • 25% OFF" },
+            ].map((plan) => (
+              <Card key={plan.periodo} className="border-border hover:shadow-xl transition-all">
+                <CardContent className="p-6 text-center space-y-3">
+                  <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">{plan.periodo}</p>
+                  <div>
+                    <span className="text-3xl font-bold text-foreground">{plan.preco}</span>
+                    <span className="text-muted-foreground">{plan.sub}</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">{plan.nota}</p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
           <div className="text-center mb-10">
             <h2 className="text-2xl font-bold font-display text-foreground mb-2">Planos de Grupo (20 usuários)</h2>
             <p className="text-muted-foreground">Ideal para equipes e consultorias</p>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-4xl mx-auto">
             {[
-              { periodo: "Mensal", preco: "R$ 497", sub: "/mês", nota: "≈ R$ 25/usuário/mês" },
-              { periodo: "Semestral", preco: "R$ 2.535", sub: "", nota: "≈ R$ 21/usuário/mês" },
-              { periodo: "Anual", preco: "R$ 4.500", sub: "", nota: "≈ R$ 19/usuário/mês" },
+              { periodo: "Mensal", preco: "R$ 497", sub: "/mês", nota: "≈ R$ 24,85/usuário/mês" },
+              { periodo: "Semestral", preco: "R$ 2.534,70", sub: "", nota: "Pagamento único • 6 meses • 15% OFF" },
+              { periodo: "Anual", preco: "R$ 4.473,00", sub: "", nota: "Pagamento único • 12 meses • 25% OFF" },
             ].map((plan) => (
               <Card key={plan.periodo} className="border-border hover:shadow-xl transition-all">
                 <CardContent className="p-6 text-center space-y-3">
