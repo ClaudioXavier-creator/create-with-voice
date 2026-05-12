@@ -122,9 +122,9 @@ export default function AgroGestaoCRMPage() {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-4xl mx-auto">
             {[
-              { periodo: "Mensal", preco: "R$ 97", sub: "/mês", nota: "Sem compromisso de fidelidade", destaque: false },
-              { periodo: "Semestral", preco: "R$ 497", sub: "", nota: "≈ R$ 83/mês • 14% OFF", destaque: true, badge: "Mais Popular" },
-              { periodo: "Anual", preco: "R$ 897", sub: "", nota: "≈ R$ 75/mês • 23% OFF", destaque: true, badge: "Melhor Custo" },
+              { periodo: "Mensal", preco: "R$ 297", sub: "/mês", nota: "Cobrança recorrente", destaque: false },
+              { periodo: "Semestral", preco: "R$ 1.514,70", sub: "", nota: "Pagamento único • acesso 6 meses • 15% OFF", destaque: true, badge: "Mais Popular" },
+              { periodo: "Anual", preco: "R$ 2.673,00", sub: "", nota: "Pagamento único • acesso 12 meses • 25% OFF", destaque: true, badge: "Melhor Custo" },
             ].map((plan) => (
               <Card key={plan.periodo} className={`transition-all hover:shadow-xl ${plan.destaque ? "border-primary/50 bg-primary/5 scale-[1.02]" : "border-border"} relative`}>
                 {plan.badge && (
