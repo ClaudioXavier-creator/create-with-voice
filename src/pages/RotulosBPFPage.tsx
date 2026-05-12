@@ -30,6 +30,27 @@ export default function RotulosBPFPage() {
   const destino = "/rotulos";
   const signupLink = session ? destino : `/auth?product=rotulos&mode=signup&redirect=%2Frotulos`;
   const loginLink = session ? destino : `/auth?product=rotulos&mode=login&redirect=%2Frotulos`;
+  const [loadingKey, setLoadingKey] = useState<string | null>(null);
+
+  const handleCheckout = async (tipo: "grupo10" | "grupo20", plano: "mensal" | "semestral" | "anual") => {
+    const key = `${tipo}-${plano}`;
+    setLoadingKey(key);
+    try {
+      const { data, error } = await supabase.functions.invoke("create-checkout-nutriagrolabels", {
+        body: { tipo, plano },
+      });
+      if (error) throw error;
+      if (data?.url) {
+        window.open(data.url, "_blank");
+      } else {
+        throw new Error("URL de checkout não retornada");
+      }
+    } catch (e: any) {
+      toast.error("Erro ao iniciar checkout", { description: e.message });
+    } finally {
+      setLoadingKey(null);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background">
