@@ -255,6 +255,12 @@ export default function Auth() {
         if (postLoginRedirect) sessionStorage.removeItem("post_login_redirect");
         navigate(preferredRedirect, { replace: true });
       } else {
+        if (product === "admin") {
+          toast.error("O cadastro para o Portal de Gestão é restrito. Utilize outro programa para criar sua conta.");
+          setLoading(false);
+          return;
+        }
+
         const { data: signUpData, error } = await supabase.auth.signUp({
           email,
           password,

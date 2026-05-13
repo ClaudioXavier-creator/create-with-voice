@@ -76,8 +76,8 @@ export default function SuperAdmin() {
 
   // Acesso estrito ao superadmin
   if (!user || !canAccessLicenseAdmin(roles, user.email)) {
-    console.log("Acesso negado ao SuperAdmin:", user?.email);
-    return <Navigate to="/" replace />;
+    console.log("Acesso negado ao SuperAdmin:", user?.email, roles);
+    return <Navigate to="/auth?product=admin" replace />;
   }
 
   return (
