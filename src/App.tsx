@@ -85,7 +85,11 @@ const queryClient = new QueryClient({
     queries: {
       staleTime: 1000 * 60 * 5, // 5 minutes
       gcTime: 1000 * 60 * 30, // 30 minutes
-      retry: 1,
+      retry: (failureCount, error: any) => {
+        // Don't retry on 401/403 or specific Supabase errors
+        if (error?.status === 401 || error?.status === 403 || error?.code === "PGRST301") return false;
+        return failureCount < 2;
+      },
       refetchOnWindowFocus: false,
     },
   },
@@ -95,19 +99,17 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { session, loading } = useAuth();
   const location = useLocation();
 
-  if (session) {
-    const nextPath = `${location.pathname}${location.search}${location.hash}`;
-    if (nextPath !== "/auth") {
-      sessionStorage.setItem("post_login_redirect", nextPath);
-    }
-  }
-
   if (loading) return <PageLoader />;
 
   if (!session) {
-    const redirect = encodeURIComponent(`${location.pathname}${location.search}${location.hash}`);
+    const nextPath = `${location.pathname}${location.search}${location.hash}`;
+    if (nextPath !== "/auth" && !nextPath.includes("redirect=")) {
+      sessionStorage.setItem("post_login_redirect", nextPath);
+    }
+    const redirect = encodeURIComponent(nextPath);
     return <Navigate to={`/auth?redirect=${redirect}`} replace />;
   }
+  
   return <>{children}</>;
 };
 
