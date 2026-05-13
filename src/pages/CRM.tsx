@@ -223,7 +223,7 @@ function Kanban({
   if (loading) return <div className="flex justify-center py-12"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>;
 
   return (
-    <div className="grid grid-cols-2 lg:grid-cols-6 gap-3 overflow-x-auto">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3 overflow-x-auto">
       {ETAPAS.map((etapa) => {
         const list = items.filter((i) => i.etapa === etapa.id);
         return (
