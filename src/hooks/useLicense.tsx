@@ -42,27 +42,41 @@ export function useLicense(productParam?: string) {
     : 0;
 
   useEffect(() => {
-    if (!user) { setLicense(null); setLoading(false); return; }
+    if (!user) { 
+      setLicense(null); 
+      setLoading(false); 
+      return; 
+    }
 
     const fetchLicense = async () => {
       setLoading(true);
+      try {
+        let query = supabase
+          .from("licencas")
+          .select("*")
+          .eq("produto", targetProduct)
+          .order("created_at", { ascending: false })
+          .limit(1);
 
-      let query = supabase
-        .from("licencas")
-        .select("*")
-        .eq("produto", targetProduct)
-        .order("created_at", { ascending: false })
-        .limit(1);
+        if (empresaAtiva) {
+          query = query.eq("empresa_id", empresaAtiva.id);
+        } else {
+          query = query.eq("user_id", user.id).is("empresa_id", null);
+        }
 
-      if (empresaAtiva) {
-        query = query.eq("empresa_id", empresaAtiva.id);
-      } else {
-        query = query.eq("user_id", user.id).is("empresa_id", null);
+        const { data, error } = await query.maybeSingle();
+        if (error) {
+          console.error("Erro ao buscar licença:", error);
+          setLicense(null);
+        } else {
+          setLicense(data as LicenseInfo | null);
+        }
+      } catch (err) {
+        console.error("Erro inesperado ao buscar licença:", err);
+        setLicense(null);
+      } finally {
+        setLoading(false);
       }
-
-      const { data } = await query.maybeSingle();
-      setLicense(data as LicenseInfo | null);
-      setLoading(false);
     };
 
     fetchLicense();
