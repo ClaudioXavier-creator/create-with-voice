@@ -92,7 +92,6 @@ export default function RotulosBPFPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <SuperAdminBanner programa="Nutri_Agro Labels" />
 
       {checkoutStatus && (
         <section className="max-w-6xl mx-auto px-4 pt-6">
