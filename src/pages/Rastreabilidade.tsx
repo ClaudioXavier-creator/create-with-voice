@@ -1238,7 +1238,7 @@ export default function Rastreabilidade() {
                                 <p className="font-medium">{mp.fornecedor}</p>
                                 <p className="text-[10px] text-muted-foreground">Fornecedor</p>
                               </div>
-                              <ChevronRight className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                              <ChevronRight className="w-4 h-4 text-muted-foreground flex-shrink-0 rotate-90 md:rotate-0" />
                               <div className="flex-shrink-0 p-2 rounded bg-accent/10 border border-accent/20 text-xs text-center min-w-[140px]">
                                 <p className="font-medium">{mp.mp}</p>
                                 <Badge variant="outline" className="font-mono text-[10px] mt-1">{mp.lote}</Badge>
