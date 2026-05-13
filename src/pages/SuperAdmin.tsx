@@ -1,9 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Navigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ShieldCheck, Users, TrendingUp, Key, CreditCard, Activity } from "lucide-react";
+import { ShieldCheck, Users, TrendingUp, Key, CreditCard, Activity, Target, Award, Loader2 } from "lucide-react";
 import { canAccessLicenseAdmin } from "@/config/adminAccess";
 import CRM from "./CRM";
 import AdminLicencas from "./AdminLicencas";
