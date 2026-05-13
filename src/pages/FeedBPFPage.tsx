@@ -31,9 +31,9 @@ const diferenciais = [
 
 export default function FeedBPFPage() {
   const { session } = useAuth();
-  const destino = \"/feedbpf/dashboard\";
-  const signupLink = session ? destino : \"/auth?product=feedbpf&mode=signup&redirect=%2Ffeedbpf%2Fdashboard\";
-  const loginLink = session ? destino : \"/auth?product=feedbpf&mode=login&redirect=%2Ffeedbpf%2Fdashboard\";
+  const destino = "/feedbpf/dashboard";
+  const signupLink = session ? destino : "/auth?product=feedbpf&mode=signup&redirect=%2Ffeedbpf%2Fdashboard";
+  const loginLink = session ? destino : "/auth?product=feedbpf&mode=login&redirect=%2Ffeedbpf%2Fdashboard";
 
   return (
     <div className="min-h-screen bg-background">
