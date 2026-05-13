@@ -217,19 +217,6 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
         <div className="fixed bottom-0 left-0 -z-10 w-[500px] h-[500px] bg-emerald-500/5 rounded-full blur-3xl opacity-50 pointer-events-none -translate-x-1/2 translate-y-1/2" />
       </main>
 
-      {/* Floating Action Button CRM (apenas admin/comercial) */}
-      {canCRM && location.pathname !== "/crm" && (
-        <Button
-          onClick={() => navigate("/crm")}
-          size="icon"
-          className="fixed bottom-6 right-6 sm:bottom-8 sm:right-8 z-50 h-12 w-12 sm:h-14 sm:w-14 rounded-2xl shadow-2xl shadow-primary/20 bg-primary hover:bg-primary/90 hover:scale-110 active:scale-95 transition-all duration-300 ring-4 ring-background group"
-          title="CRM Comercial"
-          aria-label="Abrir CRM Comercial"
-        >
-          <Target className="h-6 w-6 text-white group-hover:rotate-12 transition-transform" />
-          <div className="absolute -top-1 -right-1 h-3 w-3 bg-accent rounded-full border-2 border-background animate-pulse" />
-        </Button>
-      )}
     </div>
   );
 };
