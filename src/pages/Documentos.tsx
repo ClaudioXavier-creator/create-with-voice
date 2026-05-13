@@ -303,7 +303,7 @@ export default function Documentos() {
         orientacaoModuloId="documentos" />
 
       <Tabs defaultValue="pops" className="space-y-4">
-        <TabsList className="flex flex-wrap h-auto gap-1 p-1">
+        <TabsList className="mb-4 w-full justify-start overflow-x-auto h-auto p-1 flex">
           <TabsTrigger value="pops">POPs Obrigatórios</TabsTrigger>
           <TabsTrigger value="registrados">Docs Registrados ({docs.length})</TabsTrigger>
           <TabsTrigger value="arquivo_bpf" className="flex items-center gap-1">
@@ -322,8 +322,9 @@ export default function Documentos() {
               <CardTitle className="font-display">10 POPs Obrigatórios — IN nº 04/2007 / Decreto 12.031/2024</CardTitle>
               <p className="text-xs text-muted-foreground mt-1">Procedimentos operacionais padrão exigidos pelo MAPA para fábricas de alimentação animal</p>
             </CardHeader>
-            <CardContent className="overflow-x-auto">
-              <Table>
+            <CardContent className="p-2 sm:p-6 overflow-x-auto">
+              <div className="overflow-x-auto">
+                <Table>
                 <TableHeader>
                   <TableRow>
                     <TableHead className="w-24">Código</TableHead>
@@ -360,7 +361,8 @@ export default function Documentos() {
                     );
                   })}
                 </TableBody>
-              </Table>
+                </Table>
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
