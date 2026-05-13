@@ -195,16 +195,58 @@ export default function AdminLeads({ isTab = false }: { isTab?: boolean }) {
 
         <Card>
           <CardHeader>
-            <CardTitle className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-              <span>{filtered.length} lead(s)</span>
-              <div className="relative w-full max-w-sm">
-                <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Buscar por nome, email, telefone, produto..."
-                  className="pl-8"
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                />
+            <CardTitle className="flex flex-col gap-4">
+              <div className="flex items-center justify-between">
+                <span>{filtered.length} lead(s)</span>
+                {(search || filterOrigem !== "all" || filterStatus !== "all") && (
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    onClick={() => {
+                      setSearch("");
+                      setFilterOrigem("all");
+                      setFilterStatus("all");
+                    }}
+                    className="h-8 text-xs text-muted-foreground"
+                  >
+                    <FilterX className="h-3 w-3 mr-1" /> Limpar filtros
+                  </Button>
+                )}
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+                <div className="relative col-span-1 md:col-span-2">
+                  <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Buscar por nome, email, telefone..."
+                    className="pl-8"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                  />
+                </div>
+
+                <Select value={filterOrigem} onValueChange={setFilterOrigem}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Origem" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Todas as origens</SelectItem>
+                    {origensUnicas.map(o => (
+                      <SelectItem key={o} value={o}>{o}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
+                <Select value={filterStatus} onValueChange={setFilterStatus}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Todos os status</SelectItem>
+                    <SelectItem value="notificado">Notificado</SelectItem>
+                    <SelectItem value="pendente">Pendente</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </CardTitle>
           </CardHeader>
