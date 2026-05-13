@@ -125,7 +125,7 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
       {/* Mobile nav overlay */}
       {mobileOpen && (
         <div className="lg:hidden fixed inset-0 z-40 bg-black/60 backdrop-blur-sm transition-all duration-300" onClick={closeMobile}>
-          <aside className="w-80 h-full bg-sidebar text-sidebar-foreground pt-16 flex flex-col shadow-2xl animate-in slide-in-from-left duration-300" onClick={(e) => e.stopPropagation()}>
+          <aside className="w-[280px] sm:w-80 h-full bg-sidebar text-sidebar-foreground pt-16 flex flex-col shadow-2xl animate-in slide-in-from-left duration-300" onClick={(e) => e.stopPropagation()}>
             <div className="px-4 py-4 border-b border-sidebar-border/50">
               <EmpresaSelector />
             </div>
