@@ -10,6 +10,7 @@ const corsHeaders = {
 const NOTIFY_RECIPIENTS = [
   'contato@bpfconsult.com.br',
   'clxn2000@hotmail.com',
+  '61996757585@c.us',
 ]
 
 interface LeadPayload {

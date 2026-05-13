@@ -21,6 +21,7 @@ interface NewLeadProps {
   produto?: string
   origem?: string
   data?: string
+  whatsapp_link?: string
 }
 
 const NewLeadNotificationEmail = ({
@@ -30,6 +31,7 @@ const NewLeadNotificationEmail = ({
   produto = '—',
   origem = '—',
   data = new Date().toLocaleString('pt-BR'),
+  whatsapp_link,
 }: NewLeadProps) => (
   <Html lang="pt-BR" dir="ltr">
     <Head />
@@ -47,6 +49,24 @@ const NewLeadNotificationEmail = ({
           <Text style={row}><strong>Produto de interesse:</strong> {produto}</Text>
           <Text style={row}><strong>Origem:</strong> {origem}</Text>
           <Text style={row}><strong>Data:</strong> {data}</Text>
+          {whatsapp_link && (
+            <Text style={{ ...row, marginTop: '12px' }}>
+              <a 
+                href={whatsapp_link} 
+                style={{ 
+                  backgroundColor: '#25D366', 
+                  color: '#ffffff', 
+                  padding: '8px 16px', 
+                  borderRadius: '6px', 
+                  textDecoration: 'none',
+                  fontWeight: 'bold',
+                  display: 'inline-block'
+                }}
+              >
+                Responder via WhatsApp
+              </a>
+            </Text>
+          )}
         </Section>
         <Hr style={hr} />
         <Text style={footer}>
