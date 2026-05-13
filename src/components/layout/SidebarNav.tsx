@@ -123,7 +123,7 @@ export const SidebarNav = React.memo(({
   };
 
   const renderLink = (item: NavItem, isSubItem = false) => {
-    const isActive = currentPath === item.path;
+    const isActive = currentPath === item.path || currentPath === `/${product}${item.path}`;
     const isFavorite = favorites.includes(item.path);
     const targetPath = product ? `/${product}${item.path}` : item.path;
 
