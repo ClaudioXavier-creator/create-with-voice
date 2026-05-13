@@ -131,6 +131,15 @@
   .nav-item-active {
     @apply bg-primary/10 text-primary font-semibold relative after:absolute after:left-0 after:top-1/2 after:-translate-y-1/2 after:h-5 after:w-1 after:bg-primary after:rounded-r-full;
   }
+
+  /* Helper para esconder scrollbars mantendo funcionalidade */
+  .scrollbar-none {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 /* Page Transitions */

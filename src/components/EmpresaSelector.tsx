@@ -79,7 +79,7 @@ export default function EmpresaSelector() {
           <ChevronDown className={cn("w-3.5 h-3.5 shrink-0 transition-transform opacity-30 group-hover:opacity-60", open && "rotate-180")} />
         </Button>
       </PopoverTrigger>
-      <PopoverContent align="start" className="w-[320px] p-0 rounded-2xl border-sidebar-border/50 shadow-2xl overflow-hidden bg-sidebar/95 backdrop-blur-xl">
+      <PopoverContent align="start" className="w-[calc(100vw-2rem)] md:w-[320px] p-0 rounded-2xl border-sidebar-border/50 shadow-2xl overflow-hidden bg-sidebar/95 backdrop-blur-xl">
         <div className="p-4 bg-primary/10 border-b border-sidebar-border/50">
           <div className="flex items-center gap-3">
             <Layers className="w-5 h-5 text-primary" />
