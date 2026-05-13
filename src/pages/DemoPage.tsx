@@ -203,7 +203,7 @@ export default function DemoPage() {
   const goNext = () => setIndex((i) => (i + 1) % totalSlides);
 
   const handleTrial = () => {
-    navigate(`/auth?mode=signup&product=${config.authProduct}&redirect=${encodeURIComponent(config.redirectPath)}`);
+    navigate(`/auth?mode=signup&product=${config.authProduct}&redirect=${encodeURIComponent(config.redirectPath)}&source=Demo`);
   };
 
   return (
