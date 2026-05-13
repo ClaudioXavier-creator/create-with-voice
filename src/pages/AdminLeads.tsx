@@ -75,11 +75,8 @@ export default function AdminLeads({ isTab = false }: { isTab?: boolean }) {
     }
   }, [authLoading, user, roles]);
 
-  const HIDDEN_PRODUCTS = new Set(["nutricrm", "agrogestao"]);
-  const visibleLeads = useMemo(
-    () => leads.filter((l) => !HIDDEN_PRODUCTS.has((l.produto_interesse ?? "").toLowerCase())),
-    [leads],
-  );
+  const visibleLeads = useMemo(() => leads, [leads]);
+
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
     if (!q) return visibleLeads;
