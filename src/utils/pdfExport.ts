@@ -127,17 +127,23 @@ ${carimboHTML(gerarCarimboSync({
   doc.close();
 
   iframe.onload = () => {
+    // Breve delay para garantir renderização dos estilos e fontes
     setTimeout(() => {
-      iframe.contentWindow?.print();
-      setTimeout(() => document.body.removeChild(iframe), 1000);
+      try {
+        iframe.contentWindow?.focus();
+        iframe.contentWindow?.print();
+        // Remove o iframe após um tempo suficiente para o diálogo de impressão fechar/processar
+        setTimeout(() => {
+          if (document.body.contains(iframe)) {
+            document.body.removeChild(iframe);
+          }
+        }, 2000);
+      } catch (err) {
+        console.error("Erro ao imprimir PDF:", err);
+        if (document.body.contains(iframe)) {
+          document.body.removeChild(iframe);
+        }
+      }
     }, 500);
   };
-
-  // Trigger load for inline content
-  setTimeout(() => {
-    iframe.contentWindow?.print();
-    setTimeout(() => {
-      try { document.body.removeChild(iframe); } catch {}
-    }, 2000);
-  }, 800);
 }
