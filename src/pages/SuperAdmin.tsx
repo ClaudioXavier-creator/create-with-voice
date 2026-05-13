@@ -89,7 +89,7 @@ export default function SuperAdmin() {
         </div>
       </div>
 
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+      <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-6">
         <TabsList className="grid grid-cols-2 md:grid-cols-5 lg:grid-cols-6 w-full h-auto gap-2 bg-transparent">
           <TabsTrigger value="dashboard" className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground py-2 border">
             <Activity className="h-4 w-4" />
