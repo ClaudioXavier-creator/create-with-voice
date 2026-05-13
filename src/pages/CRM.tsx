@@ -167,19 +167,19 @@ export default function CRM({ isTab = false }: { isTab?: boolean }) {
 
       {/* Métricas */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-        <StatCard icon={TrendingUp} label="Ativos no funil" value={stats.ativos} />
+        <StatCard icon={TrendingUp} label="Ativos" value={stats.ativos} />
         <StatCard icon={Trophy} label="Ganhos" value={stats.ganho} valueClass="text-green-600" />
         <StatCard icon={XCircle} label="Perdidos" value={stats.perdido} valueClass="text-red-500" />
-        <StatCard label="Taxa conversão" value={`${stats.conv}%`} />
-        <StatCard label="Valor pipeline" value={stats.valorPipeline.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })} />
+        <StatCard label="Conversão" value={`${stats.conv}%`} />
+        <StatCard label="Pipeline" value={stats.valorPipeline.toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 })} />
       </div>
 
       <Tabs value={tab} onValueChange={(v) => setTab(v as Origem)}>
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
           {!canAccessCRM(roles, user?.email) ? (
             <TabsList>
-              <TabsTrigger value="produto">Leads de produto</TabsTrigger>
-              <TabsTrigger value="site">Contatos do site</TabsTrigger>
+              <TabsTrigger value="produto" className="text-xs sm:text-sm">Produtos</TabsTrigger>
+              <TabsTrigger value="site" className="text-xs sm:text-sm">Site</TabsTrigger>
             </TabsList>
           ) : (
             <div className="text-sm font-medium text-muted-foreground bg-muted px-3 py-1.5 rounded-md border">
@@ -411,7 +411,7 @@ function LeadDrawer({
 
   return (
     <Sheet open={!!lead} onOpenChange={(o) => !o && onClose()}>
-      <SheetContent className="w-full sm:max-w-2xl overflow-y-auto">
+      <SheetContent className="w-full sm:max-w-2xl overflow-y-auto p-4 sm:p-6">
         <SheetHeader>
           <SheetTitle>{lead.nome}</SheetTitle>
         </SheetHeader>
