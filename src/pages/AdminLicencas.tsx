@@ -39,10 +39,14 @@ const PLAN_LABELS: Record<string, string> = {
 
 const PRODUCT_LABELS: Record<string, string> = {
   feed_bpf: "Feed_BPF",
+  feedbpf: "Feed_BPF",
   audits_bpf: "Audits BPF",
-  agrogestao: "AgroGestão",
+  auditsbpf: "Audits BPF",
+  agrogestao: "AgroGestão CRM",
   agrogestao_crm: "AgroGestão CRM",
   nutricrm: "NutriCRM",
+  agro_rc: "Agro RC CRM",
+  agrorc: "Agro RC CRM",
   agro_rc_crm: "Agro RC CRM",
   rotulos: "Nutri_Agro Labels",
 };
