@@ -88,7 +88,7 @@ export default function TierGate({ children }: TierGateProps) {
           <CardHeader>
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                <Lock className="w-5 h-5 text-primary" />
+                <Lock aria-hidden="true" className="w-5 h-5 text-primary" />
               </div>
               <div>
                 <CardTitle className="text-lg">Recurso bloqueado</CardTitle>
@@ -113,14 +113,14 @@ export default function TierGate({ children }: TierGateProps) {
     return (
       <>
         <div className="mb-4 p-4 rounded-lg bg-warning/10 border border-warning/30 flex items-start gap-3">
-          <AlertTriangle className="w-5 h-5 text-warning shrink-0 mt-0.5" />
+          <AlertTriangle aria-hidden="true" className="w-5 h-5 text-warning shrink-0 mt-0.5" />
           <div className="flex-1 text-sm space-y-2">
             <p className="font-semibold">Modo Híbrido — Plano Entrada</p>
             <p className="text-muted-foreground">{access.reason}</p>
             <div className="flex flex-wrap gap-2 pt-1">
               <Button asChild size="sm" variant="outline">
                 <Link to={shortcuts.templatePath}>
-                  <FileDown className="w-4 h-4 mr-1" /> Baixar planilha em branco
+                  <FileDown aria-hidden="true" className="w-4 h-4 mr-1" /> Baixar planilha em branco
                 </Link>
               </Button>
               <Button asChild size="sm" variant="outline">

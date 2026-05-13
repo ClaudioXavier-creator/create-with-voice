@@ -429,14 +429,15 @@ export default function Index() {
             variant="outline" 
             size="sm" 
             onClick={iniciarTour}
+            aria-label="Iniciar guia interativo do sistema"
             className="rounded-full border-primary/20 hover:border-primary hover:bg-primary/5 transition-all"
           >
-            <HelpCircle className="w-4 h-4 mr-2 text-primary" /> 
+            <HelpCircle aria-hidden="true" className="w-4 h-4 mr-2 text-primary" /> 
             Guia do Sistema
           </Button>
           <Select value={periodoFiltro} onValueChange={setPeriodoFiltro}>
             <SelectTrigger className="w-full sm:w-[180px] rounded-full border-primary/20 bg-background/50 backdrop-blur-sm">
-              <CalendarDays className="w-4 h-4 mr-2 text-muted-foreground" />
+              <CalendarDays aria-hidden="true" className="w-4 h-4 mr-2 text-muted-foreground" />
               <SelectValue placeholder="Filtrar Período" />
             </SelectTrigger>
             <SelectContent className="rounded-xl border-border/50 shadow-2xl">
@@ -457,7 +458,7 @@ export default function Index() {
               <div className="absolute top-0 left-0 w-1 h-full bg-rose-500" />
               <CardContent className="flex items-start gap-4 p-5">
                 <div className="flex items-center justify-center w-10 h-10 rounded-full bg-rose-500/10 shrink-0">
-                  <AlertTriangle className="h-5 w-5 text-rose-600" />
+                  <AlertTriangle aria-hidden="true" className="h-5 w-5 text-rose-600" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="font-bold text-rose-900 dark:text-rose-200 text-sm">
@@ -467,7 +468,7 @@ export default function Index() {
                     {data.atividadesVencidas[0].atividade} e outras pendências.
                   </p>
                   <Link to="/planejamento-anual" className="text-xs font-bold text-rose-600 hover:text-rose-700 mt-2 flex items-center gap-1 group/link">
-                    Regularizar Agora <ChevronRight className="w-3 h-3 transition-transform group-hover/link:translate-x-1" />
+                    Regularizar Agora <ChevronRight aria-hidden="true" className="w-3 h-3 transition-transform group-hover/link:translate-x-1" />
                   </Link>
                 </div>
               </CardContent>
@@ -478,7 +479,7 @@ export default function Index() {
               <div className="absolute top-0 left-0 w-1 h-full bg-amber-500" />
               <CardContent className="flex items-start gap-4 p-5">
                 <div className="flex items-center justify-center w-10 h-10 rounded-full bg-amber-500/10 shrink-0">
-                  <Bell className="h-5 w-5 text-amber-600" />
+                  <Bell aria-hidden="true" className="h-5 w-5 text-amber-600" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="font-bold text-amber-900 dark:text-amber-200 text-sm">
@@ -488,7 +489,7 @@ export default function Index() {
                     {data.atividadesProximas.length} itens vencem em breve.
                   </p>
                   <Link to="/planejamento-anual" className="text-xs font-bold text-amber-600 hover:text-amber-700 mt-2 flex items-center gap-1 group/link">
-                    Ver Cronograma <ChevronRight className="w-3 h-3 transition-transform group-hover/link:translate-x-1" />
+                    Ver Cronograma <ChevronRight aria-hidden="true" className="w-3 h-3 transition-transform group-hover/link:translate-x-1" />
                   </Link>
                 </div>
               </CardContent>
@@ -505,7 +506,7 @@ export default function Index() {
               <div className={cn("absolute top-0 right-0 w-16 h-16 rounded-bl-[40px] opacity-10 transition-opacity group-hover:opacity-20", s.bg)} />
               <CardContent className="flex flex-col items-center gap-3 p-5 text-center">
                 <div className={cn("flex items-center justify-center w-12 h-12 rounded-2xl shadow-inner transition-transform group-hover:scale-110 group-hover:-rotate-3 duration-300", s.bg)}>
-                  <s.icon className={cn("w-6 h-6", s.color)} />
+                  <s.icon aria-hidden="true" className={cn("w-6 h-6", s.color)} />
                 </div>
                 <div>
                   <p className="text-2xl font-bold font-display tracking-tight text-foreground">{s.value}</p>
@@ -524,7 +525,7 @@ export default function Index() {
             <div className="flex items-center justify-between">
               <CardTitle className="text-base flex items-center gap-2">
                 <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
-                  <ShieldCheck className="w-4 h-4 text-primary" />
+                  <ShieldCheck aria-hidden="true" className="w-4 h-4 text-primary" />
                 </div>
                 Prioridades Estratégicas
               </CardTitle>
@@ -543,7 +544,7 @@ export default function Index() {
                   <Link key={idx} to={acao.link} className="block">
                     <div className={cn("rounded-2xl border border-transparent p-4 transition-all hover:shadow-md hover:translate-x-1 relative overflow-hidden group", config.container)}>
                       <div className="absolute top-0 right-0 p-2 opacity-10 group-hover:opacity-30 transition-opacity">
-                        <ArrowRight className="w-8 h-8 -rotate-45" />
+                        <ArrowRight aria-hidden="true" className="w-8 h-8 -rotate-45" />
                       </div>
                       <div className="flex items-start justify-between gap-4 relative z-10">
                         <div className="space-y-1.5 flex-1 min-w-0">
@@ -570,7 +571,7 @@ export default function Index() {
           <CardHeader className="pb-4 border-b border-border/50 bg-muted/20">
             <CardTitle className="text-base flex items-center gap-2">
               <div className="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center">
-                <BarChartIcon className="w-4 h-4 text-emerald-600" />
+                <BarChartIcon aria-hidden="true" className="w-4 h-4 text-emerald-600" />
               </div>
               Indicadores de Saúde
             </CardTitle>
@@ -617,7 +618,7 @@ export default function Index() {
           <Link key={i} to={btn.to}>
             <Button variant="ghost" className="w-full h-auto py-5 flex flex-col items-center gap-3 bg-card shadow-premium hover:shadow-premium-hover border-none rounded-2xl group transition-all">
               <div className={cn("w-12 h-12 rounded-2xl flex items-center justify-center transition-transform group-hover:scale-110 group-hover:rotate-3", btn.bg)}>
-                <btn.icon className={cn("w-6 h-6", btn.color)} />
+                <btn.icon aria-hidden="true" className={cn("w-6 h-6", btn.color)} />
               </div>
               <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground group-hover:text-foreground transition-colors">{btn.label}</span>
             </Button>
@@ -682,7 +683,7 @@ export default function Index() {
                 ))}
                 <Link to="/nao-conformidades" className="block text-center pt-2">
                   <Button variant="ghost" size="sm" className="text-xs font-bold uppercase tracking-widest text-primary/60 hover:text-primary">
-                    Gerenciar Desvios <ArrowRight className="w-3 h-3 ml-2" />
+                    Gerenciar Desvios <ArrowRight aria-hidden="true" className="w-3 h-3 ml-2" />
                   </Button>
                 </Link>
               </div>

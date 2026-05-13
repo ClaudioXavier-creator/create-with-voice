@@ -39,10 +39,10 @@ export default function ChecklistLista({ items, loading }: ChecklistListaProps) 
             <CardContent className="flex flex-wrap items-center gap-4 py-4">
               <div className="flex items-center gap-3">
                 <div className="flex h-10 w-10 items-center justify-center rounded-md bg-muted">
-                  <StatusIcon className="h-5 w-5 text-foreground" />
+                  <StatusIcon aria-hidden="true" className="h-5 w-5 text-foreground" />
                 </div>
                 <div className="flex h-10 w-10 items-center justify-center rounded-md bg-secondary">
-                  <item.icon className="h-5 w-5 text-foreground" />
+                  <item.icon aria-hidden="true" className="h-5 w-5 text-foreground" />
                 </div>
               </div>
 
@@ -58,7 +58,7 @@ export default function ChecklistLista({ items, loading }: ChecklistListaProps) 
               <Link to={item.link} className="ml-auto">
                 <Button variant="ghost" size="sm" className="gap-2">
                   Abrir
-                  <ArrowRight className="h-4 w-4" />
+                  <ArrowRight aria-hidden="true" className="h-4 w-4" />
                 </Button>
               </Link>
             </CardContent>

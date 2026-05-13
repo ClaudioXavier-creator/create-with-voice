@@ -110,8 +110,15 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <div className="flex min-h-screen bg-background/50">
+      {/* Skip to Content Link */}
+      <a 
+        href="#main-content" 
+        className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2 focus:bg-primary focus:text-white focus:rounded-lg focus:shadow-lg transition-all"
+      >
+        Pular para o conteúdo principal
+      </a>
       {/* Desktop sidebar */}
-      <aside className="hidden lg:flex w-72 flex-col bg-sidebar text-sidebar-foreground border-r border-sidebar-border shadow-xl">
+      <aside aria-label="Navegação Lateral" className="hidden lg:flex w-72 flex-col bg-sidebar text-sidebar-foreground border-r border-sidebar-border shadow-xl">
         <div className="flex items-center gap-3 px-6 py-6 border-b border-sidebar-border/50 bg-sidebar/50 backdrop-blur-sm sticky top-0 z-10">
           <div className="relative group cursor-pointer" onClick={() => navigate("/")}>
             <div className="absolute -inset-1 bg-gradient-to-r from-primary to-emerald-400 rounded-lg blur opacity-25 group-hover:opacity-100 transition duration-1000 group-hover:duration-200"></div>
@@ -127,6 +134,7 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
           <div className="px-4 py-4">
             <button 
               onClick={() => navigate("/busca-global")}
+              aria-label="Abrir busca global"
               className="w-full flex items-center gap-2 px-3 py-2 rounded-lg bg-sidebar-accent/50 border border-sidebar-border/50 text-sidebar-foreground/50 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-all text-xs"
             >
               <Search className="h-3.5 w-3.5" />
@@ -163,7 +171,7 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
       </aside>
 
       {/* Mobile header */}
-      <div className="lg:hidden fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-3 py-2 bg-sidebar text-sidebar-foreground border-b border-sidebar-border/50 shadow-sm backdrop-blur-md h-[56px]">
+      <header aria-label="Cabeçalho Móvel" className="lg:hidden fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-3 py-2 bg-sidebar text-sidebar-foreground border-b border-sidebar-border/50 shadow-sm backdrop-blur-md h-[56px]">
         <div className="flex items-center gap-2 min-w-0" onClick={() => navigate("/")}>
           <img src={config.logo} alt={`${config.title} Logo`} className="w-8 h-8 rounded bg-white p-1 object-contain" />
           <div className="min-w-0">
@@ -171,19 +179,19 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
           </div>
         </div>
         <div className="flex items-center gap-0.5">
-          <Button variant="ghost" size="icon" onClick={() => navigate("/busca-global")} className="h-8 w-8 text-sidebar-foreground/70">
-            <Search className="w-4 h-4" />
+          <Button variant="ghost" size="icon" onClick={() => navigate("/busca-global")} className="h-8 w-8 text-sidebar-foreground/70" aria-label="Abrir busca global">
+            <Search className="w-4 h-4" aria-hidden="true" />
           </Button>
-          <Button variant="ghost" size="icon" onClick={() => setMobileOpen(!mobileOpen)} className="h-8 w-8 text-sidebar-foreground">
-            {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          <Button variant="ghost" size="icon" onClick={() => setMobileOpen(!mobileOpen)} className="h-8 w-8 text-sidebar-foreground" aria-label={mobileOpen ? "Fechar menu" : "Abrir menu"}>
+            {mobileOpen ? <X className="w-5 h-5" aria-hidden="true" /> : <Menu className="w-5 h-5" aria-hidden="true" />}
           </Button>
         </div>
-      </div>
+      </header>
 
       {/* Mobile nav overlay */}
       {mobileOpen && (
         <div className="lg:hidden fixed inset-0 z-40 bg-black/60 backdrop-blur-sm transition-all duration-300" onClick={closeMobile}>
-          <aside className="w-[280px] sm:w-80 h-full bg-sidebar text-sidebar-foreground pt-16 flex flex-col shadow-2xl animate-in slide-in-from-left duration-300" onClick={(e) => e.stopPropagation()}>
+          <aside aria-label="Menu Mobile" className="w-[280px] sm:w-80 h-full bg-sidebar text-sidebar-foreground pt-16 flex flex-col shadow-2xl animate-in slide-in-from-left duration-300" onClick={(e) => e.stopPropagation()}>
             <div className="px-4 py-4 border-b border-sidebar-border/50">
               <EmpresaSelector />
             </div>
@@ -216,7 +224,7 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
       )}
 
       {/* Main content */}
-      <main className="flex-1 lg:ml-0 mt-[56px] lg:mt-0 overflow-x-hidden relative">
+      <main id="main-content" className="flex-1 lg:ml-0 mt-[56px] lg:mt-0 overflow-x-hidden relative focus:outline-none" tabIndex={-1}>
         <OfflineBanner />
         <div className="p-3 sm:p-4 md:p-8 lg:p-10 max-w-7xl mx-auto min-h-full animate-fade-in">
           <LicenseGate product={product as any}>

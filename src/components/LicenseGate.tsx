@@ -141,7 +141,7 @@ export default function LicenseGate({ children, product: initialProduct }: Licen
   if (loading || empresaLoading || authLoading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+        <Loader2 aria-hidden="true" className="w-8 h-8 animate-spin text-primary" />
       </div>
     );
   }
@@ -155,7 +155,7 @@ export default function LicenseGate({ children, product: initialProduct }: Licen
       <>
         {license?.plano === "trial" && daysRemaining <= 3 && (
           <div className="mb-4 p-3 rounded-lg bg-warning/10 border border-warning/30 flex items-center gap-3 text-sm">
-            <Clock className="w-5 h-5 text-warning shrink-0" />
+            <Clock aria-hidden="true" className="w-5 h-5 text-warning shrink-0" />
             <span>
               Seu período de teste expira em <strong>{daysRemaining} dia{daysRemaining !== 1 ? "s" : ""}</strong>.
             </span>
@@ -165,7 +165,7 @@ export default function LicenseGate({ children, product: initialProduct }: Licen
               className="ml-auto shrink-0"
               onClick={() => document.getElementById("license-plans")?.scrollIntoView({ behavior: "smooth" })}
             >
-              <CreditCard className="w-4 h-4 mr-1" />
+              <CreditCard aria-hidden="true" className="w-4 h-4 mr-1" />
               Assinar agora
             </Button>
           </div>
@@ -197,7 +197,7 @@ export default function LicenseGate({ children, product: initialProduct }: Licen
       <div className="max-w-5xl w-full space-y-6">
         <div className="text-center space-y-3">
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-destructive/10 mb-2">
-            <AlertTriangle className="w-8 h-8 text-destructive" />
+            <AlertTriangle aria-hidden="true" className="w-8 h-8 text-destructive" />
           </div>
           <h2 className="text-2xl font-bold">Acesso expirado — {productLabel}</h2>
           <p className="text-muted-foreground max-w-md mx-auto">
@@ -224,6 +224,7 @@ export default function LicenseGate({ children, product: initialProduct }: Licen
             <button
               key={nivel.key}
               onClick={() => setNivelSelecionado(nivel.key)}
+              aria-pressed={nivelSelecionado === nivel.key}
               className={`text-left p-4 rounded-lg border-2 transition-all ${
                 nivelSelecionado === nivel.key
                   ? "border-primary bg-primary/5 ring-2 ring-primary/20"
@@ -282,9 +283,9 @@ export default function LicenseGate({ children, product: initialProduct }: Licen
                     disabled={!!checkoutLoading}
                   >
                     {checkoutLoading === loadingKey ? (
-                      <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                      <Loader2 aria-hidden="true" className="w-4 h-4 animate-spin mr-2" />
                     ) : (
-                      <CreditCard className="w-4 h-4 mr-2" />
+                      <CreditCard aria-hidden="true" className="w-4 h-4 mr-2" />
                     )}
                     Assinar
                   </Button>
@@ -296,7 +297,7 @@ export default function LicenseGate({ children, product: initialProduct }: Licen
 
         <div className="text-center space-y-2">
           <p className="text-xs text-muted-foreground">
-            <ShieldCheck className="w-3 h-3 inline mr-1" />
+            <ShieldCheck aria-hidden="true" className="w-3 h-3 inline mr-1" />
             Pagamento seguro via Stripe. Cancele a qualquer momento.
           </p>
           <p className="text-xs text-muted-foreground">
@@ -307,7 +308,7 @@ export default function LicenseGate({ children, product: initialProduct }: Licen
               href="mailto:contato@bpfconsult.com.br"
               className="inline-flex items-center gap-1.5 text-xs text-primary hover:underline"
             >
-              <Mail className="w-3.5 h-3.5" />
+              <Mail aria-hidden="true" className="w-3.5 h-3.5" />
               contato@bpfconsult.com.br
             </a>
             <ContactFormDialog programa={product} />
@@ -364,7 +365,7 @@ function ContactFormDialog({ programa }: { programa?: string }) {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <button className="inline-flex items-center gap-1.5 text-xs text-primary hover:underline cursor-pointer bg-transparent border-none p-0">
-          <MessageCircle className="w-3.5 h-3.5" />
+          <MessageCircle aria-hidden="true" className="w-3.5 h-3.5" />
           Fale Conosco
         </button>
       </DialogTrigger>
@@ -442,7 +443,7 @@ function ContactFormDialog({ programa }: { programa?: string }) {
             />
           </div>
           <Button type="submit" className="w-full gap-2" disabled={sending}>
-            {sending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Mail className="w-4 h-4" />}
+            {sending ? <Loader2 aria-hidden="true" className="w-4 h-4 animate-spin" /> : <Mail aria-hidden="true" className="w-4 h-4" />}
             Enviar Mensagem
           </Button>
         </form>

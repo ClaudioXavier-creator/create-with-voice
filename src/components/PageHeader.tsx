@@ -25,7 +25,7 @@ export default function PageHeader({ icon: Icon, title, description, orientacaoM
           <div className="flex items-start md:items-center gap-3 md:gap-4 mb-2">
             {Icon && (
               <div className="flex items-center justify-center w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl bg-primary/10 border border-primary/20 shadow-inner group transition-all duration-300 hover:scale-110 shrink-0">
-                <Icon className="w-5 h-5 md:w-6 md:h-6 text-primary group-hover:rotate-6 transition-transform" />
+                <Icon aria-hidden="true" className="w-5 h-5 md:w-6 md:h-6 text-primary group-hover:rotate-6 transition-transform" />
               </div>
             )}
             <div className="min-w-0 flex-1">
@@ -39,8 +39,11 @@ export default function PageHeader({ icon: Icon, title, description, orientacaoM
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <button className="text-muted-foreground/40 hover:text-primary transition-colors shrink-0">
-                        <Info className="w-3.5 h-3.5" />
+                      <button 
+                        className="text-muted-foreground/40 hover:text-primary transition-colors shrink-0"
+                        aria-label="Mais informações sobre este padrão"
+                      >
+                        <Info aria-hidden="true" className="w-3.5 h-3.5" />
                       </button>
                     </TooltipTrigger>
                     <TooltipContent side="right" className="max-w-xs text-[11px]">
@@ -62,7 +65,7 @@ export default function PageHeader({ icon: Icon, title, description, orientacaoM
                   size="sm" 
                   className="w-full md:w-auto gap-2 shrink-0 rounded-full border-primary/20 hover:border-primary hover:bg-primary/5 shadow-sm px-4 md:px-5 h-9 md:h-10 transition-all active:scale-95 text-xs md:text-sm"
                 >
-                  <GraduationCap className="w-4 h-4 text-primary" />
+                  <GraduationCap aria-hidden="true" className="w-4 h-4 text-primary" />
                   <span className="font-semibold text-primary/80">Orientação Técnica</span>
                 </Button>
               </DialogTrigger>

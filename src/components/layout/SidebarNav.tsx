@@ -132,6 +132,7 @@ export const SidebarNav = React.memo(({
         key={item.path}
         to={targetPath}
         onClick={onNavigate}
+        aria-current={isActive ? "page" : undefined}
         className={cn(
           "group flex items-center gap-3 rounded-xl px-3 py-2 text-sm transition-all duration-200 relative overflow-hidden",
           isActive
@@ -140,7 +141,7 @@ export const SidebarNav = React.memo(({
           isSubItem && !isActive && "ml-2"
         )}
       >
-        <item.icon className={cn("h-4 w-4 shrink-0 transition-transform group-hover:scale-110 duration-200", isActive ? "text-white" : "text-sidebar-foreground/40")} />
+        <item.icon aria-hidden="true" className={cn("h-4 w-4 shrink-0 transition-transform group-hover:scale-110 duration-200", isActive ? "text-white" : "text-sidebar-foreground/40")} />
         <span className="min-w-0 flex-1 truncate">{item.label}</span>
         
         <button
@@ -157,7 +158,7 @@ export const SidebarNav = React.memo(({
             isActive && "text-white/40 hover:text-white"
           )}
         >
-          <Star className={cn("h-3 w-3", isFavorite && "fill-accent text-accent")}/>
+          <Star aria-hidden="true" className={cn("h-3 w-3", isFavorite && "fill-accent text-accent")}/>
         </button>
 
         {isActive && (
@@ -174,7 +175,7 @@ export const SidebarNav = React.memo(({
           <section className="space-y-2">
             <div className="flex items-center justify-between px-3 mb-1">
               <div className="flex items-center gap-2">
-                <Sparkles className="h-3 w-3 text-accent" />
+                <Sparkles aria-hidden="true" className="h-3 w-3 text-accent" />
                 <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-sidebar-foreground/30">Favoritos</p>
               </div>
               <Badge variant="outline" className="h-4 px-1 text-[9px] font-mono border-sidebar-border text-sidebar-foreground/40 bg-sidebar/50">{favoriteItems.length}</Badge>
@@ -202,6 +203,7 @@ export const SidebarNav = React.memo(({
                     type="button"
                     variant="ghost"
                     onClick={() => toggleGroup(entry.label)}
+                    aria-expanded={groupOpen}
                     className={cn(
                       "h-auto w-full justify-start gap-3 rounded-xl px-3 py-2 text-left text-sm transition-all duration-200",
                       hasActive && !groupOpen
@@ -209,9 +211,9 @@ export const SidebarNav = React.memo(({
                         : "text-sidebar-foreground/60 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground",
                     )}
                   >
-                    <entry.icon className={cn("h-4 w-4 shrink-0 transition-colors duration-200", hasActive ? "text-sidebar-primary" : "text-sidebar-foreground/30")} />
+                    <entry.icon aria-hidden="true" className={cn("h-4 w-4 shrink-0 transition-colors duration-200", hasActive ? "text-sidebar-primary" : "text-sidebar-foreground/30")} />
                     <span className="flex-1 whitespace-normal leading-snug">{entry.label}</span>
-                    <ChevronDown className={cn("h-3.5 w-3.5 shrink-0 transition-transform duration-300 opacity-30", groupOpen && "rotate-180 opacity-60")} />
+                    <ChevronDown aria-hidden="true" className={cn("h-3.5 w-3.5 shrink-0 transition-transform duration-300 opacity-30", groupOpen && "rotate-180 opacity-60")} />
                   </Button>
                   
                   {groupOpen && (
