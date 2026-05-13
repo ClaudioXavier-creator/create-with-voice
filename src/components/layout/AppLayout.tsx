@@ -66,7 +66,7 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const { user, roles, signOut } = useAuth();
   
-  const canCRM = !!roles?.includes("admin") || !!roles?.includes("comercial");
+  
 
   useEffect(() => {
     const handleShortcut = (event: KeyboardEvent) => {
