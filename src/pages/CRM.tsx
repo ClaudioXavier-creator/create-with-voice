@@ -181,7 +181,7 @@ export default function CRM({ isTab = false }: { isTab?: boolean }) {
             </TabsList>
           ) : (
             <div className="text-sm font-medium text-muted-foreground bg-muted px-3 py-1.5 rounded-md border">
-              Visão Global de Leads (SuperAdmin)
+              Gestão Pessoal de Vendas (SuperAdmin)
             </div>
           )}
           <Input
