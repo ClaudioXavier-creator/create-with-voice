@@ -301,7 +301,7 @@ export default function AdminLicencas({ isTab = false }: { isTab?: boolean }) {
                             </Select>
 
                             <Button
-                              size="xs"
+                              size="sm"
                               variant="outline"
                               className="h-8 text-xs"
                               onClick={() => handleUpdateLevel(e)}
@@ -331,7 +331,7 @@ export default function AdminLicencas({ isTab = false }: { isTab?: boolean }) {
                             </Select>
 
                             <Button
-                              size="xs"
+                              size="sm"
                               className="h-8 text-xs"
                               onClick={() => handleGrant(e)}
                                disabled={!canManage || actionLoading === (targetId + "-grant")}
@@ -345,7 +345,7 @@ export default function AdminLicencas({ isTab = false }: { isTab?: boolean }) {
                             </Button>
 
                             <Button
-                              size="xs"
+                              size="sm"
                               variant="destructive"
                               className="h-8 text-xs"
                               onClick={() => handleRevoke(e)}
