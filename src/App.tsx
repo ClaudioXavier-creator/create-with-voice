@@ -62,8 +62,7 @@ const AuditsBPFPlanos = lazy(() => import("./pages/AuditsBPFPlanos"));
 const AgroGestaoCRMPage = lazy(() => import("./pages/AgroGestaoCRMPage"));
 const AgroRCCRMPage = lazy(() => import("./pages/AgroRCCRMPage"));
 const RotulosBPFPage = lazy(() => import("./pages/RotulosBPFPage"));
-const AdminLicencas = lazy(() => import("./pages/AdminLicencas"));
-const AdminLeads = lazy(() => import("./pages/AdminLeads"));
+const SuperAdmin = lazy(() => import("./pages/SuperAdmin"));
 const ChecklistPreAuditoria = lazy(() => import("./pages/ChecklistPreAuditoria"));
 const SimulacaoRecall = lazy(() => import("./pages/SimulacaoRecall"));
 const SimulacaoCarimbo = lazy(() => import("./pages/SimulacaoCarimbo"));
@@ -77,7 +76,6 @@ const ConsultaSipeagro = lazy(() => import("./pages/ConsultaSipeagro"));
 const ConfigurarPin = lazy(() => import("./pages/ConfigurarPin"));
 const AuditorPortal = lazy(() => import("./pages/AuditorPortal"));
 const DemoPage = lazy(() => import("./pages/DemoPage"));
-const CRM = lazy(() => import("./pages/CRM"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient({
@@ -188,9 +186,7 @@ const AppRoutes = () => {
                     <Route path="/gerador-pop-ia" element={<GeradorPopIA />} />
                     <Route path="/consulta-sipeagro" element={<ConsultaSipeagro />} />
                     <Route path="/configurar-pin" element={<ConfigurarPin />} />
-                    <Route path="/admin-licencas" element={<AdminLicencas />} />
-                    <Route path="/admin-leads" element={<AdminLeads />} />
-                    <Route path="/crm" element={<CRM />} />
+                    <Route path="/admin" element={<SuperAdmin />} />
                     <Route path="*" element={<NotFound />} />
                   </Routes>
                   </LicenseGate>
