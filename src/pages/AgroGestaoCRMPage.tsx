@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import logoAgrogestao from "@/assets/logo-agrogestao.png";
 import logoBpfConsult from "@/assets/logo-bpf-consult.png";
-import SuperAdminBanner from "@/components/SuperAdminBanner";
+
 import { useAuth } from "@/hooks/useAuth";
 
 const funcionalidades = [

@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import logoAuditsBpf from "@/assets/logo-audits-bpf.png";
 import logoBpfConsult from "@/assets/logo-bpf-consult.png";
 import dashboardPreview from "@/assets/auditsbpf-dashboard-preview.jpg";
-import SuperAdminBanner from "@/components/SuperAdminBanner";
+
 import { useAuth } from "@/hooks/useAuth";
 
 const funcionalidades = [

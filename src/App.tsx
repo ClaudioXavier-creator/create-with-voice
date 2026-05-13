@@ -10,7 +10,7 @@ import AppLayout from "@/components/layout/AppLayout";
 import LicenseGate from "@/components/LicenseGate";
 import PageLoader from "@/components/PageLoader";
 
-import SuperAdminButton from "@/components/SuperAdminButton";
+
 
 // Lazy-loaded pages
 const Vitrine = lazy(() => import("./pages/Vitrine"));
