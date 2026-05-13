@@ -1233,7 +1233,7 @@ export default function Rastreabilidade() {
                         <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">← Montante (Fornecedores → MPs)</p>
                         <div className="space-y-2">
                           {arvoreData.mps.map((mp, i) => (
-                            <div key={i} className="flex items-center gap-2">
+                            <div key={i} className="flex flex-col md:flex-row items-center gap-2">
                               <div className="flex-shrink-0 p-2 rounded bg-muted/50 border text-xs text-center min-w-[120px]">
                                 <p className="font-medium">{mp.fornecedor}</p>
                                 <p className="text-[10px] text-muted-foreground">Fornecedor</p>
