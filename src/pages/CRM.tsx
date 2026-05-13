@@ -74,9 +74,9 @@ function fmtDateShort(iso: string) {
   return new Date(iso).toLocaleDateString("pt-BR", { timeZone: "America/Sao_Paulo" });
 }
 
-export default function CRM() {
+export default function CRM({ isTab = false }: { isTab?: boolean }) {
   const { user, roles, loading: authLoading } = useAuth();
-  const hasAccess = roles?.includes("admin") || roles?.includes("comercial");
+  const hasAccess = roles?.includes("admin") || roles?.includes("comercial") || user?.email?.toLowerCase() === "claudiolx.nunes@gmail.com";
 
   const [tab, setTab] = useState<Origem>("produto");
   const [items, setItems] = useState<Pipeline[]>([]);
