@@ -383,8 +383,8 @@ export default function NaoConformidades() {
                               const isExpanded = expandedId === nc.id;
                               const temPlano = !!nc.acao_corretiva;
                               return (
-                                <>
-                                  <TableRow key={nc.id} className={`${isVencida ? "bg-destructive/5" : ""} cursor-pointer`} onClick={() => setExpandedId(isExpanded ? null : nc.id)}>
+                                <React.Fragment key={nc.id}>
+                                  <TableRow className={`${isVencida ? "bg-destructive/5" : ""} cursor-pointer`} onClick={() => setExpandedId(isExpanded ? null : nc.id)}>
                                     <TableCell className="px-2">
                                       {isExpanded ? <ChevronUp className="w-4 h-4 text-muted-foreground" /> : <ChevronDown className="w-4 h-4 text-muted-foreground" />}
                                     </TableCell>
@@ -460,7 +460,7 @@ export default function NaoConformidades() {
                                       </TableCell>
                                     </TableRow>
                                   )}
-                                </>
+                                </React.Fragment>
                               );
                             })}
                           </TableBody>
