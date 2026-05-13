@@ -255,6 +255,12 @@ export default function Auth() {
         if (postLoginRedirect) sessionStorage.removeItem("post_login_redirect");
         navigate(preferredRedirect, { replace: true });
       } else {
+        if (product === "admin") {
+          toast.error("O cadastro para o Portal de Gestão é restrito. Utilize outro programa para criar sua conta.");
+          setLoading(false);
+          return;
+        }
+
         const { data: signUpData, error } = await supabase.auth.signUp({
           email,
           password,
@@ -344,6 +350,12 @@ export default function Auth() {
           </div>
 
           <form onSubmit={handleSubmit} className="mt-4 space-y-4">
+            {product === "admin" && (
+              <div className="p-3 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-700 dark:text-amber-400 text-xs flex items-start gap-2">
+                <AlertTriangle className="h-4 w-4 shrink-0" />
+                <p>Este portal é restrito à equipe interna da BPF_Consult. Se você é um cliente, utilize os links específicos do seu programa.</p>
+              </div>
+            )}
             {!isLogin && (
               <>
                 <div className="space-y-2">
