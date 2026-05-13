@@ -114,7 +114,9 @@ export default function CRM({ isTab = false }: { isTab?: boolean }) {
   }, [items, tab, search, user]);
 
   const stats = useMemo(() => {
-    const list = items.filter((i) => i.lead_origem === tab);
+    const isSuperAdmin = user?.email?.toLowerCase() === "claudiolx.nunes@gmail.com";
+    const list = isSuperAdmin ? items : items.filter((i) => i.lead_origem === tab);
+    
     const total = list.length;
     const ganho = list.filter((i) => i.etapa === "ganho").length;
     const perdido = list.filter((i) => i.etapa === "perdido").length;
@@ -125,7 +127,7 @@ export default function CRM({ isTab = false }: { isTab?: boolean }) {
       .filter((i) => !["ganho", "perdido"].includes(i.etapa))
       .reduce((acc, i) => acc + (Number(i.valor_estimado) || 0), 0);
     return { total, ganho, perdido, ativos, conv, valorPipeline };
-  }, [items, tab]);
+  }, [items, tab, user]);
 
   const moveEtapa = async (id: string, etapa: Etapa) => {
     const patch: any = { etapa };
