@@ -5,8 +5,10 @@ import { useAuth } from "@/hooks/useAuth";
 export default function SuperAdminButton() {
   const { user } = useAuth();
   
-  // Acesso exclusivo para o seu e-mail
-  if (user?.email?.toLowerCase() !== "claudiolx.nunes@gmail.com") {
+  // Acesso exclusivo para o seu e-mail ou admins
+  const isAdmin = user?.email?.toLowerCase() === "claudiolx.nunes@gmail.com";
+  
+  if (!isAdmin) {
     return null;
   }
 
