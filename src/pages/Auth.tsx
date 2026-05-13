@@ -53,6 +53,11 @@ const authConfigs = {
     title: "Nutri_Agro Labels",
     subtitle: "Gerador de rótulos para nutrição animal",
   },
+  admin: {
+    logo: logoImg,
+    title: "Portal de Gestão",
+    subtitle: "Gestão central de leads e licenças BPF_Consult",
+  },
 } as const;
 
 export default function Auth() {

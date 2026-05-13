@@ -145,7 +145,8 @@ export default function Vitrine() {
   const { user, roles } = useAuth();
   const isAdmin = canAccessLicenseAdmin(roles, user?.email);
   
-  const produtosVisiveis = produtos.filter(p => !p.adminOnly || isAdmin);
+  // Mostramos todos os programas, mas indicamos acesso restrito para o Portal de Gestão
+  const produtosVisiveis = produtos;
 
   return (
     <div className="min-h-screen bg-background">
@@ -215,7 +216,7 @@ export default function Vitrine() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-5 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {produtosVisiveis.map((p) => (
             <div key={p.nome} className="group cursor-pointer" onClick={() => p.external ? window.open(p.link, "_blank", "noopener,noreferrer") : navigate(p.link)}>
               <div className={`h-full rounded-2xl border-2 ${p.borderColor} ${p.bgCard} p-1 transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 hover:scale-[1.02]`}>

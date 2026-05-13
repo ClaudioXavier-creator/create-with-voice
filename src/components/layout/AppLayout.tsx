@@ -18,6 +18,7 @@ import logoNutricrm from "@/assets/logo-nutricrm.png";
 import logoAgrogestao from "@/assets/logo-agrogestao.png";
 import logoAgrorc from "@/assets/logo-agrorc.png";
 import logoRotulos from "@/assets/logo-rotulos-bpf.png";
+import logoBpfConsult from "@/assets/logo-bpf-consult.png";
 import { SidebarNav } from "@/components/layout/SidebarNav";
 import { NAV_ENTRIES } from "@/components/layout/nav-config";
 import OfflineBanner from "@/components/OfflineBanner";
@@ -53,6 +54,11 @@ const PRODUCT_CONFIGS: Record<string, { logo: string; title: string; subtitle: s
     logo: logoRotulos,
     title: "Nutri_Agro Labels",
     subtitle: "Gerador de Rótulos",
+  },
+  admin: {
+    logo: logoBpfConsult,
+    title: "Portal de Gestão",
+    subtitle: "CRM & Licenças",
   },
 };
 
