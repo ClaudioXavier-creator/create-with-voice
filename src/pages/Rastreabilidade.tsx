@@ -1285,12 +1285,12 @@ export default function Rastreabilidade() {
                             {arvoreData.clientes.map((c, i) => (
                               <div key={i} className="flex flex-col md:flex-row items-center gap-2">
                                 <div className="flex-1 h-px bg-primary/30" />
-                                <ChevronRight className="w-4 h-4 text-muted-foreground flex-shrink-0" />
-                                <div className="flex-shrink-0 p-2 rounded bg-muted/50 border text-xs min-w-[120px]">
+                                <ChevronRight className="w-4 h-4 text-muted-foreground flex-shrink-0 rotate-90 md:rotate-0" />
+                                <div className="flex-shrink-0 p-2 rounded bg-muted/50 border text-xs min-w-[120px] w-full md:w-auto text-center md:text-left">
                                   <p className="font-medium">{c.cliente}</p>
                                   <p className="text-[10px] text-muted-foreground">{c.local}</p>
                                 </div>
-                                <ChevronRight className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                                <ChevronRight className="w-4 h-4 text-muted-foreground flex-shrink-0 rotate-90 md:rotate-0" />
                                 <div className="flex-shrink-0 p-2 rounded bg-primary/5 border border-primary/10 text-xs">
                                   <p className="font-mono">{c.nf}</p>
                                 </div>
