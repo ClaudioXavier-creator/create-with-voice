@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { ChevronDown, Search, Star, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -17,7 +17,7 @@ function flattenEntries(entries: NavEntry[]) {
   );
 }
 
-export function SidebarNav({
+export const SidebarNav = React.memo(({
   currentPath,
   entries,
   onNavigate,
@@ -29,7 +29,7 @@ export function SidebarNav({
   onNavigate?: () => void;
   userRoles?: string[];
   userEmail?: string;
-}) {
+}) => {
   const [favorites, setFavorites] = useState<string[]>(() => {
     try {
       return JSON.parse(localStorage.getItem(FAVORITES_KEY) || "[]");
@@ -225,4 +225,4 @@ export function SidebarNav({
       </div>
     </ScrollArea>
   );
-}
+});

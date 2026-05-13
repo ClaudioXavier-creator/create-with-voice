@@ -1,14 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, memo, Suspense, useCallback } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
-  LayoutGrid,
   LogOut,
   Menu,
-  Sparkles,
   Target,
   X,
   Search,
-  ChevronRight,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
@@ -19,9 +16,9 @@ import logoImg from "@/assets/logo-feed-bpf.png";
 import { SidebarNav } from "@/components/layout/SidebarNav";
 import { NAV_ENTRIES } from "@/components/layout/nav-config";
 import OfflineBanner from "@/components/OfflineBanner";
-import { cn } from "@/lib/utils";
+import PageLoader from "@/components/PageLoader";
 
-export default function AppLayout({ children }: { children: React.ReactNode }) {
+const AppLayout = ({ children }: { children: React.ReactNode }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -34,7 +31,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       const target = event.target as HTMLElement | null;
       const isTyping = !!target && (["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName) || target.isContentEditable);
 
-      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k") {
+      if (!isTyping && (event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k") {
         event.preventDefault();
         if (location.pathname !== "/busca-global") {
           navigate("/busca-global");
@@ -45,6 +42,13 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     window.addEventListener("keydown", handleShortcut);
     return () => window.removeEventListener("keydown", handleShortcut);
   }, [location.pathname, navigate]);
+
+  const handleSignOut = useCallback(async () => {
+    await signOut();
+    navigate("/auth");
+  }, [signOut, navigate]);
+
+  const closeMobile = useCallback(() => setMobileOpen(false), []);
 
   return (
     <div className="flex min-h-screen bg-background/50">
@@ -90,7 +94,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             <Button
               variant="ghost"
               size="icon"
-              onClick={signOut}
+              onClick={handleSignOut}
               className="h-8 w-8 text-sidebar-foreground/50 hover:text-destructive hover:bg-destructive/10 rounded-full"
               title="Sair da conta"
             >
@@ -120,7 +124,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
       {/* Mobile nav overlay */}
       {mobileOpen && (
-        <div className="lg:hidden fixed inset-0 z-40 bg-black/60 backdrop-blur-sm transition-all duration-300" onClick={() => setMobileOpen(false)}>
+        <div className="lg:hidden fixed inset-0 z-40 bg-black/60 backdrop-blur-sm transition-all duration-300" onClick={closeMobile}>
           <aside className="w-80 h-full bg-sidebar text-sidebar-foreground pt-16 flex flex-col shadow-2xl animate-in slide-in-from-left duration-300" onClick={(e) => e.stopPropagation()}>
             <div className="px-4 py-4 border-b border-sidebar-border/50">
               <EmpresaSelector />
@@ -129,7 +133,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               <SidebarNav 
                 currentPath={location.pathname} 
                 entries={NAV_ENTRIES} 
-                onNavigate={() => setMobileOpen(false)} 
+                onNavigate={closeMobile} 
                 userRoles={roles || []}
                 userEmail={user?.email || ""}
               />
@@ -142,7 +146,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={signOut}
+                onClick={handleSignOut}
                 className="w-full justify-start text-sidebar-foreground/70 hover:text-destructive hover:bg-destructive/10 h-10 px-4 rounded-xl transition-all"
               >
                 <LogOut className="w-4 h-4 mr-3" />
@@ -158,7 +162,11 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         <OfflineBanner />
         <div className="p-4 md:p-8 lg:p-10 max-w-7xl mx-auto min-h-full animate-fade-in">
           <LicenseGate>
-            <TierGate>{children}</TierGate>
+            <TierGate>
+              <Suspense fallback={<PageLoader />}>
+                {children}
+              </Suspense>
+            </TierGate>
           </LicenseGate>
         </div>
         
@@ -182,4 +190,6 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       )}
     </div>
   );
-}
+};
+
+export default memo(AppLayout);

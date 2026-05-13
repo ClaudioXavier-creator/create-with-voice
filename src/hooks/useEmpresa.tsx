@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, ReactNode, useCallback } from "react";
+import { createContext, useContext, useEffect, useState, ReactNode, useCallback, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "./useAuth";
 
@@ -41,74 +41,47 @@ export function EmpresaProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   const carregar = useCallback(async () => {
-    if (!user) { setEmpresas([]); setEmpresaAtivaState(null); setLoading(false); return; }
+    if (!user) { 
+      setEmpresas([]); 
+      setEmpresaAtivaState(null); 
+      setLoading(false); 
+      return; 
+    }
+    
     setLoading(true);
     try {
-      const results = await Promise.allSettled([
-        supabase
-          .from("empresas")
-          .select("*")
-          .eq("user_id", user.id)
-          .order("nome"),
-        supabase
-          .from("empresa_membros")
-          .select("empresa_id")
-          .eq("user_id", user.id)
-          .eq("ativo", true),
-        supabase
-          .from("licenca_empresas")
-          .select("empresa_id")
-          .eq("user_id", user.id)
-          .eq("ativo", true),
+      // Otimização: Buscas paralelas para reduzir tempo de carregamento inicial
+      const [own, members, licenses, invites] = await Promise.all([
+        supabase.from("empresas").select("*").eq("user_id", user.id).order("nome"),
+        supabase.from("empresa_membros").select("empresa_id").eq("user_id", user.id).eq("ativo", true),
+        supabase.from("licenca_empresas").select("empresa_id").eq("user_id", user.id).eq("ativo", true),
         user.email
-          ? supabase
-              .from("convites_empresa")
-              .select("empresa_id, aceito_em, aceito_por")
-              .eq("email", user.email)
+          ? supabase.from("convites_empresa").select("empresa_id, aceito_em, aceito_por").eq("email", user.email)
           : Promise.resolve({ data: [], error: null }),
       ]);
 
-      const ownEmpresas = results[0].status === "fulfilled" && !results[0].value.error
-        ? ((results[0].value.data as Empresa[] | null) ?? [])
-        : [];
-
-      const memberIds = results[1].status === "fulfilled" && !results[1].value.error
-        ? (results[1].value.data ?? []).map((item) => item.empresa_id)
-        : [];
-
-      const linkedLicenseIds = results[2].status === "fulfilled" && !results[2].value.error
-        ? (results[2].value.data ?? []).map((item) => item.empresa_id)
-        : [];
-
-      const inviteIds = results[3].status === "fulfilled" && !results[3].value.error
-        ? (results[3].value.data ?? [])
-            .filter((item) => item.aceito_em || item.aceito_por === user.id)
-            .map((item) => item.empresa_id)
-        : [];
+      const ownEmpresas = own.data ?? [];
+      const memberIds = (members.data ?? []).map((item) => item.empresa_id);
+      const linkedLicenseIds = (licenses.data ?? []).map((item) => item.empresa_id);
+      const inviteIds = (invites.data ?? [])
+        .filter((item) => item.aceito_em || item.aceito_por === user.id)
+        .map((item) => item.empresa_id);
 
       const empresaIds = Array.from(
-        new Set([
-          ...ownEmpresas.map((empresa) => empresa.id),
-          ...memberIds,
-          ...linkedLicenseIds,
-          ...inviteIds,
-        ].filter(Boolean)),
+        new Set([...ownEmpresas.map((e) => e.id), ...memberIds, ...linkedLicenseIds, ...inviteIds].filter(Boolean))
       );
 
-      const extraEmpresas = empresaIds.length > 0
-        ? await supabase
-            .from("empresas")
-            .select("*")
-            .in("id", empresaIds)
-            .order("nome")
-        : { data: [], error: null };
+      // Busca apenas as empresas que o usuário ainda não tem os dados completos
+      const missingIds = empresaIds.filter(id => !ownEmpresas.some(e => e.id === id));
+      
+      let extraEmpresas: any[] = [];
+      if (missingIds.length > 0) {
+        const { data } = await supabase.from("empresas").select("*").in("id", missingIds);
+        extraEmpresas = data ?? [];
+      }
 
-      const lista = Array.from(
-        new Map(
-          [...ownEmpresas, ...((extraEmpresas.data as Empresa[] | null) ?? [])]
-            .sort((a, b) => a.nome.localeCompare(b.nome, "pt-BR"))
-            .map((empresa) => [empresa.id, empresa]),
-        ).values(),
+      const lista = [...ownEmpresas, ...extraEmpresas].sort((a, b) => 
+        a.nome.localeCompare(b.nome, "pt-BR")
       );
 
       setEmpresas(lista);
@@ -116,23 +89,38 @@ export function EmpresaProvider({ children }: { children: ReactNode }) {
       const savedId = localStorage.getItem(getStorageKey(user.id));
       const saved = lista.find(e => e.id === savedId);
       setEmpresaAtivaState(saved || lista[0] || null);
+    } catch (error) {
+      console.error("Erro ao carregar empresas:", error);
     } finally {
       setLoading(false);
     }
   }, [user]);
 
-  useEffect(() => { carregar(); }, [carregar]);
+  useEffect(() => {
+    carregar();
+  }, [carregar]);
 
-  const setEmpresaAtiva = (empresa: Empresa) => {
+  const setEmpresaAtiva = useCallback((empresa: Empresa) => {
     setEmpresaAtivaState(empresa);
-    localStorage.setItem(getStorageKey(user?.id), empresa.id);
-  };
+    if (user?.id) {
+      localStorage.setItem(getStorageKey(user.id), empresa.id);
+    }
+  }, [user?.id]);
+
+  const contextValue = useMemo(() => ({
+    empresas,
+    empresaAtiva,
+    loading,
+    setEmpresaAtiva,
+    recarregar: carregar
+  }), [empresas, empresaAtiva, loading, setEmpresaAtiva, carregar]);
 
   return (
-    <EmpresaContext.Provider value={{ empresas, empresaAtiva, loading, setEmpresaAtiva, recarregar: carregar }}>
+    <EmpresaContext.Provider value={contextValue}>
       {children}
     </EmpresaContext.Provider>
   );
 }
+
 
 export const useEmpresa = () => useContext(EmpresaContext);
