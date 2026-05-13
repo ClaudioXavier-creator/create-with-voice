@@ -90,12 +90,12 @@ export default function FileUpload({
           onClick={() => inputRef.current?.click()}
           className="gap-2"
         >
-          {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
+          {uploading ? <Loader2 aria-hidden="true" className="w-4 h-4 animate-spin" /> : <Upload aria-hidden="true" className="w-4 h-4" />}
           {label}
         </Button>
         {preview && (
-          <Button type="button" variant="ghost" size="sm" onClick={clear}>
-            <X className="w-4 h-4" />
+          <Button type="button" variant="ghost" size="sm" onClick={clear} aria-label="Remover arquivo selecionado">
+            <X aria-hidden="true" className="w-4 h-4" />
           </Button>
         )}
       </div>
@@ -109,10 +109,10 @@ export default function FileUpload({
       {preview && (
         <div className="border rounded-lg p-2 bg-muted/30">
           {isImage ? (
-            <img src={preview} alt="Preview" className="max-h-32 rounded object-contain" />
+            <img src={preview} alt={fileName || "Prévia do arquivo"} className="max-h-32 rounded object-contain" />
           ) : (
             <a href={preview} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm text-primary hover:underline">
-              <FileText className="w-4 h-4" />
+              <FileText aria-hidden="true" className="w-4 h-4" />
               {fileName || "Ver arquivo"}
             </a>
           )}
