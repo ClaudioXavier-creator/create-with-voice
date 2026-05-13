@@ -27,6 +27,7 @@ type ProdutoCard = {
   preco: string;
   external?: boolean;
   trialExternal?: boolean;
+  adminOnly?: boolean;
 };
 
 const produtos: ProdutoCard[] = [
