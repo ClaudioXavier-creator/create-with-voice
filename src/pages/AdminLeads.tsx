@@ -62,6 +62,7 @@ export default function AdminLeads({ isTab = false }: { isTab?: boolean }) {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [filterOrigem, setFilterOrigem] = useState("all");
+  const [filterProduto, setFilterProduto] = useState("all");
   const [filterStatus, setFilterStatus] = useState("all");
 
   const load = async () => {
