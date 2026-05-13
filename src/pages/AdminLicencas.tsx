@@ -53,7 +53,7 @@ const ACCESS_LEVEL_LABELS: Record<string, string> = {
   avancado: "Avançado",
 };
 
-export default function AdminLicencas() {
+export default function AdminLicencas({ isTab = false }: { isTab?: boolean }) {
   const { user, roles, loading: authLoading } = useAuth();
   const [entries, setEntries] = useState<LicenseEntry[]>([]);
   const [loading, setLoading] = useState(true);
@@ -94,7 +94,7 @@ export default function AdminLicencas() {
 
   if (authLoading || isAdmin === null) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="flex items-center justify-center p-8">
         <Loader2 className="w-8 h-8 animate-spin text-primary" />
       </div>
     );
@@ -203,29 +203,39 @@ export default function AdminLicencas() {
   const canManage = true;
 
   return (
-    <div className="min-h-screen bg-background p-4 md:p-8">
-      <div className="max-w-5xl mx-auto space-y-6">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Shield className="w-7 h-7 text-primary" />
-            <div>
-              <h1 className="text-2xl font-bold">Licenças por Empresa</h1>
+    <div className={isTab ? "space-y-6" : "min-h-screen bg-background p-4 md:p-8"}>
+      <div className={isTab ? "space-y-6" : "max-w-5xl mx-auto space-y-6"}>
+        {!isTab && (
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Shield className="w-7 h-7 text-primary" />
+              <div>
+                <h1 className="text-2xl font-bold">Licenças por Empresa</h1>
+              </div>
             </div>
+            <Button variant="outline" size="sm" onClick={fetchEntries} disabled={loading}>
+              <RefreshCw className={`w-4 h-4 mr-2 ${loading ? "animate-spin" : ""}`} />
+              Atualizar
+            </Button>
           </div>
-          <Button variant="outline" size="sm" onClick={fetchEntries} disabled={loading}>
-            <RefreshCw className={`w-4 h-4 mr-2 ${loading ? "animate-spin" : ""}`} />
-            Atualizar
-          </Button>
-        </div>
+        )}
 
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-          <Input
-            placeholder="Buscar por empresa ou email..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-9"
-          />
+        <div className="flex items-center justify-between gap-4">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <Input
+              placeholder="Buscar por empresa ou email..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-9"
+            />
+          </div>
+          {isTab && (
+            <Button variant="outline" size="sm" onClick={fetchEntries} disabled={loading}>
+              <RefreshCw className={`w-4 h-4 mr-2 ${loading ? "animate-spin" : ""}`} />
+              Atualizar
+            </Button>
+          )}
         </div>
 
         {loading ? (
@@ -242,26 +252,26 @@ export default function AdminLicencas() {
           <div className="space-y-3">
             {filtered.map((e) => (
               <Card key={e.id} className="overflow-hidden">
-                <CardContent className="p-4 flex flex-col md:flex-row md:items-center gap-4">
+                <CardContent className="p-4 flex flex-col xl:flex-row xl:items-center gap-4">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
                       <Building2 className="w-4 h-4 text-muted-foreground shrink-0" />
                       <p className="font-medium truncate">{getEntryTitle(e)}</p>
                     </div>
-                    <div className="flex items-center gap-2 mt-1 text-sm text-muted-foreground">
-                      <span className="truncate">{e.email}</span>
+                    <div className="flex flex-wrap items-center gap-2 mt-1 text-sm text-muted-foreground">
+                      <span className="truncate font-mono text-xs">{e.email}</span>
                       <span>·</span>
-                      <span>{PLAN_LABELS[e.plano] || e.plano}</span>
+                      <Badge variant="outline" className="text-[10px]">{PLAN_LABELS[e.plano] || e.plano}</Badge>
                       <span>·</span>
-                      <span>Nível: {ACCESS_LEVEL_LABELS[e.nivel || ""] || "Não definido"}</span>
+                      <span className="text-xs">Nível: {ACCESS_LEVEL_LABELS[e.nivel || ""] || "Não definido"}</span>
                       <span>·</span>
-                      <span>Exp: {new Date(e.data_expiracao).toLocaleDateString("pt-BR")}</span>
+                      <span className="text-xs">Exp: {new Date(e.data_expiracao).toLocaleDateString("pt-BR")}</span>
                       <span>·</span>
-                      <span>{daysRemaining(e)} restantes</span>
+                      <span className="text-xs font-bold">{daysRemaining(e)}</span>
                     </div>
                   </div>
 
-                     <div className="flex items-center gap-2">
+                  <div className="flex flex-wrap items-center gap-2">
                     <Badge variant={isActive(e) ? "default" : "destructive"}>
                       {e.liberado_admin ? "Admin" : isActive(e) ? "Ativa" : e.status === "revogada" ? "Revogada" : "Expirada"}
                     </Badge>
@@ -269,84 +279,87 @@ export default function AdminLicencas() {
                      {e.excedente && <Badge variant="secondary">Excedente</Badge>}
                   </div>
 
-                  <div className="flex items-center gap-2">
+                  <div className="flex flex-wrap items-center gap-2">
                      {(() => {
-                       const targetId = e.licenca_id || e.id;
-                       return (
-                         <>
-                    <Select
-                       value={selectedLevels[targetId] || e.nivel || "entrada"}
-                      onValueChange={(v) =>
-                         setSelectedLevels((prev) => ({ ...prev, [targetId]: v }))
-                      }
-                    >
-                      <SelectTrigger className="w-[150px]">
-                        <SelectValue placeholder="Nível" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="entrada">Entrada</SelectItem>
-                        <SelectItem value="intermediario">Intermediário</SelectItem>
-                        <SelectItem value="avancado">Avançado</SelectItem>
-                      </SelectContent>
-                    </Select>
+                        const targetId = e.licenca_id || e.id;
+                        return (
+                          <>
+                            <Select
+                               value={selectedLevels[targetId] || e.nivel || "entrada"}
+                               onValueChange={(v) =>
+                                  setSelectedLevels((prev) => ({ ...prev, [targetId]: v }))
+                               }
+                            >
+                              <SelectTrigger className="w-[140px] h-8 text-xs">
+                                <SelectValue placeholder="Nível" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="entrada">Entrada</SelectItem>
+                                <SelectItem value="intermediario">Intermediário</SelectItem>
+                                <SelectItem value="avancado">Avançado</SelectItem>
+                              </SelectContent>
+                            </Select>
 
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => handleUpdateLevel(e)}
-                       disabled={!canManage || actionLoading === (targetId + "-level")}
-                    >
-                       {actionLoading === (targetId + "-level") ? (
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                      ) : null}
-                      Salvar nível
-                    </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="h-8 text-xs"
+                              onClick={() => handleUpdateLevel(e)}
+                               disabled={!canManage || actionLoading === (targetId + "-level")}
+                            >
+                               {actionLoading === (targetId + "-level") ? (
+                                <Loader2 className="w-3 h-3 animate-spin mr-1" />
+                              ) : null}
+                              Nível
+                            </Button>
 
-                    <Select
-                       value={selectedDays[targetId] || ""}
-                      onValueChange={(v) =>
-                         setSelectedDays((prev) => ({ ...prev, [targetId]: v }))
-                      }
-                    >
-                      <SelectTrigger className="w-[130px]">
-                        <SelectValue placeholder="Período" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="30">30 dias</SelectItem>
-                        <SelectItem value="90">90 dias</SelectItem>
-                        <SelectItem value="180">180 dias</SelectItem>
-                        <SelectItem value="365">1 ano</SelectItem>
-                      </SelectContent>
-                    </Select>
+                            <Select
+                               value={selectedDays[targetId] || ""}
+                               onValueChange={(v) =>
+                                  setSelectedDays((prev) => ({ ...prev, [targetId]: v }))
+                               }
+                            >
+                              <SelectTrigger className="w-[110px] h-8 text-xs">
+                                <SelectValue placeholder="Período" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="30">30 dias</SelectItem>
+                                <SelectItem value="90">90 dias</SelectItem>
+                                <SelectItem value="180">180 dias</SelectItem>
+                                <SelectItem value="365">1 ano</SelectItem>
+                              </SelectContent>
+                            </Select>
 
-                    <Button
-                      size="sm"
-                      onClick={() => handleGrant(e)}
-                       disabled={!canManage || actionLoading === (targetId + "-grant")}
-                    >
-                       {actionLoading === (targetId + "-grant") ? (
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                      ) : (
-                        <UserCheck className="w-4 h-4 mr-1" />
-                      )}
-                      Liberar
-                    </Button>
+                            <Button
+                              size="sm"
+                              className="h-8 text-xs"
+                              onClick={() => handleGrant(e)}
+                               disabled={!canManage || actionLoading === (targetId + "-grant")}
+                            >
+                               {actionLoading === (targetId + "-grant") ? (
+                                <Loader2 className="w-3 h-3 animate-spin mr-1" />
+                              ) : (
+                                <UserCheck className="w-3 h-3 mr-1" />
+                              )}
+                              Liberar
+                            </Button>
 
-                    <Button
-                      size="sm"
-                      variant="destructive"
-                      onClick={() => handleRevoke(e)}
-                       disabled={!canManage || actionLoading === (targetId + "-revoke")}
-                    >
-                       {actionLoading === (targetId + "-revoke") ? (
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                      ) : (
-                        <UserX className="w-4 h-4 mr-1" />
-                      )}
-                      Revogar
-                    </Button>
-                         </>
-                       );
+                            <Button
+                              size="sm"
+                              variant="destructive"
+                              className="h-8 text-xs"
+                              onClick={() => handleRevoke(e)}
+                               disabled={!canManage || actionLoading === (targetId + "-revoke")}
+                            >
+                               {actionLoading === (targetId + "-revoke") ? (
+                                <Loader2 className="w-3 h-3 animate-spin mr-1" />
+                              ) : (
+                                <UserX className="w-3 h-3 mr-1" />
+                              )}
+                              Revogar
+                            </Button>
+                          </>
+                        );
                      })()}
                   </div>
                 </CardContent>
