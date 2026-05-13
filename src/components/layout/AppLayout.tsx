@@ -92,8 +92,18 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
   }, [location.pathname, navigate]);
 
   const handleSignOut = useCallback(async () => {
-    await signOut();
-    navigate("/auth");
+    try {
+      await signOut();
+      // Limpeza profunda de estados locais
+      sessionStorage.clear();
+      // Removemos apenas chaves específicas para não deslogar de outros apps no mesmo domínio se houver
+      localStorage.removeItem("feedbpf_empresa_ativa_id");
+      localStorage.removeItem("post_login_redirect");
+      navigate("/auth", { replace: true });
+    } catch (err) {
+      console.error("Erro ao sair:", err);
+      navigate("/auth", { replace: true });
+    }
   }, [signOut, navigate]);
 
   const closeMobile = useCallback(() => setMobileOpen(false), []);
