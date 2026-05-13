@@ -648,22 +648,24 @@ export default function HigieneSanitizacao() {
         orientacaoModuloId="higiene" />
 
       <Tabs defaultValue="preop">
-        <TabsList className="flex flex-wrap h-auto gap-1 p-1">
-          <TabsTrigger value="preop"><ShieldCheck className="w-4 h-4 mr-1" />Pré-Operacional</TabsTrigger>
-          <TabsTrigger value="liberacao"><Layers className="w-4 h-4 mr-1" />Liberação de Linha</TabsTrigger>
-          <TabsTrigger value="superficies"><FlaskConical className="w-4 h-4 mr-1" />Superfícies</TabsTrigger>
-          <TabsTrigger value="silos"><Container className="w-4 h-4 mr-1" />Silos & Transportadores</TabsTrigger>
-          <TabsTrigger value="higiene_pessoal"><UserCheck className="w-4 h-4 mr-1" />Higiene Pessoal (POP-03)</TabsTrigger>
-          <TabsTrigger value="saude_sintomas"><HeartPulse className="w-4 h-4 mr-1" />Saúde & Sintomas</TabsTrigger>
-          <TabsTrigger value="reservatorio"><Droplet className="w-4 h-4 mr-1" />Limpeza Reservatório</TabsTrigger>
-          <TabsTrigger value="cronogramas"><Droplets className="w-4 h-4 mr-1" />Cronogramas</TabsTrigger>
-          <TabsTrigger value="registros"><CheckCircle2 className="w-4 h-4 mr-1" />Registros Limpeza</TabsTrigger>
-          <TabsTrigger value="agua"><Beaker className="w-4 h-4 mr-1" />Controle de Água (POP-04)</TabsTrigger>
-          <TabsTrigger value="agua_checklist"><ClipboardList className="w-4 h-4 mr-1" />Checklist POP-04</TabsTrigger>
-          <TabsTrigger value="laudos"><FileText className="w-4 h-4 mr-1" />Laudos Vinculados</TabsTrigger>
-          <TabsTrigger value="planilha"><ClipboardList className="w-4 h-4 mr-1" />Planilha Mensal</TabsTrigger>
-          <TabsTrigger value="arquivo"><Archive className="w-4 h-4 mr-1" />Arquivo 2 Anos</TabsTrigger>
-        </TabsList>
+        <div className="w-full overflow-x-auto pb-1">
+          <TabsList className="inline-flex w-max h-auto gap-1 p-1">
+            <TabsTrigger value="preop" className="whitespace-nowrap"><ShieldCheck className="w-4 h-4 mr-1" />Pré-Operacional</TabsTrigger>
+            <TabsTrigger value="liberacao" className="whitespace-nowrap"><Layers className="w-4 h-4 mr-1" />Liberação de Linha</TabsTrigger>
+            <TabsTrigger value="superficies" className="whitespace-nowrap"><FlaskConical className="w-4 h-4 mr-1" />Superfícies</TabsTrigger>
+            <TabsTrigger value="silos" className="whitespace-nowrap"><Container className="w-4 h-4 mr-1" />Silos & Transportadores</TabsTrigger>
+            <TabsTrigger value="higiene_pessoal" className="whitespace-nowrap"><UserCheck className="w-4 h-4 mr-1" />Higiene Pessoal (POP-03)</TabsTrigger>
+            <TabsTrigger value="saude_sintomas" className="whitespace-nowrap"><HeartPulse className="w-4 h-4 mr-1" />Saúde & Sintomas</TabsTrigger>
+            <TabsTrigger value="reservatorio" className="whitespace-nowrap"><Droplet className="w-4 h-4 mr-1" />Limpeza Reservatório</TabsTrigger>
+            <TabsTrigger value="cronogramas" className="whitespace-nowrap"><Droplets className="w-4 h-4 mr-1" />Cronogramas</TabsTrigger>
+            <TabsTrigger value="registros" className="whitespace-nowrap"><CheckCircle2 className="w-4 h-4 mr-1" />Registros Limpeza</TabsTrigger>
+            <TabsTrigger value="agua" className="whitespace-nowrap"><Beaker className="w-4 h-4 mr-1" />Controle de Água (POP-04)</TabsTrigger>
+            <TabsTrigger value="agua_checklist" className="whitespace-nowrap"><ClipboardList className="w-4 h-4 mr-1" />Checklist POP-04</TabsTrigger>
+            <TabsTrigger value="laudos" className="whitespace-nowrap"><FileText className="w-4 h-4 mr-1" />Laudos Vinculados</TabsTrigger>
+            <TabsTrigger value="planilha" className="whitespace-nowrap"><ClipboardList className="w-4 h-4 mr-1" />Planilha Mensal</TabsTrigger>
+            <TabsTrigger value="arquivo" className="whitespace-nowrap"><Archive className="w-4 h-4 mr-1" />Arquivo 2 Anos</TabsTrigger>
+          </TabsList>
+        </div>
 
         {/* ── CHECKLIST PRÉ-OPERACIONAL ── */}
         <TabsContent value="preop" className="space-y-4">
