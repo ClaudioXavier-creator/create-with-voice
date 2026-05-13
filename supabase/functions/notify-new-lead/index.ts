@@ -76,6 +76,27 @@ Deno.serve(async (req) => {
     .select()
     .single()
 
+  if (!insertError && lead) {
+    // 1.1) Create entry in crm_pipeline automatically
+    const { error: pipelineError } = await admin
+      .from('crm_pipeline')
+      .insert({
+        lead_id: lead.id,
+        lead_origem: origem.toLowerCase().includes('site') || origem.toLowerCase().includes('fale conosco') ? 'site' : 'produto',
+        nome: lead.nome,
+        email: lead.email,
+        telefone: lead.telefone,
+        produto_interesse: lead.produto_interesse,
+        etapa: 'novo',
+        responsavel_nome: 'Sistema',
+        observacoes: `Lead captado via ${origem}`,
+      })
+    
+    if (pipelineError) {
+      console.error('Failed to create crm_pipeline entry', pipelineError)
+    }
+  }
+
   if (insertError) {
     console.error('Failed to insert lead', insertError)
     return new Response(

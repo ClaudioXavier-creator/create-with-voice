@@ -262,13 +262,14 @@ export default function Auth() {
 
         // Registra lead + envia notificação por e-mail (não bloqueante)
         try {
+          const sourceParam = searchParams.get("source") || "Trial";
           await supabase.functions.invoke("notify-new-lead", {
             body: {
               nome: nome.trim(),
               email: email.trim(),
               telefone: telefone.trim(),
               produto: product !== "default" ? product : "plataforma",
-              origem: window.location.pathname + window.location.search,
+              origem: sourceParam,
               user_id: signUpData.user?.id,
             },
           });
