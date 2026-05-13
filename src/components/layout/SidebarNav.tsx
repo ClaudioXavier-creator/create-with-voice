@@ -22,10 +22,14 @@ export function SidebarNav({
   currentPath,
   entries,
   onNavigate,
+  userRoles = [],
+  userEmail = "",
 }: {
   currentPath: string;
   entries: NavEntry[];
   onNavigate?: () => void;
+  userRoles?: string[];
+  userEmail?: string;
 }) {
   const [search, setSearch] = useState("");
   const [favorites, setFavorites] = useState<string[]>(() => {
@@ -37,23 +41,74 @@ export function SidebarNav({
   });
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({});
 
+  const filteredByRole = useMemo(() => {
+    return entries.filter((entry) => {
+      if (isGroup(entry)) {
+        // A group is visible if at least one item is visible
+        const visibleItems = entry.items.filter((item) => {
+          if (item.requiredRoles && !item.requiredRoles.some(r => userRoles.includes(r))) {
+             if (item.requiredEmail && userEmail.toLowerCase() === item.requiredEmail.toLowerCase()) {
+                return true;
+             }
+             return false;
+          }
+          if (item.requiredEmail && userEmail.toLowerCase() !== item.requiredEmail.toLowerCase()) {
+             return false;
+          }
+          return true;
+        });
+        return visibleItems.length > 0;
+      } else {
+        if (entry.requiredRoles && !entry.requiredRoles.some(r => userRoles.includes(r))) {
+            if (entry.requiredEmail && userEmail.toLowerCase() === entry.requiredEmail.toLowerCase()) {
+                return true;
+            }
+            return false;
+        }
+        if (entry.requiredEmail && userEmail.toLowerCase() !== entry.requiredEmail.toLowerCase()) {
+            return false;
+        }
+        return true;
+      }
+    }).map(entry => {
+      if (isGroup(entry)) {
+        return {
+          ...entry,
+          items: entry.items.filter(item => {
+            if (item.requiredRoles && !item.requiredRoles.some(r => userRoles.includes(r))) {
+               if (item.requiredEmail && userEmail.toLowerCase() === item.requiredEmail.toLowerCase()) {
+                  return true;
+               }
+               return false;
+            }
+            if (item.requiredEmail && userEmail.toLowerCase() !== item.requiredEmail.toLowerCase()) {
+               return false;
+            }
+            return true;
+          })
+        };
+      }
+      return entry;
+    });
+  }, [entries, userRoles, userEmail]);
+
   useEffect(() => {
     setOpenGroups((prev) => {
       const next = { ...prev };
-      entries.forEach((entry) => {
+      filteredByRole.forEach((entry) => {
         if (isGroup(entry) && entry.items.some((item) => item.path === currentPath)) {
           next[entry.label] = true;
         }
       });
       return next;
     });
-  }, [currentPath, entries]);
+  }, [currentPath, filteredByRole]);
 
   useEffect(() => {
     localStorage.setItem(FAVORITES_KEY, JSON.stringify(favorites));
   }, [favorites]);
 
-  const flatEntries = useMemo(() => flattenEntries(entries), [entries]);
+  const flatEntries = useMemo(() => flattenEntries(filteredByRole), [filteredByRole]);
   const favoriteItems = useMemo(
     () => flatEntries.filter((item) => favorites.includes(item.path)).slice(0, 6),
     [favorites, flatEntries],
@@ -64,10 +119,10 @@ export function SidebarNav({
   }, [currentPath, favoriteItems, flatEntries]);
 
   const normalizedSearch = search.trim().toLowerCase();
-  const filteredEntries = useMemo(() => {
-    if (!normalizedSearch) return entries;
+  const displayEntries = useMemo(() => {
+    if (!normalizedSearch) return filteredByRole;
 
-    return entries
+    return filteredByRole
       .map((entry) => {
         if (!isGroup(entry)) {
           const haystack = `${entry.label} ${(entry.keywords || []).join(" ")}`.toLowerCase();
@@ -78,7 +133,7 @@ export function SidebarNav({
         return items.length ? { ...entry, items } : null;
       })
       .filter(Boolean) as NavEntry[];
-  }, [entries, normalizedSearch]);
+  }, [filteredByRole, normalizedSearch]);
 
   const toggleFavorite = (path: string) => {
     setFavorites((prev) =>
@@ -167,7 +222,7 @@ export function SidebarNav({
             <div className="px-2">
               <p className="text-xs font-semibold uppercase tracking-wide text-sidebar-foreground/55">Módulos</p>
             </div>
-            {filteredEntries.map((entry) => {
+            {displayEntries.map((entry) => {
               if (!isGroup(entry)) {
                 return renderLink(entry);
               }
@@ -201,7 +256,7 @@ export function SidebarNav({
               );
             })}
 
-            {filteredEntries.length === 0 && (
+            {displayEntries.length === 0 && (
               <div className="rounded-lg border border-dashed border-sidebar-border px-3 py-5 text-sm text-sidebar-foreground/60">
                 Nenhum módulo encontrado para “{search}”.
               </div>

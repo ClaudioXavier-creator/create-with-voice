@@ -40,6 +40,8 @@ export interface NavItem {
   label: string;
   icon: React.ElementType;
   keywords?: string[];
+  requiredRoles?: string[];
+  requiredEmail?: string;
 }
 
 export interface NavGroup {
@@ -153,8 +155,26 @@ export const NAV_ENTRIES: NavEntry[] = [
       { path: "/busca-global", label: "Busca Global", icon: Search },
     ],
   },
-  { path: "/admin-licencas", label: "Licenças & Plano", icon: ShieldCheck },
-  { path: "/admin-leads", label: "Leads (Admin)", icon: ClipboardList },
+  { 
+    path: "/admin-licencas", 
+    label: "Licenças & Plano", 
+    icon: ShieldCheck,
+    requiredRoles: ["admin"],
+    requiredEmail: "claudiolx.nunes@gmail.com"
+  },
+  { 
+    path: "/admin-leads", 
+    label: "Leads (Admin)", 
+    icon: ClipboardList,
+    requiredRoles: ["admin"]
+  },
+  { 
+    path: "/crm", 
+    label: "CRM Comercial", 
+    icon: BarChart3,
+    requiredRoles: ["admin", "comercial"]
+  },
+  { path: "/ativar-licenca", label: "🔑 Ativar Licença", icon: ShieldCheck },
   { path: "/modelos", label: "📁 Modelos", icon: FolderOpen },
   { path: "/modo-tablet", label: "🏭 Modo Tablet", icon: Tablet },
 ];

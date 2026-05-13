@@ -5,7 +5,7 @@ import { AlertTriangle, CreditCard, Loader2, Clock, ShieldCheck, Mail, MessageCi
 // Rotas livres — conteúdo 100% educativo / sandbox.
 // Sempre acessíveis, mesmo sem licença ativa ou empresa selecionada,
 // para que treinamento e onboarding nunca fiquem bloqueados.
-const ROTAS_LIVRES = ["/orientacoes", "/manual", "/guia-pops"];
+const ROTAS_LIVRES = ["/orientacoes", "/manual", "/guia-pops", "/ativar-licenca"];
 const isRotaLivre = (path: string) =>
   ROTAS_LIVRES.some((r) => path === r || path.startsWith(r + "/"));
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";

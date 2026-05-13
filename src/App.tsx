@@ -51,6 +51,7 @@ import ControleVisitantes from "./pages/ControleVisitantes";
 import DocumentosBPF from "./pages/DocumentosBPF";
 import Auth from "./pages/Auth";
 import ResetPassword from "./pages/ResetPassword";
+import AtivarLicenca from "./pages/AtivarLicenca";
 
 import Modelos from "./pages/Modelos";
 import Instalar from "./pages/Instalar";
@@ -139,6 +140,7 @@ const AppRoutes = React.forwardRef<HTMLDivElement>((_props, _ref) => {
                 <LicenseGate>
                 <Routes>
                   <Route path="/dashboard" element={<Index />} />
+                  <Route path="/ativar-licenca" element={<AtivarLicenca />} />
                   <Route path="/cadastro" element={<Cadastro />} />
                   <Route path="/documentos" element={<Documentos />} />
                   <Route path="/documentos-bpf" element={<DocumentosBPF />} />
