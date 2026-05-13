@@ -1225,7 +1225,7 @@ export default function HigieneSanitizacao() {
             </CardContent>
           </Card>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 mb-4">
             <div><Label>Responsável *</Label><Input value={resResp} onChange={e => setResResp(e.target.value)} placeholder="Executor" /></div>
             <div><Label>Data</Label><Input type="date" value={resData} onChange={e => setResData(e.target.value)} /></div>
             <div><Label>Identificação do Reservatório *</Label><Input value={resIdentificacao} onChange={e => setResIdentificacao(e.target.value)} placeholder="Ex: Caixa d'água 01 — 5.000L" /></div>
