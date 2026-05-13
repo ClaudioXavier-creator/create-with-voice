@@ -689,7 +689,7 @@ export default function Index() {
       </div>
       
       {/* Onboarding Overlay */}
-      {showOnboarding && <OnboardingOverlay onStart={iniciarTour} onDismiss={fecharTour} />}
+      {showOnboarding && <OnboardingOverlay onClose={fecharTour} />}
     </div>
   );
 }
