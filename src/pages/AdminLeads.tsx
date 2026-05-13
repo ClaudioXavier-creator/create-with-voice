@@ -62,6 +62,7 @@ export default function AdminLeads({ isTab = false }: { isTab?: boolean }) {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [filterOrigem, setFilterOrigem] = useState("all");
+  const [filterProduto, setFilterProduto] = useState("all");
   const [filterStatus, setFilterStatus] = useState("all");
 
   const load = async () => {
@@ -93,7 +94,7 @@ export default function AdminLeads({ isTab = false }: { isTab?: boolean }) {
     const q = search.trim().toLowerCase();
     if (q) {
       result = result.filter((l) =>
-        [l.nome, l.email, l.telefone, l.produto_interesse ?? ""].some((v) => 
+        [l.nome, l.email, l.telefone].some((v) => 
           v.toLowerCase().includes(q)
         )
       );
@@ -104,6 +105,11 @@ export default function AdminLeads({ isTab = false }: { isTab?: boolean }) {
       result = result.filter((l) => (l.origem || "—").toLowerCase() === filterOrigem.toLowerCase());
     }
 
+    // Filtro por Produto de Interesse
+    if (filterProduto !== "all") {
+      result = result.filter((l) => (l.produto_interesse || "—").toLowerCase() === filterProduto.toLowerCase());
+    }
+
     // Filtro por Status (Notificado/Pendente)
     if (filterStatus !== "all") {
       const isNotificado = filterStatus === "notificado";
@@ -111,10 +117,15 @@ export default function AdminLeads({ isTab = false }: { isTab?: boolean }) {
     }
 
     return result;
-  }, [leads, search, filterOrigem, filterStatus]);
+  }, [leads, search, filterOrigem, filterProduto, filterStatus]);
 
   const origensUnicas = useMemo(() => {
     const set = new Set(leads.map(l => l.origem || "—"));
+    return Array.from(set).sort();
+  }, [leads]);
+
+  const produtosUnicos = useMemo(() => {
+    const set = new Set(leads.map(l => l.produto_interesse || "—"));
     return Array.from(set).sort();
   }, [leads]);
 
@@ -198,13 +209,14 @@ export default function AdminLeads({ isTab = false }: { isTab?: boolean }) {
             <CardTitle className="flex flex-col gap-4">
               <div className="flex items-center justify-between">
                 <span>{filtered.length} lead(s)</span>
-                {(search || filterOrigem !== "all" || filterStatus !== "all") && (
+                {(search || filterOrigem !== "all" || filterProduto !== "all" || filterStatus !== "all") && (
                   <Button 
                     variant="ghost" 
                     size="sm" 
                     onClick={() => {
                       setSearch("");
                       setFilterOrigem("all");
+                      setFilterProduto("all");
                       setFilterStatus("all");
                     }}
                     className="h-8 text-xs text-muted-foreground"
@@ -214,7 +226,7 @@ export default function AdminLeads({ isTab = false }: { isTab?: boolean }) {
                 )}
               </div>
               
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+              <div className="grid grid-cols-1 md:grid-cols-5 gap-3">
                 <div className="relative col-span-1 md:col-span-2">
                   <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
                   <Input
@@ -233,6 +245,18 @@ export default function AdminLeads({ isTab = false }: { isTab?: boolean }) {
                     <SelectItem value="all">Todas as origens</SelectItem>
                     {origensUnicas.map(o => (
                       <SelectItem key={o} value={o}>{o}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
+                <Select value={filterProduto} onValueChange={setFilterProduto}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Produto" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Todos os produtos</SelectItem>
+                    {produtosUnicos.map(p => (
+                      <SelectItem key={p} value={p}>{PRODUTO_LABEL[p] || p}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
