@@ -24,7 +24,7 @@
     --secondary-foreground: 158 50% 15%;
 
     --muted: 150 10% 94%;
-    --muted-foreground: 155 10% 40%;
+    --muted-foreground: 155 10% 35%; /* Escurecido para melhor contraste (de 40% para 35%) */
 
     --accent: 38 92% 50%;
     --accent-foreground: 0 0% 100%;
@@ -69,7 +69,7 @@
     --secondary-foreground: 150 15% 94%;
 
     --muted: 160 20% 14%;
-    --muted-foreground: 150 10% 55%;
+    --muted-foreground: 150 10% 65%; /* Ajustado para contraste em modo escuro */
 
     --accent: 38 92% 50%;
     --accent-foreground: 0 0% 100%;
@@ -100,6 +100,12 @@
   body {
     @apply bg-background text-foreground font-sans antialiased;
     font-family: 'Inter', sans-serif;
+    scroll-behavior: smooth;
+  }
+
+  /* Improved focus visibility */
+  :focus-visible {
+    @apply outline-none ring-2 ring-primary ring-offset-2 ring-offset-background;
   }
 
   h1, h2, h3, h4, h5, h6 {
