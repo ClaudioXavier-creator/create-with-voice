@@ -80,13 +80,36 @@ export default function AdminLeads({ isTab = false }: { isTab?: boolean }) {
   const visibleLeads = useMemo(() => leads, [leads]);
 
   const filtered = useMemo(() => {
+    let result = leads;
+    
+    // Filtro por busca de texto (Nome, Email, Telefone)
     const q = search.trim().toLowerCase();
-    if (!q) return visibleLeads;
-    return visibleLeads.filter((l) =>
-      [l.nome, l.email, l.telefone, l.produto_interesse ?? "", l.origem ?? ""]
-        .some((v) => v.toLowerCase().includes(q)),
-    );
-  }, [visibleLeads, search]);
+    if (q) {
+      result = result.filter((l) =>
+        [l.nome, l.email, l.telefone, l.produto_interesse ?? ""].some((v) => 
+          v.toLowerCase().includes(q)
+        )
+      );
+    }
+
+    // Filtro por Origem
+    if (filterOrigem !== "all") {
+      result = result.filter((l) => (l.origem || "—").toLowerCase() === filterOrigem.toLowerCase());
+    }
+
+    // Filtro por Status (Notificado/Pendente)
+    if (filterStatus !== "all") {
+      const isNotificado = filterStatus === "notificado";
+      result = result.filter((l) => l.notificado === isNotificado);
+    }
+
+    return result;
+  }, [leads, search, filterOrigem, filterStatus]);
+
+  const origensUnicas = useMemo(() => {
+    const set = new Set(leads.map(l => l.origem || "—"));
+    return Array.from(set).sort();
+  }, [leads]);
 
   const exportCsv = () => {
     const header = ["Data", "Nome", "Email", "Telefone", "Produto", "Origem", "Notificado"];
