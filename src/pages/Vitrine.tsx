@@ -55,11 +55,11 @@ const produtos: ProdutoCard[] = [
     bgCard: "bg-gradient-to-br from-emerald-50 to-green-50 dark:from-emerald-950/30 dark:to-green-950/30",
     borderColor: "border-emerald-200 dark:border-emerald-800",
     trial: "7 dias grátis",
-    trialLink: "https://friendly-flame-igniter.lovable.app/auth",
+    trialLink: "/auth?product=auditsbpf&mode=signup&redirect=%2Faudits-bpf",
     demoLink: "/demo/auditsbpf",
     preco: "A partir de R$ 249/mês",
     external: false,
-    trialExternal: true,
+    trialExternal: false,
   },
   {
     nome: "Agro RC CRM",
