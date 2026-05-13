@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { ChevronDown, Search, Star, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -225,4 +225,4 @@ export const SidebarNav = React.memo(({
       </div>
     </ScrollArea>
   );
-}
+});
