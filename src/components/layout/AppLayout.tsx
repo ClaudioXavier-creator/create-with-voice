@@ -179,11 +179,11 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
           </div>
         </div>
         <div className="flex items-center gap-0.5">
-          <Button variant="ghost" size="icon" onClick={() => navigate("/busca-global")} className="h-8 w-8 text-sidebar-foreground/70">
-            <Search className="w-4 h-4" />
+          <Button variant="ghost" size="icon" onClick={() => navigate("/busca-global")} className="h-8 w-8 text-sidebar-foreground/70" aria-label="Abrir busca global">
+            <Search className="w-4 h-4" aria-hidden="true" />
           </Button>
-          <Button variant="ghost" size="icon" onClick={() => setMobileOpen(!mobileOpen)} className="h-8 w-8 text-sidebar-foreground">
-            {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          <Button variant="ghost" size="icon" onClick={() => setMobileOpen(!mobileOpen)} className="h-8 w-8 text-sidebar-foreground" aria-label={mobileOpen ? "Fechar menu" : "Abrir menu"}>
+            {mobileOpen ? <X className="w-5 h-5" aria-hidden="true" /> : <Menu className="w-5 h-5" aria-hidden="true" />}
           </Button>
         </div>
       </header>
