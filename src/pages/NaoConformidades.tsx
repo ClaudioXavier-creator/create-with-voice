@@ -295,7 +295,7 @@ export default function NaoConformidades() {
                 {/* Identificação da NC */}
                 <div className="p-3 rounded-lg bg-destructive/5 border border-destructive/20">
                   <p className="text-xs font-semibold text-destructive mb-2">① Identificação da NC</p>
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div className="space-y-1"><Label>Data</Label><Input type="date" required value={formData} onChange={e => setFormData(e.target.value)} /></div>
                     <div className="space-y-1">
                       <Label>Setor</Label>
@@ -326,7 +326,7 @@ export default function NaoConformidades() {
                 {/* Responsabilidade e Prazo */}
                 <div className="p-3 rounded-lg bg-muted/50 border">
                   <p className="text-xs font-semibold mb-2">③ Responsabilidade e Prazo</p>
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div className="space-y-1"><Label>Responsável *</Label><Input value={formResponsavel} onChange={e => setFormResponsavel(e.target.value)} required placeholder="Nome do responsável" /></div>
                     <div className="space-y-1"><Label>Prazo para Conclusão *</Label><Input type="date" value={formPrazo} onChange={e => setFormPrazo(e.target.value)} required /></div>
                   </div>

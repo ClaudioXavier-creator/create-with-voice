@@ -276,11 +276,11 @@ export default function Recebimento() {
               <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto">
                 <DialogHeader><DialogTitle>Registrar Recebimento de MP</DialogTitle></DialogHeader>
                 <div className="space-y-3">
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div><Label>Fornecedor *</Label><Input value={fornecedor} onChange={e => setFornecedor(e.target.value)} /></div>
                     <div><Label>Matéria-Prima *</Label><Input value={materiaPrima} onChange={e => setMateriaPrima(e.target.value)} /></div>
                   </div>
-                  <div className="grid grid-cols-3 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <div><Label>Lote</Label><Input value={lote} onChange={e => setLote(e.target.value)} /></div>
                     <div><Label>Quantidade</Label><Input value={quantidade} onChange={e => setQuantidade(e.target.value)} /></div>
                     <div>
@@ -296,7 +296,7 @@ export default function Recebimento() {
                       </Select>
                     </div>
                   </div>
-                  <div className="grid grid-cols-3 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <div>
                       <Label>Odor</Label>
                       <Select value={odor} onValueChange={setOdor}>
@@ -310,7 +310,7 @@ export default function Recebimento() {
                     <div><Label>Umidade (%)</Label><Input value={umidade} onChange={e => setUmidade(e.target.value)} /></div>
                     <div><Label>Temperatura (°C)</Label><Input value={temperatura} onChange={e => setTemperatura(e.target.value)} /></div>
                   </div>
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
                       <Label>Insetos</Label>
                       <Select value={insetos} onValueChange={setInsetos}>
@@ -327,7 +327,7 @@ export default function Recebimento() {
                    {/* Certificado de Análise / Laudo de Conformidade */}
                    <div className="p-3 rounded-lg border bg-muted/20 space-y-3">
                      <p className="text-sm font-semibold flex items-center gap-2"><FileText className="w-4 h-4" /> Laudo de Conformidade do Fornecedor (Art. 12 — Decreto 12.031/2024)</p>
-                     <div className="grid grid-cols-2 gap-3">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                      <div><Label>Nº do Certificado / Laudo</Label><Input value={certNumero} onChange={e => setCertNumero(e.target.value)} placeholder="Ex: CA-2026-0321" /></div>
                        <div><Label>URL / Link do Laudo</Label><Input value={certUrl} onChange={e => setCertUrl(e.target.value)} placeholder="https://..." /></div>
                      </div>

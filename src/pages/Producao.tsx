@@ -187,7 +187,7 @@ export default function Producao() {
                     <Label>Produto *</Label>
                     <Input value={produto} onChange={e => setProduto(e.target.value)} placeholder="Ex: Ração Bovinos 22%" />
                   </div>
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
                       <Label>Lote</Label>
                       <Input value={lote} onChange={e => setLote(e.target.value)} placeholder="Ex: L2026-0321" />
@@ -197,7 +197,7 @@ export default function Producao() {
                       <Input value={operador} onChange={e => setOperador(e.target.value)} placeholder="Nome" />
                     </div>
                   </div>
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
                       <Label>Tempo de Mistura (min) *</Label>
                       <Input 
@@ -235,7 +235,7 @@ export default function Producao() {
                     </p>
                     {realizouFlush && (
                       <>
-                        <div className="grid grid-cols-2 gap-3">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                           <div>
                             <Label>Tipo de Limpeza</Label>
                             <Select value={tipoLimpeza} onValueChange={setTipoLimpeza}>
@@ -254,7 +254,7 @@ export default function Producao() {
                             <Input value={volumeFlush} onChange={e => setVolumeFlush(e.target.value)} placeholder="Ex: 500" />
                           </div>
                         </div>
-                        <div className="grid grid-cols-2 gap-3">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                           <div>
                             <Label>Produto Anterior na Linha</Label>
                             <Input value={produtoAnterior} onChange={e => setProdutoAnterior(e.target.value)} placeholder="Ex: Ração Frango Engorda c/ Salinomicina" />
@@ -286,7 +286,7 @@ export default function Producao() {
                     </div>
                     {houveSobra && (
                       <>
-                        <div className="grid grid-cols-2 gap-3">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                           <div>
                             <Label>Quantidade sobra (kg)</Label>
                             <Input value={qtdSobra} onChange={e => setQtdSobra(e.target.value)} placeholder="Ex: 50" />
@@ -320,7 +320,7 @@ export default function Producao() {
                     <p className="text-[10px] text-muted-foreground">
                       Reter amostra testemunha de cada lote produzido pelo prazo de validade do produto + 30 dias para defesa em fiscalizações.
                     </p>
-                    <div className="grid grid-cols-3 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                       <div><Label>Quantidade retida</Label><Input id="prod-cp-qtd" placeholder="Ex: 500g" /></div>
                       <div><Label>Local armazenamento</Label><Input id="prod-cp-local" placeholder="Ex: Sala de amostras" /></div>
                       <div><Label>Validade retenção</Label><Input id="prod-cp-val" placeholder="Ex: Validade +30 dias" /></div>

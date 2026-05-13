@@ -221,7 +221,7 @@ export default function Pragas() {
                 <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
                   <DialogHeader><DialogTitle>Registro de Operação de Expurgo</DialogTitle></DialogHeader>
                   <p className="text-xs text-muted-foreground mb-2">Conforme IN 04/2007 — POP 07. Registrar todas as operações de expurgo/fumigação realizadas.</p>
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div><Label>Data Início</Label><Input type="date" value={expurgoForm.data_inicio} onChange={e => setExpurgoForm(f => ({ ...f, data_inicio: e.target.value }))} /></div>
                     <div><Label>Data Fim</Label><Input type="date" value={expurgoForm.data_fim} onChange={e => setExpurgoForm(f => ({ ...f, data_fim: e.target.value }))} /></div>
                     <div><Label>Local / Silo / Armazém</Label><Input value={expurgoForm.local} onChange={e => setExpurgoForm(f => ({ ...f, local: e.target.value }))} placeholder="Ex: Silo 2, Armazém MP" /></div>
@@ -246,7 +246,7 @@ export default function Pragas() {
                     <div><Label>Nº ART / Licença</Label><Input value={expurgoForm.art_numero} onChange={e => setExpurgoForm(f => ({ ...f, art_numero: e.target.value }))} placeholder="ART do responsável" /></div>
                     <div className="col-span-2"><Label>Responsável Técnico</Label><Input value={expurgoForm.responsavel_tecnico} onChange={e => setExpurgoForm(f => ({ ...f, responsavel_tecnico: e.target.value }))} placeholder="Nome do RT" /></div>
 
-                    <div className="col-span-2 grid grid-cols-2 gap-3 pt-2 border-t">
+                    <div className="col-span-1 sm:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t">
                       <h4 className="col-span-2 font-semibold text-sm">Checklist de Segurança</h4>
                       <label className="flex items-center gap-2 text-sm">
                         <Checkbox checked={expurgoForm.vedacao_ok} onCheckedChange={c => setExpurgoForm(f => ({ ...f, vedacao_ok: !!c }))} />
