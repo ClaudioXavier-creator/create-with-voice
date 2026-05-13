@@ -373,8 +373,8 @@ export default function Documentos() {
             <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle className="font-display">Documentos Registrados</CardTitle>
               <Dialog open={popOpen} onOpenChange={setPopOpen}>
-                <DialogTrigger asChild><Button size="sm"><Plus className="w-4 h-4 mr-1" /> Novo Documento</Button></DialogTrigger>
-                <DialogContent>
+                <DialogTrigger asChild><Button size="sm" className="h-8 text-xs sm:h-9 sm:text-sm"><Plus className="w-4 h-4 mr-1" /> <span className="hidden sm:inline">Novo Documento</span><span className="sm:hidden">Novo</span></Button></DialogTrigger>
+                <DialogContent className="w-[95vw] sm:max-w-lg max-h-[90vh] overflow-y-auto">
                   <DialogHeader><DialogTitle>Registrar Documento</DialogTitle></DialogHeader>
                   <div className="space-y-4">
                     <div>
@@ -402,11 +402,12 @@ export default function Documentos() {
                 </DialogContent>
               </Dialog>
             </CardHeader>
-            <CardContent className="overflow-x-auto">
+            <CardContent className="p-2 sm:p-6 overflow-hidden">
               {loading ? <div className="flex justify-center py-8"><Loader2 className="w-6 h-6 animate-spin text-muted-foreground" /></div>
               : docs.length === 0 ? <p className="text-center text-muted-foreground py-8">Nenhum documento registrado</p>
               : (
-                <Table>
+                <div className="hidden md:block overflow-x-auto">
+                  <Table>
                   <TableHeader><TableRow>
                     <TableHead>Código</TableHead><TableHead>Nome</TableHead><TableHead>Versão</TableHead>
                     <TableHead>Workflow</TableHead>
@@ -469,7 +470,64 @@ export default function Documentos() {
                       </TableRow>
                     )})}
                   </TableBody>
-                </Table>
+                  </Table>
+                </div>
+
+                {/* Mobile View */}
+                <div className="md:hidden space-y-3">
+                  {docs.map(d => {
+                    const today = new Date().toISOString().split("T")[0];
+                    const vencido = d.validade_revisao && d.validade_revisao < today;
+                    const proximoVencer = d.proxima_revisao && d.proxima_revisao <= new Date(Date.now() + 30 * 86400000).toISOString().split("T")[0];
+                    const wf = (d.workflow_status || "vigente") as WorkflowStatus;
+                    
+                    return (
+                      <Card key={d.id} className={`border shadow-sm ${wf === "obsoleto" ? "opacity-60" : ""}`}>
+                        <CardContent className="p-4 space-y-3">
+                          <div className="flex justify-between items-start">
+                            <div className="space-y-1">
+                              <p className="text-xs font-mono text-muted-foreground">{d.codigo}</p>
+                              <p className="text-sm font-bold truncate max-w-[200px]">{d.nome}</p>
+                            </div>
+                            <WorkflowBadge status={wf} />
+                          </div>
+                          
+                          <div className="grid grid-cols-2 gap-2 text-[10px] pt-2 border-t">
+                            <div>
+                              <p className="font-bold uppercase text-muted-foreground">Versão</p>
+                              <p>v{d.versao}</p>
+                            </div>
+                            <div>
+                              <p className="font-bold uppercase text-muted-foreground">Validade</p>
+                              <p className={vencido ? "text-destructive font-bold" : ""}>{d.validade_revisao || "—"}</p>
+                            </div>
+                          </div>
+                          
+                          <div className="flex flex-wrap gap-2 pt-1">
+                            {wf === "rascunho" && (
+                              <Button variant="outline" size="sm" className="h-8 text-xs flex-1" onClick={() => abrirAprovacao(d, "em_revisao")}>
+                                Enviar
+                              </Button>
+                            )}
+                            {wf === "em_revisao" && (
+                              <Button size="sm" className="h-8 text-xs flex-1" onClick={() => abrirAprovacao(d, "vigente")}>
+                                Aprovar
+                              </Button>
+                            )}
+                            {wf === "vigente" && (
+                              <Button variant="outline" size="sm" className="h-8 text-xs flex-1" onClick={() => handleNovaVersao(d)}>
+                                Revisar
+                              </Button>
+                            )}
+                            <Button variant="ghost" size="sm" className="h-8 text-xs px-2" onClick={() => handleVerHistorico(d.id, `${d.codigo} — ${d.nome}`)}>
+                              <History className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    );
+                  })}
+                </div>
               )}
             </CardContent>
           </Card>
@@ -500,7 +558,7 @@ export default function Documentos() {
             </Card>
           )}
 
-          <div className="grid grid-cols-3 gap-4 mb-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
             <Card><CardContent className="pt-4 text-center">
               <p className="text-2xl font-bold font-display">{calibracoes.length}</p>
               <p className="text-xs text-muted-foreground">Equipamentos</p>
@@ -520,7 +578,7 @@ export default function Documentos() {
               <CardTitle className="font-display">Gestão de Calibração</CardTitle>
               <Dialog open={calOpen} onOpenChange={setCalOpen}>
                 <DialogTrigger asChild><Button size="sm"><Plus className="w-4 h-4 mr-1" /> Novo Equipamento</Button></DialogTrigger>
-                <DialogContent>
+                <DialogContent className="w-[95vw] sm:max-w-lg max-h-[90vh] overflow-y-auto">
                   <DialogHeader><DialogTitle>Registrar Calibração</DialogTitle></DialogHeader>
                   <div className="space-y-4">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -552,11 +610,12 @@ export default function Documentos() {
                 </DialogContent>
               </Dialog>
             </CardHeader>
-            <CardContent className="overflow-x-auto">
+            <CardContent className="p-2 sm:p-6 overflow-hidden">
               {loading ? <div className="flex justify-center py-8"><Loader2 className="w-6 h-6 animate-spin text-muted-foreground" /></div>
               : calibracoes.length === 0 ? <p className="text-center text-muted-foreground py-8">Nenhum equipamento cadastrado</p>
               : (
-                <Table>
+                <div className="overflow-x-auto">
+                  <Table>
                   <TableHeader><TableRow>
                     <TableHead>Equipamento</TableHead><TableHead>Código</TableHead><TableHead>Tipo</TableHead>
                     <TableHead>Local</TableHead><TableHead>Calibração</TableHead><TableHead>Próxima</TableHead>
@@ -580,7 +639,8 @@ export default function Documentos() {
                       );
                     })}
                   </TableBody>
-                </Table>
+                  </Table>
+                </div>
               )}
             </CardContent>
           </Card>
@@ -604,7 +664,7 @@ export default function Documentos() {
                 </Select>
                 <Dialog open={arqOpen} onOpenChange={setArqOpen}>
                   <DialogTrigger asChild><Button size="sm"><Upload className="w-4 h-4 mr-1" /> Enviar Arquivo</Button></DialogTrigger>
-                  <DialogContent>
+                  <DialogContent className="w-[95vw] sm:max-w-lg max-h-[90vh] overflow-y-auto">
                     <DialogHeader><DialogTitle>Enviar Arquivo BPF</DialogTitle></DialogHeader>
                     <div className="space-y-4">
                       <div><Label>Título *</Label><Input value={arqTitulo} onChange={e => setArqTitulo(e.target.value)} placeholder="Ex: POP-001 — IT Limpeza de Silos" /></div>
@@ -627,11 +687,12 @@ export default function Documentos() {
                 </Dialog>
               </div>
             </CardHeader>
-            <CardContent className="overflow-x-auto">
+            <CardContent className="p-2 sm:p-6 overflow-hidden">
               {loading ? <div className="flex justify-center py-8"><Loader2 className="w-6 h-6 animate-spin text-muted-foreground" /></div>
               : filteredArquivos.length === 0 ? <p className="text-center text-muted-foreground py-8">Nenhum arquivo nesta categoria</p>
               : (
-                <Table>
+                <div className="overflow-x-auto">
+                  <Table>
                   <TableHeader><TableRow>
                     <TableHead>Título</TableHead><TableHead>Categoria</TableHead><TableHead>Arquivo</TableHead>
                     <TableHead>Descrição</TableHead><TableHead>Data</TableHead><TableHead className="w-16"></TableHead>
@@ -662,7 +723,8 @@ export default function Documentos() {
                       </TableRow>
                     ))}
                   </TableBody>
-                </Table>
+                      </Table>
+                    </div>
               )}
             </CardContent>
           </Card>
