@@ -19,6 +19,9 @@ import OfflineBanner from "@/components/OfflineBanner";
 import PageLoader from "@/components/PageLoader";
 
 const AppLayout = ({ children }: { children: React.ReactNode }) => {
+  const { product: urlProduct } = useParams();
+  const product = urlProduct || \"feedbpf\";
+  
   const location = useLocation();
   const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);

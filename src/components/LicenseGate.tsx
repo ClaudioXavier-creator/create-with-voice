@@ -114,19 +114,22 @@ interface LicenseGateProps {
   product?: ProductKey;
 }
 
-export default function LicenseGate({ children, product = "feedbpf" }: LicenseGateProps) {
+export default function LicenseGate({ children, product: initialProduct }: LicenseGateProps) {
+  const { product: urlProduct } = useParams();
+  const product = (urlProduct as ProductKey) || initialProduct || \"feedbpf\";
+  
   const { license, loading, isActive, daysRemaining } = useLicense();
   const { empresaAtiva, loading: empresaLoading } = useEmpresa();
   const { user, roles, loading: authLoading } = useAuth();
-  const SUPER_ADMIN_EMAIL = "claudiolx.nunes@gmail.com";
+  const SUPER_ADMIN_EMAIL = \"claudiolx.nunes@gmail.com\";
   const isSuperAdmin =
-    roles?.includes("admin") ||
+    roles?.includes(\"admin\") ||
     user?.email?.toLowerCase() === SUPER_ADMIN_EMAIL;
   const location = useLocation();
   const [checkoutLoading, setCheckoutLoading] = useState<string | null>(null);
-  const [nivelSelecionado, setNivelSelecionado] = useState<NivelKey>("intermediario");
+  const [nivelSelecionado, setNivelSelecionado] = useState<NivelKey>(\"intermediario\");
 
-  const productLabel = PRODUCT_LABELS[product];
+  const productLabel = PRODUCT_LABELS[product] || PRODUCT_LABELS.feedbpf;
   const launchActive = isLaunchActive();
   const nivelAtivo = NIVEIS.find((n) => n.key === nivelSelecionado)!;
 
