@@ -4358,35 +4358,65 @@ export type Database = {
         Args: { payload: Json; queue_name: string }
         Returns: number
       }
-      get_licenca_consultor_ativa: {
-        Args: { _produto: string; _user_id: string }
-        Returns: {
-          chave_licenca: string
-          created_at: string
-          data_expiracao: string
-          data_inicio: string
-          empresa_id: string | null
-          id: string
-          liberado_admin: boolean
-          nivel: string
-          plano: string
-          produto: string
-          slots_max: number
-          slots_usados: number
-          status: string
-          stripe_checkout_id: string | null
-          stripe_customer_id: string | null
-          stripe_subscription_id: string | null
-          updated_at: string
-          user_id: string | null
-        }
-        SetofOptions: {
-          from: "*"
-          to: "licencas"
-          isOneToOne: true
-          isSetofReturn: false
-        }
-      }
+      get_licenca_consultor_ativa:
+        | {
+            Args: { _produto: string }
+            Returns: {
+              chave_licenca: string
+              created_at: string
+              data_expiracao: string
+              data_inicio: string
+              empresa_id: string | null
+              id: string
+              liberado_admin: boolean
+              nivel: string
+              plano: string
+              produto: string
+              slots_max: number
+              slots_usados: number
+              status: string
+              stripe_checkout_id: string | null
+              stripe_customer_id: string | null
+              stripe_subscription_id: string | null
+              updated_at: string
+              user_id: string | null
+            }
+            SetofOptions: {
+              from: "*"
+              to: "licencas"
+              isOneToOne: true
+              isSetofReturn: false
+            }
+          }
+        | {
+            Args: { _produto: string; _user_id: string }
+            Returns: {
+              chave_licenca: string
+              created_at: string
+              data_expiracao: string
+              data_inicio: string
+              empresa_id: string | null
+              id: string
+              liberado_admin: boolean
+              nivel: string
+              plano: string
+              produto: string
+              slots_max: number
+              slots_usados: number
+              status: string
+              stripe_checkout_id: string | null
+              stripe_customer_id: string | null
+              stripe_subscription_id: string | null
+              updated_at: string
+              user_id: string | null
+            }
+            SetofOptions: {
+              from: "*"
+              to: "licencas"
+              isOneToOne: true
+              isSetofReturn: false
+            }
+          }
       get_limite_membros_empresa: {
         Args: { _empresa_id: string }
         Returns: number
