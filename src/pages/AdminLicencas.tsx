@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { Navigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -184,6 +184,13 @@ export default function AdminLicencas({ isTab = false }: { isTab?: boolean }) {
     return diff > 0 ? `${diff}d` : "0d";
   };
 
+  const filtered = entries.filter(
+    (e) =>
+      (e.empresa_nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        e.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (e.produto || "").toLowerCase().includes(searchTerm.toLowerCase()))
+  );
+
   const grouped = useMemo(() => {
     const result: Record<string, LicenseEntry[]> = {};
     filtered.forEach((e) => {
@@ -193,13 +200,6 @@ export default function AdminLicencas({ isTab = false }: { isTab?: boolean }) {
     });
     return result;
   }, [filtered]);
-
-  const filtered = entries.filter(
-    (e) =>
-      (e.empresa_nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        e.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (e.produto || "").toLowerCase().includes(searchTerm.toLowerCase()))
-  );
 
   const getEntryTitle = (entry: LicenseEntry) => {
     const empresaNome = entry.empresa_nome?.trim();
