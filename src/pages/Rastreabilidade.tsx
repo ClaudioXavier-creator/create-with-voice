@@ -1283,7 +1283,7 @@ export default function Rastreabilidade() {
                         {arvoreData.clientes.length > 0 ? (
                           <div className="space-y-2">
                             {arvoreData.clientes.map((c, i) => (
-                              <div key={i} className="flex items-center gap-2">
+                              <div key={i} className="flex flex-col md:flex-row items-center gap-2">
                                 <div className="flex-1 h-px bg-primary/30" />
                                 <ChevronRight className="w-4 h-4 text-muted-foreground flex-shrink-0" />
                                 <div className="flex-shrink-0 p-2 rounded bg-muted/50 border text-xs min-w-[120px]">
