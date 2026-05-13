@@ -13,6 +13,49 @@ import AdminLeads from "./AdminLeads";
 export default function SuperAdmin() {
   const { user, roles, loading: authLoading } = useAuth();
   const [activeTab, setActiveTab] = useState("dashboard");
+  const [stats, setStats] = useState({
+    totalLeads: 0,
+    leadsPendente: 0,
+    vendasGanhos: 0,
+    valorTotalGanhos: 0,
+    licencasAtivas: 0,
+    loading: true
+  });
+
+  useEffect(() => {
+    if (!user || !canAccessLicenseAdmin(roles, user.email)) return;
+
+    async function fetchStats() {
+      try {
+        const [leadsRes, crmRes, licRes] = await Promise.all([
+          supabase.from("leads").select("id, notificado"),
+          supabase.from("crm_pipeline").select("etapa, valor_estimado"),
+          supabase.from("empresas_licencas").select("id, status").eq("status", "ativa")
+        ]);
+
+        const leads = leadsRes.data || [];
+        const crm = crmRes.data || [];
+        const lic = licRes.data || [];
+
+        const ganhos = crm.filter(i => i.etapa === "ganho");
+        const valorGanhos = ganhos.reduce((acc, i) => acc + (Number(i.valor_estimado) || 0), 0);
+
+        setStats({
+          totalLeads: leads.length,
+          leadsPendente: leads.filter(l => !l.notificado).length,
+          vendasGanhos: ganhos.length,
+          valorTotalGanhos: valorGanhos,
+          licencasAtivas: lic.length,
+          loading: false
+        });
+      } catch (error) {
+        console.error("Erro ao carregar métricas superadmin:", error);
+        setStats(s => ({ ...s, loading: false }));
+      }
+    }
+
+    void fetchStats();
+  }, [user, roles]);
 
   if (authLoading) {
     return (
