@@ -2,7 +2,7 @@ import { type ElementType, useEffect, useState } from "react";
 import {
   LayoutDashboard, AlertTriangle, ClipboardCheck, GraduationCap, CheckCircle2,
   CalendarDays, Bell, Wrench, FileText, Droplets, Search, ShieldCheck,
-  ArrowRight, Timer, BarChart as BarChartIcon, HelpCircle
+  ArrowRight, Timer, BarChart as BarChartIcon, HelpCircle, ChevronRight
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -16,6 +16,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useEmpresa } from "@/hooks/useEmpresa";
 import { Link } from "react-router-dom";
 import { useOnboarding, OnboardingOverlay } from "@/components/OnboardingTour";
+import { cn } from "@/lib/utils";
 import {
   LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid,
   Tooltip, ResponsiveContainer, Legend
@@ -367,12 +368,12 @@ export default function Index() {
   }, [user, empresaAtiva, periodoFiltro]);
 
   const stats = [
-    { label: "Conformidade BPF", value: data.loading ? "..." : `${data.conformidadeBPF}%`, icon: CheckCircle2, color: "text-primary", link: "/auditoria" },
-    { label: "NCs Abertas", value: data.loading ? "..." : `${data.ncAbertas}`, icon: AlertTriangle, color: "text-destructive", link: "/nao-conformidades" },
-    { label: "Auditorias Realizadas", value: data.loading ? "..." : `${data.auditoriasRealizadas}`, icon: ClipboardCheck, color: "text-accent-foreground", link: "/auditoria" },
-    { label: "Treinamentos Pendentes", value: data.loading ? "..." : `${data.treinamentosPendentes}`, icon: GraduationCap, color: "text-warning-foreground", link: "/treinamentos" },
-    { label: "Calibrações Vencidas", value: data.loading ? "..." : `${data.calibracoesVencidas}`, icon: Wrench, color: "text-destructive", link: "/manutencao" },
-    { label: "Docs p/ Revisão", value: data.loading ? "..." : `${data.docsVencidos}`, icon: FileText, color: "text-muted-foreground", link: "/documentos" },
+    { label: "Conformidade BPF", value: data.loading ? "..." : `${data.conformidadeBPF}%`, icon: CheckCircle2, color: "text-emerald-600 dark:text-emerald-400", bg: "bg-emerald-500/10", border: "border-emerald-500/20", link: "/auditoria" },
+    { label: "NCs Abertas", value: data.loading ? "..." : `${data.ncAbertas}`, icon: AlertTriangle, color: "text-rose-600 dark:text-rose-400", bg: "bg-rose-500/10", border: "border-rose-500/20", link: "/nao-conformidades" },
+    { label: "Auditorias Realizadas", value: data.loading ? "..." : `${data.auditoriasRealizadas}`, icon: ClipboardCheck, color: "text-amber-600 dark:text-amber-400", bg: "bg-amber-500/10", border: "border-amber-500/20", link: "/auditoria" },
+    { label: "Treinamentos Pendentes", value: data.loading ? "..." : `${data.treinamentosPendentes}`, icon: GraduationCap, color: "text-indigo-600 dark:text-indigo-400", bg: "bg-indigo-500/10", border: "border-indigo-500/20", link: "/treinamentos" },
+    { label: "Calibrações Vencidas", value: data.loading ? "..." : `${data.calibracoesVencidas}`, icon: Wrench, color: "text-orange-600 dark:text-orange-400", bg: "bg-orange-500/10", border: "border-orange-500/20", link: "/manutencao" },
+    { label: "Docs p/ Revisão", value: data.loading ? "..." : `${data.docsVencidos}`, icon: FileText, color: "text-slate-600 dark:text-slate-400", bg: "bg-slate-500/10", border: "border-slate-500/20", link: "/documentos" },
   ];
 
   const alertaIconMap: Record<string, ElementType> = {
@@ -411,23 +412,35 @@ export default function Index() {
     aso: "ASO",
     planejamento: "Planejamento",
   };
-
   return (
-    <>
-      <div className="flex items-center justify-between mb-4 gap-3 flex-wrap">
-        <PageHeader icon={LayoutDashboard} title="Dashboard" description="Visão geral do sistema FeedBPF" />
-        <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" onClick={iniciarTour} title="Reiniciar tour de boas-vindas">
-            <HelpCircle className="w-4 h-4 mr-1" /> Tour
+    <div className="space-y-8 pb-10">
+      <div className="flex items-center justify-between gap-4 flex-wrap">
+        <PageHeader 
+          icon={LayoutDashboard} 
+          title="Painel de Controle" 
+          description="Visão analítica e operacional da conformidade BPF" 
+        />
+        <div className="flex items-center gap-3">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={iniciarTour}
+            className="rounded-full border-primary/20 hover:border-primary hover:bg-primary/5 transition-all"
+          >
+            <HelpCircle className="w-4 h-4 mr-2 text-primary" /> 
+            Guia do Sistema
           </Button>
           <Select value={periodoFiltro} onValueChange={setPeriodoFiltro}>
-            <SelectTrigger className="w-[180px]"><SelectValue placeholder="Período" /></SelectTrigger>
-            <SelectContent>
-              <SelectItem value="todos">Todo período</SelectItem>
-              <SelectItem value="mes">Último mês</SelectItem>
+            <SelectTrigger className="w-[180px] rounded-full border-primary/20 bg-background/50 backdrop-blur-sm">
+              <CalendarDays className="w-4 h-4 mr-2 text-muted-foreground" />
+              <SelectValue placeholder="Filtrar Período" />
+            </SelectTrigger>
+            <SelectContent className="rounded-xl border-border/50 shadow-2xl">
+              <SelectItem value="todos">Todo período histórico</SelectItem>
+              <SelectItem value="mes">Últimos 30 dias</SelectItem>
               <SelectItem value="trimestre">Último trimestre</SelectItem>
               <SelectItem value="semestre">Último semestre</SelectItem>
-              <SelectItem value="ano">Último ano</SelectItem>
+              <SelectItem value="ano">Último ano fiscal</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -435,43 +448,45 @@ export default function Index() {
 
       {/* Alertas do Planejamento Anual */}
       {!data.loading && (data.atividadesVencidas.length > 0 || data.atividadesProximas.length > 0) && (
-        <div className="space-y-3 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {data.atividadesVencidas.length > 0 && (
-            <Card className="border-destructive bg-destructive/5">
-              <CardContent className="flex items-start gap-3 p-4">
-                <AlertTriangle className="h-5 w-5 text-destructive mt-0.5 shrink-0" />
-                <div className="flex-1">
-                  <p className="font-semibold text-destructive text-sm">
-                    {data.atividadesVencidas.length} atividade(s) do planejamento anual VENCIDA(S)
+            <Card className="border-none shadow-premium bg-rose-500/5 overflow-hidden group">
+              <div className="absolute top-0 left-0 w-1 h-full bg-rose-500" />
+              <CardContent className="flex items-start gap-4 p-5">
+                <div className="flex items-center justify-center w-10 h-10 rounded-full bg-rose-500/10 shrink-0">
+                  <AlertTriangle className="h-5 w-5 text-rose-600" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="font-bold text-rose-900 dark:text-rose-200 text-sm">
+                    {data.atividadesVencidas.length} Atividades Vencidas
                   </p>
-                  <ul className="mt-1 space-y-0.5">
-                    {data.atividadesVencidas.slice(0, 5).map((a, i) => (
-                      <li key={i} className="text-xs text-muted-foreground">
-                        • {a.atividade} — venceu em {format(parseISO(a.proxima_execucao), "dd/MM/yyyy")}
-                      </li>
-                    ))}
-                  </ul>
-                  <Link to="/planejamento-anual" className="text-xs text-primary underline mt-1 inline-block">Ver Planejamento Anual →</Link>
+                  <p className="text-xs text-rose-700/70 dark:text-rose-400/70 mt-0.5 line-clamp-1">
+                    {data.atividadesVencidas[0].atividade} e outras pendências.
+                  </p>
+                  <Link to="/planejamento-anual" className="text-xs font-bold text-rose-600 hover:text-rose-700 mt-2 flex items-center gap-1 group/link">
+                    Regularizar Agora <ChevronRight className="w-3 h-3 transition-transform group-hover/link:translate-x-1" />
+                  </Link>
                 </div>
               </CardContent>
             </Card>
           )}
           {data.atividadesProximas.length > 0 && (
-            <Card className="border-warning bg-warning/5">
-              <CardContent className="flex items-start gap-3 p-4">
-                <Bell className="h-5 w-5 text-warning-foreground mt-0.5 shrink-0" />
-                <div className="flex-1">
-                  <p className="font-semibold text-warning-foreground text-sm">
-                    {data.atividadesProximas.length} atividade(s) vencem nos próximos 7 dias
+            <Card className="border-none shadow-premium bg-amber-500/5 overflow-hidden group">
+              <div className="absolute top-0 left-0 w-1 h-full bg-amber-500" />
+              <CardContent className="flex items-start gap-4 p-5">
+                <div className="flex items-center justify-center w-10 h-10 rounded-full bg-amber-500/10 shrink-0">
+                  <Bell className="h-5 w-5 text-amber-600" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="font-bold text-amber-900 dark:text-amber-200 text-sm">
+                    Atenção ao Cronograma
                   </p>
-                  <ul className="mt-1 space-y-0.5">
-                    {data.atividadesProximas.map((a, i) => (
-                      <li key={i} className="text-xs text-muted-foreground">
-                        • {a.atividade} — vence em {a.dias === 0 ? "hoje" : `${a.dias} dia(s)`} ({format(parseISO(a.proxima_execucao), "dd/MM/yyyy")})
-                      </li>
-                    ))}
-                  </ul>
-                  <Link to="/planejamento-anual" className="text-xs text-primary underline mt-1 inline-block">Ver Planejamento Anual →</Link>
+                  <p className="text-xs text-amber-700/70 dark:text-amber-400/70 mt-0.5 line-clamp-1">
+                    {data.atividadesProximas.length} itens vencem em breve.
+                  </p>
+                  <Link to="/planejamento-anual" className="text-xs font-bold text-amber-600 hover:text-amber-700 mt-2 flex items-center gap-1 group/link">
+                    Ver Cronograma <ChevronRight className="w-3 h-3 transition-transform group-hover/link:translate-x-1" />
+                  </Link>
                 </div>
               </CardContent>
             </Card>
@@ -479,49 +494,65 @@ export default function Index() {
         </div>
       )}
 
-      {/* Stats Cards — Clicáveis */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 mb-6">
+      {/* Stats Cards — Premium Grid */}
+      <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-4">
         {stats.map((s) => (
-          <Link key={s.label} to={s.link}>
-            <Card className="border border-border hover:border-primary/40 hover:shadow-md transition-all cursor-pointer group">
-              <CardContent className="flex flex-col items-center gap-2 pt-4 pb-3 px-3">
-                <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-muted group-hover:bg-primary/10 transition-colors">
-                  <s.icon className={`w-5 h-5 ${s.color}`} />
+          <Link key={s.label} to={s.link} className="block group">
+            <Card className="border-none shadow-premium bg-card hover:shadow-premium-hover transition-all duration-300 relative overflow-hidden h-full">
+              <div className={cn("absolute top-0 right-0 w-16 h-16 rounded-bl-[40px] opacity-10 transition-opacity group-hover:opacity-20", s.bg)} />
+              <CardContent className="flex flex-col items-center gap-3 p-5 text-center">
+                <div className={cn("flex items-center justify-center w-12 h-12 rounded-2xl shadow-inner transition-transform group-hover:scale-110 group-hover:-rotate-3 duration-300", s.bg)}>
+                  <s.icon className={cn("w-6 h-6", s.color)} />
                 </div>
-                <p className="text-xl font-bold font-display">{s.value}</p>
-                <p className="text-xs text-muted-foreground text-center leading-tight">{s.label}</p>
+                <div>
+                  <p className="text-2xl font-bold font-display tracking-tight text-foreground">{s.value}</p>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 mt-1 leading-tight">{s.label}</p>
+                </div>
               </CardContent>
             </Card>
           </Link>
         ))}
       </div>
 
-      <div className="grid grid-cols-1 xl:grid-cols-[1.2fr_0.8fr] gap-6 mb-6">
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="font-display text-lg flex items-center gap-2">
-              <ShieldCheck className="w-5 h-5 text-primary" />
-              Prioridades do dia
-            </CardTitle>
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+        {/* Prioridades */}
+        <Card className="xl:col-span-2 border-none shadow-premium bg-card overflow-hidden">
+          <CardHeader className="pb-4 border-b border-border/50 bg-muted/20">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-base flex items-center gap-2">
+                <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <ShieldCheck className="w-4 h-4 text-primary" />
+                </div>
+                Prioridades Estratégicas
+              </CardTitle>
+              <Badge variant="outline" className="bg-background/50 border-border/50 font-mono text-[10px]">
+                {data.acoesPrioritarias.length} PENDÊNCIAS
+              </Badge>
+            </div>
           </CardHeader>
-          <CardContent className="space-y-3">
+          <CardContent className="p-4 space-y-3">
             {data.loading ? (
-              Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-20 w-full" />)
+              Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-24 w-full rounded-xl" />)
             ) : (
-              data.acoesPrioritarias.map((acao) => {
+              data.acoesPrioritarias.map((acao, idx) => {
                 const config = criticidadeConfig[acao.criticidade];
                 return (
-                  <Link key={`${acao.link}-${acao.titulo}`} to={acao.link}>
-                    <div className={`rounded-lg border p-4 transition-colors hover:bg-muted/50 ${config.container}`}>
-                      <div className="flex items-start justify-between gap-3">
-                        <div className="space-y-1 min-w-0">
-                          <div className="flex items-center gap-2 flex-wrap">
-                            <p className="font-medium text-sm">{acao.titulo}</p>
-                            <Badge variant={config.badge}>{config.label}</Badge>
+                  <Link key={idx} to={acao.link} className="block">
+                    <div className={cn("rounded-2xl border border-transparent p-4 transition-all hover:shadow-md hover:translate-x-1 relative overflow-hidden group", config.container)}>
+                      <div className="absolute top-0 right-0 p-2 opacity-10 group-hover:opacity-30 transition-opacity">
+                        <ArrowRight className="w-8 h-8 -rotate-45" />
+                      </div>
+                      <div className="flex items-start justify-between gap-4 relative z-10">
+                        <div className="space-y-1.5 flex-1 min-w-0">
+                          <div className="flex items-center gap-2">
+                            <span className={cn("w-2 h-2 rounded-full", config.text.replace("text-", "bg-"))} />
+                            <p className="font-bold text-sm tracking-tight">{acao.titulo}</p>
                           </div>
-                          <p className="text-sm text-muted-foreground">{acao.detalhe}</p>
+                          <p className="text-xs text-muted-foreground/80 leading-relaxed">{acao.detalhe}</p>
                         </div>
-                        <ArrowRight className={`w-4 h-4 shrink-0 ${config.text}`} />
+                        <Badge variant={config.badge} className="rounded-full text-[10px] font-bold px-2.5 py-0.5 uppercase tracking-wider">
+                          {config.label}
+                        </Badge>
                       </div>
                     </div>
                   </Link>
@@ -531,24 +562,40 @@ export default function Index() {
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="font-display text-lg">Saúde operacional</CardTitle>
+        {/* Saúde Operacional */}
+        <Card className="border-none shadow-premium bg-card overflow-hidden">
+          <CardHeader className="pb-4 border-b border-border/50 bg-muted/20">
+            <CardTitle className="text-base flex items-center gap-2">
+              <div className="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center">
+                <BarChartIcon className="w-4 h-4 text-emerald-600" />
+              </div>
+              Indicadores de Saúde
+            </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="p-5 space-y-6">
             {data.loading ? (
               Array.from({ length: 3 }).map((_, i) => (
-                <div key={i} className="space-y-2"><Skeleton className="h-4 w-40" /><Skeleton className="h-2 w-full" /></div>
+                <div key={i} className="space-y-3"><Skeleton className="h-4 w-1/2" /><Skeleton className="h-2 w-full" /></div>
               ))
             ) : (
-              data.saudeOperacional.map((item) => (
-                <Link key={item.label} to={item.link} className="block rounded-lg border border-border p-3 transition-colors hover:bg-muted/40">
-                  <div className="flex items-center justify-between gap-3 mb-2">
-                    <p className="text-sm font-medium">{item.label}</p>
-                    <span className="text-sm font-semibold">{item.valor}%</span>
+              data.saudeOperacional.map((item, idx) => (
+                <Link key={idx} to={item.link} className="block group">
+                  <div className="flex items-center justify-between mb-2">
+                    <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground/60">{item.label}</p>
+                    <span className="text-sm font-bold text-foreground">{item.valor}%</span>
                   </div>
-                  <Progress value={item.valor} className="h-2 mb-2" />
-                  <p className="text-xs text-muted-foreground">{item.descricao}</p>
+                  <div className="relative h-2 w-full bg-muted rounded-full overflow-hidden mb-2">
+                    <div 
+                      className={cn(
+                        "absolute top-0 left-0 h-full rounded-full transition-all duration-1000",
+                        item.valor > 80 ? "bg-emerald-500" : item.valor > 50 ? "bg-amber-500" : "bg-rose-500"
+                      )}
+                      style={{ width: `${item.valor}%` }}
+                    />
+                  </div>
+                  <p className="text-[11px] text-muted-foreground leading-snug line-clamp-2 group-hover:text-foreground transition-colors">
+                    {item.descricao}
+                  </p>
                 </Link>
               ))
             )}
@@ -556,91 +603,47 @@ export default function Index() {
         </Card>
       </div>
 
-      {/* Painel de Alertas de Vencimento */}
-      {!data.loading && data.alertasVencimento.length > 0 && (
-        <Card className="mb-6 border-warning/50 bg-warning/5">
-          <CardHeader className="pb-2">
-            <CardTitle className="font-display text-base flex items-center gap-2">
-              <Bell className="w-4 h-4 text-warning-foreground" />
-              Central de Alertas de Vencimento ({data.alertasVencimento.length})
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="divide-y divide-border max-h-64 overflow-y-auto">
-              {data.alertasVencimento.slice(0, 10).map((alerta, i) => {
-                const Icon = alertaIconMap[alerta.tipo] || Bell;
-                const isVencido = alerta.diasRestantes < 0;
-                return (
-                  <Link key={i} to={alerta.link} className="flex items-center gap-3 py-2 hover:bg-muted/50 rounded px-2 -mx-2 transition-colors">
-                    <Icon className={`w-4 h-4 shrink-0 ${isVencido ? "text-destructive" : "text-yellow-600"}`} />
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium truncate">{alerta.descricao}</p>
-                      <p className="text-xs text-muted-foreground">{alertaTipoLabel[alerta.tipo]}</p>
-                    </div>
-                    <Badge variant={isVencido ? "destructive" : "secondary"} className="text-xs shrink-0">
-                      {isVencido ? `Vencido ${Math.abs(alerta.diasRestantes)}d` : alerta.diasRestantes === 0 ? "Hoje" : `${alerta.diasRestantes}d`}
-                    </Badge>
-                    <ArrowRight className="w-3 h-3 text-muted-foreground shrink-0" />
-                  </Link>
-                );
-              })}
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Atalhos Rápidos */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
-        <Link to="/checklist-pre-auditoria">
-          <Button variant="outline" className="w-full h-auto py-3 flex flex-col items-center gap-1.5">
-            <ShieldCheck className="w-5 h-5 text-primary" />
-            <span className="text-xs font-medium">Checklist Pré-Auditoria</span>
-          </Button>
-        </Link>
-        <Link to="/simulacao-recall">
-          <Button variant="outline" className="w-full h-auto py-3 flex flex-col items-center gap-1.5">
-            <Timer className="w-5 h-5 text-destructive" />
-            <span className="text-xs font-medium">Simular Recall</span>
-          </Button>
-        </Link>
-        <Link to="/busca-global">
-          <Button variant="outline" className="w-full h-auto py-3 flex flex-col items-center gap-1.5">
-            <Search className="w-5 h-5 text-primary" />
-            <span className="text-xs font-medium">Busca Global</span>
-          </Button>
-        </Link>
-        <Link to="/qualidade-total">
-          <Button variant="outline" className="w-full h-auto py-3 flex flex-col items-center gap-1.5">
-            <BarChartIcon className="w-5 h-5 text-primary" />
-            <span className="text-xs font-medium">Relatório Anual</span>
-          </Button>
-        </Link>
+      {/* Atalhos Rápidos — Grid Moderno */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {[
+          { to: "/checklist-pre-auditoria", label: "Checklist Auditoria", icon: ShieldCheck, color: "text-emerald-600", bg: "bg-emerald-50" },
+          { to: "/simulacao-recall", label: "Simular Recall", icon: Timer, color: "text-rose-600", bg: "bg-rose-50" },
+          { to: "/busca-global", label: "Busca Inteligente", icon: Search, color: "text-indigo-600", bg: "bg-indigo-50" },
+          { to: "/qualidade-total", label: "Relatório Anual", icon: BarChartIcon, color: "text-amber-600", bg: "bg-amber-50" },
+        ].map((btn, i) => (
+          <Link key={i} to={btn.to}>
+            <Button variant="ghost" className="w-full h-auto py-5 flex flex-col items-center gap-3 bg-card shadow-premium hover:shadow-premium-hover border-none rounded-2xl group transition-all">
+              <div className={cn("w-12 h-12 rounded-2xl flex items-center justify-center transition-transform group-hover:scale-110 group-hover:rotate-3", btn.bg)}>
+                <btn.icon className={cn("w-6 h-6", btn.color)} />
+              </div>
+              <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground group-hover:text-foreground transition-colors">{btn.label}</span>
+            </Button>
+          </Link>
+        ))}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Conformidade por área */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="font-display text-lg">Conformidade por Área</CardTitle>
+        <Card className="border-none shadow-premium bg-card">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base font-display">Status de Conformidade por Área</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-4 pt-4">
             {data.loading ? (
-              Array.from({ length: 4 }).map((_, i) => (
-                <div key={i} className="space-y-2"><Skeleton className="h-4 w-3/4" /><Skeleton className="h-2 w-full" /></div>
-              ))
+              Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-8 w-full" />)
             ) : data.conformidadePorArea.length === 0 ? (
-              <div className="text-center py-6">
-                <p className="text-sm text-muted-foreground mb-2">Nenhum dado de auditoria encontrado.</p>
-                <Link to="/auditoria"><Button size="sm">Realizar Auditoria</Button></Link>
+              <div className="text-center py-10">
+                <p className="text-sm text-muted-foreground mb-4">Nenhum dado de auditoria processado.</p>
+                <Link to="/auditoria"><Button size="sm" className="rounded-full px-6">Iniciar Auditoria</Button></Link>
               </div>
             ) : (
-              data.conformidadePorArea.map((item) => (
-                <div key={item.area}>
-                  <div className="flex justify-between text-sm mb-1">
-                    <span className="font-medium">{item.area}</span>
-                    <span className="text-muted-foreground">{item.pct}%</span>
+              data.conformidadePorArea.map((item, idx) => (
+                <div key={idx} className="group">
+                  <div className="flex justify-between text-xs font-bold uppercase tracking-wider mb-2 text-muted-foreground/70 group-hover:text-foreground transition-colors">
+                    <span>{item.area}</span>
+                    <span className="font-mono">{item.pct}%</span>
                   </div>
-                  <Progress value={item.pct} className="h-2" />
+                  <Progress value={item.pct} className="h-1.5" />
                 </div>
               ))
             )}
@@ -648,70 +651,45 @@ export default function Index() {
         </Card>
 
         {/* NCs Recentes */}
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle className="font-display text-lg">Não Conformidades Recentes</CardTitle>
-            <Link to="/nao-conformidades"><Button variant="ghost" size="sm" className="text-xs">Ver todas <ArrowRight className="w-3 h-3 ml-1" /></Button></Link>
+        <Card className="border-none shadow-premium bg-card">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base font-display">Desvios Recentes</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-3">
+          <CardContent className="pt-2">
             {data.loading ? (
-              Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-14 w-full" />)
+              Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-16 w-full mb-3" />)
             ) : data.recentNCs.length === 0 ? (
-              <p className="text-sm text-muted-foreground">Nenhuma não conformidade registrada.</p>
+              <div className="text-center py-10">
+                <CheckCircle2 className="w-10 h-10 text-emerald-500 mx-auto mb-3 opacity-20" />
+                <p className="text-sm text-muted-foreground">Sua operação está 100% conforme hoje.</p>
+              </div>
             ) : (
-              data.recentNCs.map((nc, i) => (
-                <Link key={i} to="/nao-conformidades" className="flex items-center justify-between p-3 rounded-lg bg-muted/50 hover:bg-muted transition-colors">
-                  <div>
-                    <p className="font-medium text-sm">{nc.descricao}</p>
-                    <p className="text-xs text-muted-foreground">{nc.setor}</p>
+              <div className="space-y-2">
+                {data.recentNCs.map((nc, idx) => (
+                  <div key={idx} className="flex items-center gap-4 p-3 rounded-xl hover:bg-muted/50 transition-colors border border-transparent hover:border-border/50">
+                    <div className={cn("w-2 h-10 rounded-full shrink-0", statusColors[nc.status] || "bg-muted")} />
+                    <div className="min-w-0 flex-1">
+                      <p className="text-xs font-bold uppercase tracking-tighter text-primary/70">{nc.setor}</p>
+                      <p className="text-sm font-medium truncate leading-tight mt-0.5">{nc.descricao}</p>
+                    </div>
+                    <Badge className={cn("rounded-full px-2 text-[9px] font-bold uppercase tracking-tighter", statusColors[nc.status])}>
+                      {statusLabels[nc.status] || nc.status}
+                    </Badge>
                   </div>
-                  <Badge className={statusColors[nc.status] || ""}>{statusLabels[nc.status] || nc.status}</Badge>
+                ))}
+                <Link to="/nao-conformidades" className="block text-center pt-2">
+                  <Button variant="ghost" size="sm" className="text-xs font-bold uppercase tracking-widest text-primary/60 hover:text-primary">
+                    Gerenciar Desvios <ArrowRight className="w-3 h-3 ml-2" />
+                  </Button>
                 </Link>
-              ))
+              </div>
             )}
           </CardContent>
         </Card>
       </div>
-
-      {/* Gráficos */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
-        <Card>
-          <CardHeader><CardTitle className="font-display text-lg">Evolução de NCs (últimos 6 meses)</CardTitle></CardHeader>
-          <CardContent>
-            {data.loading ? <Skeleton className="h-64 w-full" /> : (
-              <ResponsiveContainer width="100%" height={260}>
-                <BarChart data={data.ncPorMes}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                  <XAxis dataKey="mes" tick={{ fontSize: 12, fill: "hsl(var(--muted-foreground))" }} />
-                  <YAxis allowDecimals={false} tick={{ fontSize: 12, fill: "hsl(var(--muted-foreground))" }} />
-                  <Tooltip contentStyle={{ backgroundColor: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 8 }} />
-                  <Legend />
-                  <Bar dataKey="abertas" name="Abertas" fill="hsl(var(--destructive))" radius={[4, 4, 0, 0]} />
-                  <Bar dataKey="fechadas" name="Fechadas" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            )}
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader><CardTitle className="font-display text-lg">Conformidade BPF (últimos 6 meses)</CardTitle></CardHeader>
-          <CardContent>
-            {data.loading ? <Skeleton className="h-64 w-full" /> : (
-              <ResponsiveContainer width="100%" height={260}>
-                <LineChart data={data.conformidadePorMes}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                  <XAxis dataKey="mes" tick={{ fontSize: 12, fill: "hsl(var(--muted-foreground))" }} />
-                  <YAxis domain={[0, 100]} tick={{ fontSize: 12, fill: "hsl(var(--muted-foreground))" }} unit="%" />
-                  <Tooltip contentStyle={{ backgroundColor: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 8 }} formatter={(value: number) => [`${value}%`, "Conformidade"]} />
-                  <Line type="monotone" dataKey="percentual" name="Conformidade" stroke="hsl(var(--primary))" strokeWidth={2} dot={{ fill: "hsl(var(--primary))", r: 4 }} />
-                </LineChart>
-              </ResponsiveContainer>
-            )}
-          </CardContent>
-        </Card>
-      </div>
+      
+      {/* Onboarding Overlay */}
       {showOnboarding && <OnboardingOverlay onClose={fecharTour} />}
-    </>
+    </div>
   );
 }

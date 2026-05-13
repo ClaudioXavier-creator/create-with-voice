@@ -1,12 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { ChevronDown, Search, Star } from "lucide-react";
+import { ChevronDown, Search, Star, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
-import { NAV_ENTRIES, NavEntry, NavItem, isGroup } from "./nav-config";
+import { NavEntry, NavItem, isGroup } from "./nav-config";
 
 const FAVORITES_KEY = "feedbpf_nav_favorites";
 
@@ -31,7 +30,6 @@ export function SidebarNav({
   userRoles?: string[];
   userEmail?: string;
 }) {
-  const [search, setSearch] = useState("");
   const [favorites, setFavorites] = useState<string[]>(() => {
     try {
       return JSON.parse(localStorage.getItem(FAVORITES_KEY) || "[]");
@@ -44,7 +42,6 @@ export function SidebarNav({
   const filteredByRole = useMemo(() => {
     return entries.filter((entry) => {
       if (isGroup(entry)) {
-        // A group is visible if at least one item is visible
         const visibleItems = entry.items.filter((item) => {
           if (item.requiredRoles && !item.requiredRoles.some(r => userRoles.includes(r))) {
              if (item.requiredEmail && userEmail.toLowerCase() === item.requiredEmail.toLowerCase()) {
@@ -110,30 +107,9 @@ export function SidebarNav({
 
   const flatEntries = useMemo(() => flattenEntries(filteredByRole), [filteredByRole]);
   const favoriteItems = useMemo(
-    () => flatEntries.filter((item) => favorites.includes(item.path)).slice(0, 6),
+    () => flatEntries.filter((item) => favorites.includes(item.path)).slice(0, 8),
     [favorites, flatEntries],
   );
-  const recentItems = useMemo(() => {
-    const active = flatEntries.find((item) => item.path === currentPath);
-    return active ? [active, ...favoriteItems.filter((item) => item.path !== active.path)].slice(0, 4) : favoriteItems.slice(0, 4);
-  }, [currentPath, favoriteItems, flatEntries]);
-
-  const normalizedSearch = search.trim().toLowerCase();
-  const displayEntries = useMemo(() => {
-    if (!normalizedSearch) return filteredByRole;
-
-    return filteredByRole
-      .map((entry) => {
-        if (!isGroup(entry)) {
-          const haystack = `${entry.label} ${(entry.keywords || []).join(" ")}`.toLowerCase();
-          return haystack.includes(normalizedSearch) ? entry : null;
-        }
-
-        const items = entry.items.filter((item) => item.label.toLowerCase().includes(normalizedSearch));
-        return items.length ? { ...entry, items } : null;
-      })
-      .filter(Boolean) as NavEntry[];
-  }, [filteredByRole, normalizedSearch]);
 
   const toggleFavorite = (path: string) => {
     setFavorites((prev) =>
@@ -145,7 +121,7 @@ export function SidebarNav({
     setOpenGroups((prev) => ({ ...prev, [label]: !prev[label] }));
   };
 
-  const renderLink = (item: NavItem, compact = false) => {
+  const renderLink = (item: NavItem, isSubItem = false) => {
     const isActive = currentPath === item.path;
     const isFavorite = favorites.includes(item.path);
 
@@ -155,15 +131,16 @@ export function SidebarNav({
         to={item.path}
         onClick={onNavigate}
         className={cn(
-          "group flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors",
-          compact && "py-2",
+          "group flex items-center gap-3 rounded-xl px-3 py-2 text-sm transition-all duration-200 relative overflow-hidden",
           isActive
-            ? "bg-sidebar-primary text-sidebar-primary-foreground"
-            : "text-sidebar-foreground/75 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+            ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20 font-medium"
+            : "text-sidebar-foreground/60 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground",
+          isSubItem && !isActive && "ml-2"
         )}
       >
-        <item.icon className="h-4 w-4 shrink-0" />
+        <item.icon className={cn("h-4 w-4 shrink-0 transition-transform group-hover:scale-110 duration-200", isActive ? "text-white" : "text-sidebar-foreground/40")} />
         <span className="min-w-0 flex-1 truncate">{item.label}</span>
+        
         <button
           type="button"
           aria-label={isFavorite ? "Remover dos favoritos" : "Adicionar aos favoritos"}
@@ -173,97 +150,79 @@ export function SidebarNav({
             toggleFavorite(item.path);
           }}
           className={cn(
-            "rounded p-1 opacity-0 transition-opacity group-hover:opacity-100",
+            "rounded-full p-1 opacity-0 transition-all hover:bg-sidebar-accent/30 group-hover:opacity-100",
             isFavorite && "opacity-100",
+            isActive && "text-white/40 hover:text-white"
           )}
         >
-          <Star className={cn("h-3.5 w-3.5", isFavorite && "fill-current text-accent")}/>
+          <Star className={cn("h-3 w-3", isFavorite && "fill-accent text-accent")}/>
         </button>
+
+        {isActive && (
+          <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-4 bg-white/40 rounded-r-full" />
+        )}
       </Link>
     );
   };
 
   return (
-    <div className="flex flex-1 flex-col overflow-hidden">
-      <div className="border-b border-sidebar-border px-3 py-3">
-        <div className="relative">
-          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-sidebar-foreground/50" />
-          <Input
-            value={search}
-            onChange={(event) => setSearch(event.target.value)}
-            placeholder="Filtrar módulos"
-            className="border-sidebar-border bg-sidebar-accent pl-9 text-sidebar-foreground placeholder:text-sidebar-foreground/50"
-          />
-        </div>
-      </div>
-
-      <ScrollArea className="flex-1">
-        <div className="space-y-4 px-3 py-4">
-          {favoriteItems.length > 0 && (
-            <section className="space-y-2">
-              <div className="flex items-center justify-between px-2">
-                <p className="text-xs font-semibold uppercase tracking-wide text-sidebar-foreground/55">Favoritos</p>
-                <Badge variant="outline" className="border-sidebar-border text-sidebar-foreground/70">{favoriteItems.length}</Badge>
+    <ScrollArea className="flex-1 px-3">
+      <div className="space-y-6 py-4">
+        {favoriteItems.length > 0 && (
+          <section className="space-y-2">
+            <div className="flex items-center justify-between px-3 mb-1">
+              <div className="flex items-center gap-2">
+                <Sparkles className="h-3 w-3 text-accent" />
+                <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-sidebar-foreground/30">Favoritos</p>
               </div>
-              <div className="space-y-1">{favoriteItems.map((item) => renderLink(item, true))}</div>
-            </section>
-          )}
-
-          {recentItems.length > 0 && (
-            <section className="space-y-2">
-              <div className="px-2">
-                <p className="text-xs font-semibold uppercase tracking-wide text-sidebar-foreground/55">Acesso rápido</p>
-              </div>
-              <div className="space-y-1">{recentItems.map((item) => renderLink(item, true))}</div>
-            </section>
-          )}
-
-          <section className="space-y-1">
-            <div className="px-2">
-              <p className="text-xs font-semibold uppercase tracking-wide text-sidebar-foreground/55">Módulos</p>
+              <Badge variant="outline" className="h-4 px-1 text-[9px] font-mono border-sidebar-border text-sidebar-foreground/40 bg-sidebar/50">{favoriteItems.length}</Badge>
             </div>
-            {displayEntries.map((entry) => {
+            <div className="space-y-0.5">{favoriteItems.map((item) => renderLink(item))}</div>
+          </section>
+        )}
+
+        <section className="space-y-1">
+          <div className="px-3 mb-2">
+            <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-sidebar-foreground/30">Módulos do Sistema</p>
+          </div>
+          <div className="space-y-0.5">
+            {filteredByRole.map((entry) => {
               if (!isGroup(entry)) {
                 return renderLink(entry);
               }
 
-              const groupOpen = normalizedSearch ? true : (openGroups[entry.label] ?? false);
+              const groupOpen = openGroups[entry.label] ?? false;
               const hasActive = entry.items.some((item) => item.path === currentPath);
 
               return (
-                <div key={entry.label} className="space-y-1">
+                <div key={entry.label} className="space-y-0.5">
                   <Button
                     type="button"
                     variant="ghost"
                     onClick={() => toggleGroup(entry.label)}
                     className={cn(
-                      "h-auto w-full justify-start gap-3 rounded-lg px-3 py-2.5 text-left text-sm",
-                      hasActive
-                        ? "bg-sidebar-primary/20 text-sidebar-primary-foreground hover:bg-sidebar-primary/25"
-                        : "text-sidebar-foreground/75 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+                      "h-auto w-full justify-start gap-3 rounded-xl px-3 py-2 text-left text-sm transition-all duration-200",
+                      hasActive && !groupOpen
+                        ? "bg-sidebar-primary/20 text-sidebar-primary-foreground border border-sidebar-border/30 shadow-sm"
+                        : "text-sidebar-foreground/60 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground",
                     )}
                   >
-                    <entry.icon className="h-4 w-4 shrink-0" />
-                    <span className="flex-1 whitespace-normal">{entry.label}</span>
-                    <ChevronDown className={cn("h-4 w-4 shrink-0 transition-transform", groupOpen && "rotate-180")} />
+                    <entry.icon className={cn("h-4 w-4 shrink-0 transition-colors duration-200", hasActive ? "text-sidebar-primary" : "text-sidebar-foreground/30")} />
+                    <span className="flex-1 whitespace-normal leading-snug">{entry.label}</span>
+                    <ChevronDown className={cn("h-3.5 w-3.5 shrink-0 transition-transform duration-300 opacity-30", groupOpen && "rotate-180 opacity-60")} />
                   </Button>
-                  <div className={cn("overflow-hidden transition-all", groupOpen ? "max-h-[900px] opacity-100" : "max-h-0 opacity-0")}>
-                    <div className="ml-4 space-y-1 border-l border-sidebar-border pl-3">
+                  
+                  {groupOpen && (
+                    <div className="mt-0.5 space-y-0.5 animate-in slide-in-from-top-1 duration-200">
                       {entry.items.map((item) => renderLink(item, true))}
                     </div>
-                  </div>
+                  )}
                 </div>
               );
             })}
-
-            {displayEntries.length === 0 && (
-              <div className="rounded-lg border border-dashed border-sidebar-border px-3 py-5 text-sm text-sidebar-foreground/60">
-                Nenhum módulo encontrado para “{search}”.
-              </div>
-            )}
-          </section>
-        </div>
-      </ScrollArea>
-    </div>
+          </div>
+        </section>
+      </div>
+    </ScrollArea>
   );
 }
