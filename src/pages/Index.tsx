@@ -367,12 +367,12 @@ export default function Index() {
   }, [user, empresaAtiva, periodoFiltro]);
 
   const stats = [
-    { label: "Conformidade BPF", value: data.loading ? "..." : `${data.conformidadeBPF}%`, icon: CheckCircle2, color: "text-primary", link: "/auditoria" },
-    { label: "NCs Abertas", value: data.loading ? "..." : `${data.ncAbertas}`, icon: AlertTriangle, color: "text-destructive", link: "/nao-conformidades" },
-    { label: "Auditorias Realizadas", value: data.loading ? "..." : `${data.auditoriasRealizadas}`, icon: ClipboardCheck, color: "text-accent-foreground", link: "/auditoria" },
-    { label: "Treinamentos Pendentes", value: data.loading ? "..." : `${data.treinamentosPendentes}`, icon: GraduationCap, color: "text-warning-foreground", link: "/treinamentos" },
-    { label: "Calibrações Vencidas", value: data.loading ? "..." : `${data.calibracoesVencidas}`, icon: Wrench, color: "text-destructive", link: "/manutencao" },
-    { label: "Docs p/ Revisão", value: data.loading ? "..." : `${data.docsVencidos}`, icon: FileText, color: "text-muted-foreground", link: "/documentos" },
+    { label: "Conformidade BPF", value: data.loading ? "..." : `${data.conformidadeBPF}%`, icon: CheckCircle2, color: "text-emerald-600 dark:text-emerald-400", bg: "bg-emerald-500/10", border: "border-emerald-500/20", link: "/auditoria" },
+    { label: "NCs Abertas", value: data.loading ? "..." : `${data.ncAbertas}`, icon: AlertTriangle, color: "text-rose-600 dark:text-rose-400", bg: "bg-rose-500/10", border: "border-rose-500/20", link: "/nao-conformidades" },
+    { label: "Auditorias Realizadas", value: data.loading ? "..." : `${data.auditoriasRealizadas}`, icon: ClipboardCheck, color: "text-amber-600 dark:text-amber-400", bg: "bg-amber-500/10", border: "border-amber-500/20", link: "/auditoria" },
+    { label: "Treinamentos Pendentes", value: data.loading ? "..." : `${data.treinamentosPendentes}`, icon: GraduationCap, color: "text-indigo-600 dark:text-indigo-400", bg: "bg-indigo-500/10", border: "border-indigo-500/20", link: "/treinamentos" },
+    { label: "Calibrações Vencidas", value: data.loading ? "..." : `${data.calibracoesVencidas}`, icon: Wrench, color: "text-orange-600 dark:text-orange-400", bg: "bg-orange-500/10", border: "border-orange-500/20", link: "/manutencao" },
+    { label: "Docs p/ Revisão", value: data.loading ? "..." : `${data.docsVencidos}`, icon: FileText, color: "text-slate-600 dark:text-slate-400", bg: "bg-slate-500/10", border: "border-slate-500/20", link: "/documentos" },
   ];
 
   const alertaIconMap: Record<string, ElementType> = {
