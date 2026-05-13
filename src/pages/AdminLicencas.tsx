@@ -184,6 +184,16 @@ export default function AdminLicencas({ isTab = false }: { isTab?: boolean }) {
     return diff > 0 ? `${diff}d` : "0d";
   };
 
+  const grouped = useMemo(() => {
+    const result: Record<string, LicenseEntry[]> = {};
+    filtered.forEach((e) => {
+      const p = e.produto || "sem_produto";
+      if (!result[p]) result[p] = [];
+      result[p].push(e);
+    });
+    return result;
+  }, [filtered]);
+
   const filtered = entries.filter(
     (e) =>
       (e.empresa_nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
