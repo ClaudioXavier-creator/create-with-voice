@@ -406,6 +406,7 @@ export default function Documentos() {
               {loading ? <div className="flex justify-center py-8"><Loader2 className="w-6 h-6 animate-spin text-muted-foreground" /></div>
               : docs.length === 0 ? <p className="text-center text-muted-foreground py-8">Nenhum documento registrado</p>
               : (
+                <>
                 <div className="hidden md:block overflow-x-auto">
                   <Table>
                   <TableHeader><TableRow>
