@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
   LayoutGrid,
@@ -14,9 +14,8 @@ import EmpresaSelector from "@/components/EmpresaSelector";
 import LicenseGate from "@/components/LicenseGate";
 import TierGate from "@/components/TierGate";
 import logoImg from "@/assets/logo-feed-bpf.png";
-import { canAccessLeadsAdmin, canAccessLicenseAdmin } from "@/config/adminAccess";
 import { SidebarNav } from "@/components/layout/SidebarNav";
-import { NAV_ENTRIES, isGroup } from "@/components/layout/nav-config";
+import { NAV_ENTRIES } from "@/components/layout/nav-config";
 import OfflineBanner from "@/components/OfflineBanner";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
@@ -24,21 +23,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);
   const { user, roles, signOut } = useAuth();
+  
   const canCRM = !!roles?.includes("admin") || !!roles?.includes("comercial");
-  const visibleEntries = useMemo(
-    () =>
-      NAV_ENTRIES.filter((entry) => {
-        if (isGroup(entry)) return true;
-        if (entry.path === "/admin-licencas") {
-          return canAccessLicenseAdmin(roles, user?.email);
-        }
-        if (entry.path === "/admin-leads") {
-          return canAccessLeadsAdmin(roles);
-        }
-        return true;
-      }),
-    [roles],
-  );
 
   useEffect(() => {
     const handleShortcut = (event: KeyboardEvent) => {
@@ -81,7 +67,12 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             </div>
           </div>
         </div>
-        <SidebarNav currentPath={location.pathname} entries={visibleEntries} />
+        <SidebarNav 
+          currentPath={location.pathname} 
+          entries={NAV_ENTRIES} 
+          userRoles={roles || []} 
+          userEmail={user?.email || ""}
+        />
         <div className="px-4 py-3 border-t border-sidebar-border space-y-3">
           <EmpresaSelector />
           <p className="text-xs text-sidebar-foreground/60 truncate">{user?.email}</p>
@@ -115,7 +106,13 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       {mobileOpen && (
         <div className="lg:hidden fixed inset-0 z-40 bg-black/50" onClick={() => setMobileOpen(false)}>
           <aside className="w-72 h-full bg-sidebar text-sidebar-foreground pt-16 flex flex-col" onClick={(e) => e.stopPropagation()}>
-            <SidebarNav currentPath={location.pathname} entries={visibleEntries} onNavigate={() => setMobileOpen(false)} />
+            <SidebarNav 
+              currentPath={location.pathname} 
+              entries={NAV_ENTRIES} 
+              onNavigate={() => setMobileOpen(false)} 
+              userRoles={roles || []}
+              userEmail={user?.email || ""}
+            />
             <div className="px-4 py-3 border-t border-sidebar-border space-y-3">
               <EmpresaSelector />
               <p className="text-xs text-sidebar-foreground/60 truncate px-3 mb-2">{user?.email}</p>
