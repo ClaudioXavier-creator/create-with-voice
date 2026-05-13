@@ -27,6 +27,7 @@ type ProdutoCard = {
   preco: string;
   external?: boolean;
   trialExternal?: boolean;
+  adminOnly?: boolean;
 };
 
 const produtos: ProdutoCard[] = [
@@ -116,6 +117,20 @@ const produtos: ProdutoCard[] = [
     demoLink: "/demo/agrogestao",
     preco: "A partir de R$ 97/mês",
   },
+  {
+    nome: "Portal de Gestão (CRM)",
+    logo: logoBpfConsult,
+    desc: "Plataforma central de gestão da BPF_Consult. Controle total de leads, pipeline de vendas CRM e gestão centralizada de licenças para todos os programas do ecossistema.",
+    destaques: ["Gestão de Leads", "CRM de Vendas", "Gestão de Licenças", "Painel Super Admin", "Consolidação de Dados", "Relatórios de Vendas"],
+    link: "/admin",
+    gradient: "from-slate-700 to-slate-900",
+    bgCard: "bg-slate-50 dark:bg-slate-900/40",
+    borderColor: "border-slate-300 dark:border-slate-700",
+    trial: "Acesso Restrito",
+    trialLink: "/admin",
+    preco: "Uso Interno Admin",
+    adminOnly: true,
+  },
 ];
 
 const estatisticas = [
@@ -129,36 +144,11 @@ export default function Vitrine() {
   const navigate = useNavigate();
   const { user, roles } = useAuth();
   const isAdmin = canAccessLicenseAdmin(roles, user?.email);
+  
+  const produtosVisiveis = produtos.filter(p => !p.adminOnly || isAdmin);
+
   return (
     <div className="min-h-screen bg-background">
-      {isAdmin && (
-        <div className="sticky top-0 z-50 w-full bg-primary text-primary-foreground shadow-md">
-          <div className="max-w-7xl mx-auto px-4 py-2 flex flex-wrap items-center justify-between gap-2">
-            <div className="flex items-center gap-2 text-sm font-medium">
-              <ShieldCheck className="h-4 w-4" />
-              Modo Super Admin · acesso total às licenças e leads
-            </div>
-            <div className="flex flex-wrap gap-2">
-              <Link to="/admin-licencas">
-                <Button size="sm" variant="secondary" className="gap-2">
-                  <ShieldCheck className="h-4 w-4" />
-                  Admin · Licenças
-                </Button>
-              </Link>
-              <Link to="/admin-leads">
-                <Button size="sm" variant="secondary" className="gap-2">
-                  Leads
-                </Button>
-              </Link>
-              <Link to="/feedbpf">
-                <Button size="sm" variant="secondary" className="gap-2">
-                  Abrir Feed_BPF
-                </Button>
-              </Link>
-            </div>
-          </div>
-        </div>
-      )}
       {/* Hero Section */}
       <header className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/15 via-primary/5 to-accent/10" />
@@ -218,7 +208,7 @@ export default function Vitrine() {
             Nossos Programas
           </Badge>
           <h2 className="text-3xl sm:text-4xl font-bold font-display text-foreground mb-3">
-            Seis soluções, um ecossistema completo
+            {produtosVisiveis.length} soluções, um ecossistema completo
           </h2>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
             Clique em cada programa para ver o tutorial completo, funcionalidades e planos de preço.
@@ -226,7 +216,7 @@ export default function Vitrine() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-5 gap-6">
-          {produtos.map((p) => (
+          {produtosVisiveis.map((p) => (
             <div key={p.nome} className="group cursor-pointer" onClick={() => p.external ? window.open(p.link, "_blank", "noopener,noreferrer") : navigate(p.link)}>
               <div className={`h-full rounded-2xl border-2 ${p.borderColor} ${p.bgCard} p-1 transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 hover:scale-[1.02]`}>
                 <div className="h-full rounded-xl bg-card/80 backdrop-blur-sm p-6 sm:p-8 flex flex-col">

@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import logoRotulos from "@/assets/logo-nutri-agro-labels.png";
 import logoBpfConsult from "@/assets/logo-bpf-consult.png";
-import SuperAdminBanner from "@/components/SuperAdminBanner";
+
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -92,7 +92,6 @@ export default function RotulosBPFPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <SuperAdminBanner programa="Nutri_Agro Labels" />
 
       {checkoutStatus && (
         <section className="max-w-6xl mx-auto px-4 pt-6">

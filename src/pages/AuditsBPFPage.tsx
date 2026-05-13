@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import logoAuditsBpf from "@/assets/logo-audits-bpf.png";
 import logoBpfConsult from "@/assets/logo-bpf-consult.png";
 import dashboardPreview from "@/assets/auditsbpf-dashboard-preview.jpg";
-import SuperAdminBanner from "@/components/SuperAdminBanner";
+
 import { useAuth } from "@/hooks/useAuth";
 
 const funcionalidades = [
@@ -31,7 +31,6 @@ export default function AuditsBPFPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <SuperAdminBanner programa="Audits_BPF" />
       <header className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 via-green-500/5 to-primary/10" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,hsl(140,60%,40%,0.08),transparent_60%)]" />
