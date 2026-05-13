@@ -114,8 +114,12 @@ export default function Index() {
     async function fetchDashboard() {
       const cutoff = getPeriodoCutoff(periodoFiltro);
       const addEmpresa = (q: any, dateField?: string) => {
-        let r = q.eq("user_id", user!.id);
-        if (empresaAtiva) r = r.eq("empresa_id", empresaAtiva.id);
+        let r = q;
+        if (empresaAtiva) {
+          r = r.eq("empresa_id", empresaAtiva.id);
+        } else {
+          r = r.eq("user_id", user!.id);
+        }
         if (cutoff && dateField) r = r.gte(dateField, cutoff);
         return r;
       };
