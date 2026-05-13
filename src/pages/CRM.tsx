@@ -86,6 +86,7 @@ export default function CRM({ isTab = false }: { isTab?: boolean }) {
 
   const load = async () => {
     setLoading(true);
+    // Removemos filtros para que o superadmin veja TODOS os leads de TODOS os programas
     const { data, error } = await supabase
       .from("crm_pipeline")
       .select("*")
@@ -101,17 +102,21 @@ export default function CRM({ isTab = false }: { isTab?: boolean }) {
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
+    const isSuperAdmin = user?.email?.toLowerCase() === "claudiolx.nunes@gmail.com";
+
     return items
-      .filter((i) => i.lead_origem === tab)
+      .filter((i) => isSuperAdmin || i.lead_origem === tab)
       .filter((i) =>
         !q ||
-        [i.nome, i.email ?? "", i.telefone ?? "", i.produto_interesse ?? ""]
+        [i.nome, i.email ?? "", i.telefone ?? "", i.produto_interesse ?? "", i.lead_origem ?? ""]
           .some((v) => v.toLowerCase().includes(q)),
       );
-  }, [items, tab, search]);
+  }, [items, tab, search, user]);
 
   const stats = useMemo(() => {
-    const list = items.filter((i) => i.lead_origem === tab);
+    const isSuperAdmin = user?.email?.toLowerCase() === "claudiolx.nunes@gmail.com";
+    const list = isSuperAdmin ? items : items.filter((i) => i.lead_origem === tab);
+    
     const total = list.length;
     const ganho = list.filter((i) => i.etapa === "ganho").length;
     const perdido = list.filter((i) => i.etapa === "perdido").length;
@@ -122,7 +127,7 @@ export default function CRM({ isTab = false }: { isTab?: boolean }) {
       .filter((i) => !["ganho", "perdido"].includes(i.etapa))
       .reduce((acc, i) => acc + (Number(i.valor_estimado) || 0), 0);
     return { total, ganho, perdido, ativos, conv, valorPipeline };
-  }, [items, tab]);
+  }, [items, tab, user]);
 
   const moveEtapa = async (id: string, etapa: Etapa) => {
     const patch: any = { etapa };
@@ -169,12 +174,18 @@ export default function CRM({ isTab = false }: { isTab?: boolean }) {
 
       <Tabs value={tab} onValueChange={(v) => setTab(v as Origem)}>
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-          <TabsList>
-            <TabsTrigger value="produto">Leads de produto</TabsTrigger>
-            <TabsTrigger value="site">Contatos do site</TabsTrigger>
-          </TabsList>
+          {user?.email?.toLowerCase() !== "claudiolx.nunes@gmail.com" ? (
+            <TabsList>
+              <TabsTrigger value="produto">Leads de produto</TabsTrigger>
+              <TabsTrigger value="site">Contatos do site</TabsTrigger>
+            </TabsList>
+          ) : (
+            <div className="text-sm font-medium text-muted-foreground bg-muted px-3 py-1.5 rounded-md border">
+              Visão Global de Leads (SuperAdmin)
+            </div>
+          )}
           <Input
-            placeholder="Buscar por nome, e-mail, telefone..."
+            placeholder="Buscar por nome, e-mail, programa..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="md:w-80"
@@ -182,10 +193,11 @@ export default function CRM({ isTab = false }: { isTab?: boolean }) {
         </div>
 
         <TabsContent value="produto" className="mt-4">
-          <Kanban items={filtered} onMove={moveEtapa} onSelect={setSelected} loading={loading} />
+          <Kanban items={filtered} onMove={moveEtapa} onSelect={setSelected} loading={loading} user={user} />
+
         </TabsContent>
         <TabsContent value="site" className="mt-4">
-          <Kanban items={filtered} onMove={moveEtapa} onSelect={setSelected} loading={loading} />
+          <Kanban items={filtered} onMove={moveEtapa} onSelect={setSelected} loading={loading} user={user} />
         </TabsContent>
       </Tabs>
 
@@ -213,13 +225,15 @@ function StatCard({ icon: Icon, label, value, valueClass }: { icon?: any; label:
 }
 
 function Kanban({
-  items, onMove, onSelect, loading,
+  items, onMove, onSelect, loading, user
 }: {
   items: Pipeline[];
   onMove: (id: string, etapa: Etapa) => void;
   onSelect: (p: Pipeline) => void;
   loading: boolean;
+  user: any;
 }) {
+
   const [dragId, setDragId] = useState<string | null>(null);
 
   if (loading) return <div className="flex justify-center py-12"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>;
@@ -251,7 +265,13 @@ function Kanban({
                   onClick={() => onSelect(p)}
                   className="bg-card border rounded-md p-2 text-sm cursor-pointer hover:shadow-md transition-shadow"
                 >
-                  <div className="font-medium truncate">{p.nome}</div>
+                  <div className="flex justify-between items-start gap-1">
+                    <div className="font-medium truncate">{p.nome}</div>
+                    {user?.email?.toLowerCase() === "claudiolx.nunes@gmail.com" && (
+                      <Badge variant="outline" className="text-[9px] px-1 py-0 h-4 bg-muted capitalize shrink-0">{p.lead_origem}</Badge>
+                    )}
+                  </div>
+
                   {p.produto_interesse && (
                     <Badge variant="outline" className="text-[10px] mt-1">{p.produto_interesse}</Badge>
                   )}

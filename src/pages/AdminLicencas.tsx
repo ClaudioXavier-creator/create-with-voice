@@ -184,12 +184,11 @@ export default function AdminLicencas({ isTab = false }: { isTab?: boolean }) {
     return diff > 0 ? `${diff}d` : "0d";
   };
 
-  const HIDDEN_PRODUCTS = new Set(["nutricrm", "agrogestao", "agrogestao_crm"]);
   const filtered = entries.filter(
     (e) =>
-      !HIDDEN_PRODUCTS.has((e.produto || "").toLowerCase()) &&
       (e.empresa_nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        e.email.toLowerCase().includes(searchTerm.toLowerCase()))
+        e.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (e.produto || "").toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
   const getEntryTitle = (entry: LicenseEntry) => {
