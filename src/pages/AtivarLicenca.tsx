@@ -7,6 +7,7 @@ import { useLicense } from "@/hooks/useLicense";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
 import { TIER_LABEL } from "@/config/tiers";
+import { useParams } from "react-router-dom";
 
 const PLAN_LABELS: Record<string, string> = {
   trial: "Teste Grátis (30 dias)",
@@ -15,26 +16,24 @@ const PLAN_LABELS: Record<string, string> = {
   "1_ano": "Anual (1 ano)",
 };
 
-import { useParams } from \"react-router-dom\";
-
 const PRODUCT_LABELS: Record<string, string> = {
-  feedbpf: \"Feed_BPF\",
-  nutricrm: \"NutriCRM\",
-  agrogestao: \"AgroGestão CRM\",
-  auditsbpf: \"Audits_BPF\",
-  agrorc: \"Agro RC CRM\",
-  rotulos: \"Nutri_Agro Labels\",
+  feedbpf: "Feed_BPF",
+  nutricrm: "NutriCRM",
+  agrogestao: "AgroGestão CRM",
+  auditsbpf: "Audits_BPF",
+  agrorc: "Agro RC CRM",
+  rotulos: "Nutri_Agro Labels",
 };
 
 export default function AtivarLicenca() {
   const { product: urlProduct } = useParams();
   const { license, tier, isActive, isExpired, daysRemaining, activateKey } = useLicense();
   const { signOut } = useAuth();
-  const [chave, setChave] = useState(\"\");
+  const [chave, setChave] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const productKey = urlProduct || \"feedbpf\";
-  const productLabel = PRODUCT_LABELS[productKey] || \"Feed_BPF\";
+  const productKey = urlProduct || "feedbpf";
+  const productLabel = PRODUCT_LABELS[productKey] || "Feed_BPF";
 
   const handleActivate = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -42,21 +41,21 @@ export default function AtivarLicenca() {
     setLoading(true);
     try {
       await activateKey(chave.trim());
-      toast.success(\"Licença ativada com sucesso!\");
-      setChave(\"\");
+      toast.success("Licença ativada com sucesso!");
+      setChave("");
     } catch (err: any) {
-      toast.error(err.message || \"Chave inválida\");
+      toast.error(err.message || "Chave inválida");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className=\"min-h-screen flex items-center justify-center bg-background p-4\">
-      <Card className=\"w-full max-w-md\">
-        <CardHeader className=\"text-center\">
-          <CardTitle className=\"flex items-center justify-center gap-2 text-xl\">
-            <Key className=\"w-6 h-6\" />
+    <div className="min-h-screen flex items-center justify-center bg-background p-4">
+      <Card className="w-full max-w-md">
+        <CardHeader className="text-center">
+          <CardTitle className="flex items-center justify-center gap-2 text-xl">
+            <Key className="w-6 h-6" />
             Licença do Sistema
           </CardTitle>
           <CardDescription>Gerencie sua licença {productLabel}</CardDescription>
