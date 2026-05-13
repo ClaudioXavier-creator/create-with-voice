@@ -84,8 +84,8 @@ export default function SuperAdmin() {
       <div className="flex items-center gap-3">
         <ShieldCheck className="h-8 w-8 text-primary" />
         <div>
-          <h1 className="text-3xl font-bold">Painel Super Admin</h1>
-          <p className="text-muted-foreground">Gestão pessoal de leads, vendas e licenças</p>
+          <h1 className="text-3xl font-bold">Portal de Gestão (CRM & Licenças)</h1>
+          <p className="text-muted-foreground">Controle central de leads, vendas e licenças de todos os programas</p>
         </div>
       </div>
 
