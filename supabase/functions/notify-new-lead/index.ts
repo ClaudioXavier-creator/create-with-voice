@@ -111,6 +111,10 @@ Deno.serve(async (req) => {
 
   // 2) Fire-and-track notification emails to each recipient
   const results: Array<{ to: string; ok: boolean; error?: string }> = []
+  
+  // WhatsApp Link for the team to use
+  const waLink = `https://wa.me/55${telefone.replace(/\D/g, '')}`
+  
   for (const recipient of NOTIFY_RECIPIENTS) {
     try {
       const res = await admin.functions.invoke('send-transactional-email', {
@@ -125,6 +129,7 @@ Deno.serve(async (req) => {
             produto,
             origem,
             data: dataFormatada,
+            whatsapp_link: waLink, // Added for quick response
           },
         },
       })
