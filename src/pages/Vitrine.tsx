@@ -144,36 +144,11 @@ export default function Vitrine() {
   const navigate = useNavigate();
   const { user, roles } = useAuth();
   const isAdmin = canAccessLicenseAdmin(roles, user?.email);
+  
+  const produtosVisiveis = produtos.filter(p => !p.adminOnly || isAdmin);
+
   return (
     <div className="min-h-screen bg-background">
-      {isAdmin && (
-        <div className="sticky top-0 z-50 w-full bg-primary text-primary-foreground shadow-md">
-          <div className="max-w-7xl mx-auto px-4 py-2 flex flex-wrap items-center justify-between gap-2">
-            <div className="flex items-center gap-2 text-sm font-medium">
-              <ShieldCheck className="h-4 w-4" />
-              Modo Super Admin · acesso total às licenças e leads
-            </div>
-            <div className="flex flex-wrap gap-2">
-              <Link to="/admin-licencas">
-                <Button size="sm" variant="secondary" className="gap-2">
-                  <ShieldCheck className="h-4 w-4" />
-                  Admin · Licenças
-                </Button>
-              </Link>
-              <Link to="/admin-leads">
-                <Button size="sm" variant="secondary" className="gap-2">
-                  Leads
-                </Button>
-              </Link>
-              <Link to="/feedbpf">
-                <Button size="sm" variant="secondary" className="gap-2">
-                  Abrir Feed_BPF
-                </Button>
-              </Link>
-            </div>
-          </div>
-        </div>
-      )}
       {/* Hero Section */}
       <header className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/15 via-primary/5 to-accent/10" />
