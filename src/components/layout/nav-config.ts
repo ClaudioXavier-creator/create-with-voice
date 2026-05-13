@@ -156,23 +156,10 @@ export const NAV_ENTRIES: NavEntry[] = [
     ],
   },
   { 
-    path: "/admin-licencas", 
-    label: "Licenças & Plano", 
+    path: "/admin", 
+    label: "Super Admin", 
     icon: ShieldCheck,
-    requiredRoles: ["admin"],
     requiredEmail: "claudiolx.nunes@gmail.com"
-  },
-  { 
-    path: "/admin-leads", 
-    label: "Leads (Admin)", 
-    icon: ClipboardList,
-    requiredRoles: ["admin"]
-  },
-  { 
-    path: "/crm", 
-    label: "CRM Comercial", 
-    icon: BarChart3,
-    requiredRoles: ["admin", "comercial"]
   },
   { path: "/ativar-licenca", label: "🔑 Ativar Licença", icon: ShieldCheck },
   { path: "/modelos", label: "📁 Modelos", icon: FolderOpen },
