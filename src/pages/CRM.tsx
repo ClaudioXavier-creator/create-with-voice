@@ -224,13 +224,15 @@ function StatCard({ icon: Icon, label, value, valueClass }: { icon?: any; label:
 }
 
 function Kanban({
-  items, onMove, onSelect, loading,
+  items, onMove, onSelect, loading, user
 }: {
   items: Pipeline[];
   onMove: (id: string, etapa: Etapa) => void;
   onSelect: (p: Pipeline) => void;
   loading: boolean;
+  user: any;
 }) {
+
   const [dragId, setDragId] = useState<string | null>(null);
 
   if (loading) return <div className="flex justify-center py-12"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>;
