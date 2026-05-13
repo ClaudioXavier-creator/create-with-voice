@@ -21,6 +21,7 @@ interface NewLeadProps {
   produto?: string
   origem?: string
   data?: string
+  whatsapp_link?: string
 }
 
 const NewLeadNotificationEmail = ({
