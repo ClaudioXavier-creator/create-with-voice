@@ -40,6 +40,8 @@ export interface NavItem {
   label: string;
   icon: React.ElementType;
   keywords?: string[];
+  requiredRoles?: string[];
+  requiredEmail?: string;
 }
 
 export interface NavGroup {
