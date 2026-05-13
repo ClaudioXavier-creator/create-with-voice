@@ -154,7 +154,7 @@ export default function Vitrine() {
       <header className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/15 via-primary/5 to-accent/10" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,hsl(var(--primary)/0.12),transparent_60%)]" />
-        <div className="relative max-w-7xl mx-auto px-4 py-16 sm:py-28">
+        <div className="relative max-w-7xl mx-auto px-4 py-12 sm:py-28">
           <div className="flex flex-col items-center text-center">
             <div className="relative mb-8">
               <div className="absolute -inset-4 rounded-full bg-primary/10 blur-2xl" />
@@ -167,22 +167,22 @@ export default function Vitrine() {
             <Badge variant="secondary" className="mb-5 text-xs tracking-widest uppercase px-4 py-1.5 rounded-full">
               Consultoria & Sistemas para Nutrição Animal
             </Badge>
-            <h1 translate="no" className="text-5xl sm:text-6xl lg:text-7xl font-bold font-display text-foreground mb-5 tracking-tight leading-tight notranslate">
+            <h1 translate="no" className="text-4xl sm:text-6xl lg:text-7xl font-bold font-display text-foreground mb-5 tracking-tight leading-tight notranslate">
               BPF_<span className="text-primary">Consult</span>
             </h1>
             <p className="text-lg sm:text-xl text-muted-foreground max-w-3xl mx-auto mb-10 leading-relaxed">
               Soluções completas em <strong className="text-foreground">Boas Práticas de Fabricação</strong>, auditoria e gestão para a indústria de nutrição animal. 
               Conformidade com IN 04/2007 e Decreto 12.031/2024.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4">
-              <Link to="/auth">
-                <Button size="lg" className="gap-2 px-8 text-base shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30 transition-all">
+            <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto px-4 sm:px-0">
+              <Link to="/auth" className="w-full sm:w-auto">
+                <Button size="lg" className="w-full sm:w-auto gap-2 px-8 text-base shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30 transition-all">
                   <Lock className="h-4 w-4" />
                   Acessar Sistema
                 </Button>
               </Link>
-              <a href="#programas">
-                <Button size="lg" variant="outline" className="gap-2 px-8 text-base">
+              <a href="#programas" className="w-full sm:w-auto">
+                <Button size="lg" variant="outline" className="w-full sm:w-auto gap-2 px-8 text-base">
                   <Sparkles className="h-4 w-4" />
                   Conhecer Programas
                 </Button>

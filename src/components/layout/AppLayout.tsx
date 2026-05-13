@@ -218,7 +218,7 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
       {/* Main content */}
       <main className="flex-1 lg:ml-0 mt-[56px] lg:mt-0 overflow-x-hidden relative">
         <OfflineBanner />
-        <div className="p-4 md:p-8 lg:p-10 max-w-7xl mx-auto min-h-full animate-fade-in">
+        <div className="p-3 sm:p-4 md:p-8 lg:p-10 max-w-7xl mx-auto min-h-full animate-fade-in">
           <LicenseGate product={product as any}>
             <TierGate>
               <Suspense fallback={<PageLoader />}>
