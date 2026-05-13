@@ -55,7 +55,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             <div className="absolute -inset-1 bg-gradient-to-r from-primary to-emerald-400 rounded-lg blur opacity-25 group-hover:opacity-100 transition duration-1000 group-hover:duration-200"></div>
             <img src={logoImg} alt="Feed_BPF Logo" className="relative w-10 h-10 rounded-lg object-contain bg-white p-1 shadow-sm" />
           </div>
-          <div className="min-w-0" onClick={() => navigate("/")} className="cursor-pointer">
+          <div className="min-w-0 cursor-pointer" onClick={() => navigate("/")}>
             <h1 className="font-display text-lg font-bold text-sidebar-foreground tracking-tight">Feed_BPF</h1>
             <p className="text-[10px] uppercase tracking-widest text-sidebar-foreground/40 font-semibold">BPF Consult</p>
           </div>
