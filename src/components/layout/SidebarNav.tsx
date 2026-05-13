@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState, useCallback } from "react";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { ChevronDown, Search, Star, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -30,6 +30,7 @@ export const SidebarNav = React.memo(({
   userRoles?: string[];
   userEmail?: string;
 }) => {
+  const { product } = useParams();
   const [favorites, setFavorites] = useState<string[]>(() => {
     try {
       return JSON.parse(localStorage.getItem(FAVORITES_KEY) || "[]");
@@ -124,11 +125,12 @@ export const SidebarNav = React.memo(({
   const renderLink = (item: NavItem, isSubItem = false) => {
     const isActive = currentPath === item.path;
     const isFavorite = favorites.includes(item.path);
+    const targetPath = product ? `/${product}${item.path}` : item.path;
 
     return (
       <Link
         key={item.path}
-        to={item.path}
+        to={targetPath}
         onClick={onNavigate}
         className={cn(
           "group flex items-center gap-3 rounded-xl px-3 py-2 text-sm transition-all duration-200 relative overflow-hidden",
