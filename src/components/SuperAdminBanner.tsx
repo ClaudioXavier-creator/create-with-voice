@@ -18,7 +18,7 @@ export default function SuperAdminBanner({ programa }: Props) {
           <ShieldCheck className="h-4 w-4" />
           Super Admin{programa ? ` · ${programa}` : ""} · gestão de licenças
         </div>
-        <Link to="/admin-licencas">
+        <Link to="/admin">
           <Button size="sm" variant="secondary" className="gap-2">
             <ShieldCheck className="h-4 w-4" />
             Admin · Licenças
