@@ -12,7 +12,20 @@ import AdminLeads from "./AdminLeads";
 
 export default function SuperAdmin() {
   const { user, roles, loading: authLoading } = useAuth();
-  const [activeTab, setActiveTab] = useState("dashboard");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const validTabs = ["dashboard", "leads", "crm", "licencas", "assinaturas"];
+  const initialTab = searchParams.get("tab");
+  const [activeTab, setActiveTab] = useState(
+    initialTab && validTabs.includes(initialTab) ? initialTab : "dashboard"
+  );
+  useEffect(() => {
+    const t = searchParams.get("tab");
+    if (t && validTabs.includes(t) && t !== activeTab) setActiveTab(t);
+  }, [searchParams]);
+  const handleTabChange = (t: string) => {
+    setActiveTab(t);
+    setSearchParams({ tab: t }, { replace: true });
+  };
   const [stats, setStats] = useState({
     totalLeads: 0,
     leadsPendente: 0,
