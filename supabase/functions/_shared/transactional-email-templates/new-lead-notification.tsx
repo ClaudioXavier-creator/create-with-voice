@@ -31,6 +31,7 @@ const NewLeadNotificationEmail = ({
   produto = '—',
   origem = '—',
   data = new Date().toLocaleString('pt-BR'),
+  whatsapp_link,
 }: NewLeadProps) => (
   <Html lang="pt-BR" dir="ltr">
     <Head />
