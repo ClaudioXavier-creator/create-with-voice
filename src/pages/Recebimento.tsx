@@ -273,7 +273,7 @@ export default function Recebimento() {
               <DialogTrigger asChild>
                 <Button size="sm"><Plus className="w-4 h-4 mr-1" /> Novo Recebimento</Button>
               </DialogTrigger>
-              <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto">
+              <DialogContent className="w-[95vw] sm:max-w-lg max-h-[90vh] overflow-y-auto p-4 sm:p-6">
                 <DialogHeader><DialogTitle>Registrar Recebimento de MP</DialogTitle></DialogHeader>
                 <div className="space-y-3">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -560,8 +560,10 @@ export default function Recebimento() {
           ) : filtered.length === 0 ? (
             <p className="text-center text-muted-foreground py-8">Nenhum recebimento registrado.</p>
           ) : (
-            <div className="overflow-x-auto">
-              <Table>
+            <div className="space-y-4">
+              {/* Desktop View */}
+              <div className="hidden md:block overflow-x-auto">
+                <Table>
                 <TableHeader>
                   <TableRow>
                     <TableHead>Data</TableHead>
@@ -604,6 +606,56 @@ export default function Recebimento() {
                   ))}
                 </TableBody>
               </Table>
+              </div>
+
+              {/* Mobile View */}
+              <div className="md:hidden space-y-3">
+                {filtered.map((r) => (
+                  <Card key={r.id} className="border shadow-sm overflow-hidden">
+                    <CardContent className="p-4 space-y-3">
+                      <div className="flex justify-between items-start">
+                        <div className="space-y-0.5">
+                          <p className="text-xs font-mono text-muted-foreground">{r.data}</p>
+                          <p className="text-sm font-bold truncate max-w-[200px]">{r.fornecedor}</p>
+                        </div>
+                        {r.aprovado ? (
+                          <Badge className="bg-primary">Aprovado</Badge>
+                        ) : (
+                          <Badge variant="destructive">Reprovado</Badge>
+                        )}
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-2 text-xs">
+                        <div>
+                          <p className="text-[10px] uppercase font-bold text-muted-foreground">Produto</p>
+                          <p className="truncate">{r.materia_prima}</p>
+                        </div>
+                        <div>
+                          <p className="text-[10px] uppercase font-bold text-muted-foreground">Lote</p>
+                          <p className="font-mono">{r.lote || "—"}</p>
+                        </div>
+                      </div>
+
+                      <div className="flex flex-wrap gap-2 pt-2 border-t">
+                        <Badge variant="outline" className="text-[10px]">{r.quantidade ? `${r.quantidade} ${r.unidade || ""}` : "—"}</Badge>
+                        <Badge variant={r.odor === "normal" ? "secondary" : "destructive"} className="text-[10px]">Odor: {r.odor}</Badge>
+                        {r.certificado_analise_numero && (
+                          <Badge variant="outline" className="text-[10px] flex items-center gap-1">
+                            <FileText className="w-2 h-2" /> Cert: {r.certificado_analise_numero}
+                          </Badge>
+                        )}
+                      </div>
+                      
+                      {r.observacoes && (
+                        <div className="pt-2">
+                          <p className="text-[10px] uppercase font-bold text-muted-foreground mb-1">Observações</p>
+                          <p className="text-[11px] text-muted-foreground line-clamp-2 italic">"{r.observacoes}"</p>
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
             </div>
           )}
         </CardContent>
