@@ -49,7 +49,7 @@ function formatDate(iso: string) {
   return new Date(iso).toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo" });
 }
 
-export default function AdminLeads() {
+export default function AdminLeads({ isTab = false }: { isTab?: boolean }) {
   const { user, roles, loading: authLoading } = useAuth();
   const [leads, setLeads] = useState<Lead[]>([]);
   const [loading, setLoading] = useState(true);
@@ -70,7 +70,7 @@ export default function AdminLeads() {
   };
 
   useEffect(() => {
-    if (!authLoading && user && canAccessLeadsAdmin(roles)) {
+    if (!authLoading && user && canAccessLeadsAdmin(roles, user.email)) {
       void load();
     }
   }, [authLoading, user, roles]);
@@ -114,43 +114,59 @@ export default function AdminLeads() {
 
   if (authLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="flex items-center justify-center p-8">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
   }
 
-  if (!user) return <Navigate to="/auth?redirect=/admin-leads" replace />;
-  if (!canAccessLeadsAdmin(roles)) return <Navigate to="/" replace />;
+  if (!user || !canAccessLeadsAdmin(roles, user.email)) {
+    return <Navigate to="/" replace />;
+  }
 
   return (
-    <div className="min-h-screen bg-background p-4 md:p-8">
-      <div className="max-w-7xl mx-auto space-y-6">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-          <div>
-            <h1 className="text-3xl font-bold">Leads capturados</h1>
-            <p className="text-muted-foreground">
-              Cadastros gerados pelo trial e formulários públicos.
-            </p>
+    <div className={isTab ? "space-y-6" : "min-h-screen bg-background p-4 md:p-8"}>
+      <div className={isTab ? "space-y-6" : "max-w-7xl mx-auto space-y-6"}>
+        {!isTab && (
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div>
+              <h1 className="text-3xl font-bold">Leads capturados</h1>
+              <p className="text-muted-foreground">
+                Cadastros gerados pelo trial e formulários públicos.
+              </p>
+            </div>
+            <div className="flex gap-2">
+              <Button variant="outline" asChild>
+                <Link to="/admin-licencas">Licenças</Link>
+              </Button>
+              <Button variant="outline" onClick={load} disabled={loading}>
+                <RefreshCw className={`h-4 w-4 mr-2 ${loading ? "animate-spin" : ""}`} />
+                Atualizar
+              </Button>
+              <Button onClick={exportCsv} disabled={!filtered.length}>
+                <Download className="h-4 w-4 mr-2" />
+                Exportar CSV
+              </Button>
+            </div>
           </div>
-          <div className="flex gap-2">
-            <Button variant="outline" asChild>
-              <Link to="/admin-licencas">Licenças</Link>
-            </Button>
-            <Button variant="outline" onClick={load} disabled={loading}>
-              <RefreshCw className={`h-4 w-4 mr-2 ${loading ? "animate-spin" : ""}`} />
-              Atualizar
-            </Button>
-            <Button onClick={exportCsv} disabled={!filtered.length}>
-              <Download className="h-4 w-4 mr-2" />
-              Exportar CSV
-            </Button>
+        )}
+
+        {isTab && (
+          <div className="flex justify-end gap-2">
+             <Button variant="outline" size="sm" onClick={load} disabled={loading}>
+               <RefreshCw className={`h-4 w-4 mr-2 ${loading ? "animate-spin" : ""}`} />
+               Atualizar
+             </Button>
+             <Button size="sm" onClick={exportCsv} disabled={!filtered.length}>
+               <Download className="h-4 w-4 mr-2" />
+               Exportar
+             </Button>
           </div>
-        </div>
+        )}
 
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center justify-between gap-4">
+            <CardTitle className="flex flex-col md:flex-row md:items-center justify-between gap-4">
               <span>{filtered.length} lead(s)</span>
               <div className="relative w-full max-w-sm">
                 <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -173,73 +189,75 @@ export default function AdminLeads() {
                 Nenhum lead encontrado.
               </p>
             ) : (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Data</TableHead>
-                    <TableHead>Nome</TableHead>
-                    <TableHead>Contato</TableHead>
-                    <TableHead>Produto</TableHead>
-                    <TableHead>Origem</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead className="text-right">Ações</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filtered.map((lead) => {
-                    const produtoLabel =
-                      (lead.produto_interesse &&
-                        (PRODUTO_LABEL[lead.produto_interesse] ?? lead.produto_interesse)) ||
-                      "—";
-                    return (
-                      <TableRow key={lead.id}>
-                        <TableCell className="whitespace-nowrap text-sm">
-                          {formatDate(lead.created_at)}
-                        </TableCell>
-                        <TableCell className="font-medium">{lead.nome}</TableCell>
-                        <TableCell>
-                          <div className="flex flex-col text-sm">
-                            <span>{lead.email}</span>
-                            <span className="text-muted-foreground">{lead.telefone}</span>
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant="secondary">{produtoLabel}</Badge>
-                        </TableCell>
-                        <TableCell className="text-sm text-muted-foreground">
-                          {lead.origem ?? "—"}
-                        </TableCell>
-                        <TableCell>
-                          {lead.notificado ? (
-                            <Badge>Notificado</Badge>
-                          ) : (
-                            <Badge variant="outline">Pendente</Badge>
-                          )}
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <div className="flex justify-end gap-1">
-                            <Button size="sm" variant="ghost" asChild>
-                              <a
-                                href={whatsappLink(lead.telefone)}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                title="Abrir WhatsApp"
-                              >
-                                <MessageCircle className="h-4 w-4" />
-                              </a>
-                            </Button>
-                            <Button size="sm" variant="ghost" asChild>
-                              <a href={`mailto:${lead.email}`} title="Enviar e-mail">
-                                <Mail className="h-4 w-4" />
-                              </a>
-                            </Button>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
-                </TableBody>
-              </Table>
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Data</TableHead>
+                      <TableHead>Nome</TableHead>
+                      <TableHead>Contato</TableHead>
+                      <TableHead>Produto</TableHead>
+                      <TableHead>Origem</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead className="text-right">Ações</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {filtered.map((lead) => {
+                      const produtoLabel =
+                        (lead.produto_interesse &&
+                          (PRODUTO_LABEL[lead.produto_interesse] ?? lead.produto_interesse)) ||
+                        "—";
+                      return (
+                        <TableRow key={lead.id}>
+                          <TableCell className="whitespace-nowrap text-xs">
+                            {formatDate(lead.created_at)}
+                          </TableCell>
+                          <TableCell className="font-medium text-sm">{lead.nome}</TableCell>
+                          <TableCell>
+                            <div className="flex flex-col text-xs">
+                              <span className="font-mono">{lead.email}</span>
+                              <span className="text-muted-foreground">{lead.telefone}</span>
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <Badge variant="secondary" className="text-[10px]">{produtoLabel}</Badge>
+                          </TableCell>
+                          <TableCell className="text-xs text-muted-foreground">
+                            {lead.origem ?? "—"}
+                          </TableCell>
+                          <TableCell>
+                            {lead.notificado ? (
+                              <Badge className="text-[10px]">Notificado</Badge>
+                            ) : (
+                              <Badge variant="outline" className="text-[10px]">Pendente</Badge>
+                            )}
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <div className="flex justify-end gap-1">
+                              <Button size="sm" variant="ghost" asChild>
+                                <a
+                                  href={whatsappLink(lead.telefone)}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  title="Abrir WhatsApp"
+                                >
+                                  <MessageCircle className="h-4 w-4" />
+                                </a>
+                              </Button>
+                              <Button size="sm" variant="ghost" asChild>
+                                <a href={`mailto:${lead.email}`} title="Enviar e-mail">
+                                  <Mail className="h-4 w-4" />
+                                </a>
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+              </div>
             )}
           </CardContent>
         </Card>
