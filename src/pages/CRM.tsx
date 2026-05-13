@@ -102,14 +102,16 @@ export default function CRM({ isTab = false }: { isTab?: boolean }) {
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
+    const isSuperAdmin = user?.email?.toLowerCase() === "claudiolx.nunes@gmail.com";
+
     return items
-      .filter((i) => i.lead_origem === tab)
+      .filter((i) => isSuperAdmin || i.lead_origem === tab)
       .filter((i) =>
         !q ||
-        [i.nome, i.email ?? "", i.telefone ?? "", i.produto_interesse ?? ""]
+        [i.nome, i.email ?? "", i.telefone ?? "", i.produto_interesse ?? "", i.lead_origem ?? ""]
           .some((v) => v.toLowerCase().includes(q)),
       );
-  }, [items, tab, search]);
+  }, [items, tab, search, user]);
 
   const stats = useMemo(() => {
     const list = items.filter((i) => i.lead_origem === tab);
