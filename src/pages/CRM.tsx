@@ -86,6 +86,7 @@ export default function CRM({ isTab = false }: { isTab?: boolean }) {
 
   const load = async () => {
     setLoading(true);
+    // Removemos filtros para que o superadmin veja TODOS os leads de TODOS os programas
     const { data, error } = await supabase
       .from("crm_pipeline")
       .select("*")
