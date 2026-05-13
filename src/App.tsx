@@ -224,7 +224,7 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <AuthProvider>
-          <SuperAdminButton />
+          
           <EmpresaProvider>
             <AppRoutes />
           </EmpresaProvider>
