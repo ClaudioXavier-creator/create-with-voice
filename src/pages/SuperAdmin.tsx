@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -12,7 +12,20 @@ import AdminLeads from "./AdminLeads";
 
 export default function SuperAdmin() {
   const { user, roles, loading: authLoading } = useAuth();
-  const [activeTab, setActiveTab] = useState("dashboard");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const validTabs = ["dashboard", "leads", "crm", "licencas", "assinaturas"];
+  const initialTab = searchParams.get("tab");
+  const [activeTab, setActiveTab] = useState(
+    initialTab && validTabs.includes(initialTab) ? initialTab : "dashboard"
+  );
+  useEffect(() => {
+    const t = searchParams.get("tab");
+    if (t && validTabs.includes(t) && t !== activeTab) setActiveTab(t);
+  }, [searchParams]);
+  const handleTabChange = (t: string) => {
+    setActiveTab(t);
+    setSearchParams({ tab: t }, { replace: true });
+  };
   const [stats, setStats] = useState({
     totalLeads: 0,
     leadsPendente: 0,
@@ -76,7 +89,7 @@ export default function SuperAdmin() {
         </div>
       </div>
 
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+      <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-6">
         <TabsList className="grid grid-cols-2 md:grid-cols-5 lg:grid-cols-6 w-full h-auto gap-2 bg-transparent">
           <TabsTrigger value="dashboard" className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground py-2 border">
             <Activity className="h-4 w-4" />

@@ -164,6 +164,10 @@ const InternalRoutes = () => (
     <Route path="/consulta-sipeagro" element={<ConsultaSipeagro />} />
     <Route path="/configurar-pin" element={<ConfigurarPin />} />
     <Route path="/admin" element={<SuperAdmin />} />
+    <Route path="/crm" element={<Navigate to="/admin?tab=crm" replace />} />
+    <Route path="/leads" element={<Navigate to="/admin?tab=leads" replace />} />
+    <Route path="/licencas" element={<Navigate to="/admin?tab=licencas" replace />} />
+    <Route path="/assinaturas" element={<Navigate to="/admin?tab=assinaturas" replace />} />
     <Route path="*" element={<NotFound />} />
   </Routes>
 );
