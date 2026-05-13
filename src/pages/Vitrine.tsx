@@ -216,7 +216,7 @@ export default function Vitrine() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-5 gap-6">
-          {produtos.map((p) => (
+          {produtosVisiveis.map((p) => (
             <div key={p.nome} className="group cursor-pointer" onClick={() => p.external ? window.open(p.link, "_blank", "noopener,noreferrer") : navigate(p.link)}>
               <div className={`h-full rounded-2xl border-2 ${p.borderColor} ${p.bgCard} p-1 transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 hover:scale-[1.02]`}>
                 <div className="h-full rounded-xl bg-card/80 backdrop-blur-sm p-6 sm:p-8 flex flex-col">
