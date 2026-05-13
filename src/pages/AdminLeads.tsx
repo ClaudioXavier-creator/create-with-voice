@@ -9,7 +9,14 @@ import { Badge } from "@/components/ui/badge";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
-import { Loader2, RefreshCw, Search, Download, MessageCircle, Mail } from "lucide-react";
+import { 
+  Select, 
+  SelectContent, 
+  SelectItem, 
+  SelectTrigger, 
+  SelectValue 
+} from "@/components/ui/select";
+import { Loader2, RefreshCw, Search, Download, MessageCircle, Mail, FilterX } from "lucide-react";
 import { toast } from "sonner";
 import { canAccessLeadsAdmin } from "@/config/adminAccess";
 
@@ -54,6 +61,8 @@ export default function AdminLeads({ isTab = false }: { isTab?: boolean }) {
   const [leads, setLeads] = useState<Lead[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
+  const [filterOrigem, setFilterOrigem] = useState("all");
+  const [filterStatus, setFilterStatus] = useState("all");
 
   const load = async () => {
     setLoading(true);
@@ -78,13 +87,36 @@ export default function AdminLeads({ isTab = false }: { isTab?: boolean }) {
   const visibleLeads = useMemo(() => leads, [leads]);
 
   const filtered = useMemo(() => {
+    let result = leads;
+    
+    // Filtro por busca de texto (Nome, Email, Telefone)
     const q = search.trim().toLowerCase();
-    if (!q) return visibleLeads;
-    return visibleLeads.filter((l) =>
-      [l.nome, l.email, l.telefone, l.produto_interesse ?? "", l.origem ?? ""]
-        .some((v) => v.toLowerCase().includes(q)),
-    );
-  }, [visibleLeads, search]);
+    if (q) {
+      result = result.filter((l) =>
+        [l.nome, l.email, l.telefone, l.produto_interesse ?? ""].some((v) => 
+          v.toLowerCase().includes(q)
+        )
+      );
+    }
+
+    // Filtro por Origem
+    if (filterOrigem !== "all") {
+      result = result.filter((l) => (l.origem || "—").toLowerCase() === filterOrigem.toLowerCase());
+    }
+
+    // Filtro por Status (Notificado/Pendente)
+    if (filterStatus !== "all") {
+      const isNotificado = filterStatus === "notificado";
+      result = result.filter((l) => l.notificado === isNotificado);
+    }
+
+    return result;
+  }, [leads, search, filterOrigem, filterStatus]);
+
+  const origensUnicas = useMemo(() => {
+    const set = new Set(leads.map(l => l.origem || "—"));
+    return Array.from(set).sort();
+  }, [leads]);
 
   const exportCsv = () => {
     const header = ["Data", "Nome", "Email", "Telefone", "Produto", "Origem", "Notificado"];
@@ -163,16 +195,58 @@ export default function AdminLeads({ isTab = false }: { isTab?: boolean }) {
 
         <Card>
           <CardHeader>
-            <CardTitle className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-              <span>{filtered.length} lead(s)</span>
-              <div className="relative w-full max-w-sm">
-                <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Buscar por nome, email, telefone, produto..."
-                  className="pl-8"
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                />
+            <CardTitle className="flex flex-col gap-4">
+              <div className="flex items-center justify-between">
+                <span>{filtered.length} lead(s)</span>
+                {(search || filterOrigem !== "all" || filterStatus !== "all") && (
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    onClick={() => {
+                      setSearch("");
+                      setFilterOrigem("all");
+                      setFilterStatus("all");
+                    }}
+                    className="h-8 text-xs text-muted-foreground"
+                  >
+                    <FilterX className="h-3 w-3 mr-1" /> Limpar filtros
+                  </Button>
+                )}
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+                <div className="relative col-span-1 md:col-span-2">
+                  <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Buscar por nome, email, telefone..."
+                    className="pl-8"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                  />
+                </div>
+
+                <Select value={filterOrigem} onValueChange={setFilterOrigem}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Origem" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Todas as origens</SelectItem>
+                    {origensUnicas.map(o => (
+                      <SelectItem key={o} value={o}>{o}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
+                <Select value={filterStatus} onValueChange={setFilterStatus}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Todos os status</SelectItem>
+                    <SelectItem value="notificado">Notificado</SelectItem>
+                    <SelectItem value="pendente">Pendente</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </CardTitle>
           </CardHeader>
