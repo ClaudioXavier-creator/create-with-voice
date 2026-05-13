@@ -472,6 +472,9 @@ export default function Documentos() {
                   </TableBody>
                 </Table>
               </div>
+                  </TableBody>
+                </Table>
+              </div>
 
                 {/* Mobile View */}
                 <div className="md:hidden space-y-3">
