@@ -339,12 +339,12 @@ export default function NaoConformidades() {
             </DialogContent>
           </Dialog>
         </CardHeader>
-        <CardContent className="overflow-x-auto">
+        <CardContent className="p-2 sm:p-6 overflow-hidden">
           {loading ? (
             <div className="flex justify-center py-8"><Loader2 className="w-6 h-6 animate-spin text-muted-foreground" /></div>
           ) : (
             <Tabs defaultValue="todas">
-              <TabsList className="mb-4">
+              <TabsList className="mb-4 w-full justify-start overflow-x-auto h-auto p-1 flex">
                 <TabsTrigger value="todas">Todas ({ncs.length})</TabsTrigger>
                 <TabsTrigger value="abertas">Abertas ({abertas.length})</TabsTrigger>
                 <TabsTrigger value="andamento">Em andamento ({emAndamento.length})</TabsTrigger>
@@ -360,8 +360,10 @@ export default function NaoConformidades() {
                   {tab.data.length === 0 ? (
                     <p className="text-center text-muted-foreground py-8">Nenhuma NC encontrada</p>
                   ) : (
-                    <div className="space-y-0">
-                      <Table>
+                    <div className="space-y-4">
+                      {/* Desktop Table View */}
+                      <div className="hidden md:block">
+                        <Table>
                         <TableHeader>
                           <TableRow>
                             <TableHead className="w-8"></TableHead>

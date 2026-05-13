@@ -262,7 +262,7 @@ export default function Recebimento() {
         </CardContent></Card>
       </div>
 
-      <Card>
+      <Card className="overflow-hidden">
         <CardHeader className="flex flex-row items-center justify-between flex-wrap gap-2">
           <CardTitle className="font-display">Registros de Recebimento</CardTitle>
           <div className="flex gap-2">
