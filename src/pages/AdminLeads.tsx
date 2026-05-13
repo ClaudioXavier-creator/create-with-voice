@@ -94,7 +94,7 @@ export default function AdminLeads({ isTab = false }: { isTab?: boolean }) {
     const q = search.trim().toLowerCase();
     if (q) {
       result = result.filter((l) =>
-        [l.nome, l.email, l.telefone, l.produto_interesse ?? ""].some((v) => 
+        [l.nome, l.email, l.telefone].some((v) => 
           v.toLowerCase().includes(q)
         )
       );
@@ -105,6 +105,11 @@ export default function AdminLeads({ isTab = false }: { isTab?: boolean }) {
       result = result.filter((l) => (l.origem || "—").toLowerCase() === filterOrigem.toLowerCase());
     }
 
+    // Filtro por Produto de Interesse
+    if (filterProduto !== "all") {
+      result = result.filter((l) => (l.produto_interesse || "—").toLowerCase() === filterProduto.toLowerCase());
+    }
+
     // Filtro por Status (Notificado/Pendente)
     if (filterStatus !== "all") {
       const isNotificado = filterStatus === "notificado";
@@ -112,10 +117,15 @@ export default function AdminLeads({ isTab = false }: { isTab?: boolean }) {
     }
 
     return result;
-  }, [leads, search, filterOrigem, filterStatus]);
+  }, [leads, search, filterOrigem, filterProduto, filterStatus]);
 
   const origensUnicas = useMemo(() => {
     const set = new Set(leads.map(l => l.origem || "—"));
+    return Array.from(set).sort();
+  }, [leads]);
+
+  const produtosUnicos = useMemo(() => {
+    const set = new Set(leads.map(l => l.produto_interesse || "—"));
     return Array.from(set).sort();
   }, [leads]);
 
