@@ -116,6 +116,20 @@ const produtos: ProdutoCard[] = [
     demoLink: "/demo/agrogestao",
     preco: "A partir de R$ 97/mês",
   },
+  {
+    nome: "Portal de Gestão (CRM)",
+    logo: logoBpfConsult,
+    desc: "Plataforma central de gestão da BPF_Consult. Controle total de leads, pipeline de vendas CRM e gestão centralizada de licenças para todos os programas do ecossistema.",
+    destaques: ["Gestão de Leads", "CRM de Vendas", "Gestão de Licenças", "Painel Super Admin", "Consolidação de Dados", "Relatórios de Vendas"],
+    link: "/admin",
+    gradient: "from-slate-700 to-slate-900",
+    bgCard: "bg-slate-50 dark:bg-slate-900/40",
+    borderColor: "border-slate-300 dark:border-slate-700",
+    trial: "Acesso Restrito",
+    trialLink: "/admin",
+    preco: "Uso Interno Admin",
+    adminOnly: true,
+  },
 ];
 
 const estatisticas = [
