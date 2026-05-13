@@ -19,6 +19,7 @@ import {
 import { Loader2, RefreshCw, Search, Download, MessageCircle, Mail, FilterX } from "lucide-react";
 import { toast } from "sonner";
 import { canAccessLeadsAdmin } from "@/config/adminAccess";
+import { getProductLabel } from "@/utils/productUtils";
 
 interface Lead {
   id: string;
@@ -31,20 +32,6 @@ interface Lead {
   user_id: string | null;
   created_at: string;
 }
-
-const PRODUTO_LABEL: Record<string, string> = {
-  feedbpf: "Feed_BPF",
-  feed_bpf: "Feed_BPF",
-  auditsbpf: "Audits BPF",
-  audits_bpf: "Audits BPF",
-  nutricrm: "NutriCRM",
-  agrogestao: "AgroGestão",
-  agro_rc: "Agro RC",
-  "agro-rc": "Agro RC",
-  agro_rc_crm: "Agro RC CRM",
-  rotulos: "Nutri_Agro Labels",
-  plataforma: "Plataforma",
-};
 
 function whatsappLink(phone: string) {
   const digits = phone.replace(/\D/g, "");
@@ -256,7 +243,7 @@ export default function AdminLeads({ isTab = false }: { isTab?: boolean }) {
                   <SelectContent>
                     <SelectItem value="all">Todos os produtos</SelectItem>
                     {produtosUnicos.map(p => (
-                      <SelectItem key={p} value={p}>{PRODUTO_LABEL[p] || p}</SelectItem>
+                      <SelectItem key={p} value={p}>{getProductLabel(p)}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -299,10 +286,7 @@ export default function AdminLeads({ isTab = false }: { isTab?: boolean }) {
                   </TableHeader>
                   <TableBody>
                     {filtered.map((lead) => {
-                      const produtoLabel =
-                        (lead.produto_interesse &&
-                          (PRODUTO_LABEL[lead.produto_interesse] ?? lead.produto_interesse)) ||
-                        "—";
+                      const produtoLabel = getProductLabel(lead.produto_interesse);
                       return (
                         <TableRow key={lead.id}>
                           <TableCell className="whitespace-nowrap text-xs">
