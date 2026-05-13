@@ -54,7 +54,7 @@ const ControleVisitantes = lazy(() => import("./pages/ControleVisitantes"));
 const DocumentosBPF = lazy(() => import("./pages/DocumentosBPF"));
 const Auth = lazy(() => import("./pages/Auth"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
-const AtivarLicenca = lazy(() => import("./pages/AtivarLicenca"));
+
 const Modelos = lazy(() => import("./pages/Modelos"));
 const Instalar = lazy(() => import("./pages/Instalar"));
 const NutriCRMPage = lazy(() => import("./pages/NutriCRMPage"));
@@ -114,7 +114,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 const InternalRoutes = () => (
   <Routes>
     <Route path="/dashboard" element={<Index />} />
-    <Route path="/ativar-licenca" element={<AtivarLicenca />} />
+    
     <Route path="/cadastro" element={<Cadastro />} />
     <Route path="/documentos" element={<Documentos />} />
     <Route path="/documentos-bpf" element={<DocumentosBPF />} />
