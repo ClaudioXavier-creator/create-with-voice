@@ -1253,7 +1253,7 @@ export default function Rastreabilidade() {
                                   <p className="text-[10px] text-yellow-600 mt-1">⚠ Sem CA</p>
                                 )}
                               </div>
-                              <ChevronRight className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                              <ChevronRight className="w-4 h-4 text-muted-foreground flex-shrink-0 rotate-90 md:rotate-0" />
                               <div className="flex-1 h-px bg-accent/30" />
                             </div>
                           ))}
