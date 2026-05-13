@@ -76,6 +76,7 @@ export default function SuperAdmin() {
 
   // Acesso estrito ao superadmin
   if (!user || !canAccessLicenseAdmin(roles, user.email)) {
+    console.log("Acesso negado ao SuperAdmin:", user?.email);
     return <Navigate to="/" replace />;
   }
 
@@ -101,7 +102,7 @@ export default function SuperAdmin() {
           </TabsTrigger>
           <TabsTrigger value="crm" className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground py-2 border">
             <TrendingUp className="h-4 w-4" />
-            <span className="hidden md:inline">CRM e Vendas</span>
+            <span className="hidden md:inline text-xs">CRM e Vendas</span>
           </TabsTrigger>
           <TabsTrigger value="licencas" className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground py-2 border">
             <Key className="h-4 w-4" />
