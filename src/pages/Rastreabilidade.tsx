@@ -1233,12 +1233,12 @@ export default function Rastreabilidade() {
                         <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">← Montante (Fornecedores → MPs)</p>
                         <div className="space-y-2">
                           {arvoreData.mps.map((mp, i) => (
-                            <div key={i} className="flex items-center gap-2">
+                            <div key={i} className="flex flex-col md:flex-row items-center gap-2">
                               <div className="flex-shrink-0 p-2 rounded bg-muted/50 border text-xs text-center min-w-[120px]">
                                 <p className="font-medium">{mp.fornecedor}</p>
                                 <p className="text-[10px] text-muted-foreground">Fornecedor</p>
                               </div>
-                              <ChevronRight className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                              <ChevronRight className="w-4 h-4 text-muted-foreground flex-shrink-0 rotate-90 md:rotate-0" />
                               <div className="flex-shrink-0 p-2 rounded bg-accent/10 border border-accent/20 text-xs text-center min-w-[140px]">
                                 <p className="font-medium">{mp.mp}</p>
                                 <Badge variant="outline" className="font-mono text-[10px] mt-1">{mp.lote}</Badge>
@@ -1253,7 +1253,7 @@ export default function Rastreabilidade() {
                                   <p className="text-[10px] text-yellow-600 mt-1">⚠ Sem CA</p>
                                 )}
                               </div>
-                              <ChevronRight className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                              <ChevronRight className="w-4 h-4 text-muted-foreground flex-shrink-0 rotate-90 md:rotate-0" />
                               <div className="flex-1 h-px bg-accent/30" />
                             </div>
                           ))}
@@ -1283,14 +1283,14 @@ export default function Rastreabilidade() {
                         {arvoreData.clientes.length > 0 ? (
                           <div className="space-y-2">
                             {arvoreData.clientes.map((c, i) => (
-                              <div key={i} className="flex items-center gap-2">
+                              <div key={i} className="flex flex-col md:flex-row items-center gap-2">
                                 <div className="flex-1 h-px bg-primary/30" />
-                                <ChevronRight className="w-4 h-4 text-muted-foreground flex-shrink-0" />
-                                <div className="flex-shrink-0 p-2 rounded bg-muted/50 border text-xs min-w-[120px]">
+                                <ChevronRight className="w-4 h-4 text-muted-foreground flex-shrink-0 rotate-90 md:rotate-0" />
+                                <div className="flex-shrink-0 p-2 rounded bg-muted/50 border text-xs min-w-[120px] w-full md:w-auto text-center md:text-left">
                                   <p className="font-medium">{c.cliente}</p>
                                   <p className="text-[10px] text-muted-foreground">{c.local}</p>
                                 </div>
-                                <ChevronRight className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                                <ChevronRight className="w-4 h-4 text-muted-foreground flex-shrink-0 rotate-90 md:rotate-0" />
                                 <div className="flex-shrink-0 p-2 rounded bg-primary/5 border border-primary/10 text-xs">
                                   <p className="font-mono">{c.nf}</p>
                                 </div>

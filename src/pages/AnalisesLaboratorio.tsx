@@ -311,7 +311,7 @@ export default function AnalisesLaboratorio() {
         <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader><DialogTitle className="font-display flex items-center gap-2"><FlaskConical className="w-5 h-5 text-primary" /> Nova Análise Laboratorial</DialogTitle></DialogHeader>
           <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <Label className="text-xs">Tipo de Análise *</Label>
                 <Select value={form.tipo_analise} onValueChange={v => { updateForm("tipo_analise", v); updateForm("parametro", ""); }}>
@@ -334,7 +334,7 @@ export default function AnalisesLaboratorio() {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div><Label className="text-xs">Produto *</Label><Input value={form.produto} onChange={e => updateForm("produto", e.target.value)} placeholder="Ex: Ração Bovino Engorda" /></div>
               <div><Label className="text-xs">Lote</Label><Input value={form.lote} onChange={e => updateForm("lote", e.target.value)} placeholder="Ex: RBE-0320-01" /></div>
             </div>
@@ -351,7 +351,7 @@ export default function AnalisesLaboratorio() {
               </Select>
             </div>
 
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div><Label className="text-xs">Resultado</Label><Input value={form.resultado} onChange={e => updateForm("resultado", e.target.value)} placeholder="Ex: 12,5" /></div>
               <div><Label className="text-xs">Unidade</Label><Input value={form.unidade} onChange={e => updateForm("unidade", e.target.value)} placeholder="Ex: %, ppb, UFC/g" /></div>
               <div><Label className="text-xs">Limite Referência</Label><Input value={form.limite_referencia} onChange={e => updateForm("limite_referencia", e.target.value)} placeholder="Ex: ≤ 20 ppb" /></div>

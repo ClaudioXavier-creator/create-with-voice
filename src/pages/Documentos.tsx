@@ -521,7 +521,7 @@ export default function Documentos() {
                 <DialogContent>
                   <DialogHeader><DialogTitle>Registrar Calibração</DialogTitle></DialogHeader>
                   <div className="space-y-4">
-                    <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <div><Label>Equipamento *</Label><Input value={calEquipamento} onChange={e => setCalEquipamento(e.target.value)} placeholder="Ex: Balança Toledo 500kg" /></div>
                       <div><Label>Código / Patrimônio</Label><Input value={calCodigo} onChange={e => setCalCodigo(e.target.value)} placeholder="Ex: BAL-001" /></div>
                     </div>

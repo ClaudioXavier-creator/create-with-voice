@@ -292,7 +292,7 @@ export default function Fornecedores() {
                 {/* ABA 1 — DADOS DO FORNECEDOR */}
                 <TabsContent value="dados" className="space-y-4 mt-4">
                   <h3 className="text-sm font-semibold border-b pb-1">1 — Dados do Fornecedor</h3>
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div className="col-span-2 sm:col-span-1">
                       <Label>Nome / Razão Social *</Label>
                       <Input value={nome} onChange={e => setNome(e.target.value)} placeholder="Ex: AgroCorp Ltda" />
@@ -308,7 +308,7 @@ export default function Fornecedores() {
                       <Input value={endereco} onChange={e => setEndereco(e.target.value)} placeholder="Rua, número" />
                     </div>
                   </div>
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
                       <Label>Nº Registro MAPA</Label>
                       <Input value={registroMapa} onChange={e => setRegistroMapa(e.target.value)} placeholder="Ex: BR-00000" />
@@ -318,7 +318,7 @@ export default function Fornecedores() {
                       <Input value={bairro} onChange={e => setBairro(e.target.value)} />
                     </div>
                   </div>
-                  <div className="grid grid-cols-3 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <div>
                       <Label>CEP</Label>
                       <Input value={cep} onChange={e => setCep(e.target.value)} placeholder="00000-000" />
@@ -337,7 +337,7 @@ export default function Fornecedores() {
                       </Select>
                     </div>
                   </div>
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
                       <Label>CNPJ</Label>
                       <Input value={cnpj} onChange={e => setCnpj(e.target.value)} placeholder="00.000.000/0000-00" />
@@ -347,7 +347,7 @@ export default function Fornecedores() {
                       <Input value={inscricaoEstadual} onChange={e => setInscricaoEstadual(e.target.value)} />
                     </div>
                   </div>
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
                       <Label>Contato Qualidade</Label>
                       <Input value={contatoQualidade} onChange={e => setContatoQualidade(e.target.value)} placeholder="Nome do contato" />

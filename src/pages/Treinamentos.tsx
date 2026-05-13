@@ -281,7 +281,7 @@ export default function Treinamentos() {
                 <div className="grid gap-3">
                   <div><Label>Funcionário *</Label><Input value={treinoForm.funcionario} onChange={e => setTreinoForm(p => ({ ...p, funcionario: e.target.value }))} /></div>
                   <div><Label>Treinamento *</Label><Input value={treinoForm.treinamento} onChange={e => setTreinoForm(p => ({ ...p, treinamento: e.target.value }))} placeholder="Ex: BPF e Higiene Pessoal" /></div>
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div><Label>Data</Label><Input type="date" value={treinoForm.data} onChange={e => setTreinoForm(p => ({ ...p, data: e.target.value }))} /></div>
                     <div><Label>Validade</Label><Input type="date" value={treinoForm.validade} onChange={e => setTreinoForm(p => ({ ...p, validade: e.target.value }))} /></div>
                   </div>
