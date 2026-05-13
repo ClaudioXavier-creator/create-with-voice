@@ -262,7 +262,13 @@ function Kanban({
                   onClick={() => onSelect(p)}
                   className="bg-card border rounded-md p-2 text-sm cursor-pointer hover:shadow-md transition-shadow"
                 >
-                  <div className="font-medium truncate">{p.nome}</div>
+                  <div className="flex justify-between items-start gap-1">
+                    <div className="font-medium truncate">{p.nome}</div>
+                    {user?.email?.toLowerCase() === "claudiolx.nunes@gmail.com" && (
+                      <Badge variant="outline" className="text-[9px] px-1 py-0 h-4 bg-muted capitalize shrink-0">{p.lead_origem}</Badge>
+                    )}
+                  </div>
+
                   {p.produto_interesse && (
                     <Badge variant="outline" className="text-[10px] mt-1">{p.produto_interesse}</Badge>
                   )}
