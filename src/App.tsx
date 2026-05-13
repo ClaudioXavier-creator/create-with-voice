@@ -1,6 +1,6 @@
 import React, { Suspense, lazy } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Route, Routes, Navigate, useLocation } from "react-router-dom";
+import { BrowserRouter, Route, Routes, Navigate, useLocation, useParams } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -109,6 +109,65 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   return <>{children}</>;
 };
 
+const InternalRoutes = () => (
+  <Routes>
+    <Route path="/dashboard" element={<Index />} />
+    <Route path="/ativar-licenca" element={<AtivarLicenca />} />
+    <Route path="/cadastro" element={<Cadastro />} />
+    <Route path="/documentos" element={<Documentos />} />
+    <Route path="/documentos-bpf" element={<DocumentosBPF />} />
+    <Route path="/auditoria" element={<Auditoria />} />
+    <Route path="/nao-conformidades" element={<NaoConformidades />} />
+    <Route path="/recebimento" element={<Recebimento />} />
+    <Route path="/fornecedores" element={<Fornecedores />} />
+    <Route path="/producao" element={<Producao />} />
+    <Route path="/pcp" element={<PCP />} />
+    <Route path="/rastreabilidade" element={<Rastreabilidade />} />
+    <Route path="/expedicao" element={<Expedicao />} />
+    <Route path="/pragas" element={<Pragas />} />
+    <Route path="/treinamentos" element={<Treinamentos />} />
+    <Route path="/indicadores" element={<Indicadores />} />
+    <Route path="/execucao-pops" element={<ExecucaoPops />} />
+    <Route path="/relatorios" element={<Relatorios />} />
+    <Route path="/legislacao" element={<Legislacao />} />
+    <Route path="/manual" element={<Manual />} />
+    <Route path="/guia-pops" element={<GuiaPops />} />
+    <Route path="/planilhas-pop" element={<PlanilhasPop />} />
+    <Route path="/produtos" element={<Produtos />} />
+    <Route path="/formulas" element={<Formulas />} />
+    <Route path="/analises" element={<AnalisesLaboratorio />} />
+    <Route path="/higiene" element={<HigieneSanitizacao />} />
+    <Route path="/manutencao" element={<ManutencaoPreventiva />} />
+    <Route path="/residuos" element={<ControleResiduos />} />
+    <Route path="/substancias" element={<ControleSubstancias />} />
+    <Route path="/validacao-limpeza" element={<ValidacaoLimpezaLinha />} />
+    <Route path="/matriz-risco" element={<MatrizRisco />} />
+    <Route path="/planejamento-anual" element={<PlanejamentoAnual />} />
+    <Route path="/qualidade-total" element={<QualidadeTotal />} />
+    <Route path="/sala-auditor" element={<SalaAuditor />} />
+    <Route path="/relatorio-producao" element={<RelatorioProducao />} />
+    <Route path="/armazenamento-transporte" element={<ArmazenamentoTransporte />} />
+    <Route path="/potabilidade-agua" element={<PotabilidadeAgua />} />
+    <Route path="/saude-pessoal" element={<SaudePessoal />} />
+    <Route path="/visitantes" element={<ControleVisitantes />} />
+    <Route path="/modelos" element={<Modelos />} />
+    <Route path="/checklist-pre-auditoria" element={<ChecklistPreAuditoria />} />
+    <Route path="/simulacao-recall" element={<SimulacaoRecall />} />
+    <Route path="/simulacao-carimbo" element={<SimulacaoCarimbo />} />
+    <Route path="/orientacoes" element={<Orientacoes />} />
+    <Route path="/orientacoes/:moduloId" element={<Orientacoes />} />
+    <Route path="/busca-global" element={<BuscaGlobal />} />
+    <Route path="/modo-tablet" element={<ModoTablet />} />
+    <Route path="/analise-tendencias" element={<AnaliseTendencias />} />
+    <Route path="/geracao-manual-bpf" element={<GeracaoManualBPF />} />
+    <Route path="/gerador-pop-ia" element={<GeradorPopIA />} />
+    <Route path="/consulta-sipeagro" element={<ConsultaSipeagro />} />
+    <Route path="/configurar-pin" element={<ConfigurarPin />} />
+    <Route path="/admin" element={<SuperAdmin />} />
+    <Route path="*" element={<NotFound />} />
+  </Routes>
+);
+
 const AppRoutes = () => {
   return (
     <Suspense fallback={<PageLoader />}>
@@ -128,69 +187,22 @@ const AppRoutes = () => {
         <Route path="/agro-rc" element={<AgroRCCRMPage />} />
         <Route path="/rotulos" element={<RotulosBPFPage />} />
         <Route
+          path="/:product/*"
+          element={
+            <ProtectedRoute>
+              <AppLayout>
+                <InternalRoutes />
+              </AppLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
           path="/*"
           element={
             <ProtectedRoute>
-                <AppLayout>
-                  <LicenseGate>
-                  <Routes>
-                    <Route path="/dashboard" element={<Index />} />
-                    <Route path="/ativar-licenca" element={<AtivarLicenca />} />
-                    <Route path="/cadastro" element={<Cadastro />} />
-                    <Route path="/documentos" element={<Documentos />} />
-                    <Route path="/documentos-bpf" element={<DocumentosBPF />} />
-                    <Route path="/auditoria" element={<Auditoria />} />
-                    <Route path="/nao-conformidades" element={<NaoConformidades />} />
-                    <Route path="/recebimento" element={<Recebimento />} />
-                    <Route path="/fornecedores" element={<Fornecedores />} />
-                    <Route path="/producao" element={<Producao />} />
-                    <Route path="/pcp" element={<PCP />} />
-                    <Route path="/rastreabilidade" element={<Rastreabilidade />} />
-                    <Route path="/expedicao" element={<Expedicao />} />
-                    <Route path="/pragas" element={<Pragas />} />
-                    <Route path="/treinamentos" element={<Treinamentos />} />
-                    <Route path="/indicadores" element={<Indicadores />} />
-                    <Route path="/execucao-pops" element={<ExecucaoPops />} />
-                    <Route path="/relatorios" element={<Relatorios />} />
-                    <Route path="/legislacao" element={<Legislacao />} />
-                    <Route path="/manual" element={<Manual />} />
-                    <Route path="/guia-pops" element={<GuiaPops />} />
-                    <Route path="/planilhas-pop" element={<PlanilhasPop />} />
-                    <Route path="/produtos" element={<Produtos />} />
-                    <Route path="/formulas" element={<Formulas />} />
-                    <Route path="/analises" element={<AnalisesLaboratorio />} />
-                    <Route path="/higiene" element={<HigieneSanitizacao />} />
-                    <Route path="/manutencao" element={<ManutencaoPreventiva />} />
-                    <Route path="/residuos" element={<ControleResiduos />} />
-                    <Route path="/substancias" element={<ControleSubstancias />} />
-                    <Route path="/validacao-limpeza" element={<ValidacaoLimpezaLinha />} />
-                    <Route path="/matriz-risco" element={<MatrizRisco />} />
-                    <Route path="/planejamento-anual" element={<PlanejamentoAnual />} />
-                    <Route path="/qualidade-total" element={<QualidadeTotal />} />
-                    <Route path="/sala-auditor" element={<SalaAuditor />} />
-                    <Route path="/relatorio-producao" element={<RelatorioProducao />} />
-                    <Route path="/armazenamento-transporte" element={<ArmazenamentoTransporte />} />
-                    <Route path="/potabilidade-agua" element={<PotabilidadeAgua />} />
-                    <Route path="/saude-pessoal" element={<SaudePessoal />} />
-                    <Route path="/visitantes" element={<ControleVisitantes />} />
-                    <Route path="/modelos" element={<Modelos />} />
-                    <Route path="/checklist-pre-auditoria" element={<ChecklistPreAuditoria />} />
-                    <Route path="/simulacao-recall" element={<SimulacaoRecall />} />
-                    <Route path="/simulacao-carimbo" element={<SimulacaoCarimbo />} />
-                    <Route path="/orientacoes" element={<Orientacoes />} />
-                    <Route path="/orientacoes/:moduloId" element={<Orientacoes />} />
-                    <Route path="/busca-global" element={<BuscaGlobal />} />
-                    <Route path="/modo-tablet" element={<ModoTablet />} />
-                    <Route path="/analise-tendencias" element={<AnaliseTendencias />} />
-                    <Route path="/geracao-manual-bpf" element={<GeracaoManualBPF />} />
-                    <Route path="/gerador-pop-ia" element={<GeradorPopIA />} />
-                    <Route path="/consulta-sipeagro" element={<ConsultaSipeagro />} />
-                    <Route path="/configurar-pin" element={<ConfigurarPin />} />
-                    <Route path="/admin" element={<SuperAdmin />} />
-                    <Route path="*" element={<NotFound />} />
-                  </Routes>
-                  </LicenseGate>
-                </AppLayout>
+              <AppLayout>
+                <InternalRoutes />
+              </AppLayout>
             </ProtectedRoute>
           }
         />
