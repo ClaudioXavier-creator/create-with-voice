@@ -180,7 +180,7 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
         <Button
           onClick={() => navigate("/crm")}
           size="icon"
-          className="fixed bottom-8 right-8 z-50 h-14 w-14 rounded-2xl shadow-2xl shadow-primary/20 bg-primary hover:bg-primary/90 hover:scale-110 active:scale-95 transition-all duration-300 ring-4 ring-background group"
+          className="fixed bottom-6 right-6 sm:bottom-8 sm:right-8 z-50 h-12 w-12 sm:h-14 sm:w-14 rounded-2xl shadow-2xl shadow-primary/20 bg-primary hover:bg-primary/90 hover:scale-110 active:scale-95 transition-all duration-300 ring-4 ring-background group"
           title="CRM Comercial"
           aria-label="Abrir CRM Comercial"
         >
