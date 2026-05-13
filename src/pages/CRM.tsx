@@ -174,12 +174,18 @@ export default function CRM({ isTab = false }: { isTab?: boolean }) {
 
       <Tabs value={tab} onValueChange={(v) => setTab(v as Origem)}>
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-          <TabsList>
-            <TabsTrigger value="produto">Leads de produto</TabsTrigger>
-            <TabsTrigger value="site">Contatos do site</TabsTrigger>
-          </TabsList>
+          {user?.email?.toLowerCase() !== "claudiolx.nunes@gmail.com" ? (
+            <TabsList>
+              <TabsTrigger value="produto">Leads de produto</TabsTrigger>
+              <TabsTrigger value="site">Contatos do site</TabsTrigger>
+            </TabsList>
+          ) : (
+            <div className="text-sm font-medium text-muted-foreground bg-muted px-3 py-1.5 rounded-md border">
+              Visão Global de Leads (SuperAdmin)
+            </div>
+          )}
           <Input
-            placeholder="Buscar por nome, e-mail, telefone..."
+            placeholder="Buscar por nome, e-mail, programa..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="md:w-80"
