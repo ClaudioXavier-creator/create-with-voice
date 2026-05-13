@@ -209,13 +209,14 @@ export default function AdminLeads({ isTab = false }: { isTab?: boolean }) {
             <CardTitle className="flex flex-col gap-4">
               <div className="flex items-center justify-between">
                 <span>{filtered.length} lead(s)</span>
-                {(search || filterOrigem !== "all" || filterStatus !== "all") && (
+                {(search || filterOrigem !== "all" || filterProduto !== "all" || filterStatus !== "all") && (
                   <Button 
                     variant="ghost" 
                     size="sm" 
                     onClick={() => {
                       setSearch("");
                       setFilterOrigem("all");
+                      setFilterProduto("all");
                       setFilterStatus("all");
                     }}
                     className="h-8 text-xs text-muted-foreground"
@@ -225,7 +226,7 @@ export default function AdminLeads({ isTab = false }: { isTab?: boolean }) {
                 )}
               </div>
               
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+              <div className="grid grid-cols-1 md:grid-cols-5 gap-3">
                 <div className="relative col-span-1 md:col-span-2">
                   <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
                   <Input
@@ -244,6 +245,18 @@ export default function AdminLeads({ isTab = false }: { isTab?: boolean }) {
                     <SelectItem value="all">Todas as origens</SelectItem>
                     {origensUnicas.map(o => (
                       <SelectItem key={o} value={o}>{o}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
+                <Select value={filterProduto} onValueChange={setFilterProduto}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Produto" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Todos os produtos</SelectItem>
+                    {produtosUnicos.map(p => (
+                      <SelectItem key={p} value={p}>{PRODUTO_LABEL[p] || p}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
