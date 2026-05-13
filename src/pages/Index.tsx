@@ -374,9 +374,9 @@ export default function Index() {
   const stats = [
     { label: "Conformidade BPF", value: data.loading ? "..." : `${data.conformidadeBPF}%`, icon: CheckCircle2, color: "text-emerald-600 dark:text-emerald-400", bg: "bg-emerald-500/10", border: "border-emerald-500/20", link: "/auditoria" },
     { label: "NCs Abertas", value: data.loading ? "..." : `${data.ncAbertas}`, icon: AlertTriangle, color: "text-rose-600 dark:text-rose-400", bg: "bg-rose-500/10", border: "border-rose-500/20", link: "/nao-conformidades" },
-    { label: "Auditorias Realizadas", value: data.loading ? "..." : `${data.auditoriasRealizadas}`, icon: ClipboardCheck, color: "text-amber-600 dark:text-amber-400", bg: "bg-amber-500/10", border: "border-amber-500/20", link: "/auditoria" },
-    { label: "Treinamentos Pendentes", value: data.loading ? "..." : `${data.treinamentosPendentes}`, icon: GraduationCap, color: "text-indigo-600 dark:text-indigo-400", bg: "bg-indigo-500/10", border: "border-indigo-500/20", link: "/treinamentos" },
-    { label: "Calibrações Vencidas", value: data.loading ? "..." : `${data.calibracoesVencidas}`, icon: Wrench, color: "text-orange-600 dark:text-orange-400", bg: "bg-orange-500/10", border: "border-orange-500/20", link: "/manutencao" },
+    { label: "Auditorias", value: data.loading ? "..." : `${data.auditoriasRealizadas}`, icon: ClipboardCheck, color: "text-amber-600 dark:text-amber-400", bg: "bg-amber-500/10", border: "border-amber-500/20", link: "/auditoria" },
+    { label: "Treinamentos", value: data.loading ? "..." : `${data.treinamentosPendentes}`, icon: GraduationCap, color: "text-indigo-600 dark:text-indigo-400", bg: "bg-indigo-500/10", border: "border-indigo-500/20", link: "/treinamentos" },
+    { label: "Calibrações", value: data.loading ? "..." : `${data.calibracoesVencidas}`, icon: Wrench, color: "text-orange-600 dark:text-orange-400", bg: "bg-orange-500/10", border: "border-orange-500/20", link: "/manutencao" },
     { label: "Docs p/ Revisão", value: data.loading ? "..." : `${data.docsVencidos}`, icon: FileText, color: "text-slate-600 dark:text-slate-400", bg: "bg-slate-500/10", border: "border-slate-500/20", link: "/documentos" },
   ];
 
@@ -435,7 +435,7 @@ export default function Index() {
             Guia do Sistema
           </Button>
           <Select value={periodoFiltro} onValueChange={setPeriodoFiltro}>
-            <SelectTrigger className="w-[180px] rounded-full border-primary/20 bg-background/50 backdrop-blur-sm">
+            <SelectTrigger className="w-full sm:w-[180px] rounded-full border-primary/20 bg-background/50 backdrop-blur-sm">
               <CalendarDays className="w-4 h-4 mr-2 text-muted-foreground" />
               <SelectValue placeholder="Filtrar Período" />
             </SelectTrigger>
@@ -450,9 +450,8 @@ export default function Index() {
         </div>
       </div>
 
-      {/* Alertas do Planejamento Anual */}
       {!data.loading && (data.atividadesVencidas.length > 0 || data.atividadesProximas.length > 0) && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="flex flex-col gap-4">
           {data.atividadesVencidas.length > 0 && (
             <Card className="border-none shadow-premium bg-rose-500/5 overflow-hidden group">
               <div className="absolute top-0 left-0 w-1 h-full bg-rose-500" />

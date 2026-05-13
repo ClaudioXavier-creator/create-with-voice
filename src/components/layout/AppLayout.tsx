@@ -163,18 +163,18 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
       </aside>
 
       {/* Mobile header */}
-      <div className="lg:hidden fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-4 py-3 bg-sidebar text-sidebar-foreground border-b border-sidebar-border/50 shadow-sm backdrop-blur-md">
+      <div className="lg:hidden fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-3 py-2 bg-sidebar text-sidebar-foreground border-b border-sidebar-border/50 shadow-sm backdrop-blur-md h-[56px]">
         <div className="flex items-center gap-2 min-w-0" onClick={() => navigate("/")}>
-          <img src={config.logo} alt={`${config.title} Logo`} className="w-8 h-8 rounded bg-white p-0.5 object-contain" />
+          <img src={config.logo} alt={`${config.title} Logo`} className="w-8 h-8 rounded bg-white p-1 object-contain" />
           <div className="min-w-0">
-            <span className="font-display font-bold block truncate tracking-tight">{config.title}</span>
+            <span className="font-display font-bold block truncate tracking-tight text-sm">{config.title}</span>
           </div>
         </div>
-        <div className="flex items-center gap-1">
-          <Button variant="ghost" size="icon" onClick={() => navigate("/busca-global")} className="h-9 w-9 text-sidebar-foreground/70">
+        <div className="flex items-center gap-0.5">
+          <Button variant="ghost" size="icon" onClick={() => navigate("/busca-global")} className="h-8 w-8 text-sidebar-foreground/70">
             <Search className="w-4 h-4" />
           </Button>
-          <Button variant="ghost" size="icon" onClick={() => setMobileOpen(!mobileOpen)} className="h-9 w-9 text-sidebar-foreground">
+          <Button variant="ghost" size="icon" onClick={() => setMobileOpen(!mobileOpen)} className="h-8 w-8 text-sidebar-foreground">
             {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </Button>
         </div>
@@ -218,7 +218,7 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
       {/* Main content */}
       <main className="flex-1 lg:ml-0 mt-[56px] lg:mt-0 overflow-x-hidden relative">
         <OfflineBanner />
-        <div className="p-4 md:p-8 lg:p-10 max-w-7xl mx-auto min-h-full animate-fade-in">
+        <div className="p-3 sm:p-4 md:p-8 lg:p-10 max-w-7xl mx-auto min-h-full animate-fade-in">
           <LicenseGate product={product as any}>
             <TierGate>
               <Suspense fallback={<PageLoader />}>

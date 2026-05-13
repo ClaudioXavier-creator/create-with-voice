@@ -125,7 +125,7 @@ export const SidebarNav = React.memo(({
   const renderLink = (item: NavItem, isSubItem = false) => {
     const isActive = currentPath === item.path || currentPath === `/${product}${item.path}`;
     const isFavorite = favorites.includes(item.path);
-    const targetPath = product ? `/${product}${item.path}` : item.path;
+    const targetPath = product && !item.path.startsWith(`/${product}`) ? `/${product}${item.path}` : item.path;
 
     return (
       <Link

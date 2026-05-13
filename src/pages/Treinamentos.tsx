@@ -262,7 +262,7 @@ export default function Treinamentos() {
       </div>
 
       <Tabs defaultValue="treinamentos">
-        <TabsList className="flex flex-wrap">
+        <TabsList className="mb-4 w-full justify-start overflow-x-auto h-auto p-1 flex">
           <TabsTrigger value="treinamentos"><GraduationCap className="w-4 h-4 mr-1" />Treinamentos</TabsTrigger>
           <TabsTrigger value="eficacia"><ShieldCheck className="w-4 h-4 mr-1" />Avaliação Eficácia</TabsTrigger>
           <TabsTrigger value="aso"><HeartPulse className="w-4 h-4 mr-1" />ASO / Saúde</TabsTrigger>
@@ -295,8 +295,9 @@ export default function Treinamentos() {
           {treinamentos.length === 0 ? (
             <Card><CardContent className="py-12 text-center text-muted-foreground"><GraduationCap className="w-12 h-12 mx-auto mb-3 opacity-40" /><p>Nenhum treinamento registrado</p></CardContent></Card>
           ) : (
-            <Card>
-              <Table>
+            <Card className="overflow-hidden">
+              <div className="hidden md:block overflow-x-auto">
+                <Table>
                 <TableHeader>
                   <TableRow>
                     <TableHead>Funcionário</TableHead>
@@ -329,7 +330,48 @@ export default function Treinamentos() {
                     </TableRow>
                   ))}
                 </TableBody>
-              </Table>
+                </Table>
+              </div>
+
+              {/* Mobile View */}
+              <div className="md:hidden space-y-3">
+                {treinamentos.map((t: any) => (
+                  <Card key={t.id} className="border shadow-sm">
+                    <CardContent className="p-4 space-y-3">
+                      <div className="flex justify-between items-start">
+                        <div className="space-y-0.5">
+                          <p className="text-sm font-bold truncate max-w-[200px]">{t.funcionario}</p>
+                          <p className="text-xs text-muted-foreground">{t.treinamento}</p>
+                        </div>
+                        {isVencido(t.validade) ? (
+                          <Badge variant="destructive" className="text-[10px]">Vencido</Badge>
+                        ) : isProximo(t.validade) ? (
+                          <Badge variant="secondary" className="bg-yellow-500/15 text-yellow-700 text-[10px]">Próximo</Badge>
+                        ) : (
+                          <Badge variant="secondary" className="bg-primary/10 text-primary text-[10px]">Válido</Badge>
+                        )}
+                      </div>
+                      
+                      <div className="grid grid-cols-2 gap-2 text-[10px] pt-2 border-t">
+                        <div>
+                          <p className="font-bold uppercase text-muted-foreground">Data</p>
+                          <p>{t.data}</p>
+                        </div>
+                        <div>
+                          <p className="font-bold uppercase text-muted-foreground">Validade</p>
+                          <p>{t.validade || "—"}</p>
+                        </div>
+                      </div>
+                      
+                      <div className="flex justify-end gap-2 pt-1">
+                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={() => delTreino.mutate(t.id)}>
+                          <Trash2 className="h-4 w-4 text-destructive" />
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
             </Card>
           )}
         </TabsContent>

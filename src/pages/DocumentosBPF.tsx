@@ -245,10 +245,10 @@ export default function DocumentosBPF() {
           <DialogTrigger asChild>
             <Button><Upload className="w-4 h-4 mr-2" /> Enviar Documento</Button>
           </DialogTrigger>
-          <DialogContent className="max-w-lg">
+          <DialogContent className="w-[95vw] sm:max-w-lg max-h-[90vh] overflow-y-auto p-4 sm:p-6">
             <DialogHeader><DialogTitle>Enviar Documento BPF</DialogTitle></DialogHeader>
             <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <Label>Tipo</Label>
                   <Select value={tipo} onValueChange={setTipo}>
@@ -331,7 +331,8 @@ export default function DocumentosBPF() {
               </CardTitle>
             </CardHeader>
             <CardContent className="pt-0">
-              <Table>
+              <div className="hidden md:block overflow-x-auto">
+                <Table>
                 <TableHeader>
                   <TableRow>
                     <TableHead className="w-20">Tipo</TableHead>
@@ -364,7 +365,41 @@ export default function DocumentosBPF() {
                     </TableRow>
                   ))}
                 </TableBody>
-              </Table>
+                </Table>
+              </div>
+
+              {/* Mobile View */}
+              <div className="md:hidden space-y-3">
+                {groupDocs.map(d => (
+                  <Card key={d.id} className="border shadow-sm">
+                    <CardContent className="p-4 space-y-3">
+                      <div className="flex justify-between items-start">
+                        <div className="space-y-1">
+                          <p className="text-sm font-bold truncate max-w-[200px]">{d.titulo}</p>
+                          <p className="text-xs text-muted-foreground font-mono">{d.pop_codigo || "Sem código"}</p>
+                        </div>
+                        <Badge variant="outline" className={tipoBadgeColor(d.tipo)}>{tipoLabel(d.tipo)}</Badge>
+                      </div>
+                      
+                      <div className="flex justify-between items-center pt-2 border-t">
+                        <div className="flex flex-col">
+                          <span className="text-[10px] text-muted-foreground uppercase font-bold">Arquivo</span>
+                          <span className="text-xs truncate max-w-[150px]">{d.arquivo_nome}</span>
+                        </div>
+                        
+                        <div className="flex gap-1">
+                          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleDownload(d)}>
+                            <Download className="w-4 h-4" />
+                          </Button>
+                          <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive" onClick={() => handleDelete(d)}>
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
             </CardContent>
           </Card>
         ))

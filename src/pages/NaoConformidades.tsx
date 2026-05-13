@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { AlertTriangle, Plus, Loader2, Bell, Clock, ChevronDown, ChevronUp, ClipboardList, Sparkles } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -339,12 +339,12 @@ export default function NaoConformidades() {
             </DialogContent>
           </Dialog>
         </CardHeader>
-        <CardContent className="overflow-x-auto">
+        <CardContent className="p-2 sm:p-6 overflow-hidden">
           {loading ? (
             <div className="flex justify-center py-8"><Loader2 className="w-6 h-6 animate-spin text-muted-foreground" /></div>
           ) : (
             <Tabs defaultValue="todas">
-              <TabsList className="mb-4">
+              <TabsList className="mb-4 w-full justify-start overflow-x-auto h-auto p-1 flex">
                 <TabsTrigger value="todas">Todas ({ncs.length})</TabsTrigger>
                 <TabsTrigger value="abertas">Abertas ({abertas.length})</TabsTrigger>
                 <TabsTrigger value="andamento">Em andamento ({emAndamento.length})</TabsTrigger>
@@ -360,109 +360,182 @@ export default function NaoConformidades() {
                   {tab.data.length === 0 ? (
                     <p className="text-center text-muted-foreground py-8">Nenhuma NC encontrada</p>
                   ) : (
-                    <div className="space-y-0">
-                      <Table>
-                        <TableHeader>
-                          <TableRow>
-                            <TableHead className="w-8"></TableHead>
-                            <TableHead>Data</TableHead>
-                            <TableHead>Setor</TableHead>
-                            <TableHead>Descrição</TableHead>
-                            <TableHead>Ação Corretiva</TableHead>
-                            <TableHead>Responsável</TableHead>
-                            <TableHead>Prazo</TableHead>
-                            <TableHead>Status</TableHead>
-                            <TableHead></TableHead>
-                          </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          {tab.data.map((nc) => {
-                            const isVencida = nc.prazo && nc.prazo < today && nc.status !== "fechada";
-                            const isExpanded = expandedId === nc.id;
-                            const temPlano = !!nc.acao_corretiva;
-                            return (
-                              <>
-                                <TableRow key={nc.id} className={`${isVencida ? "bg-destructive/5" : ""} cursor-pointer`} onClick={() => setExpandedId(isExpanded ? null : nc.id)}>
-                                  <TableCell className="px-2">
-                                    {isExpanded ? <ChevronUp className="w-4 h-4 text-muted-foreground" /> : <ChevronDown className="w-4 h-4 text-muted-foreground" />}
-                                  </TableCell>
-                                  <TableCell className="whitespace-nowrap">{nc.data}</TableCell>
-                                  <TableCell>{nc.setor}</TableCell>
-                                  <TableCell className="max-w-[180px] truncate">{nc.descricao}</TableCell>
-                                  <TableCell className="max-w-[180px]">
-                                    {temPlano ? (
-                                      <span className="text-sm text-foreground truncate block">{nc.acao_corretiva!.slice(0, 50)}{nc.acao_corretiva!.length > 50 ? "..." : ""}</span>
-                                    ) : (
-                                      <Badge variant="outline" className="text-destructive border-destructive/50 text-[10px]">Sem plano</Badge>
-                                    )}
-                                  </TableCell>
-                                  <TableCell>{nc.responsavel || "—"}</TableCell>
-                                  <TableCell className="whitespace-nowrap">
-                                    <span className={isVencida ? "text-destructive font-semibold" : ""}>{nc.prazo || "—"}</span>
-                                    {isVencida && <Badge variant="destructive" className="ml-1 text-[10px]">Vencida</Badge>}
-                                  </TableCell>
-                                  <TableCell><Badge className={statusColors[nc.status || "aberta"]}>{statusLabels[nc.status || "aberta"]}</Badge></TableCell>
-                                  <TableCell onClick={e => e.stopPropagation()}>
-                                    <div className="flex gap-1">
-                                      <Button variant="ghost" size="sm" className="text-xs h-7" onClick={() => openEditPlano(nc)}>
-                                        <ClipboardList className="w-3 h-3 mr-1" /> Plano
-                                      </Button>
-                                      {nc.status !== "fechada" && (
-                                        <Select onValueChange={(v) => handleUpdateStatus(nc.id, v)}>
-                                          <SelectTrigger className="w-[80px] h-7 text-xs"><SelectValue placeholder="Ação" /></SelectTrigger>
-                                          <SelectContent>
-                                            {nc.status !== "em_andamento" && <SelectItem value="em_andamento">Iniciar</SelectItem>}
-                                            <SelectItem value="fechada">Fechar</SelectItem>
-                                          </SelectContent>
-                                        </Select>
+                    <div className="space-y-4">
+                      {/* Desktop Table View */}
+                      <div className="hidden md:block overflow-x-auto">
+                        <Table>
+                          <TableHeader>
+                            <TableRow>
+                              <TableHead className="w-8"></TableHead>
+                              <TableHead>Data</TableHead>
+                              <TableHead>Setor</TableHead>
+                              <TableHead>Descrição</TableHead>
+                              <TableHead>Ação Corretiva</TableHead>
+                              <TableHead>Responsável</TableHead>
+                              <TableHead>Prazo</TableHead>
+                              <TableHead>Status</TableHead>
+                              <TableHead></TableHead>
+                            </TableRow>
+                          </TableHeader>
+                          <TableBody>
+                            {tab.data.map((nc) => {
+                              const isVencida = nc.prazo && nc.prazo < today && nc.status !== "fechada";
+                              const isExpanded = expandedId === nc.id;
+                              const temPlano = !!nc.acao_corretiva;
+                              return (
+                                <React.Fragment key={nc.id}>
+                                  <TableRow className={`${isVencida ? "bg-destructive/5" : ""} cursor-pointer`} onClick={() => setExpandedId(isExpanded ? null : nc.id)}>
+                                    <TableCell className="px-2">
+                                      {isExpanded ? <ChevronUp className="w-4 h-4 text-muted-foreground" /> : <ChevronDown className="w-4 h-4 text-muted-foreground" />}
+                                    </TableCell>
+                                    <TableCell className="whitespace-nowrap">{nc.data}</TableCell>
+                                    <TableCell>{nc.setor}</TableCell>
+                                    <TableCell className="max-w-[180px] truncate">{nc.descricao}</TableCell>
+                                    <TableCell className="max-w-[180px]">
+                                      {temPlano ? (
+                                        <span className="text-sm text-foreground truncate block">{nc.acao_corretiva!.slice(0, 50)}{nc.acao_corretiva!.length > 50 ? "..." : ""}</span>
+                                      ) : (
+                                        <Badge variant="outline" className="text-destructive border-destructive/50 text-[10px]">Sem plano</Badge>
                                       )}
-                                    </div>
-                                  </TableCell>
-                                </TableRow>
-                                {isExpanded && (
-                                  <TableRow key={`${nc.id}-detail`} className="bg-muted/30 hover:bg-muted/30">
-                                    <TableCell colSpan={9} className="p-4">
-                                      <div className="grid md:grid-cols-2 gap-4">
-                                        <div className="space-y-3">
-                                          <div>
-                                            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">Descrição Completa</p>
-                                            <p className="text-sm">{nc.descricao}</p>
-                                          </div>
-                                          <div>
-                                            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">Causa Raiz</p>
-                                            <p className="text-sm">{nc.causa || <span className="text-muted-foreground italic">Não informada</span>}</p>
-                                          </div>
-                                        </div>
-                                        <div className="space-y-3">
-                                          <div className={`p-3 rounded-lg ${temPlano ? "bg-primary/5 border border-primary/20" : "bg-destructive/5 border border-destructive/20"}`}>
-                                            <p className={`text-xs font-semibold uppercase tracking-wider mb-1 ${temPlano ? "text-primary" : "text-destructive"}`}>
-                                              Plano de Ação Corretiva
-                                            </p>
-                                            {temPlano ? (
-                                              <p className="text-sm">{nc.acao_corretiva}</p>
-                                            ) : (
-                                              <div className="text-center py-2">
-                                                <p className="text-sm text-muted-foreground mb-2">Nenhum plano de ação definido</p>
-                                                <Button size="sm" variant="outline" onClick={() => openEditPlano(nc)}>
-                                                  <ClipboardList className="w-3 h-3 mr-1" /> Definir Plano de Ação
-                                                </Button>
-                                              </div>
-                                            )}
-                                          </div>
-                                          <div className="flex gap-4 text-xs text-muted-foreground">
-                                            <span><strong>Responsável:</strong> {nc.responsavel || "—"}</span>
-                                            <span><strong>Prazo:</strong> <span className={isVencida ? "text-destructive font-semibold" : ""}>{nc.prazo || "—"}</span></span>
-                                          </div>
-                                        </div>
+                                    </TableCell>
+                                    <TableCell>{nc.responsavel || "—"}</TableCell>
+                                    <TableCell className="whitespace-nowrap">
+                                      <span className={isVencida ? "text-destructive font-semibold" : ""}>{nc.prazo || "—"}</span>
+                                      {isVencida && <Badge variant="destructive" className="ml-1 text-[10px]">Vencida</Badge>}
+                                    </TableCell>
+                                    <TableCell><Badge className={statusColors[nc.status || "aberta"]}>{statusLabels[nc.status || "aberta"]}</Badge></TableCell>
+                                    <TableCell onClick={e => e.stopPropagation()}>
+                                      <div className="flex gap-1">
+                                        <Button variant="ghost" size="sm" className="text-xs h-7" onClick={() => openEditPlano(nc)}>
+                                          <ClipboardList className="w-3 h-3 mr-1" /> Plano
+                                        </Button>
+                                        {nc.status !== "fechada" && (
+                                          <Select onValueChange={(v) => handleUpdateStatus(nc.id, v)}>
+                                            <SelectTrigger className="w-[80px] h-7 text-xs"><SelectValue placeholder="Ação" /></SelectTrigger>
+                                            <SelectContent>
+                                              {nc.status !== "em_andamento" && <SelectItem value="em_andamento">Iniciar</SelectItem>}
+                                              <SelectItem value="fechada">Fechar</SelectItem>
+                                            </SelectContent>
+                                          </Select>
+                                        )}
                                       </div>
                                     </TableCell>
                                   </TableRow>
+                                  {isExpanded && (
+                                    <TableRow key={`${nc.id}-detail`} className="bg-muted/30 hover:bg-muted/30">
+                                      <TableCell colSpan={9} className="p-4">
+                                        <div className="grid md:grid-cols-2 gap-4">
+                                          <div className="space-y-3">
+                                            <div>
+                                              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">Descrição Completa</p>
+                                              <p className="text-sm">{nc.descricao}</p>
+                                            </div>
+                                            <div>
+                                              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">Causa Raiz</p>
+                                              <p className="text-sm">{nc.causa || <span className="text-muted-foreground italic">Não informada</span>}</p>
+                                            </div>
+                                          </div>
+                                          <div className="space-y-3">
+                                            <div className={`p-3 rounded-lg ${temPlano ? "bg-primary/5 border border-primary/20" : "bg-destructive/5 border border-destructive/20"}`}>
+                                              <p className={`text-xs font-semibold uppercase tracking-wider mb-1 ${temPlano ? "text-primary" : "text-destructive"}`}>
+                                                Plano de Ação Corretiva
+                                              </p>
+                                              {temPlano ? (
+                                                <p className="text-sm">{nc.acao_corretiva}</p>
+                                              ) : (
+                                                <div className="text-center py-2">
+                                                  <p className="text-sm text-muted-foreground mb-2">Nenhum plano de ação definido</p>
+                                                  <Button size="sm" variant="outline" onClick={() => openEditPlano(nc)}>
+                                                    <ClipboardList className="w-3 h-3 mr-1" /> Definir Plano de Ação
+                                                  </Button>
+                                                </div>
+                                              )}
+                                            </div>
+                                            <div className="flex gap-4 text-xs text-muted-foreground">
+                                              <span><strong>Responsável:</strong> {nc.responsavel || "—"}</span>
+                                              <span><strong>Prazo:</strong> <span className={isVencida ? "text-destructive font-semibold" : ""}>{nc.prazo || "—"}</span></span>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </TableCell>
+                                    </TableRow>
+                                  )}
+                                </React.Fragment>
+                              );
+                            })}
+                          </TableBody>
+                        </Table>
+                      </div>
+
+                      {/* Mobile Card View */}
+                      <div className="md:hidden space-y-4">
+                        {tab.data.map((nc) => {
+                          const isExpanded = expandedId === nc.id;
+                          const temPlano = !!nc.acao_corretiva;
+                          const isVencida = nc.prazo && nc.prazo < today && nc.status !== "fechada";
+                          
+                          return (
+                            <Card key={nc.id} className="border shadow-sm">
+                              <CardContent className="p-4 space-y-3">
+                                <div className="flex justify-between items-start">
+                                  <div className="space-y-1">
+                                    <p className="text-xs font-mono text-muted-foreground">{new Date(nc.data + "T12:00:00").toLocaleDateString("pt-BR")}</p>
+                                    <p className="text-sm font-bold">{nc.setor}</p>
+                                  </div>
+                                  <Badge className={statusColors[nc.status || "aberta"]}>{statusLabels[nc.status || "aberta"]}</Badge>
+                                </div>
+                                
+                                <p className="text-sm line-clamp-2">{nc.descricao}</p>
+                                
+                                <div className="flex justify-between items-center gap-2 pt-2 border-t">
+                                  <Button size="sm" variant="ghost" className="h-8 text-xs" onClick={() => setExpandedId(isExpanded ? null : nc.id)}>
+                                    {isExpanded ? <ChevronUp className="w-3 h-3 mr-1" /> : <ChevronDown className="w-3 h-3 mr-1" />}
+                                    {isExpanded ? "Menos" : "Detalhes"}
+                                  </Button>
+                                  
+                                  <div className="flex gap-1">
+                                    <Button size="sm" variant="outline" className="h-8 text-xs" onClick={() => openEditPlano(nc)}>
+                                      Plano
+                                    </Button>
+                                    {nc.status !== "fechada" && (
+                                      <Button size="sm" className="h-8 text-xs" onClick={() => handleUpdateStatus(nc.id, "fechada")}>
+                                        Fechar
+                                      </Button>
+                                    )}
+                                  </div>
+                                </div>
+
+                                {isExpanded && (
+                                  <div className="pt-3 space-y-3 animate-in fade-in slide-in-from-top-1">
+                                    <div className="space-y-1">
+                                      <p className="text-[10px] font-bold uppercase text-muted-foreground">Descrição</p>
+                                      <p className="text-xs">{nc.descricao}</p>
+                                    </div>
+                                    <div className="space-y-1">
+                                      <p className="text-[10px] font-bold uppercase text-muted-foreground">Causa Raiz</p>
+                                      <p className="text-xs">{nc.causa || "Não informada"}</p>
+                                    </div>
+                                    <div className={`p-2 rounded border ${temPlano ? "bg-primary/5 border-primary/20" : "bg-destructive/5 border-destructive/20"}`}>
+                                      <p className="text-[10px] font-bold uppercase mb-1">Ação Corretiva</p>
+                                      <p className="text-xs">{nc.acao_corretiva || "Pendente"}</p>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-2 text-[10px]">
+                                      <div>
+                                        <p className="font-bold uppercase text-muted-foreground">Responsável</p>
+                                        <p>{nc.responsavel || "—"}</p>
+                                      </div>
+                                      <div>
+                                        <p className="font-bold uppercase text-muted-foreground">Prazo</p>
+                                        <p className={isVencida ? "text-destructive font-bold" : ""}>{nc.prazo || "—"}</p>
+                                      </div>
+                                    </div>
+                                  </div>
                                 )}
-                              </>
-                            );
-                          })}
-                        </TableBody>
-                      </Table>
+                              </CardContent>
+                            </Card>
+                          );
+                        })}
+                      </div>
                     </div>
                   )}
                 </TabsContent>

@@ -132,11 +132,11 @@ export default function Cadastro() {
           <DialogTrigger asChild>
             <Button onClick={openNew} disabled={limitReached}><Plus className="w-4 h-4 mr-1" /> Nova Empresa</Button>
           </DialogTrigger>
-          <DialogContent className="max-w-2xl">
+          <DialogContent className="w-[95vw] sm:max-w-2xl max-h-[90vh] overflow-y-auto p-4 sm:p-6">
             <DialogHeader>
               <DialogTitle>{editId ? "Editar Empresa" : "Nova Empresa"}</DialogTitle>
             </DialogHeader>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>Nome da Empresa *</Label>
                 <Input value={form.nome} onChange={e => setForm(p => ({ ...p, nome: e.target.value }))} placeholder="Ex: AgroNutri Rações Ltda" />

@@ -91,28 +91,30 @@ export default function SuperAdmin() {
       </div>
 
       <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-6">
-        <TabsList className="grid grid-cols-2 md:grid-cols-5 lg:grid-cols-6 w-full h-auto gap-2 bg-transparent">
-          <TabsTrigger value="dashboard" className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground py-2 border">
-            <Activity className="h-4 w-4" />
-            <span className="hidden md:inline">Dashboard</span>
-          </TabsTrigger>
-          <TabsTrigger value="leads" className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground py-2 border">
-            <Users className="h-4 w-4" />
-            <span className="hidden md:inline">Leads</span>
-          </TabsTrigger>
-          <TabsTrigger value="crm" className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground py-2 border">
-            <TrendingUp className="h-4 w-4" />
-            <span className="hidden md:inline text-xs">CRM e Vendas</span>
-          </TabsTrigger>
-          <TabsTrigger value="licencas" className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground py-2 border">
-            <Key className="h-4 w-4" />
-            <span className="hidden md:inline">Licenças</span>
-          </TabsTrigger>
-          <TabsTrigger value="assinaturas" className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground py-2 border">
-            <CreditCard className="h-4 w-4" />
-            <span className="hidden md:inline">Assinaturas</span>
-          </TabsTrigger>
-        </TabsList>
+        <div className="overflow-x-auto pb-2 -mx-4 px-4 md:mx-0 md:px-0">
+          <TabsList className="flex md:grid md:grid-cols-5 lg:grid-cols-6 w-max md:w-full h-auto gap-2 bg-transparent">
+            <TabsTrigger value="dashboard" className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground py-2 border flex-1">
+              <Activity className="h-4 w-4" />
+              <span>Dashboard</span>
+            </TabsTrigger>
+            <TabsTrigger value="leads" className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground py-2 border flex-1">
+              <Users className="h-4 w-4" />
+              <span>Leads</span>
+            </TabsTrigger>
+            <TabsTrigger value="crm" className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground py-2 border flex-1">
+              <TrendingUp className="h-4 w-4" />
+              <span className="text-xs">CRM e Vendas</span>
+            </TabsTrigger>
+            <TabsTrigger value="licencas" className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground py-2 border flex-1">
+              <Key className="h-4 w-4" />
+              <span>Licenças</span>
+            </TabsTrigger>
+            <TabsTrigger value="assinaturas" className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground py-2 border flex-1">
+              <CreditCard className="h-4 w-4" />
+              <span>Assinaturas</span>
+            </TabsTrigger>
+          </TabsList>
+        </div>
 
         <TabsContent value="dashboard" className="space-y-6">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
