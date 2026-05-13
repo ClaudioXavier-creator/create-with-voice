@@ -12,6 +12,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Loader2, RefreshCw, Mail, MessageCircle, Phone, CalendarPlus, Send, TrendingUp, Trophy, XCircle } from "lucide-react";
 import { toast } from "sonner";
+import { canAccessCRM } from "@/config/adminAccess";
+import { getProductLabel } from "@/utils/productUtils";
 
 type Etapa = "novo" | "contato" | "qualificado" | "proposta" | "ganho" | "perdido";
 type Origem = "produto" | "site";
@@ -76,7 +78,7 @@ function fmtDateShort(iso: string) {
 
 export default function CRM({ isTab = false }: { isTab?: boolean }) {
   const { user, roles, loading: authLoading } = useAuth();
-  const hasAccess = roles?.includes("admin") || roles?.includes("comercial") || user?.email?.toLowerCase() === "claudiolx.nunes@gmail.com";
+  const hasAccess = canAccessCRM(roles, user?.email) || roles?.includes("comercial");
 
   const [tab, setTab] = useState<Origem>("produto");
   const [items, setItems] = useState<Pipeline[]>([]);
@@ -102,7 +104,7 @@ export default function CRM({ isTab = false }: { isTab?: boolean }) {
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
-    const isSuperAdmin = user?.email?.toLowerCase() === "claudiolx.nunes@gmail.com";
+    const isSuperAdmin = canAccessCRM(roles, user?.email);
 
     return items
       .filter((i) => isSuperAdmin || i.lead_origem === tab)
@@ -114,7 +116,7 @@ export default function CRM({ isTab = false }: { isTab?: boolean }) {
   }, [items, tab, search, user]);
 
   const stats = useMemo(() => {
-    const isSuperAdmin = user?.email?.toLowerCase() === "claudiolx.nunes@gmail.com";
+    const isSuperAdmin = canAccessCRM(roles, user?.email);
     const list = isSuperAdmin ? items : items.filter((i) => i.lead_origem === tab);
     
     const total = list.length;
@@ -174,7 +176,7 @@ export default function CRM({ isTab = false }: { isTab?: boolean }) {
 
       <Tabs value={tab} onValueChange={(v) => setTab(v as Origem)}>
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-          {user?.email?.toLowerCase() !== "claudiolx.nunes@gmail.com" ? (
+          {!canAccessCRM(roles, user?.email) ? (
             <TabsList>
               <TabsTrigger value="produto">Leads de produto</TabsTrigger>
               <TabsTrigger value="site">Contatos do site</TabsTrigger>
@@ -267,13 +269,13 @@ function Kanban({
                 >
                   <div className="flex justify-between items-start gap-1">
                     <div className="font-medium truncate">{p.nome}</div>
-                    {user?.email?.toLowerCase() === "claudiolx.nunes@gmail.com" && (
+                    {canAccessCRM(null, user?.email) && (
                       <Badge variant="outline" className="text-[9px] px-1 py-0 h-4 bg-muted capitalize shrink-0">{p.lead_origem}</Badge>
                     )}
                   </div>
 
                   {p.produto_interesse && (
-                    <Badge variant="outline" className="text-[10px] mt-1">{p.produto_interesse}</Badge>
+                    <Badge variant="outline" className="text-[10px] mt-1">{getProductLabel(p.produto_interesse)}</Badge>
                   )}
                   <div className="text-xs text-muted-foreground mt-1 truncate">{p.email}</div>
                   <div className="text-[10px] text-muted-foreground">{fmtDateShort(p.created_at)}</div>
@@ -420,7 +422,7 @@ function LeadDrawer({
             <CardContent className="p-4 space-y-2">
               <div className="text-sm"><strong>E-mail:</strong> {lead.email ?? "—"}</div>
               <div className="text-sm"><strong>Telefone:</strong> {lead.telefone ?? "—"}</div>
-              <div className="text-sm"><strong>Produto:</strong> {lead.produto_interesse ?? "—"}</div>
+              <div className="text-sm"><strong>Produto:</strong> {getProductLabel(lead.produto_interesse) || "—"}</div>
               <div className="text-sm"><strong>Recebido em:</strong> {fmtDate(lead.created_at)}</div>
               {lead.observacoes && <div className="text-sm"><strong>Mensagem original:</strong> {lead.observacoes}</div>}
               <div className="flex gap-2 pt-2">
