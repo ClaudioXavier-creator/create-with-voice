@@ -411,7 +411,7 @@ export default function Index() {
     aso: "ASO",
     planejamento: "Planejamento",
   };
-
+  return (
     <div className="space-y-8 pb-10">
       <div className="flex items-center justify-between gap-4 flex-wrap">
         <PageHeader 
