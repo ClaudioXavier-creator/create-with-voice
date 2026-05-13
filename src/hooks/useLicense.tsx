@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "./useAuth";
 import { useEmpresa } from "./useEmpresa";
 import { resolveLicenseTier, type Tier } from "@/config/tiers";
+import { useParams } from "react-router-dom";
 
 export interface LicenseInfo {
   id: string;
@@ -14,13 +15,17 @@ export interface LicenseInfo {
   chave_licenca: string;
   empresa_id: string | null;
   liberado_admin: boolean;
+  produto: string | null;
 }
 
-export function useLicense() {
+export function useLicense(productParam?: string) {
   const { user } = useAuth();
   const { empresaAtiva } = useEmpresa();
+  const { product: urlProduct } = useParams();
   const [license, setLicense] = useState<LicenseInfo | null>(null);
   const [loading, setLoading] = useState(true);
+
+  const targetProduct = productParam || urlProduct || "feedbpf";
 
   const tier: Tier = useMemo(() => resolveLicenseTier(license), [license]);
 
@@ -45,6 +50,7 @@ export function useLicense() {
       let query = supabase
         .from("licencas")
         .select("*")
+        .eq("produto", targetProduct)
         .order("created_at", { ascending: false })
         .limit(1);
 
@@ -60,14 +66,17 @@ export function useLicense() {
     };
 
     fetchLicense();
-  }, [user, empresaAtiva]);
+  }, [user, empresaAtiva, targetProduct]);
 
   const activateKey = async (key: string) => {
     if (!user) throw new Error("Não autenticado");
 
-    const session = (await supabase.auth.getSession()).data.session;
     const { data, error } = await supabase.functions.invoke("activate-license", {
-      body: { chave: key, empresa_id: empresaAtiva?.id || null },
+      body: { 
+        chave: key, 
+        empresa_id: empresaAtiva?.id || null,
+        produto: targetProduct 
+      },
     });
 
     if (error) throw new Error(error.message || "Erro ao ativar licença");
@@ -76,6 +85,7 @@ export function useLicense() {
     let query = supabase
       .from("licencas")
       .select("*")
+      .eq("produto", targetProduct)
       .order("created_at", { ascending: false })
       .limit(1);
 

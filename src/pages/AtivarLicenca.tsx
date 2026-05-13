@@ -7,6 +7,7 @@ import { useLicense } from "@/hooks/useLicense";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
 import { TIER_LABEL } from "@/config/tiers";
+import { useParams } from "react-router-dom";
 
 const PLAN_LABELS: Record<string, string> = {
   trial: "Teste Grátis (30 dias)",
@@ -15,11 +16,24 @@ const PLAN_LABELS: Record<string, string> = {
   "1_ano": "Anual (1 ano)",
 };
 
+const PRODUCT_LABELS: Record<string, string> = {
+  feedbpf: "Feed_BPF",
+  nutricrm: "NutriCRM",
+  agrogestao: "AgroGestão CRM",
+  auditsbpf: "Audits_BPF",
+  agrorc: "Agro RC CRM",
+  rotulos: "Nutri_Agro Labels",
+};
+
 export default function AtivarLicenca() {
+  const { product: urlProduct } = useParams();
   const { license, tier, isActive, isExpired, daysRemaining, activateKey } = useLicense();
   const { signOut } = useAuth();
   const [chave, setChave] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const productKey = urlProduct || "feedbpf";
+  const productLabel = PRODUCT_LABELS[productKey] || "Feed_BPF";
 
   const handleActivate = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -44,7 +58,7 @@ export default function AtivarLicenca() {
             <Key className="w-6 h-6" />
             Licença do Sistema
           </CardTitle>
-          <CardDescription>Gerencie sua licença Feed_BPF</CardDescription>
+          <CardDescription>Gerencie sua licença {productLabel}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           {/* Current license status */}

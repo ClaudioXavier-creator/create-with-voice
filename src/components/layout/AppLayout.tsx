@@ -1,5 +1,5 @@
 import { useEffect, useState, memo, Suspense, useCallback } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import {
   LogOut,
   Menu,
@@ -12,13 +12,55 @@ import { useAuth } from "@/hooks/useAuth";
 import EmpresaSelector from "@/components/EmpresaSelector";
 import LicenseGate from "@/components/LicenseGate";
 import TierGate from "@/components/TierGate";
-import logoImg from "@/assets/logo-feed-bpf.png";
+import logoFeedBpf from "@/assets/logo-feed-bpf.png";
+import logoAuditsBpf from "@/assets/logo-audits-bpf.png";
+import logoNutricrm from "@/assets/logo-nutricrm.png";
+import logoAgrogestao from "@/assets/logo-agrogestao.png";
+import logoAgrorc from "@/assets/logo-agrorc.png";
+import logoRotulos from "@/assets/logo-rotulos-bpf.png";
 import { SidebarNav } from "@/components/layout/SidebarNav";
 import { NAV_ENTRIES } from "@/components/layout/nav-config";
 import OfflineBanner from "@/components/OfflineBanner";
 import PageLoader from "@/components/PageLoader";
 
+const PRODUCT_CONFIGS: Record<string, { logo: string; title: string; subtitle: string }> = {
+  feedbpf: {
+    logo: logoFeedBpf,
+    title: "Feed_BPF",
+    subtitle: "BPF Consult",
+  },
+  nutricrm: {
+    logo: logoNutricrm,
+    title: "NutriCRM",
+    subtitle: "CRM Especializado",
+  },
+  agrogestao: {
+    logo: logoAgrogestao,
+    title: "AgroGestão CRM",
+    subtitle: "Gestão Regional",
+  },
+  agrorc: {
+    logo: logoAgrorc,
+    title: "Agro RC CRM",
+    subtitle: "Representantes",
+  },
+  auditsbpf: {
+    logo: logoAuditsBpf,
+    title: "Audits_BPF",
+    subtitle: "Auditoria Interna",
+  },
+  rotulos: {
+    logo: logoRotulos,
+    title: "Nutri_Agro Labels",
+    subtitle: "Gerador de Rótulos",
+  },
+};
+
 const AppLayout = ({ children }: { children: React.ReactNode }) => {
+  const { product: urlProduct } = useParams();
+  const product = urlProduct || "feedbpf";
+  const config = PRODUCT_CONFIGS[product] || PRODUCT_CONFIGS.feedbpf;
+  
   const location = useLocation();
   const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -57,11 +99,11 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
         <div className="flex items-center gap-3 px-6 py-6 border-b border-sidebar-border/50 bg-sidebar/50 backdrop-blur-sm sticky top-0 z-10">
           <div className="relative group cursor-pointer" onClick={() => navigate("/")}>
             <div className="absolute -inset-1 bg-gradient-to-r from-primary to-emerald-400 rounded-lg blur opacity-25 group-hover:opacity-100 transition duration-1000 group-hover:duration-200"></div>
-            <img src={logoImg} alt="Feed_BPF Logo" className="relative w-10 h-10 rounded-lg object-contain bg-white p-1 shadow-sm" />
+            <img src={config.logo} alt={`${config.title} Logo`} className="relative w-10 h-10 rounded-lg object-contain bg-white p-1 shadow-sm" />
           </div>
           <div className="min-w-0 cursor-pointer" onClick={() => navigate("/")}>
-            <h1 className="font-display text-lg font-bold text-sidebar-foreground tracking-tight">Feed_BPF</h1>
-            <p className="text-[10px] uppercase tracking-widest text-sidebar-foreground/40 font-semibold">BPF Consult</p>
+            <h1 className="font-display text-lg font-bold text-sidebar-foreground tracking-tight">{config.title}</h1>
+            <p className="text-[10px] uppercase tracking-widest text-sidebar-foreground/40 font-semibold">{config.subtitle}</p>
           </div>
         </div>
 
@@ -107,9 +149,9 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
       {/* Mobile header */}
       <div className="lg:hidden fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-4 py-3 bg-sidebar text-sidebar-foreground border-b border-sidebar-border/50 shadow-sm backdrop-blur-md">
         <div className="flex items-center gap-2 min-w-0" onClick={() => navigate("/")}>
-          <img src={logoImg} alt="Feed_BPF Logo" className="w-8 h-8 rounded bg-white p-0.5 object-contain" />
+          <img src={config.logo} alt={`${config.title} Logo`} className="w-8 h-8 rounded bg-white p-0.5 object-contain" />
           <div className="min-w-0">
-            <span className="font-display font-bold block truncate tracking-tight">Feed_BPF</span>
+            <span className="font-display font-bold block truncate tracking-tight">{config.title}</span>
           </div>
         </div>
         <div className="flex items-center gap-1">
@@ -161,7 +203,7 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
       <main className="flex-1 lg:ml-0 mt-[56px] lg:mt-0 overflow-x-hidden relative">
         <OfflineBanner />
         <div className="p-4 md:p-8 lg:p-10 max-w-7xl mx-auto min-h-full animate-fade-in">
-          <LicenseGate>
+          <LicenseGate product={product as any}>
             <TierGate>
               <Suspense fallback={<PageLoader />}>
                 {children}

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import { AlertTriangle, CreditCard, Loader2, Clock, ShieldCheck, Mail, MessageCircle, X } from "lucide-react";
 
 // Rotas livres — conteúdo 100% educativo / sandbox.
@@ -22,7 +22,7 @@ import { toast } from "sonner";
 
 import { useAuth } from "@/hooks/useAuth";
 
-type ProductKey = "feedbpf" | "nutricrm" | "agrogestao" | "auditsbpf";
+type ProductKey = "feedbpf" | "nutricrm" | "agrogestao" | "auditsbpf" | "agrorc" | "rotulos";
 type NivelKey = "entrada" | "intermediario" | "avancado";
 
 interface PlanInfo {
@@ -107,6 +107,8 @@ const PRODUCT_LABELS: Record<ProductKey, string> = {
   nutricrm: "NutriCRM",
   agrogestao: "AgroGestão CRM",
   auditsbpf: "Audits_BPF",
+  agrorc: "Agro RC CRM",
+  rotulos: "Nutri_Agro Labels",
 };
 
 interface LicenseGateProps {
@@ -114,7 +116,10 @@ interface LicenseGateProps {
   product?: ProductKey;
 }
 
-export default function LicenseGate({ children, product = "feedbpf" }: LicenseGateProps) {
+export default function LicenseGate({ children, product: initialProduct }: LicenseGateProps) {
+  const { product: urlProduct } = useParams();
+  const product = (urlProduct as ProductKey) || initialProduct || "feedbpf";
+  
   const { license, loading, isActive, daysRemaining } = useLicense();
   const { empresaAtiva, loading: empresaLoading } = useEmpresa();
   const { user, roles, loading: authLoading } = useAuth();
@@ -126,7 +131,7 @@ export default function LicenseGate({ children, product = "feedbpf" }: LicenseGa
   const [checkoutLoading, setCheckoutLoading] = useState<string | null>(null);
   const [nivelSelecionado, setNivelSelecionado] = useState<NivelKey>("intermediario");
 
-  const productLabel = PRODUCT_LABELS[product];
+  const productLabel = PRODUCT_LABELS[product] || PRODUCT_LABELS.feedbpf;
   const launchActive = isLaunchActive();
   const nivelAtivo = NIVEIS.find((n) => n.key === nivelSelecionado)!;
 
