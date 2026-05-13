@@ -155,13 +155,6 @@ export const NAV_ENTRIES: NavEntry[] = [
       { path: "/busca-global", label: "Busca Global", icon: Search },
     ],
   },
-  { 
-    path: "/admin", 
-    label: "Super Admin (CRM)", 
-    icon: ShieldCheck,
-    requiredEmail: "claudiolx.nunes@gmail.com"
-  },
-  { path: "/ativar-licenca", label: "🔑 Ativar Licença", icon: ShieldCheck },
   { path: "/modelos", label: "📁 Modelos", icon: FolderOpen },
   { path: "/modo-tablet", label: "🏭 Modo Tablet", icon: Tablet },
 ];
