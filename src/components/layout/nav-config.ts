@@ -157,7 +157,7 @@ export const NAV_ENTRIES: NavEntry[] = [
   },
   { 
     path: "/admin", 
-    label: "Super Admin", 
+    label: "Super Admin (CRM)", 
     icon: ShieldCheck,
     requiredEmail: "claudiolx.nunes@gmail.com"
   },

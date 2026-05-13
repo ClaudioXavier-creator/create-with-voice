@@ -16,12 +16,12 @@ export default function SuperAdminBanner({ programa }: Props) {
       <div className="max-w-7xl mx-auto px-4 py-2 flex flex-wrap items-center justify-between gap-2">
         <div className="flex items-center gap-2 text-sm font-medium">
           <ShieldCheck className="h-4 w-4" />
-          Super Admin{programa ? ` · ${programa}` : ""} · gestão de licenças
+          Super Admin{programa ? ` · ${programa}` : ""} · central de gestão
         </div>
         <Link to="/admin">
           <Button size="sm" variant="secondary" className="gap-2">
             <ShieldCheck className="h-4 w-4" />
-            Admin · Licenças
+            Super Admin (CRM)
           </Button>
         </Link>
       </div>

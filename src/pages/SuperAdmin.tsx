@@ -101,7 +101,7 @@ export default function SuperAdmin() {
           </TabsTrigger>
           <TabsTrigger value="crm" className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground py-2 border">
             <TrendingUp className="h-4 w-4" />
-            <span className="hidden md:inline">Pipeline CRM</span>
+            <span className="hidden md:inline">CRM e Vendas</span>
           </TabsTrigger>
           <TabsTrigger value="licencas" className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground py-2 border">
             <Key className="h-4 w-4" />
