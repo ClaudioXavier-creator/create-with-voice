@@ -27,10 +27,9 @@ export default function SuperAdmin() {
 
     async function fetchStats() {
       try {
-        const [leadsRes, crmRes, licRes] = await Promise.all([
+        const [leadsRes, crmRes] = await Promise.all([
           supabase.from("leads").select("id, notificado"),
-          supabase.from("crm_pipeline").select("etapa, valor_estimado"),
-          supabase.from("empresas_licencas").select("id, status").eq("status", "ativa")
+          supabase.from("crm_pipeline").select("etapa, valor_estimado")
         ]);
 
         const leads = leadsRes.data || [];
