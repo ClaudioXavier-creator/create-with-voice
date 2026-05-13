@@ -153,8 +153,8 @@ export default function CRM({ isTab = false }: { isTab?: boolean }) {
       {!isTab && (
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold">CRM Comercial</h1>
-            <p className="text-muted-foreground">Pipeline de vendas — leads de produto e contatos do site</p>
+            <h1 className="text-3xl font-bold">CRM e Vendas</h1>
+            <p className="text-muted-foreground">Pipeline pessoal — gestão de leads e conversão</p>
           </div>
           <Button variant="outline" onClick={load} disabled={loading}>
             <RefreshCw className={`h-4 w-4 mr-2 ${loading ? "animate-spin" : ""}`} />
