@@ -5,15 +5,18 @@ import { toast } from "sonner";
  * Utilitário centralizado para tratamento de erros e logs.
  */
 export const errorHandler = {
-  log: (error: any, context?: string) => {
-    const message = error?.message || "Erro desconhecido";
+  log: (error: unknown, context?: string) => {
+    const err = error as any;
+    const message = err?.message || err?.error_description || "Erro inesperado no sistema";
     console.error(`[${context || "App"}]`, error);
     return message;
   },
 
-  handle: (error: any, context?: string) => {
+  handle: (error: unknown, context?: string) => {
     const message = errorHandler.log(error, context);
-    toast.error(message);
+    toast.error(message, {
+      description: "Se o problema persistir, entre em contato com o suporte.",
+    });
     return message;
   },
 

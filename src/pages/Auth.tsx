@@ -31,7 +31,7 @@ const authConfigs = {
   "audits-bpf": {
     logo: logoAuditsBpf,
     title: "Audits_BPF",
-    subtitle: "Sistema de auditoria interna para BPF em nutrição animal",
+    subtitle: "Auditoria interna (Decreto 12.031/2024)",
   },
   nutricrm: {
     logo: logoNutricrm,

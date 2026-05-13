@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { Shield, UserCheck, UserX, Loader2, RefreshCw, Building2, Search } from "lucide-react";
 import { canAccessLicenseAdmin } from "@/config/adminAccess";
+import { getProductLabel } from "@/utils/productUtils";
 
 interface LicenseEntry {
   id: string;
@@ -37,19 +38,7 @@ const PLAN_LABELS: Record<string, string> = {
   "1_ano": "Anual",
 };
 
-const PRODUCT_LABELS: Record<string, string> = {
-  feed_bpf: "Feed_BPF",
-  feedbpf: "Feed_BPF",
-  audits_bpf: "Audits BPF",
-  auditsbpf: "Audits BPF",
-  agrogestao: "AgroGestão CRM",
-  agrogestao_crm: "AgroGestão CRM",
-  nutricrm: "NutriCRM",
-  agro_rc: "Agro RC CRM",
-  agrorc: "Agro RC CRM",
-  agro_rc_crm: "Agro RC CRM",
-  rotulos: "Nutri_Agro Labels",
-};
+// PRODUCT_LABELS removed in favor of central productUtils
 
 const ACCESS_LEVEL_LABELS: Record<string, string> = {
   entrada: "Entrada",
@@ -209,7 +198,7 @@ export default function AdminLicencas({ isTab = false }: { isTab?: boolean }) {
     const empresaNome = entry.empresa_nome?.trim();
     if (empresaNome && empresaNome !== "—") return empresaNome;
 
-    const produto = entry.produto ? PRODUCT_LABELS[entry.produto] || entry.produto : "Licença sem empresa";
+    const produto = entry.produto ? getProductLabel(entry.produto) : "Licença sem empresa";
     return `${produto} · ${entry.email}`;
   };
 
@@ -267,7 +256,7 @@ export default function AdminLicencas({ isTab = false }: { isTab?: boolean }) {
               <div key={prodKey} className="space-y-4">
                 <div className="flex items-center gap-2 border-b pb-2">
                   <Badge variant="outline" className="text-sm px-3 py-1 bg-primary/5">
-                    {PRODUCT_LABELS[prodKey] || (prodKey === "sem_produto" ? "Sem Programa Definido" : prodKey)}
+                    {getProductLabel(prodKey) || (prodKey === "sem_produto" ? "Sem Programa Definido" : prodKey)}
                   </Badge>
                   <span className="text-xs text-muted-foreground">{prodEntries.length} licença(s)</span>
                 </div>
