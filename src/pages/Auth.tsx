@@ -316,7 +316,7 @@ export default function Auth() {
             {pendingConfirmationEmail && !isForgot && isLogin && (
               <div className="rounded-lg border border-border bg-secondary/60 p-3 text-sm">
                 <div className="flex items-start gap-3">
-                  <MailCheck className="mt-0.5 h-4 w-4 text-primary" />
+                  <MailCheck aria-hidden="true" className="mt-0.5 h-4 w-4 text-primary" />
                   <div className="space-y-2">
                     <p className="font-medium">Confirme seu e-mail para entrar</p>
                     <p className="text-muted-foreground">
@@ -352,7 +352,7 @@ export default function Auth() {
           <form onSubmit={handleSubmit} className="mt-4 space-y-4">
             {product === "admin" && (
               <div className="p-3 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-700 dark:text-amber-400 text-xs flex items-start gap-2">
-                <AlertTriangle className="h-4 w-4 shrink-0" />
+                <AlertTriangle aria-hidden="true" className="h-4 w-4 shrink-0" />
                 <p>Este portal é restrito à equipe interna da BPF_Consult. Se você é um cliente, utilize os links específicos do seu programa.</p>
               </div>
             )}
@@ -364,26 +364,28 @@ export default function Auth() {
                     <button
                       type="button"
                       onClick={() => setTipoUsuario("cliente")}
+                      aria-pressed={tipoUsuario === "cliente"}
                       className={`flex flex-col items-center gap-2 p-4 rounded-lg border-2 transition-all ${
                           tipoUsuario === "cliente"
                             ? "border-primary bg-primary/10 text-primary"
                             : "border-border hover:border-muted-foreground"
                       }`}
                     >
-                      <Building2 className="w-6 h-6" />
+                      <Building2 aria-hidden="true" className="w-6 h-6" />
                       <span className="text-sm font-medium">Cliente</span>
                       <span className="text-xs text-muted-foreground text-center">Fábrica / Unidade</span>
                     </button>
                     <button
                       type="button"
                       onClick={() => setTipoUsuario("consultoria")}
+                      aria-pressed={tipoUsuario === "consultoria"}
                       className={`flex flex-col items-center gap-2 p-4 rounded-lg border-2 transition-all ${
                           tipoUsuario === "consultoria"
                             ? "border-primary bg-primary/10 text-primary"
                             : "border-border hover:border-muted-foreground"
                       }`}
                     >
-                      <Briefcase className="w-6 h-6" />
+                      <Briefcase aria-hidden="true" className="w-6 h-6" />
                       <span className="text-sm font-medium">Consultoria</span>
                       <span className="text-xs text-muted-foreground text-center">Assessoria técnica</span>
                     </button>
@@ -392,7 +394,7 @@ export default function Auth() {
                 <div className="space-y-2">
                   <Label htmlFor="nome">Nome completo</Label>
                   <div className="relative">
-                    <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                    <User aria-hidden="true" className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                     <Input
                       id="nome"
                       placeholder="Seu nome"
@@ -406,7 +408,7 @@ export default function Auth() {
                 <div className="space-y-2">
                   <Label htmlFor="telefone">Telefone / WhatsApp</Label>
                   <div className="relative">
-                    <Phone className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                    <Phone aria-hidden="true" className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                     <Input
                       id="telefone"
                       type="tel"
@@ -427,7 +429,7 @@ export default function Auth() {
               <div className="space-y-2">
               <Label htmlFor="email">E-mail</Label>
               <div className="relative">
-                <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                <Mail aria-hidden="true" className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                 <Input
                   id="email"
                   type="email"
@@ -443,7 +445,7 @@ export default function Auth() {
               <div className="space-y-2">
                 <Label htmlFor="password">Senha</Label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                   <Lock aria-hidden="true" className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                   <Input
                     id="password"
                     type={showPassword ? "text" : "password"}
@@ -461,12 +463,12 @@ export default function Auth() {
                     className="absolute right-3 top-3 text-muted-foreground transition-colors hover:text-foreground"
                     aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
                   >
-                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    {showPassword ? <EyeOff aria-hidden="true" className="h-4 w-4" /> : <Eye aria-hidden="true" className="h-4 w-4" />}
                   </button>
                 </div>
                 {capsLockOn && (
                   <div className="flex items-center gap-2 text-xs text-accent-foreground">
-                    <AlertTriangle className="h-3.5 w-3.5 text-accent" />
+                    <AlertTriangle aria-hidden="true" className="h-3.5 w-3.5 text-accent" />
                     <span className="text-muted-foreground">Caps Lock está ativado.</span>
                   </div>
                 )}
@@ -485,7 +487,7 @@ export default function Auth() {
               <div className="space-y-2">
                 <Label htmlFor="confirm-password">Confirmar senha</Label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                  <Lock aria-hidden="true" className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                   <Input
                     id="confirm-password"
                     type={showConfirmPassword ? "text" : "password"}
@@ -503,7 +505,7 @@ export default function Auth() {
                     className="absolute right-3 top-3 text-muted-foreground transition-colors hover:text-foreground"
                     aria-label={showConfirmPassword ? "Ocultar confirmação de senha" : "Mostrar confirmação de senha"}
                   >
-                    {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    {showConfirmPassword ? <EyeOff aria-hidden="true" className="h-4 w-4" /> : <Eye aria-hidden="true" className="h-4 w-4" />}
                   </button>
                 </div>
               </div>
