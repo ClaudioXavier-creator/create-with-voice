@@ -16,6 +16,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useEmpresa } from "@/hooks/useEmpresa";
 import { Link } from "react-router-dom";
 import { useOnboarding, OnboardingOverlay } from "@/components/OnboardingTour";
+import { cn } from "@/lib/utils";
 import {
   LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid,
   Tooltip, ResponsiveContainer, Legend
