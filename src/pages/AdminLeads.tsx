@@ -54,6 +54,8 @@ export default function AdminLeads({ isTab = false }: { isTab?: boolean }) {
   const [leads, setLeads] = useState<Lead[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
+  const [filterOrigem, setFilterOrigem] = useState("all");
+  const [filterStatus, setFilterStatus] = useState("all");
 
   const load = async () => {
     setLoading(true);
