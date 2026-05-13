@@ -222,6 +222,7 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
+      <SuperAdminButton />
       <BrowserRouter>
         <AuthProvider>
           <EmpresaProvider>
