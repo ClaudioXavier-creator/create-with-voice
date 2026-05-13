@@ -197,7 +197,7 @@ export default function CRM({ isTab = false }: { isTab?: boolean }) {
 
         </TabsContent>
         <TabsContent value="site" className="mt-4">
-          <Kanban items={filtered} onMove={moveEtapa} onSelect={setSelected} loading={loading} />
+          <Kanban items={filtered} onMove={moveEtapa} onSelect={setSelected} loading={loading} user={user} />
         </TabsContent>
       </Tabs>
 
