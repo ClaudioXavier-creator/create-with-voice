@@ -17,7 +17,7 @@ function flattenEntries(entries: NavEntry[]) {
   );
 }
 
-export function SidebarNav({
+export const SidebarNav = React.memo(({
   currentPath,
   entries,
   onNavigate,
@@ -29,7 +29,7 @@ export function SidebarNav({
   onNavigate?: () => void;
   userRoles?: string[];
   userEmail?: string;
-}) {
+}) => {
   const [favorites, setFavorites] = useState<string[]>(() => {
     try {
       return JSON.parse(localStorage.getItem(FAVORITES_KEY) || "[]");
