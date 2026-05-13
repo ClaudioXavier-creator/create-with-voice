@@ -450,9 +450,8 @@ export default function Index() {
         </div>
       </div>
 
-      {/* Alertas do Planejamento Anual */}
       {!data.loading && (data.atividadesVencidas.length > 0 || data.atividadesProximas.length > 0) && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="flex flex-col gap-4">
           {data.atividadesVencidas.length > 0 && (
             <Card className="border-none shadow-premium bg-rose-500/5 overflow-hidden group">
               <div className="absolute top-0 left-0 w-1 h-full bg-rose-500" />
