@@ -9,7 +9,14 @@ import { Badge } from "@/components/ui/badge";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
-import { Loader2, RefreshCw, Search, Download, MessageCircle, Mail } from "lucide-react";
+import { 
+  Select, 
+  SelectContent, 
+  SelectItem, 
+  SelectTrigger, 
+  SelectValue 
+} from "@/components/ui/select";
+import { Loader2, RefreshCw, Search, Download, MessageCircle, Mail, FilterX } from "lucide-react";
 import { toast } from "sonner";
 import { canAccessLeadsAdmin } from "@/config/adminAccess";
 
