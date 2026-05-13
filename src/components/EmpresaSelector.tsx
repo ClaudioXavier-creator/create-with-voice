@@ -48,7 +48,7 @@ export default function EmpresaSelector() {
     return (
       <div className="flex items-center gap-3 px-4 py-2.5 rounded-xl bg-sidebar-accent/30 border border-sidebar-border/30">
         <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-primary/20 text-primary shrink-0 shadow-inner">
-          <Building2 className="w-4 h-4" />
+          <Building2 aria-hidden="true" className="w-4 h-4" />
         </div>
         <div className="min-w-0 flex-1">
           <p className="text-[10px] uppercase tracking-widest text-sidebar-foreground/30 font-bold leading-none mb-1">Empresa Ativa</p>
@@ -68,7 +68,7 @@ export default function EmpresaSelector() {
           className="w-full h-auto px-4 py-3 justify-start gap-3 rounded-xl bg-sidebar-accent/30 border border-sidebar-border/20 hover:bg-sidebar-accent/50 hover:border-sidebar-border/50 hover:shadow-lg transition-all group"
         >
           <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-primary/20 text-primary group-hover:scale-110 transition-transform shadow-inner shrink-0">
-            <Building2 className="w-4 h-4" />
+            <Building2 aria-hidden="true" className="w-4 h-4" />
           </div>
           <div className="min-w-0 flex-1 text-left">
             <p className="text-[10px] uppercase tracking-widest text-sidebar-foreground/30 font-bold leading-none mb-1">Alterar Unidade</p>
@@ -76,13 +76,13 @@ export default function EmpresaSelector() {
               {empresaAtiva?.nome || "Selecionar"}
             </p>
           </div>
-          <ChevronDown className={cn("w-3.5 h-3.5 shrink-0 transition-transform opacity-30 group-hover:opacity-60", open && "rotate-180")} />
+          <ChevronDown aria-hidden="true" className={cn("w-3.5 h-3.5 shrink-0 transition-transform opacity-30 group-hover:opacity-60", open && "rotate-180")} />
         </Button>
       </PopoverTrigger>
       <PopoverContent align="start" className="w-[calc(100vw-2rem)] md:w-[320px] p-0 rounded-2xl border-sidebar-border/50 shadow-2xl overflow-hidden bg-sidebar/95 backdrop-blur-xl">
         <div className="p-4 bg-primary/10 border-b border-sidebar-border/50">
           <div className="flex items-center gap-3">
-            <Layers className="w-5 h-5 text-primary" />
+            <Layers aria-hidden="true" className="w-5 h-5 text-primary" />
             <h3 className="font-display font-bold text-sidebar-foreground tracking-tight text-sm">Seletor de Unidade</h3>
           </div>
         </div>
@@ -106,13 +106,13 @@ export default function EmpresaSelector() {
                     className="gap-3 rounded-lg px-3 py-2 cursor-pointer hover:bg-primary/10 aria-selected:bg-primary/20 transition-colors mb-1"
                   >
                     <div className="w-7 h-7 rounded bg-sidebar-accent flex items-center justify-center shrink-0">
-                      <Building2 className="w-3.5 h-3.5 text-sidebar-foreground/60" />
+                      <Building2 aria-hidden="true" className="w-3.5 h-3.5 text-sidebar-foreground/60" />
                     </div>
                     <div className="flex min-w-0 flex-1 flex-col">
                       <span className="truncate font-medium text-xs">{empresa.nome}</span>
                       {empresa.cnpj && <span className="text-[10px] text-sidebar-foreground/40 font-mono tracking-tighter">{empresa.cnpj}</span>}
                     </div>
-                    {empresaAtiva?.id === empresa.id && <Check className="w-3.5 h-3.5 text-primary" />}
+                    {empresaAtiva?.id === empresa.id && <Check aria-hidden="true" className="w-3.5 h-3.5 text-primary" />}
                   </CommandItem>
                 ))}
               </CommandGroup>
@@ -132,7 +132,7 @@ export default function EmpresaSelector() {
                   className="gap-3 rounded-lg px-3 py-2 cursor-pointer hover:bg-primary/10 aria-selected:bg-primary/20 transition-colors mb-1 group"
                 >
                   <div className="w-7 h-7 rounded bg-sidebar-accent flex items-center justify-center shrink-0 group-hover:bg-primary/20 transition-colors">
-                    <Building2 className="w-3.5 h-3.5 text-sidebar-foreground/60 group-hover:text-primary transition-colors" />
+                    <Building2 aria-hidden="true" className="w-3.5 h-3.5 text-sidebar-foreground/60 group-hover:text-primary transition-colors" />
                   </div>
                   <div className="flex min-w-0 flex-1 flex-col">
                     <span className="truncate font-medium text-xs">{e.nome}</span>
@@ -143,15 +143,16 @@ export default function EmpresaSelector() {
                   <button
                     type="button"
                     className="rounded-full p-1.5 hover:bg-accent/20 transition-colors shrink-0"
+                    aria-label={favoritas.includes(e.id) ? "Remover unidade dos favoritos" : "Adicionar unidade aos favoritos"}
                     onClick={(event) => {
                       event.preventDefault();
                       event.stopPropagation();
                       toggleFavorita(e.id);
                     }}
                   >
-                    <Star className={cn("w-3.5 h-3.5 transition-all", favoritas.includes(e.id) ? "fill-accent text-accent scale-110" : "text-sidebar-foreground/20")} />
+                    <Star aria-hidden="true" className={cn("w-3.5 h-3.5 transition-all", favoritas.includes(e.id) ? "fill-accent text-accent scale-110" : "text-sidebar-foreground/20")} />
                   </button>
-                  {empresaAtiva?.id === e.id && <Check className="w-3.5 h-3.5 text-primary" />}
+                  {empresaAtiva?.id === e.id && <Check aria-hidden="true" className="w-3.5 h-3.5 text-primary" />}
                 </CommandItem>
               ))}
             </CommandGroup>
