@@ -145,16 +145,18 @@ export default function CRM({ isTab = false }: { isTab?: boolean }) {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold">CRM Comercial</h1>
-          <p className="text-muted-foreground">Pipeline de vendas — leads de produto e contatos do site</p>
+      {!isTab && (
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-bold">CRM Comercial</h1>
+            <p className="text-muted-foreground">Pipeline de vendas — leads de produto e contatos do site</p>
+          </div>
+          <Button variant="outline" onClick={load} disabled={loading}>
+            <RefreshCw className={`h-4 w-4 mr-2 ${loading ? "animate-spin" : ""}`} />
+            Atualizar
+          </Button>
         </div>
-        <Button variant="outline" onClick={load} disabled={loading}>
-          <RefreshCw className={`h-4 w-4 mr-2 ${loading ? "animate-spin" : ""}`} />
-          Atualizar
-        </Button>
-      </div>
+      )}
 
       {/* Métricas */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
