@@ -28,39 +28,45 @@ function cleanupStaleServiceWorkers() {
   const storedVersion = localStorage.getItem("__app_version__");
   const versionMismatch = storedVersion !== APP_VERSION;
   
-  const shouldCleanup = versionMismatch;
+  const shouldCleanup = versionMismatch || true; // Force cleanup on every reload for now to kill the zombie cache
 
   if (!shouldCleanup) return;
 
-  console.log("[CacheBuster] Cleaning up stale service workers and caches...", { 
-    isPreviewHost, isPublishedHost, versionMismatch 
+  console.log("[CacheBuster] Executing forced cleanup...", { 
+    versionMismatch 
   });
 
+  // 1. Unregister EVERY service worker found
   if ("serviceWorker" in navigator) {
-    navigator.serviceWorker
-      .getRegistrations()
-      .then((regs) => {
-        regs.forEach((r) => r.unregister());
-      })
-      .catch(() => {});
+    navigator.serviceWorker.getRegistrations().then((registrations) => {
+      for (const registration of registrations) {
+        console.log("[CacheBuster] Unregistering SW:", registration.scope);
+        registration.unregister();
+      }
+    });
   }
 
+  // 2. Clear ALL cache storage
   if ("caches" in window) {
-    window.caches
-      .keys()
-      .then((keys) => {
-        keys.forEach((k) => window.caches.delete(k));
-      })
-      .catch(() => {});
+    window.caches.keys().then((keys) => {
+      for (const key of keys) {
+        console.log("[CacheBuster] Deleting Cache:", key);
+        window.caches.delete(key);
+      }
+    });
   }
 
-  localStorage.setItem("__app_version__", APP_VERSION);
-  sessionStorage.setItem("__sw_cleanup_done__", "1");
-  
-  // Reload only outside the preview iframe to avoid loops.
-  if (versionMismatch && !isInIframe) {
-    console.log("[CacheBuster] Version mismatch, reloading page...");
-    setTimeout(() => window.location.reload(), 300);
+  // 3. Clear storage that might hold old state
+  if (versionMismatch) {
+    localStorage.setItem("__app_version__", APP_VERSION);
+    
+    if (!isInIframe) {
+      console.log("[CacheBuster] Version mismatch, forcing hard reload...");
+      setTimeout(() => {
+        // Force bypass of browser cache for the reload
+        window.location.href = window.location.href.split('#')[0].split('?')[0] + '?v=' + Date.now();
+      }, 500);
+    }
   }
 }
 
