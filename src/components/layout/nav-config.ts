@@ -86,26 +86,90 @@ export const NAV_ENTRIES: NavEntry[] = [
 
   // --- PROGRAMAS POP (IN 04/2007) ---
   {
-    label: "POPs - Operacional",
-    icon: ClipboardList,
+    label: "POP 01 - Fornecedores & MP",
+    icon: Users,
     items: [
-      { path: "/fornecedores", label: "POP 01 - Fornecedores", icon: Users },
-      { path: "/recebimento", label: "POP 01 - Recebimento MP", icon: ClipboardList },
-      { path: "/higiene", label: "POP 02 - Higiene / Sanitização", icon: Droplets },
-      { path: "/saude-pessoal", label: "POP 03 - Saúde Pessoal", icon: Activity },
-      { path: "/potabilidade-agua", label: "POP 04 - Potabilidade da Água", icon: Droplets },
-      { path: "/producao", label: "POP 05 - Produção", icon: Layers },
-      { path: "/pcp", label: "POP 05 - PCP / Sequenciamento", icon: CalendarDays },
-      { path: "/manutencao", label: "POP 06 - Manutenção / Calibração", icon: Wrench },
-      { path: "/pragas", label: "POP 07 - Controle de Pragas", icon: Bug },
-      { path: "/residuos", label: "POP 08 - Resíduos / Efluentes", icon: Trash2 },
-      { path: "/rastreabilidade", label: "POP 09 - Rastreabilidade", icon: History },
-      { path: "/expedicao", label: "POP 09 - Expedição", icon: Truck },
-      { path: "/substancias", label: "POP 11 - Substâncias", icon: Zap },
-      { path: "/armazenamento-transporte", label: "POP 12 - Armazenamento", icon: Building2 },
-      { path: "/treinamentos", label: "Treinamentos", icon: GraduationCap },
-      { path: "/visitantes", label: "Controle de Visitantes", icon: Users },
+      { path: "/fornecedores", label: "Controle de Fornecedores", icon: Users },
+      { path: "/recebimento", label: "Recebimento de MP", icon: ClipboardList },
+      { path: "/guia-pops?pop=POP-01", label: "ITs de Qualificação", icon: FileText },
+    ],
+  },
+  {
+    label: "POP 02 - Higiene & Limpeza",
+    icon: Droplets,
+    items: [
+      { path: "/higiene", label: "Higiene / Sanitização", icon: Droplets },
       { path: "/validacao-limpeza", label: "Validação de Limpeza", icon: CheckCircle2 },
+      { path: "/guia-pops?pop=POP-02", label: "ITs de Higienização", icon: FileText },
+    ],
+  },
+  {
+    label: "POP 03 - Saúde dos Colaboradores",
+    icon: Activity,
+    items: [
+      { path: "/saude-pessoal", label: "Saúde Pessoal", icon: Activity },
+      { path: "/treinamentos", label: "Treinamentos BPF", icon: GraduationCap },
+      { path: "/guia-pops?pop=POP-03", label: "ITs de Saúde e Higiene", icon: FileText },
+    ],
+  },
+  {
+    label: "POP 04 - Potabilidade da Água",
+    icon: Droplets,
+    items: [
+      { path: "/potabilidade-agua", label: "Controle da Água", icon: Droplets },
+      { path: "/guia-pops?pop=POP-04", label: "ITs de Potabilidade", icon: FileText },
+    ],
+  },
+  {
+    label: "POP 05 - Produção & PCP",
+    icon: Layers,
+    items: [
+      { path: "/producao", label: "Controle de Produção", icon: Layers },
+      { path: "/pcp", label: "PCP / Sequenciamento", icon: CalendarDays },
+      { path: "/guia-pops?pop=POP-05", label: "ITs de Produção", icon: FileText },
+    ],
+  },
+  {
+    label: "POP 06 - Manutenção & Calibração",
+    icon: Wrench,
+    items: [
+      { path: "/manutencao", label: "Manutenção Preventiva", icon: Wrench },
+      { path: "/guia-pops?pop=POP-06", label: "ITs de Manutenção", icon: FileText },
+    ],
+  },
+  {
+    label: "POP 07 - Controle de Pragas",
+    icon: Bug,
+    items: [
+      { path: "/pragas", label: "Manejo de Pragas", icon: Bug },
+      { path: "/guia-pops?pop=POP-07", label: "ITs de Pragas", icon: FileText },
+    ],
+  },
+  {
+    label: "POP 08 - Resíduos & Efluentes",
+    icon: Trash2,
+    items: [
+      { path: "/residuos", label: "Controle de Resíduos", icon: Trash2 },
+      { path: "/guia-pops?pop=POP-08", label: "ITs de Resíduos", icon: FileText },
+    ],
+  },
+  {
+    label: "POP 09 - Rastreabilidade & Recall",
+    icon: History,
+    items: [
+      { path: "/rastreabilidade", label: "Rastreabilidade", icon: History },
+      { path: "/expedicao", label: "Expedição", icon: Truck },
+      { path: "/guia-pops?pop=POP-09", label: "ITs de Rastreabilidade", icon: FileText },
+    ],
+  },
+  {
+    label: "POPs 10/11/12 - Armazenamento & PAC",
+    icon: Building2,
+    items: [
+      { path: "/armazenamento-transporte", label: "Armazenamento", icon: Building2 },
+      { path: "/substancias", label: "Substâncias / Zap", icon: Zap },
+      { path: "/guia-pops?pop=POP-10", label: "Programa PAC", icon: ClipboardCheck },
+      { path: "/visitantes", label: "Visitantes", icon: Users },
     ],
   },
 
