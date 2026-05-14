@@ -118,7 +118,8 @@ interface LicenseGateProps {
 
 export default function LicenseGate({ children, product: initialProduct }: LicenseGateProps) {
   const { product: urlProduct } = useParams();
-  const product = (urlProduct as ProductKey) || initialProduct || "feedbpf";
+  // Se initialProduct for passado (pelo Layout dedicado), ele tem prioridade sobre a URL
+  const product = initialProduct || (urlProduct as ProductKey) || "feedbpf";
   
   const { license, loading, isActive, daysRemaining } = useLicense();
   const { empresaAtiva, loading: empresaLoading } = useEmpresa();

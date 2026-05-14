@@ -28,9 +28,9 @@ const diferenciais = [
 export default function AgroRCCRMPage() {
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
   const { session } = useAuth();
-  const destino = "/agrorc/dashboard";
-  const signupLink = session ? destino : `/auth?product=agro-rc&mode=signup&redirect=%2Fagrorc%2Fdashboard`;
-  const loginLink = session ? destino : `/auth?product=agro-rc&mode=login&redirect=%2Fagrorc%2Fdashboard`;
+  const destino = "/agrorc";
+  const signupLink = session ? destino : `/auth?product=agro-rc&mode=signup&redirect=%2Fagrorc`;
+  const loginLink = session ? destino : `/auth?product=agro-rc&mode=login&redirect=%2Fagrorc`;
 
   const handleCheckout = async (tipo: "individual" | "grupo", plano: "mensal" | "semestral" | "anual") => {
     const key = `${tipo}-${plano}`;
@@ -72,18 +72,18 @@ export default function AgroRCCRMPage() {
                 Plataforma de gestão para Representantes Comerciais do agronegócio. Controle clientes, metas, visitas e pipeline de oportunidades em um só lugar.
               </p>
               <div className="flex flex-col sm:flex-row gap-3">
-                <Link to={signupLink}>
-                  <Button size="lg" className="gap-2 shadow-lg shadow-primary/20">
+                <Button size="lg" className="gap-2 shadow-lg shadow-primary/20" asChild>
+                  <Link to={signupLink}>
                     <Sparkles className="h-4 w-4" />
                     Testar grátis por 7 dias
-                  </Button>
-                </Link>
-                <Link to={loginLink}>
-                  <Button size="lg" variant="outline" className="gap-2">
+                  </Link>
+                </Button>
+                <Button size="lg" variant="outline" className="gap-2" asChild>
+                  <Link to={loginLink}>
                     <Lock className="h-4 w-4" />
                     Já é cadastrado? Acesse o Sistema
-                  </Button>
-                </Link>
+                  </Link>
+                </Button>
               </div>
               <p className="text-xs text-muted-foreground mt-2">Sem cartão de crédito • Acesso completo</p>
             </div>
@@ -245,12 +245,12 @@ export default function AgroRCCRMPage() {
           <div className="mt-12 text-center">
             <h3 className="text-xl font-bold font-display text-foreground mb-3">Experimente grátis por 7 dias!</h3>
             <p className="text-muted-foreground mb-6">Acesse o sistema completo do Agro RC CRM durante o período trial.</p>
-            <Link to="/auth?product=agro-rc&mode=signup&redirect=%2Fagro-rc">
-              <Button size="lg" className="gap-2 shadow-lg shadow-primary/25">
+            <Button size="lg" className="gap-2 shadow-lg shadow-primary/25" asChild>
+              <Link to="/auth?product=agro-rc&mode=signup&redirect=%2Fagrorc">
                 <Sparkles className="h-4 w-4" />
                 Começar Trial Grátis
-              </Button>
-            </Link>
+              </Link>
+            </Button>
           </div>
         </section>
       </main>

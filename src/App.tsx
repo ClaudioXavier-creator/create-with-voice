@@ -80,6 +80,15 @@ const AuditorPortal = lazy(() => import("./pages/AuditorPortal"));
 const DemoPage = lazy(() => import("./pages/DemoPage"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
+// Agro RC CRM - Páginas Internas
+const AgroRcLayout = lazy(() => import("./components/layout/AgroRcLayout"));
+const AgroRcDashboard = lazy(() => import("./pages/agrorc/Dashboard"));
+const AgroRcPipeline = lazy(() => import("./pages/agrorc/Pipeline"));
+const AgroRcClientes = lazy(() => import("./pages/agrorc/Clientes"));
+const AgroRcVisitas = lazy(() => import("./pages/agrorc/Visitas"));
+const AgroRcMetas = lazy(() => import("./pages/agrorc/Metas"));
+const AgroRcAdmin = lazy(() => import("./pages/agrorc/Admin"));
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -95,8 +104,8 @@ const queryClient = new QueryClient({
   },
 });
 
-const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  const { session, loading } = useAuth();
+const ProtectedRoute = ({ children, requireAdmin }: { children: React.ReactNode; requireAdmin?: boolean }) => {
+  const { session, loading, roles, user } = useAuth();
   const location = useLocation();
 
   if (loading) return <PageLoader />;
@@ -108,6 +117,17 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     }
     const redirect = encodeURIComponent(nextPath);
     return <Navigate to={`/auth?redirect=${redirect}`} replace />;
+  }
+
+  // Proteção extra para módulos administrativos (BPF_Consult)
+  if (requireAdmin) {
+    const isSuperAdmin = user?.email?.toLowerCase() === "claudiolx.nunes@gmail.com";
+    const isAdminRole = roles?.includes("admin") || roles?.includes("comercial");
+    
+    if (!isSuperAdmin && !isAdminRole) {
+      console.warn("Acesso negado: Rota administrativa restrita.");
+      return <Navigate to="/404" replace />;
+    }
   }
   
   return <>{children}</>;
@@ -167,11 +187,11 @@ const InternalRoutes = () => (
     <Route path="/gerador-pop-ia" element={<GeradorPopIA />} />
     <Route path="/consulta-sipeagro" element={<ConsultaSipeagro />} />
     <Route path="/configurar-pin" element={<ConfigurarPin />} />
-    <Route path="/admin" element={<SuperAdmin />} />
-    <Route path="/crm" element={<Navigate to="/admin?tab=crm" replace />} />
-    <Route path="/leads" element={<Navigate to="/admin?tab=leads" replace />} />
-    <Route path="/licencas" element={<Navigate to="/admin?tab=licencas" replace />} />
-    <Route path="/assinaturas" element={<Navigate to="/admin?tab=assinaturas" replace />} />
+    <Route path="/admin" element={<ProtectedRoute requireAdmin><SuperAdmin /></ProtectedRoute>} />
+    <Route path="/crm" element={<ProtectedRoute requireAdmin><Navigate to="/admin?tab=crm" replace /></ProtectedRoute>} />
+    <Route path="/leads" element={<ProtectedRoute requireAdmin><Navigate to="/admin?tab=leads" replace /></ProtectedRoute>} />
+    <Route path="/licencas" element={<ProtectedRoute requireAdmin><Navigate to="/admin?tab=licencas" replace /></ProtectedRoute>} />
+    <Route path="/assinaturas" element={<ProtectedRoute requireAdmin><Navigate to="/admin?tab=assinaturas" replace /></ProtectedRoute>} />
     <Route path="*" element={<NotFound />} />
   </Routes>
 );
@@ -187,6 +207,8 @@ const AppRoutes = () => {
         <Route path="/auditor/:token" element={<AuditorPortal />} />
         <Route path="/demo/:produto" element={<DemoPage />} />
         <Route path="/instalar" element={<Instalar />} />
+        
+        {/* Landings de Produtos */}
         <Route path="/nutricrm" element={<NutriCRMPage />} />
         <Route path="/feedbpf" element={<FeedBPFPage />} />
         <Route path="/audits-bpf/planos" element={<ProtectedRoute><AuditsBPFPlanos /></ProtectedRoute>} />
@@ -194,6 +216,28 @@ const AppRoutes = () => {
         <Route path="/agrogestao" element={<AgroGestaoCRMPage />} />
         <Route path="/agro-rc" element={<AgroRCCRMPage />} />
         <Route path="/rotulos" element={<RotulosBPFPage />} />
+
+        {/* Agro RC CRM - Rotas Dedicadas */}
+        <Route
+          path="/agrorc/*"
+          element={
+            <ProtectedRoute>
+              <AgroRcLayout>
+                <Routes>
+                  <Route path="/" element={<Navigate to="dashboard" replace />} />
+                  <Route path="/dashboard" element={<AgroRcDashboard />} />
+                  <Route path="/pipeline" element={<AgroRcPipeline />} />
+                  <Route path="/clientes" element={<AgroRcClientes />} />
+                  <Route path="/visitas" element={<AgroRcVisitas />} />
+                  <Route path="/metas" element={<AgroRcMetas />} />
+                  <Route path="/admin" element={<AgroRcAdmin />} />
+                </Routes>
+              </AgroRcLayout>
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Feed_BPF e outros (Páginas Compartilhadas Legadas) */}
         <Route
           path="/:product/*"
           element={
