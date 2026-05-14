@@ -1,13 +1,15 @@
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Info, Sparkles, Tag, FileText, Layers, Printer, Palette } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
+import Produtos from "@/pages/Produtos";
 
 const PreviewAlert = () => (
   <Alert variant="default" className="bg-teal-500/10 border-teal-500/20 mb-6">
     <Info className="h-4 w-4 text-teal-600" />
     <AlertTitle className="text-teal-700 font-bold">Nutri_Agro Labels — Ambiente Dedicado</AlertTitle>
     <AlertDescription className="text-teal-600">
-      Este é o ambiente exclusivo para geração e gestão de rótulos comerciais.
+      Selecione um produto para acessar Rótulo (IN 22), Ficha Técnica, RTPI e Níveis de Garantia.
     </AlertDescription>
   </Alert>
 );
@@ -19,32 +21,61 @@ export const RotulosDashboardPage = () => (
       <div className="p-6 rounded-2xl bg-card border border-border shadow-sm">
         <h4 className="text-sm font-bold text-muted-foreground mb-4 uppercase tracking-widest">Acesso Rápido</h4>
         <div className="space-y-3">
-          <Button className="w-full justify-start gap-3" variant="outline">
-            <Tag className="h-4 w-4 text-teal-600" /> Criar Novo Rótulo
+          <Button asChild className="w-full justify-start gap-3" variant="outline">
+            <Link to="/rotulos/editor"><Tag className="h-4 w-4 text-teal-600" /> Editor de Rótulos</Link>
           </Button>
-          <Button className="w-full justify-start gap-3" variant="outline">
-            <FileText className="h-4 w-4 text-teal-600" /> Ficha Técnica RTPI
+          <Button asChild className="w-full justify-start gap-3" variant="outline">
+            <Link to="/rotulos/rtpi"><FileText className="h-4 w-4 text-teal-600" /> Ficha Técnica RTPI</Link>
           </Button>
-          <Button className="w-full justify-start gap-3" variant="outline">
-            <Printer className="h-4 w-4 text-teal-600" /> Configurar Impressora
+          <Button asChild className="w-full justify-start gap-3" variant="outline">
+            <Link to="/rotulos/niveis"><Layers className="h-4 w-4 text-teal-600" /> Níveis de Garantia</Link>
           </Button>
         </div>
       </div>
       <div className="md:col-span-2 p-12 flex flex-col items-center justify-center text-center border-2 border-dashed rounded-2xl bg-teal-500/[0.02]">
         <Sparkles className="h-12 w-12 text-teal-200 mb-4" />
         <h3 className="text-xl font-bold mb-2 text-foreground">Gerador de Rótulos</h3>
-        <p className="text-muted-foreground max-w-md">Em breve, o gerador de rótulos será totalmente integrado a esta nova interface com salvamento automático na nuvem.</p>
+        <p className="text-muted-foreground max-w-md mb-4">
+          Cadastre seus produtos e gere rótulos comerciais conforme MAPA (IN 04/2007 e Decreto 12.031/2024) com exportação para Zebra (ZPL), Word e Excel.
+        </p>
+        <Button asChild>
+          <Link to="/rotulos/editor">Acessar Cadastro de Produtos</Link>
+        </Button>
       </div>
     </div>
   </div>
 );
 
-export const GenericModule = ({ name, icon: Icon }: any) => (
-  <div className="p-20 flex flex-col items-center justify-center text-center">
-    <div className="h-20 w-20 rounded-full bg-teal-500/10 flex items-center justify-center mb-6">
-      <Icon className="h-10 w-10 text-teal-600" />
+// Editor / RTPI / Níveis / Templates: todos renderizam o módulo real de Produtos,
+// onde o usuário escolhe o produto e abre as abas (Rótulo IN 22, Ficha Técnica, RTPI, Fórmulas).
+export const RotulosEditorPage = () => <Produtos />;
+export const RotulosRTPIPage = () => <Produtos />;
+export const RotulosNiveisPage = () => <Produtos />;
+export const RotulosTemplatesPage = () => <Produtos />;
+
+export const RotulosZebraPage = () => (
+  <div className="max-w-3xl mx-auto space-y-6">
+    <div className="p-8 rounded-2xl bg-card border border-border">
+      <div className="flex items-center gap-3 mb-4">
+        <div className="h-12 w-12 rounded-full bg-teal-500/10 flex items-center justify-center">
+          <Printer className="h-6 w-6 text-teal-600" />
+        </div>
+        <div>
+          <h2 className="text-2xl font-bold">Configuração Zebra (ZPL)</h2>
+          <p className="text-sm text-muted-foreground">Impressão direta nas impressoras térmicas Zebra.</p>
+        </div>
+      </div>
+      <div className="space-y-3 text-sm text-muted-foreground">
+        <p>1. Conecte sua impressora Zebra via USB ou rede.</p>
+        <p>2. Acesse <Link to="/rotulos/editor" className="text-teal-600 underline">Editor de Rótulos</Link>, selecione o produto desejado e abra a aba <strong>Rótulo IN 22</strong>.</p>
+        <p>3. Use o botão <strong>Exportar ZPL</strong> dentro do editor para baixar o comando e enviar à impressora.</p>
+      </div>
+      <Button asChild className="mt-6">
+        <Link to="/rotulos/editor">Ir para o Editor</Link>
+      </Button>
     </div>
-    <h2 className="text-2xl font-bold mb-2">{name}</h2>
-    <p className="text-muted-foreground">Módulo do Nutri_Agro Labels em fase de migração para o novo ambiente isolado.</p>
   </div>
 );
+
+// Compat: alguns imports antigos podem usar GenericModule. Mantemos como alias do dashboard.
+export const GenericModule = ({ name }: { name?: string; icon?: any }) => <RotulosDashboardPage />;
