@@ -541,7 +541,7 @@ export default function Index() {
               data.acoesPrioritarias.map((acao, idx) => {
                 const config = criticidadeConfig[acao.criticidade];
                 return (
-                  <Link key={idx} to={acao.link} className="block">
+                  <Link key={idx} to={acao.link} className="block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded-2xl">
                     <div className={cn("rounded-2xl border border-transparent p-4 transition-all hover:shadow-md hover:translate-x-1 relative overflow-hidden group", config.container)}>
                       <div className="absolute top-0 right-0 p-2 opacity-10 group-hover:opacity-30 transition-opacity">
                         <ArrowRight aria-hidden="true" className="w-8 h-8 -rotate-45" />
