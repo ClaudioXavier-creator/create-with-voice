@@ -1,9 +1,6 @@
-import { useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ArrowRight, Lock, ShieldCheck, Factory, Beaker, BarChart3, GraduationCap, ClipboardCheck, Sparkles, Building2, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useAuth } from "@/hooks/useAuth";
-import { canAccessLicenseAdmin } from "@/config/adminAccess";
 import { Badge } from "@/components/ui/badge";
 import logoBpfConsult from "@/assets/logo-bpf-consult.png";
 import logoFeedBpf from "@/assets/logo-feed-bpf.png";
@@ -157,16 +154,7 @@ const estatisticas = [
 
 export default function Vitrine() {
   const navigate = useNavigate();
-  const { user, roles } = useAuth();
-  const isAdmin = canAccessLicenseAdmin(roles, user?.email);
-  
-  // Filtramos os produtos com base nas permissões
-  const produtosVisiveis = useMemo(() => {
-    return produtos.filter(p => {
-      if (p.adminOnly) return isAdmin;
-      return true;
-    });
-  }, [isAdmin]);
+  const produtosVisiveis = produtos;
 
   return (
     <div className="min-h-screen bg-background">
