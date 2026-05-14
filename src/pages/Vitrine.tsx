@@ -33,6 +33,7 @@ type ProdutoCard = {
 const produtos: ProdutoCard[] = [
   {
     nome: "Feed_BPF",
+    icon: LayoutDashboard,
     logo: logoFeedBpf,
     desc: "Plataforma completa de Boas Práticas de Fabricação para nutrição animal. Manual BPF, POPs digitais, planilhas de monitoramento, produção, PCP, rastreabilidade, controle de pragas, higiene e muito mais.",
     destaques: ["Manual BPF & POPs", "Produção & PCP", "Rastreabilidade", "Higiene & Manutenção", "Matriz de Risco (APPCC)", "Indicadores & Relatórios"],
