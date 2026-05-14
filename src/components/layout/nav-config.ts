@@ -57,10 +57,10 @@ export const NAV_ENTRIES: NavEntry[] = [
     items: [
       { path: "/dashboard", label: "Feed_BPF", icon: LayoutDashboard },
       { path: "https://friendly-flame-igniter.lovable.app", label: "Audits_BPF", icon: ShieldCheck, external: true },
-      { path: "https://soil-to-client.lovable.app/dashboard", label: "Agro RC CRM", icon: BarChart3, external: true },
+      { path: "https://soil-to-client.lovable.app", label: "Agro RC CRM", icon: BarChart3, external: true },
       { path: "/rotulos/dashboard", label: "Nutri_Agro Labels", icon: Tag },
-      { path: "https://nutricrm.onrender.com/dashboard", label: "NutriCRM", icon: Users, external: true },
-      { path: "https://regional-fixer-charm.lovable.app/dashboard", label: "AgroGestão CRM", icon: Building2, external: true },
+      { path: "https://nutricrm.onrender.com", label: "NutriCRM", icon: Users, external: true },
+      { path: "https://regional-fixer-charm.lovable.app", label: "AgroGestão CRM", icon: Building2, external: true },
       { path: "/admin", label: "Portal de Gestão & CRM", icon: ShieldCheck, requiredRoles: ["admin", "comercial"] },
     ],
   },
