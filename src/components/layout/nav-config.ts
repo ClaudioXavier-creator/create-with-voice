@@ -1,49 +1,16 @@
 import {
   AlertTriangle,
-  BarChart3,
   BookOpen,
-  Brain,
   Building2,
-  CalendarDays,
   Clipboard,
   ClipboardCheck,
   ClipboardList,
-  Droplets,
-  Factory,
-  FileDown,
-  FileSearch,
   FileText,
-  FlaskConical,
   FolderOpen,
-  Globe,
   GraduationCap,
-  HeartPulse,
   LayoutDashboard,
-  Package,
-  Radar,
-  Recycle,
-  ScrollText,
-  Search,
-  Settings,
-  ShieldAlert,
   ShieldCheck,
   Tablet,
-  Tag,
-  Timer,
-  Truck,
-  UserCheck,
-  Wrench,
-  Users,
-  CreditCard,
-  Smartphone,
-  Shield,
-  LayoutGrid,
-  ClipboardList as AuditIcon,
-  UserSquare2,
-  Database,
-  Users2,
-  Tags,
-  Settings2,
 } from "lucide-react";
 
 export interface NavItem {
@@ -69,22 +36,7 @@ export function isGroup(entry: NavEntry): entry is NavGroup {
 }
 
 export const NAV_ENTRIES: NavEntry[] = [
-  // --- GRUPO 1: PROGRAMAS FIXOS BPF_CONSULT ---
-  {
-    label: "Programas BPF_Consult",
-    icon: LayoutGrid,
-    items: [
-      { path: "/feedbpf/dashboard", label: "1. Feed_BPF", icon: Factory },
-      { path: "https://friendly-flame-igniter.lovable.app/", label: "2. Audits_BPF", icon: AuditIcon, external: true },
-      { path: "https://soil-to-client.lovable.app/", label: "3. Agro RC CRM", icon: UserSquare2, external: true },
-      { path: "https://regional-fixer-charm.lovable.app/", label: "4. Agrogestão CRM", icon: Database, external: true },
-      { path: "https://nutricrm.onrender.com/", label: "5. NutriCRM", icon: Users2, external: true },
-      { path: "/rotulos/dashboard", label: "6. Nutri_Agro Labels", icon: Tags },
-      { path: "/admin", label: "7. Gestão do Site BPF", icon: Settings2, requiredRoles: ["admin"] },
-    ],
-  },
-  
-  // --- GRUPO 2: OPERACIONAL FEED_BPF ---
+  // --- OPERACIONAL FEED_BPF ---
   {
     label: "Operacional Feed_BPF",
     icon: ClipboardCheck,
