@@ -69,8 +69,8 @@ const DEMOS: Record<string, DemoConfig> = {
   auditsbpf: {
     key: "auditsbpf",
     productSlug: "auditsbpf",
-    authProduct: "audits-bpf",
-    redirectPath: "/audits-bpf",
+    authProduct: "auditsbpf",
+    redirectPath: "/auditsbpf",
     brand: "Audits_BPF",
     tagline: "Auditoria interna BPF para nutrição animal",
     logo: logoAuditsBpf,
