@@ -389,7 +389,6 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <AuthProvider>
-          
           <EmpresaProvider>
             <AppRoutes />
           </EmpresaProvider>
