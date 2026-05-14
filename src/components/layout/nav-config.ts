@@ -67,8 +67,8 @@ export const NAV_ENTRIES: NavEntry[] = [
     label: "Meus Programas (Fixos)",
     icon: LayoutDashboard,
     items: [
-      { path: "/agrogestao", label: "1. AgroGestão Completa", icon: Factory },
-      { path: "/agrorc", label: "2. CRM Clientes", icon: Users },
+      { path: "https://regional-fixer-charm.lovable.app", label: "1. AgroGestão Completa", icon: Factory, external: true },
+      { path: "https://soil-to-client.lovable.app", label: "2. CRM Clientes", icon: Users, external: true },
       { path: "/assinaturas", label: "3. Financeiro", icon: CreditCard },
       { path: "/recebimento", label: "4. Estoque", icon: Package },
       { path: "/indicadores", label: "5. Relatórios BI", icon: BarChart3 },
@@ -111,4 +111,3 @@ export const NAV_ENTRIES: NavEntry[] = [
   },
   { path: "/modelos", label: "📁 Modelos", icon: FolderOpen },
 ];
-
