@@ -100,14 +100,6 @@ const NutriProjetos = lazy(() => import("./pages/nutricrm/NutriCrmPages").then(m
 const NutriMetas = lazy(() => import("./pages/nutricrm/NutriCrmPages").then(m => ({ default: m.NutriMetasPage })));
 const NutriRelatorios = lazy(() => import("./pages/nutricrm/NutriCrmPages").then(m => ({ default: m.NutriRelatoriosPage })));
 
-// AgroGestão - Páginas Internas
-const AgroGestaoLayout = lazy(() => import("./components/layout/AgroGestaoLayout"));
-const AgroDashboard = lazy(() => import("./pages/agrogestao/AgroGestaoPages").then(m => ({ default: m.AgroDashboardPage })));
-const AgroClientes = lazy(() => import("./pages/agrogestao/AgroGestaoPages").then(m => ({ default: m.AgroClientesPage })));
-const AgroRegioes = lazy(() => import("./pages/agrogestao/AgroGestaoPages").then(m => ({ default: m.AgroRegioesPage })));
-const AgroVisitas = lazy(() => import("./pages/agrogestao/AgroGestaoPages").then(m => ({ default: m.AgroVisitasPage })));
-const AgroMetas = lazy(() => import("./pages/agrogestao/AgroGestaoPages").then(m => ({ default: m.AgroMetasPage })));
-const AgroRelatorios = lazy(() => import("./pages/agrogestao/AgroGestaoPages").then(m => ({ default: m.AgroRelatoriosPage })));
 
 // Audits_BPF - Páginas Internas
 const AuditsBpfLayout = lazy(() => import("./components/layout/AuditsBpfLayout"));
@@ -264,24 +256,10 @@ const AppRoutes = () => {
           element={<ExternalRedirect to="https://nutricrm.onrender.com" preservePath basePath="/nutricrm" />}
         />
 
-        {/* AgroGestão CRM - Rotas Dedicadas */}
+        {/* AgroGestão CRM - redireciona para projeto externo publicado */}
         <Route
           path="/agrogestao/*"
-          element={
-            <ProtectedRoute>
-              <AgroGestaoLayout>
-                <Routes>
-                  <Route index element={<Navigate to="dashboard" replace />} />
-                  <Route path="dashboard" element={<AgroDashboard />} />
-                  <Route path="clientes" element={<AgroClientes />} />
-                  <Route path="regioes" element={<AgroRegioes />} />
-                  <Route path="visitas" element={<AgroVisitas />} />
-                  <Route path="metas" element={<AgroMetas />} />
-                  <Route path="relatorios" element={<AgroRelatorios />} />
-                </Routes>
-              </AgroGestaoLayout>
-            </ProtectedRoute>
-          }
+          element={<ExternalRedirect to="https://regional-fixer-charm.lovable.app" preservePath basePath="/agrogestao" />}
         />
 
         {/* Audits_BPF - redireciona para projeto externo publicado */}
