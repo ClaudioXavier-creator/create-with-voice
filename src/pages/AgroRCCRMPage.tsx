@@ -29,8 +29,8 @@ export default function AgroRCCRMPage() {
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
   const { session } = useAuth();
   const destino = "/agrorc/dashboard";
-  const signupLink = session ? destino : `/auth?product=agrorc&mode=signup&redirect=%2Fagrorc%2Fdashboard`;
-  const loginLink = session ? destino : `/auth?product=agrorc&mode=login&redirect=%2Fagrorc%2Fdashboard`;
+  const signupLink = "/auth?product=agrorc&mode=signup&redirect=%2Fagrorc%2Fdashboard";
+  const loginLink = "/auth?product=agrorc&mode=login&redirect=%2Fagrorc%2Fdashboard";
 
   const handleCheckout = async (tipo: "individual" | "grupo", plano: "mensal" | "semestral" | "anual") => {
     const key = `${tipo}-${plano}`;

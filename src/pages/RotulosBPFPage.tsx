@@ -37,8 +37,8 @@ const diferenciais = [
 export default function RotulosBPFPage() {
   const { session } = useAuth();
   const destino = "/rotulos";
-  const signupLink = session ? destino : `/auth?product=rotulos&mode=signup&redirect=%2Frotulos`;
-  const loginLink = session ? destino : `/auth?product=rotulos&mode=login&redirect=%2Frotulos`;
+  const signupLink = "/auth?product=rotulos&mode=signup&redirect=%2Frotulos";
+  const loginLink = "/auth?product=rotulos&mode=login&redirect=%2Frotulos";
   const [loadingKey, setLoadingKey] = useState<string | null>(null);
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
