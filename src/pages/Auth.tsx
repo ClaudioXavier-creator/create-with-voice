@@ -126,9 +126,9 @@ export default function Auth() {
     setIsForgot(nextIsForgot);
     setIsLogin(nextIsLogin);
 
-    const nextParams = new URLSearchParams(searchParams);
+    const nextParams = new URLSearchParams();
     nextParams.set("mode", nextIsForgot ? "forgot" : nextIsLogin ? "login" : "signup");
-    if (!nextParams.get("product")) nextParams.set("product", product);
+    nextParams.set("product", product);
     if (redirectTo) nextParams.set("redirect", redirectTo);
     setSearchParams(nextParams, { replace: true });
   };
@@ -265,7 +265,7 @@ export default function Auth() {
           email,
           password,
           options: {
-            data: { nome: nome.trim(), telefone: telefone.trim(), tipo_usuario: tipoUsuario, produto: product },
+            data: { nome: nome.trim(), telefone: telefone.trim(), tipo_usuario: tipoUsuario, produto: product === "auditsbpf" ? "auditsbpf" : product },
             emailRedirectTo: window.location.origin,
           },
         });
