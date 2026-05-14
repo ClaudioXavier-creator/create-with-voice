@@ -47,43 +47,43 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
-    // Tenta pegar sessão inicial de forma síncrona se disponível (pode ser null)
-    const initSession = async () => {
-      try {
-        const { data: { session: initialSession } } = await supabase.auth.getSession();
-        setSession(initialSession);
-        if (initialSession) {
-          await loadAccessContext(initialSession.user.id);
-        }
-      } catch (error) {
-        console.error("Erro ao inicializar sessão:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    void initSession();
-
+    // CRITICAL: nunca usar await dentro do callback do onAuthStateChange.
+    // Causa deadlock quando o refresh token falha (erro 500), gerando spinner infinito.
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (_event, newSession) => {
-        try {
-          setSession(newSession);
-          if (newSession) {
-            setLoading(true);
-            await loadAccessContext(newSession.user.id);
-          } else {
-            setRoles([]);
-            setUserType(null);
-          }
-        } catch (error) {
-          console.error("Erro no onAuthStateChange:", error);
-        } finally {
-          setLoading(false);
+      (_event, newSession) => {
+        setSession(newSession);
+        if (newSession) {
+          setTimeout(() => {
+            loadAccessContext(newSession.user.id).catch((err) =>
+              console.error("Erro ao carregar contexto:", err)
+            );
+          }, 0);
+        } else {
+          setRoles([]);
+          setUserType(null);
         }
       }
     );
 
-    return () => subscription.unsubscribe();
+    supabase.auth.getSession()
+      .then(({ data: { session: initialSession } }) => {
+        setSession(initialSession);
+        if (initialSession) {
+          loadAccessContext(initialSession.user.id).catch((err) =>
+            console.error("Erro ao carregar contexto inicial:", err)
+          );
+        }
+      })
+      .catch((error) => console.error("Erro ao inicializar sessão:", error))
+      .finally(() => setLoading(false));
+
+    // Failsafe: libera o spinner em 5s caso algo trave
+    const failsafe = setTimeout(() => setLoading(false), 5000);
+
+    return () => {
+      subscription.unsubscribe();
+      clearTimeout(failsafe);
+    };
   }, [loadAccessContext]);
 
   const signOut = useCallback(async () => {
