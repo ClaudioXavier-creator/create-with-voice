@@ -36,6 +36,7 @@ const Fornecedores = lazy(() => import("./pages/Fornecedores"));
 const Manual = lazy(() => import("./pages/Manual"));
 const PlanilhasPop = lazy(() => import("./pages/PlanilhasPop"));
 const GuiaPops = lazy(() => import("./pages/GuiaPops"));
+const GuiaGeralPops = lazy(() => import("./pages/GuiaGeralPops"));
 const Produtos = lazy(() => import("./pages/Produtos"));
 const Formulas = lazy(() => import("./pages/Formulas"));
 const AnalisesLaboratorio = lazy(() => import("./pages/AnalisesLaboratorio"));
@@ -184,6 +185,7 @@ const InternalRoutes = () => (
     <Route path="/legislacao" element={<Legislacao />} />
     <Route path="/manual" element={<Manual />} />
     <Route path="/guia-pops" element={<GuiaPops />} />
+    <Route path="/guia-geral-pops" element={<GuiaGeralPops />} />
     <Route path="/planilhas-pop" element={<PlanilhasPop />} />
     <Route path="/produtos" element={<Produtos />} />
     <Route path="/formulas" element={<Formulas />} />
