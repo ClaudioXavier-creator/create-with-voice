@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
-import { createPortal } from "react-dom";
 import { X, ArrowRight, ArrowLeft, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { Dialog, DialogContent, DialogTitle, DialogDescription, DialogHeader } from "@/components/ui/dialog";
 
 interface Step {
   title: string;
