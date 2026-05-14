@@ -1,4 +1,5 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 import { ArrowLeft, Sparkles, ClipboardCheck, ShieldCheck, FileBarChart, AlertTriangle, BarChart3, History, Scale, Eye, LogIn } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -25,9 +26,17 @@ const diferenciais = [
 
 export default function AuditsBPFPage() {
   const { session } = useAuth();
-  const destino = "/auditsbpf";
-  const signupLink = session ? destino : `/auth?product=auditsbpf&mode=signup&redirect=%2Fauditsbpf`;
-  const loginLink = session ? destino : `/auth?product=auditsbpf&mode=login&redirect=%2Fauditsbpf`;
+  const navigate = useNavigate();
+  const dashboardPath = "/auditsbpf/dashboard";
+  
+  useEffect(() => {
+    if (session) {
+      navigate(dashboardPath, { replace: true });
+    }
+  }, [session, navigate, dashboardPath]);
+
+  const signupLink = session ? dashboardPath : `/auth?product=auditsbpf&mode=signup&redirect=%2Fauditsbpf%2Fdashboard`;
+  const loginLink = session ? dashboardPath : `/auth?product=auditsbpf&mode=login&redirect=%2Fauditsbpf%2Fdashboard`;
 
   return (
     <div className="min-h-screen bg-background">
@@ -184,12 +193,12 @@ export default function AuditsBPFPage() {
           <div className="mt-12 text-center">
             <h3 className="text-xl font-bold font-display text-foreground mb-3">Experimente grátis por 7 dias!</h3>
             <p className="text-muted-foreground mb-6">Crie sua conta e tenha acesso completo ao Audits_BPF durante o período trial.</p>
-            <a href={signupLink} target="_blank" rel="noopener noreferrer">
+            <Link to={signupLink}>
               <Button size="lg" className="gap-2 shadow-lg shadow-primary/25">
                 <Sparkles className="h-4 w-4" />
                 Começar Trial Grátis
               </Button>
-            </a>
+            </Link>
           </div>
         </section>
       </main>
