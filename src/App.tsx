@@ -10,6 +10,7 @@ import { EmpresaProvider } from "@/hooks/useEmpresa";
 import AppLayout from "@/components/layout/AppLayout";
 import LicenseGate from "@/components/LicenseGate";
 import PageLoader from "@/components/PageLoader";
+import { ExternalRedirect } from "@/components/ExternalRedirect";
 
 
 
@@ -247,24 +248,14 @@ const AppRoutes = () => {
         <Route path="/agro-rc" element={<AgroRCCRMPage />} />
         <Route path="/rotulos" element={<RotulosBPFPage />} />
 
-        {/* Agro RC CRM - Rotas Dedicadas */}
+        {/* Agro RC CRM - redireciona para projeto externo publicado */}
         <Route
           path="/agrorc/*"
-          element={
-            <ProtectedRoute>
-              <AgroRcLayout>
-                <Routes>
-                  <Route index element={<Navigate to="dashboard" replace />} />
-                  <Route path="dashboard" element={<AgroRcDashboard />} />
-                  <Route path="pipeline" element={<AgroRcPipeline />} />
-                  <Route path="clientes" element={<AgroRcClientes />} />
-                  <Route path="visitas" element={<AgroRcVisitas />} />
-                  <Route path="metas" element={<AgroRcMetas />} />
-                  <Route path="admin" element={<AgroRcAdmin />} />
-                </Routes>
-              </AgroRcLayout>
-            </ProtectedRoute>
-          }
+          element={<ExternalRedirect to="https://soil-to-client.lovable.app" preservePath basePath="/agrorc" />}
+        />
+        <Route
+          path="/agro-rc/*"
+          element={<ExternalRedirect to="https://soil-to-client.lovable.app" preservePath basePath="/agro-rc" />}
         />
 
         {/* NutriCRM - Rotas Dedicadas */}
@@ -307,28 +298,9 @@ const AppRoutes = () => {
           }
         />
 
-        {/* Audits_BPF - Rotas Dedicadas */}
-        <Route path="/auditsbpf">
-          <Route index element={<AuditsBPFPage />} />
-          <Route
-            path="*"
-            element={
-              <ProtectedRoute>
-                <AuditsBpfLayout>
-                  <Routes>
-                    <Route index element={<Navigate to="dashboard" replace />} />
-                    <Route path="dashboard" element={<AuditsDashboard />} />
-                    <Route path="checklist" element={<AuditsChecklist />} />
-                    <Route path="sala" element={<AuditsSala />} />
-                    <Route path="plano" element={<AuditsPlano />} />
-                    <Route path="relatorio" element={<AuditsRelatorio />} />
-                    <Route path="historico" element={<AuditsHistorico />} />
-                  </Routes>
-                </AuditsBpfLayout>
-              </ProtectedRoute>
-            }
-          />
-        </Route>
+        {/* Audits_BPF - redireciona para projeto externo publicado */}
+        <Route path="/auditsbpf/*" element={<ExternalRedirect to="https://friendly-flame-igniter.lovable.app" preservePath basePath="/auditsbpf" />} />
+        <Route path="/audits-bpf/*" element={<ExternalRedirect to="https://friendly-flame-igniter.lovable.app" preservePath basePath="/audits-bpf" />} />
 
         {/* Nutri_Agro Labels - Rotas Dedicadas */}
         <Route
