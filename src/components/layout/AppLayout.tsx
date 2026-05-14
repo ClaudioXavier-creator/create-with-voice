@@ -110,7 +110,7 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
   const closeMobile = useCallback(() => setMobileOpen(false), []);
 
   return (
-    <div className="flex min-h-screen bg-background/50">
+    <div className="flex min-h-screen bg-background/50 selection:bg-primary/10 selection:text-primary">
       {/* Skip to Content Link */}
       <a 
         href="#main-content" 
@@ -118,12 +118,13 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
       >
         Pular para o conteúdo principal
       </a>
+
       {/* Desktop sidebar */}
-      <aside aria-label="Navegação Lateral" className="hidden lg:flex w-72 flex-col bg-sidebar text-sidebar-foreground border-r border-sidebar-border shadow-xl">
-        <div className="flex items-center gap-3 px-6 py-6 border-b border-sidebar-border/50 bg-sidebar/50 backdrop-blur-sm sticky top-0 z-10">
+      <aside aria-label="Navegação Lateral" className="hidden lg:flex w-72 flex-col bg-sidebar text-sidebar-foreground border-r border-sidebar-border shadow-xl sticky top-0 h-screen overflow-hidden">
+        <div className="flex items-center gap-3 px-6 py-6 border-b border-sidebar-border/50 bg-sidebar/50 backdrop-blur-sm shrink-0">
           <button 
             type="button"
-            className="flex items-center gap-3 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded-lg"
+            className="flex items-center gap-3 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded-lg transition-transform active:scale-95"
             onClick={() => navigate("/")}
             aria-label={`Ir para o início de ${config.title}`}
           >
@@ -132,14 +133,14 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
               <img src={config.logo} alt="" className="relative w-10 h-10 rounded-lg object-contain bg-white p-1 shadow-sm" />
             </div>
             <div className="min-w-0">
-              <h1 className="font-display text-lg font-bold text-sidebar-foreground tracking-tight">{config.title}</h1>
-              <p className="text-[10px] uppercase tracking-widest text-sidebar-foreground/40 font-semibold">{config.subtitle}</p>
+              <h1 className="font-display text-lg font-bold text-sidebar-foreground tracking-tight truncate">{config.title}</h1>
+              <p className="text-[10px] uppercase tracking-widest text-sidebar-foreground/40 font-semibold truncate">{config.subtitle}</p>
             </div>
           </button>
         </div>
 
         <div className="flex-1 flex flex-col overflow-hidden">
-          <div className="px-4 py-4">
+          <div className="px-4 py-4 shrink-0">
             <button 
               onClick={() => navigate("/busca-global")}
               aria-label="Abrir busca global"
@@ -147,7 +148,7 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
             >
               <Search className="h-3.5 w-3.5" />
               <span className="flex-1 text-left">Buscar ferramentas...</span>
-              <kbd className="hidden sm:inline-flex h-5 select-none items-center gap-1 rounded border border-sidebar-border bg-sidebar px-1.5 font-mono text-[10px] font-medium text-sidebar-foreground/40">
+              <kbd className="hidden xl:inline-flex h-5 select-none items-center gap-1 rounded border border-sidebar-border bg-sidebar px-1.5 font-mono text-[10px] font-medium text-sidebar-foreground/40">
                 <span className="text-xs">⌘</span>K
               </kbd>
             </button>
@@ -161,15 +162,15 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
           />
         </div>
 
-        <div className="mt-auto px-4 py-4 border-t border-sidebar-border/50 space-y-3 bg-sidebar/30">
+        <div className="mt-auto px-4 py-4 border-t border-sidebar-border/50 space-y-3 bg-sidebar/30 shrink-0">
           <EmpresaSelector />
-          <div className="flex items-center justify-between px-2">
-            <p className="text-[11px] font-medium text-sidebar-foreground/50 truncate max-w-[140px]">{user?.email}</p>
+          <div className="flex items-center justify-between px-2 gap-2">
+            <p className="text-[11px] font-medium text-sidebar-foreground/50 truncate flex-1">{user?.email}</p>
             <Button
               variant="ghost"
               size="icon"
               onClick={handleSignOut}
-              className="h-8 w-8 text-sidebar-foreground/50 hover:text-destructive hover:bg-destructive/10 rounded-full"
+              className="h-8 w-8 text-sidebar-foreground/50 hover:text-destructive hover:bg-destructive/10 rounded-full shrink-0"
               title="Sair da conta"
             >
               <LogOut className="h-4 w-4" />
