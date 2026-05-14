@@ -55,7 +55,7 @@ const produtos: ProdutoCard[] = [
     bgCard: "bg-gradient-to-br from-emerald-50 to-green-50 dark:from-emerald-950/30 dark:to-green-950/30",
     borderColor: "border-emerald-200 dark:border-emerald-800",
     trial: "7 dias grátis",
-    trialLink: "/auth?product=auditsbpf&mode=signup&redirect=%2Fauditsbpf",
+    trialLink: "/auth?product=auditsbpf&mode=signup&redirect=%2Fauditsbpf%2Fdashboard",
     demoLink: "/demo/auditsbpf",
     preco: "A partir de R$ 249/mês",
     external: false,
