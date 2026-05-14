@@ -47,11 +47,11 @@ export const NAV_ENTRIES: NavEntry[] = [
     items: [
       { path: "/dashboard", label: "Feed_BPF", icon: LayoutDashboard },
       { path: "https://friendly-flame-igniter.lovable.app", label: "Audits_BPF", icon: ShieldCheck, external: true },
-      { path: "https://soil-to-client.lovable.app", label: "Agro RC CRM", icon: BarChart3, external: true },
+      { path: "https://soil-to-client.lovable.app/dashboard", label: "Agro RC CRM", icon: BarChart3, external: true },
       { path: "/rotulos/dashboard", label: "Nutri_Agro Labels", icon: Tag },
-      { path: "https://nutricrm.onrender.com", label: "NutriCRM", icon: Users, external: true },
-      { path: "https://regional-fixer-charm.lovable.app", label: "AgroGestão CRM", icon: Building2, external: true },
-      { path: "/admin", label: "Portal de Gestão", icon: ShieldCheck, requiredRoles: ["admin", "comercial"] },
+      { path: "https://nutricrm.onrender.com/dashboard", label: "NutriCRM", icon: Users, external: true },
+      { path: "https://regional-fixer-charm.lovable.app/dashboard", label: "AgroGestão CRM", icon: Building2, external: true },
+      { path: "/admin", label: "Portal de Gestão & CRM", icon: ShieldCheck, requiredRoles: ["admin", "comercial"] },
     ],
   },
 
@@ -61,6 +61,14 @@ export const NAV_ENTRIES: NavEntry[] = [
     icon: ClipboardCheck,
     items: [
       { path: "/cadastro", label: "Dados da Empresa", icon: Building2 },
+    ],
+  },
+
+  // --- GESTÃO DE POPS ---
+  {
+    label: "Documentos & POPs",
+    icon: FileText,
+    items: [
       { path: "/documentos", label: "Documentos / POPs", icon: FileText },
       { path: "/execucao-pops", label: "Execução ITs/POPs", icon: Clipboard },
     ],
