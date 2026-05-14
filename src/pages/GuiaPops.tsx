@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   HelpCircle, ChevronDown, ChevronRight, BookOpen, FileText, Droplets, Users,
   ShieldCheck, Wrench, Bug, Recycle, Search, Beaker, ClipboardCheck,
@@ -423,7 +423,7 @@ export default function GuiaPops() {
         description="Textos procedimentais completos dos 10 POPs obrigatórios com Instruções de Trabalho, orientações de preenchimento e digitalização" 
       />
       
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+      <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-6">
         <ScrollArea className="w-full">
           <TabsList className="inline-flex w-max h-auto p-1 bg-muted/50">
             {sections.map((section) => (
