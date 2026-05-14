@@ -194,20 +194,18 @@ export default function RotulosBPFPage() {
                 Gerador de rótulos para impressão em Zebra, Word e Excel — desenvolvido para nutrição animal, fábricas de rações e suplementos.
               </p>
               <div className="flex flex-col sm:flex-row gap-3">
-                <div className="flex flex-col sm:flex-row gap-3">
-                  <Button size="lg" className="gap-2 shadow-lg shadow-primary/20" asChild>
-                    <a href="/gerador-rotulos/index.html" target="_blank" rel="noopener noreferrer">
-                      <Sparkles className="h-4 w-4" />
-                      Acessar Gerador Nutri_Agro Labels
-                    </a>
-                  </Button>
-                  <Link to={loginLink}>
-                    <Button size="lg" variant="outline" className="gap-2">
-                      <Lock className="h-4 w-4" />
-                      Já sou cliente
-                    </Button>
+                <Button size="lg" className="gap-2 shadow-lg shadow-primary/20" asChild>
+                  <Link to={session ? "/gerador-rotulos/index.html" : `/auth?product=rotulos&mode=login&redirect=%2Fgerador-rotulos%2Findex.html`}>
+                    <Sparkles className="h-4 w-4" />
+                    Acessar Gerador Nutri_Agro Labels
                   </Link>
-                </div>
+                </Button>
+                <Link to={loginLink}>
+                  <Button size="lg" variant="outline" className="gap-2">
+                    <Lock className="h-4 w-4" />
+                    Já sou cliente
+                  </Button>
+                </Link>
               </div>
               <p className="text-xs text-muted-foreground mt-2">Sem cartão de crédito • Acesso completo</p>
             </div>
