@@ -89,10 +89,8 @@ export default function Auth() {
   const navigate = useNavigate();
 
   const preferredRedirect = useMemo(() => {
-    const postLoginRedirect = normalizeAuditsPath(sessionStorage.getItem("post_login_redirect") || "/");
-    if (redirectTo && redirectTo !== "/") return redirectTo;
-    if (postLoginRedirect && postLoginRedirect !== "/auth") return postLoginRedirect;
-    return "/";
+    if (redirectTo && redirectTo !== "/" && redirectTo !== "/auth") return redirectTo;
+    return "/dashboard";
   }, [redirectTo]);
 
   const passwordChecks = useMemo(
@@ -131,8 +129,6 @@ export default function Auth() {
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session) {
-        const postLoginRedirect = sessionStorage.getItem("post_login_redirect");
-        if (postLoginRedirect) sessionStorage.removeItem("post_login_redirect");
         navigate(preferredRedirect, { replace: true });
       }
     });
@@ -270,8 +266,6 @@ export default function Auth() {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
         toast.success("Login realizado com sucesso!");
-        const postLoginRedirect = sessionStorage.getItem("post_login_redirect");
-        if (postLoginRedirect) sessionStorage.removeItem("post_login_redirect");
         navigate(preferredRedirect, { replace: true });
       } else {
         if (product === "admin") {

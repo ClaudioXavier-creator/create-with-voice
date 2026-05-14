@@ -1,4 +1,5 @@
-import { createContext, useContext, useEffect, useState, ReactNode, useCallback, useMemo } from "react";
+import { createContext, useContext, ReactNode, useCallback, useMemo } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "./useAuth";
 
@@ -17,6 +18,7 @@ interface EmpresaContextType {
   empresas: Empresa[];
   empresaAtiva: Empresa | null;
   loading: boolean;
+  error: Error | null;
   setEmpresaAtiva: (empresa: Empresa) => void;
   recarregar: () => Promise<void>;
 }
@@ -25,6 +27,7 @@ const EmpresaContext = createContext<EmpresaContextType>({
   empresas: [],
   empresaAtiva: null,
   loading: true,
+  error: null,
   setEmpresaAtiva: () => {},
   recarregar: async () => {},
 });
@@ -36,21 +39,13 @@ const getStorageKey = (userId?: string) =>
 
 export function EmpresaProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth();
-  const [empresas, setEmpresas] = useState<Empresa[]>([]);
-  const [empresaAtiva, setEmpresaAtivaState] = useState<Empresa | null>(null);
-  const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
 
-  const carregar = useCallback(async () => {
-    if (!user) { 
-      setEmpresas([]); 
-      setEmpresaAtivaState(null); 
-      setLoading(false); 
-      return; 
-    }
-    
-    setLoading(true);
-    try {
-      // Otimização: Buscas paralelas para reduzir tempo de carregamento inicial
+  const { data: empresas = [], isLoading, error, refetch } = useQuery({
+    queryKey: ["empresas", user?.id],
+    queryFn: async () => {
+      if (!user) return [];
+      
       const [own, members, licenses, invites] = await Promise.all([
         supabase.from("empresas").select("*").eq("user_id", user.id).order("nome"),
         supabase.from("empresa_membros").select("empresa_id").eq("user_id", user.id).eq("ativo", true),
@@ -71,49 +66,49 @@ export function EmpresaProvider({ children }: { children: ReactNode }) {
         new Set([...ownEmpresas.map((e) => e.id), ...memberIds, ...linkedLicenseIds, ...inviteIds].filter(Boolean))
       );
 
-      // Busca apenas as empresas que o usuário ainda não tem os dados completos
       const missingIds = empresaIds.filter(id => !ownEmpresas.some(e => e.id === id));
       
-      let extraEmpresas: any[] = [];
+      let extraEmpresas: Empresa[] = [];
       if (missingIds.length > 0) {
         const { data } = await supabase.from("empresas").select("*").in("id", missingIds);
-        extraEmpresas = data ?? [];
+        extraEmpresas = (data ?? []) as Empresa[];
       }
 
-      const lista = [...ownEmpresas, ...extraEmpresas].sort((a, b) => 
+      return [...ownEmpresas, ...extraEmpresas].sort((a, b) => 
         a.nome.localeCompare(b.nome, "pt-BR")
-      );
+      ) as Empresa[];
+    },
+    enabled: !!user,
+    staleTime: 1000 * 60 * 5, // 5 minutes
+    retry: 2,
+  });
 
-      setEmpresas(lista);
-
-      const savedId = localStorage.getItem(getStorageKey(user.id));
-      const saved = lista.find(e => e.id === savedId);
-      setEmpresaAtivaState(saved || lista[0] || null);
-    } catch (error) {
-      console.error("Erro ao carregar empresas:", error);
-    } finally {
-      setLoading(false);
-    }
-  }, [user]);
-
-  useEffect(() => {
-    carregar();
-  }, [carregar]);
+  const empresaAtivaId = user?.id ? localStorage.getItem(getStorageKey(user.id)) : null;
+  
+  const empresaAtiva = useMemo(() => {
+    if (!empresas.length) return null;
+    const saved = empresas.find(e => e.id === empresaAtivaId);
+    return saved || empresas[0] || null;
+  }, [empresas, empresaAtivaId]);
 
   const setEmpresaAtiva = useCallback((empresa: Empresa) => {
-    setEmpresaAtivaState(empresa);
     if (user?.id) {
       localStorage.setItem(getStorageKey(user.id), empresa.id);
+      // Invalida queries que dependem da empresa ativa
+      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+      // Força re-renderização local através do memo
+      queryClient.setQueryData(["empresas", user.id], [...empresas]); 
     }
-  }, [user?.id]);
+  }, [user?.id, queryClient, empresas]);
 
   const contextValue = useMemo(() => ({
     empresas,
     empresaAtiva,
-    loading,
+    loading: isLoading,
+    error: error as Error | null,
     setEmpresaAtiva,
-    recarregar: carregar
-  }), [empresas, empresaAtiva, loading, setEmpresaAtiva, carregar]);
+    recarregar: async () => { await refetch(); }
+  }), [empresas, empresaAtiva, isLoading, error, setEmpresaAtiva, refetch]);
 
   return (
     <EmpresaContext.Provider value={contextValue}>
@@ -121,6 +116,5 @@ export function EmpresaProvider({ children }: { children: ReactNode }) {
     </EmpresaContext.Provider>
   );
 }
-
 
 export const useEmpresa = () => useContext(EmpresaContext);

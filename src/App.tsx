@@ -149,9 +149,6 @@ const ProtectedRoute = ({ children, requireAdmin }: { children: React.ReactNode;
 
   if (!session) {
     const nextPath = `${location.pathname}${location.search}${location.hash}`;
-    if (nextPath !== "/auth" && !nextPath.includes("redirect=")) {
-      sessionStorage.setItem("post_login_redirect", nextPath);
-    }
     const redirect = encodeURIComponent(nextPath);
     return <Navigate to={`/auth?redirect=${redirect}`} replace />;
   }
