@@ -230,9 +230,13 @@ export default function Vitrine() {
                 return;
               }
               
-              // Se o usuário clicar no card principal, mandamos para o tutorial (página do produto)
-              // em vez de mandar direto para o dashboard/login
-              navigate(p.link);
+              // Se o usuário já estiver logado, manda direto para o app
+              // Caso contrário, manda para a página de detalhes/tutorial
+              if (user) {
+                navigate(p.appLink || p.link);
+              } else {
+                navigate(p.link);
+              }
             }}>
               <div className={`h-full rounded-2xl border-2 ${p.borderColor} ${p.bgCard} p-1 transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 hover:scale-[1.02]`}>
                 <div className="h-full rounded-xl bg-card/80 backdrop-blur-sm p-6 sm:p-8 flex flex-col">
