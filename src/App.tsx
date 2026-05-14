@@ -234,7 +234,6 @@ const AppRoutes = () => {
         <Route path="/nutricrm" element={<NutriCRMPage />} />
         <Route path="/feedbpf" element={<FeedBPFPage />} />
         <Route path="/auditsbpf/planos" element={<ProtectedRoute><AuditsBPFPlanos /></ProtectedRoute>} />
-        <Route path="/audits-bpf/*" element={<Navigate to="/auditsbpf" replace />} />
         <Route path="/audits-bpf" element={<Navigate to="/auditsbpf" replace />} />
         <Route path="/agrogestao" element={<AgroGestaoCRMPage />} />
         <Route path="/agro-rc" element={<AgroRCCRMPage />} />
