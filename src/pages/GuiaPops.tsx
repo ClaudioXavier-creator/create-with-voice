@@ -378,10 +378,7 @@ const popSections: GuiaSection[] = POP_TEXTOS.map((pop) => ({
 
 // Ordem final: Fluxo Geral → POP 01 a POP 10 → Tutoriais auxiliares
 const sections: GuiaSection[] = [
-  fluxoGeralSection,
   ...popSections,
-  docsRegistradosSection,
-  digitalizacaoSection,
 ];
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -419,8 +416,8 @@ export default function GuiaPops() {
     <>
       <PageHeader 
         icon={BookOpen} 
-        title="Guia dos POPs — IN 04/2007" 
-        description="Textos procedimentais completos dos 10 POPs obrigatórios com Instruções de Trabalho, orientações de preenchimento e digitalização" 
+        title="ITs e Procedimentos Detalhados" 
+        description="Textos procedimentais completos dos 10 POPs obrigatórios com suas respectivas Instruções de Trabalho (ITs)" 
       />
       
       <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-6">

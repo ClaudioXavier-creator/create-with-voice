@@ -367,19 +367,8 @@ const digitalizacaoSection: GuiaSection = {
   ),
 };
 
-// Seções dos POPs na ordem correta (POP-01 a POP-10)
-const popSections: GuiaSection[] = POP_TEXTOS.map((pop) => ({
-  id: pop.codigo.toLowerCase().replace("-", ""),
-  title: `${pop.codigo.replace("-", " ")} — ${pop.nome}`,
-  icon: POP_ICONS[pop.codigo] || FileText,
-  badge: pop.codigo,
-  content: <PopContent codigo={pop.codigo} />,
-}));
-
-// Ordem final: Fluxo Geral → POP 01 a POP 10 → Tutoriais auxiliares
 const sections: GuiaSection[] = [
   fluxoGeralSection,
-  ...popSections,
   docsRegistradosSection,
   digitalizacaoSection,
 ];
@@ -419,8 +408,8 @@ export default function GuiaPops() {
     <>
       <PageHeader 
         icon={BookOpen} 
-        title="Guia dos POPs — IN 04/2007" 
-        description="Textos procedimentais completos dos 10 POPs obrigatórios com Instruções de Trabalho, orientações de preenchimento e digitalização" 
+        title="Guia Geral de Procedimentos (POPs)" 
+        description="Orientações gerais sobre fluxo de preenchimento, controle de versão e digitalização de documentos" 
       />
       
       <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-6">
