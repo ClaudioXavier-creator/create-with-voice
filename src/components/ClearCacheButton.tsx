@@ -9,6 +9,12 @@ const ClearCacheButton = ({ className, showLabel = true }: { className?: string;
   const [isClearing, setIsClearing] = useState(false);
 
   const handleClearCache = async () => {
+    const confirmClear = window.confirm(
+      "Deseja realmente limpar o cache e atualizar a aplicação? Isso irá reiniciar a página para carregar a versão mais recente."
+    );
+    
+    if (!confirmClear) return;
+
     setIsClearing(true);
     try {
       // 1. Limpar CacheStorage
