@@ -120,11 +120,11 @@ const AuditsHistorico = lazy(() => import("./pages/auditsbpf/AuditsBpfPages").th
 // Nutri_Agro Labels - Páginas Internas
 const RotulosLayout = lazy(() => import("./components/layout/RotulosLayout"));
 const RotulosDashboard = lazy(() => import("./pages/rotulos/RotulosPages").then(m => ({ default: m.RotulosDashboardPage })));
-const RotulosEditor = lazy(() => import("./pages/rotulos/RotulosPages").then(m => ({ default: (props: any) => <m.GenericModule name="Editor de Rótulos" icon={Tag} {...props} /> })));
-const RotulosRTPI = lazy(() => import("./pages/rotulos/RotulosPages").then(m => ({ default: (props: any) => <m.GenericModule name="Ficha Técnica (RTPI)" icon={FileText} {...props} /> })));
-const RotulosNiveis = lazy(() => import("./pages/rotulos/RotulosPages").then(m => ({ default: (props: any) => <m.GenericModule name="Níveis de Garantia" icon={Layers} {...props} /> })));
-const RotulosTemplates = lazy(() => import("./pages/rotulos/RotulosPages").then(m => ({ default: (props: any) => <m.GenericModule name="Templates de Rótulos" icon={Palette} {...props} /> })));
-const RotulosZebra = lazy(() => import("./pages/rotulos/RotulosPages").then(m => ({ default: (props: any) => <m.GenericModule name="Configuração Zebra" icon={Printer} {...props} /> })));
+const RotulosEditor = lazy(() => import("./pages/rotulos/RotulosPages").then(m => ({ default: (props: { name: string; icon: React.ElementType }) => <m.GenericModule name="Editor de Rótulos" icon={Tag} {...props} /> })));
+const RotulosRTPI = lazy(() => import("./pages/rotulos/RotulosPages").then(m => ({ default: (props: { name: string; icon: React.ElementType }) => <m.GenericModule name="Ficha Técnica (RTPI)" icon={FileText} {...props} /> })));
+const RotulosNiveis = lazy(() => import("./pages/rotulos/RotulosPages").then(m => ({ default: (props: { name: string; icon: React.ElementType }) => <m.GenericModule name="Níveis de Garantia" icon={Layers} {...props} /> })));
+const RotulosTemplates = lazy(() => import("./pages/rotulos/RotulosPages").then(m => ({ default: (props: { name: string; icon: React.ElementType }) => <m.GenericModule name="Templates de Rótulos" icon={Palette} {...props} /> })));
+const RotulosZebra = lazy(() => import("./pages/rotulos/RotulosPages").then(m => ({ default: (props: { name: string; icon: React.ElementType }) => <m.GenericModule name="Configuração Zebra" icon={Printer} {...props} /> })));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -149,9 +149,6 @@ const ProtectedRoute = ({ children, requireAdmin }: { children: React.ReactNode;
 
   if (!session) {
     const nextPath = `${location.pathname}${location.search}${location.hash}`;
-    if (nextPath !== "/auth" && !nextPath.includes("redirect=")) {
-      sessionStorage.setItem("post_login_redirect", nextPath);
-    }
     const redirect = encodeURIComponent(nextPath);
     return <Navigate to={`/auth?redirect=${redirect}`} replace />;
   }
@@ -342,11 +339,11 @@ const AppRoutes = () => {
                 <Routes>
                   <Route index element={<Navigate to="dashboard" replace />} />
                   <Route path="dashboard" element={<RotulosDashboard />} />
-                  <Route path="editor" element={<RotulosEditor />} />
-                  <Route path="rtpi" element={<RotulosRTPI />} />
-                  <Route path="niveis" element={<RotulosNiveis />} />
-                  <Route path="templates" element={<RotulosTemplates />} />
-                  <Route path="zebra" element={<RotulosZebra />} />
+                   <Route path="editor" element={<RotulosEditor name="Editor de Rótulos" icon={Tag} />} />
+                   <Route path="rtpi" element={<RotulosRTPI name="Ficha Técnica (RTPI)" icon={FileText} />} />
+                   <Route path="niveis" element={<RotulosNiveis name="Níveis de Garantia" icon={Layers} />} />
+                   <Route path="templates" element={<RotulosTemplates name="Templates de Rótulos" icon={Palette} />} />
+                   <Route path="zebra" element={<RotulosZebra name="Configuração Zebra" icon={Printer} />} />
                 </Routes>
               </RotulosLayout>
             </ProtectedRoute>
