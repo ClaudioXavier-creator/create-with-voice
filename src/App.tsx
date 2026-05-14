@@ -224,13 +224,13 @@ const AppRoutes = () => {
             <ProtectedRoute>
               <AgroRcLayout>
                 <Routes>
-                  <Route path="/" element={<Navigate to="dashboard" replace />} />
-                  <Route path="/dashboard" element={<AgroRcDashboard />} />
-                  <Route path="/pipeline" element={<AgroRcPipeline />} />
-                  <Route path="/clientes" element={<AgroRcClientes />} />
-                  <Route path="/visitas" element={<AgroRcVisitas />} />
-                  <Route path="/metas" element={<AgroRcMetas />} />
-                  <Route path="/admin" element={<AgroRcAdmin />} />
+                  <Route index element={<Navigate to="dashboard" replace />} />
+                  <Route path="dashboard" element={<AgroRcDashboard />} />
+                  <Route path="pipeline" element={<AgroRcPipeline />} />
+                  <Route path="clientes" element={<AgroRcClientes />} />
+                  <Route path="visitas" element={<AgroRcVisitas />} />
+                  <Route path="metas" element={<AgroRcMetas />} />
+                  <Route path="admin" element={<AgroRcAdmin />} />
                 </Routes>
               </AgroRcLayout>
             </ProtectedRoute>
