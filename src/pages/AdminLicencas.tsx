@@ -57,6 +57,49 @@ export default function AdminLicencas({ isTab = false }: { isTab?: boolean }) {
   const [selectedLevels, setSelectedLevels] = useState<Record<string, string>>({});
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [createOpen, setCreateOpen] = useState(false);
+  const [createForm, setCreateForm] = useState({ email: "", produto: "auditsbpf", dias: "365", nivel: "entrada" });
+  const [creating, setCreating] = useState(false);
+
+  const PRODUTOS_OPCOES = useMemo(
+    () => [
+      { value: "feedbpf", label: "Feed_BPF" },
+      { value: "auditsbpf", label: "Audits_BPF" },
+      { value: "agrorc", label: "Agro RC CRM" },
+      { value: "rotulos", label: "Nutri_Agro Labels" },
+      { value: "nutricrm", label: "NutriCRM" },
+      { value: "agrogestao", label: "AgroGestão CRM" },
+    ],
+    []
+  );
+
+  const handleCreate = async () => {
+    if (!createForm.email || !createForm.produto || !createForm.dias) {
+      toast.error("Preencha e-mail, produto e período");
+      return;
+    }
+    setCreating(true);
+    try {
+      const { error } = await supabase.functions.invoke("admin-licencas", {
+        body: {
+          action: "create",
+          email: createForm.email.trim(),
+          produto: createForm.produto,
+          dias: Number(createForm.dias),
+          nivel: createForm.nivel,
+        },
+      });
+      if (error) throw error;
+      toast.success("Licença criada!");
+      setCreateOpen(false);
+      setCreateForm({ email: "", produto: "auditsbpf", dias: "365", nivel: "entrada" });
+      fetchEntries();
+    } catch (err: any) {
+      toast.error(err.message || "Erro ao criar licença");
+    } finally {
+      setCreating(false);
+    }
+  };
 
   useEffect(() => {
     if (!user) return;
