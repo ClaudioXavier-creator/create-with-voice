@@ -29,8 +29,9 @@ function cleanupStaleServiceWorkers() {
   const storedVersion = localStorage.getItem("__app_version__");
   const versionMismatch = storedVersion !== APP_VERSION;
   
-  // We only run cleanup if the version changed or if we're in a preview environment for the first time in the session.
-  const shouldCleanup = versionMismatch || (isPreviewHost && !sessionStorage.getItem("__sw_cleanup_done__"));
+  // Nunca force cleanup no preview do Lovable: isso pode invalidar chunks durante a navegação
+  // e deixar telas lazy-loaded presas em fallback infinito.
+  const shouldCleanup = !isPreviewHost && versionMismatch;
 
   if (!shouldCleanup) return;
 
