@@ -358,16 +358,6 @@ const AppRoutes = () => {
         <Route path="/assinaturas" element={<ProtectedRoute requireAdmin><Navigate to="/admin?tab=assinaturas" replace /></ProtectedRoute>} />
 
         <Route
-          path="/:product/*"
-          element={
-            <ProtectedRoute>
-              <AppLayout>
-                <InternalRoutes />
-              </AppLayout>
-            </ProtectedRoute>
-          }
-        />
-        <Route
           path="/*"
           element={
             <ProtectedRoute>
