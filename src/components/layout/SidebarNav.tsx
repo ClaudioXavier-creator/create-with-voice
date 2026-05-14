@@ -125,13 +125,20 @@ export const SidebarNav = React.memo(({
   const renderLink = (item: NavItem, isSubItem = false) => {
     const isActive = currentPath === item.path || currentPath === `/${product}${item.path}`;
     const isFavorite = favorites.includes(item.path);
-    const targetPath = product && !item.path.startsWith(`/${product}`) ? `/${product}${item.path}` : item.path;
+    const isExternal = item.external;
+    const targetPath = isExternal ? item.path : (product && !item.path.startsWith(`/${product}`) ? `/${product}${item.path}` : item.path);
 
     return (
       <div key={item.path} className="group relative">
         <Link
-          to={targetPath}
-          onClick={onNavigate}
+          to={isExternal ? "#" : targetPath}
+          onClick={(e) => {
+            if (isExternal) {
+              e.preventDefault();
+              window.open(targetPath, "_blank", "noopener,noreferrer");
+            }
+            onNavigate?.();
+          }}
           aria-current={isActive ? "page" : undefined}
           className={cn(
             "flex items-center gap-3 rounded-xl px-4 py-3 sm:px-3 sm:py-2 text-sm transition-all duration-300 overflow-hidden min-h-[44px] sm:min-h-0",
