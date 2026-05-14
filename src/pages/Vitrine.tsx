@@ -1,5 +1,6 @@
+import { useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ArrowRight, Lock, ShieldCheck, Factory, Beaker, BarChart3, GraduationCap, ClipboardCheck, Sparkles } from "lucide-react";
+import { ArrowRight, Lock, ShieldCheck, Factory, Beaker, BarChart3, GraduationCap, ClipboardCheck, Sparkles, Building2, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { canAccessLicenseAdmin } from "@/config/adminAccess";
@@ -118,7 +119,7 @@ const produtos: ProdutoCard[] = [
     preco: "A partir de R$ 97/mês",
   },
   {
-    nome: "Portal de Gestão (CRM)",
+    nome: "Portal de Gestão",
     logo: logoBpfConsult,
     desc: "Plataforma central de gestão da BPF_Consult. Controle total de leads, pipeline de vendas CRM e gestão centralizada de licenças para todos os programas do ecossistema.",
     destaques: ["Gestão de Leads", "CRM de Vendas", "Gestão de Licenças", "Painel Super Admin", "Consolidação de Dados", "Relatórios de Vendas"],
@@ -145,8 +146,13 @@ export default function Vitrine() {
   const { user, roles } = useAuth();
   const isAdmin = canAccessLicenseAdmin(roles, user?.email);
   
-  // Mostramos apenas os 4 programas principais solicitados (3 principais + 1 novo)
-  const produtosVisiveis = produtos.slice(0, 4);
+  // Filtramos os produtos com base nas permissões
+  const produtosVisiveis = useMemo(() => {
+    return produtos.filter(p => {
+      if (p.adminOnly) return isAdmin;
+      return true;
+    });
+  }, [isAdmin]);
 
   return (
     <div className="min-h-screen bg-background">
