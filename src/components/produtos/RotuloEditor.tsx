@@ -576,6 +576,14 @@ function calcDataVencimento(dataFab: string, validadeDias: number): string {
 }
 
 // ──── Build print-ready HTML matching the uploaded label models ────
+const escHtml = (s: any): string =>
+  String(s ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+
 function buildPrintHTML(rotulo: RotuloData, niveisObj: Record<string, any>): string {
   const hasTable = rotulo.exibir_tabela_consumo;
 
