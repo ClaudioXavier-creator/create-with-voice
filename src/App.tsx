@@ -119,12 +119,11 @@ const AuditsHistorico = lazy(() => import("./pages/auditsbpf/AuditsBpfPages").th
 // Nutri_Agro Labels - Páginas Internas
 const RotulosLayout = lazy(() => import("./components/layout/RotulosLayout"));
 const RotulosDashboard = lazy(() => import("./pages/rotulos/RotulosPages").then(m => ({ default: m.RotulosDashboardPage })));
-const { GenericModule: RotulosGeneric } = require("./pages/rotulos/RotulosPages");
-const RotulosEditor = (props: any) => <RotulosGeneric name="Editor de Rótulos" icon={Tag} {...props} />;
-const RotulosRTPI = (props: any) => <RotulosGeneric name="Ficha Técnica (RTPI)" icon={FileText} {...props} />;
-const RotulosNiveis = (props: any) => <RotulosGeneric name="Níveis de Garantia" icon={Layers} {...props} />;
-const RotulosTemplates = (props: any) => <RotulosGeneric name="Templates de Rótulos" icon={Palette} {...props} />;
-const RotulosZebra = (props: any) => <RotulosGeneric name="Configuração Zebra" icon={Printer} {...props} />;
+const RotulosEditor = lazy(() => import("./pages/rotulos/RotulosPages").then(m => ({ default: (props: any) => <m.GenericModule name="Editor de Rótulos" icon={Tag} {...props} /> })));
+const RotulosRTPI = lazy(() => import("./pages/rotulos/RotulosPages").then(m => ({ default: (props: any) => <m.GenericModule name="Ficha Técnica (RTPI)" icon={FileText} {...props} /> })));
+const RotulosNiveis = lazy(() => import("./pages/rotulos/RotulosPages").then(m => ({ default: (props: any) => <m.GenericModule name="Níveis de Garantia" icon={Layers} {...props} /> })));
+const RotulosTemplates = lazy(() => import("./pages/rotulos/RotulosPages").then(m => ({ default: (props: any) => <m.GenericModule name="Templates de Rótulos" icon={Palette} {...props} /> })));
+const RotulosZebra = lazy(() => import("./pages/rotulos/RotulosPages").then(m => ({ default: (props: any) => <m.GenericModule name="Configuração Zebra" icon={Printer} {...props} /> })));
 
 const queryClient = new QueryClient({
   defaultOptions: {
