@@ -386,9 +386,34 @@ const sections: GuiaSection[] = [
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { useSearchParams } from "react-router-dom";
 
 export default function GuiaPops() {
-  const [activeTab, setActiveTab] = useState(sections[0].id);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const popParam = searchParams.get("pop")?.toLowerCase().replace("-", "");
+  
+  const [activeTab, setActiveTab] = useState(() => {
+    if (popParam && sections.some(s => s.id === popParam)) {
+      return popParam;
+    }
+    return sections[0].id;
+  });
+
+  const handleTabChange = (value: string) => {
+    setActiveTab(value);
+    const section = sections.find(s => s.id === value);
+    if (section && section.badge) {
+      setSearchParams({ pop: section.badge });
+    } else {
+      setSearchParams({});
+    }
+  };
+
+  useEffect(() => {
+    if (popParam && sections.some(s => s.id === popParam)) {
+      setActiveTab(popParam);
+    }
+  }, [popParam]);
 
   return (
     <>
