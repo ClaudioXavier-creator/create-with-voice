@@ -3,7 +3,9 @@ import { RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
-const ClearCacheButton = () => {
+import { cn } from "@/lib/utils";
+
+const ClearCacheButton = ({ className, showLabel = true }: { className?: string; showLabel?: boolean }) => {
   const [isClearing, setIsClearing] = useState(false);
 
   const handleClearCache = async () => {
@@ -47,10 +49,14 @@ const ClearCacheButton = () => {
       size="sm"
       disabled={isClearing}
       onClick={handleClearCache}
-      className="w-full justify-start text-[10px] text-sidebar-foreground/40 hover:text-primary hover:bg-primary/5 h-8 px-2 mt-2 gap-2 transition-all group"
+      className={cn(
+        "w-full justify-start text-[10px] text-sidebar-foreground/40 hover:text-primary hover:bg-primary/5 h-8 px-2 gap-2 transition-all group",
+        className
+      )}
+      title="Limpar Cache e Atualizar"
     >
-      <RefreshCw className={`h-3 w-3 ${isClearing ? 'animate-spin' : 'group-hover:rotate-180 transition-transform duration-500'}`} />
-      <span className="truncate">Limpar Cache e Atualizar</span>
+      <RefreshCw className={cn("h-3 w-3 shrink-0", isClearing ? "animate-spin" : "group-hover:rotate-180 transition-transform duration-500")} />
+      {showLabel && <span className="truncate">Limpar Cache e Atualizar</span>}
     </Button>
   );
 };
