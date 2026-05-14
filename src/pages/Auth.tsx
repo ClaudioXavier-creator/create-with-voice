@@ -60,11 +60,16 @@ const authConfigs = {
   },
 } as const;
 
+const normalizeAuditsPath = (value: string) =>
+  value.startsWith("/audits-bpf") ? value.replace("/audits-bpf", "/auditsbpf") : value;
+
 export default function Auth() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const product = searchParams.get("product") ?? "default";
+  const rawProduct = searchParams.get("product");
+  const rawRedirect = searchParams.get("redirect");
+  const product = rawProduct === "audits-bpf" ? "auditsbpf" : rawProduct ?? "default";
   const mode = searchParams.get("mode");
-  const redirectTo = searchParams.get("redirect") || "/";
+  const redirectTo = normalizeAuditsPath(rawRedirect || "/");
   const authContent = authConfigs[product as keyof typeof authConfigs] ?? authConfigs.default;
 
   const [isLogin, setIsLogin] = useState(mode !== "signup");
@@ -83,13 +88,8 @@ export default function Auth() {
   const [pendingConfirmationEmail, setPendingConfirmationEmail] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  const resolvedRedirect = useMemo(() => {
-    if (redirectTo && redirectTo !== "/") return redirectTo;
-    return "/";
-  }, [redirectTo]);
-
   const preferredRedirect = useMemo(() => {
-    const postLoginRedirect = sessionStorage.getItem("post_login_redirect");
+    const postLoginRedirect = normalizeAuditsPath(sessionStorage.getItem("post_login_redirect") || "/");
     if (redirectTo && redirectTo !== "/") return redirectTo;
     if (postLoginRedirect && postLoginRedirect !== "/auth") return postLoginRedirect;
     return "/";
@@ -108,6 +108,25 @@ export default function Auth() {
     setIsForgot(mode === "forgot");
     setIsLogin(mode !== "signup");
   }, [mode]);
+
+  useEffect(() => {
+    const nextParams = new URLSearchParams(searchParams);
+    let changed = false;
+
+    if (rawProduct === "audits-bpf") {
+      nextParams.set("product", "auditsbpf");
+      changed = true;
+    }
+
+    if (rawRedirect?.startsWith("/audits-bpf")) {
+      nextParams.set("redirect", normalizeAuditsPath(rawRedirect));
+      changed = true;
+    }
+
+    if (changed) {
+      setSearchParams(nextParams, { replace: true });
+    }
+  }, [rawProduct, rawRedirect, searchParams, setSearchParams]);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -265,7 +284,7 @@ export default function Auth() {
           email,
           password,
           options: {
-            data: { nome: nome.trim(), telefone: telefone.trim(), tipo_usuario: tipoUsuario, produto: product === "auditsbpf" ? "auditsbpf" : product },
+            data: { nome: nome.trim(), telefone: telefone.trim(), tipo_usuario: tipoUsuario, produto: product },
             emailRedirectTo: window.location.origin,
           },
         });

@@ -74,7 +74,7 @@ export default function AuditsBPFPlanos() {
       if (error) throw error;
       if (!data?.ok) throw new Error(data?.error || "Falha ao ativar trial");
       toast.success("Trial Consultor ativado! 7 dias com até 10 empresas.");
-      setTimeout(() => navigate("/audits-bpf"), 1500);
+      setTimeout(() => navigate("/auditsbpf"), 1500);
     } catch (err: any) {
       toast.error(err.message || "Erro ao ativar trial");
     } finally {
@@ -108,7 +108,7 @@ export default function AuditsBPFPlanos() {
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8 max-w-6xl">
-        <Button variant="ghost" onClick={() => navigate("/audits-bpf")} className="mb-6">
+        <Button variant="ghost" onClick={() => navigate("/auditsbpf")} className="mb-6">
           <ArrowLeft className="h-4 w-4 mr-2" />
           Voltar
         </Button>
