@@ -5,6 +5,19 @@
 @tailwind utilities;
 
 @layer base {
+  /* Fix for horizontal scroll on some mobile browsers */
+  html, body {
+    @apply overflow-x-hidden;
+    width: 100%;
+  }
+
+  /* Responsive table wrapper pattern */
+  .table-responsive {
+    @apply w-full overflow-x-auto border rounded-xl bg-card;
+  }
+}
+
+@layer base {
   :root {
     /* Sophisticated Greyscale-Green Base */
     --background: 145 20% 98%;
