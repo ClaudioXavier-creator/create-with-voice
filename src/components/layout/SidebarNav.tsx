@@ -134,17 +134,17 @@ export const SidebarNav = React.memo(({
           onClick={onNavigate}
           aria-current={isActive ? "page" : undefined}
           className={cn(
-            "flex items-center gap-3 rounded-xl px-3 py-2 text-sm transition-all duration-200 overflow-hidden",
+            "flex items-center gap-3 rounded-xl px-4 py-3 sm:px-3 sm:py-2 text-sm transition-all duration-300 overflow-hidden min-h-[44px] sm:min-h-0",
             isActive
-              ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20 font-medium"
-              : "text-sidebar-foreground/60 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground",
+              ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20 font-semibold"
+              : "text-sidebar-foreground/60 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground active:scale-[0.98]",
             isSubItem && !isActive && "ml-2"
           )}
         >
-          <item.icon aria-hidden="true" className={cn("h-4 w-4 shrink-0 transition-transform group-hover:scale-110 duration-200", isActive ? "text-white" : "text-sidebar-foreground/40")} />
+          <item.icon aria-hidden="true" className={cn("h-5 w-5 sm:h-4 sm:w-4 shrink-0 transition-transform group-hover:scale-110 duration-300", isActive ? "text-white" : "text-sidebar-foreground/40")} />
           <span className="min-w-0 flex-1 truncate">{item.label}</span>
           {isActive && (
-            <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-4 bg-white/40 rounded-r-full" />
+            <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-6 bg-white/50 rounded-r-full animate-in slide-in-from-left-full duration-500" />
           )}
         </Link>
         
