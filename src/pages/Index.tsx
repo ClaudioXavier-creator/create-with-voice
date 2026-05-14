@@ -501,7 +501,7 @@ export default function Index() {
       {/* Stats Cards — Premium Grid */}
       <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-4">
         {stats.map((s) => (
-          <Link key={s.label} to={s.link} className="block group">
+          <Link key={s.label} to={s.link} className="block group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-4 rounded-xl">
             <Card className="border-none shadow-premium bg-card hover:shadow-premium-hover transition-all duration-300 relative overflow-hidden h-full">
               <div className={cn("absolute top-0 right-0 w-16 h-16 rounded-bl-[40px] opacity-10 transition-opacity group-hover:opacity-20", s.bg)} />
               <CardContent className="flex flex-col items-center gap-3 p-5 text-center">
