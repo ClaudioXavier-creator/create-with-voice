@@ -265,7 +265,7 @@ export default function Auth() {
           email,
           password,
           options: {
-            data: { nome: nome.trim(), telefone: telefone.trim(), tipo_usuario: tipoUsuario },
+            data: { nome: nome.trim(), telefone: telefone.trim(), tipo_usuario: tipoUsuario, produto: product },
             emailRedirectTo: window.location.origin,
           },
         });
