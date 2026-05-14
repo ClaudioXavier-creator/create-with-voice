@@ -220,28 +220,30 @@ export default function LicenseGate({ children, product: initialProduct }: Licen
           )}
         </div>
 
-        <div id="license-plans" className="grid gap-3 md:grid-cols-3">
+        <div id="license-plans" className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
           {NIVEIS.map((nivel) => (
             <button
               key={nivel.key}
               onClick={() => setNivelSelecionado(nivel.key)}
               aria-pressed={nivelSelecionado === nivel.key}
-              className={`text-left p-4 rounded-lg border-2 transition-all ${
+              className={`text-left p-4 sm:p-5 rounded-2xl border-2 transition-all active:scale-[0.98] ${
                 nivelSelecionado === nivel.key
-                  ? "border-primary bg-primary/5 ring-2 ring-primary/20"
-                  : "border-border hover:border-primary/50"
+                  ? "border-primary bg-primary/5 ring-4 ring-primary/10"
+                  : "border-border hover:border-primary/50 bg-card/50"
               }`}
             >
-              <div className="flex items-center justify-between mb-2">
-                <h3 className="font-bold text-lg">{nivel.label}</h3>
-                {nivel.destaque && <Badge variant="default" className="text-xs">Mais popular</Badge>}
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="font-bold text-lg sm:text-xl tracking-tight">{nivel.label}</h3>
+                {nivel.destaque && <Badge variant="default" className="text-[10px] uppercase tracking-wider px-2 py-0.5">Mais popular</Badge>}
               </div>
-              <p className="text-xs text-muted-foreground mb-3">{nivel.porte}</p>
-              <ul className="space-y-1">
+              <p className="text-xs text-muted-foreground mb-4 font-medium uppercase tracking-wide">{nivel.porte}</p>
+              <ul className="space-y-2">
                 {nivel.features.map((f, i) => (
-                  <li key={i} className="text-xs flex items-start gap-1.5">
-                    <span className="text-primary mt-0.5">✓</span>
-                    <span>{f}</span>
+                  <li key={i} className="text-xs flex items-start gap-2 leading-relaxed">
+                    <div className="w-4 h-4 rounded-full bg-primary/20 text-primary flex items-center justify-center shrink-0 mt-0.5">
+                      <span className="text-[10px] font-bold">✓</span>
+                    </div>
+                    <span className="text-foreground/80">{f}</span>
                   </li>
                 ))}
               </ul>
