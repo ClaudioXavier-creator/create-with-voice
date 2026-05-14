@@ -118,18 +118,28 @@ export async function gerarCarimbo(params: {
  * Bloco HTML pronto para colar em qualquer PDF/impressão.
  * Aparece como rodapé discreto, mas auditável.
  */
+/** Escapa HTML para evitar XSS em campos controlados pelo usuário */
+function esc(s: string | undefined | null): string {
+  return String(s ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
 export function carimboHTML(info: CarimboInfo): string {
   return `
 <div style="margin-top:14px;padding:8px 10px;border-top:2px solid #1a1a2e;font-family:Arial,sans-serif;font-size:9px;color:#444;background:#fafafa;">
   <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;">
     <div>
-      <strong>${info.documentoTipo}</strong>${info.documentoId ? ` — ${info.documentoId}` : ""}
-      ${info.empresa ? `<br/>Empresa: ${info.empresa}` : ""}
+      <strong>${esc(info.documentoTipo)}</strong>${info.documentoId ? ` — ${esc(info.documentoId)}` : ""}
+      ${info.empresa ? `<br/>Empresa: ${esc(info.empresa)}` : ""}
     </div>
     <div style="text-align:right;">
-      Emitido em: <strong>${info.dataHoraBR}</strong><br/>
-      ${info.usuario ? `Por: ${info.usuario}<br/>` : ""}
-      <span style="font-family:monospace;color:#1a1a2e;">${info.selo}</span>
+      Emitido em: <strong>${esc(info.dataHoraBR)}</strong><br/>
+      ${info.usuario ? `Por: ${esc(info.usuario)}<br/>` : ""}
+      <span style="font-family:monospace;color:#1a1a2e;">${esc(info.selo)}</span>
     </div>
   </div>
   <div style="margin-top:4px;font-size:8px;color:#888;">
@@ -143,8 +153,8 @@ export function carimboHTML(info: CarimboInfo): string {
 export function carimboHTMLCompacto(info: CarimboInfo): string {
   return `
 <div style="margin-top:10px;padding:4px 6px;border-top:1px solid #000;font-family:Arial,sans-serif;font-size:9px;color:#222;display:flex;justify-content:space-between;">
-  <span>${info.documentoTipo}${info.documentoId ? ` — ${info.documentoId}` : ""}${info.empresa ? ` | ${info.empresa}` : ""}</span>
-  <span>Emitido: <strong>${info.dataHoraBR}</strong>${info.usuario ? ` | ${info.usuario}` : ""} | <span style="font-family:monospace;">${info.selo}</span></span>
+  <span>${esc(info.documentoTipo)}${info.documentoId ? ` — ${esc(info.documentoId)}` : ""}${info.empresa ? ` | ${esc(info.empresa)}` : ""}</span>
+  <span>Emitido: <strong>${esc(info.dataHoraBR)}</strong>${info.usuario ? ` | ${esc(info.usuario)}` : ""} | <span style="font-family:monospace;">${esc(info.selo)}</span></span>
 </div>`;
 }
 
