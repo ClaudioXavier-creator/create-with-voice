@@ -89,6 +89,17 @@ const AgroRcVisitas = lazy(() => import("./pages/agrorc/Visitas"));
 const AgroRcMetas = lazy(() => import("./pages/agrorc/Metas"));
 const AgroRcAdmin = lazy(() => import("./pages/agrorc/Admin"));
 
+// NutriCRM - Páginas Internas
+const NutriCrmLayout = lazy(() => import("./components/layout/NutriCrmLayout"));
+const { 
+  NutriDashboardPage: NutriDashboard, 
+  NutriClientesPage: NutriClientes, 
+  NutriVisitasPage: NutriVisitas, 
+  NutriProjetosPage: NutriProjetos, 
+  NutriMetasPage: NutriMetas, 
+  NutriRelatoriosPage: NutriRelatorios 
+} = require("./pages/nutricrm/NutriCrmPages");
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
