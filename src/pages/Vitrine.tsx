@@ -1,5 +1,6 @@
+import { useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ArrowRight, Lock, ShieldCheck, Factory, Beaker, BarChart3, GraduationCap, ClipboardCheck, Sparkles } from "lucide-react";
+import { ArrowRight, Lock, ShieldCheck, Factory, Beaker, BarChart3, GraduationCap, ClipboardCheck, Sparkles, Building2, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { canAccessLicenseAdmin } from "@/config/adminAccess";
@@ -145,8 +146,13 @@ export default function Vitrine() {
   const { user, roles } = useAuth();
   const isAdmin = canAccessLicenseAdmin(roles, user?.email);
   
-  // Mostramos todos os programas solicitados
-  const produtosVisiveis = produtos;
+  // Filtramos os produtos com base nas permissões
+  const produtosVisiveis = useMemo(() => {
+    return produtos.filter(p => {
+      if (p.adminOnly) return isAdmin;
+      return true;
+    });
+  }, [isAdmin]);
 
   return (
     <div className="min-h-screen bg-background">

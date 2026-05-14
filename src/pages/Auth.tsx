@@ -7,7 +7,7 @@ import logoAuditsBpf from "@/assets/logo-audits-bpf.png";
 import logoNutricrm from "@/assets/logo-nutricrm.png";
 import logoAgrogestao from "@/assets/logo-agrogestao.png";
 import logoAgrorc from "@/assets/logo-agrorc.png";
-import logoRotulos from "@/assets/logo-rotulos-bpf.png";
+import logoRotulos from "@/assets/logo-nutri-agro-labels.png";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
