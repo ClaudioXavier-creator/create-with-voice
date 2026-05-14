@@ -128,43 +128,40 @@ export const SidebarNav = React.memo(({
     const targetPath = product && !item.path.startsWith(`/${product}`) ? `/${product}${item.path}` : item.path;
 
     return (
-      <Link
-        key={item.path}
-        to={targetPath}
-        onClick={onNavigate}
-        aria-current={isActive ? "page" : undefined}
-        className={cn(
-          "group flex items-center gap-3 rounded-xl px-3 py-2 text-sm transition-all duration-200 relative overflow-hidden",
-          isActive
-            ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20 font-medium"
-            : "text-sidebar-foreground/60 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground",
-          isSubItem && !isActive && "ml-2"
-        )}
-      >
-        <item.icon aria-hidden="true" className={cn("h-4 w-4 shrink-0 transition-transform group-hover:scale-110 duration-200", isActive ? "text-white" : "text-sidebar-foreground/40")} />
-        <span className="min-w-0 flex-1 truncate">{item.label}</span>
+      <div key={item.path} className="group relative">
+        <Link
+          to={targetPath}
+          onClick={onNavigate}
+          aria-current={isActive ? "page" : undefined}
+          className={cn(
+            "flex items-center gap-3 rounded-xl px-3 py-2 text-sm transition-all duration-200 overflow-hidden",
+            isActive
+              ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20 font-medium"
+              : "text-sidebar-foreground/60 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground",
+            isSubItem && !isActive && "ml-2"
+          )}
+        >
+          <item.icon aria-hidden="true" className={cn("h-4 w-4 shrink-0 transition-transform group-hover:scale-110 duration-200", isActive ? "text-white" : "text-sidebar-foreground/40")} />
+          <span className="min-w-0 flex-1 truncate">{item.label}</span>
+          {isActive && (
+            <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-4 bg-white/40 rounded-r-full" />
+          )}
+        </Link>
         
         <button
           type="button"
-          aria-label={isFavorite ? "Remover dos favoritos" : "Adicionar aos favoritos"}
-          onClick={(event) => {
-            event.preventDefault();
-            event.stopPropagation();
-            toggleFavorite(item.path);
-          }}
+          aria-label={isFavorite ? `Remover ${item.label} dos favoritos` : `Adicionar ${item.label} aos favoritos`}
+          onClick={() => toggleFavorite(item.path)}
           className={cn(
-            "rounded-full p-1 opacity-0 transition-all hover:bg-sidebar-accent/30 group-hover:opacity-100",
+            "absolute right-2 top-1/2 -translate-y-1/2 rounded-full p-1.5 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 z-10",
+            "opacity-0 group-hover:opacity-100",
             isFavorite && "opacity-100",
-            isActive && "text-white/40 hover:text-white"
+            isActive ? "text-white/40 hover:text-white hover:bg-white/10" : "hover:bg-sidebar-accent/50 text-sidebar-foreground/30 hover:text-sidebar-foreground"
           )}
         >
-          <Star aria-hidden="true" className={cn("h-3 w-3", isFavorite && "fill-accent text-accent")}/>
+          <Star aria-hidden="true" className={cn("h-3.5 w-3.5", isFavorite && "fill-accent text-accent")}/>
         </button>
-
-        {isActive && (
-          <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-4 bg-white/40 rounded-r-full" />
-        )}
-      </Link>
+      </div>
     );
   };
 

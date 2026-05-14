@@ -23,6 +23,7 @@ import { SidebarNav } from "@/components/layout/SidebarNav";
 import { NAV_ENTRIES } from "@/components/layout/nav-config";
 import OfflineBanner from "@/components/OfflineBanner";
 import PageLoader from "@/components/PageLoader";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 
 const PRODUCT_CONFIGS: Record<string, { logo: string; title: string; subtitle: string }> = {
   feedbpf: {
@@ -120,14 +121,21 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
       {/* Desktop sidebar */}
       <aside aria-label="Navegação Lateral" className="hidden lg:flex w-72 flex-col bg-sidebar text-sidebar-foreground border-r border-sidebar-border shadow-xl">
         <div className="flex items-center gap-3 px-6 py-6 border-b border-sidebar-border/50 bg-sidebar/50 backdrop-blur-sm sticky top-0 z-10">
-          <div className="relative group cursor-pointer" onClick={() => navigate("/")}>
-            <div className="absolute -inset-1 bg-gradient-to-r from-primary to-emerald-400 rounded-lg blur opacity-25 group-hover:opacity-100 transition duration-1000 group-hover:duration-200"></div>
-            <img src={config.logo} alt={`${config.title} Logo`} className="relative w-10 h-10 rounded-lg object-contain bg-white p-1 shadow-sm" />
-          </div>
-          <div className="min-w-0 cursor-pointer" onClick={() => navigate("/")}>
-            <h1 className="font-display text-lg font-bold text-sidebar-foreground tracking-tight">{config.title}</h1>
-            <p className="text-[10px] uppercase tracking-widest text-sidebar-foreground/40 font-semibold">{config.subtitle}</p>
-          </div>
+          <button 
+            type="button"
+            className="flex items-center gap-3 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded-lg"
+            onClick={() => navigate("/")}
+            aria-label={`Ir para o início de ${config.title}`}
+          >
+            <div className="relative group shrink-0">
+              <div className="absolute -inset-1 bg-gradient-to-r from-primary to-emerald-400 rounded-lg blur opacity-25 group-hover:opacity-100 transition duration-1000 group-hover:duration-200"></div>
+              <img src={config.logo} alt="" className="relative w-10 h-10 rounded-lg object-contain bg-white p-1 shadow-sm" />
+            </div>
+            <div className="min-w-0">
+              <h1 className="font-display text-lg font-bold text-sidebar-foreground tracking-tight">{config.title}</h1>
+              <p className="text-[10px] uppercase tracking-widest text-sidebar-foreground/40 font-semibold">{config.subtitle}</p>
+            </div>
+          </button>
         </div>
 
         <div className="flex-1 flex flex-col overflow-hidden">
@@ -172,56 +180,68 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
 
       {/* Mobile header */}
       <header aria-label="Cabeçalho Móvel" className="lg:hidden fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-3 py-2 bg-sidebar text-sidebar-foreground border-b border-sidebar-border/50 shadow-sm backdrop-blur-md h-[56px]">
-        <div className="flex items-center gap-2 min-w-0" onClick={() => navigate("/")}>
-          <img src={config.logo} alt={`${config.title} Logo`} className="w-8 h-8 rounded bg-white p-1 object-contain" />
+        <button 
+          type="button"
+          onClick={() => navigate("/")}
+          className="flex items-center gap-2 min-w-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 rounded-md px-1"
+          aria-label={`Ir para o início de ${config.title}`}
+        >
+          <img src={config.logo} alt="" className="w-8 h-8 rounded bg-white p-1 object-contain" />
           <div className="min-w-0">
             <span className="font-display font-bold block truncate tracking-tight text-sm">{config.title}</span>
           </div>
-        </div>
+        </button>
         <div className="flex items-center gap-0.5">
           <Button variant="ghost" size="icon" onClick={() => navigate("/busca-global")} className="h-8 w-8 text-sidebar-foreground/70" aria-label="Abrir busca global">
             <Search className="w-4 h-4" aria-hidden="true" />
           </Button>
-          <Button variant="ghost" size="icon" onClick={() => setMobileOpen(!mobileOpen)} className="h-8 w-8 text-sidebar-foreground" aria-label={mobileOpen ? "Fechar menu" : "Abrir menu"}>
-            {mobileOpen ? <X className="w-5 h-5" aria-hidden="true" /> : <Menu className="w-5 h-5" aria-hidden="true" />}
-          </Button>
+          
+          <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="icon" className="h-8 w-8 text-sidebar-foreground" aria-label={mobileOpen ? "Fechar menu" : "Abrir menu"}>
+                <Menu className="w-5 h-5" aria-hidden="true" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="left" className="w-[280px] sm:w-80 p-0 bg-sidebar text-sidebar-foreground border-sidebar-border shadow-2xl">
+              <SheetHeader className="sr-only">
+                <SheetTitle>Menu de Navegação</SheetTitle>
+              </SheetHeader>
+              
+              <div className="flex flex-col h-full pt-4">
+                <div className="px-4 py-4 border-b border-sidebar-border/50">
+                  <EmpresaSelector />
+                </div>
+                
+                <div className="flex-1 overflow-hidden flex flex-col">
+                  <SidebarNav 
+                    currentPath={location.pathname} 
+                    entries={NAV_ENTRIES} 
+                    onNavigate={closeMobile} 
+                    userRoles={roles || []}
+                    userEmail={user?.email || ""}
+                  />
+                </div>
+                
+                <div className="p-4 border-t border-sidebar-border/50 bg-sidebar-accent/20">
+                  <div className="flex items-center justify-between mb-2 px-2">
+                    <span className="text-xs text-sidebar-foreground/50 truncate">{user?.email}</span>
+                    <span className="px-2 py-0.5 rounded-full bg-primary/20 text-primary text-[10px] font-bold uppercase tracking-wider">Premium</span>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleSignOut}
+                    className="w-full justify-start text-sidebar-foreground/70 hover:text-destructive hover:bg-destructive/10 h-10 px-4 rounded-xl transition-all"
+                  >
+                    <LogOut className="w-4 h-4 mr-3" />
+                    Sair da conta
+                  </Button>
+                </div>
+              </div>
+            </SheetContent>
+          </Sheet>
         </div>
       </header>
-
-      {/* Mobile nav overlay */}
-      {mobileOpen && (
-        <div className="lg:hidden fixed inset-0 z-40 bg-black/60 backdrop-blur-sm transition-all duration-300" onClick={closeMobile}>
-          <aside aria-label="Menu Mobile" className="w-[280px] sm:w-80 h-full bg-sidebar text-sidebar-foreground pt-16 flex flex-col shadow-2xl animate-in slide-in-from-left duration-300" onClick={(e) => e.stopPropagation()}>
-            <div className="px-4 py-4 border-b border-sidebar-border/50">
-              <EmpresaSelector />
-            </div>
-            <div className="flex-1 overflow-hidden flex flex-col">
-              <SidebarNav 
-                currentPath={location.pathname} 
-                entries={NAV_ENTRIES} 
-                onNavigate={closeMobile} 
-                userRoles={roles || []}
-                userEmail={user?.email || ""}
-              />
-            </div>
-            <div className="p-4 border-t border-sidebar-border/50 bg-sidebar-accent/20">
-              <div className="flex items-center justify-between mb-2 px-2">
-                <span className="text-xs text-sidebar-foreground/50 truncate">{user?.email}</span>
-                <span className="px-2 py-0.5 rounded-full bg-primary/20 text-primary text-[10px] font-bold uppercase tracking-wider">Premium</span>
-              </div>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleSignOut}
-                className="w-full justify-start text-sidebar-foreground/70 hover:text-destructive hover:bg-destructive/10 h-10 px-4 rounded-xl transition-all"
-              >
-                <LogOut className="w-4 h-4 mr-3" />
-                Sair da conta
-              </Button>
-            </div>
-          </aside>
-        </div>
-      )}
 
       {/* Main content */}
       <main id="main-content" className="flex-1 lg:ml-0 mt-[56px] lg:mt-0 overflow-x-hidden relative focus:outline-none" tabIndex={-1}>

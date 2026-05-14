@@ -501,7 +501,7 @@ export default function Index() {
       {/* Stats Cards — Premium Grid */}
       <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-4">
         {stats.map((s) => (
-          <Link key={s.label} to={s.link} className="block group">
+          <Link key={s.label} to={s.link} className="block group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-4 rounded-xl">
             <Card className="border-none shadow-premium bg-card hover:shadow-premium-hover transition-all duration-300 relative overflow-hidden h-full">
               <div className={cn("absolute top-0 right-0 w-16 h-16 rounded-bl-[40px] opacity-10 transition-opacity group-hover:opacity-20", s.bg)} />
               <CardContent className="flex flex-col items-center gap-3 p-5 text-center">
@@ -541,7 +541,7 @@ export default function Index() {
               data.acoesPrioritarias.map((acao, idx) => {
                 const config = criticidadeConfig[acao.criticidade];
                 return (
-                  <Link key={idx} to={acao.link} className="block">
+                  <Link key={idx} to={acao.link} className="block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded-2xl">
                     <div className={cn("rounded-2xl border border-transparent p-4 transition-all hover:shadow-md hover:translate-x-1 relative overflow-hidden group", config.container)}>
                       <div className="absolute top-0 right-0 p-2 opacity-10 group-hover:opacity-30 transition-opacity">
                         <ArrowRight aria-hidden="true" className="w-8 h-8 -rotate-45" />
@@ -583,7 +583,7 @@ export default function Index() {
               ))
             ) : (
               data.saudeOperacional.map((item, idx) => (
-                <Link key={idx} to={item.link} className="block group">
+                <Link key={idx} to={item.link} className="block group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded-lg p-1 -m-1">
                   <div className="flex items-center justify-between mb-2">
                     <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground/60">{item.label}</p>
                     <span className="text-sm font-bold text-foreground">{item.valor}%</span>
@@ -615,14 +615,14 @@ export default function Index() {
           { to: "/busca-global", label: "Busca Inteligente", icon: Search, color: "text-indigo-600", bg: "bg-indigo-50" },
           { to: "/qualidade-total", label: "Relatório Anual", icon: BarChartIcon, color: "text-amber-600", bg: "bg-amber-50" },
         ].map((btn, i) => (
-          <Link key={i} to={btn.to}>
-            <Button variant="ghost" className="w-full h-auto py-5 flex flex-col items-center gap-3 bg-card shadow-premium hover:shadow-premium-hover border-none rounded-2xl group transition-all">
+          <Button key={i} variant="ghost" asChild className="w-full h-auto py-5 flex flex-col items-center gap-3 bg-card shadow-premium hover:shadow-premium-hover border-none rounded-2xl group transition-all">
+            <Link to={btn.to}>
               <div className={cn("w-12 h-12 rounded-2xl flex items-center justify-center transition-transform group-hover:scale-110 group-hover:rotate-3", btn.bg)}>
                 <btn.icon aria-hidden="true" className={cn("w-6 h-6", btn.color)} />
               </div>
               <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground group-hover:text-foreground transition-colors">{btn.label}</span>
-            </Button>
-          </Link>
+            </Link>
+          </Button>
         ))}
       </div>
 
