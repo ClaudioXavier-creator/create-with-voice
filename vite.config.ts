@@ -17,6 +17,7 @@ export default defineConfig(({ mode }) => ({
     react(),
     mode === "development" && componentTagger(),
     VitePWA({
+      disable: true,
       registerType: "autoUpdate",
       includeAssets: ["favicon.png", "pwa-icons/icon-192x192.png", "pwa-icons/icon-512x512.png"],
       workbox: {
