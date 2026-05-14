@@ -27,6 +27,7 @@ type ProdutoCard = {
   external?: boolean;
   trialExternal?: boolean;
   adminOnly?: boolean;
+  icon?: React.ElementType;
 };
 
 const produtos: ProdutoCard[] = [
