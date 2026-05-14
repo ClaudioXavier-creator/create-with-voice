@@ -198,7 +198,7 @@ export default function AuditsBPFPage() {
                 <Sparkles className="h-4 w-4" />
                 Começar Trial Grátis
               </Button>
-            </a>
+            </Link>
           </div>
         </section>
       </main>
