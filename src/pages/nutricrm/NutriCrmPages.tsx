@@ -1,4 +1,4 @@
-import { NutriCrmDashboard, NutriCrmClientes, NutriCrmVisitas, NutriCrmProjetos, NutriCrmMetas, NutriCrmRelatorios } from "@/components/demo/MockScreens";
+import { NutriDashboard, NutriClientes, NutriVisita, NutriPipeline, NutriRelatorios } from "@/components/demo/MockScreens";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Info } from "lucide-react";
 
@@ -15,12 +15,16 @@ const PreviewAlert = () => (
 export const NutriDashboardPage = () => (
   <div className="space-y-6">
     <PreviewAlert />
-    <NutriCrmDashboard />
+    <NutriDashboard />
   </div>
 );
 
-export const NutriClientesPage = () => <NutriCrmClientes />;
-export const NutriVisitasPage = () => <NutriCrmVisitas />;
-export const NutriProjetosPage = () => <NutriCrmProjetos />;
-export const NutriMetasPage = () => <NutriCrmMetas />;
-export const NutriRelatoriosPage = () => <NutriCrmRelatorios />;
+export const NutriClientesPage = () => <NutriClientes />;
+export const NutriVisitasPage = () => <NutriVisita />;
+export const NutriProjetosPage = () => <NutriPipeline />;
+export const NutriMetasPage = () => (
+  <div className="p-8 text-center text-muted-foreground border-2 border-dashed rounded-xl">
+    Módulo de Metas em desenvolvimento para o ambiente NutriCRM.
+  </div>
+);
+export const NutriRelatoriosPage = () => <NutriRelatorios />;

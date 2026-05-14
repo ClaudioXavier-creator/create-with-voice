@@ -91,14 +91,12 @@ const AgroRcAdmin = lazy(() => import("./pages/agrorc/Admin"));
 
 // NutriCRM - Páginas Internas
 const NutriCrmLayout = lazy(() => import("./components/layout/NutriCrmLayout"));
-const { 
-  NutriDashboardPage: NutriDashboard, 
-  NutriClientesPage: NutriClientes, 
-  NutriVisitasPage: NutriVisitas, 
-  NutriProjetosPage: NutriProjetos, 
-  NutriMetasPage: NutriMetas, 
-  NutriRelatoriosPage: NutriRelatorios 
-} = require("./pages/nutricrm/NutriCrmPages");
+const NutriDashboard = lazy(() => import("./pages/nutricrm/NutriCrmPages").then(m => ({ default: m.NutriDashboardPage })));
+const NutriClientes = lazy(() => import("./pages/nutricrm/NutriCrmPages").then(m => ({ default: m.NutriClientesPage })));
+const NutriVisitas = lazy(() => import("./pages/nutricrm/NutriCrmPages").then(m => ({ default: m.NutriVisitasPage })));
+const NutriProjetos = lazy(() => import("./pages/nutricrm/NutriCrmPages").then(m => ({ default: m.NutriProjetosPage })));
+const NutriMetas = lazy(() => import("./pages/nutricrm/NutriCrmPages").then(m => ({ default: m.NutriMetasPage })));
+const NutriRelatorios = lazy(() => import("./pages/nutricrm/NutriCrmPages").then(m => ({ default: m.NutriRelatoriosPage })));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -248,7 +246,26 @@ const AppRoutes = () => {
           }
         />
 
-        {/* Feed_BPF e outros (Páginas Compartilhadas Legadas) */}
+        {/* NutriCRM - Rotas Dedicadas */}
+        <Route
+          path="/nutricrm/*"
+          element={
+            <ProtectedRoute>
+              <NutriCrmLayout>
+                <Routes>
+                  <Route index element={<Navigate to="dashboard" replace />} />
+                  <Route path="dashboard" element={<NutriDashboard />} />
+                  <Route path="clientes" element={<NutriClientes />} />
+                  <Route path="visitas" element={<NutriVisitas />} />
+                  <Route path="projetos" element={<NutriProjetos />} />
+                  <Route path="metas" element={<NutriMetas />} />
+                  <Route path="relatorios" element={<NutriRelatorios />} />
+                </Routes>
+              </NutriCrmLayout>
+            </ProtectedRoute>
+          }
+        />
+
         <Route
           path="/:product/*"
           element={
