@@ -353,6 +353,13 @@ const AppRoutes = () => {
           }
         />
 
+        {/* Portal de Gestão (BPF_Consult) - rotas standalone, fora do AppLayout do Feed_BPF */}
+        <Route path="/admin" element={<ProtectedRoute requireAdmin><SuperAdmin /></ProtectedRoute>} />
+        <Route path="/crm" element={<ProtectedRoute requireAdmin><Navigate to="/admin?tab=crm" replace /></ProtectedRoute>} />
+        <Route path="/leads" element={<ProtectedRoute requireAdmin><Navigate to="/admin?tab=leads" replace /></ProtectedRoute>} />
+        <Route path="/licencas" element={<ProtectedRoute requireAdmin><Navigate to="/admin?tab=licencas" replace /></ProtectedRoute>} />
+        <Route path="/assinaturas" element={<ProtectedRoute requireAdmin><Navigate to="/admin?tab=assinaturas" replace /></ProtectedRoute>} />
+
         <Route
           path="/:product/*"
           element={
