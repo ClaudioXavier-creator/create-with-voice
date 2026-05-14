@@ -26,7 +26,15 @@ const diferenciais = [
 
 export default function AuditsBPFPage() {
   const { session } = useAuth();
+  const navigate = useNavigate();
   const dashboardPath = "/auditsbpf/dashboard";
+  
+  useEffect(() => {
+    if (session) {
+      navigate(dashboardPath, { replace: true });
+    }
+  }, [session, navigate, dashboardPath]);
+
   const signupLink = session ? dashboardPath : `/auth?product=auditsbpf&mode=signup&redirect=%2Fauditsbpf%2Fdashboard`;
   const loginLink = session ? dashboardPath : `/auth?product=auditsbpf&mode=login&redirect=%2Fauditsbpf%2Fdashboard`;
 
