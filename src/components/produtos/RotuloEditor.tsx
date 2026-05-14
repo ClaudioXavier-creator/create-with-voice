@@ -664,7 +664,7 @@ function buildPrintHTML(rotulo: RotuloData, niveisObj: Record<string, any>): str
 
   const section = (title: string, content: string) => {
     if (!content) return '';
-    return `<p style="font-size:7pt;font-weight:bold;margin:4px 0 1px;">${title}</p><p style="font-size:6.5pt;line-height:1.4;margin:0 0 2px;text-align:justify;">${content}</p>`;
+    return `<p style="font-size:7pt;font-weight:bold;margin:4px 0 1px;">${escHtml(title)}</p><p style="font-size:6.5pt;line-height:1.4;margin:0 0 2px;text-align:justify;">${escHtml(content)}</p>`;
   };
 
   const bodyContent = `
@@ -684,14 +684,14 @@ function buildPrintHTML(rotulo: RotuloData, niveisObj: Record<string, any>): str
       <!-- HEADER -->
       <div style="display:flex;border-bottom:2px solid #000;">
         <div style="flex:1;padding:6px 10px;border-right:1px solid #000;">
-          <p style="font-size:7.5pt;text-align:center;margin:0 0 4px;font-weight:bold;">${rotulo.classificacao_label}</p>
-          <p style="font-size:18pt;font-weight:900;text-align:center;margin:4px 0;letter-spacing:1px;">${rotulo.nome_comercial}</p>
+          <p style="font-size:7.5pt;text-align:center;margin:0 0 4px;font-weight:bold;">${escHtml(rotulo.classificacao_label)}</p>
+          <p style="font-size:18pt;font-weight:900;text-align:center;margin:4px 0;letter-spacing:1px;">${escHtml(rotulo.nome_comercial)}</p>
         </div>
         <div style="width:30%;padding:5px 8px;font-size:6.5pt;line-height:1.5;border-left:1px solid #000;">
           <p style="font-weight:bold;font-size:7pt;margin:0 0 1px;text-align:right;">Fabricado por:</p>
-          <p style="margin:0;text-align:right;">${rotulo.razao_social}</p>
-          <p style="margin:0;text-align:right;">${rotulo.endereco}</p>
-          <p style="margin:0;text-align:right;">CNPJ: ${rotulo.cnpj}</p>
+          <p style="margin:0;text-align:right;">${escHtml(rotulo.razao_social)}</p>
+          <p style="margin:0;text-align:right;">${escHtml(rotulo.endereco)}</p>
+          <p style="margin:0;text-align:right;">CNPJ: ${escHtml(rotulo.cnpj)}</p>
           <p style="margin:0;font-weight:bold;text-align:right;">INDÚSTRIA BRASILEIRA</p>
         </div>
       </div>
@@ -714,11 +714,11 @@ function buildPrintHTML(rotulo: RotuloData, niveisObj: Record<string, any>): str
       <!-- FOOTER -->
       <div style="border-top:1px solid #000;padding:4px 10px;font-size:6.5pt;">
         <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:2px;">
-          <span>${rotulo.lote ? `LOTE: ${rotulo.lote}` : rotulo.lote_placeholder}</span>
-          <span>${rotulo.data_fabricacao ? `FAB: ${formatDateBR(rotulo.data_fabricacao)}` : rotulo.fabricacao_placeholder}</span>
-          <span>${rotulo.data_fabricacao && rotulo.validade_dias ? `VAL: ${calcDataVencimento(rotulo.data_fabricacao, rotulo.validade_dias)}` : 'VAL: ___/___/______'}</span>
-          ${rotulo.rt_nome ? `<span>RT: ${rotulo.rt_nome} – CRMV: ${rotulo.rt_crmv}</span>` : ''}
-          ${rotulo.sac_contato ? `<span>SAC: ${rotulo.sac_contato}</span>` : ''}
+          <span>${rotulo.lote ? `LOTE: ${escHtml(rotulo.lote)}` : escHtml(rotulo.lote_placeholder)}</span>
+          <span>${rotulo.data_fabricacao ? `FAB: ${escHtml(formatDateBR(rotulo.data_fabricacao))}` : escHtml(rotulo.fabricacao_placeholder)}</span>
+          <span>${rotulo.data_fabricacao && rotulo.validade_dias ? `VAL: ${escHtml(calcDataVencimento(rotulo.data_fabricacao, rotulo.validade_dias))}` : 'VAL: ___/___/______'}</span>
+          ${rotulo.rt_nome ? `<span>RT: ${escHtml(rotulo.rt_nome)} – CRMV: ${escHtml(rotulo.rt_crmv)}</span>` : ''}
+          ${rotulo.sac_contato ? `<span>SAC: ${escHtml(rotulo.sac_contato)}</span>` : ''}
         </div>
         <div style="text-align:center;margin-top:6px;padding-top:4px;border-top:0.5pt solid #666;">
           <p style="font-weight:bold;font-size:8pt;margin:2px 0;color:#000;">INDÚSTRIA BRASILEIRA</p>
