@@ -4,7 +4,7 @@ import { useEmpresa } from "@/hooks/useEmpresa";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AgroRcSidebar } from "./AgroRcSidebar";
 import LicenseGate from "@/components/LicenseGate";
-import Navbar from "./Navbar";
+import Navbar from "@/components/layout/Navbar";
 
 export default function AgroRcLayout({ children }: { children: React.ReactNode }) {
   const { session } = useAuth();
