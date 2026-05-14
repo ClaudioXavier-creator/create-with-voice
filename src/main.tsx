@@ -8,6 +8,11 @@ import "./index.css";
 function cleanupStaleServiceWorkers() {
   if (typeof window === "undefined") return;
 
+  // Manual cache busting version - update this string to force a full refresh for all users.
+  // Increment the version number (e.g., v1 -> v2) whenever you make big changes
+  // that might be stuck in browser cache.
+  const APP_VERSION = "2024.05.14.v2"; 
+
   let isInIframe = false;
   try {
     isInIframe = window.self !== window.top;
@@ -24,25 +29,55 @@ function cleanupStaleServiceWorkers() {
     window.location.hostname.includes("bpfconsult.com.br");
 
   const isStandalone = window.matchMedia?.("(display-mode: standalone)")?.matches ?? false;
-  const shouldCleanup = isPreviewHost || isInIframe || (isPublishedHost && !isStandalone);
+  
+  // Always cleanup in preview/iframe. 
+  // In published host, cleanup if version mismatch or not standalone.
+  const storedVersion = localStorage.getItem("__app_version__");
+  const versionMismatch = storedVersion !== APP_VERSION;
+  
+  const shouldCleanup = isPreviewHost || isInIframe || (isPublishedHost && !isStandalone) || versionMismatch;
 
   if (!shouldCleanup) return;
 
-  if (sessionStorage.getItem("__sw_cleanup_done__")) return;
-  sessionStorage.setItem("__sw_cleanup_done__", "1");
+  // Only run once per session if the version matches
+  if (!versionMismatch && sessionStorage.getItem("__sw_cleanup_done__")) return;
+  
+  console.log("[CacheBuster] Cleaning up stale service workers and caches...", { 
+    isPreviewHost, isInIframe, isPublishedHost, isStandalone, versionMismatch 
+  });
 
   if ("serviceWorker" in navigator) {
     navigator.serviceWorker
       .getRegistrations()
-      .then((regs) => regs.forEach((r) => r.unregister()))
+      .then((regs) => {
+        regs.forEach((r) => {
+          console.log("[CacheBuster] Unregistering SW:", r.scope);
+          r.unregister();
+        });
+      })
       .catch(() => {});
   }
 
   if ("caches" in window) {
     window.caches
       .keys()
-      .then((keys) => keys.forEach((k) => window.caches.delete(k)))
+      .then((keys) => {
+        keys.forEach((k) => {
+          console.log("[CacheBuster] Deleting cache:", k);
+          window.caches.delete(k);
+        });
+      })
       .catch(() => {});
+  }
+
+  localStorage.setItem("__app_version__", APP_VERSION);
+  sessionStorage.setItem("__sw_cleanup_done__", "1");
+  
+  // If there was a version mismatch, we might want to reload, 
+  // but let's be careful not to loop in iframes.
+  if (versionMismatch && !isInIframe) {
+    console.log("[CacheBuster] Version mismatch detected, reloading...");
+    setTimeout(() => window.location.reload(), 500);
   }
 }
 
