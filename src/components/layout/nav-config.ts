@@ -11,6 +11,10 @@ import {
   LayoutDashboard,
   ShieldCheck,
   Tablet,
+  Layers,
+  Tag,
+  BarChart3,
+  Users,
 } from "lucide-react";
 
 export interface NavItem {
@@ -36,12 +40,26 @@ export function isGroup(entry: NavEntry): entry is NavGroup {
 }
 
 export const NAV_ENTRIES: NavEntry[] = [
+  // --- ECOSSISTEMA BPF_CONSULT (7 PROGRAMAS) ---
+  {
+    label: "Programas BPF_Consult",
+    icon: Layers,
+    items: [
+      { path: "/dashboard", label: "Feed_BPF", icon: LayoutDashboard },
+      { path: "https://friendly-flame-igniter.lovable.app", label: "Audits_BPF", icon: ShieldCheck, external: true },
+      { path: "https://soil-to-client.lovable.app", label: "Agro RC CRM", icon: BarChart3, external: true },
+      { path: "/rotulos/dashboard", label: "Nutri_Agro Labels", icon: Tag },
+      { path: "https://nutricrm.onrender.com", label: "NutriCRM", icon: Users, external: true },
+      { path: "https://regional-fixer-charm.lovable.app", label: "AgroGestão CRM", icon: Building2, external: true },
+      { path: "/admin", label: "Portal de Gestão", icon: ShieldCheck, requiredRoles: ["admin", "comercial"] },
+    ],
+  },
+
   // --- OPERACIONAL FEED_BPF ---
   {
     label: "Operacional Feed_BPF",
     icon: ClipboardCheck,
     items: [
-      { path: "/dashboard", label: "Painel Geral", icon: LayoutDashboard },
       { path: "/cadastro", label: "Dados da Empresa", icon: Building2 },
       { path: "/documentos", label: "Documentos / POPs", icon: FileText },
       { path: "/execucao-pops", label: "Execução ITs/POPs", icon: Clipboard },

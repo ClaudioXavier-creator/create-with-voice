@@ -163,6 +163,7 @@ const ProtectedRoute = ({ children, requireAdmin }: { children: React.ReactNode;
 const InternalRoutes = () => (
   <Routes>
     <Route path="/dashboard" element={<Index />} />
+    <Route path="/Dashboard" element={<Navigate to="/dashboard" replace />} />
     
     <Route path="/cadastro" element={<Cadastro />} />
     <Route path="/documentos" element={<Documentos />} />
