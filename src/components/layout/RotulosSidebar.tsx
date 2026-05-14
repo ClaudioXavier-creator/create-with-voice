@@ -10,6 +10,7 @@ import {
   QrCode,
   Palette
 } from "lucide-react";
+import { cn } from "@/lib/utils";
 import {
   Sidebar,
   SidebarContent,
@@ -23,6 +24,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import logoRotulos from "@/assets/logo-rotulos-bpf.png";
+import ClearCacheButton from "@/components/ClearCacheButton";
 
 const items = [
   { title: "Dashboard Rótulos", icon: LayoutDashboard, url: "/rotulos/dashboard" },
@@ -86,10 +88,20 @@ export function RotulosSidebar() {
         </SidebarMenu>
       </SidebarContent>
 
-      <SidebarFooter className="p-4">
+      <SidebarFooter className="p-4 space-y-2">
+        <ClearCacheButton 
+          showLabel={!isCollapsed} 
+          className={cn(
+            "text-muted-foreground/60 hover:text-teal-600 hover:bg-teal-500/10",
+            isCollapsed && "justify-center px-0"
+          )}
+        />
         <Button 
           variant="ghost" 
-          className="w-full justify-start gap-3 text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+          className={cn(
+            "w-full justify-start gap-3 text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors",
+            isCollapsed && "justify-center px-0"
+          )}
           onClick={() => signOut()}
         >
           <LogOut className="h-5 w-5 shrink-0" />
