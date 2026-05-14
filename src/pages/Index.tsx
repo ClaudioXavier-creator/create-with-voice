@@ -615,14 +615,14 @@ export default function Index() {
           { to: "/busca-global", label: "Busca Inteligente", icon: Search, color: "text-indigo-600", bg: "bg-indigo-50" },
           { to: "/qualidade-total", label: "Relatório Anual", icon: BarChartIcon, color: "text-amber-600", bg: "bg-amber-50" },
         ].map((btn, i) => (
-          <Link key={i} to={btn.to}>
-            <Button variant="ghost" className="w-full h-auto py-5 flex flex-col items-center gap-3 bg-card shadow-premium hover:shadow-premium-hover border-none rounded-2xl group transition-all">
+          <Button key={i} variant="ghost" asChild className="w-full h-auto py-5 flex flex-col items-center gap-3 bg-card shadow-premium hover:shadow-premium-hover border-none rounded-2xl group transition-all">
+            <Link to={btn.to}>
               <div className={cn("w-12 h-12 rounded-2xl flex items-center justify-center transition-transform group-hover:scale-110 group-hover:rotate-3", btn.bg)}>
                 <btn.icon aria-hidden="true" className={cn("w-6 h-6", btn.color)} />
               </div>
               <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground group-hover:text-foreground transition-colors">{btn.label}</span>
-            </Button>
-          </Link>
+            </Link>
+          </Button>
         ))}
       </div>
 
