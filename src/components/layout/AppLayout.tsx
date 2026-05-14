@@ -245,9 +245,9 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
       </header>
 
       {/* Main content */}
-      <main id="main-content" className="flex-1 lg:ml-0 mt-[56px] lg:mt-0 overflow-x-hidden relative focus:outline-none" tabIndex={-1}>
+      <main id="main-content" className="flex-1 lg:ml-0 mt-[56px] lg:mt-0 overflow-x-hidden relative focus:outline-none min-h-screen flex flex-col" tabIndex={-1}>
         <OfflineBanner />
-        <div className="p-3 sm:p-4 md:p-8 lg:p-10 max-w-7xl mx-auto min-h-full animate-fade-in">
+        <div className="flex-1 w-full max-w-[1920px] mx-auto p-3 sm:p-4 md:p-6 lg:p-8 xl:p-10 animate-fade-in relative z-10">
           <LicenseGate product={product as any}>
             <TierGate>
               <Suspense fallback={<PageLoader />}>
@@ -257,9 +257,9 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
           </LicenseGate>
         </div>
         
-        {/* Floating elements backdrop decoration */}
-        <div className="fixed top-0 right-0 -z-10 w-[500px] h-[500px] bg-primary/5 rounded-full blur-3xl opacity-50 pointer-events-none translate-x-1/2 -translate-y-1/2" />
-        <div className="fixed bottom-0 left-0 -z-10 w-[500px] h-[500px] bg-emerald-500/5 rounded-full blur-3xl opacity-50 pointer-events-none -translate-x-1/2 translate-y-1/2" />
+        {/* Floating elements backdrop decoration - Refined for better performance and responsiveness */}
+        <div className="fixed top-0 right-0 -z-0 w-[300px] h-[300px] md:w-[600px] md:h-[600px] bg-primary/5 rounded-full blur-[80px] md:blur-[120px] opacity-30 pointer-events-none translate-x-1/4 -translate-y-1/4 select-none" />
+        <div className="fixed bottom-0 left-0 -z-0 w-[300px] h-[300px] md:w-[600px] md:h-[600px] bg-emerald-500/5 rounded-full blur-[80px] md:blur-[120px] opacity-30 pointer-events-none -translate-x-1/4 translate-y-1/4 select-none" />
       </main>
 
     </div>
