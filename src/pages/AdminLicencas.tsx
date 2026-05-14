@@ -8,9 +8,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import { Shield, UserCheck, UserX, Loader2, RefreshCw, Building2, Search } from "lucide-react";
+import { Shield, UserCheck, UserX, Loader2, RefreshCw, Building2, Search, Plus } from "lucide-react";
 import { canAccessLicenseAdmin } from "@/config/adminAccess";
-import { getProductLabel } from "@/utils/productUtils";
+import { getProductLabel, PRODUCT_LABELS } from "@/utils/productUtils";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
 
 interface LicenseEntry {
   id: string;
