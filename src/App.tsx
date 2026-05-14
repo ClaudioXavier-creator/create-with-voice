@@ -258,24 +258,10 @@ const AppRoutes = () => {
           element={<ExternalRedirect to="https://soil-to-client.lovable.app" preservePath basePath="/agro-rc" />}
         />
 
-        {/* NutriCRM - Rotas Dedicadas */}
+        {/* NutriCRM - redireciona para projeto externo publicado */}
         <Route
           path="/nutricrm/*"
-          element={
-            <ProtectedRoute>
-              <NutriCrmLayout>
-                <Routes>
-                  <Route index element={<Navigate to="dashboard" replace />} />
-                  <Route path="dashboard" element={<NutriDashboard />} />
-                  <Route path="clientes" element={<NutriClientes />} />
-                  <Route path="visitas" element={<NutriVisitas />} />
-                  <Route path="projetos" element={<NutriProjetos />} />
-                  <Route path="metas" element={<NutriMetas />} />
-                  <Route path="relatorios" element={<NutriRelatorios />} />
-                </Routes>
-              </NutriCrmLayout>
-            </ProtectedRoute>
-          }
+          element={<ExternalRedirect to="https://nutricrm.onrender.com" preservePath basePath="/nutricrm" />}
         />
 
         {/* AgroGestão CRM - Rotas Dedicadas */}
