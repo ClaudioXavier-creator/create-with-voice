@@ -583,7 +583,7 @@ export default function Index() {
               ))
             ) : (
               data.saudeOperacional.map((item, idx) => (
-                <Link key={idx} to={item.link} className="block group">
+                <Link key={idx} to={item.link} className="block group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded-lg p-1 -m-1">
                   <div className="flex items-center justify-between mb-2">
                     <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground/60">{item.label}</p>
                     <span className="text-sm font-bold text-foreground">{item.valor}%</span>
