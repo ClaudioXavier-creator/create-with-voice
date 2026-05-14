@@ -126,7 +126,7 @@ const DEMOS: Record<string, DemoConfig> = {
   agrorc: {
     key: "agrorc",
     productSlug: "agrorc",
-    authProduct: "agro-rc",
+    authProduct: "agrorc",
     redirectPath: "/agro-rc",
     brand: "Agro RC CRM",
     tagline: "CRM para Representantes Comerciais do agro",
