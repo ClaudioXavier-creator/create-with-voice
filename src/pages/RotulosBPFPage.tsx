@@ -200,13 +200,12 @@ export default function RotulosBPFPage() {
                     Acessar Gerador Nutri_Agro Labels
                   </Link>
                 </Button>
-                  <Link to={loginLink}>
-                    <Button size="lg" variant="outline" className="gap-2">
-                      <Lock className="h-4 w-4" />
-                      Já sou cliente
-                    </Button>
-                  </Link>
-                </div>
+                <Link to={loginLink}>
+                  <Button size="lg" variant="outline" className="gap-2">
+                    <Lock className="h-4 w-4" />
+                    Já sou cliente
+                  </Button>
+                </Link>
               </div>
               <p className="text-xs text-muted-foreground mt-2">Sem cartão de crédito • Acesso completo</p>
             </div>
