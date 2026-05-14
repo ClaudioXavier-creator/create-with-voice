@@ -37,6 +37,13 @@ import {
   CreditCard,
   Smartphone,
   Shield,
+  LayoutGrid,
+  ClipboardList as AuditIcon,
+  UserSquare2,
+  Database,
+  Users2,
+  Tags,
+  Settings2,
 } from "lucide-react";
 
 export interface NavItem {
@@ -62,22 +69,22 @@ export function isGroup(entry: NavEntry): entry is NavGroup {
 }
 
 export const NAV_ENTRIES: NavEntry[] = [
-  // --- GRUPO 1: PROGRAMAS FIXOS ---
+  // --- GRUPO 1: PROGRAMAS FIXOS BPF_CONSULT ---
   {
-    label: "Meus Programas (Fixos)",
-    icon: LayoutDashboard,
+    label: "Programas BPF_Consult",
+    icon: LayoutGrid,
     items: [
-      { path: "https://regional-fixer-charm.lovable.app", label: "1. AgroGestão Completa", icon: Factory, external: true },
-      { path: "https://soil-to-client.lovable.app", label: "2. CRM Clientes", icon: Users, external: true },
-      { path: "/assinaturas", label: "3. Financeiro", icon: CreditCard },
-      { path: "/recebimento", label: "4. Estoque", icon: Package },
-      { path: "/indicadores", label: "5. Relatórios BI", icon: BarChart3 },
-      { path: "/modo-tablet", label: "6. Vendas Mobile", icon: Smartphone },
-      { path: "/admin", label: "7. Configurações Admin", icon: Shield, requiredRoles: ["admin"] },
+      { path: "/feedbpf/dashboard", label: "1. Feed_BPF", icon: Factory },
+      { path: "https://friendly-flame-igniter.lovable.app/dashboard", label: "2. Audits_BPF", icon: AuditIcon, external: true },
+      { path: "https://soil-to-client.lovable.app/dashboard", label: "3. Agro RC CRM", icon: UserSquare2, external: true },
+      { path: "https://regional-fixer-charm.lovable.app/dashboard", label: "4. Agrogestão CRM", icon: Database, external: true },
+      { path: "https://nutricrm.onrender.com/dashboard", label: "5. NutriCRM", icon: Users2, external: true },
+      { path: "/rotulos/dashboard", label: "6. Nutri_Agro Labels", icon: Tags },
+      { path: "/admin", label: "7. Gestão do Site BPF", icon: Settings2, requiredRoles: ["admin"] },
     ],
   },
   
-  // --- GRUPO 2: OPERACIONAL FEED_BPF (Mantendo compatibilidade) ---
+  // --- GRUPO 2: OPERACIONAL FEED_BPF ---
   {
     label: "Operacional Feed_BPF",
     icon: ClipboardCheck,
@@ -89,20 +96,20 @@ export const NAV_ENTRIES: NavEntry[] = [
     ],
   },
 
-  // --- OUTROS MÓDULOS (Opcionais/Secundários) ---
+  // --- OUTROS MÓDULOS ---
   { path: "/orientacoes", label: "🎓 Central de Orientações", icon: GraduationCap },
   {
-    label: "POP 05 — Produção",
-    icon: ShieldAlert,
+    label: "Documentação BPF",
+    icon: FileText,
     items: [
-      { path: "/producao", label: "Produção", icon: Factory },
-      { path: "/pcp", label: "PCP / Sequenciamento", icon: Settings },
-      { path: "/rotulos", label: "Nutri_Agro Labels", icon: Tag },
+      { path: "/manual", label: "Manual Feed_BPF", icon: BookOpen },
+      { path: "/guia-pops", label: "Guia POPs & ITs", icon: ClipboardList },
+      { path: "/planilhas-pop", label: "Planilhas de POPs", icon: Clipboard },
     ],
   },
   {
     label: "Auditoria & Qualidade",
-    icon: ClipboardCheck,
+    icon: ShieldCheck,
     items: [
       { path: "/auditoria", label: "Auditoria BPF", icon: ClipboardCheck },
       { path: "/nao-conformidades", label: "Não Conformidades", icon: AlertTriangle },
@@ -110,4 +117,5 @@ export const NAV_ENTRIES: NavEntry[] = [
     ],
   },
   { path: "/modelos", label: "📁 Modelos", icon: FolderOpen },
+  { path: "/modo-tablet", label: "🏭 Modo Tablet", icon: Tablet },
 ];
