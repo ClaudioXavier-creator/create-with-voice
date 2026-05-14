@@ -170,7 +170,8 @@ export const NAV_ENTRIES: NavEntry[] = [
     icon: FileText,
     items: [
       { path: "/manual", label: "Manual Feed_BPF", icon: BookOpen },
-      { path: "/guia-pops", label: "Guia POPs & ITs", icon: ClipboardList },
+      { path: "/guia-geral-pops", label: "Guia Geral POPs", icon: ClipboardList },
+      { path: "/guia-pops", label: "ITs Detalhadas", icon: Clipboard },
       { path: "/planilhas-pop", label: "Planilhas de POPs", icon: Clipboard },
     ],
   },
