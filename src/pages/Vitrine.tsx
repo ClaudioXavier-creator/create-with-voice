@@ -224,7 +224,16 @@ export default function Vitrine() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {produtosVisiveis.map((p) => (
-            <div key={p.nome} className="group cursor-pointer" onClick={() => p.external ? window.open(p.link, "_blank", "noopener,noreferrer") : navigate(p.link)}>
+            <div key={p.nome} className="group cursor-pointer" onClick={() => {
+              if (p.external) {
+                window.open(p.link, "_blank", "noopener,noreferrer");
+                return;
+              }
+              
+              // Se o usuário clicar no card principal, mandamos para o tutorial (página do produto)
+              // em vez de mandar direto para o dashboard/login
+              navigate(p.link);
+            }}>
               <div className={`h-full rounded-2xl border-2 ${p.borderColor} ${p.bgCard} p-1 transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 hover:scale-[1.02]`}>
                 <div className="h-full rounded-xl bg-card/80 backdrop-blur-sm p-6 sm:p-8 flex flex-col">
                   {/* Logo */}
