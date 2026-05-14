@@ -107,6 +107,15 @@ const AgroVisitas = lazy(() => import("./pages/agrogestao/AgroGestaoPages").then
 const AgroMetas = lazy(() => import("./pages/agrogestao/AgroGestaoPages").then(m => ({ default: m.AgroMetasPage })));
 const AgroRelatorios = lazy(() => import("./pages/agrogestao/AgroGestaoPages").then(m => ({ default: m.AgroRelatoriosPage })));
 
+// Audits_BPF - Páginas Internas
+const AuditsBpfLayout = lazy(() => import("./components/layout/AuditsBpfLayout"));
+const AuditsDashboard = lazy(() => import("./pages/auditsbpf/AuditsBpfPages").then(m => ({ default: m.AuditsDashboardPage })));
+const AuditsChecklist = lazy(() => import("./pages/auditsbpf/AuditsBpfPages").then(m => ({ default: m.AuditsChecklistPage })));
+const AuditsSala = lazy(() => import("./pages/auditsbpf/AuditsBpfPages").then(m => ({ default: m.AuditsSalaPage })));
+const AuditsPlano = lazy(() => import("./pages/auditsbpf/AuditsBpfPages").then(m => ({ default: m.AuditsPlanoPage })));
+const AuditsRelatorio = lazy(() => import("./pages/auditsbpf/AuditsBpfPages").then(m => ({ default: m.AuditsRelatorioPage })));
+const AuditsHistorico = lazy(() => import("./pages/auditsbpf/AuditsBpfPages").then(m => ({ default: m.AuditsHistoricoPage })));
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -291,6 +300,26 @@ const AppRoutes = () => {
                   <Route path="relatorios" element={<AgroRelatorios />} />
                 </Routes>
               </AgroGestaoLayout>
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Audits_BPF - Rotas Dedicadas */}
+        <Route
+          path="/auditsbpf/*"
+          element={
+            <ProtectedRoute>
+              <AuditsBpfLayout>
+                <Routes>
+                  <Route index element={<Navigate to="dashboard" replace />} />
+                  <Route path="dashboard" element={<AuditsDashboard />} />
+                  <Route path="checklist" element={<AuditsChecklist />} />
+                  <Route path="sala" element={<AuditsSala />} />
+                  <Route path="plano" element={<AuditsPlano />} />
+                  <Route path="relatorio" element={<AuditsRelatorio />} />
+                  <Route path="historico" element={<AuditsHistorico />} />
+                </Routes>
+              </AuditsBpfLayout>
             </ProtectedRoute>
           }
         />
