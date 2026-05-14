@@ -258,7 +258,10 @@ export default function Vitrine() {
                   </div>
 
                   {/* Nome */}
-                  <h3 className="text-2xl font-bold font-display text-foreground text-center mb-3">{p.nome}</h3>
+                  <div className="flex items-center justify-center gap-2 mb-3">
+                    {p.icon && <p.icon className="h-6 w-6 text-primary shrink-0" />}
+                    <h3 className="text-2xl font-bold font-display text-foreground text-center">{p.nome}</h3>
+                  </div>
 
                   {/* Descrição */}
                   <p className="text-sm text-muted-foreground leading-relaxed text-center mb-6">{p.desc}</p>
