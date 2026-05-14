@@ -298,28 +298,9 @@ const AppRoutes = () => {
           }
         />
 
-        {/* Audits_BPF - Rotas Dedicadas */}
-        <Route path="/auditsbpf">
-          <Route index element={<AuditsBPFPage />} />
-          <Route
-            path="*"
-            element={
-              <ProtectedRoute>
-                <AuditsBpfLayout>
-                  <Routes>
-                    <Route index element={<Navigate to="dashboard" replace />} />
-                    <Route path="dashboard" element={<AuditsDashboard />} />
-                    <Route path="checklist" element={<AuditsChecklist />} />
-                    <Route path="sala" element={<AuditsSala />} />
-                    <Route path="plano" element={<AuditsPlano />} />
-                    <Route path="relatorio" element={<AuditsRelatorio />} />
-                    <Route path="historico" element={<AuditsHistorico />} />
-                  </Routes>
-                </AuditsBpfLayout>
-              </ProtectedRoute>
-            }
-          />
-        </Route>
+        {/* Audits_BPF - redireciona para projeto externo publicado */}
+        <Route path="/auditsbpf/*" element={<ExternalRedirect to="https://friendly-flame-igniter.lovable.app" preservePath basePath="/auditsbpf" />} />
+        <Route path="/audits-bpf/*" element={<ExternalRedirect to="https://friendly-flame-igniter.lovable.app" preservePath basePath="/audits-bpf" />} />
 
         {/* Nutri_Agro Labels - Rotas Dedicadas */}
         <Route
