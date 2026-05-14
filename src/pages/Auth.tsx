@@ -360,34 +360,38 @@ export default function Auth() {
               <>
                 <div className="space-y-2">
                   <Label>Tipo de acesso</Label>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="grid grid-cols-2 gap-3">
                     <button
                       type="button"
                       onClick={() => setTipoUsuario("cliente")}
                       aria-pressed={tipoUsuario === "cliente"}
-                      className={`flex flex-col items-center gap-2 p-4 rounded-lg border-2 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${
+                      className={`flex flex-col items-center gap-2 p-3 sm:p-4 rounded-xl border-2 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 active:scale-95 ${
                           tipoUsuario === "cliente"
-                            ? "border-primary bg-primary/10 text-primary"
-                            : "border-border hover:border-muted-foreground hover:bg-muted/50"
+                            ? "border-primary bg-primary/10 text-primary shadow-inner"
+                            : "border-border hover:border-muted-foreground/30 hover:bg-muted/50 text-muted-foreground"
                       }`}
                     >
-                      <Building2 aria-hidden="true" className="w-6 h-6" />
-                      <span className="text-sm font-medium">Cliente</span>
-                      <span className="text-xs text-muted-foreground text-center">Fábrica / Unidade</span>
+                      <Building2 aria-hidden="true" className="w-5 h-5 sm:w-6 sm:h-6" />
+                      <div className="flex flex-col">
+                        <span className="text-sm font-bold">Cliente</span>
+                        <span className="text-[10px] opacity-70 hidden sm:block">Fábrica</span>
+                      </div>
                     </button>
                     <button
                       type="button"
                       onClick={() => setTipoUsuario("consultoria")}
                       aria-pressed={tipoUsuario === "consultoria"}
-                      className={`flex flex-col items-center gap-2 p-4 rounded-lg border-2 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${
+                      className={`flex flex-col items-center gap-2 p-3 sm:p-4 rounded-xl border-2 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 active:scale-95 ${
                           tipoUsuario === "consultoria"
-                            ? "border-primary bg-primary/10 text-primary"
-                            : "border-border hover:border-muted-foreground hover:bg-muted/50"
+                            ? "border-primary bg-primary/10 text-primary shadow-inner"
+                            : "border-border hover:border-muted-foreground/30 hover:bg-muted/50 text-muted-foreground"
                       }`}
                     >
-                      <Briefcase aria-hidden="true" className="w-6 h-6" />
-                      <span className="text-sm font-medium">Consultoria</span>
-                      <span className="text-xs text-muted-foreground text-center">Assessoria técnica</span>
+                      <Briefcase aria-hidden="true" className="w-5 h-5 sm:w-6 sm:h-6" />
+                      <div className="flex flex-col">
+                        <span className="text-sm font-bold">Consultor</span>
+                        <span className="text-[10px] opacity-70 hidden sm:block">Assessoria</span>
+                      </div>
                     </button>
                   </div>
                 </div>
