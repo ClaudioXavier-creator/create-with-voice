@@ -49,26 +49,35 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     // Tenta pegar sessão inicial de forma síncrona se disponível (pode ser null)
     const initSession = async () => {
-      const { data: { session: initialSession } } = await supabase.auth.getSession();
-      setSession(initialSession);
-      if (initialSession) {
-        await loadAccessContext(initialSession.user.id);
+      try {
+        const { data: { session: initialSession } } = await supabase.auth.getSession();
+        setSession(initialSession);
+        if (initialSession) {
+          await loadAccessContext(initialSession.user.id);
+        }
+      } catch (error) {
+        console.error("Erro ao inicializar sessão:", error);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
 
     void initSession();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (_event, newSession) => {
-        setSession(newSession);
-        if (newSession) {
-          setLoading(true);
-          await loadAccessContext(newSession.user.id);
-          setLoading(false);
-        } else {
-          setRoles([]);
-          setUserType(null);
+        try {
+          setSession(newSession);
+          if (newSession) {
+            setLoading(true);
+            await loadAccessContext(newSession.user.id);
+          } else {
+            setRoles([]);
+            setUserType(null);
+          }
+        } catch (error) {
+          console.error("Erro no onAuthStateChange:", error);
+        } finally {
           setLoading(false);
         }
       }
