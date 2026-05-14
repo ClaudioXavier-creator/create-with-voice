@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import { ArrowRight, Lock, ShieldCheck, Factory, Beaker, BarChart3, GraduationCap, ClipboardCheck, Sparkles, Building2, Users } from "lucide-react";
+import { ArrowRight, Lock, ShieldCheck, Factory, Beaker, BarChart3, GraduationCap, ClipboardCheck, Sparkles, Building2, Users, LayoutDashboard, Tag } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import logoBpfConsult from "@/assets/logo-bpf-consult.png";
@@ -27,11 +27,13 @@ type ProdutoCard = {
   external?: boolean;
   trialExternal?: boolean;
   adminOnly?: boolean;
+  icon?: React.ElementType;
 };
 
 const produtos: ProdutoCard[] = [
   {
     nome: "Feed_BPF",
+    icon: LayoutDashboard,
     logo: logoFeedBpf,
     desc: "Plataforma completa de Boas Práticas de Fabricação para nutrição animal. Manual BPF, POPs digitais, planilhas de monitoramento, produção, PCP, rastreabilidade, controle de pragas, higiene e muito mais.",
     destaques: ["Manual BPF & POPs", "Produção & PCP", "Rastreabilidade", "Higiene & Manutenção", "Matriz de Risco (APPCC)", "Indicadores & Relatórios"],
@@ -47,6 +49,7 @@ const produtos: ProdutoCard[] = [
   },
   {
     nome: "Audits_BPF",
+    icon: ShieldCheck,
     logo: logoAuditsBpf,
     desc: "Sistema de auditoria interna com checklist completo baseado no Decreto 12.031/2024. Sala exclusiva do auditor MAPA, cálculo automático de conformidade e planos de ação.",
     destaques: ["Checklist Decreto 12.031", "Sala do Auditor", "Planos de Ação", "Cálculo de Conformidade", "Relatórios de Auditoria", "Histórico e Evolução"],
@@ -64,6 +67,7 @@ const produtos: ProdutoCard[] = [
   },
   {
     nome: "Agro RC CRM",
+    icon: BarChart3,
     logo: logoAgrorc,
     desc: "Plataforma de gestão para Representantes Comerciais do agronegócio. Controle de clientes, metas, visitas, pipeline de oportunidades Kanban e painel RC com margens e scores.",
     destaques: ["Painel RC", "Pipeline Kanban", "Metas Comerciais", "Visitas a Campo", "Clientes & Carteira", "Scores de Desempenho"],
@@ -81,6 +85,7 @@ const produtos: ProdutoCard[] = [
   },
   {
     nome: "Nutri_Agro Labels",
+    icon: Tag,
     logo: logoRotulos,
     desc: "Gerador de rótulos para impressão em Zebra, Word e Excel — desenvolvido para nutrição animal, fábricas de rações e suplementos. Conforme MAPA (RTPI).",
     destaques: ["Impressão Zebra (ZPL)", "Exportação Word & Excel", "Ficha Técnica RTPI", "Níveis de Garantia", "QR Code & Lote", "Templates p/ Rações"],
@@ -96,6 +101,7 @@ const produtos: ProdutoCard[] = [
   },
   {
     nome: "NutriCRM",
+    icon: Users,
     logo: logoNutriCrm,
     desc: "CRM especializado para nutricionistas e representantes técnicos do agronegócio. Gestão de clientes, visitas, recomendações e acompanhamento de campo.",
     destaques: ["Gestão de Clientes", "Visitas Técnicas", "Recomendações", "Pipeline de Vendas", "Painel do Representante", "Relatórios"],
@@ -113,6 +119,7 @@ const produtos: ProdutoCard[] = [
   },
   {
     nome: "AgroGestão CRM",
+    icon: Building2,
     logo: logoAgroGestao,
     desc: "Plataforma de CRM e gestão para o agronegócio. Controle completo de carteira, oportunidades, equipe comercial e indicadores de desempenho.",
     destaques: ["CRM Completo", "Carteira de Clientes", "Pipeline Comercial", "Equipe & Metas", "Indicadores", "Painel Gerencial"],
@@ -130,6 +137,7 @@ const produtos: ProdutoCard[] = [
   },
   {
     nome: "Portal de Gestão",
+    icon: ShieldCheck,
     logo: logoBpfConsult,
     desc: "Plataforma central de gestão da BPF_Consult. Controle total de leads, pipeline de vendas CRM e gestão centralizada de licenças para todos os programas do ecossistema.",
     destaques: ["Gestão de Leads", "CRM de Vendas", "Gestão de Licenças", "Painel Super Admin", "Consolidação de Dados", "Relatórios de Vendas"],
@@ -250,7 +258,10 @@ export default function Vitrine() {
                   </div>
 
                   {/* Nome */}
-                  <h3 className="text-2xl font-bold font-display text-foreground text-center mb-3">{p.nome}</h3>
+                  <div className="flex items-center justify-center gap-2 mb-3">
+                    {p.icon && <p.icon className="h-6 w-6 text-primary shrink-0" />}
+                    <h3 className="text-2xl font-bold font-display text-foreground text-center">{p.nome}</h3>
+                  </div>
 
                   {/* Descrição */}
                   <p className="text-sm text-muted-foreground leading-relaxed text-center mb-6">{p.desc}</p>
