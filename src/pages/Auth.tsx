@@ -43,7 +43,7 @@ const authConfigs = {
     title: "AgroGestão CRM",
     subtitle: "CRM para gestão regional de vendas no agronegócio",
   },
-  "agro-rc": {
+  agrorc: {
     logo: logoAgrorc,
     title: "Agro RC CRM",
     subtitle: "CRM para Representantes Comerciais do agronegócio",

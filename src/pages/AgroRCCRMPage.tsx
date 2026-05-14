@@ -29,8 +29,8 @@ export default function AgroRCCRMPage() {
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
   const { session } = useAuth();
   const destino = "/agrorc";
-  const signupLink = session ? destino : `/auth?product=agro-rc&mode=signup&redirect=%2Fagrorc`;
-  const loginLink = session ? destino : `/auth?product=agro-rc&mode=login&redirect=%2Fagrorc`;
+  const signupLink = session ? destino : `/auth?product=agrorc&mode=signup&redirect=%2Fagrorc`;
+  const loginLink = session ? destino : `/auth?product=agrorc&mode=login&redirect=%2Fagrorc`;
 
   const handleCheckout = async (tipo: "individual" | "grupo", plano: "mensal" | "semestral" | "anual") => {
     const key = `${tipo}-${plano}`;
@@ -246,7 +246,7 @@ export default function AgroRCCRMPage() {
             <h3 className="text-xl font-bold font-display text-foreground mb-3">Experimente grátis por 7 dias!</h3>
             <p className="text-muted-foreground mb-6">Acesse o sistema completo do Agro RC CRM durante o período trial.</p>
             <Button size="lg" className="gap-2 shadow-lg shadow-primary/25" asChild>
-              <Link to="/auth?product=agro-rc&mode=signup&redirect=%2Fagrorc">
+              <Link to="/auth?product=agrorc&mode=signup&redirect=%2Fagrorc">
                 <Sparkles className="h-4 w-4" />
                 Começar Trial Grátis
               </Link>

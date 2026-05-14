@@ -71,7 +71,7 @@ const produtos: ProdutoCard[] = [
     bgCard: "bg-gradient-to-br from-purple-50 to-violet-50 dark:from-purple-950/30 dark:to-violet-950/30",
     borderColor: "border-purple-200 dark:border-purple-800",
     trial: "7 dias grátis",
-    trialLink: "/auth?product=agro-rc&mode=signup&redirect=%2Fagro-rc",
+    trialLink: "/auth?product=agrorc&mode=signup&redirect=%2Fagrorc",
     demoLink: "/demo/agrorc",
     preco: "A partir de R$ 97/mês",
   },
