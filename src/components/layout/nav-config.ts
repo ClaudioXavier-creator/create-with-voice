@@ -15,6 +15,16 @@ import {
   Tag,
   BarChart3,
   Users,
+  CalendarDays,
+  Wrench,
+  Droplets,
+  Truck,
+  Bug,
+  Activity,
+  Trash2,
+  Zap,
+  History,
+  CheckCircle2,
 } from "lucide-react";
 
 export interface NavItem {
@@ -61,6 +71,31 @@ export const NAV_ENTRIES: NavEntry[] = [
     icon: ClipboardCheck,
     items: [
       { path: "/cadastro", label: "Dados da Empresa", icon: Building2 },
+      { path: "/fornecedores", label: "Fornecedores", icon: Users },
+    ],
+  },
+
+  // --- PROGRAMAS POP (IN 04/2007) ---
+  {
+    label: "POPs - Operacional",
+    icon: ClipboardList,
+    items: [
+      { path: "/recebimento", label: "Recebimento MP", icon: ClipboardList },
+      { path: "/producao", label: "Produção", icon: Layers },
+      { path: "/pcp", label: "PCP / Sequenciamento", icon: CalendarDays },
+      { path: "/rastreabilidade", label: "Rastreabilidade", icon: History },
+      { path: "/expedicao", label: "Expedição", icon: Truck },
+      { path: "/pragas", label: "Controle de Pragas", icon: Bug },
+      { path: "/treinamentos", label: "Treinamentos", icon: GraduationCap },
+      { path: "/higiene", label: "Higiene / Sanitização", icon: Droplets },
+      { path: "/manutencao", label: "Manutenção / Calibração", icon: Wrench },
+      { path: "/potabilidade-agua", label: "Potabilidade da Água", icon: Droplets },
+      { path: "/saude-pessoal", label: "Saúde Pessoal", icon: Activity },
+      { path: "/visitantes", label: "Controle de Visitantes", icon: Users },
+      { path: "/residuos", label: "Resíduos / Efluentes", icon: Trash2 },
+      { path: "/substancias", label: "Substâncias e Medicamentos", icon: Zap },
+      { path: "/armazenamento-transporte", label: "Armazenamento e Transporte", icon: Building2 },
+      { path: "/validacao-limpeza", label: "Validação de Limpeza", icon: CheckCircle2 },
     ],
   },
 
