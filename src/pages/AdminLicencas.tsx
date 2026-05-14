@@ -85,6 +85,27 @@ export default function AdminLicencas({ isTab = false }: { isTab?: boolean }) {
     if (isAdmin) fetchEntries();
   }, [isAdmin, fetchEntries]);
 
+  const filtered = useMemo(
+    () =>
+      entries.filter(
+        (e) =>
+          e.empresa_nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          e.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          (e.produto || "").toLowerCase().includes(searchTerm.toLowerCase())
+      ),
+    [entries, searchTerm]
+  );
+
+  const grouped = useMemo(() => {
+    const result: Record<string, LicenseEntry[]> = {};
+    filtered.forEach((e) => {
+      const p = e.produto || "sem_produto";
+      if (!result[p]) result[p] = [];
+      result[p].push(e);
+    });
+    return result;
+  }, [filtered]);
+
   if (authLoading || isAdmin === null) {
     return (
       <div className="flex items-center justify-center p-8">
