@@ -142,7 +142,7 @@ export default function EmpresaSelector() {
                   </div>
                   <button
                     type="button"
-                    className="rounded-full p-1.5 hover:bg-accent/20 transition-colors shrink-0"
+                    className="rounded-full p-1.5 hover:bg-accent/20 transition-colors shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1"
                     aria-label={favoritas.includes(e.id) ? "Remover unidade dos favoritos" : "Adicionar unidade aos favoritos"}
                     onClick={(event) => {
                       event.preventDefault();
