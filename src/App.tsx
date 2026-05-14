@@ -80,6 +80,15 @@ const AuditorPortal = lazy(() => import("./pages/AuditorPortal"));
 const DemoPage = lazy(() => import("./pages/DemoPage"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
+// Agro RC CRM - Páginas Internas
+const AgroRcLayout = lazy(() => import("./components/layout/AgroRcLayout"));
+const AgroRcDashboard = lazy(() => import("./pages/agrorc/Dashboard"));
+const AgroRcPipeline = lazy(() => import("./pages/agrorc/Pipeline"));
+const AgroRcClientes = lazy(() => import("./pages/agrorc/Clientes"));
+const AgroRcVisitas = lazy(() => import("./pages/agrorc/Visitas"));
+const AgroRcMetas = lazy(() => import("./pages/agrorc/Metas"));
+const AgroRcAdmin = lazy(() => import("./pages/agrorc/Admin"));
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -198,6 +207,8 @@ const AppRoutes = () => {
         <Route path="/auditor/:token" element={<AuditorPortal />} />
         <Route path="/demo/:produto" element={<DemoPage />} />
         <Route path="/instalar" element={<Instalar />} />
+        
+        {/* Landings de Produtos */}
         <Route path="/nutricrm" element={<NutriCRMPage />} />
         <Route path="/feedbpf" element={<FeedBPFPage />} />
         <Route path="/audits-bpf/planos" element={<ProtectedRoute><AuditsBPFPlanos /></ProtectedRoute>} />
@@ -205,6 +216,28 @@ const AppRoutes = () => {
         <Route path="/agrogestao" element={<AgroGestaoCRMPage />} />
         <Route path="/agro-rc" element={<AgroRCCRMPage />} />
         <Route path="/rotulos" element={<RotulosBPFPage />} />
+
+        {/* Agro RC CRM - Rotas Dedicadas */}
+        <Route
+          path="/agrorc/*"
+          element={
+            <ProtectedRoute>
+              <AgroRcLayout>
+                <Routes>
+                  <Route path="/" element={<Navigate to="dashboard" replace />} />
+                  <Route path="/dashboard" element={<AgroRcDashboard />} />
+                  <Route path="/pipeline" element={<AgroRcPipeline />} />
+                  <Route path="/clientes" element={<AgroRcClientes />} />
+                  <Route path="/visitas" element={<AgroRcVisitas />} />
+                  <Route path="/metas" element={<AgroRcMetas />} />
+                  <Route path="/admin" element={<AgroRcAdmin />} />
+                </Routes>
+              </AgroRcLayout>
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Feed_BPF e outros (Páginas Compartilhadas Legadas) */}
         <Route
           path="/:product/*"
           element={
