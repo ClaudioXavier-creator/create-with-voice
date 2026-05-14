@@ -1,4 +1,5 @@
 import React, { Suspense, lazy } from "react";
+import { Tag, FileText, Layers, Palette, Printer } from "lucide-react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Route, Routes, Navigate, useLocation, useParams } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -88,6 +89,42 @@ const AgroRcClientes = lazy(() => import("./pages/agrorc/Clientes"));
 const AgroRcVisitas = lazy(() => import("./pages/agrorc/Visitas"));
 const AgroRcMetas = lazy(() => import("./pages/agrorc/Metas"));
 const AgroRcAdmin = lazy(() => import("./pages/agrorc/Admin"));
+
+// NutriCRM - Páginas Internas
+const NutriCrmLayout = lazy(() => import("./components/layout/NutriCrmLayout"));
+const NutriDashboard = lazy(() => import("./pages/nutricrm/NutriCrmPages").then(m => ({ default: m.NutriDashboardPage })));
+const NutriClientes = lazy(() => import("./pages/nutricrm/NutriCrmPages").then(m => ({ default: m.NutriClientesPage })));
+const NutriVisitas = lazy(() => import("./pages/nutricrm/NutriCrmPages").then(m => ({ default: m.NutriVisitasPage })));
+const NutriProjetos = lazy(() => import("./pages/nutricrm/NutriCrmPages").then(m => ({ default: m.NutriProjetosPage })));
+const NutriMetas = lazy(() => import("./pages/nutricrm/NutriCrmPages").then(m => ({ default: m.NutriMetasPage })));
+const NutriRelatorios = lazy(() => import("./pages/nutricrm/NutriCrmPages").then(m => ({ default: m.NutriRelatoriosPage })));
+
+// AgroGestão - Páginas Internas
+const AgroGestaoLayout = lazy(() => import("./components/layout/AgroGestaoLayout"));
+const AgroDashboard = lazy(() => import("./pages/agrogestao/AgroGestaoPages").then(m => ({ default: m.AgroDashboardPage })));
+const AgroClientes = lazy(() => import("./pages/agrogestao/AgroGestaoPages").then(m => ({ default: m.AgroClientesPage })));
+const AgroRegioes = lazy(() => import("./pages/agrogestao/AgroGestaoPages").then(m => ({ default: m.AgroRegioesPage })));
+const AgroVisitas = lazy(() => import("./pages/agrogestao/AgroGestaoPages").then(m => ({ default: m.AgroVisitasPage })));
+const AgroMetas = lazy(() => import("./pages/agrogestao/AgroGestaoPages").then(m => ({ default: m.AgroMetasPage })));
+const AgroRelatorios = lazy(() => import("./pages/agrogestao/AgroGestaoPages").then(m => ({ default: m.AgroRelatoriosPage })));
+
+// Audits_BPF - Páginas Internas
+const AuditsBpfLayout = lazy(() => import("./components/layout/AuditsBpfLayout"));
+const AuditsDashboard = lazy(() => import("./pages/auditsbpf/AuditsBpfPages").then(m => ({ default: m.AuditsDashboardPage })));
+const AuditsChecklist = lazy(() => import("./pages/auditsbpf/AuditsBpfPages").then(m => ({ default: m.AuditsChecklistPage })));
+const AuditsSala = lazy(() => import("./pages/auditsbpf/AuditsBpfPages").then(m => ({ default: m.AuditsSalaPage })));
+const AuditsPlano = lazy(() => import("./pages/auditsbpf/AuditsBpfPages").then(m => ({ default: m.AuditsPlanoPage })));
+const AuditsRelatorio = lazy(() => import("./pages/auditsbpf/AuditsBpfPages").then(m => ({ default: m.AuditsRelatorioPage })));
+const AuditsHistorico = lazy(() => import("./pages/auditsbpf/AuditsBpfPages").then(m => ({ default: m.AuditsHistoricoPage })));
+
+// Nutri_Agro Labels - Páginas Internas
+const RotulosLayout = lazy(() => import("./components/layout/RotulosLayout"));
+const RotulosDashboard = lazy(() => import("./pages/rotulos/RotulosPages").then(m => ({ default: m.RotulosDashboardPage })));
+const RotulosEditor = lazy(() => import("./pages/rotulos/RotulosPages").then(m => ({ default: (props: any) => <m.GenericModule name="Editor de Rótulos" icon={Tag} {...props} /> })));
+const RotulosRTPI = lazy(() => import("./pages/rotulos/RotulosPages").then(m => ({ default: (props: any) => <m.GenericModule name="Ficha Técnica (RTPI)" icon={FileText} {...props} /> })));
+const RotulosNiveis = lazy(() => import("./pages/rotulos/RotulosPages").then(m => ({ default: (props: any) => <m.GenericModule name="Níveis de Garantia" icon={Layers} {...props} /> })));
+const RotulosTemplates = lazy(() => import("./pages/rotulos/RotulosPages").then(m => ({ default: (props: any) => <m.GenericModule name="Templates de Rótulos" icon={Palette} {...props} /> })));
+const RotulosZebra = lazy(() => import("./pages/rotulos/RotulosPages").then(m => ({ default: (props: any) => <m.GenericModule name="Configuração Zebra" icon={Printer} {...props} /> })));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -237,7 +274,86 @@ const AppRoutes = () => {
           }
         />
 
-        {/* Feed_BPF e outros (Páginas Compartilhadas Legadas) */}
+        {/* NutriCRM - Rotas Dedicadas */}
+        <Route
+          path="/nutricrm/*"
+          element={
+            <ProtectedRoute>
+              <NutriCrmLayout>
+                <Routes>
+                  <Route index element={<Navigate to="dashboard" replace />} />
+                  <Route path="dashboard" element={<NutriDashboard />} />
+                  <Route path="clientes" element={<NutriClientes />} />
+                  <Route path="visitas" element={<NutriVisitas />} />
+                  <Route path="projetos" element={<NutriProjetos />} />
+                  <Route path="metas" element={<NutriMetas />} />
+                  <Route path="relatorios" element={<NutriRelatorios />} />
+                </Routes>
+              </NutriCrmLayout>
+            </ProtectedRoute>
+          }
+        />
+
+        {/* AgroGestão CRM - Rotas Dedicadas */}
+        <Route
+          path="/agrogestao/*"
+          element={
+            <ProtectedRoute>
+              <AgroGestaoLayout>
+                <Routes>
+                  <Route index element={<Navigate to="dashboard" replace />} />
+                  <Route path="dashboard" element={<AgroDashboard />} />
+                  <Route path="clientes" element={<AgroClientes />} />
+                  <Route path="regioes" element={<AgroRegioes />} />
+                  <Route path="visitas" element={<AgroVisitas />} />
+                  <Route path="metas" element={<AgroMetas />} />
+                  <Route path="relatorios" element={<AgroRelatorios />} />
+                </Routes>
+              </AgroGestaoLayout>
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Audits_BPF - Rotas Dedicadas */}
+        <Route
+          path="/auditsbpf/*"
+          element={
+            <ProtectedRoute>
+              <AuditsBpfLayout>
+                <Routes>
+                  <Route index element={<Navigate to="dashboard" replace />} />
+                  <Route path="dashboard" element={<AuditsDashboard />} />
+                  <Route path="checklist" element={<AuditsChecklist />} />
+                  <Route path="sala" element={<AuditsSala />} />
+                  <Route path="plano" element={<AuditsPlano />} />
+                  <Route path="relatorio" element={<AuditsRelatorio />} />
+                  <Route path="historico" element={<AuditsHistorico />} />
+                </Routes>
+              </AuditsBpfLayout>
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Nutri_Agro Labels - Rotas Dedicadas */}
+        <Route
+          path="/rotulos/*"
+          element={
+            <ProtectedRoute>
+              <RotulosLayout>
+                <Routes>
+                  <Route index element={<Navigate to="dashboard" replace />} />
+                  <Route path="dashboard" element={<RotulosDashboard />} />
+                  <Route path="editor" element={<RotulosEditor />} />
+                  <Route path="rtpi" element={<RotulosRTPI />} />
+                  <Route path="niveis" element={<RotulosNiveis />} />
+                  <Route path="templates" element={<RotulosTemplates />} />
+                  <Route path="zebra" element={<RotulosZebra />} />
+                </Routes>
+              </RotulosLayout>
+            </ProtectedRoute>
+          }
+        />
+
         <Route
           path="/:product/*"
           element={
