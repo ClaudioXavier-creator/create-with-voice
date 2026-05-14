@@ -24,6 +24,7 @@ import { NAV_ENTRIES } from "@/components/layout/nav-config";
 import OfflineBanner from "@/components/OfflineBanner";
 import PageLoader from "@/components/PageLoader";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import ClearCacheButton from "@/components/ClearCacheButton";
 
 const PRODUCT_CONFIGS: Record<string, { logo: string; title: string; subtitle: string }> = {
   feedbpf: {
@@ -176,6 +177,7 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
               <LogOut className="h-4 w-4" />
             </Button>
           </div>
+          <ClearCacheButton />
         </div>
       </aside>
 
@@ -237,6 +239,7 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
                     <LogOut className="w-4 h-4 mr-3" />
                     Sair da conta
                   </Button>
+                  <ClearCacheButton />
                 </div>
               </div>
             </SheetContent>
