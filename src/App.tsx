@@ -116,6 +116,16 @@ const AuditsPlano = lazy(() => import("./pages/auditsbpf/AuditsBpfPages").then(m
 const AuditsRelatorio = lazy(() => import("./pages/auditsbpf/AuditsBpfPages").then(m => ({ default: m.AuditsRelatorioPage })));
 const AuditsHistorico = lazy(() => import("./pages/auditsbpf/AuditsBpfPages").then(m => ({ default: m.AuditsHistoricoPage })));
 
+// Nutri_Agro Labels - Páginas Internas
+const RotulosLayout = lazy(() => import("./components/layout/RotulosLayout"));
+const RotulosDashboard = lazy(() => import("./pages/rotulos/RotulosPages").then(m => ({ default: m.RotulosDashboardPage })));
+const { GenericModule: RotulosGeneric } = require("./pages/rotulos/RotulosPages");
+const RotulosEditor = (props: any) => <RotulosGeneric name="Editor de Rótulos" icon={Tag} {...props} />;
+const RotulosRTPI = (props: any) => <RotulosGeneric name="Ficha Técnica (RTPI)" icon={FileText} {...props} />;
+const RotulosNiveis = (props: any) => <RotulosGeneric name="Níveis de Garantia" icon={Layers} {...props} />;
+const RotulosTemplates = (props: any) => <RotulosGeneric name="Templates de Rótulos" icon={Palette} {...props} />;
+const RotulosZebra = (props: any) => <RotulosGeneric name="Configuração Zebra" icon={Printer} {...props} />;
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -320,6 +330,26 @@ const AppRoutes = () => {
                   <Route path="historico" element={<AuditsHistorico />} />
                 </Routes>
               </AuditsBpfLayout>
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Nutri_Agro Labels - Rotas Dedicadas */}
+        <Route
+          path="/rotulos/*"
+          element={
+            <ProtectedRoute>
+              <RotulosLayout>
+                <Routes>
+                  <Route index element={<Navigate to="dashboard" replace />} />
+                  <Route path="dashboard" element={<RotulosDashboard />} />
+                  <Route path="editor" element={<RotulosEditor />} />
+                  <Route path="rtpi" element={<RotulosRTPI />} />
+                  <Route path="niveis" element={<RotulosNiveis />} />
+                  <Route path="templates" element={<RotulosTemplates />} />
+                  <Route path="zebra" element={<RotulosZebra />} />
+                </Routes>
+              </RotulosLayout>
             </ProtectedRoute>
           }
         />
