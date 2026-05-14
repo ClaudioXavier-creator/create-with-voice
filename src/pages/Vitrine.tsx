@@ -239,19 +239,13 @@ export default function Vitrine() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {produtosVisiveis.map((p) => (
             <div key={p.nome} className="group cursor-pointer" onClick={() => {
+              const target = p.appLink || p.link;
               if (p.external) {
-                const base = (p.appLink || p.link).replace(/\/(dashboard|app)?\/?$/, "");
-                window.open(`${base}/auth`, "_blank", "noopener,noreferrer");
+                window.open(target, "_blank", "noopener,noreferrer");
                 return;
               }
-              
-              // Se o usuário já estiver logado, manda direto para o app
-              // Caso contrário, manda para a página de detalhes/tutorial
-              if (user) {
-                navigate(p.appLink || p.link);
-              } else {
-                navigate(p.link);
-              }
+              // Vai direto para o programa (ProtectedRoute redireciona para /auth se não logado)
+              navigate(target);
             }}>
               <div className={`h-full rounded-2xl border-2 ${p.borderColor} ${p.bgCard} p-1 transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 hover:scale-[1.02]`}>
                 <div className="h-full rounded-xl bg-card/80 backdrop-blur-sm p-6 sm:p-8 flex flex-col">
