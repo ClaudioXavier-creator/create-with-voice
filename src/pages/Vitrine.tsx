@@ -119,7 +119,7 @@ const produtos: ProdutoCard[] = [
     preco: "A partir de R$ 97/mês",
   },
   {
-    nome: "Portal de Gestão (CRM)",
+    nome: "Portal de Gestão",
     logo: logoBpfConsult,
     desc: "Plataforma central de gestão da BPF_Consult. Controle total de leads, pipeline de vendas CRM e gestão centralizada de licenças para todos os programas do ecossistema.",
     destaques: ["Gestão de Leads", "CRM de Vendas", "Gestão de Licenças", "Painel Super Admin", "Consolidação de Dados", "Relatórios de Vendas"],

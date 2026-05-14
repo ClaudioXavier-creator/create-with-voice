@@ -56,7 +56,7 @@ const authConfigs = {
   admin: {
     logo: logoImg,
     title: "Portal de Gestão",
-    subtitle: "Gestão central de leads e licenças BPF_Consult",
+    subtitle: "Gestão central de leads, CRM e licenças BPF_Consult",
   },
 } as const;
 
