@@ -251,8 +251,21 @@ export default function Vitrine() {
                       <div className={`absolute -inset-3 rounded-full bg-gradient-to-br ${p.gradient} opacity-10 blur-xl group-hover:opacity-20 transition-opacity`} />
                       <img
                         src={p.logo}
-                        alt={`${p.nome} Logo`}
-                        className="relative w-28 h-28 sm:w-32 sm:h-32 object-contain drop-shadow-md group-hover:scale-105 transition-transform duration-300"
+                        alt={p.nome}
+                        loading="eager"
+                        decoding="async"
+                        className="relative w-28 h-28 sm:w-32 sm:h-32 object-contain drop-shadow-md group-hover:scale-105 transition-transform duration-300 bg-transparent"
+                        onError={(e) => {
+                          const img = e.currentTarget;
+                          const parent = img.parentElement;
+                          if (!parent || parent.querySelector('[data-logo-fallback]')) return;
+                          img.style.display = 'none';
+                          const fb = document.createElement('div');
+                          fb.setAttribute('data-logo-fallback', 'true');
+                          fb.className = `relative w-28 h-28 sm:w-32 sm:h-32 rounded-2xl bg-gradient-to-br ${p.gradient} flex items-center justify-center text-white font-bold text-lg text-center px-3 shadow-lg`;
+                          fb.textContent = p.nome;
+                          parent.appendChild(fb);
+                        }}
                       />
                     </div>
                   </div>
