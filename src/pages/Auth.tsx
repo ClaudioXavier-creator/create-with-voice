@@ -379,10 +379,10 @@ export default function Auth() {
                       type="button"
                       onClick={() => setTipoUsuario("consultoria")}
                       aria-pressed={tipoUsuario === "consultoria"}
-                      className={`flex flex-col items-center gap-2 p-4 rounded-lg border-2 transition-all ${
+                      className={`flex flex-col items-center gap-2 p-4 rounded-lg border-2 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${
                           tipoUsuario === "consultoria"
                             ? "border-primary bg-primary/10 text-primary"
-                            : "border-border hover:border-muted-foreground"
+                            : "border-border hover:border-muted-foreground hover:bg-muted/50"
                       }`}
                     >
                       <Briefcase aria-hidden="true" className="w-6 h-6" />
