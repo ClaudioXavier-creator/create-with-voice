@@ -240,7 +240,7 @@ export default function Vitrine() {
           {produtosVisiveis.map((p) => (
             <div key={p.nome} className="group cursor-pointer" onClick={() => {
               if (p.external) {
-                window.open(p.link, "_blank", "noopener,noreferrer");
+                window.open(p.appLink || p.link, "_blank", "noopener,noreferrer");
                 return;
               }
               
