@@ -162,7 +162,7 @@ export default function Index() {
   return (
     <div className="space-y-8 pb-10">
       <div className="flex items-center justify-between gap-4 flex-wrap">
-        <PageHeader icon={LayoutDashboard} title="Painel de Controle" subtitle="Visão geral da conformidade e indicadores de BPF" />
+        <PageHeader icon={LayoutDashboard} title="Painel de Controle" description="Visão geral da conformidade e indicadores de BPF" />
         <div className="flex items-center gap-3">
           <Select value={periodoFiltro} onValueChange={setPeriodoFiltro}>
             <SelectTrigger className="w-[180px] bg-card/50 backdrop-blur-sm border-primary/20"><SelectValue placeholder="Período" /></SelectTrigger>
@@ -192,7 +192,7 @@ export default function Index() {
         </div>
       </div>
 
-      {showOnboarding && <OnboardingOverlay onStart={iniciarTour} onSkip={fecharTour} />}
+      {showOnboarding && <OnboardingOverlay onClose={fecharTour} />}
     </div>
   );
 }
