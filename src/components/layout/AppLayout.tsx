@@ -23,6 +23,7 @@ import { SidebarNav } from "@/components/layout/SidebarNav";
 import { NAV_ENTRIES } from "@/components/layout/nav-config";
 import OfflineBanner from "@/components/OfflineBanner";
 import PageLoader from "@/components/PageLoader";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 
 const PRODUCT_CONFIGS: Record<string, { logo: string; title: string; subtitle: string }> = {
   feedbpf: {
