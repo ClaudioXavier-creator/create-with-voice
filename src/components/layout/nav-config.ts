@@ -27,10 +27,19 @@ import {
   CheckCircle2,
 } from "lucide-react";
 
+import logoFeedBpf from "@/assets/logo-feed-bpf.png";
+import logoAuditsBpf from "@/assets/logo-audits-bpf.png";
+import logoNutricrm from "@/assets/logo-nutricrm.png";
+import logoAgrogestao from "@/assets/logo-agrogestao.png";
+import logoAgrorc from "@/assets/logo-agrorc.png";
+import logoRotulos from "@/assets/logo-rotulos-bpf.png";
+import logoBpfConsult from "@/assets/logo-bpf-consult.png";
+
 export interface NavItem {
   path: string;
   label: string;
   icon: React.ElementType;
+  logo?: string;
   keywords?: string[];
   requiredRoles?: string[];
   requiredEmail?: string;
@@ -40,6 +49,7 @@ export interface NavItem {
 export interface NavGroup {
   label: string;
   icon: React.ElementType;
+  logo?: string;
   items: NavItem[];
 }
 
@@ -55,13 +65,13 @@ export const NAV_ENTRIES: NavEntry[] = [
     label: "Programas BPF_Consult",
     icon: Layers,
     items: [
-      { path: "/dashboard", label: "Feed_BPF", icon: LayoutDashboard },
-      { path: "https://friendly-flame-igniter.lovable.app", label: "Audits_BPF", icon: ShieldCheck, external: true },
-      { path: "https://soil-to-client.lovable.app", label: "Agro RC CRM", icon: BarChart3, external: true },
-      { path: "/rotulos/dashboard", label: "Nutri_Agro Labels", icon: Tag },
-      { path: "https://nutricrm.onrender.com", label: "NutriCRM", icon: Users, external: true },
-      { path: "https://regional-fixer-charm.lovable.app", label: "AgroGestão CRM", icon: Building2, external: true },
-      { path: "/admin", label: "Portal de Gestão & CRM", icon: ShieldCheck, requiredRoles: ["admin", "comercial"] },
+      { path: "/dashboard", label: "Feed_BPF", icon: LayoutDashboard, logo: logoFeedBpf },
+      { path: "https://friendly-flame-igniter.lovable.app", label: "Audits_BPF", icon: ShieldCheck, external: true, logo: logoAuditsBpf },
+      { path: "https://soil-to-client.lovable.app", label: "Agro RC CRM", icon: BarChart3, external: true, logo: logoAgrorc },
+      { path: "/rotulos/dashboard", label: "Nutri_Agro Labels", icon: Tag, logo: logoRotulos },
+      { path: "https://nutricrm.onrender.com", label: "NutriCRM", icon: Users, external: true, logo: logoNutricrm },
+      { path: "https://regional-fixer-charm.lovable.app", label: "AgroGestão CRM", icon: Building2, external: true, logo: logoAgrogestao },
+      { path: "/admin", label: "Portal de Gestão & CRM", icon: ShieldCheck, requiredRoles: ["admin", "comercial"], logo: logoBpfConsult },
     ],
   },
 
