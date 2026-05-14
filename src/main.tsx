@@ -8,8 +8,10 @@ import "./index.css";
 function cleanupStaleServiceWorkers() {
   if (typeof window === "undefined") return;
 
-  // Manual cache busting version - update this string to force a full refresh for all users
-  const APP_VERSION = "2024.05.14.v1"; 
+  // Manual cache busting version - update this string to force a full refresh for all users.
+  // Increment the version number (e.g., v1 -> v2) whenever you make big changes
+  // that might be stuck in browser cache.
+  const APP_VERSION = "2024.05.14.v2"; 
 
   let isInIframe = false;
   try {
