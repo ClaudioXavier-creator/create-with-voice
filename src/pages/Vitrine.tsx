@@ -71,7 +71,7 @@ const produtos: ProdutoCard[] = [
     desc: "Plataforma de gestão para Representantes Comerciais do agronegócio. Controle de clientes, metas, visitas, pipeline de oportunidades Kanban e painel RC com margens e scores.",
     destaques: ["Painel RC", "Pipeline Kanban", "Metas Comerciais", "Visitas a Campo", "Clientes & Carteira", "Scores de Desempenho"],
     link: "https://soil-to-client.lovable.app",
-    appLink: "https://soil-to-client.lovable.app",
+    appLink: "https://soil-to-client.lovable.app/dashboard",
     gradient: "from-[hsl(270,70%,45%)] to-[hsl(290,80%,30%)]",
     bgCard: "bg-gradient-to-br from-purple-50 to-violet-50 dark:from-purple-950/30 dark:to-violet-950/30",
     borderColor: "border-purple-200 dark:border-purple-800",
