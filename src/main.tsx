@@ -28,7 +28,7 @@ function cleanupStaleServiceWorkers() {
   const storedVersion = localStorage.getItem("__app_version__");
   const versionMismatch = storedVersion !== APP_VERSION;
   
-  const shouldCleanup = versionMismatch || true; // Force cleanup on every reload for now to kill the zombie cache
+  const shouldCleanup = versionMismatch;
 
   if (!shouldCleanup) return;
 
