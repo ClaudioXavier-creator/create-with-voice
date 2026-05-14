@@ -121,7 +121,7 @@ export default function LicenseGate({ children, product: initialProduct }: Licen
   // Se initialProduct for passado (pelo Layout dedicado), ele tem prioridade sobre a URL
   const product = initialProduct || (urlProduct as ProductKey) || "feedbpf";
   
-  const { license, loading, isActive, daysRemaining } = useLicense();
+  const { license, loading, isActive, daysRemaining } = useLicense(product);
   const { empresaAtiva, loading: empresaLoading } = useEmpresa();
   const { user, roles, loading: authLoading } = useAuth();
   const SUPER_ADMIN_EMAIL = "claudiolx.nunes@gmail.com";
