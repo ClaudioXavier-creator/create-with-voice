@@ -280,12 +280,90 @@ export default function AdminLicencas({ isTab = false }: { isTab?: boolean }) {
               className="pl-9"
             />
           </div>
-          {isTab && (
-            <Button variant="outline" size="sm" onClick={fetchEntries} disabled={loading}>
-              <RefreshCw className={`w-4 h-4 mr-2 ${loading ? "animate-spin" : ""}`} />
-              Atualizar
-            </Button>
-          )}
+          <Dialog open={createOpen} onOpenChange={setCreateOpen}>
+            <DialogTrigger asChild>
+              <Button size="sm">
+                <Plus className="w-4 h-4 mr-2" />
+                Nova Licença
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Criar Licença Manual</DialogTitle>
+                <DialogDescription>
+                  Conceda acesso a um programa para um usuário existente. O e-mail deve já estar cadastrado.
+                </DialogDescription>
+              </DialogHeader>
+              <div className="space-y-3 py-2">
+                <div className="space-y-1">
+                  <Label htmlFor="email">E-mail do usuário</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    value={createForm.email}
+                    onChange={(e) => setCreateForm((p) => ({ ...p, email: e.target.value }))}
+                    placeholder="usuario@empresa.com"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <Label>Programa</Label>
+                  <Select
+                    value={createForm.produto}
+                    onValueChange={(v) => setCreateForm((p) => ({ ...p, produto: v }))}
+                  >
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      {PRODUTOS_OPCOES.map((o) => (
+                        <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1">
+                    <Label>Período</Label>
+                    <Select
+                      value={createForm.dias}
+                      onValueChange={(v) => setCreateForm((p) => ({ ...p, dias: v }))}
+                    >
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="30">30 dias</SelectItem>
+                        <SelectItem value="90">90 dias</SelectItem>
+                        <SelectItem value="180">180 dias</SelectItem>
+                        <SelectItem value="365">1 ano</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-1">
+                    <Label>Nível</Label>
+                    <Select
+                      value={createForm.nivel}
+                      onValueChange={(v) => setCreateForm((p) => ({ ...p, nivel: v }))}
+                    >
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="entrada">Entrada</SelectItem>
+                        <SelectItem value="intermediario">Intermediário</SelectItem>
+                        <SelectItem value="avancado">Avançado</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              </div>
+              <DialogFooter>
+                <Button variant="outline" onClick={() => setCreateOpen(false)} disabled={creating}>Cancelar</Button>
+                <Button onClick={handleCreate} disabled={creating}>
+                  {creating && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+                  Criar
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+          <Button variant="outline" size="sm" onClick={fetchEntries} disabled={loading}>
+            <RefreshCw className={`w-4 h-4 mr-2 ${loading ? "animate-spin" : ""}`} />
+            Atualizar
+          </Button>
         </div>
 
         {loading ? (
