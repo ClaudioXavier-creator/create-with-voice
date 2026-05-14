@@ -28,7 +28,7 @@ const authConfigs = {
     title: "Feed_BPF",
     subtitle: "Sistema de Gestão de Boas Práticas de Fabricação",
   },
-  "audits-bpf": {
+  "auditsbpf": {
     logo: logoAuditsBpf,
     title: "Audits_BPF",
     subtitle: "Auditoria interna (Decreto 12.031/2024)",
