@@ -2,9 +2,9 @@ import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
 import "./index.css";
 
-// Unregister any leftover service workers and clear caches in preview/iframe
-// contexts to avoid stale assets. Never reload — reloading inside the Lovable
-// preview iframe causes infinite loops.
+// Unregister stale service workers and clear caches when running in browser
+// contexts that are prone to serving outdated chunks after publish. Never
+// reload here — reloading inside the Lovable preview iframe causes loops.
 function cleanupStaleServiceWorkers() {
   if (typeof window === "undefined") return;
 
@@ -19,7 +19,17 @@ function cleanupStaleServiceWorkers() {
     window.location.hostname.includes("lovableproject.com") ||
     window.location.hostname.includes("id-preview--");
 
-  if (!isInIframe && !isPreviewHost) return;
+  const isPublishedHost =
+    window.location.hostname.includes("lovable.app") ||
+    window.location.hostname.includes("bpfconsult.com.br");
+
+  const isStandalone = window.matchMedia?.("(display-mode: standalone)")?.matches ?? false;
+  const shouldCleanup = isPreviewHost || isInIframe || (isPublishedHost && !isStandalone);
+
+  if (!shouldCleanup) return;
+
+  if (sessionStorage.getItem("__sw_cleanup_done__")) return;
+  sessionStorage.setItem("__sw_cleanup_done__", "1");
 
   if ("serviceWorker" in navigator) {
     navigator.serviceWorker
