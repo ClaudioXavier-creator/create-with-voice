@@ -19,6 +19,7 @@ import { useLicense } from "@/hooks/useLicense";
 import { useEmpresa } from "@/hooks/useEmpresa";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 
 import { useAuth } from "@/hooks/useAuth";
 
@@ -220,28 +221,30 @@ export default function LicenseGate({ children, product: initialProduct }: Licen
           )}
         </div>
 
-        <div id="license-plans" className="grid gap-3 md:grid-cols-3">
+        <div id="license-plans" className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
           {NIVEIS.map((nivel) => (
             <button
               key={nivel.key}
               onClick={() => setNivelSelecionado(nivel.key)}
               aria-pressed={nivelSelecionado === nivel.key}
-              className={`text-left p-4 rounded-lg border-2 transition-all ${
+              className={`text-left p-4 sm:p-5 rounded-2xl border-2 transition-all active:scale-[0.98] ${
                 nivelSelecionado === nivel.key
-                  ? "border-primary bg-primary/5 ring-2 ring-primary/20"
-                  : "border-border hover:border-primary/50"
+                  ? "border-primary bg-primary/5 ring-4 ring-primary/10"
+                  : "border-border hover:border-primary/50 bg-card/50"
               }`}
             >
-              <div className="flex items-center justify-between mb-2">
-                <h3 className="font-bold text-lg">{nivel.label}</h3>
-                {nivel.destaque && <Badge variant="default" className="text-xs">Mais popular</Badge>}
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="font-bold text-lg sm:text-xl tracking-tight">{nivel.label}</h3>
+                {nivel.destaque && <Badge variant="default" className="text-[10px] uppercase tracking-wider px-2 py-0.5">Mais popular</Badge>}
               </div>
-              <p className="text-xs text-muted-foreground mb-3">{nivel.porte}</p>
-              <ul className="space-y-1">
+              <p className="text-xs text-muted-foreground mb-4 font-medium uppercase tracking-wide">{nivel.porte}</p>
+              <ul className="space-y-2">
                 {nivel.features.map((f, i) => (
-                  <li key={i} className="text-xs flex items-start gap-1.5">
-                    <span className="text-primary mt-0.5">✓</span>
-                    <span>{f}</span>
+                  <li key={i} className="text-xs flex items-start gap-2 leading-relaxed">
+                    <div className="w-4 h-4 rounded-full bg-primary/20 text-primary flex items-center justify-center shrink-0 mt-0.5">
+                      <span className="text-[10px] font-bold">✓</span>
+                    </div>
+                    <span className="text-foreground/80">{f}</span>
                   </li>
                 ))}
               </ul>
@@ -249,37 +252,53 @@ export default function LicenseGate({ children, product: initialProduct }: Licen
           ))}
         </div>
 
-        <div className="grid gap-4 md:grid-cols-3">
+        <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
           {nivelAtivo.plans.map((plan) => {
             const totalEffective = launchActive ? plan.priceTotal / 2 : plan.priceTotal;
             const mesEffective = launchActive ? plan.priceFull / 2 : plan.priceFull;
             const loadingKey = `${nivelSelecionado}-${plan.key}`;
+            const isAnual = plan.key === "anual";
+            
             return (
-              <Card key={plan.key} className={plan.key === "anual" ? "border-primary ring-1 ring-primary" : ""}>
-                <CardHeader className="pb-2">
+              <Card key={plan.key} className={cn(
+                "rounded-2xl border-2 transition-all flex flex-col relative overflow-hidden",
+                isAnual ? "border-primary shadow-xl shadow-primary/5 bg-primary/[0.02]" : "hover:border-primary/30"
+              )}>
+                {isAnual && (
+                  <div className="absolute top-0 right-0 px-3 py-1 bg-primary text-white text-[10px] font-bold uppercase tracking-widest rounded-bl-xl z-10 shadow-sm">
+                    Recomendado
+                  </div>
+                )}
+                <CardHeader className="pb-4">
                   <div className="flex items-center justify-between">
-                    <CardTitle className="text-lg">{plan.label}</CardTitle>
-                    {plan.key === "anual" && <Badge variant="default" className="text-xs">Melhor valor</Badge>}
+                    <CardTitle className="text-xl font-bold tracking-tight">{plan.label}</CardTitle>
+                    {isAnual && <Badge variant="default" className="text-[10px] h-5">Melhor valor</Badge>}
                   </div>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  <div>
+                <CardContent className="space-y-6 flex-1 flex flex-col justify-between">
+                  <div className="space-y-1">
                     {launchActive && (
-                      <p className="text-xs text-muted-foreground line-through">
+                      <p className="text-xs text-muted-foreground line-through opacity-60">
                         {formatBRL(plan.priceTotal)}
                       </p>
                     )}
-                    <p className="text-2xl font-bold">{formatBRL(totalEffective)}</p>
+                    <div className="flex items-baseline gap-1">
+                      <span className="text-3xl font-bold text-foreground tracking-tight">{formatBRL(totalEffective)}</span>
+                      <span className="text-xs text-muted-foreground font-medium lowercase">/total</span>
+                    </div>
                     {plan.key !== "mensal" && (
-                      <p className="text-sm font-medium text-primary">
+                      <div className="inline-flex items-center px-2 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] font-bold uppercase tracking-wide">
                         equivale a {formatBRL(mesEffective)}/mês
-                      </p>
+                      </div>
                     )}
-                    <p className="text-sm text-muted-foreground">{plan.desc}</p>
+                    <p className="text-xs text-muted-foreground mt-2">{plan.desc}</p>
                   </div>
                   <Button
-                    className="w-full"
-                    variant={plan.key === "anual" ? "default" : "outline"}
+                    className={cn(
+                      "w-full h-11 rounded-xl font-bold transition-all active:scale-[0.97]",
+                      isAnual ? "bg-primary hover:bg-primary/90 shadow-lg shadow-primary/20" : "variant-outline"
+                    )}
+                    variant={isAnual ? "default" : "outline"}
                     onClick={() => handleCheckout(plan.key)}
                     disabled={!!checkoutLoading}
                   >
@@ -288,7 +307,7 @@ export default function LicenseGate({ children, product: initialProduct }: Licen
                     ) : (
                       <CreditCard aria-hidden="true" className="w-4 h-4 mr-2" />
                     )}
-                    Assinar
+                    Assinar Agora
                   </Button>
                 </CardContent>
               </Card>

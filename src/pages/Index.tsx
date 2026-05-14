@@ -498,19 +498,19 @@ export default function Index() {
         </div>
       )}
 
-      {/* Stats Cards — Premium Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-4">
+      {/* Stats Cards — Premium Grid - Responsive for all screens */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4 lg:gap-6">
         {stats.map((s) => (
-          <Link key={s.label} to={s.link} className="block group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-4 rounded-xl">
-            <Card className="border-none shadow-premium bg-card hover:shadow-premium-hover transition-all duration-300 relative overflow-hidden h-full">
-              <div className={cn("absolute top-0 right-0 w-16 h-16 rounded-bl-[40px] opacity-10 transition-opacity group-hover:opacity-20", s.bg)} />
-              <CardContent className="flex flex-col items-center gap-3 p-5 text-center">
-                <div className={cn("flex items-center justify-center w-12 h-12 rounded-2xl shadow-inner transition-transform group-hover:scale-110 group-hover:-rotate-3 duration-300", s.bg)}>
-                  <s.icon aria-hidden="true" className={cn("w-6 h-6", s.color)} />
+          <Link key={s.label} to={s.link} className="block group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-4 rounded-2xl active:scale-95 transition-transform">
+            <Card className="border-none shadow-premium bg-card hover:shadow-premium-hover transition-all duration-500 relative overflow-hidden h-full">
+              <div className={cn("absolute top-0 right-0 w-20 h-20 rounded-bl-[60px] opacity-10 transition-all duration-500 group-hover:opacity-25 group-hover:scale-110", s.bg)} />
+              <CardContent className="flex flex-col items-center gap-3 sm:gap-4 p-4 sm:p-5 lg:p-6 text-center h-full justify-center">
+                <div className={cn("flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-2xl shadow-inner transition-all duration-500 group-hover:scale-110 group-hover:-rotate-6 group-hover:shadow-lg", s.bg)}>
+                  <s.icon aria-hidden="true" className={cn("w-5 h-5 sm:w-6 sm:h-6", s.color)} />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold font-display tracking-tight text-foreground">{s.value}</p>
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 mt-1 leading-tight">{s.label}</p>
+                  <p className="text-xl sm:text-2xl font-bold font-display tracking-tight text-foreground">{s.value}</p>
+                  <p className="text-[9px] sm:text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 mt-1 leading-tight">{s.label}</p>
                 </div>
               </CardContent>
             </Card>
