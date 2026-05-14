@@ -274,11 +274,11 @@ const AppRoutes = () => {
                 <Routes>
                   <Route index element={<Navigate to="dashboard" replace />} />
                   <Route path="dashboard" element={<RotulosDashboard />} />
-                   <Route path="editor" element={<RotulosEditor name="Editor de Rótulos" icon={Tag} />} />
-                   <Route path="rtpi" element={<RotulosRTPI name="Ficha Técnica (RTPI)" icon={FileText} />} />
-                   <Route path="niveis" element={<RotulosNiveis name="Níveis de Garantia" icon={Layers} />} />
-                   <Route path="templates" element={<RotulosTemplates name="Templates de Rótulos" icon={Palette} />} />
-                   <Route path="zebra" element={<RotulosZebra name="Configuração Zebra" icon={Printer} />} />
+                   <Route path="editor" element={<RotulosEditor />} />
+                   <Route path="rtpi" element={<RotulosRTPI />} />
+                   <Route path="niveis" element={<RotulosNiveis />} />
+                   <Route path="templates" element={<RotulosTemplates />} />
+                   <Route path="zebra" element={<RotulosZebra />} />
                 </Routes>
               </RotulosLayout>
             </ProtectedRoute>
