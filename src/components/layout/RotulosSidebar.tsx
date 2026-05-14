@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
-import logoRotulos from "@/assets/logo-rotulos-bpf.png";
+import logoRotulos from "@/assets/logo-nutri-agro-labels.png";
 import ClearCacheButton from "@/components/ClearCacheButton";
 
 const items = [
