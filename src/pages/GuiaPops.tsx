@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   HelpCircle, ChevronDown, ChevronRight, BookOpen, FileText, Droplets, Users,
   ShieldCheck, Wrench, Bug, Recycle, Search, Beaker, ClipboardCheck,
@@ -384,25 +384,83 @@ const sections: GuiaSection[] = [
   digitalizacaoSection,
 ];
 
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { useSearchParams } from "react-router-dom";
+
 export default function GuiaPops() {
-  const [openSections, setOpenSections] = useState<Record<string, boolean>>({});
-  const toggleSection = (id: string) => setOpenSections((prev) => ({ ...prev, [id]: !prev[id] }));
-  const expandAll = () => { const all: Record<string, boolean> = {}; sections.forEach((s) => (all[s.id] = true)); setOpenSections(all); };
-  const collapseAll = () => setOpenSections({});
+  const [searchParams, setSearchParams] = useSearchParams();
+  const popParam = searchParams.get("pop")?.toLowerCase().replace("-", "");
+  
+  const [activeTab, setActiveTab] = useState(() => {
+    if (popParam && sections.some(s => s.id === popParam)) {
+      return popParam;
+    }
+    return sections[0].id;
+  });
+
+  const handleTabChange = (value: string) => {
+    setActiveTab(value);
+    const section = sections.find(s => s.id === value);
+    if (section && section.badge) {
+      setSearchParams({ pop: section.badge });
+    } else {
+      setSearchParams({});
+    }
+  };
+
+  useEffect(() => {
+    if (popParam && sections.some(s => s.id === popParam)) {
+      setActiveTab(popParam);
+    }
+  }, [popParam]);
 
   return (
     <>
-      <PageHeader icon={BookOpen} title="Guia dos POPs — IN 04/2007" description="Textos procedimentais completos dos 10 POPs obrigatórios com Instruções de Trabalho, orientações de preenchimento e digitalização" />
-      <div className="flex gap-2 mb-6">
-        <button onClick={expandAll} className="text-sm text-primary hover:underline font-medium">Expandir tudo</button>
-        <span className="text-muted-foreground">|</span>
-        <button onClick={collapseAll} className="text-sm text-primary hover:underline font-medium">Recolher tudo</button>
-      </div>
-      <div className="space-y-3">
+      <PageHeader 
+        icon={BookOpen} 
+        title="Guia dos POPs — IN 04/2007" 
+        description="Textos procedimentais completos dos 10 POPs obrigatórios com Instruções de Trabalho, orientações de preenchimento e digitalização" 
+      />
+      
+      <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-6">
+        <ScrollArea className="w-full">
+          <TabsList className="inline-flex w-max h-auto p-1 bg-muted/50">
+            {sections.map((section) => (
+              <TabsTrigger 
+                key={section.id} 
+                value={section.id}
+                className="px-4 py-2.5 text-xs font-semibold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all"
+              >
+                <div className="flex flex-col items-center gap-1">
+                  <section.icon className="w-4 h-4" />
+                  <span>{section.badge || section.title.split(" — ")[0]}</span>
+                </div>
+              </TabsTrigger>
+            ))}
+          </TabsList>
+          <ScrollBar orientation="horizontal" />
+        </ScrollArea>
+
         {sections.map((section) => (
-          <AccordionCard key={section.id} section={section} isOpen={openSections[section.id] ?? false} onToggle={() => toggleSection(section.id)} />
+          <TabsContent key={section.id} value={section.id} className="mt-0 focus-visible:outline-none focus-visible:ring-0">
+            <Card className="border border-border">
+              <CardHeader className="flex flex-row items-center gap-3 bg-muted/30 border-b border-border/50">
+                <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-primary/10 shrink-0">
+                  <section.icon className="w-5 h-5 text-primary" />
+                </div>
+                <div>
+                  <CardTitle className="text-lg font-bold">{section.title}</CardTitle>
+                  {section.badge && <Badge variant="secondary" className="mt-1">{section.badge}</Badge>}
+                </div>
+              </CardHeader>
+              <CardContent className="pt-6">
+                {section.content}
+              </CardContent>
+            </Card>
+          </TabsContent>
         ))}
-      </div>
+      </Tabs>
     </>
   );
 }
