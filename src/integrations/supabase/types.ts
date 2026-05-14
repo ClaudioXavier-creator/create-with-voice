@@ -14,6 +14,211 @@ export type Database = {
   }
   public: {
     Tables: {
+      agrogestao_metas: {
+        Row: {
+          created_at: string | null
+          empresa_id: string
+          gerente_id: string
+          id: string
+          periodo: string
+          valor_meta: number
+          valor_realizado: number | null
+          vendedor_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          empresa_id: string
+          gerente_id: string
+          id?: string
+          periodo: string
+          valor_meta: number
+          valor_realizado?: number | null
+          vendedor_id: string
+        }
+        Update: {
+          created_at?: string | null
+          empresa_id?: string
+          gerente_id?: string
+          id?: string
+          periodo?: string
+          valor_meta?: number
+          valor_realizado?: number | null
+          vendedor_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "agrogestao_metas_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      agrorc_clientes: {
+        Row: {
+          created_at: string | null
+          documento: string | null
+          email: string | null
+          empresa_id: string
+          id: string
+          nome: string
+          perfil_produtivo: Json | null
+          regiao: string | null
+          score_desempenho: number | null
+          segmento: string | null
+          telefone: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          documento?: string | null
+          email?: string | null
+          empresa_id: string
+          id?: string
+          nome: string
+          perfil_produtivo?: Json | null
+          regiao?: string | null
+          score_desempenho?: number | null
+          segmento?: string | null
+          telefone?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          documento?: string | null
+          email?: string | null
+          empresa_id?: string
+          id?: string
+          nome?: string
+          perfil_produtivo?: Json | null
+          regiao?: string | null
+          score_desempenho?: number | null
+          segmento?: string | null
+          telefone?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "agrorc_clientes_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      agrorc_pipeline: {
+        Row: {
+          cliente_id: string | null
+          created_at: string | null
+          data_fechamento_prevista: string | null
+          empresa_id: string
+          etapa: string | null
+          id: string
+          titulo: string
+          user_id: string
+          valor: number | null
+        }
+        Insert: {
+          cliente_id?: string | null
+          created_at?: string | null
+          data_fechamento_prevista?: string | null
+          empresa_id: string
+          etapa?: string | null
+          id?: string
+          titulo: string
+          user_id: string
+          valor?: number | null
+        }
+        Update: {
+          cliente_id?: string | null
+          created_at?: string | null
+          data_fechamento_prevista?: string | null
+          empresa_id?: string
+          etapa?: string | null
+          id?: string
+          titulo?: string
+          user_id?: string
+          valor?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "agrorc_pipeline_cliente_id_fkey"
+            columns: ["cliente_id"]
+            isOneToOne: false
+            referencedRelation: "agrorc_clientes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "agrorc_pipeline_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      agrorc_visitas: {
+        Row: {
+          cliente_id: string | null
+          created_at: string | null
+          data_planejada: string
+          data_realizada: string | null
+          empresa_id: string
+          fotos: string[] | null
+          geolocalizacao: Json | null
+          id: string
+          relatorio: string | null
+          status: string | null
+          user_id: string
+        }
+        Insert: {
+          cliente_id?: string | null
+          created_at?: string | null
+          data_planejada: string
+          data_realizada?: string | null
+          empresa_id: string
+          fotos?: string[] | null
+          geolocalizacao?: Json | null
+          id?: string
+          relatorio?: string | null
+          status?: string | null
+          user_id: string
+        }
+        Update: {
+          cliente_id?: string | null
+          created_at?: string | null
+          data_planejada?: string
+          data_realizada?: string | null
+          empresa_id?: string
+          fotos?: string[] | null
+          geolocalizacao?: Json | null
+          id?: string
+          relatorio?: string | null
+          status?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "agrorc_visitas_cliente_id_fkey"
+            columns: ["cliente_id"]
+            isOneToOne: false
+            referencedRelation: "agrorc_clientes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "agrorc_visitas_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       analises_laboratorio: {
         Row: {
           conforme: boolean | null
@@ -2958,6 +3163,50 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "normas_legislacao_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      nutricrm_projetos: {
+        Row: {
+          anexos: string[] | null
+          cliente_nome: string
+          created_at: string | null
+          descricao: string | null
+          empresa_id: string
+          id: string
+          status: string | null
+          titulo: string
+          user_id: string
+        }
+        Insert: {
+          anexos?: string[] | null
+          cliente_nome: string
+          created_at?: string | null
+          descricao?: string | null
+          empresa_id: string
+          id?: string
+          status?: string | null
+          titulo: string
+          user_id: string
+        }
+        Update: {
+          anexos?: string[] | null
+          cliente_nome?: string
+          created_at?: string | null
+          descricao?: string | null
+          empresa_id?: string
+          id?: string
+          status?: string | null
+          titulo?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "nutricrm_projetos_empresa_id_fkey"
             columns: ["empresa_id"]
             isOneToOne: false
             referencedRelation: "empresas"
