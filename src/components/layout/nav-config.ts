@@ -40,6 +40,7 @@ export interface NavItem {
 export interface NavGroup {
   label: string;
   icon: React.ElementType;
+  logo?: string;
   items: NavItem[];
 }
 
