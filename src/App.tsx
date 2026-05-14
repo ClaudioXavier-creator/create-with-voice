@@ -316,24 +316,27 @@ const AppRoutes = () => {
         />
 
         {/* Audits_BPF - Rotas Dedicadas */}
-        <Route
-          path="/auditsbpf/*"
-          element={
-            <ProtectedRoute>
-              <AuditsBpfLayout>
-                <Routes>
-                  <Route index element={<Navigate to="dashboard" replace />} />
-                  <Route path="dashboard" element={<AuditsDashboard />} />
-                  <Route path="checklist" element={<AuditsChecklist />} />
-                  <Route path="sala" element={<AuditsSala />} />
-                  <Route path="plano" element={<AuditsPlano />} />
-                  <Route path="relatorio" element={<AuditsRelatorio />} />
-                  <Route path="historico" element={<AuditsHistorico />} />
-                </Routes>
-              </AuditsBpfLayout>
-            </ProtectedRoute>
-          }
-        />
+        <Route path="/auditsbpf">
+          <Route index element={<AuditsBPFPage />} />
+          <Route
+            path="*"
+            element={
+              <ProtectedRoute>
+                <AuditsBpfLayout>
+                  <Routes>
+                    <Route index element={<Navigate to="dashboard" replace />} />
+                    <Route path="dashboard" element={<AuditsDashboard />} />
+                    <Route path="checklist" element={<AuditsChecklist />} />
+                    <Route path="sala" element={<AuditsSala />} />
+                    <Route path="plano" element={<AuditsPlano />} />
+                    <Route path="relatorio" element={<AuditsRelatorio />} />
+                    <Route path="historico" element={<AuditsHistorico />} />
+                  </Routes>
+                </AuditsBpfLayout>
+              </ProtectedRoute>
+            }
+          />
+        </Route>
 
         {/* Nutri_Agro Labels - Rotas Dedicadas */}
         <Route
