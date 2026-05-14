@@ -60,29 +60,9 @@ export function isGroup(entry: NavEntry): entry is NavGroup {
 }
 
 export const NAV_ENTRIES: NavEntry[] = [
-  // --- ECOSSISTEMA BPF_CONSULT (7 PROGRAMAS) ---
-  {
-    label: "Programas BPF_Consult",
-    icon: Layers,
-    items: [
-      { path: "/dashboard", label: "Feed_BPF", icon: LayoutDashboard, logo: logoFeedBpf },
-      { path: "https://friendly-flame-igniter.lovable.app", label: "Audits_BPF", icon: ShieldCheck, external: true, logo: logoAuditsBpf },
-      { path: "https://soil-to-client.lovable.app", label: "Agro RC CRM", icon: BarChart3, external: true, logo: logoAgrorc },
-      { path: "/rotulos/dashboard", label: "Nutri_Agro Labels", icon: Tag, logo: logoRotulos },
-      { path: "https://nutricrm.onrender.com", label: "NutriCRM", icon: Users, external: true, logo: logoNutricrm },
-      { path: "https://regional-fixer-charm.lovable.app", label: "AgroGestão CRM", icon: Building2, external: true, logo: logoAgrogestao },
-      { path: "/admin", label: "Portal de Gestão & CRM", icon: ShieldCheck, requiredRoles: ["admin", "comercial"], logo: logoBpfConsult },
-    ],
-  },
-
-  // --- OPERACIONAL FEED_BPF ---
-  {
-    label: "Operacional Feed_BPF",
-    icon: ClipboardCheck,
-    items: [
-      { path: "/cadastro", label: "Dados da Empresa", icon: Building2 },
-    ],
-  },
+  // --- NAVEGAÇÃO PRINCIPAL ---
+  { path: "/dashboard", label: "Dashboard Feed_BPF", icon: LayoutDashboard },
+  { path: "/cadastro", label: "Dados da Empresa", icon: Building2 },
 
   // --- PROGRAMAS POP (IN 04/2007) ---
   {
