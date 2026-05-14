@@ -2,14 +2,13 @@ import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
 import "./index.css";
 
-// Unregister stale service workers and clear caches when running in browser
-// contexts that are prone to serving outdated chunks after publish. Never
-// reload here — reloading inside the Lovable preview iframe causes loops.
+// Unregister stale service workers and clear caches so the latest vitrine is
+// always served instead of an older offline copy.
 function cleanupStaleServiceWorkers() {
   if (typeof window === "undefined") return;
 
   // Manual cache busting version - update this to force a full refresh.
-  const APP_VERSION = "2024.05.14.v5"; 
+  const APP_VERSION = "2026.05.14.v6";
 
   let isInIframe = false;
   try {
@@ -29,9 +28,7 @@ function cleanupStaleServiceWorkers() {
   const storedVersion = localStorage.getItem("__app_version__");
   const versionMismatch = storedVersion !== APP_VERSION;
   
-  // Nunca force cleanup no preview do Lovable: isso pode invalidar chunks durante a navegação
-  // e deixar telas lazy-loaded presas em fallback infinito.
-  const shouldCleanup = !isPreviewHost && versionMismatch;
+  const shouldCleanup = versionMismatch;
 
   if (!shouldCleanup) return;
 
@@ -60,7 +57,7 @@ function cleanupStaleServiceWorkers() {
   localStorage.setItem("__app_version__", APP_VERSION);
   sessionStorage.setItem("__sw_cleanup_done__", "1");
   
-  // Reload only on version mismatch and not in an iframe to avoid loops
+  // Reload only outside the preview iframe to avoid loops.
   if (versionMismatch && !isInIframe) {
     console.log("[CacheBuster] Version mismatch, reloading page...");
     setTimeout(() => window.location.reload(), 300);
