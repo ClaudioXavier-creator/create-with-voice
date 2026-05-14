@@ -8,7 +8,7 @@ function cleanupStaleServiceWorkers() {
   if (typeof window === "undefined") return;
 
   // Manual cache busting version - update this to force a full refresh.
-  const APP_VERSION = "2026.05.14.v8";
+  const APP_VERSION = "2026.05.14.v9";
 
   let isInIframe = false;
   try {
