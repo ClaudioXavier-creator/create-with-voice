@@ -121,14 +121,21 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
       {/* Desktop sidebar */}
       <aside aria-label="Navegação Lateral" className="hidden lg:flex w-72 flex-col bg-sidebar text-sidebar-foreground border-r border-sidebar-border shadow-xl">
         <div className="flex items-center gap-3 px-6 py-6 border-b border-sidebar-border/50 bg-sidebar/50 backdrop-blur-sm sticky top-0 z-10">
-          <div className="relative group cursor-pointer" onClick={() => navigate("/")}>
-            <div className="absolute -inset-1 bg-gradient-to-r from-primary to-emerald-400 rounded-lg blur opacity-25 group-hover:opacity-100 transition duration-1000 group-hover:duration-200"></div>
-            <img src={config.logo} alt={`${config.title} Logo`} className="relative w-10 h-10 rounded-lg object-contain bg-white p-1 shadow-sm" />
-          </div>
-          <div className="min-w-0 cursor-pointer" onClick={() => navigate("/")}>
-            <h1 className="font-display text-lg font-bold text-sidebar-foreground tracking-tight">{config.title}</h1>
-            <p className="text-[10px] uppercase tracking-widest text-sidebar-foreground/40 font-semibold">{config.subtitle}</p>
-          </div>
+          <button 
+            type="button"
+            className="flex items-center gap-3 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded-lg"
+            onClick={() => navigate("/")}
+            aria-label={`Ir para o início de ${config.title}`}
+          >
+            <div className="relative group shrink-0">
+              <div className="absolute -inset-1 bg-gradient-to-r from-primary to-emerald-400 rounded-lg blur opacity-25 group-hover:opacity-100 transition duration-1000 group-hover:duration-200"></div>
+              <img src={config.logo} alt="" className="relative w-10 h-10 rounded-lg object-contain bg-white p-1 shadow-sm" />
+            </div>
+            <div className="min-w-0">
+              <h1 className="font-display text-lg font-bold text-sidebar-foreground tracking-tight">{config.title}</h1>
+              <p className="text-[10px] uppercase tracking-widest text-sidebar-foreground/40 font-semibold">{config.subtitle}</p>
+            </div>
+          </button>
         </div>
 
         <div className="flex-1 flex flex-col overflow-hidden">
