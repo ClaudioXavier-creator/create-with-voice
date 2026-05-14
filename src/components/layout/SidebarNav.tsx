@@ -131,8 +131,14 @@ export const SidebarNav = React.memo(({
     return (
       <div key={item.path} className="group relative">
         <Link
-          to={targetPath}
-          onClick={onNavigate}
+          to={isExternal ? "#" : targetPath}
+          onClick={(e) => {
+            if (isExternal) {
+              e.preventDefault();
+              window.open(targetPath, "_blank", "noopener,noreferrer");
+            }
+            onNavigate?.();
+          }}
           aria-current={isActive ? "page" : undefined}
           className={cn(
             "flex items-center gap-3 rounded-xl px-4 py-3 sm:px-3 sm:py-2 text-sm transition-all duration-300 overflow-hidden min-h-[44px] sm:min-h-0",
