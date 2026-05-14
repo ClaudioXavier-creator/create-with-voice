@@ -49,6 +49,7 @@ const produtos: ProdutoCard[] = [
   },
   {
     nome: "Audits_BPF",
+    icon: ShieldCheck,
     logo: logoAuditsBpf,
     desc: "Sistema de auditoria interna com checklist completo baseado no Decreto 12.031/2024. Sala exclusiva do auditor MAPA, cálculo automático de conformidade e planos de ação.",
     destaques: ["Checklist Decreto 12.031", "Sala do Auditor", "Planos de Ação", "Cálculo de Conformidade", "Relatórios de Auditoria", "Histórico e Evolução"],
@@ -66,6 +67,7 @@ const produtos: ProdutoCard[] = [
   },
   {
     nome: "Agro RC CRM",
+    icon: BarChart3,
     logo: logoAgrorc,
     desc: "Plataforma de gestão para Representantes Comerciais do agronegócio. Controle de clientes, metas, visitas, pipeline de oportunidades Kanban e painel RC com margens e scores.",
     destaques: ["Painel RC", "Pipeline Kanban", "Metas Comerciais", "Visitas a Campo", "Clientes & Carteira", "Scores de Desempenho"],
@@ -83,6 +85,7 @@ const produtos: ProdutoCard[] = [
   },
   {
     nome: "Nutri_Agro Labels",
+    icon: Tag,
     logo: logoRotulos,
     desc: "Gerador de rótulos para impressão em Zebra, Word e Excel — desenvolvido para nutrição animal, fábricas de rações e suplementos. Conforme MAPA (RTPI).",
     destaques: ["Impressão Zebra (ZPL)", "Exportação Word & Excel", "Ficha Técnica RTPI", "Níveis de Garantia", "QR Code & Lote", "Templates p/ Rações"],
@@ -98,6 +101,7 @@ const produtos: ProdutoCard[] = [
   },
   {
     nome: "NutriCRM",
+    icon: Users,
     logo: logoNutriCrm,
     desc: "CRM especializado para nutricionistas e representantes técnicos do agronegócio. Gestão de clientes, visitas, recomendações e acompanhamento de campo.",
     destaques: ["Gestão de Clientes", "Visitas Técnicas", "Recomendações", "Pipeline de Vendas", "Painel do Representante", "Relatórios"],
@@ -115,6 +119,7 @@ const produtos: ProdutoCard[] = [
   },
   {
     nome: "AgroGestão CRM",
+    icon: Building2,
     logo: logoAgroGestao,
     desc: "Plataforma de CRM e gestão para o agronegócio. Controle completo de carteira, oportunidades, equipe comercial e indicadores de desempenho.",
     destaques: ["CRM Completo", "Carteira de Clientes", "Pipeline Comercial", "Equipe & Metas", "Indicadores", "Painel Gerencial"],
@@ -132,6 +137,7 @@ const produtos: ProdutoCard[] = [
   },
   {
     nome: "Portal de Gestão",
+    icon: ShieldCheck,
     logo: logoBpfConsult,
     desc: "Plataforma central de gestão da BPF_Consult. Controle total de leads, pipeline de vendas CRM e gestão centralizada de licenças para todos os programas do ecossistema.",
     destaques: ["Gestão de Leads", "CRM de Vendas", "Gestão de Licenças", "Painel Super Admin", "Consolidação de Dados", "Relatórios de Vendas"],
