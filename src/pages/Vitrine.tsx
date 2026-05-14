@@ -145,8 +145,8 @@ export default function Vitrine() {
   const { user, roles } = useAuth();
   const isAdmin = canAccessLicenseAdmin(roles, user?.email);
   
-  // Mostramos todos os programas, mas indicamos acesso restrito para o Portal de Gestão
-  const produtosVisiveis = produtos;
+  // Mostramos apenas os 4 programas principais solicitados (3 principais + 1 novo)
+  const produtosVisiveis = produtos.slice(0, 4);
 
   return (
     <div className="min-h-screen bg-background">

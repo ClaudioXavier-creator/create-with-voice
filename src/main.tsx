@@ -8,10 +8,8 @@ import "./index.css";
 function cleanupStaleServiceWorkers() {
   if (typeof window === "undefined") return;
 
-  // Manual cache busting version - update this string to force a full refresh for all users.
-  // Increment the version number (e.g., v1 -> v2) whenever you make big changes
-  // that might be stuck in browser cache.
-  const APP_VERSION = "2024.05.14.v2"; 
+  // Manual cache busting version - update this to force a full refresh.
+  const APP_VERSION = "2024.05.14.v4"; 
 
   let isInIframe = false;
   try {
@@ -28,32 +26,23 @@ function cleanupStaleServiceWorkers() {
     window.location.hostname.includes("lovable.app") ||
     window.location.hostname.includes("bpfconsult.com.br");
 
-  const isStandalone = window.matchMedia?.("(display-mode: standalone)")?.matches ?? false;
-  
-  // Always cleanup in preview/iframe. 
-  // In published host, cleanup if version mismatch or not standalone.
   const storedVersion = localStorage.getItem("__app_version__");
   const versionMismatch = storedVersion !== APP_VERSION;
   
-  const shouldCleanup = isPreviewHost || isInIframe || (isPublishedHost && !isStandalone) || versionMismatch;
+  // We only run cleanup if the version changed or if we're in a preview environment for the first time in the session.
+  const shouldCleanup = versionMismatch || (isPreviewHost && !sessionStorage.getItem("__sw_cleanup_done__"));
 
   if (!shouldCleanup) return;
 
-  // Only run once per session if the version matches
-  if (!versionMismatch && sessionStorage.getItem("__sw_cleanup_done__")) return;
-  
   console.log("[CacheBuster] Cleaning up stale service workers and caches...", { 
-    isPreviewHost, isInIframe, isPublishedHost, isStandalone, versionMismatch 
+    isPreviewHost, isPublishedHost, versionMismatch 
   });
 
   if ("serviceWorker" in navigator) {
     navigator.serviceWorker
       .getRegistrations()
       .then((regs) => {
-        regs.forEach((r) => {
-          console.log("[CacheBuster] Unregistering SW:", r.scope);
-          r.unregister();
-        });
+        regs.forEach((r) => r.unregister());
       })
       .catch(() => {});
   }
@@ -62,10 +51,7 @@ function cleanupStaleServiceWorkers() {
     window.caches
       .keys()
       .then((keys) => {
-        keys.forEach((k) => {
-          console.log("[CacheBuster] Deleting cache:", k);
-          window.caches.delete(k);
-        });
+        keys.forEach((k) => window.caches.delete(k));
       })
       .catch(() => {});
   }
@@ -73,36 +59,15 @@ function cleanupStaleServiceWorkers() {
   localStorage.setItem("__app_version__", APP_VERSION);
   sessionStorage.setItem("__sw_cleanup_done__", "1");
   
-  // If there was a version mismatch, we might want to reload, 
-  // but let's be careful not to loop in iframes.
+  // Reload only on version mismatch and not in an iframe to avoid loops
   if (versionMismatch && !isInIframe) {
-    console.log("[CacheBuster] Version mismatch detected, reloading...");
-    setTimeout(() => window.location.reload(), 500);
+    console.log("[CacheBuster] Version mismatch, reloading page...");
+    setTimeout(() => window.location.reload(), 300);
   }
 }
 
 cleanupStaleServiceWorkers();
 
-// Force logout in Lovable preview iframe so the app always starts as a visitor.
-// Only runs once per preview tab (sessionStorage flag), and never on production.
-async function forceLogoutInPreview() {
-  if (typeof window === "undefined") return;
-  let isInIframe = false;
-  try { isInIframe = window.self !== window.top; } catch { isInIframe = true; }
-  const isPreviewHost =
-    window.location.hostname.includes("lovableproject.com") ||
-    window.location.hostname.includes("lovable.app") ||
-    window.location.hostname.includes("id-preview--");
-  if (!isInIframe && !isPreviewHost) return;
-  if (window.location.hostname === "www.bpfconsult.com.br") return;
-  if (sessionStorage.getItem("__preview_logged_out__")) return;
-  sessionStorage.setItem("__preview_logged_out__", "1");
-  try {
-    Object.keys(localStorage)
-      .filter((k) => k.startsWith("sb-") || k.includes("supabase"))
-      .forEach((k) => localStorage.removeItem(k));
-  } catch {}
-}
+// Removed automatic logout in preview as it can interfere with testing session-based features.
 
-void forceLogoutInPreview();
 createRoot(document.getElementById("root")!).render(<App />);
