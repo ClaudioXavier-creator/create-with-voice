@@ -219,7 +219,11 @@ export const SidebarNav = React.memo(({
                         : "text-sidebar-foreground/60 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground",
                     )}
                   >
-                    <entry.icon aria-hidden="true" className={cn("h-4 w-4 shrink-0 transition-colors duration-200", hasActive ? "text-sidebar-primary" : "text-sidebar-foreground/30")} />
+                    {entry.logo ? (
+                      <img src={entry.logo} alt="" className={cn("h-5 w-5 shrink-0 transition-transform duration-200 rounded bg-white p-0.5 shadow-sm")} />
+                    ) : (
+                      <entry.icon aria-hidden="true" className={cn("h-4 w-4 shrink-0 transition-colors duration-200", hasActive ? "text-sidebar-primary" : "text-sidebar-foreground/30")} />
+                    )}
                     <span className="flex-1 whitespace-normal leading-snug">{entry.label}</span>
                     <ChevronDown aria-hidden="true" className={cn("h-3.5 w-3.5 shrink-0 transition-transform duration-300 opacity-30", groupOpen && "rotate-180 opacity-60")} />
                   </Button>
