@@ -148,7 +148,11 @@ export const SidebarNav = React.memo(({
             isSubItem && !isActive && "ml-2"
           )}
         >
-          <item.icon aria-hidden="true" className={cn("h-5 w-5 sm:h-4 sm:w-4 shrink-0 transition-transform group-hover:scale-110 duration-300", isActive ? "text-white" : "text-sidebar-foreground/40")} />
+          {item.logo ? (
+            <img src={item.logo} alt="" className={cn("h-6 w-6 sm:h-5 sm:w-5 shrink-0 transition-transform group-hover:scale-110 duration-300 rounded bg-white p-0.5 shadow-sm")} />
+          ) : (
+            <item.icon aria-hidden="true" className={cn("h-5 w-5 sm:h-4 sm:w-4 shrink-0 transition-transform group-hover:scale-110 duration-300", isActive ? "text-white" : "text-sidebar-foreground/40")} />
+          )}
           <span className="min-w-0 flex-1 truncate">{item.label}</span>
           {isActive && (
             <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-6 bg-white/50 rounded-r-full animate-in slide-in-from-left-full duration-500" />
