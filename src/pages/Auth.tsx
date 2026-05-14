@@ -300,15 +300,15 @@ export default function Auth() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center space-y-4 pb-2">
-          <div className="flex justify-center">
-            <img src={authContent.logo} alt={`${authContent.title} Logo`} className="w-20 h-20 object-contain" />
+    <div className="min-h-screen flex items-center justify-center bg-background p-4 sm:p-6">
+      <Card className="w-full max-w-md border-none sm:border-solid shadow-none sm:shadow-premium bg-transparent sm:bg-card">
+        <CardHeader className="text-center space-y-4 pb-2 pt-6">
+          <div className="flex justify-center transition-transform hover:scale-105 duration-300">
+            <img src={authContent.logo} alt={`${authContent.title} Logo`} className="w-16 h-16 sm:w-20 sm:h-20 object-contain drop-shadow-md" />
           </div>
-          <div>
-            <h1 className="font-display text-2xl font-bold">{authContent.title}</h1>
-            <p className="text-sm text-muted-foreground">{authContent.subtitle}</p>
+          <div className="space-y-1">
+            <h1 className="font-display text-2xl sm:text-3xl font-bold tracking-tight text-foreground">{authContent.title}</h1>
+            <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed px-4">{authContent.subtitle}</p>
           </div>
         </CardHeader>
         <CardContent>
