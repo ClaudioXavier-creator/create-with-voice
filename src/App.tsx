@@ -275,6 +275,26 @@ const AppRoutes = () => {
           }
         />
 
+        {/* AgroGestão CRM - Rotas Dedicadas */}
+        <Route
+          path="/agrogestao/*"
+          element={
+            <ProtectedRoute>
+              <AgroGestaoLayout>
+                <Routes>
+                  <Route index element={<Navigate to="dashboard" replace />} />
+                  <Route path="dashboard" element={<AgroDashboard />} />
+                  <Route path="clientes" element={<AgroClientes />} />
+                  <Route path="regioes" element={<AgroRegioes />} />
+                  <Route path="visitas" element={<AgroVisitas />} />
+                  <Route path="metas" element={<AgroMetas />} />
+                  <Route path="relatorios" element={<AgroRelatorios />} />
+                </Routes>
+              </AgroGestaoLayout>
+            </ProtectedRoute>
+          }
+        />
+
         <Route
           path="/:product/*"
           element={
