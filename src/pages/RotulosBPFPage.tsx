@@ -36,9 +36,9 @@ const diferenciais = [
 
 export default function RotulosBPFPage() {
   const { session } = useAuth();
-  const destino = "/rotulos";
-  const signupLink = "/auth?product=rotulos&mode=signup&redirect=%2Frotulos";
-  const loginLink = "/auth?product=rotulos&mode=login&redirect=%2Frotulos";
+  const destino = "/rotulos/dashboard";
+  const signupLink = "/auth?product=rotulos&mode=signup&redirect=%2Frotulos%2Fdashboard";
+  const loginLink = "/auth?product=rotulos&mode=login&redirect=%2Frotulos%2Fdashboard";
   const [loadingKey, setLoadingKey] = useState<string | null>(null);
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -195,7 +195,7 @@ export default function RotulosBPFPage() {
               </p>
               <div className="flex flex-col sm:flex-row gap-3">
                 <Button size="lg" className="gap-2 shadow-lg shadow-primary/20" asChild>
-                  <Link to={session ? "/gerador-rotulos/index.html" : `/auth?product=rotulos&mode=login&redirect=%2Fgerador-rotulos%2Findex.html`}>
+                  <Link to={session ? "/rotulos/dashboard" : `/auth?product=rotulos&mode=login&redirect=%2Frotulos%2Fdashboard`}>
                     <Sparkles className="h-4 w-4" />
                     Acessar Gerador Nutri_Agro Labels
                   </Link>

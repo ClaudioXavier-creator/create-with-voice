@@ -19,6 +19,7 @@ type ProdutoCard = {
   desc: string;
   destaques: string[];
   link: string;
+  appLink?: string;
   gradient: string;
   bgCard: string;
   borderColor: string;
@@ -38,11 +39,12 @@ const produtos: ProdutoCard[] = [
     desc: "Plataforma completa de Boas Práticas de Fabricação para nutrição animal. Manual BPF, POPs digitais, planilhas de monitoramento, produção, PCP, rastreabilidade, controle de pragas, higiene e muito mais.",
     destaques: ["Manual BPF & POPs", "Produção & PCP", "Rastreabilidade", "Higiene & Manutenção", "Matriz de Risco (APPCC)", "Indicadores & Relatórios"],
     link: "/feedbpf",
+    appLink: "/feedbpf/dashboard",
     gradient: "from-[hsl(200,80%,45%)] to-[hsl(210,90%,30%)]",
     bgCard: "bg-gradient-to-br from-sky-50 to-blue-50 dark:from-sky-950/30 dark:to-blue-950/30",
     borderColor: "border-sky-200 dark:border-sky-800",
     trial: "7 dias grátis",
-    trialLink: "/auth?product=feedbpf&mode=signup&redirect=%2Ffeedbpf",
+    trialLink: "/auth?product=feedbpf&mode=signup&redirect=%2Ffeedbpf%2Fdashboard",
     demoLink: "/demo/feedbpf",
     preco: "A partir de R$ 495/mês",
   },
@@ -52,6 +54,7 @@ const produtos: ProdutoCard[] = [
     desc: "Sistema de auditoria interna com checklist completo baseado no Decreto 12.031/2024. Sala exclusiva do auditor MAPA, cálculo automático de conformidade e planos de ação.",
     destaques: ["Checklist Decreto 12.031", "Sala do Auditor", "Planos de Ação", "Cálculo de Conformidade", "Relatórios de Auditoria", "Histórico e Evolução"],
     link: "/auditsbpf",
+    appLink: "/auditsbpf/dashboard",
     gradient: "from-[hsl(140,60%,35%)] to-[hsl(160,70%,25%)]",
     bgCard: "bg-gradient-to-br from-emerald-50 to-green-50 dark:from-emerald-950/30 dark:to-green-950/30",
     borderColor: "border-emerald-200 dark:border-emerald-800",
@@ -68,11 +71,12 @@ const produtos: ProdutoCard[] = [
     desc: "Plataforma de gestão para Representantes Comerciais do agronegócio. Controle de clientes, metas, visitas, pipeline de oportunidades Kanban e painel RC com margens e scores.",
     destaques: ["Painel RC", "Pipeline Kanban", "Metas Comerciais", "Visitas a Campo", "Clientes & Carteira", "Scores de Desempenho"],
     link: "/agro-rc",
+    appLink: "/agrorc/dashboard",
     gradient: "from-[hsl(270,70%,45%)] to-[hsl(290,80%,30%)]",
     bgCard: "bg-gradient-to-br from-purple-50 to-violet-50 dark:from-purple-950/30 dark:to-violet-950/30",
     borderColor: "border-purple-200 dark:border-purple-800",
     trial: "7 dias grátis",
-    trialLink: "/auth?product=agrorc&mode=signup&redirect=%2Fagrorc",
+    trialLink: "/auth?product=agrorc&mode=signup&redirect=%2Fagrorc%2Fdashboard",
     demoLink: "/demo/agrorc",
     preco: "A partir de R$ 97/mês",
   },
@@ -82,11 +86,12 @@ const produtos: ProdutoCard[] = [
     desc: "Gerador de rótulos para impressão em Zebra, Word e Excel — desenvolvido para nutrição animal, fábricas de rações e suplementos. Conforme MAPA (RTPI).",
     destaques: ["Impressão Zebra (ZPL)", "Exportação Word & Excel", "Ficha Técnica RTPI", "Níveis de Garantia", "QR Code & Lote", "Templates p/ Rações"],
     link: "/rotulos",
+    appLink: "/rotulos/dashboard",
     gradient: "from-[hsl(170,70%,40%)] to-[hsl(180,80%,25%)]",
     bgCard: "bg-gradient-to-br from-teal-50 to-emerald-50 dark:from-teal-950/30 dark:to-emerald-950/30",
     borderColor: "border-teal-200 dark:border-teal-800",
     trial: "7 dias grátis",
-    trialLink: "/auth?product=rotulos&mode=signup&redirect=%2Frotulos",
+    trialLink: "/auth?product=rotulos&mode=signup&redirect=%2Frotulos%2Fdashboard",
     demoLink: "/demo/rotulos",
     preco: "A partir de R$ 97/mês",
   },
@@ -96,11 +101,12 @@ const produtos: ProdutoCard[] = [
     desc: "CRM especializado para nutricionistas e representantes técnicos do agronegócio. Gestão de clientes, visitas, recomendações e acompanhamento de campo.",
     destaques: ["Gestão de Clientes", "Visitas Técnicas", "Recomendações", "Pipeline de Vendas", "Painel do Representante", "Relatórios"],
     link: "/nutricrm",
+    appLink: "/nutricrm/dashboard",
     gradient: "from-[hsl(20,80%,45%)] to-[hsl(35,90%,35%)]",
     bgCard: "bg-gradient-to-br from-orange-50 to-amber-50 dark:from-orange-950/30 dark:to-amber-950/30",
     borderColor: "border-orange-200 dark:border-orange-800",
     trial: "7 dias grátis",
-    trialLink: "/auth?product=nutricrm&mode=signup&redirect=%2Fnutricrm",
+    trialLink: "/auth?product=nutricrm&mode=signup&redirect=%2Fnutricrm%2Fdashboard",
     demoLink: "/demo/nutricrm",
     preco: "A partir de R$ 97/mês",
   },
@@ -110,11 +116,12 @@ const produtos: ProdutoCard[] = [
     desc: "Plataforma de CRM e gestão para o agronegócio. Controle completo de carteira, oportunidades, equipe comercial e indicadores de desempenho.",
     destaques: ["CRM Completo", "Carteira de Clientes", "Pipeline Comercial", "Equipe & Metas", "Indicadores", "Painel Gerencial"],
     link: "/agrogestao",
+    appLink: "/agrogestao/dashboard",
     gradient: "from-[hsl(220,70%,45%)] to-[hsl(240,80%,30%)]",
     bgCard: "bg-gradient-to-br from-indigo-50 to-blue-50 dark:from-indigo-950/30 dark:to-blue-950/30",
     borderColor: "border-indigo-200 dark:border-indigo-800",
     trial: "7 dias grátis",
-    trialLink: "/auth?product=agrogestao&mode=signup&redirect=%2Fagrogestao",
+    trialLink: "/auth?product=agrogestao&mode=signup&redirect=%2Fagrogestao%2Fdashboard",
     demoLink: "/demo/agrogestao",
     preco: "A partir de R$ 97/mês",
   },
@@ -124,6 +131,7 @@ const produtos: ProdutoCard[] = [
     desc: "Plataforma central de gestão da BPF_Consult. Controle total de leads, pipeline de vendas CRM e gestão centralizada de licenças para todos os programas do ecossistema.",
     destaques: ["Gestão de Leads", "CRM de Vendas", "Gestão de Licenças", "Painel Super Admin", "Consolidação de Dados", "Relatórios de Vendas"],
     link: "/admin",
+    appLink: "/admin",
     gradient: "from-slate-700 to-slate-900",
     bgCard: "bg-slate-50 dark:bg-slate-900/40",
     borderColor: "border-slate-300 dark:border-slate-700",
@@ -230,9 +238,13 @@ export default function Vitrine() {
                 return;
               }
               
-              // Se o usuário clicar no card principal, mandamos para o tutorial (página do produto)
-              // em vez de mandar direto para o dashboard/login
-              navigate(p.link);
+              // Se o usuário já estiver logado, manda direto para o app
+              // Caso contrário, manda para a página de detalhes/tutorial
+              if (user) {
+                navigate(p.appLink || p.link);
+              } else {
+                navigate(p.link);
+              }
             }}>
               <div className={`h-full rounded-2xl border-2 ${p.borderColor} ${p.bgCard} p-1 transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 hover:scale-[1.02]`}>
                 <div className="h-full rounded-xl bg-card/80 backdrop-blur-sm p-6 sm:p-8 flex flex-col">
