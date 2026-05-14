@@ -112,6 +112,69 @@ Deno.serve(async (req) => {
       });
     }
 
+    if (action === "create") {
+      const { email, produto, empresa_id, dias, nivel } = params;
+      if (!email) throw new Error("email é obrigatório");
+      if (!produto) throw new Error("produto é obrigatório");
+      if (!dias) throw new Error("dias é obrigatório");
+
+      // Find user by email
+      const allUsers = await adminClient.auth.admin.listUsers({ perPage: 1000 });
+      const target = (allUsers.data.users || []).find(
+        (u: any) => u.email?.toLowerCase() === String(email).toLowerCase()
+      );
+      if (!target) throw new Error("Usuário não encontrado para este e-mail");
+
+      const planoMap: Record<number, string> = {
+        30: "trial",
+        90: "3_meses",
+        180: "6_meses",
+        365: "1_ano",
+      };
+
+      const now = new Date();
+      const expDate = new Date(now);
+      expDate.setDate(expDate.getDate() + Number(dias));
+
+      const chave = `ADM-${crypto.randomUUID().replace(/-/g, "").slice(0, 16).toUpperCase()}`;
+
+      const normalizedNivel = typeof nivel === "string" && ["entrada", "intermediario", "avancado"].includes(nivel.toLowerCase())
+        ? nivel.toLowerCase()
+        : "entrada";
+
+      const normalizedProduto = String(produto).toLowerCase();
+
+      // Check duplicate
+      let existsQuery = adminClient
+        .from("licencas")
+        .select("id")
+        .eq("user_id", target.id)
+        .eq("produto", normalizedProduto);
+      existsQuery = empresa_id ? existsQuery.eq("empresa_id", empresa_id) : existsQuery.is("empresa_id", null);
+      const { data: existsRow } = await existsQuery.maybeSingle();
+      if (existsRow) {
+        throw new Error("Já existe uma licença deste produto para o usuário/empresa selecionado");
+      }
+
+      const { error } = await adminClient.from("licencas").insert({
+        user_id: target.id,
+        empresa_id: empresa_id || null,
+        produto: normalizedProduto,
+        plano: planoMap[Number(dias)] || `${dias}_dias`,
+        nivel: normalizedNivel,
+        data_inicio: now.toISOString().split("T")[0],
+        data_expiracao: expDate.toISOString().split("T")[0],
+        status: "ativa",
+        chave_licenca: chave,
+        liberado_admin: true,
+      });
+      if (error) throw error;
+
+      return new Response(JSON.stringify({ success: true }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     if (action === "grant") {
       const { empresa_id, dias, licenca_id, user_id: targetUserId, nivel } = params;
       if (!dias) throw new Error("dias é obrigatório");
