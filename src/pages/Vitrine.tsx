@@ -19,6 +19,7 @@ type ProdutoCard = {
   desc: string;
   destaques: string[];
   link: string;
+  appLink?: string;
   gradient: string;
   bgCard: string;
   borderColor: string;
