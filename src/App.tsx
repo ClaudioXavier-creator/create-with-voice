@@ -81,6 +81,7 @@ const ConsultaSipeagro = lazy(() => import("./pages/ConsultaSipeagro"));
 const ConfigurarPin = lazy(() => import("./pages/ConfigurarPin"));
 const AuditorPortal = lazy(() => import("./pages/AuditorPortal"));
 const DemoPage = lazy(() => import("./pages/DemoPage"));
+const AdminAccess = lazy(() => import("./pages/AdminAccess"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 // Agro RC CRM - Páginas Internas
@@ -290,6 +291,7 @@ const AppRoutes = () => {
         />
 
         {/* Portal de Gestão (BPF_Consult) - rotas standalone, fora do AppLayout do Feed_BPF */}
+        <Route path="/admin-access" element={<AdminAccess />} />
         <Route path="/admin" element={<ProtectedRoute requireAdmin><SuperAdmin /></ProtectedRoute>} />
         <Route path="/crm" element={<ProtectedRoute requireAdmin><Navigate to="/admin?tab=crm" replace /></ProtectedRoute>} />
         <Route path="/leads" element={<ProtectedRoute requireAdmin><Navigate to="/admin?tab=leads" replace /></ProtectedRoute>} />
