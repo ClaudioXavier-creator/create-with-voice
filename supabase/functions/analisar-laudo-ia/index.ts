@@ -111,6 +111,7 @@ function formatarNiveisGarantia(rotulo?: RotuloInfo): string {
 }
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { getAiResponse } from "../_shared/ai-helper.ts";
 
 Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
@@ -134,9 +135,6 @@ Deno.serve(async (req: Request) => {
         status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
-
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY não configurada");
 
     const body: RequestBody = await req.json();
 
@@ -179,7 +177,7 @@ REGRAS CRÍTICAS DE INTERPRETAÇÃO:
 - Use linguagem técnica brasileira, cite a normativa e seja conciso.
 ${body.pdf_base64 ? "O PDF do laudo original foi anexado — extraia também os dados relevantes dele e considere-os no parecer." : ""}`;
 
-    // Monta mensagem do usuário (texto + opcionalmente PDF como image_url base64 para multimodal)
+    // Monta mensagem do usuário
     const userContent: any[] = [{ type: "text", text: contexto }];
     if (body.pdf_base64) {
       userContent.push({
@@ -188,134 +186,56 @@ ${body.pdf_base64 ? "O PDF do laudo original foi anexado — extraia também os 
       });
     }
 
-    const aiResp = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "google/gemini-2.5-pro",
-        messages: [
-          { role: "system", content: systemPrompt },
-          { role: "user", content: userContent },
-        ],
-        tools: [
-          {
-            type: "function",
-            function: {
-              name: "emitir_parecer_laudo",
-              description: "Emite parecer técnico estruturado sobre o laudo laboratorial, comparando contra legislação E rótulo.",
-              parameters: {
-                type: "object",
-                properties: {
-                  conforme: {
-                    type: "boolean",
-                    description: "true se o resultado está conforme tanto o limite legal quanto o rótulo (ou se o rótulo não foi avaliado, considera apenas o legal).",
-                  },
-                  conforme_legislacao: {
-                    type: "boolean",
-                    description: "true se o resultado atende ao limite da legislação MAPA aplicável.",
-                  },
-                  conforme_rotulo: {
-                    type: "string",
-                    enum: ["conforme", "nao_conforme", "nao_avaliado"],
-                    description: "'conforme' se atende ao nível de garantia do rótulo (CONSIDERANDO a tolerância analítica CBAA 2017); 'nao_conforme' se está fora mesmo após aplicar a tolerância; 'nao_avaliado' se o rótulo não estava disponível.",
-                  },
-                  dentro_tolerancia_analitica: {
-                    type: "string",
-                    enum: ["sim", "nao", "nao_aplicavel"],
-                    description: "'sim' se o resultado está dentro da faixa de tolerância CBAA 2017 em relação ao valor declarado/limite; 'nao' se ultrapassa a tolerância; 'nao_aplicavel' se não há tolerância CBAA para o parâmetro.",
-                  },
-                  comparacao_rotulo: {
-                    type: "string",
-                    description: "Frase curta explicando como o resultado se compara ao rótulo, citando a tolerância CBAA quando aplicável (ex.: 'PB declarada 18% mín; resultado 16,4%; tolerância CBAA ±0,98 p.p. — desvio de 1,6 p.p. EXCEDE a tolerância').",
-                  },
-                  classificacao_risco: {
-                    type: "string",
-                    enum: ["baixo", "medio", "alto", "critico"],
-                    description: "Risco sanitário/regulatório do desvio (considera ambos os eixos).",
-                  },
-                  parecer_tecnico: {
-                    type: "string",
-                    description: "Parecer técnico em 2-4 parágrafos: interpretação do resultado, comparação com limite legal, comparação com rótulo, citação da normativa MAPA aplicável e impacto sanitário/regulatório.",
-                  },
-                  causa_provavel: {
-                    type: "string",
-                    description: "Causa raiz mais provável do desvio (vazio se totalmente conforme).",
-                  },
-                  acoes_corretivas: {
-                    type: "array",
-                    items: { type: "string" },
-                    description: "Lista de ações corretivas concretas (3-6 itens). Vazia se conforme.",
-                  },
-                  prazo_recomendado_dias: {
-                    type: "integer",
-                    description: "Prazo recomendado em dias para correção (0 se conforme).",
-                  },
-                  setor_responsavel: {
-                    type: "string",
-                    description: "Setor sugerido como responsável (ex: Recebimento, Produção, Controle de Qualidade, Manutenção, Limpeza, Formulação).",
-                  },
-                  referencia_legal: {
-                    type: "string",
-                    description: "Normativa principal aplicável (ex: 'IN 15/2009 MAPA - Anexo II' ou 'IN 22/2009 - Rotulagem').",
-                  },
-                },
-                required: [
-                  "conforme",
-                  "conforme_legislacao",
-                  "conforme_rotulo",
-                  "dentro_tolerancia_analitica",
-                  "comparacao_rotulo",
-                  "classificacao_risco",
-                  "parecer_tecnico",
-                  "causa_provavel",
-                  "acoes_corretivas",
-                  "prazo_recomendado_dias",
-                  "setor_responsavel",
-                  "referencia_legal",
-                ],
-                additionalProperties: false,
+    const aiResp = await getAiResponse({
+      messages: [{ role: "user", content: userContent }],
+      systemPrompt,
+      tools: [
+        {
+          type: "function",
+          function: {
+            name: "emitir_parecer_laudo",
+            description: "Emite parecer técnico estruturado sobre o laudo laboratorial, comparando contra legislação E rótulo.",
+            parameters: {
+              type: "object",
+              properties: {
+                conforme: { type: "boolean" },
+                conforme_legislacao: { type: "boolean" },
+                conforme_rotulo: { type: "string", enum: ["conforme", "nao_conforme", "nao_avaliado"] },
+                dentro_tolerancia_analitica: { type: "string", enum: ["sim", "nao", "nao_aplicavel"] },
+                comparacao_rotulo: { type: "string" },
+                classificacao_risco: { type: "string", enum: ["baixo", "medio", "alto", "critico"] },
+                parecer_tecnico: { type: "string" },
+                causa_provavel: { type: "string" },
+                acoes_corretivas: { type: "array", items: { type: "string" } },
+                prazo_recomendado_dias: { type: "integer" },
+                setor_responsavel: { type: "string" },
+                referencia_legal: { type: "string" },
               },
+              required: [
+                "conforme", "conforme_legislacao", "conforme_rotulo", "dentro_tolerancia_analitica",
+                "comparacao_rotulo", "classificacao_risco", "parecer_tecnico", "causa_provavel",
+                "acoes_corretivas", "prazo_recomendado_dias", "setor_responsavel", "referencia_legal"
+              ],
+              additionalProperties: false,
             },
           },
-        ],
-        tool_choice: { type: "function", function: { name: "emitir_parecer_laudo" } },
-      }),
+        },
+      ],
+      toolChoice: { type: "function", function: { name: "emitir_parecer_laudo" } },
     });
 
     if (!aiResp.ok) {
-      if (aiResp.status === 429) {
-        return new Response(
-          JSON.stringify({ error: "Limite de requisições atingido. Tente novamente em alguns instantes." }),
-          { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } },
-        );
-      }
-      if (aiResp.status === 402) {
-        return new Response(
-          JSON.stringify({ error: "Créditos da IA esgotados. Adicione créditos em Settings > Workspace > Usage." }),
-          { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } },
-        );
-      }
       const t = await aiResp.text();
-      console.error("AI gateway error:", aiResp.status, t);
+      console.error("AI service error:", aiResp.status, t);
       return new Response(JSON.stringify({ error: "Falha na análise IA" }), {
-        status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
     const data = await aiResp.json();
     const toolCall = data.choices?.[0]?.message?.tool_calls?.[0];
-    if (!toolCall) {
-      return new Response(JSON.stringify({ error: "IA não retornou parecer estruturado" }), {
-        status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-
     const parecer = JSON.parse(toolCall.function.arguments);
+
 
     return new Response(JSON.stringify({ ok: true, parecer }), {
       status: 200,
