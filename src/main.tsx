@@ -8,7 +8,7 @@ function cleanupStaleServiceWorkers() {
   if (typeof window === "undefined") return;
 
   // Manual cache busting version - update this to force a full refresh.
-  const APP_VERSION = "2026.05.15.v03-HEADLINES-AND-MARKETING-FIX";
+  const APP_VERSION = "2026.05.15.v04-FORCE-SITE-NOVO-CLEANUP";
 
   let isInIframe = false;
   try {

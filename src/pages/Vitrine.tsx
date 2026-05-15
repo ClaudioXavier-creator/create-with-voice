@@ -162,6 +162,7 @@ const estatisticas = [
 
 export default function Vitrine() {
   const navigate = useNavigate();
+  // Filtrando apenas produtos públicos para a vitrine
   const produtosVisiveis = produtos.filter(p => !p.adminOnly);
 
   return (
