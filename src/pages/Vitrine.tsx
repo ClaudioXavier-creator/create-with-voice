@@ -184,11 +184,11 @@ export default function Vitrine() {
               Consultoria & Sistemas para Nutrição Animal
             </Badge>
             <h1 translate="no" className="text-3xl sm:text-6xl lg:text-7xl font-bold font-display text-foreground mb-4 sm:mb-5 tracking-tight leading-tight notranslate">
-              BPF_<span className="text-primary">Consult</span>
+              Conformidade MAPA e <span className="text-primary">Gestão Total</span>
             </h1>
-            <p className="text-base sm:text-xl text-muted-foreground max-w-2xl mx-auto mb-8 sm:mb-10 leading-relaxed px-2">
-              Soluções completas em <strong className="text-foreground">Boas Práticas de Fabricação</strong>, auditoria e gestão para a indústria de nutrição animal. 
-              Conformidade com IN 04/2007 e Decreto 12.031/2024.
+            <p className="text-base sm:text-xl text-muted-foreground max-w-3xl mx-auto mb-8 sm:mb-10 leading-relaxed px-2">
+              A única plataforma que integra <strong className="text-foreground">BPF, Auditoria Digital e CRM</strong> para o agronegócio. 
+              Mantenha sua fábrica 100% alinhada com as novas exigências do MAPA enquanto escala sua produtividade.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full sm:w-auto max-w-sm sm:max-w-none">
               <Link to="/auth" className="w-full sm:w-auto">
@@ -200,7 +200,7 @@ export default function Vitrine() {
               <a href="#programas" className="w-full sm:w-auto">
                 <Button size="lg" variant="outline" className="w-full sm:w-auto gap-2 px-8 text-base bg-background/50 backdrop-blur-sm">
                   <Sparkles className="h-4 w-4" />
-                  Conhecer Programas
+                  Ver Soluções Digitais
                 </Button>
               </a>
             </div>

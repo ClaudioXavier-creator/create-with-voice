@@ -4,16 +4,17 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ShieldCheck, Users, TrendingUp, Key, CreditCard, Activity, Target, Award, Loader2 } from "lucide-react";
+import { ShieldCheck, Users, TrendingUp, Key, CreditCard, Activity, Target, Award, Loader2, Megaphone } from "lucide-react";
 import { canAccessLicenseAdmin } from "@/config/adminAccess";
 import CRM from "./CRM";
 import AdminLicencas from "./AdminLicencas";
 import AdminLeads from "./AdminLeads";
+import GeradorHeadlines from "./GeradorHeadlines";
 
 export default function SuperAdmin() {
   const { user, roles, loading: authLoading } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
-  const validTabs = ["dashboard", "leads", "crm", "licencas", "assinaturas"];
+  const validTabs = ["dashboard", "leads", "crm", "licencas", "assinaturas", "marketing"];
   const initialTab = searchParams.get("tab");
   const [activeTab, setActiveTab] = useState(
     initialTab && validTabs.includes(initialTab) ? initialTab : "dashboard"
@@ -92,7 +93,7 @@ export default function SuperAdmin() {
 
       <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-6">
         <div className="overflow-x-auto pb-2 -mx-4 px-4 md:mx-0 md:px-0">
-          <TabsList className="flex md:grid md:grid-cols-5 lg:grid-cols-6 w-max md:w-full h-auto gap-2 bg-transparent">
+          <TabsList className="flex md:grid md:grid-cols-6 lg:grid-cols-7 w-max md:w-full h-auto gap-2 bg-transparent">
             <TabsTrigger value="dashboard" className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground py-2 border flex-1">
               <Activity className="h-4 w-4" />
               <span>Dashboard</span>
@@ -112,6 +113,10 @@ export default function SuperAdmin() {
             <TabsTrigger value="assinaturas" className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground py-2 border flex-1">
               <CreditCard className="h-4 w-4" />
               <span>Assinaturas</span>
+            </TabsTrigger>
+            <TabsTrigger value="marketing" className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground py-2 border flex-1">
+              <Megaphone className="h-4 w-4" />
+              <span>Marketing</span>
             </TabsTrigger>
           </TabsList>
         </div>
@@ -190,6 +195,9 @@ export default function SuperAdmin() {
               </div>
             </CardContent>
           </Card>
+        </TabsContent>
+        <TabsContent value="marketing">
+          <GeradorHeadlines />
         </TabsContent>
       </Tabs>
     </div>
