@@ -54,8 +54,11 @@ export default function RotulosBPFPage() {
   useEffect(() => {
     if (checkoutStatus === "success") {
       toast.success("Pagamento confirmado! 🎉", {
-        description: planoInfo ? `${planoInfo.titulo} • ${planoInfo.periodo}` : undefined,
+        description: planoInfo ? `${planoInfo.titulo} • ${planoInfo.periodo}` : "Seu acesso será liberado em instantes.",
       });
+      if (session) {
+        setTimeout(() => navigate("/rotulos/dashboard"), 3000);
+      }
       try { window.scrollTo({ top: 0, behavior: "smooth" }); } catch {}
     } else if (checkoutStatus === "canceled") {
       toast.error("Checkout cancelado", { description: "Você pode tentar novamente quando quiser." });

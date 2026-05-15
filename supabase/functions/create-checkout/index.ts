@@ -78,7 +78,7 @@ serve(async (req) => {
       line_items: [{ price: priceConfig.id, quantity: 1 }],
       mode: priceConfig.mode,
       success_url: `${req.headers.get("origin")}/dashboard?checkout=success&empresa_id=${empresa_id}`,
-      cancel_url: `${req.headers.get("origin")}/dashboard?checkout=canceled`,
+      cancel_url: `${req.headers.get("origin")}/dashboard?checkout=canceled&empresa_id=${empresa_id}`,
       metadata: {
         empresa_id,
         user_id: user.id,

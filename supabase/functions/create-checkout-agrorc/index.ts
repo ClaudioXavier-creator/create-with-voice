@@ -73,7 +73,7 @@ serve(async (req) => {
       customer_email: customerId ? undefined : userEmail,
       line_items: [{ price: priceConfig.id, quantity: 1 }],
       mode: priceConfig.mode,
-      success_url: `${origin}/agro-rc?checkout=success&redirect=${encodeURIComponent(APP_URL)}`,
+      success_url: `${origin}/agro-rc?checkout=success`,
       cancel_url: `${origin}/agro-rc?checkout=canceled`,
       allow_promotion_codes: true,
       metadata: {
