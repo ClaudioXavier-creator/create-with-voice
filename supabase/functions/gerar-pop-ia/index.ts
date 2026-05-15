@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { getAiResponse } from "../_shared/ai-helper.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -29,9 +30,6 @@ serve(async (req) => {
       });
     }
 
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
-
     const { codigo_pop, nome_pop, especies, capacidade, equipamentos, observacoes } = await req.json();
 
     if (!codigo_pop || !nome_pop) {
@@ -59,104 +57,60 @@ Personalize o conteúdo de acordo com:
 **Equipamentos:** ${equipamentos || "padrão"}
 **Observações:** ${observacoes || "nenhuma"}`;
 
-    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "google/gemini-3-flash-preview",
-        messages: [
-          { role: "system", content: systemPrompt },
-          { role: "user", content: userPrompt },
-        ],
-        tools: [{
-          type: "function",
-          function: {
-            name: "gerar_pop",
-            description: "Retorna um POP completo estruturado",
-            parameters: {
-              type: "object",
-              properties: {
-                objetivo: { type: "string", description: "Objetivo do POP (1-2 parágrafos)" },
-                campo_aplicacao: { type: "string", description: "Onde e quando o POP se aplica" },
-                documentos_referencia: {
-                  type: "array",
-                  items: { type: "string" },
-                  description: "Lista de normas, ITs e documentos referenciados",
-                },
-                definicoes: {
-                  type: "array",
-                  items: {
-                    type: "object",
-                    properties: {
-                      termo: { type: "string" },
-                      definicao: { type: "string" },
-                    },
-                    required: ["termo", "definicao"],
-                  },
-                },
-                procedimentos: {
-                  type: "array",
-                  items: { type: "string" },
-                  description: "Lista numerada de passos detalhados do procedimento",
-                },
-                monitoramento: {
+    const response = await getAiResponse({
+      messages: [{ role: "user", content: userPrompt }],
+      systemPrompt,
+      tools: [{
+        type: "function",
+        function: {
+          name: "gerar_pop",
+          description: "Retorna um POP completo estruturado",
+          parameters: {
+            type: "object",
+            properties: {
+              objetivo: { type: "string" },
+              campo_aplicacao: { type: "string" },
+              documentos_referencia: { type: "array", items: { type: "string" } },
+              definicoes: {
+                type: "array",
+                items: {
                   type: "object",
-                  properties: {
-                    controle: { type: "string" },
-                    frequencia: { type: "string" },
-                    registro: { type: "string" },
-                    responsavel: { type: "string" },
-                  },
-                  required: ["controle", "frequencia", "registro", "responsavel"],
+                  properties: { termo: { type: "string" }, definicao: { type: "string" } },
+                  required: ["termo", "definicao"],
                 },
-                verificacao: {
-                  type: "object",
-                  properties: {
-                    controle: { type: "string" },
-                    frequencia: { type: "string" },
-                    registro: { type: "string" },
-                    responsavel: { type: "string" },
-                  },
-                  required: ["controle", "frequencia", "registro", "responsavel"],
-                },
-                acoes_corretivas: {
-                  type: "array",
-                  items: {
-                    type: "object",
-                    properties: {
-                      nao_conformidade: { type: "string" },
-                      acao: { type: "string" },
-                    },
-                    required: ["nao_conformidade", "acao"],
-                  },
-                },
-                tempo_retencao: { type: "string", description: "Ex: 2 anos conforme Decreto 12.031/2024" },
               },
-              required: ["objetivo", "campo_aplicacao", "documentos_referencia", "definicoes", "procedimentos", "monitoramento", "verificacao", "acoes_corretivas", "tempo_retencao"],
+              procedimentos: { type: "array", items: { type: "string" } },
+              monitoramento: {
+                type: "object",
+                properties: { controle: { type: "string" }, frequencia: { type: "string" }, registro: { type: "string" }, responsavel: { type: "string" } },
+                required: ["controle", "frequencia", "registro", "responsavel"],
+              },
+              verificacao: {
+                type: "object",
+                properties: { controle: { type: "string" }, frequencia: { type: "string" }, registro: { type: "string" }, responsavel: { type: "string" } },
+                required: ["controle", "frequencia", "registro", "responsavel"],
+              },
+              acoes_corretivas: {
+                type: "array",
+                items: {
+                  type: "object",
+                  properties: { nao_conformidade: { type: "string" }, acao: { type: "string" } },
+                  required: ["nao_conformidade", "acao"],
+                },
+              },
+              tempo_retencao: { type: "string" },
             },
+            required: ["objetivo", "campo_aplicacao", "documentos_referencia", "definicoes", "procedimentos", "monitoramento", "verificacao", "acoes_corretivas", "tempo_retencao"],
           },
-        }],
-        tool_choice: { type: "function", function: { name: "gerar_pop" } },
-      }),
+        },
+      }],
+      toolChoice: { type: "function", function: { name: "gerar_pop" } },
     });
 
     if (!response.ok) {
-      if (response.status === 429) {
-        return new Response(JSON.stringify({ error: "Limite de requisições excedido. Tente novamente em alguns minutos." }), {
-          status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
-      if (response.status === 402) {
-        return new Response(JSON.stringify({ error: "Créditos insuficientes." }), {
-          status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
       const t = await response.text();
-      console.error("AI gateway error:", response.status, t);
-      throw new Error("AI gateway error");
+      console.error("AI service error:", response.status, t);
+      throw new Error("AI service error");
     }
 
     const data = await response.json();
@@ -167,6 +121,7 @@ Personalize o conteúdo de acordo com:
     return new Response(JSON.stringify({ success: true, data: result }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
+
   } catch (e) {
     console.error("gerar-pop-ia error:", e);
     return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "Erro desconhecido" }), {

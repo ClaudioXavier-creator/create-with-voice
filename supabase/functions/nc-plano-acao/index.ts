@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { getAiResponse } from "../_shared/ai-helper.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -9,9 +10,6 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
-
     const { descricao, setor } = await req.json();
 
     if (!descricao || !setor) {
@@ -26,17 +24,11 @@ Dado uma não conformidade detectada em uma fábrica de ração, gere automatica
 
 Responda SEMPRE em JSON válido com esta estrutura:
 {
-  "causa": "Análise de causa raiz detalhada usando os 5 Porquês ou Ishikawa. Seja específico para o setor e problema.",
-  "acao_corretiva": "Ação corretiva detalhada com passos claros e práticos para resolver o problema e prevenir reincidência.",
-  "responsavel_sugerido": "Cargo/função sugerida para ser responsável (ex: Supervisor de Produção, RT, Encarregado de Qualidade)",
+  "causa": "Análise de causa raiz detalhada usando os 5 Porquês ou Ishikawa.",
+  "acao_corretiva": "Ação corretiva detalhada.",
+  "responsavel_sugerido": "Cargo/função sugerida",
   "prazo_dias": 7
-}
-
-O prazo_dias deve ser realista:
-- Problemas simples de higiene/organização: 3-7 dias
-- Problemas de manutenção/equipamentos: 7-15 dias
-- Problemas estruturais/documentação: 15-30 dias
-- Problemas de treinamento/capacitação: 7-15 dias`;
+}`;
 
     const userPrompt = `Gere um plano de ação corretiva para esta não conformidade:
 
@@ -45,34 +37,14 @@ O prazo_dias deve ser realista:
 
 Responda APENAS com o JSON, sem markdown.`;
 
-    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "google/gemini-3-flash-preview",
-        messages: [
-          { role: "system", content: systemPrompt },
-          { role: "user", content: userPrompt },
-        ],
-      }),
+    const response = await getAiResponse({
+      messages: [{ role: "user", content: userPrompt }],
+      systemPrompt,
     });
 
     if (!response.ok) {
-      if (response.status === 429) {
-        return new Response(JSON.stringify({ error: "Limite de requisições excedido. Tente novamente em alguns minutos." }), {
-          status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
-      if (response.status === 402) {
-        return new Response(JSON.stringify({ error: "Créditos insuficientes." }), {
-          status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
       const t = await response.text();
-      console.error("AI gateway error:", response.status, t);
+      console.error("AI service error:", response.status, t);
       return new Response(JSON.stringify({ error: "Erro no serviço de IA" }), {
         status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
@@ -92,6 +64,7 @@ Responda APENAS com o JSON, sem markdown.`;
     return new Response(JSON.stringify({ success: true, data: parsed }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
+
 
   } catch (e) {
     console.error("nc-plano-acao error:", e);
