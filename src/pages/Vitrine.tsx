@@ -304,7 +304,7 @@ export default function Vitrine() {
                   <div className="space-y-2">
                     {p.adminOnly ? (
                       <Link to="/admin-access" onClick={(e) => e.stopPropagation()}>
-                        <Button size="sm" className="w-full gap-2 shadow-sm variant-secondary">
+                        <Button size="sm" variant="secondary" className="w-full gap-2 shadow-sm">
                           <Lock className="h-3.5 w-3.5" />
                           Acessar Portal
                         </Button>
