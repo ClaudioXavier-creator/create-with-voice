@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { getAiResponse } from "../_shared/ai-helper.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -9,9 +10,6 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
-
     const { etapa_processo, perigo_identificado, tipo_perigo } = await req.json();
 
     if (!etapa_processo || !perigo_identificado) {
@@ -40,54 +38,34 @@ Considere:
 **Perigo identificado:** ${perigo_identificado}
 **Tipo de perigo:** ${tipo_perigo || "Não especificado"}`;
 
-    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "google/gemini-3-flash-preview",
-        messages: [
-          { role: "system", content: systemPrompt },
-          { role: "user", content: userPrompt },
-        ],
-        tools: [{
-          type: "function",
-          function: {
-            name: "classificar_risco",
-            description: "Retorna a classificação de risco APPCC",
-            parameters: {
-              type: "object",
-              properties: {
-                probabilidade: { type: "string", enum: ["Baixa", "Média", "Alta"] },
-                severidade: { type: "string", enum: ["Baixa", "Média", "Alta"] },
-                nivel_risco: { type: "string", enum: ["Baixo", "Médio", "Alto", "Crítico"] },
-                medidas_controle: { type: "string", description: "Medidas preventivas e corretivas detalhadas" },
-                justificativa: { type: "string", description: "Breve justificativa técnica da classificação" },
-              },
-              required: ["probabilidade", "severidade", "nivel_risco", "medidas_controle", "justificativa"],
+    const response = await getAiResponse({
+      messages: [{ role: "user", content: userPrompt }],
+      systemPrompt,
+      tools: [{
+        type: "function",
+        function: {
+          name: "classificar_risco",
+          description: "Retorna a classificação de risco APPCC",
+          parameters: {
+            type: "object",
+            properties: {
+              probabilidade: { type: "string", enum: ["Baixa", "Média", "Alta"] },
+              severidade: { type: "string", enum: ["Baixa", "Média", "Alta"] },
+              nivel_risco: { type: "string", enum: ["Baixo", "Médio", "Alto", "Crítico"] },
+              medidas_controle: { type: "string" },
+              justificativa: { type: "string" },
             },
+            required: ["probabilidade", "severidade", "nivel_risco", "medidas_controle", "justificativa"],
           },
-        }],
-        tool_choice: { type: "function", function: { name: "classificar_risco" } },
-      }),
+        },
+      }],
+      toolChoice: { type: "function", function: { name: "classificar_risco" } },
     });
 
     if (!response.ok) {
-      if (response.status === 429) {
-        return new Response(JSON.stringify({ error: "Limite de requisições excedido. Tente novamente em alguns minutos." }), {
-          status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
-      if (response.status === 402) {
-        return new Response(JSON.stringify({ error: "Créditos insuficientes." }), {
-          status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
       const t = await response.text();
-      console.error("AI gateway error:", response.status, t);
-      throw new Error("AI gateway error");
+      console.error("AI service error:", response.status, t);
+      throw new Error("AI service error");
     }
 
     const data = await response.json();
@@ -98,6 +76,7 @@ Considere:
     return new Response(JSON.stringify({ success: true, data: result }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
+
   } catch (e) {
     console.error("classificar-risco error:", e);
     return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "Erro desconhecido" }), {
