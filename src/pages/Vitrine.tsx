@@ -162,7 +162,7 @@ const estatisticas = [
 
 export default function Vitrine() {
   const navigate = useNavigate();
-  const produtosVisiveis = produtos;
+  const produtosVisiveis = produtos.filter(p => !p.adminOnly);
 
   return (
     <div className="min-h-screen bg-background">
