@@ -65,8 +65,8 @@ serve(async (req) => {
       customer_email: customerId ? undefined : user.email,
       line_items: [{ price: priceConfig.id, quantity: 1 }],
       mode: priceConfig.mode,
-      success_url: `${origin}/audits-bpf?checkout=success`,
-      cancel_url: `${origin}/audits-bpf/planos?checkout=canceled`,
+      success_url: `${origin}/auditsbpf/planos?checkout=success`,
+      cancel_url: `${origin}/auditsbpf/planos?checkout=canceled`,
       metadata: {
         produto: "auditsbpf",
         empresa_id: empresa_id || "",
