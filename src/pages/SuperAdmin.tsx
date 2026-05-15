@@ -205,6 +205,38 @@ export default function SuperAdmin() {
         <TabsContent value="marketing">
           <GeradorHeadlines />
         </TabsContent>
+        <TabsContent value="plano-vendas">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between">
+              <div>
+                <CardTitle className="flex items-center gap-2">
+                  <FileText className="h-5 w-5 text-primary" />
+                  Plano de Vendas & Headlines — BPF_Consult
+                </CardTitle>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Estratégia comercial completa, ICP, funil, pricing e copywriting de alta conversão.
+                </p>
+              </div>
+              <a
+                href="/admin/plano-vendas.html"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm text-primary hover:underline"
+              >
+                Abrir em nova aba ↗
+              </a>
+            </CardHeader>
+            <CardContent>
+              <iframe
+                src="/admin/plano-vendas.html"
+                title="Plano de Vendas BPF Consult"
+                className="w-full rounded-lg border"
+                style={{ height: "calc(100vh - 280px)", minHeight: "700px" }}
+              />
+            </CardContent>
+          </Card>
+        </TabsContent>
+
       </Tabs>
     </div>
   );
