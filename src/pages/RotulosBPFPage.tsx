@@ -12,12 +12,15 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 const PLANOS_INFO: Record<string, { titulo: string; preco: string; periodo: string; nota: string }> = {
-  "grupo10-mensal":    { titulo: "Grupo 10 empresas", preco: "R$ 457,00",   periodo: "Mensal",    nota: "Assinatura recorrente mensal" },
-  "grupo10-semestral": { titulo: "Grupo 10 empresas", preco: "R$ 2.330,70", periodo: "Semestral", nota: "Pagamento único • 15% OFF" },
-  "grupo10-anual":     { titulo: "Grupo 10 empresas", preco: "R$ 4.113,00", periodo: "Anual",     nota: "Pagamento único • 25% OFF" },
-  "grupo20-mensal":    { titulo: "Grupo 20 empresas", preco: "R$ 857,00",   periodo: "Mensal",    nota: "Assinatura recorrente mensal" },
-  "grupo20-semestral": { titulo: "Grupo 20 empresas", preco: "R$ 4.370,70", periodo: "Semestral", nota: "Pagamento único • 15% OFF" },
-  "grupo20-anual":     { titulo: "Grupo 20 empresas", preco: "R$ 7.713,00", periodo: "Anual",     nota: "Pagamento único • 25% OFF" },
+  "individual-mensal":    { titulo: "Individual", preco: "R$ 97,00",   periodo: "Mensal",    nota: "Assinatura recorrente mensal" },
+  "individual-semestral": { titulo: "Individual", preco: "R$ 497,00",   periodo: "Semestral", nota: "Pagamento único • 14% OFF" },
+  "individual-anual":     { titulo: "Individual", preco: "R$ 897,00",   periodo: "Anual",     nota: "Pagamento único • 23% OFF" },
+  "grupo10-mensal":       { titulo: "Grupo 10 empresas", preco: "R$ 457,00",   periodo: "Mensal",    nota: "Assinatura recorrente mensal" },
+  "grupo10-semestral":    { titulo: "Grupo 10 empresas", preco: "R$ 2.330,70", periodo: "Semestral", nota: "Pagamento único • 15% OFF" },
+  "grupo10-anual":        { titulo: "Grupo 10 empresas", preco: "R$ 4.113,00", periodo: "Anual",     nota: "Pagamento único • 25% OFF" },
+  "grupo20-mensal":       { titulo: "Grupo 20 empresas", preco: "R$ 857,00",   periodo: "Mensal",    nota: "Assinatura recorrente mensal" },
+  "grupo20-semestral":    { titulo: "Grupo 20 empresas", preco: "R$ 4.370,70", periodo: "Semestral", nota: "Pagamento único • 15% OFF" },
+  "grupo20-anual":        { titulo: "Grupo 20 empresas", preco: "R$ 7.713,00", periodo: "Anual",     nota: "Pagamento único • 25% OFF" },
 };
 
 const funcionalidades = [
@@ -73,7 +76,7 @@ export default function RotulosBPFPage() {
     setSearchParams(next, { replace: true });
   };
 
-  const handleCheckout = async (tipo: "grupo10" | "grupo20", plano: "mensal" | "semestral" | "anual") => {
+  const handleCheckout = async (tipo: "individual" | "grupo10" | "grupo20", plano: "mensal" | "semestral" | "anual") => {
     const key = `${tipo}-${plano}`;
     setLoadingKey(key);
     try {
@@ -82,7 +85,7 @@ export default function RotulosBPFPage() {
       });
       if (error) throw error;
       if (data?.url) {
-        window.open(data.url, "_blank");
+        window.location.href = data.url;
       } else {
         throw new Error("URL de checkout não retornada");
       }
@@ -266,26 +269,39 @@ export default function RotulosBPFPage() {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-4xl mx-auto">
             {[
-              { periodo: "Mensal", preco: "R$ 97", sub: "/mês", nota: "Sem fidelidade", destaque: false },
-              { periodo: "Semestral", preco: "R$ 497", sub: "", nota: "≈ R$ 83/mês • 14% OFF", destaque: true, badge: "Mais Popular" },
-              { periodo: "Anual", preco: "R$ 897", sub: "", nota: "≈ R$ 75/mês • 23% OFF", destaque: true, badge: "Melhor Custo" },
-            ].map((plan) => (
-              <Card key={plan.periodo} className={`transition-all hover:shadow-xl ${plan.destaque ? "border-primary/50 bg-primary/5 scale-[1.02]" : "border-border"} relative`}>
-                {plan.badge && (
-                  <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground text-xs shadow-lg">
-                    {plan.badge}
-                  </Badge>
-                )}
-                <CardContent className="p-6 text-center space-y-3">
-                  <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">{plan.periodo}</p>
-                  <div>
-                    <span className="text-3xl font-bold text-foreground">{plan.preco}</span>
-                    <span className="text-muted-foreground">{plan.sub}</span>
-                  </div>
-                  <p className="text-xs text-muted-foreground">{plan.nota}</p>
-                </CardContent>
-              </Card>
-            ))}
+              { periodo: "Mensal", planoKey: "mensal" as const, preco: "R$ 97", sub: "/mês", nota: "Sem fidelidade", destaque: false },
+              { periodo: "Semestral", planoKey: "semestral" as const, preco: "R$ 497", sub: "", nota: "≈ R$ 83/mês • 14% OFF", destaque: true, badge: "Mais Popular" },
+              { periodo: "Anual", planoKey: "anual" as const, preco: "R$ 897", sub: "", nota: "≈ R$ 75/mês • 23% OFF", destaque: true, badge: "Melhor Custo" },
+            ].map((plan) => {
+              const key = `individual-${plan.planoKey}`;
+              const isLoading = loadingKey === key;
+              return (
+                <Card key={plan.periodo} className={`transition-all hover:shadow-xl ${plan.destaque ? "border-primary/50 bg-primary/5 scale-[1.02]" : "border-border"} relative`}>
+                  {plan.badge && (
+                    <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground text-xs shadow-lg">
+                      {plan.badge}
+                    </Badge>
+                  )}
+                  <CardContent className="p-6 text-center space-y-3">
+                    <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">{plan.periodo}</p>
+                    <div>
+                      <span className="text-3xl font-bold text-foreground">{plan.preco}</span>
+                      <span className="text-muted-foreground">{plan.sub}</span>
+                    </div>
+                    <p className="text-xs text-muted-foreground">{plan.nota}</p>
+                    <Button
+                      size="sm"
+                      className="w-full gap-2 mt-4"
+                      disabled={isLoading}
+                      onClick={() => handleCheckout("individual", plan.planoKey)}
+                    >
+                      {isLoading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Sparkles className="h-3.5 w-3.5" />}
+                      Assinar {plan.periodo}
+                    </Button>
+                  </CardContent>
+                </Card>
+              );
+            })}
           </div>
           <div className="mt-20">
             <div className="text-center mb-10">
