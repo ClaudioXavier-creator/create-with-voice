@@ -301,6 +301,12 @@ export default function DisparadorMarketing() {
                   </div>
                 </div>
 
+                <div className="flex flex-wrap gap-2 py-2">
+                  <span className="text-[10px] font-medium text-muted-foreground w-full">Inserir variável ou link:</span>
+                  <Button size="sm" variant="outline" className="text-[10px] h-6 px-2" onClick={() => setWhatsappMsg(p => p + " {{nome}}")}>Nome do Cliente</Button>
+                  <Button size="sm" variant="outline" className="text-[10px] h-6 px-2" onClick={() => setWhatsappMsg(p => p + " https://www.bpfconsult.com.br/admin/plano-vendas.html")}>Plano de Vendas</Button>
+                  <Button size="sm" variant="outline" className="text-[10px] h-6 px-2" onClick={() => setWhatsappMsg(p => p + " https://www.bpfconsult.com.br/agrorc")}>Link AgroRC</Button>
+                </div>
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Mensagem do WhatsApp</label>
                   <Textarea 
