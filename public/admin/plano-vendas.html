@@ -1,0 +1,866 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BPF Consult — Plano de Vendas & Headlines</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green-900: #173404;
+    --green-800: #27500A;
+    --green-700: #3B6D11;
+    --green-600: #639922;
+    --green-400: #97C459;
+    --green-200: #C0DD97;
+    --green-100: #D8ECBB;
+    --green-50: #EAF3DE;
+    --amber-900: #412402;
+    --amber-800: #633806;
+    --amber-700: #854F0B;
+    --amber-600: #BA7517;
+    --amber-400: #EF9F27;
+    --amber-200: #FAC775;
+    --amber-50: #FAEEDA;
+    --teal-800: #085041;
+    --teal-700: #0F6E56;
+    --teal-600: #1D9E75;
+    --teal-400: #5DCAA5;
+    --teal-200: #9FE1CB;
+    --teal-50: #E1F5EE;
+    --gray-900: #2C2C2A;
+    --gray-800: #444441;
+    --gray-700: #5F5E5A;
+    --gray-500: #888780;
+    --gray-300: #B4B2A9;
+    --gray-100: #D3D1C7;
+    --gray-50: #F1EFE8;
+    --white: #FFFFFF;
+    --coral-800: #712B13;
+    --coral-700: #993C1D;
+    --coral-600: #D85A30;
+    --coral-400: #F0997B;
+    --coral-50: #FAECE7;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: #F7F5F0;
+    color: var(--gray-900);
+    font-size: 15px;
+    line-height: 1.65;
+  }
+  /* ── HEADER ── */
+  .site-header {
+    background: var(--green-900);
+    padding: 2.5rem 3rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .site-header::before {
+    content: '';
+    position: absolute;
+    right: -60px; top: -80px;
+    width: 320px; height: 320px;
+    border-radius: 50%;
+    background: var(--green-800);
+    opacity: .5;
+  }
+  .site-header::after {
+    content: '';
+    position: absolute;
+    right: 60px; bottom: -100px;
+    width: 200px; height: 200px;
+    border-radius: 50%;
+    background: var(--green-700);
+    opacity: .4;
+  }
+  .header-badge {
+    display: inline-block;
+    background: var(--green-600);
+    color: var(--green-50);
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    padding: 5px 14px;
+    border-radius: 20px;
+    margin-bottom: 1rem;
+  }
+  .site-header h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: 2.4rem;
+    font-weight: 800;
+    color: #fff;
+    line-height: 1.15;
+    position: relative;
+    z-index: 1;
+  }
+  .site-header h1 span { color: var(--green-400); }
+  .header-sub {
+    color: var(--green-200);
+    font-size: 14px;
+    margin-top: .75rem;
+    position: relative;
+    z-index: 1;
+  }
+  /* ── TABS ── */
+  .tabs-bar {
+    display: flex;
+    gap: 4px;
+    background: var(--gray-900);
+    padding: .5rem .75rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .tab-btn {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--gray-300);
+    background: transparent;
+    border: none;
+    padding: 8px 18px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background .18s, color .18s;
+  }
+  .tab-btn:hover { background: var(--gray-800); color: #fff; }
+  .tab-btn.active { background: var(--green-700); color: #fff; }
+  /* ── LAYOUT ── */
+  .tab-panel { display: none; padding: 2.5rem 3rem; max-width: 960px; margin: 0 auto; }
+  .tab-panel.active { display: block; }
+  /* ── SECTION TITLE ── */
+  .section-label {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--green-700);
+    margin-bottom: .4rem;
+  }
+  .section-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.55rem;
+    font-weight: 700;
+    color: var(--gray-900);
+    margin-bottom: 1.5rem;
+    line-height: 1.25;
+  }
+  /* ── CARDS ── */
+  .card {
+    background: var(--white);
+    border: 1px solid var(--gray-100);
+    border-radius: 14px;
+    padding: 1.4rem 1.6rem;
+    margin-bottom: 1rem;
+  }
+  .card-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--gray-900);
+    margin-bottom: .5rem;
+  }
+  .card-body { color: var(--gray-700); font-size: 14px; }
+  /* ── GRID ── */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
+  @media (max-width: 680px) {
+    .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    .tab-panel { padding: 1.5rem 1rem; }
+    .site-header { padding: 1.5rem 1rem; }
+  }
+  /* ── METRIC CARD ── */
+  .metric-card {
+    background: var(--green-50);
+    border: 1px solid var(--green-200);
+    border-radius: 12px;
+    padding: 1.1rem 1.25rem;
+    text-align: center;
+  }
+  .metric-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.9rem;
+    font-weight: 800;
+    color: var(--green-800);
+    line-height: 1;
+    margin-bottom: .3rem;
+  }
+  .metric-label { font-size: 12px; color: var(--green-700); font-weight: 500; }
+  /* ── FUNNEL ── */
+  .funnel-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+    background: var(--white);
+    border: 1px solid var(--gray-100);
+    border-radius: 12px;
+    margin-bottom: .75rem;
+    position: relative;
+  }
+  .funnel-step::before {
+    content: '';
+    position: absolute;
+    left: 2.35rem; top: 100%;
+    width: 2px; height: .75rem;
+    background: var(--gray-200);
+  }
+  .funnel-step:last-child::before { display: none; }
+  .step-num {
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  .step-content h4 { font-family: 'Syne', sans-serif; font-size: .95rem; font-weight: 700; color: var(--gray-900); margin-bottom: .25rem; }
+  .step-content p { font-size: 13px; color: var(--gray-600, var(--gray-700)); }
+  /* ── TAGS ── */
+  .tag {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 500;
+    padding: 3px 10px;
+    border-radius: 20px;
+    margin: 3px 3px 3px 0;
+  }
+  .tag-green { background: var(--green-50); color: var(--green-800); border: 1px solid var(--green-200); }
+  .tag-amber { background: var(--amber-50); color: var(--amber-800); border: 1px solid var(--amber-200); }
+  .tag-teal  { background: var(--teal-50);  color: var(--teal-800);  border: 1px solid var(--teal-200); }
+  .tag-coral { background: var(--coral-50); color: var(--coral-800); border: 1px solid var(--coral-400); }
+  /* ── HEADLINE CARDS ── */
+  .approach-header {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    margin: 2rem 0 1rem;
+  }
+  .approach-num {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    font-weight: 800;
+  }
+  .approach-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--gray-900);
+  }
+  .headline-card {
+    background: var(--white);
+    border: 1px solid var(--gray-100);
+    border-radius: 14px;
+    padding: 1.5rem 1.6rem;
+    margin-bottom: .85rem;
+    position: relative;
+  }
+  .headline-card .h1-text {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--gray-900);
+    line-height: 1.3;
+    margin-bottom: .5rem;
+  }
+  .headline-card .h2-text {
+    font-size: 13.5px;
+    color: var(--gray-700);
+    line-height: 1.55;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--gray-100);
+  }
+  .headline-meta {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    flex-wrap: wrap;
+  }
+  .impact-badge {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 20px;
+  }
+  .impact-high { background: var(--green-50); color: var(--green-800); border: 1px solid var(--green-200); }
+  .impact-mid  { background: var(--amber-50); color: var(--amber-800); border: 1px solid var(--amber-200); }
+  .context-tag { font-size: 11px; color: var(--gray-500); font-style: italic; }
+  .headline-num {
+    position: absolute;
+    top: 1.1rem; right: 1.25rem;
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--gray-300);
+  }
+  /* ── KPI TABLE ── */
+  .kpi-table { width: 100%; border-collapse: collapse; margin-bottom: 1.5rem; }
+  .kpi-table th {
+    background: var(--gray-900);
+    color: #fff;
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    padding: 10px 14px;
+    text-align: left;
+  }
+  .kpi-table th:first-child { border-radius: 8px 0 0 0; }
+  .kpi-table th:last-child  { border-radius: 0 8px 0 0; }
+  .kpi-table td { padding: 10px 14px; font-size: 13px; color: var(--gray-800); border-bottom: 1px solid var(--gray-50); }
+  .kpi-table tr:last-child td { border-bottom: none; }
+  .kpi-table tr:hover td { background: var(--gray-50); }
+  /* ── DIVIDER ── */
+  .divider { border: none; border-top: 1px solid var(--gray-100); margin: 2rem 0; }
+  /* ── QUOTE ── */
+  .insight-box {
+    background: var(--green-900);
+    border-radius: 14px;
+    padding: 1.4rem 1.6rem;
+    margin: 1.5rem 0;
+  }
+  .insight-box p {
+    color: var(--green-100);
+    font-size: 14px;
+    line-height: 1.65;
+  }
+  .insight-box strong { color: var(--green-400); }
+  /* ── LIST ── */
+  .styled-list { list-style: none; padding: 0; }
+  .styled-list li {
+    padding: .45rem 0 .45rem 1.4rem;
+    position: relative;
+    font-size: 14px;
+    color: var(--gray-800);
+    border-bottom: 1px solid var(--gray-50);
+  }
+  .styled-list li:last-child { border-bottom: none; }
+  .styled-list li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: var(--green-600);
+    font-weight: 700;
+  }
+  /* scrollbar */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--gray-200); border-radius: 4px; }
+</style>
+</head>
+<body>
+<header class="site-header">
+  <div class="header-badge">BPF Consult · Agronegócio & Nutrição Animal</div>
+  <h1>Plano de Vendas &<br><span>12 Headlines de Alta Conversão</span></h1>
+  <p class="header-sub">Estratégia assertiva para Feed_BPF · Audits_BPF · Label Generator · Agro RC CRM · AgroGestão_CRM</p>
+</header>
+<nav class="tabs-bar" role="tablist">
+  <button class="tab-btn active" role="tab" onclick="switchTab('plano')">Plano de Vendas</button>
+  <button class="tab-btn" role="tab" onclick="switchTab('headlines')">12 Headlines</button>
+  <button class="tab-btn" role="tab" onclick="switchTab('kpis')">KPIs & Metas</button>
+</nav>
+<!-- ═══════════════════════════════════════════════════
+     TAB 1 — PLANO DE VENDAS
+═══════════════════════════════════════════════════ -->
+<div class="tab-panel active" id="tab-plano">
+  <p class="section-label">Análise Estratégica</p>
+  <h2 class="section-title">Quem compra, por que compra e como fechar</h2>
+
+  <div class="grid-3">
+    <div class="metric-card">
+      <div class="metric-num">~2.900</div>
+      <div class="metric-label">Fábricas de ração registradas no MAPA</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-num">100%</div>
+      <div class="metric-label">Obrigadas a adotar BPF (IN 17/2023)</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-num">Até 3 anos</div>
+      <div class="metric-label">Prazo de adequação — urgência real</div>
+    </div>
+  </div>
+
+  <p class="section-label">Perfil de Cliente Ideal (ICP)</p>
+  <h2 class="section-title">Segmentos prioritários</h2>
+
+  <div class="grid-2">
+    <div class="card" style="border-left: 4px solid var(--green-600);">
+      <div class="card-title">🥇 ICP Principal — Fábricas de Ração (Médio Porte)</div>
+      <div class="card-body">
+        Faturamento R$ 5M–50M/ano · 20–150 funcionários · Produção de 5 a 50 mil t/ano · Já notificadas pelo MAPA ou em processo de regularização · Gestão ainda manual (planilhas / papel).
+        <br><br>
+        <span class="tag tag-green">Maior volume</span>
+        <span class="tag tag-green">Maior dor</span>
+        <span class="tag tag-amber">Ticket R$ 4.800–18.000/ano</span>
+      </div>
+    </div>
+    <div class="card" style="border-left: 4px solid var(--teal-600);">
+      <div class="card-title">🥈 ICP Secundário — Misturadoras e Integrados</div>
+      <div class="card-body">
+        Cooperativas, integradoras avícolas e suinícolas · Misturadoras de médio porte · Necessidade de rastreabilidade e laudos para grandes clientes · Gestão de múltiplos representantes regionais via <strong>Agro RC CRM</strong> e relacionamento com distribuidores via <strong>AgroGestão_CRM</strong>.
+        <br><br>
+        <span class="tag tag-teal">Ciclo de vendas mais longo</span>
+        <span class="tag tag-amber">Ticket R$ 12.000–36.000/ano</span>
+      </div>
+    </div>
+    <div class="card" style="border-left: 4px solid var(--amber-600);">
+      <div class="card-title">🥉 ICP Terciário — Consultores e Técnicos Autônomos</div>
+      <div class="card-body">
+        Zootecnistas e médicos veterinários que prestam consultoria em BPF · Podem atuar como canal de revenda/indicação.
+        <br><br>
+        <span class="tag tag-amber">Canal de parceiros</span>
+        <span class="tag tag-green">Baixo CAC</span>
+      </div>
+    </div>
+    <div class="card" style="border-left: 4px solid var(--coral-600);">
+      <div class="card-title">📍 Critério Geográfico Prioritário</div>
+      <div class="card-body">
+        Mato Grosso · Goiás · Paraná · Rio Grande do Sul · Minas Gerais (maiores polos de produção animal). Expansão nacional via representantes regionais — o <strong>Agro RC CRM</strong> já suporta essa gestão por território.
+        <br><br>
+        <span class="tag tag-coral">Goiás — base local da BPF Consult</span>
+      </div>
+    </div>
+  </div>
+  <hr class="divider">
+  <p class="section-label">Funil de Vendas</p>
+  <h2 class="section-title">Da atração ao fechamento</h2>
+
+  <div class="funnel-step">
+    <div class="step-num" style="background:var(--green-50);color:var(--green-800);">1</div>
+    <div class="step-content">
+      <h4>Atração — Conteúdo e Autoridade</h4>
+      <p>Artigos sobre IN 17/2023 no LinkedIn e no blog · Lives com técnicos do MAPA · E-book gratuito "Checklist de BPF para fábricas de ração" · SEO para "BPF nutrição animal", "adequação MAPA fábrica de ração".</p>
+    </div>
+  </div>
+  <div class="funnel-step">
+    <div class="step-num" style="background:var(--teal-50);color:var(--teal-800);">2</div>
+    <div class="step-content">
+      <h4>Captura — Lead Magnet Segmentado</h4>
+      <p>Landing page com oferta de diagnóstico gratuito de conformidade BPF · Formulário qualificado: CNPJ + capacidade produtiva + situação atual de documentação.</p>
+    </div>
+  </div>
+  <div class="funnel-step">
+    <div class="step-num" style="background:var(--amber-50);color:var(--amber-800);">3</div>
+    <div class="step-content">
+      <h4>Nutrição — SDR + Sequência de E-mails</h4>
+      <p>SDR faz primeiro contato em até 24h após preenchimento · Sequência de 5 e-mails mostrando custo de multa vs. custo da plataforma · Demo gravada de 8 min do Feed_BPF disponível 24/7.</p>
+    </div>
+  </div>
+  <div class="funnel-step">
+    <div class="step-num" style="background:var(--coral-50);color:var(--coral-800);">4</div>
+    <div class="step-content">
+      <h4>Demonstração — Reunião Consultiva</h4>
+      <p>Agenda Calendly direto na LP · Call de 30 min: primeiro 15 min escutando o problema do cliente, depois demo personalizada · Mostrar módulo de Gerador de Rótulos ao vivo — alto wow factor.</p>
+    </div>
+  </div>
+  <div class="funnel-step">
+    <div class="step-num" style="background:var(--green-50);color:var(--green-800);">5</div>
+    <div class="step-content">
+      <h4>Proposta & Fechamento</h4>
+      <p>Proposta em PDF personalizado enviada em até 2h após demo · Oferecer trial de 15 dias com onboarding guiado · Gatilho de urgência: desconto de 20% para assinaturas antes do prazo de adequação do MAPA · Aceite digital.</p>
+    </div>
+  </div>
+  <div class="funnel-step">
+    <div class="step-num" style="background:var(--teal-50);color:var(--teal-800);">6</div>
+    <div class="step-content">
+      <h4>Expansão — Upsell & Indicações</h4>
+      <p>Após 90 dias de uso: oferta do <strong>Agro RC CRM</strong> para gestão de representantes comerciais regionais + <strong>AgroGestão_CRM</strong> para carteira de clientes e distribuidores · Programa de indicação: 1 mês grátis por cliente indicado · Pipeline gerenciado no próprio AgroGestão_CRM.</p>
+    </div>
+  </div>
+  <hr class="divider">
+  <p class="section-label">Canais e Ações</p>
+  <h2 class="section-title">Onde e como abordar o mercado</h2>
+
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">LinkedIn — Canal Principal B2B</div>
+      <div class="card-body">
+        <ul class="styled-list">
+          <li>Perfil do fundador como autoridade em BPF</li>
+          <li>Postagens semanais sobre conformidade MAPA</li>
+          <li>Sales Navigator: busca por "gerente industrial", "responsável técnico", "proprietário" em empresas de nutrição animal</li>
+          <li>Mensagem de conexão personalizada + artigo de valor</li>
+        </ul>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Parcerias Estratégicas</div>
+      <div class="card-body">
+        <ul class="styled-list">
+          <li>Associações: ANFAR, SINDIRAÇÕES, ABPA</li>
+          <li>Distribuidores de ingredientes: oferta de co-marketing</li>
+          <li>Laboratórios de análise: cross-sell de clientes</li>
+          <li>Consultores zootécnicos como canal de revenda</li>
+        </ul>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Eventos e Feiras</div>
+      <div class="card-body">
+        <ul class="styled-list">
+          <li>SIMCORTE, EXPOMINAS, FIGAN — presença física</li>
+          <li>Rodadas de negócio SEBRAE Agro (Goiás)</li>
+          <li>Webinars mensais próprios sobre IN 17/2023</li>
+          <li>Participação como palestrante em eventos técnicos</li>
+        </ul>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Inbound — SEO & Conteúdo</div>
+      <div class="card-body">
+        <ul class="styled-list">
+          <li>Blog técnico: 2 artigos/mês otimizados para busca</li>
+          <li>YouTube: vídeos curtos de "BPF na prática"</li>
+          <li>E-book gratuito como isca de leads qualificados</li>
+          <li>Newsletter quinzenal para base de leads</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="insight-box">
+    <p>💡 <strong>Argumento de venda mais poderoso:</strong> Uma notificação do MAPA pode resultar em multa de R$ 50.000 a R$ 500.000 ou cancelamento do registro. A assinatura anual da BPF Consult custa menos de 1% desse risco. Posicione sempre como <strong>seguro de conformidade</strong>, não como software.</p>
+  </div>
+  <hr class="divider">
+  <p class="section-label">Estratégia de Preço</p>
+  <h2 class="section-title">Modelagem de pacotes sugerida</h2>
+  <div class="grid-3">
+    <div class="card" style="border-top: 4px solid var(--teal-600);">
+      <div class="card-title">Essencial</div>
+      <div class="card-body">
+        Feed_BPF + Gerador de Rótulos<br>
+        <strong style="font-size: 1.3rem; color: var(--gray-900);">R$ 399/mês</strong><br>
+        <span class="tag tag-teal">Até 2 usuários</span>
+        <span class="tag tag-teal">Fábricas pequenas</span>
+      </div>
+    </div>
+    <div class="card" style="border-top: 4px solid var(--green-700); border: 2px solid var(--green-700);">
+      <div style="font-size:11px;font-weight:700;color:var(--green-700);margin-bottom:.4rem;">MAIS POPULAR</div>
+      <div class="card-title">Profissional</div>
+      <div class="card-body">
+        Feed_BPF + Audits_BPF + Rótulos<br>
+        <strong style="font-size: 1.3rem; color: var(--gray-900);">R$ 790/mês</strong><br>
+        <span class="tag tag-green">Até 10 usuários</span>
+        <span class="tag tag-green">Médio porte</span>
+      </div>
+    </div>
+    <div class="card" style="border-top: 4px solid var(--amber-600);">
+      <div class="card-title">Enterprise</div>
+      <div class="card-body">
+        Suite completa + Agro RC CRM + AgroGestão_CRM<br>
+        <span style="font-size:12px;color:var(--gray-500);">RC: gestão de representantes regionais | AgroGestão: carteira de clientes e distribuidores</span><br>
+        <strong style="font-size: 1.3rem; color: var(--gray-900);">R$ 1.490/mês</strong><br>
+        <span class="tag tag-amber">Usuários ilimitados</span>
+        <span class="tag tag-amber">Multi-unidade</span>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- ═══════════════════════════════════════════════════
+     TAB 2 — 12 HEADLINES
+═══════════════════════════════════════════════════ -->
+<div class="tab-panel" id="tab-headlines">
+  <p class="section-label">Copywriting para Landing Page</p>
+  <h2 class="section-title">12 headlines de alta conversão para BPF Consult</h2>
+  <div class="card" style="background:var(--green-50);border-color:var(--green-200);margin-bottom:2rem;">
+    <div class="card-title" style="color:var(--green-800);">Briefing utilizado</div>
+    <div class="card-body" style="color:var(--green-700);">
+      <strong>Oferta:</strong> Plataforma digital de gestão de BPF (Feed_BPF + Audits_BPF + Rótulos + Agro RC CRM + AgroGestão_CRM) ·
+      <strong>Para quem:</strong> Responsáveis técnicos e donos de fábricas de ração e nutrição animal ·
+      <strong>Dor:</strong> Risco de autuação pelo MAPA + gestão BPF manual, ineficiente e suscetível a erros ·
+      <strong>Resultado:</strong> Conformidade total com a IN 17/2023 de forma digital, rastreável e auditável ·
+      <strong>Diferencial:</strong> Único sistema que unifica BPF + Auditoria + Rótulos + Agro RC CRM + AgroGestão_CRM em uma plataforma para o setor
+    </div>
+  </div>
+  <!-- ABORDAGEM 1 -->
+  <div class="approach-header">
+    <div class="approach-num" style="background:var(--green-50);color:var(--green-800);">1</div>
+    <div class="approach-title">Abordagem — Resultado Direto</div>
+  </div>
+  <div class="headline-card">
+    <div class="headline-num">H01</div>
+    <div class="h1-text">Sua fábrica de ração em conformidade total com o MAPA — sem papel, sem planilha, sem risco de autuação.</div>
+    <div class="h2-text">O Feed_BPF digitaliza todos os registros de Boas Práticas de Fabricação exigidos pela IN 17/2023. Audite, documente e emita rótulos em um único sistema.</div>
+    <div class="headline-meta">
+      <span class="impact-badge impact-high">Impacto: 9/10</span>
+      <span class="tag tag-green">Evergreen</span>
+      <span class="context-tag">Melhor para: hero da landing page principal</span>
+    </div>
+  </div>
+  <div class="headline-card">
+    <div class="headline-num">H02</div>
+    <div class="h1-text">Do registro de BPF ao rótulo aprovado: gerencie tudo da produção em minutos por turno.</div>
+    <div class="h2-text">Pare de perder horas preenchendo fichas manualmente. O BPF Consult automatiza os controles e gera relatórios prontos para fiscalização a qualquer momento.</div>
+    <div class="headline-meta">
+      <span class="impact-badge impact-high">Impacto: 8/10</span>
+      <span class="tag tag-green">Evergreen</span>
+      <span class="context-tag">Melhor para: público técnico — responsáveis por produção</span>
+    </div>
+  </div>
+  <div class="headline-card">
+    <div class="headline-num">H03</div>
+    <div class="h1-text">A plataforma que transforma conformidade BPF em vantagem competitiva para fábricas de nutrição animal.</div>
+    <div class="h2-text">Enquanto seus concorrentes correm para se adequar à IN 17/2023, sua empresa já estará certificada — e com gestão completa de clientes e representantes via <strong>Agro RC CRM</strong> e <strong>AgroGestão_CRM</strong>.</div>
+    <div class="headline-meta">
+      <span class="impact-badge impact-mid">Impacto: 7/10</span>
+      <span class="tag tag-amber">Lançamento / Abertura de mercado</span>
+      <span class="context-tag">Melhor para: tomador de decisão — dono ou gestor</span>
+    </div>
+  </div>
+  <!-- ABORDAGEM 2 -->
+  <div class="approach-header">
+    <div class="approach-num" style="background:var(--amber-50);color:var(--amber-800);">2</div>
+    <div class="approach-title">Abordagem — Problema → Solução</div>
+  </div>
+  <div class="headline-card">
+    <div class="headline-num">H04</div>
+    <div class="h1-text">Se o fiscal do MAPA chegasse amanhã, sua documentação de BPF estaria pronta?</div>
+    <div class="h2-text">Com o BPF Consult, cada registro, cada lote e cada auditoria interna ficam armazenados de forma digital, rastreável e auditável — prontos para apresentar em segundos.</div>
+    <div class="headline-meta">
+      <span class="impact-badge impact-high">Impacto: 9.5/10</span>
+      <span class="tag tag-amber">Alta urgência</span>
+      <span class="tag tag-green">Evergreen</span>
+      <span class="context-tag">Melhor para: hero em campanhas de ads + email frio</span>
+    </div>
+  </div>
+  <div class="headline-card">
+    <div class="headline-num">H05</div>
+    <div class="h1-text">Chega de registros em papel que somem, planilhas que ninguém atualiza e rótulos reprovados pelo MAPA.</div>
+    <div class="h2-text">O BPF Consult centraliza toda a gestão de Boas Práticas de Fabricação em uma plataforma digital pensada para fábricas de ração e nutrição animal.</div>
+    <div class="headline-meta">
+      <span class="impact-badge impact-high">Impacto: 8.5/10</span>
+      <span class="tag tag-green">Evergreen</span>
+      <span class="context-tag">Melhor para: remarketing · público que já conhece o problema</span>
+    </div>
+  </div>
+  <div class="headline-card">
+    <div class="headline-num">H06</div>
+    <div class="h1-text">Multa de até R$ 500 mil ou um sistema de R$ 399/mês. A conformidade com o MAPA tem preço — e ele é muito menor do que o risco.</div>
+    <div class="h2-text">A IN 17/2023 já está em vigor. Fábricas de ração que não se adequarem às BPFs estão sujeitas a autuação, suspensão e cancelamento de registro. O BPF Consult elimina esse risco.</div>
+    <div class="headline-meta">
+      <span class="impact-badge impact-high">Impacto: 9/10</span>
+      <span class="tag tag-amber">Alta urgência</span>
+      <span class="context-tag">Melhor para: campanhas de prospecção ativa + LinkedIn Ads</span>
+    </div>
+  </div>
+  <!-- ABORDAGEM 3 -->
+  <div class="approach-header">
+    <div class="approach-num" style="background:var(--teal-50);color:var(--teal-800);">3</div>
+    <div class="approach-title">Abordagem — Prova Social / Autoridade / Números</div>
+  </div>
+  <div class="headline-card">
+    <div class="headline-num">H07</div>
+    <div class="h1-text">A única plataforma que integra BPF, auditoria, geração de rótulos, gestão de representantes (Agro RC CRM) e carteira de clientes (AgroGestão_CRM) para o setor de nutrição animal.</div>
+    <div class="h2-text">Enquanto outros sistemas resolvem só parte do problema, o BPF Consult foi construído do zero para a realidade das fábricas de ração — do controle de produção ao relacionamento comercial com distribuidores e representantes regionais.</div>
+    <div class="headline-meta">
+      <span class="impact-badge impact-high">Impacto: 8/10</span>
+      <span class="tag tag-teal">Diferenciação</span>
+      <span class="context-tag">Melhor para: comparação com concorrentes · anúncios de awareness</span>
+    </div>
+  </div>
+  <div class="headline-card">
+    <div class="headline-num">H08</div>
+    <div class="h1-text">IN 17/2023 em vigor: fábricas de ração têm prazo para adequar suas BPFs — e as que usam gestão digital saem na frente.</div>
+    <div class="h2-text">A regulamentação do MAPA não é opcional. O BPF Consult já ajudou fábricas a digitalizar 100% dos seus registros de BPF antes da fiscalização. Você pode ser o próximo.</div>
+    <div class="headline-meta">
+      <span class="impact-badge impact-high">Impacto: 8.5/10</span>
+      <span class="tag tag-amber">Urgência regulatória</span>
+      <span class="context-tag">Melhor para: blog posts de topo de funil + anúncios contextuais</span>
+    </div>
+  </div>
+  <div class="headline-card">
+    <div class="headline-num">H09</div>
+    <div class="h1-text">Desenvolvido por quem conhece as BPFs por dentro: consultores especializados em conformidade MAPA para nutrição animal.</div>
+    <div class="h2-text">O BPF Consult não é um software genérico adaptado. É uma plataforma criada por especialistas em BPF que entenderam cada etapa do processo produtivo antes de escrever a primeira linha de código.</div>
+    <div class="headline-meta">
+      <span class="impact-badge impact-mid">Impacto: 7.5/10</span>
+      <span class="tag tag-teal">Autoridade técnica</span>
+      <span class="context-tag">Melhor para: sobre nós · sequência de nurturing · LinkedIn pessoal</span>
+    </div>
+  </div>
+  <!-- ABORDAGEM 4 -->
+  <div class="approach-header">
+    <div class="approach-num" style="background:var(--coral-50);color:var(--coral-800);">4</div>
+    <div class="approach-title">Abordagem — Pergunta Estratégica</div>
+  </div>
+  <div class="headline-card">
+    <div class="headline-num">H10</div>
+    <div class="h1-text">Quantas horas por semana sua equipe perde preenchendo formulários de BPF que poderiam ser feitos em minutos?</div>
+    <div class="h2-text">Fábricas de ração que digitalizaram a gestão de BPF com o Feed_BPF relatam redução de mais de 70% no tempo de registro — e zero não-conformidade nas auditorias do MAPA.</div>
+    <div class="headline-meta">
+      <span class="impact-badge impact-high">Impacto: 8.5/10</span>
+      <span class="tag tag-green">Evergreen</span>
+      <span class="context-tag">Melhor para: e-mail marketing · remarketing · público técnico</span>
+    </div>
+  </div>
+  <div class="headline-card">
+    <div class="headline-num">H11</div>
+    <div class="h1-text">Sua fábrica de ração está preparada para receber uma auditoria do MAPA hoje?</div>
+    <div class="h2-text">A maioria não está. E quando o fiscal chega, o custo de não ter os registros de BPF em ordem vai muito além de uma multa. O BPF Consult muda isso — em menos de 30 dias de implantação.</div>
+    <div class="headline-meta">
+      <span class="impact-badge impact-high">Impacto: 9.5/10</span>
+      <span class="tag tag-amber">Alta urgência</span>
+      <span class="tag tag-teal">Top performer</span>
+      <span class="context-tag">Melhor para: hero principal · topo de funil · cold outreach</span>
+    </div>
+  </div>
+  <div class="headline-card">
+    <div class="headline-num">H12</div>
+    <div class="h1-text">O que aconteceria com a sua empresa se o MAPA suspendesse seu registro amanhã por não-conformidade nas BPFs?</div>
+    <div class="h2-text">Não é hipótese — é o cenário real de fábricas que postergaram a adequação à IN 17/2023. Com o BPF Consult, sua empresa não precisa correr esse risco.</div>
+    <div class="headline-meta">
+      <span class="impact-badge impact-high">Impacto: 9/10</span>
+      <span class="tag tag-amber">Urgência máxima</span>
+      <span class="context-tag">Melhor para: remarketing · anúncios de conversão · sequência de e-mail D+5</span>
+    </div>
+  </div>
+  <div class="insight-box" style="margin-top: 2rem;">
+    <p>🏆 <strong>Headlines recomendadas para teste A/B inicial:</strong> H04 vs H11 — ambas são perguntas de alta urgência, mas H04 simula a chegada do fiscal (cenário físico concreto) enquanto H11 aborda a prontidão do gestor (perspectiva de controle). Teste as duas por 2 semanas com tráfego pago e avance com a vencedora.</p>
+  </div>
+</div>
+<!-- ═══════════════════════════════════════════════════
+     TAB 3 — KPIs & METAS
+═══════════════════════════════════════════════════ -->
+<div class="tab-panel" id="tab-kpis">
+  <p class="section-label">Métricas e Metas</p>
+  <h2 class="section-title">Indicadores para os primeiros 12 meses</h2>
+  <table class="kpi-table">
+    <thead>
+      <tr>
+        <th>KPI</th>
+        <th>Mês 1–3</th>
+        <th>Mês 4–6</th>
+        <th>Mês 7–12</th>
+        <th>Referência</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Leads qualificados/mês</strong></td>
+        <td>15–25</td>
+        <td>40–60</td>
+        <td>80–120</td>
+        <td>BANT qualificado</td>
+      </tr>
+      <tr>
+        <td><strong>Taxa de conversão (lead → demo)</strong></td>
+        <td>20%</td>
+        <td>25%</td>
+        <td>30%</td>
+        <td>B2B SaaS Brasil</td>
+      </tr>
+      <tr>
+        <td><strong>Taxa de fechamento (demo → cliente)</strong></td>
+        <td>25%</td>
+        <td>30%</td>
+        <td>35%</td>
+        <td>Nicho regulatório</td>
+      </tr>
+      <tr>
+        <td><strong>MRR (Receita Recorrente Mensal)</strong></td>
+        <td>R$ 3–8k</td>
+        <td>R$ 15–25k</td>
+        <td>R$ 50–80k</td>
+        <td>Ticket médio R$ 790</td>
+      </tr>
+      <tr>
+        <td><strong>Churn mensal</strong></td>
+        <td>&lt; 5%</td>
+        <td>&lt; 3%</td>
+        <td>&lt; 2%</td>
+        <td>Alta dependência = baixo churn</td>
+      </tr>
+      <tr>
+        <td><strong>NPS</strong></td>
+        <td>Baseline</td>
+        <td>≥ 50</td>
+        <td>≥ 65</td>
+        <td>Zona de excelência: 50+</td>
+      </tr>
+      <tr>
+        <td><strong>CAC (Custo de Aquisição)</strong></td>
+        <td>R$ 1.200</td>
+        <td>R$ 900</td>
+        <td>R$ 600</td>
+        <td>LTV/CAC ≥ 3x</td>
+      </tr>
+      <tr>
+        <td><strong>LTV estimado</strong></td>
+        <td colspan="3" style="text-align:center;">R$ 9.480 (Plano Profissional × 12 meses, churn 2%)</td>
+        <td>LTV/CAC = 15x</td>
+      </tr>
+    </tbody>
+  </table>
+  <hr class="divider">
+  <p class="section-label">Prioridades de Ação</p>
+  <h2 class="section-title">O que fazer nos próximos 90 dias</h2>
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">🚀 Semanas 1–4: Fundação</div>
+      <div class="card-body">
+        <ul class="styled-list">
+          <li>Landing page otimizada com H04 ou H11 como hero</li>
+          <li>E-book "Checklist BPF IN 17/2023" como lead magnet</li>
+          <li>Perfil LinkedIn do fundador atualizado com foco em BPF</li>
+          <li>Configurar o <strong>AgroGestão_CRM</strong> para pipeline de vendas interno e o <strong>Agro RC CRM</strong> para onboarding de representantes regionais</li>
+        </ul>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">📣 Semanas 5–8: Geração de Demanda</div>
+      <div class="card-body">
+        <ul class="styled-list">
+          <li>Início do LinkedIn Sales Navigator: 20 conexões/dia qualificadas</li>
+          <li>Primeiro webinar: "O que muda com a IN 17/2023 na sua fábrica"</li>
+          <li>Google Ads: palavras-chave de intenção de compra regulatória</li>
+          <li>E-mail frio para lista de registros MAPA (dados públicos)</li>
+        </ul>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">🤝 Semanas 9–12: Parcerias e Escala</div>
+      <div class="card-body">
+        <ul class="styled-list">
+          <li>Contato com SINDIRAÇÕES e ANFAR para parceria institucional</li>
+          <li>Programa de parceiros: 3 a 5 consultores zootécnicos como revendas</li>
+          <li>Primeiro case de sucesso documentado com NPS e depoimento</li>
+          <li>Teste A/B das headlines e otimização da LP</li>
+        </ul>
+      </div>
+    </div>
+    <div class="card" style="background:var(--green-900);border-color:var(--green-800);">
+      <div class="card-title" style="color:var(--green-200);">🎯 Meta de 90 dias</div>
+      <div class="card-body" style="color:var(--green-300);">
+        <ul class="styled-list" style="color:var(--green-100);">
+          <li style="border-color:var(--green-800);">10 clientes pagantes ativos</li>
+          <li style="border-color:var(--green-800);">MRR de R$ 7.900+ (10 × plano Profissional)</li>
+          <li style="border-color:var(--green-800);">100+ leads qualificados na base</li>
+          <li style="border-color:var(--green-800);">1 parceria institucional ativa</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+function switchTab(tab) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+  event.target.classList.add('active');
+}
+</script>
+</body>
+</html>
