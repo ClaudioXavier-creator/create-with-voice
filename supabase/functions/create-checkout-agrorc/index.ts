@@ -40,22 +40,10 @@ serve(async (req) => {
       Deno.env.get("SUPABASE_ANON_KEY")!
     );
 
-    // Auth opcional (permite checkout de visitante)
-    let userEmail: string | undefined;
-    let userId: string | undefined;
-    const authHeader = req.headers.get("Authorization");
-    if (authHeader) {
-      const token = authHeader.replace("Bearer ", "");
-      const { data } = await supabaseClient.auth.getUser(token);
-      if (data?.user?.email) {
-        userEmail = data.user.email;
-        userId = data.user.id;
-      }
-    }
-
     const body = await req.json().catch(() => ({}));
     const tipoKey = (body.tipo || "individual").toLowerCase();
     const planoKey = (body.plano || "mensal").toLowerCase();
+    const product = (body.produto || "agrorc").toLowerCase();
 
     const tipoPrices = PLAN_PRICES[tipoKey];
     if (!tipoPrices) throw new Error(`Tipo inválido: ${tipoKey}. Use: individual, grupo10 ou grupo20`);
@@ -78,14 +66,14 @@ serve(async (req) => {
       customer_email: customerId ? undefined : userEmail,
       line_items: [{ price: priceConfig.id, quantity: 1 }],
       mode: priceConfig.mode,
-      success_url: `${origin}/agro-rc?checkout=success`,
-      cancel_url: `${origin}/agro-rc?checkout=canceled`,
+      success_url: `${origin}/${product}?checkout=success`,
+      cancel_url: `${origin}/${product}?checkout=canceled`,
       allow_promotion_codes: true,
       metadata: {
-        produto: "agro_rc_crm",
+        produto: product,
         tipo: tipoKey,
         plano: planoKey,
-        ...(userId ? { user_id: userId } : {}),
+        user_id: userId,
       },
     });
 
