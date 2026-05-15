@@ -32,16 +32,16 @@ export default function AgroRCCRMPage() {
   const signupLink = "/auth?product=agrorc&mode=signup&redirect=%2Fagrorc%2Fdashboard";
   const loginLink = "/auth?product=agrorc&mode=login&redirect=%2Fagrorc%2Fdashboard";
 
-  const handleCheckout = async (tipo: "individual" | "grupo", plano: "mensal" | "semestral" | "anual") => {
+  const handleCheckout = async (tipo: "individual" | "grupo10" | "grupo20", plano: "mensal" | "semestral" | "anual") => {
     const key = `${tipo}-${plano}`;
     setLoadingPlan(key);
     try {
       const { data, error } = await supabase.functions.invoke("create-checkout-agrorc", {
-        body: { tipo, plano },
+        body: { tipo, plano, produto: "agrorc" },
       });
       if (error) throw error;
       if (!data?.url) throw new Error("URL de checkout não retornada");
-      window.open(data.url, "_blank", "noopener,noreferrer");
+      window.location.href = data.url;
     } catch (e: any) {
       toast.error(e?.message || "Erro ao abrir checkout");
     } finally {
@@ -186,37 +186,11 @@ export default function AgroRCCRMPage() {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-4xl mx-auto">
             {[
-              { periodo: "Mensal", preco: "R$ 297", sub: "/mês", nota: "≈ R$ 29,70/usuário/mês" },
-              { periodo: "Semestral", preco: "R$ 1.514,70", sub: "", nota: "Pagamento único • 6 meses • 15% OFF" },
-              { periodo: "Anual", preco: "R$ 2.673,00", sub: "", nota: "Pagamento único • 12 meses • 25% OFF" },
-            ].map((plan) => (
-              <Card key={plan.periodo} className="border-border hover:shadow-xl transition-all">
-                <CardContent className="p-6 text-center space-y-3">
-                  <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">{plan.periodo}</p>
-                  <div>
-                    <span className="text-3xl font-bold text-foreground">{plan.preco}</span>
-                    <span className="text-muted-foreground">{plan.sub}</span>
-                  </div>
-                  <p className="text-xs text-muted-foreground">{plan.nota}</p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </section>
-
-        {/* Preços Grupo 20 */}
-        <section>
-          <div className="text-center mb-10">
-            <h2 className="text-2xl font-bold font-display text-foreground mb-2">Planos de Grupo (20 usuários)</h2>
-            <p className="text-muted-foreground">Ideal para equipes e cooperativas</p>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-4xl mx-auto">
-            {([
-              { periodo: "Mensal", planoKey: "mensal" as const, preco: "R$ 497", sub: "/mês", nota: "≈ R$ 24,85/usuário/mês" },
-              { periodo: "Semestral", planoKey: "semestral" as const, preco: "R$ 2.534,70", sub: "", nota: "Pagamento único • 6 meses • 15% OFF" },
-              { periodo: "Anual", planoKey: "anual" as const, preco: "R$ 4.473,00", sub: "", nota: "Pagamento único • 12 meses • 25% OFF" },
-            ]).map((plan) => {
-              const key = `grupo-${plan.planoKey}`;
+              { periodo: "Mensal", planoKey: "mensal" as const, preco: "R$ 297", sub: "/mês", nota: "≈ R$ 29,70/usuário/mês" },
+              { periodo: "Semestral", planoKey: "semestral" as const, preco: "R$ 1.514,70", sub: "", nota: "Pagamento único • 6 meses • 15% OFF" },
+              { periodo: "Anual", planoKey: "anual" as const, preco: "R$ 2.673,00", sub: "", nota: "Pagamento único • 12 meses • 25% OFF" },
+            ].map((plan) => {
+              const key = `grupo10-${plan.planoKey}`;
               const isLoading = loadingPlan === key;
               return (
                 <Card key={plan.periodo} className="border-border hover:shadow-xl transition-all">
@@ -232,7 +206,47 @@ export default function AgroRCCRMPage() {
                       variant="outline"
                       className="w-full gap-2 mt-2"
                       disabled={isLoading}
-                      onClick={() => handleCheckout("grupo", plan.planoKey)}
+                      onClick={() => handleCheckout("grupo10", plan.planoKey)}
+                    >
+                      {isLoading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Sparkles className="h-3.5 w-3.5" />}
+                      Assinar {plan.periodo}
+                    </Button>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
+        </section>
+
+        {/* Preços Grupo 20 */}
+        <section>
+          <div className="text-center mb-10">
+            <h2 className="text-2xl font-bold font-display text-foreground mb-2">Planos de Grupo (20 usuários)</h2>
+            <p className="text-muted-foreground">Ideal para equipes e cooperativas</p>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-4xl mx-auto">
+            {([
+              { periodo: "Mensal", planoKey: "mensal" as const, preco: "R$ 497", sub: "/mês", nota: "≈ R$ 24,85/usuário/mês" },
+              { periodo: "Semestral", planoKey: "semestral" as const, preco: "R$ 2.534,70", sub: "", nota: "Pagamento único • 6 meses • 15% OFF" },
+              { periodo: "Anual", planoKey: "anual" as const, preco: "R$ 4.473,00", sub: "", nota: "Pagamento único • 12 meses • 25% OFF" },
+            ]).map((plan) => {
+              const key = `grupo20-${plan.planoKey}`;
+              const isLoading = loadingPlan === key;
+              return (
+                <Card key={plan.periodo} className="border-border hover:shadow-xl transition-all">
+                  <CardContent className="p-6 text-center space-y-3">
+                    <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">{plan.periodo}</p>
+                    <div>
+                      <span className="text-3xl font-bold text-foreground">{plan.preco}</span>
+                      <span className="text-muted-foreground">{plan.sub}</span>
+                    </div>
+                    <p className="text-xs text-muted-foreground">{plan.nota}</p>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="w-full gap-2 mt-2"
+                      disabled={isLoading}
+                      onClick={() => handleCheckout("grupo20", plan.planoKey)}
                     >
                       {isLoading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Sparkles className="h-3.5 w-3.5" />}
                       Assinar {plan.periodo}

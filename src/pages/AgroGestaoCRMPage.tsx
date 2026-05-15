@@ -1,8 +1,11 @@
 import { Link } from "react-router-dom";
-import { ArrowLeft, Sparkles, Users, MapPin, BarChart3, FileText, ShieldCheck, Lock, Globe, TrendingUp } from "lucide-react";
+import { useState } from "react";
+import { ArrowLeft, Sparkles, Users, MapPin, BarChart3, FileText, ShieldCheck, Lock, Globe, TrendingUp, Loader2 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 import logoAgrogestao from "@/assets/logo-agrogestao.png";
 import logoBpfConsult from "@/assets/logo-bpf-consult.png";
 
@@ -23,10 +26,28 @@ const diferenciais = [
 ];
 
 export default function AgroGestaoCRMPage() {
+  const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
   const { session } = useAuth();
   const destino = "/agrogestao/dashboard";
   const signupLink = "/auth?product=agrogestao&mode=signup&redirect=%2Fagrogestao%2Fdashboard";
   const loginLink = "/auth?product=agrogestao&mode=login&redirect=%2Fagrogestao%2Fdashboard";
+
+  const handleCheckout = async (tipo: "individual" | "grupo10" | "grupo20", plano: "mensal" | "semestral" | "anual") => {
+    const key = `${tipo}-${plano}`;
+    setLoadingPlan(key);
+    try {
+      const { data, error } = await supabase.functions.invoke("create-checkout-agrorc", {
+        body: { tipo, plano, produto: "agrogestao" },
+      });
+      if (error) throw error;
+      if (!data?.url) throw new Error("URL de checkout não retornada");
+      window.location.href = data.url;
+    } catch (e: any) {
+      toast.error(e?.message || "Erro ao abrir checkout");
+    } finally {
+      setLoadingPlan(null);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -121,26 +142,39 @@ export default function AgroGestaoCRMPage() {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-4xl mx-auto">
             {[
-              { periodo: "Mensal", preco: "R$ 97", sub: "/mês", nota: "Cobrança recorrente", destaque: false },
-              { periodo: "Semestral", preco: "R$ 494,70", sub: "", nota: "Pagamento único • acesso 6 meses • 15% OFF", destaque: true, badge: "Mais Popular" },
-              { periodo: "Anual", preco: "R$ 873,00", sub: "", nota: "Pagamento único • acesso 12 meses • 25% OFF", destaque: true, badge: "Melhor Custo" },
-            ].map((plan) => (
-              <Card key={plan.periodo} className={`transition-all hover:shadow-xl ${plan.destaque ? "border-primary/50 bg-primary/5 scale-[1.02]" : "border-border"} relative`}>
-                {plan.badge && (
-                  <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground text-xs shadow-lg">
-                    {plan.badge}
-                  </Badge>
-                )}
-                <CardContent className="p-6 text-center space-y-3">
-                  <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">{plan.periodo}</p>
-                  <div>
-                    <span className="text-3xl font-bold text-foreground">{plan.preco}</span>
-                    <span className="text-muted-foreground">{plan.sub}</span>
-                  </div>
-                  <p className="text-xs text-muted-foreground">{plan.nota}</p>
-                </CardContent>
-              </Card>
-            ))}
+              { periodo: "Mensal", planoKey: "mensal" as const, preco: "R$ 97", sub: "/mês", nota: "Cobrança recorrente", destaque: false },
+              { periodo: "Semestral", planoKey: "semestral" as const, preco: "R$ 494,70", sub: "", nota: "Pagamento único • acesso 6 meses • 15% OFF", destaque: true, badge: "Mais Popular" },
+              { periodo: "Anual", planoKey: "anual" as const, preco: "R$ 873,00", sub: "", nota: "Pagamento único • acesso 12 meses • 25% OFF", destaque: true, badge: "Melhor Custo" },
+            ].map((plan) => {
+              const key = `individual-${plan.planoKey}`;
+              const isLoading = loadingPlan === key;
+              return (
+                <Card key={plan.periodo} className={`transition-all hover:shadow-xl ${plan.destaque ? "border-primary/50 bg-primary/5 scale-[1.02]" : "border-border"} relative`}>
+                  {plan.badge && (
+                    <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground text-xs shadow-lg">
+                      {plan.badge}
+                    </Badge>
+                  )}
+                  <CardContent className="p-6 text-center space-y-3">
+                    <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">{plan.periodo}</p>
+                    <div>
+                      <span className="text-3xl font-bold text-foreground">{plan.preco}</span>
+                      <span className="text-muted-foreground">{plan.sub}</span>
+                    </div>
+                    <p className="text-xs text-muted-foreground">{plan.nota}</p>
+                    <Button
+                      size="sm"
+                      className="w-full gap-2 mt-2"
+                      disabled={isLoading}
+                      onClick={() => handleCheckout("individual", plan.planoKey)}
+                    >
+                      {isLoading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Sparkles className="h-3.5 w-3.5" />}
+                      Assinar {plan.periodo}
+                    </Button>
+                  </CardContent>
+                </Card>
+              );
+            })}
           </div>
         </section>
 
@@ -152,21 +186,35 @@ export default function AgroGestaoCRMPage() {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-4xl mx-auto mb-16">
             {[
-              { periodo: "Mensal", preco: "R$ 297", sub: "/mês", nota: "≈ R$ 29,70/usuário/mês" },
-              { periodo: "Semestral", preco: "R$ 1.514,70", sub: "", nota: "Pagamento único • 6 meses • 15% OFF" },
-              { periodo: "Anual", preco: "R$ 2.673,00", sub: "", nota: "Pagamento único • 12 meses • 25% OFF" },
-            ].map((plan) => (
-              <Card key={plan.periodo} className="border-border hover:shadow-xl transition-all">
-                <CardContent className="p-6 text-center space-y-3">
-                  <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">{plan.periodo}</p>
-                  <div>
-                    <span className="text-3xl font-bold text-foreground">{plan.preco}</span>
-                    <span className="text-muted-foreground">{plan.sub}</span>
-                  </div>
-                  <p className="text-xs text-muted-foreground">{plan.nota}</p>
-                </CardContent>
-              </Card>
-            ))}
+              { periodo: "Mensal", planoKey: "mensal" as const, preco: "R$ 297", sub: "/mês", nota: "≈ R$ 29,70/usuário/mês" },
+              { periodo: "Semestral", planoKey: "semestral" as const, preco: "R$ 1.514,70", sub: "", nota: "Pagamento único • 6 meses • 15% OFF" },
+              { periodo: "Anual", planoKey: "anual" as const, preco: "R$ 2.673,00", sub: "", nota: "Pagamento único • 12 meses • 25% OFF" },
+            ].map((plan) => {
+              const key = `grupo10-${plan.planoKey}`;
+              const isLoading = loadingPlan === key;
+              return (
+                <Card key={plan.periodo} className="border-border hover:shadow-xl transition-all">
+                  <CardContent className="p-6 text-center space-y-3">
+                    <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">{plan.periodo}</p>
+                    <div>
+                      <span className="text-3xl font-bold text-foreground">{plan.preco}</span>
+                      <span className="text-muted-foreground">{plan.sub}</span>
+                    </div>
+                    <p className="text-xs text-muted-foreground">{plan.nota}</p>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="w-full gap-2 mt-2"
+                      disabled={isLoading}
+                      onClick={() => handleCheckout("grupo10", plan.planoKey)}
+                    >
+                      {isLoading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Sparkles className="h-3.5 w-3.5" />}
+                      Assinar {plan.periodo}
+                    </Button>
+                  </CardContent>
+                </Card>
+              );
+            })}
           </div>
 
           <div className="text-center mb-10">
@@ -175,21 +223,35 @@ export default function AgroGestaoCRMPage() {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-4xl mx-auto">
             {[
-              { periodo: "Mensal", preco: "R$ 497", sub: "/mês", nota: "≈ R$ 24,85/usuário/mês" },
-              { periodo: "Semestral", preco: "R$ 2.534,70", sub: "", nota: "Pagamento único • 6 meses • 15% OFF" },
-              { periodo: "Anual", preco: "R$ 4.473,00", sub: "", nota: "Pagamento único • 12 meses • 25% OFF" },
-            ].map((plan) => (
-              <Card key={plan.periodo} className="border-border hover:shadow-xl transition-all">
-                <CardContent className="p-6 text-center space-y-3">
-                  <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">{plan.periodo}</p>
-                  <div>
-                    <span className="text-3xl font-bold text-foreground">{plan.preco}</span>
-                    <span className="text-muted-foreground">{plan.sub}</span>
-                  </div>
-                  <p className="text-xs text-muted-foreground">{plan.nota}</p>
-                </CardContent>
-              </Card>
-            ))}
+              { periodo: "Mensal", planoKey: "mensal" as const, preco: "R$ 497", sub: "/mês", nota: "≈ R$ 24,85/usuário/mês" },
+              { periodo: "Semestral", planoKey: "semestral" as const, preco: "R$ 2.534,70", sub: "", nota: "Pagamento único • 6 meses • 15% OFF" },
+              { periodo: "Anual", planoKey: "anual" as const, preco: "R$ 4.473,00", sub: "", nota: "Pagamento único • 12 meses • 25% OFF" },
+            ].map((plan) => {
+              const key = `grupo20-${plan.planoKey}`;
+              const isLoading = loadingPlan === key;
+              return (
+                <Card key={plan.periodo} className="border-border hover:shadow-xl transition-all">
+                  <CardContent className="p-6 text-center space-y-3">
+                    <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">{plan.periodo}</p>
+                    <div>
+                      <span className="text-3xl font-bold text-foreground">{plan.preco}</span>
+                      <span className="text-muted-foreground">{plan.sub}</span>
+                    </div>
+                    <p className="text-xs text-muted-foreground">{plan.nota}</p>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="w-full gap-2 mt-2"
+                      disabled={isLoading}
+                      onClick={() => handleCheckout("grupo20", plan.planoKey)}
+                    >
+                      {isLoading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Sparkles className="h-3.5 w-3.5" />}
+                      Assinar {plan.periodo}
+                    </Button>
+                  </CardContent>
+                </Card>
+              );
+            })}
           </div>
           <div className="mt-12 text-center">
             <h3 className="text-xl font-bold font-display text-foreground mb-3">Experimente grátis por 7 dias!</h3>
