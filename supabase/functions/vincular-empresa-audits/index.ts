@@ -86,17 +86,20 @@ serve(async (req) => {
       invoiceId = finalized.id ?? null;
     } else {
       // Semestral/Anual — Invoice cheia +25% baseada no plano
-      const valorBase: Record<string, number> = {
-        semestral: 254490, // R$ 2.544,90 × 1,25 = R$ 3.181,12
-        anual: 449100,     // R$ 4.491,00 × 1,25 = R$ 5.613,75
+      // Semestral/Anual — Cobrança exata informada pelo usuário (≈ +25% do plano base)
+      const VALORES_EXCEDENTE: Record<string, number> = {
+        semestral: 318112, // R$ 3.181,12 (R$ 2.544,90 × 1,25 ≈)
+        anual:     561375, // R$ 5.613,75 (R$ 4.491,00 × 1,25)
       };
-      const base = valorBase[lic.plano] ?? 0;
-      const valorComAdicional = Math.round(base * 1.25);
+
+      const valorFinal = VALORES_EXCEDENTE[lic.plano] ?? 0;
+      if (valorFinal === 0) throw new Error("Configuração de valor excedente não encontrada para este plano");
+
       await stripe.invoiceItems.create({
         customer: customerId,
-        amount: valorComAdicional,
+        amount: valorFinal,
         currency: "brl",
-        description: `Empresa adicional — Audits BPF Consultor ${lic.plano} (+25%)`,
+        description: `Empresa adicional — Audits BPF Consultor ${lic.plano} (excedente)`,
       });
       const inv = await stripe.invoices.create({
         customer: customerId,
