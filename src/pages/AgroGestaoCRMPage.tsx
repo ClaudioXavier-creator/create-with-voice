@@ -1,8 +1,11 @@
 import { Link } from "react-router-dom";
-import { ArrowLeft, Sparkles, Users, MapPin, BarChart3, FileText, ShieldCheck, Lock, Globe, TrendingUp } from "lucide-react";
+import { useState } from "react";
+import { ArrowLeft, Sparkles, Users, MapPin, BarChart3, FileText, ShieldCheck, Lock, Globe, TrendingUp, Loader2 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 import logoAgrogestao from "@/assets/logo-agrogestao.png";
 import logoBpfConsult from "@/assets/logo-bpf-consult.png";
 
@@ -23,10 +26,28 @@ const diferenciais = [
 ];
 
 export default function AgroGestaoCRMPage() {
+  const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
   const { session } = useAuth();
   const destino = "/agrogestao/dashboard";
   const signupLink = "/auth?product=agrogestao&mode=signup&redirect=%2Fagrogestao%2Fdashboard";
   const loginLink = "/auth?product=agrogestao&mode=login&redirect=%2Fagrogestao%2Fdashboard";
+
+  const handleCheckout = async (tipo: "individual" | "grupo10" | "grupo20", plano: "mensal" | "semestral" | "anual") => {
+    const key = `${tipo}-${plano}`;
+    setLoadingPlan(key);
+    try {
+      const { data, error } = await supabase.functions.invoke("create-checkout-agrorc", {
+        body: { tipo, plano, produto: "agrogestao" },
+      });
+      if (error) throw error;
+      if (!data?.url) throw new Error("URL de checkout não retornada");
+      window.location.href = data.url;
+    } catch (e: any) {
+      toast.error(e?.message || "Erro ao abrir checkout");
+    } finally {
+      setLoadingPlan(null);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background">
