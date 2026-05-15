@@ -184,7 +184,7 @@ export default function Vitrine() {
               Consultoria & Sistemas para Nutrição Animal
             </Badge>
             <h1 translate="no" className="text-3xl sm:text-6xl lg:text-7xl font-bold font-display text-foreground mb-4 sm:mb-5 tracking-tight leading-tight notranslate">
-              Conformidade MAPA e <span className="text-primary">Gestão Total</span>
+              BPF_<span className="text-primary">Consult</span>: Conformidade MAPA e Gestão Total
             </h1>
             <p className="text-base sm:text-xl text-muted-foreground max-w-3xl mx-auto mb-8 sm:mb-10 leading-relaxed px-2">
               A única plataforma que integra <strong className="text-foreground">BPF, Auditoria Digital e CRM</strong> para o agronegócio. 
