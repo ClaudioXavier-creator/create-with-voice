@@ -258,10 +258,10 @@ export default function DisparadorMarketing() {
                 </div>
                 <div className="flex flex-wrap gap-2 py-2">
                   <span className="text-[10px] font-medium text-muted-foreground w-full">Inserir variável ou link:</span>
-                  <Button size="xs" variant="outline" className="text-[10px] h-6" onClick={() => setEmailBody(p => p + " {{nome}}")}>Nome do Cliente</Button>
-                  <Button size="xs" variant="outline" className="text-[10px] h-6" onClick={() => setEmailBody(p => p + " https://www.bpfconsult.com.br/admin/plano-vendas.html")}>Plano de Vendas</Button>
-                  <Button size="xs" variant="outline" className="text-[10px] h-6" onClick={() => setEmailBody(p => p + " https://www.bpfconsult.com.br/agrorc")}>Link AgroRC</Button>
-                  <Button size="xs" variant="outline" className="text-[10px] h-6" onClick={() => setEmailBody(p => p + " https://www.bpfconsult.com.br/audits-bpf")}>Link AuditsBPF</Button>
+                  <Button size="sm" variant="outline" className="text-[10px] h-6 px-2" onClick={() => setEmailBody(p => p + " {{nome}}")}>Nome do Cliente</Button>
+                  <Button size="sm" variant="outline" className="text-[10px] h-6 px-2" onClick={() => setEmailBody(p => p + " https://www.bpfconsult.com.br/admin/plano-vendas.html")}>Plano de Vendas</Button>
+                  <Button size="sm" variant="outline" className="text-[10px] h-6 px-2" onClick={() => setEmailBody(p => p + " https://www.bpfconsult.com.br/agrorc")}>Link AgroRC</Button>
+                  <Button size="sm" variant="outline" className="text-[10px] h-6 px-2" onClick={() => setEmailBody(p => p + " https://www.bpfconsult.com.br/audits-bpf")}>Link AuditsBPF</Button>
                 </div>
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Corpo do E-mail (HTML permitido)</label>
