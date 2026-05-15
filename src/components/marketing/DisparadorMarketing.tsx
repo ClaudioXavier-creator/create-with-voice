@@ -21,6 +21,7 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { getProductLabel } from "@/utils/productUtils";
+import { useAuth } from "@/hooks/useAuth";
 
 interface Recipient {
   id: string;
@@ -34,6 +35,7 @@ interface Recipient {
 }
 
 export default function DisparadorMarketing() {
+  const { user } = useAuth();
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
   const [leads, setLeads] = useState<Recipient[]>([]);
@@ -149,11 +151,12 @@ export default function DisparadorMarketing() {
     window.open(url, "_blank");
     
     // Registrar interação se for CRM
-    if (tab === "crm") {
+    if (tab === "crm" && user) {
       void supabase.from("crm_interacoes").insert([{
         pipeline_id: l.id,
         tipo: "whatsapp",
         descricao: `[Marketing] WhatsApp iniciado: ${msg.substring(0, 50)}...`,
+        autor_id: user.id,
         autor_nome: senderName
       }]);
     }
