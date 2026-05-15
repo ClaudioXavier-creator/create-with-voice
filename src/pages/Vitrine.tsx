@@ -147,7 +147,7 @@ const produtos: ProdutoCard[] = [
     bgCard: "bg-slate-50 dark:bg-slate-900/40",
     borderColor: "border-slate-300 dark:border-slate-700",
     trial: "Acesso Restrito",
-    trialLink: "/auth?product=admin",
+    trialLink: "/auth?product=admin&redirect=%2Fadmin",
     preco: "Uso Interno Admin",
     adminOnly: true,
   },
