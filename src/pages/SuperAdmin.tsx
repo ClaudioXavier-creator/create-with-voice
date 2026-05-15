@@ -94,7 +94,7 @@ export default function SuperAdmin() {
 
       <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-6">
         <div className="overflow-x-auto pb-2 -mx-4 px-4 md:mx-0 md:px-0">
-          <TabsList className="flex md:grid md:grid-cols-6 lg:grid-cols-7 w-max md:w-full h-auto gap-2 bg-transparent">
+          <TabsList className="flex md:grid md:grid-cols-7 lg:grid-cols-7 w-max md:w-full h-auto gap-2 bg-transparent">
             <TabsTrigger value="dashboard" className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground py-2 border flex-1">
               <Activity className="h-4 w-4" />
               <span>Dashboard</span>
@@ -119,7 +119,12 @@ export default function SuperAdmin() {
               <Megaphone className="h-4 w-4" />
               <span>Marketing</span>
             </TabsTrigger>
+            <TabsTrigger value="plano-vendas" className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground py-2 border flex-1">
+              <FileText className="h-4 w-4" />
+              <span className="text-xs">Plano de Vendas</span>
+            </TabsTrigger>
           </TabsList>
+
         </div>
 
         <TabsContent value="dashboard" className="space-y-6">
