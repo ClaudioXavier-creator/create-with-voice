@@ -150,12 +150,12 @@ export default function DisparadorMarketing() {
     
     // Registrar interação se for CRM
     if (tab === "crm") {
-      void supabase.from("crm_interacoes").insert({
+      void supabase.from("crm_interacoes").insert([{
         pipeline_id: l.id,
         tipo: "whatsapp",
         descricao: `[Marketing] WhatsApp iniciado: ${msg.substring(0, 50)}...`,
         autor_nome: senderName
-      });
+      }]);
     }
   };
 
@@ -184,7 +184,7 @@ export default function DisparadorMarketing() {
             <div className="flex flex-col gap-2">
               <label className="text-xs font-medium">Filtrar por Programa</label>
               <Select value={filterProduto} onValueChange={setFilterProduto}>
-                <SelectTrigger size="sm">
+                <SelectTrigger className="h-9">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
