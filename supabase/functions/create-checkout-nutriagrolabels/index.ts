@@ -10,6 +10,11 @@ const corsHeaders = {
 // Nutri_Agro Labels — Grupo 10 e Grupo 20 × 3 períodos
 // Mensal = subscription | Semestral/Anual = one-time payment
 const PLAN_PRICES: Record<string, Record<string, { id: string; mode: "subscription" | "payment" }>> = {
+  individual: {
+    mensal:    { id: "price_1TToYOHDmwi8j6XZmUInNl9Z", mode: "subscription" },
+    semestral: { id: "price_1TToYaHDmwi8j6XZzI6C7k7A", mode: "payment" },
+    anual:     { id: "price_1TToYcHDmwi8j6XZ9N2L5p8X", mode: "payment" },
+  },
   grupo10: {
     mensal:    { id: "price_1TWLDSHDmwi8j6XZxnHtmb3e", mode: "subscription" },
     semestral: { id: "price_1TWLJsHDmwi8j6XZ8RPX08kN", mode: "payment" },
@@ -50,7 +55,7 @@ serve(async (req) => {
     const planoKey = (body.plano || "mensal").toLowerCase();
 
     const tipoPrices = PLAN_PRICES[tipoKey];
-    if (!tipoPrices) throw new Error(`Tipo inválido: ${tipoKey}. Use: grupo10 ou grupo20`);
+    if (!tipoPrices) throw new Error(`Tipo inválido: ${tipoKey}. Use: individual, grupo10 ou grupo20`);
     const priceConfig = tipoPrices[planoKey];
     if (!priceConfig) throw new Error("Plano inválido. Use: mensal, semestral ou anual");
 

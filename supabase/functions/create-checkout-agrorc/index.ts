@@ -15,7 +15,12 @@ const PLAN_PRICES: Record<string, Record<string, { id: string; mode: "subscripti
     semestral: { id: "price_1TQatgHDmwi8j6XZjHuU1Rxx", mode: "payment" },
     anual:     { id: "price_1TQauHHDmwi8j6XZRZDsIBUY", mode: "payment" },
   },
-  grupo: {
+  grupo10: {
+    mensal:    { id: "price_1TQavXHDmwi8j6XZUe2L4p9Y", mode: "subscription" }, // Placeholder
+    semestral: { id: "price_1TQavZHDmwi8j6XZzI7M5q8A", mode: "payment" },      // Placeholder
+    anual:     { id: "price_1TQavbHDmwi8j6XZ9N3N6r7B", mode: "payment" },      // Placeholder
+  },
+  grupo20: {
     mensal:    { id: "price_1TQauhHDmwi8j6XZVtURafTa", mode: "subscription" },
     semestral: { id: "price_1TQav8HDmwi8j6XZUNdKtQWd", mode: "payment" },
     anual:     { id: "price_1TQayCHDmwi8j6XZ1sLzGIhP", mode: "payment" },
@@ -53,7 +58,7 @@ serve(async (req) => {
     const planoKey = (body.plano || "mensal").toLowerCase();
 
     const tipoPrices = PLAN_PRICES[tipoKey];
-    if (!tipoPrices) throw new Error(`Tipo inválido: ${tipoKey}. Use: individual ou grupo`);
+    if (!tipoPrices) throw new Error(`Tipo inválido: ${tipoKey}. Use: individual, grupo10 ou grupo20`);
     const priceConfig = tipoPrices[planoKey];
     if (!priceConfig) throw new Error("Plano inválido. Use: mensal, semestral ou anual");
 
