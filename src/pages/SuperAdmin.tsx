@@ -4,17 +4,18 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ShieldCheck, Users, TrendingUp, Key, CreditCard, Activity, Target, Award, Loader2, Megaphone, FileText } from "lucide-react";
+import { ShieldCheck, Users, TrendingUp, Key, CreditCard, Activity, Target, Award, Loader2, Megaphone, FileText, SendHorizontal } from "lucide-react";
 import { canAccessLicenseAdmin } from "@/config/adminAccess";
 import CRM from "./CRM";
 import AdminLicencas from "./AdminLicencas";
 import AdminLeads from "./AdminLeads";
 import GeradorHeadlines from "./GeradorHeadlines";
+import DisparadorMarketing from "@/components/marketing/DisparadorMarketing";
 
 export default function SuperAdmin() {
   const { user, roles, loading: authLoading } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
-  const validTabs = ["dashboard", "leads", "crm", "licencas", "assinaturas", "marketing", "plano-vendas"];
+  const validTabs = ["dashboard", "leads", "crm", "licencas", "assinaturas", "marketing", "plano-vendas", "disparo"];
 
   const initialTab = searchParams.get("tab");
   const [activeTab, setActiveTab] = useState(
@@ -94,7 +95,7 @@ export default function SuperAdmin() {
 
       <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-6">
         <div className="overflow-x-auto pb-2 -mx-4 px-4 md:mx-0 md:px-0">
-          <TabsList className="flex md:grid md:grid-cols-7 lg:grid-cols-7 w-max md:w-full h-auto gap-2 bg-transparent">
+          <TabsList className="flex md:grid md:grid-cols-8 lg:grid-cols-8 w-max md:w-full h-auto gap-2 bg-transparent">
             <TabsTrigger value="dashboard" className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground py-2 border flex-1">
               <Activity className="h-4 w-4" />
               <span>Dashboard</span>
@@ -107,6 +108,10 @@ export default function SuperAdmin() {
               <TrendingUp className="h-4 w-4" />
               <span className="text-xs">CRM e Vendas</span>
             </TabsTrigger>
+            <TabsTrigger value="disparo" className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground py-2 border flex-1">
+              <SendHorizontal className="h-4 w-4" />
+              <span>Disparos</span>
+            </TabsTrigger>
             <TabsTrigger value="licencas" className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground py-2 border flex-1">
               <Key className="h-4 w-4" />
               <span>Licenças</span>
@@ -117,11 +122,11 @@ export default function SuperAdmin() {
             </TabsTrigger>
             <TabsTrigger value="marketing" className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground py-2 border flex-1">
               <Megaphone className="h-4 w-4" />
-              <span>Marketing</span>
+              <span>Copy/IA</span>
             </TabsTrigger>
             <TabsTrigger value="plano-vendas" className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground py-2 border flex-1">
               <FileText className="h-4 w-4" />
-              <span className="text-xs">Plano de Vendas</span>
+              <span className="text-xs">Plano Vendas</span>
             </TabsTrigger>
           </TabsList>
 
@@ -201,6 +206,9 @@ export default function SuperAdmin() {
               </div>
             </CardContent>
           </Card>
+        </TabsContent>
+        <TabsContent value="disparo">
+          <DisparadorMarketing />
         </TabsContent>
         <TabsContent value="marketing">
           <GeradorHeadlines />
