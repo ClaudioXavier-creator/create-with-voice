@@ -90,8 +90,9 @@ export default function Auth() {
 
   const preferredRedirect = useMemo(() => {
     if (redirectTo && redirectTo !== "/" && redirectTo !== "/auth") return redirectTo;
+    if (product === "admin") return "/admin";
     return "/dashboard";
-  }, [redirectTo]);
+  }, [redirectTo, product]);
 
   const passwordChecks = useMemo(
     () => [

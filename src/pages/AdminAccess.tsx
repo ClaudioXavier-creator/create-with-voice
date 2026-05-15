@@ -33,7 +33,7 @@ export default function AdminAccess() {
             </p>
           </div>
           
-          <Link to="/auth?product=admin" className="block w-full">
+          <Link to="/auth?product=admin&redirect=%2Fadmin" className="block w-full">
             <Button size="lg" className="w-full gap-2 text-base font-semibold shadow-lg shadow-primary/20">
               <Lock className="h-4 w-4" />
               Entrar no Portal
