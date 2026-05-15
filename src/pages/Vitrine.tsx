@@ -162,8 +162,8 @@ const estatisticas = [
 
 export default function Vitrine() {
   const navigate = useNavigate();
-  // Filtrando apenas produtos públicos para a vitrine
-  const produtosVisiveis = produtos.filter(p => !p.adminOnly);
+  // Exibindo todos os produtos, mas marcando os restritos
+  const produtosVisiveis = produtos;
 
   return (
     <div className="min-h-screen bg-background">
@@ -198,12 +198,12 @@ export default function Vitrine() {
                   Acessar Sistema
                 </Button>
               </Link>
-              <a href="#programas" className="w-full sm:w-auto">
-                <Button size="lg" variant="outline" className="w-full sm:w-auto gap-2 px-8 text-base bg-background/50 backdrop-blur-sm">
-                  <Sparkles className="h-4 w-4" />
-                  Ver Soluções Digitais
+              <Link to="/admin-access" className="w-full sm:w-auto">
+                <Button size="lg" variant="secondary" className="w-full sm:w-auto gap-2 px-8 text-base shadow-lg">
+                  <ShieldCheck className="h-4 w-4" />
+                  Acesso Restrito
                 </Button>
-              </a>
+              </Link>
             </div>
           </div>
 
@@ -244,8 +244,13 @@ export default function Vitrine() {
               // Vai direto para o programa (ProtectedRoute redireciona para /auth se não logado)
               navigate(target);
             }}>
-              <div className={`h-full rounded-2xl border-2 ${p.borderColor} ${p.bgCard} p-1 transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 hover:scale-[1.02]`}>
-                <div className="h-full rounded-xl bg-card/80 backdrop-blur-sm p-6 sm:p-8 flex flex-col">
+              <div className={`h-full rounded-2xl border-2 ${p.borderColor} ${p.bgCard} p-1 transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 hover:scale-[1.02] ${p.adminOnly ? 'opacity-90 grayscale-[0.3] hover:grayscale-0' : ''}`}>
+                <div className="h-full rounded-xl bg-card/80 backdrop-blur-sm p-6 sm:p-8 flex flex-col relative overflow-hidden">
+                  {p.adminOnly && (
+                    <div className="absolute top-0 right-0 bg-primary text-primary-foreground px-4 py-1 text-[10px] font-bold uppercase tracking-widest transform rotate-0 z-10 rounded-bl-lg">
+                      Restrito
+                    </div>
+                  )}
                   {/* Logo */}
                   <div className="flex justify-center mb-6">
                     <div className="relative">
@@ -297,7 +302,14 @@ export default function Vitrine() {
 
                   {/* CTAs */}
                   <div className="space-y-2">
-                    {p.trialExternal ? (
+                    {p.adminOnly ? (
+                      <Link to="/admin-access" onClick={(e) => e.stopPropagation()}>
+                        <Button size="sm" variant="secondary" className="w-full gap-2 shadow-sm">
+                          <Lock className="h-3.5 w-3.5" />
+                          Acessar Portal
+                        </Button>
+                      </Link>
+                    ) : p.trialExternal ? (
                       <a href={p.trialLink} target="_blank" rel="noopener noreferrer" className="block" onClick={(e) => e.stopPropagation()}>
                         <Button size="sm" className="w-full gap-2 shadow-sm">
                           <Sparkles className="h-3.5 w-3.5" />
