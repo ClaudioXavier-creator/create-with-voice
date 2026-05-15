@@ -46,9 +46,18 @@ export const RotulosDashboardPage = () => (
   </div>
 );
 
-// Editor / RTPI / Níveis / Templates: todos renderizam o módulo real de Produtos,
-// onde o usuário escolhe o produto e abre as abas (Rótulo IN 22, Ficha Técnica, RTPI, Fórmulas).
-export const RotulosEditorPage = () => <Produtos />;
+// Editor de Rótulos: usa o gerador completo (HTML standalone validado pelo cliente)
+// servido em /rotulos-editor.html para garantir paridade visual e funcional 1:1.
+export const RotulosEditorPage = () => (
+  <div className="-m-4 sm:-m-6 lg:-m-8 h-[calc(100vh-4rem)]">
+    <iframe
+      src="/rotulos-editor.html"
+      title="Gerador de Rótulo — Alimentos para Animais"
+      className="w-full h-full border-0 block"
+      allow="clipboard-read; clipboard-write"
+    />
+  </div>
+);
 export const RotulosRTPIPage = () => <Produtos />;
 export const RotulosNiveisPage = () => <Produtos />;
 export const RotulosTemplatesPage = () => <Produtos />;
