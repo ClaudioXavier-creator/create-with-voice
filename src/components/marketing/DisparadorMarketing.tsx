@@ -16,7 +16,8 @@ import {
   Filter, 
   CheckCircle2, 
   AlertCircle,
-  ExternalLink
+  ExternalLink,
+  ChevronRight
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -254,6 +255,13 @@ export default function DisparadorMarketing() {
                     onChange={(e) => setEmailSubject(e.target.value)}
                   />
                   <p className="text-[10px] text-muted-foreground">Dica: Use {"{{nome}}"} para personalizar com o nome do cliente.</p>
+                </div>
+                <div className="flex flex-wrap gap-2 py-2">
+                  <span className="text-[10px] font-medium text-muted-foreground w-full">Inserir variável ou link:</span>
+                  <Button size="xs" variant="outline" className="text-[10px] h-6" onClick={() => setEmailBody(p => p + " {{nome}}")}>Nome do Cliente</Button>
+                  <Button size="xs" variant="outline" className="text-[10px] h-6" onClick={() => setEmailBody(p => p + " https://www.bpfconsult.com.br/admin/plano-vendas.html")}>Plano de Vendas</Button>
+                  <Button size="xs" variant="outline" className="text-[10px] h-6" onClick={() => setEmailBody(p => p + " https://www.bpfconsult.com.br/agrorc")}>Link AgroRC</Button>
+                  <Button size="xs" variant="outline" className="text-[10px] h-6" onClick={() => setEmailBody(p => p + " https://www.bpfconsult.com.br/audits-bpf")}>Link AuditsBPF</Button>
                 </div>
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Corpo do E-mail (HTML permitido)</label>
