@@ -20,3 +20,15 @@ verify_jwt = false
 
 [functions.handle-email-suppression]
 verify_jwt = false
+
+[functions.legislacao-ai]
+verify_jwt = true
+
+[functions.classificar-risco]
+verify_jwt = true
+
+[functions.nc-plano-acao]
+verify_jwt = true
+
+[functions.analise-tendencias]
+verify_jwt = true
