@@ -18,8 +18,8 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ['Inter', 'sans-serif'],
-        display: ['Sora', 'sans-serif'],
+        sans: ['DM Sans', 'Inter', 'sans-serif'],
+        display: ['Syne', 'Sora', 'sans-serif'],
       },
       gridTemplateColumns: {
         "13": "repeat(13, minmax(0, 1fr))",
