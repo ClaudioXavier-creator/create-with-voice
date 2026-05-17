@@ -60,10 +60,11 @@ function cleanupStaleServiceWorkers() {
   if (versionMismatch) {
     localStorage.setItem("__app_version__", APP_VERSION);
     
-    if (!isInIframe) {
+    // We avoid hard reload in previews to prevent reload loops if the environment 
+    // is unstable, but for production domains it ensures users get the latest bits.
+    if (!isInIframe && isPublishedHost) {
       console.log("[CacheBuster] Version mismatch, forcing hard reload...");
       setTimeout(() => {
-        // Force bypass of browser cache for the reload
         window.location.href = window.location.href.split('#')[0].split('?')[0] + '?v=' + Date.now();
       }, 500);
     }
