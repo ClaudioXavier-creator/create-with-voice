@@ -225,21 +225,63 @@ export default function SuperAdmin() {
                   Estratégia comercial completa, ICP, funil, pricing e copywriting de alta conversão.
                 </p>
               </div>
-              <a
-                href="/admin/plano-vendas.html"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-sm text-primary hover:underline"
-              >
-                Abrir em nova aba ↗
-              </a>
+              <div className="flex items-center gap-2">
+                <a
+                  href="/admin/plano-vendas.html"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm text-primary hover:underline"
+                >
+                  Abrir em nova aba ↗
+                </a>
+              </div>
             </CardHeader>
             <CardContent>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                <Card className="bg-primary/5 border-primary/20">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-sm flex items-center gap-2">
+                      <ShieldCheck className="h-4 w-4" />
+                      Portal de Gestão (Restrito)
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-xs text-muted-foreground mb-4">
+                      Acesso centralizado para equipe interna. O link do Portal de Gestão foi movido para esta área restrita para garantir a segurança dos dados.
+                    </p>
+                    <Link to="/admin-access">
+                      <Button size="sm" variant="outline" className="w-full gap-2">
+                        <Lock className="h-3 w-3" />
+                        Ver Página de Acesso
+                      </Button>
+                    </Link>
+                  </CardContent>
+                </Card>
+                
+                <Card className="bg-emerald-500/5 border-emerald-500/20">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-sm flex items-center gap-2">
+                      <FileText className="h-4 w-4" />
+                      Material de Apoio
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-xs text-muted-foreground mb-4">
+                      Utilize o plano de vendas abaixo para alinhar a comunicação com os leads capturados.
+                    </p>
+                    <Button size="sm" variant="outline" className="w-full gap-2" onClick={() => window.open('/admin/plano-vendas.html', '_blank')}>
+                      <FileText className="h-3 w-3" />
+                      Download / Visualizar
+                    </Button>
+                  </CardContent>
+                </Card>
+              </div>
+
               <iframe
                 src="/admin/plano-vendas.html"
                 title="Plano de Vendas BPF Consult"
                 className="w-full rounded-lg border"
-                style={{ height: "calc(100vh - 280px)", minHeight: "700px" }}
+                style={{ height: "calc(100vh - 450px)", minHeight: "500px" }}
               />
             </CardContent>
           </Card>
