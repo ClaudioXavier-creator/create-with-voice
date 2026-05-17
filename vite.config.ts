@@ -65,6 +65,8 @@ export default defineConfig(({ mode }) => ({
   build: {
     reportCompressedSize: false,
     chunkSizeWarningLimit: 1000,
+    assetsInlineLimit: 0,
+    hash: true,
     rollupOptions: {
       output: {
         manualChunks: {
