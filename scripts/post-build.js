@@ -7,7 +7,7 @@ try {
   const buildTime = new Date().toISOString();
   content = content.replace('%BUILD_TIME%', buildTime);
   writeFileSync(indexPath, content);
-  console.log(`Build time stamp added: ${buildTime}`);
+  console.log(`Build time stamp added to HTML: ${buildTime}`);
 } catch (e) {
   console.error('Failed to update index.html with build time');
 }

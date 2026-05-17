@@ -8,7 +8,7 @@ function cleanupStaleServiceWorkers() {
   if (typeof window === "undefined") return;
 
   // Manual cache busting version - update this to force a full refresh.
-  const APP_VERSION = "2026.05.15.v04-FORCE-SITE-NOVO-CLEANUP";
+  const APP_VERSION = "2026.05.17.v01-AUTO-CLEANUP-" + (import.meta.env.VITE_BUILD_TIME || Date.now());
 
   let isInIframe = false;
   try {
