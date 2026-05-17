@@ -325,6 +325,7 @@ export default function Vitrine() {
           <a href="#" className="hover:text-white transition-colors">Privacidade</a>
           <a href="#" className="hover:text-white transition-colors">Termos</a>
           <a href="#" className="hover:text-white transition-colors">Suporte</a>
+          <Link to="/admin-access" className="hover:text-white transition-colors">Acesso Restrito</Link>
         </div>
       </footer>
     </div>
