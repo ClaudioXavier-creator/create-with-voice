@@ -206,12 +206,6 @@ export default function Vitrine() {
                   Acessar Sistemas
                 </Button>
               </Link>
-              <Link to="/admin-access" className="w-full sm:w-auto">
-                <Button size="lg" variant="outline" className="w-full sm:w-auto border-white/20 text-white hover:bg-white/10 font-bold text-lg px-8 py-7 rounded-xl transition-all">
-                  <ShieldCheck className="h-5 w-5 mr-2" />
-                  Acesso Restrito
-                </Button>
-              </Link>
             </div>
           </div>
 
