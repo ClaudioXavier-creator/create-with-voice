@@ -99,7 +99,7 @@ export default defineConfig(({ mode }) => {
           "vendor-query": ["@tanstack/react-query"],
           "vendor-supabase": ["@supabase/supabase-js"]
         }
+      }
     }
-  }
-};
+  };
 });
