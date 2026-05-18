@@ -1,5 +1,6 @@
-import { Link } from "react-router-dom";
-import { ArrowLeft, Check, Sparkles, BookOpen, Factory, GitBranch, ShieldCheck, Beaker, Bug, Wrench, BarChart3, CalendarRange, ClipboardCheck, Droplets, GraduationCap, Activity, Lock, FileCheck, LogIn } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { ArrowLeft, Check, Sparkles, BookOpen, Factory, GitBranch, ShieldCheck, Beaker, Bug, Wrench, BarChart3, CalendarRange, ClipboardCheck, Droplets, GraduationCap, Activity, Lock, FileCheck, LogIn, CreditCard } from "lucide-react";
+
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -30,10 +31,22 @@ const diferenciais = [
 ];
 
 export default function FeedBPFPage() {
+  const navigate = useNavigate();
   const { session } = useAuth();
   const destino = "/feedbpf/dashboard";
   const signupLink = "/auth?product=feedbpf&mode=signup&redirect=%2Ffeedbpf%2Fdashboard";
   const loginLink = "/auth?product=feedbpf&mode=login&redirect=%2Ffeedbpf%2Fdashboard";
+
+  const handleCheckout = async (nivel: string, periodo: string) => {
+    if (!session) {
+      navigate(signupLink);
+      return;
+    }
+    // Para o trial de 7 dias ou checkout direto
+    // Implementação simplificada: redireciona para o dashboard onde a empresa será criada e o checkout oferecido
+    navigate(destino);
+  };
+
 
   return (
     <div className="min-h-screen bg-background">
@@ -269,7 +282,7 @@ export default function FeedBPFPage() {
                 {tier.planos.map((plan) => (
                   <Card
                     key={plan.periodo}
-                    className={`transition-all hover:shadow-xl relative ${
+                    className={`transition-all hover:shadow-xl relative flex flex-col ${
                       tier.destaque ? "border-primary/40 bg-primary/5" : "border-border"
                     }`}
                   >
@@ -278,15 +291,26 @@ export default function FeedBPFPage() {
                         {plan.badge}
                       </Badge>
                     )}
-                    <CardContent className="p-5 text-center space-y-2">
-                      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{plan.periodo}</p>
-                      <div>
-                        <span className="text-2xl font-bold text-foreground">{plan.preco}</span>
-                        <span className="text-muted-foreground text-sm">{plan.sub}</span>
+                    <CardContent className="p-5 text-center space-y-4 flex-1 flex flex-col justify-between">
+                      <div className="space-y-2">
+                        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{plan.periodo}</p>
+                        <div>
+                          <span className="text-2xl font-bold text-foreground">{plan.preco}</span>
+                          <span className="text-muted-foreground text-sm">{plan.sub}</span>
+                        </div>
+                        <p className="text-xs text-muted-foreground">{plan.nota}</p>
                       </div>
-                      <p className="text-xs text-muted-foreground">{plan.nota}</p>
+                      <Button 
+                        onClick={() => handleCheckout(tier.nivel, plan.periodo)}
+                        variant={tier.destaque ? "default" : "outline"} 
+                        className="w-full gap-2 mt-2"
+                      >
+                        <CreditCard className="h-4 w-4" />
+                        Selecionar Plano
+                      </Button>
                     </CardContent>
                   </Card>
+
                 ))}
               </div>
             </div>
