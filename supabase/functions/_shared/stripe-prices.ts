@@ -1,5 +1,5 @@
 // =============================================================================
-// Mapa central de price IDs do Stripe — produção (BRL)
+// Mapa central de price IDs do Stripe — PRODUÇÃO LIVE (BRL)
 // Regras:
 //   Mensal    = subscription (recurring month)
 //   Semestral = payment (one-time, 15% off sobre 6× mensal)
@@ -13,140 +13,121 @@ export type ProductMap = Record<string, Record<Periodo, PriceEntry>>;
 // Feed_BPF — 3 níveis × 3 períodos
 export const FEED_BPF_PRICES: ProductMap = {
   standard: {
-    mensal:    { id: "price_1TYVRyHDmwi8j6XZcw83NOgn", mode: "subscription" },
-    semestral: { id: "price_1TYVSUHDmwi8j6XZynGI0DWm", mode: "payment" },
-    anual:     { id: "price_1TYVZDHDmwi8j6XZmpHmAXkX", mode: "payment" },
+    mensal:    { id: "price_1TYWzMHk9UvMXJyGvLfQWY1k", mode: "subscription" },
+    semestral: { id: "price_1TYWzxHk9UvMXJyGFf7Vr9xR", mode: "payment" },
+    anual:     { id: "price_1TYX0wHk9UvMXJyGPscA8mrr", mode: "payment" },
   },
   intermediaria: {
-    mensal:    { id: "price_1TYVZjHDmwi8j6XZDHIcRikw", mode: "subscription" },
-    semestral: { id: "price_1TYVbUHDmwi8j6XZm0UDOWYp", mode: "payment" },
-    anual:     { id: "price_1TYVcQHDmwi8j6XZIUi8XKBN", mode: "payment" },
+    mensal:    { id: "price_1TYXAHHk9UvMXJyGlFbVoO0s", mode: "subscription" },
+    semestral: { id: "price_1TYXAwHk9UvMXJyG63j9ezNK", mode: "payment" },
+    anual:     { id: "price_1TYXCXHk9UvMXJyG7lN854n8", mode: "payment" },
   },
   premium: {
-    mensal:    { id: "price_1TYVcQHDmwi8j6XZigGCLDNe", mode: "subscription" },
-    semestral: { id: "price_1TYVcRHDmwi8j6XZaOCz6PxR", mode: "payment" },
-    anual:     { id: "price_1TYVcRHDmwi8j6XZ0veChm4B", mode: "payment" },
+    mensal:    { id: "price_1TYXD7Hk9UvMXJyGm0dEUDiS", mode: "subscription" },
+    semestral: { id: "price_1TYXDtHk9UvMXJyGI054bYJY", mode: "payment" },
+    anual:     { id: "price_1TYXI0Hk9UvMXJyGLrIOSIJH", mode: "payment" },
   },
 };
 
 // Audits_BPF — 3 níveis × 3 períodos
 export const AUDITS_BPF_PRICES: ProductMap = {
-  // 1 empresa, até 10 usuários
   empresa: {
-    mensal:    { id: "price_1TYVcSHDmwi8j6XZxiUOYUUf", mode: "subscription" },
-    semestral: { id: "price_1TYVcSHDmwi8j6XZxE9BpoLa", mode: "payment" },
-    anual:     { id: "price_1TYVcTHDmwi8j6XZoCK4Bjet", mode: "payment" },
+    mensal:    { id: "price_1TYXIUHk9UvMXJyGKXa4zLgY", mode: "subscription" },
+    semestral: { id: "price_1TYXIVHk9UvMXJyGGonlBSWe", mode: "payment" },
+    anual:     { id: "price_1TYXIVHk9UvMXJyGeOoWNxBF", mode: "payment" },
   },
-  // Consultor — até 10 empresas
   consultor10: {
-    mensal:    { id: "price_1TYVcTHDmwi8j6XZLUrx1WdR", mode: "subscription" },
-    semestral: { id: "price_1TYVcUHDmwi8j6XZS9ttYJfp", mode: "payment" },
-    anual:     { id: "price_1TYVcUHDmwi8j6XZAGXYBLS6", mode: "payment" },
+    mensal:    { id: "price_1TYXIWHk9UvMXJyGUudO0Ccb", mode: "subscription" },
+    semestral: { id: "price_1TYXIWHk9UvMXJyG9LAlTZm6", mode: "payment" },
+    anual:     { id: "price_1TYXIXHk9UvMXJyGHXFi7un8", mode: "payment" },
   },
-  // Consultor — até 20 empresas
   consultor20: {
-    mensal:    { id: "price_1TYVcVHDmwi8j6XZLiuVjkxc", mode: "subscription" },
-    semestral: { id: "price_1TYVcVHDmwi8j6XZQdqtaubv", mode: "payment" },
-    anual:     { id: "price_1TYVcWHDmwi8j6XZVT1gElpW", mode: "payment" },
+    mensal:    { id: "price_1TYXIXHk9UvMXJyGKlae7T3U", mode: "subscription" },
+    semestral: { id: "price_1TYXIYHk9UvMXJyGYtzoMarF", mode: "payment" },
+    anual:     { id: "price_1TYXIYHk9UvMXJyGTywzVZwW", mode: "payment" },
   },
   // Aliases para compatibilidade
   individual: {
-    mensal:    { id: "price_1TYVcSHDmwi8j6XZxiUOYUUf", mode: "subscription" },
-    semestral: { id: "price_1TYVcSHDmwi8j6XZxE9BpoLa", mode: "payment" },
-    anual:     { id: "price_1TYVcTHDmwi8j6XZoCK4Bjet", mode: "payment" },
+    mensal:    { id: "price_1TYXIUHk9UvMXJyGKXa4zLgY", mode: "subscription" },
+    semestral: { id: "price_1TYXIVHk9UvMXJyGGonlBSWe", mode: "payment" },
+    anual:     { id: "price_1TYXIVHk9UvMXJyGeOoWNxBF", mode: "payment" },
   },
   consultor: {
-    mensal:    { id: "price_1TYVcTHDmwi8j6XZLUrx1WdR", mode: "subscription" },
-    semestral: { id: "price_1TYVcUHDmwi8j6XZS9ttYJfp", mode: "payment" },
-    anual:     { id: "price_1TYVcUHDmwi8j6XZAGXYBLS6", mode: "payment" },
+    mensal:    { id: "price_1TYXIWHk9UvMXJyGUudO0Ccb", mode: "subscription" },
+    semestral: { id: "price_1TYXIWHk9UvMXJyG9LAlTZm6", mode: "payment" },
+    anual:     { id: "price_1TYXIXHk9UvMXJyGHXFi7un8", mode: "payment" },
   },
 };
 
-// Agro RC CRM — 3 níveis × 3 períodos
+// AgroRC CRM — 3 níveis × 3 períodos (compartilhado com NutriCRM e AgroGestão)
 export const AGRO_RC_PRICES: ProductMap = {
   empresa: {
-    mensal:    { id: "price_1TYVcWHDmwi8j6XZUn1f5z2A", mode: "subscription" },
-    semestral: { id: "price_1TYVcXHDmwi8j6XZMCwTU4vg", mode: "payment" },
-    anual:     { id: "price_1TYVcXHDmwi8j6XZbSg3CFQG", mode: "payment" },
+    mensal:    { id: "price_1TYXIZHk9UvMXJyGTXqrtkFm", mode: "subscription" },
+    semestral: { id: "price_1TYXIZHk9UvMXJyGnJ74gDBK", mode: "payment" },
+    anual:     { id: "price_1TYXIaHk9UvMXJyGT8r8x9PP", mode: "payment" },
   },
   gestor10: {
-    mensal:    { id: "price_1TYVcYHDmwi8j6XZtmjp3UiS", mode: "subscription" },
-    semestral: { id: "price_1TYVcYHDmwi8j6XZlRjzCAWt", mode: "payment" },
-    anual:     { id: "price_1TYVcZHDmwi8j6XZYcJS6YC8", mode: "payment" },
+    mensal:    { id: "price_1TYXIaHk9UvMXJyGywyul5aQ", mode: "subscription" },
+    semestral: { id: "price_1TYXIbHk9UvMXJyGqXTgbHCO", mode: "payment" },
+    anual:     { id: "price_1TYXIbHk9UvMXJyGUpCeFv74", mode: "payment" },
   },
   consultor20: {
-    mensal:    { id: "price_1TYVcZHDmwi8j6XZkAaK2FVV", mode: "subscription" },
-    semestral: { id: "price_1TYVcaHDmwi8j6XZqGcizVoq", mode: "payment" },
-    anual:     { id: "price_1TYVcaHDmwi8j6XZkeMXz3Qj", mode: "payment" },
+    mensal:    { id: "price_1TYXIcHk9UvMXJyGUJwOP26r", mode: "subscription" },
+    semestral: { id: "price_1TYXIcHk9UvMXJyGB21DEKhk", mode: "payment" },
+    anual:     { id: "price_1TYXIdHk9UvMXJyGxMf3dYkr", mode: "payment" },
   },
   // Aliases
   individual: {
-    mensal:    { id: "price_1TYVcWHDmwi8j6XZUn1f5z2A", mode: "subscription" },
-    semestral: { id: "price_1TYVcXHDmwi8j6XZMCwTU4vg", mode: "payment" },
-    anual:     { id: "price_1TYVcXHDmwi8j6XZbSg3CFQG", mode: "payment" },
+    mensal:    { id: "price_1TYXIZHk9UvMXJyGTXqrtkFm", mode: "subscription" },
+    semestral: { id: "price_1TYXIZHk9UvMXJyGnJ74gDBK", mode: "payment" },
+    anual:     { id: "price_1TYXIaHk9UvMXJyGT8r8x9PP", mode: "payment" },
   },
   grupo10: {
-    mensal:    { id: "price_1TYVcYHDmwi8j6XZtmjp3UiS", mode: "subscription" },
-    semestral: { id: "price_1TYVcYHDmwi8j6XZlRjzCAWt", mode: "payment" },
-    anual:     { id: "price_1TYVcZHDmwi8j6XZYcJS6YC8", mode: "payment" },
+    mensal:    { id: "price_1TYXIaHk9UvMXJyGywyul5aQ", mode: "subscription" },
+    semestral: { id: "price_1TYXIbHk9UvMXJyGqXTgbHCO", mode: "payment" },
+    anual:     { id: "price_1TYXIbHk9UvMXJyGUpCeFv74", mode: "payment" },
   },
   grupo20: {
-    mensal:    { id: "price_1TYVcZHDmwi8j6XZkAaK2FVV", mode: "subscription" },
-    semestral: { id: "price_1TYVcaHDmwi8j6XZqGcizVoq", mode: "payment" },
-    anual:     { id: "price_1TYVcaHDmwi8j6XZkeMXz3Qj", mode: "payment" },
+    mensal:    { id: "price_1TYXIcHk9UvMXJyGUJwOP26r", mode: "subscription" },
+    semestral: { id: "price_1TYXIcHk9UvMXJyGB21DEKhk", mode: "payment" },
+    anual:     { id: "price_1TYXIdHk9UvMXJyGxMf3dYkr", mode: "payment" },
   },
 };
 
-// Nutri_Agro Labels — 3 níveis × 3 períodos
+// Nutri_Agro Labels (Rótulos BPF) — 3 níveis × 3 períodos
 export const NUTRI_AGRO_LABELS_PRICES: ProductMap = {
   empresa: {
-    mensal:    { id: "price_1TYVcbHDmwi8j6XZDkYGH3MC", mode: "subscription" },
-    semestral: { id: "price_1TYVcbHDmwi8j6XZJHVI3xP7", mode: "payment" },
-    anual:     { id: "price_1TYVccHDmwi8j6XZD3lKuXYw", mode: "payment" },
+    mensal:    { id: "price_1TYXIdHk9UvMXJyGxLx42WPd", mode: "subscription" },
+    semestral: { id: "price_1TYXIeHk9UvMXJyGF0NcJ0g6", mode: "payment" },
+    anual:     { id: "price_1TYXIeHk9UvMXJyGmqrtESbB", mode: "payment" },
   },
   gestor10: {
-    mensal:    { id: "price_1TYVccHDmwi8j6XZovdlBfka", mode: "subscription" },
-    semestral: { id: "price_1TYVcdHDmwi8j6XZlUXe6yBE", mode: "payment" },
-    anual:     { id: "price_1TYVcdHDmwi8j6XZuNXGNnHC", mode: "payment" },
+    mensal:    { id: "price_1TYXIfHk9UvMXJyGD4nkiUgd", mode: "subscription" },
+    semestral: { id: "price_1TYXIfHk9UvMXJyGF1jZEUyi", mode: "payment" },
+    anual:     { id: "price_1TYXIfHk9UvMXJyGVZ2NpUJb", mode: "payment" },
   },
   consultor20: {
-    mensal:    { id: "price_1TYVceHDmwi8j6XZ2hKn8MEb", mode: "subscription" },
-    semestral: { id: "price_1TYVceHDmwi8j6XZ9UTzOrDP", mode: "payment" },
-    anual:     { id: "price_1TYVcfHDmwi8j6XZXsByZFom", mode: "payment" },
+    mensal:    { id: "price_1TYXIgHk9UvMXJyG608EXQgD", mode: "subscription" },
+    semestral: { id: "price_1TYXIgHk9UvMXJyGejTbltiL", mode: "payment" },
+    anual:     { id: "price_1TYXIhHk9UvMXJyG7ebonJmE", mode: "payment" },
   },
   // Aliases
   individual: {
-    mensal:    { id: "price_1TYVcbHDmwi8j6XZDkYGH3MC", mode: "subscription" },
-    semestral: { id: "price_1TYVcbHDmwi8j6XZJHVI3xP7", mode: "payment" },
-    anual:     { id: "price_1TYVccHDmwi8j6XZD3lKuXYw", mode: "payment" },
+    mensal:    { id: "price_1TYXIdHk9UvMXJyGxLx42WPd", mode: "subscription" },
+    semestral: { id: "price_1TYXIeHk9UvMXJyGF0NcJ0g6", mode: "payment" },
+    anual:     { id: "price_1TYXIeHk9UvMXJyGmqrtESbB", mode: "payment" },
   },
   grupo10: {
-    mensal:    { id: "price_1TYVccHDmwi8j6XZovdlBfka", mode: "subscription" },
-    semestral: { id: "price_1TYVcdHDmwi8j6XZlUXe6yBE", mode: "payment" },
-    anual:     { id: "price_1TYVcdHDmwi8j6XZuNXGNnHC", mode: "payment" },
+    mensal:    { id: "price_1TYXIfHk9UvMXJyGD4nkiUgd", mode: "subscription" },
+    semestral: { id: "price_1TYXIfHk9UvMXJyGF1jZEUyi", mode: "payment" },
+    anual:     { id: "price_1TYXIfHk9UvMXJyGVZ2NpUJb", mode: "payment" },
   },
   grupo20: {
-    mensal:    { id: "price_1TYVceHDmwi8j6XZ2hKn8MEb", mode: "subscription" },
-    semestral: { id: "price_1TYVceHDmwi8j6XZ9UTzOrDP", mode: "payment" },
-    anual:     { id: "price_1TYVcfHDmwi8j6XZXsByZFom", mode: "payment" },
+    mensal:    { id: "price_1TYXIgHk9UvMXJyG608EXQgD", mode: "subscription" },
+    semestral: { id: "price_1TYXIgHk9UvMXJyGejTbltiL", mode: "payment" },
+    anual:     { id: "price_1TYXIhHk9UvMXJyG7ebonJmE", mode: "payment" },
   },
 };
 
-// AgroGestão CRM — 3 níveis × 3 períodos
-export const AGROGESTAO_PRICES: ProductMap = {
-  empresa: {
-    mensal:    { id: "price_1TYVcfHDmwi8j6XZWBoYNOHk", mode: "subscription" },
-    semestral: { id: "price_1TYVcgHDmwi8j6XZeqFB7X9j", mode: "payment" },
-    anual:     { id: "price_1TYVcgHDmwi8j6XZJkGv8LOV", mode: "payment" },
-  },
-  gestor10: {
-    mensal:    { id: "price_1TYVchHDmwi8j6XZK7sTuJjA", mode: "subscription" },
-    semestral: { id: "price_1TYVchHDmwi8j6XZU88eUO8q", mode: "payment" },
-    anual:     { id: "price_1TYVciHDmwi8j6XZAM599LPg", mode: "payment" },
-  },
-  consultor20: {
-    mensal:    { id: "price_1TYVciHDmwi8j6XZzwtrwUVX", mode: "subscription" },
-    semestral: { id: "price_1TYVcjHDmwi8j6XZdOqfupLY", mode: "payment" },
-    anual:     { id: "price_1TYVcjHDmwi8j6XZaKgG21EL", mode: "payment" },
-  },
-};
+// AgroGestão CRM — compartilha catálogo com AgroRC
+export const AGROGESTAO_PRICES: ProductMap = AGRO_RC_PRICES;
