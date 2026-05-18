@@ -51,10 +51,14 @@ serve(async (req) => {
     const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
     const supabaseClient = createClient(supabaseUrl, supabaseAnonKey);
 
-    const authHeader = req.headers.get("Authorization")!;
-    const token = authHeader.replace("Bearer ", "");
-    const { data: { user }, error: userError } = await supabaseClient.auth.getUser(token);
-    if (userError || !user?.email) throw new Error("Usuário não autenticado");
+    const authHeader = req.headers.get("Authorization");
+    let user: { id: string; email: string } | null = null;
+    if (authHeader) {
+      const token = authHeader.replace("Bearer ", "");
+      const { data } = await supabaseClient.auth.getUser(token);
+      if (data.user?.email) user = { id: data.user.id, email: data.user.email };
+    }
+    if (!user) throw new Error("Usuário não autenticado");
 
     const { empresa_id, plano, nivel } = await req.json();
     if (!empresa_id) throw new Error("empresa_id é obrigatório");
