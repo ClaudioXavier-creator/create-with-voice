@@ -7,24 +7,34 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-// BPF Consult — 3 planos × 3 períodos
-// Mensal = subscription | Semestral/Anual = one-time payment
+// Feed_BPF — 3 níveis × 3 períodos
+// Mensal = subscription | Semestral/Anual = one-time payment (15% / 25% desconto)
 const PLAN_PRICES: Record<string, Record<string, { id: string; mode: "subscription" | "payment" }>> = {
-  entrada: {
-    mensal:    { id: "price_1TMwhPHDmwi8j6XZegZsr8J2", mode: "subscription" },
-    semestral: { id: "price_1TMxllHDmwi8j6XZp3XJ7rh9", mode: "payment" },
-    anual:     { id: "price_1TMxmmHDmwi8j6XZulS5aOYg", mode: "payment" },
+  // Standard — 1 licença, até 10 usuários (R$ 397/mês)
+  standard: {
+    mensal:    { id: "price_1TYVRyHDmwi8j6XZcw83NOgn", mode: "subscription" },
+    semestral: { id: "price_1TYVSUHDmwi8j6XZynGI0DWm", mode: "payment" },
+    anual:     { id: "price_1TYVZDHDmwi8j6XZmpHmAXkX", mode: "payment" },
   },
-  intermediario: {
-    mensal:    { id: "price_1TMxn9HDmwi8j6XZjUvuls2t", mode: "subscription" },
-    semestral: { id: "price_1TMxnTHDmwi8j6XZzPkgpRqU", mode: "payment" },
-    anual:     { id: "price_1TMxpOHDmwi8j6XZBptFMtay", mode: "payment" },
+  // Intermediária — 1 licença, até 20 usuários (R$ 697/mês)
+  intermediaria: {
+    mensal:    { id: "price_1TYVZjHDmwi8j6XZDHIcRikw", mode: "subscription" },
+    semestral: { id: "price_1TYVbUHDmwi8j6XZm0UDOWYp", mode: "payment" },
+    anual:     { id: "price_1TYVcQHDmwi8j6XZIUi8XKBN", mode: "payment" },
   },
-  avancado: {
-    mensal:    { id: "price_1TMxqOHDmwi8j6XZaODkJK8s", mode: "subscription" },
-    semestral: { id: "price_1TMxqhHDmwi8j6XZwZyoH4UL", mode: "payment" },
-    anual:     { id: "price_1TMxrEHDmwi8j6XZFB9XK2kl", mode: "payment" },
+  // Premium — 1 licença, usuários ilimitados (R$ 1.297/mês)
+  premium: {
+    mensal:    { id: "price_1TYVcQHDmwi8j6XZigGCLDNe", mode: "subscription" },
+    semestral: { id: "price_1TYVcRHDmwi8j6XZaOCz6PxR", mode: "payment" },
+    anual:     { id: "price_1TYVcRHDmwi8j6XZ0veChm4B", mode: "payment" },
   },
+};
+
+// Aliases retrocompatíveis com nomenclatura antiga
+const NIVEL_ALIASES: Record<string, string> = {
+  entrada: "standard",
+  intermediario: "intermediaria",
+  avancado: "premium",
 };
 
 // Cupom 50% off — válido durante 2026
@@ -49,11 +59,12 @@ serve(async (req) => {
     const { empresa_id, plano, nivel } = await req.json();
     if (!empresa_id) throw new Error("empresa_id é obrigatório");
 
-    const nivelKey = (nivel || "entrada").toLowerCase();
+    let nivelKey = (nivel || "standard").toLowerCase();
+    nivelKey = NIVEL_ALIASES[nivelKey] || nivelKey;
     const planoKey = (plano || "mensal").toLowerCase();
 
     const nivelPrices = PLAN_PRICES[nivelKey];
-    if (!nivelPrices) throw new Error(`Nível inválido: ${nivelKey}. Use: entrada, intermediario ou avancado`);
+    if (!nivelPrices) throw new Error(`Nível inválido: ${nivelKey}. Use: standard, intermediaria ou premium`);
 
     const priceConfig = nivelPrices[planoKey];
     if (!priceConfig) throw new Error("Plano inválido. Use: mensal, semestral ou anual");
@@ -68,7 +79,6 @@ serve(async (req) => {
       customerId = customers.data[0].id;
     }
 
-    // Aplicar cupom de lançamento automaticamente até 31/12/2026
     const now = new Date();
     const applyLaunchDiscount = now <= LAUNCH_END_DATE;
 
@@ -80,6 +90,7 @@ serve(async (req) => {
       success_url: `${req.headers.get("origin")}/dashboard?checkout=success&empresa_id=${empresa_id}`,
       cancel_url: `${req.headers.get("origin")}/dashboard?checkout=canceled&empresa_id=${empresa_id}`,
       metadata: {
+        produto: "feedbpf",
         empresa_id,
         user_id: user.id,
         plano: planoKey,
@@ -90,7 +101,6 @@ serve(async (req) => {
 
     if (applyLaunchDiscount) {
       sessionParams.discounts = [{ coupon: LAUNCH_COUPON_ID }];
-      // discounts e allow_promotion_codes são mutuamente exclusivos
       delete sessionParams.allow_promotion_codes;
     }
 

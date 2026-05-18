@@ -7,19 +7,33 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-// Audits BPF — 2 níveis × 3 períodos
+// Audits_BPF — 3 níveis × 3 períodos
 // Mensal = subscription | Semestral/Anual = one-time payment
 const PLAN_PRICES: Record<string, Record<string, { id: string; mode: "subscription" | "payment" }>> = {
-  individual: {
-    mensal:    { id: "price_1TMyOdHDmwi8j6XZuoSTvlCL", mode: "subscription" },
-    semestral: { id: "price_1TMyPJHDmwi8j6XZPaj3OUbQ", mode: "payment" },
-    anual:     { id: "price_1TMyQiHDmwi8j6XZUw9SKDR8", mode: "payment" },
+  // 1 empresa, até 10 usuários (R$ 297/mês)
+  empresa: {
+    mensal:    { id: "price_1TYVcSHDmwi8j6XZxiUOYUUf", mode: "subscription" },
+    semestral: { id: "price_1TYVcSHDmwi8j6XZxE9BpoLa", mode: "payment" },
+    anual:     { id: "price_1TYVcTHDmwi8j6XZoCK4Bjet", mode: "payment" },
   },
-  consultor: {
-    mensal:    { id: "price_1TMyR7HDmwi8j6XZHibD5jBj", mode: "subscription" },
-    semestral: { id: "price_1TMyRUHDmwi8j6XZkj4kP0BJ", mode: "payment" },
-    anual:     { id: "price_1TMyRtHDmwi8j6XZKWDtCMEb", mode: "payment" },
+  // Consultor — até 10 empresas (R$ 297/mês)
+  consultor10: {
+    mensal:    { id: "price_1TYVcTHDmwi8j6XZLUrx1WdR", mode: "subscription" },
+    semestral: { id: "price_1TYVcUHDmwi8j6XZS9ttYJfp", mode: "payment" },
+    anual:     { id: "price_1TYVcUHDmwi8j6XZAGXYBLS6", mode: "payment" },
   },
+  // Consultor — até 20 empresas (R$ 497/mês)
+  consultor20: {
+    mensal:    { id: "price_1TYVcVHDmwi8j6XZLiuVjkxc", mode: "subscription" },
+    semestral: { id: "price_1TYVcVHDmwi8j6XZQdqtaubv", mode: "payment" },
+    anual:     { id: "price_1TYVcWHDmwi8j6XZVT1gElpW", mode: "payment" },
+  },
+};
+
+// Aliases retrocompatíveis
+const NIVEL_ALIASES: Record<string, string> = {
+  individual: "empresa",
+  consultor: "consultor10",
 };
 
 serve(async (req) => {
@@ -39,11 +53,12 @@ serve(async (req) => {
 
     const { empresa_id, plano, nivel } = await req.json();
 
-    const nivelKey = (nivel || "individual").toLowerCase();
+    let nivelKey = (nivel || "empresa").toLowerCase();
+    nivelKey = NIVEL_ALIASES[nivelKey] || nivelKey;
     const planoKey = (plano || "mensal").toLowerCase();
 
     const nivelPrices = PLAN_PRICES[nivelKey];
-    if (!nivelPrices) throw new Error(`Nível inválido: ${nivelKey}. Use: individual ou consultor`);
+    if (!nivelPrices) throw new Error(`Nível inválido: ${nivelKey}. Use: empresa, consultor10 ou consultor20`);
 
     const priceConfig = nivelPrices[planoKey];
     if (!priceConfig) throw new Error("Plano inválido. Use: mensal, semestral ou anual");
