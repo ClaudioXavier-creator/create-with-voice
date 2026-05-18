@@ -7,27 +7,7 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-// Agro RC CRM — 3 níveis × 3 períodos
-const PLAN_PRICES: Record<string, Record<string, { id: string; mode: "subscription" | "payment" }>> = {
-  // Empresa — 1 licença (R$ 97/mês)
-  empresa: {
-    mensal:    { id: "price_1TYVcWHDmwi8j6XZUn1f5z2A", mode: "subscription" },
-    semestral: { id: "price_1TYVcXHDmwi8j6XZMCwTU4vg", mode: "payment" },
-    anual:     { id: "price_1TYVcXHDmwi8j6XZbSg3CFQG", mode: "payment" },
-  },
-  // Gestor Comercial — até 10 representantes (R$ 297/mês)
-  gestor10: {
-    mensal:    { id: "price_1TYVcYHDmwi8j6XZtmjp3UiS", mode: "subscription" },
-    semestral: { id: "price_1TYVcYHDmwi8j6XZlRjzCAWt", mode: "payment" },
-    anual:     { id: "price_1TYVcZHDmwi8j6XZYcJS6YC8", mode: "payment" },
-  },
-  // Consultor Comercial — até 20 representantes (R$ 497/mês)
-  consultor20: {
-    mensal:    { id: "price_1TYVcZHDmwi8j6XZkAaK2FVV", mode: "subscription" },
-    semestral: { id: "price_1TYVcaHDmwi8j6XZqGcizVoq", mode: "payment" },
-    anual:     { id: "price_1TYVcaHDmwi8j6XZkeMXz3Qj", mode: "payment" },
-  },
-};
+import { AGRO_RC_PRICES as PLAN_PRICES } from "../_shared/stripe-prices.ts";
 
 // Aliases retrocompatíveis
 const TIPO_ALIASES: Record<string, string> = {

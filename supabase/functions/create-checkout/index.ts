@@ -7,28 +7,7 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-// Feed_BPF — 3 níveis × 3 períodos
-// Mensal = subscription | Semestral/Anual = one-time payment (15% / 25% desconto)
-const PLAN_PRICES: Record<string, Record<string, { id: string; mode: "subscription" | "payment" }>> = {
-  // Standard — 1 licença, até 10 usuários (R$ 397/mês)
-  standard: {
-    mensal:    { id: "price_1TYVRyHDmwi8j6XZcw83NOgn", mode: "subscription" },
-    semestral: { id: "price_1TYVSUHDmwi8j6XZynGI0DWm", mode: "payment" },
-    anual:     { id: "price_1TYVZDHDmwi8j6XZmpHmAXkX", mode: "payment" },
-  },
-  // Intermediária — 1 licença, até 20 usuários (R$ 697/mês)
-  intermediaria: {
-    mensal:    { id: "price_1TYVZjHDmwi8j6XZDHIcRikw", mode: "subscription" },
-    semestral: { id: "price_1TYVbUHDmwi8j6XZm0UDOWYp", mode: "payment" },
-    anual:     { id: "price_1TYVcQHDmwi8j6XZIUi8XKBN", mode: "payment" },
-  },
-  // Premium — 1 licença, usuários ilimitados (R$ 1.297/mês)
-  premium: {
-    mensal:    { id: "price_1TYVcQHDmwi8j6XZigGCLDNe", mode: "subscription" },
-    semestral: { id: "price_1TYVcRHDmwi8j6XZaOCz6PxR", mode: "payment" },
-    anual:     { id: "price_1TYVcRHDmwi8j6XZ0veChm4B", mode: "payment" },
-  },
-};
+import { FEED_BPF_PRICES as PLAN_PRICES } from "../_shared/stripe-prices.ts";
 
 // Aliases retrocompatíveis com nomenclatura antiga
 const NIVEL_ALIASES: Record<string, string> = {

@@ -7,27 +7,7 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-// AgroGestão CRM — 3 níveis × 3 períodos
-const PLAN_PRICES: Record<string, Record<string, { id: string; mode: "subscription" | "payment" }>> = {
-  // Empresa — 1 licença (R$ 97/mês)
-  empresa: {
-    mensal:    { id: "price_1TYVcfHDmwi8j6XZWBoYNOHk", mode: "subscription" },
-    semestral: { id: "price_1TYVcgHDmwi8j6XZeqFB7X9j", mode: "payment" },
-    anual:     { id: "price_1TYVcgHDmwi8j6XZJkGv8LOV", mode: "payment" },
-  },
-  // Gestor Comercial — até 10 representantes (R$ 297/mês)
-  gestor10: {
-    mensal:    { id: "price_1TYVchHDmwi8j6XZK7sTuJjA", mode: "subscription" },
-    semestral: { id: "price_1TYVchHDmwi8j6XZU88eUO8q", mode: "payment" },
-    anual:     { id: "price_1TYVciHDmwi8j6XZAM599LPg", mode: "payment" },
-  },
-  // Consultor Comercial — até 20 representantes (R$ 497/mês)
-  consultor20: {
-    mensal:    { id: "price_1TYVciHDmwi8j6XZzwtrwUVX", mode: "subscription" },
-    semestral: { id: "price_1TYVcjHDmwi8j6XZdOqfupLY", mode: "payment" },
-    anual:     { id: "price_1TYVcjHDmwi8j6XZaKgG21EL", mode: "payment" },
-  },
-};
+import { AGROGESTAO_PRICES as PLAN_PRICES } from "../_shared/stripe-prices.ts";
 
 const TIPO_ALIASES: Record<string, string> = {
   individual: "empresa",
