@@ -7,28 +7,7 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-// Audits_BPF — 3 níveis × 3 períodos
-// Mensal = subscription | Semestral/Anual = one-time payment
-const PLAN_PRICES: Record<string, Record<string, { id: string; mode: "subscription" | "payment" }>> = {
-  // 1 empresa, até 10 usuários (R$ 297/mês)
-  empresa: {
-    mensal:    { id: "price_1TYVcSHDmwi8j6XZxiUOYUUf", mode: "subscription" },
-    semestral: { id: "price_1TYVcSHDmwi8j6XZxE9BpoLa", mode: "payment" },
-    anual:     { id: "price_1TYVcTHDmwi8j6XZoCK4Bjet", mode: "payment" },
-  },
-  // Consultor — até 10 empresas (R$ 297/mês)
-  consultor10: {
-    mensal:    { id: "price_1TYVcTHDmwi8j6XZLUrx1WdR", mode: "subscription" },
-    semestral: { id: "price_1TYVcUHDmwi8j6XZS9ttYJfp", mode: "payment" },
-    anual:     { id: "price_1TYVcUHDmwi8j6XZAGXYBLS6", mode: "payment" },
-  },
-  // Consultor — até 20 empresas (R$ 497/mês)
-  consultor20: {
-    mensal:    { id: "price_1TYVcVHDmwi8j6XZLiuVjkxc", mode: "subscription" },
-    semestral: { id: "price_1TYVcVHDmwi8j6XZQdqtaubv", mode: "payment" },
-    anual:     { id: "price_1TYVcWHDmwi8j6XZVT1gElpW", mode: "payment" },
-  },
-};
+import { AUDITS_BPF_PRICES as PLAN_PRICES } from "../_shared/stripe-prices.ts";
 
 // Aliases retrocompatíveis
 const NIVEL_ALIASES: Record<string, string> = {
