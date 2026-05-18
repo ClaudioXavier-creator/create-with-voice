@@ -7,27 +7,34 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-// Agro RC CRM — Individual (1 user) e Grupo (20 users) × 3 períodos
-// Mensal = subscription | Semestral/Anual = one-time payment
+// Agro RC CRM — 3 níveis × 3 períodos
 const PLAN_PRICES: Record<string, Record<string, { id: string; mode: "subscription" | "payment" }>> = {
-  individual: {
-    mensal:    { id: "price_1TQat7HDmwi8j6XZkhjZKnZz", mode: "subscription" },
-    semestral: { id: "price_1TQatgHDmwi8j6XZjHuU1Rxx", mode: "payment" },
-    anual:     { id: "price_1TQauHHDmwi8j6XZRZDsIBUY", mode: "payment" },
+  // Empresa — 1 licença (R$ 97/mês)
+  empresa: {
+    mensal:    { id: "price_1TYVcWHDmwi8j6XZUn1f5z2A", mode: "subscription" },
+    semestral: { id: "price_1TYVcXHDmwi8j6XZMCwTU4vg", mode: "payment" },
+    anual:     { id: "price_1TYVcXHDmwi8j6XZbSg3CFQG", mode: "payment" },
   },
-  grupo10: {
-    mensal:    { id: "price_1TQavXHDmwi8j6XZUe2L4p9Y", mode: "subscription" }, // Placeholder
-    semestral: { id: "price_1TQavZHDmwi8j6XZzI7M5q8A", mode: "payment" },      // Placeholder
-    anual:     { id: "price_1TQavbHDmwi8j6XZ9N3N6r7B", mode: "payment" },      // Placeholder
+  // Gestor Comercial — até 10 representantes (R$ 297/mês)
+  gestor10: {
+    mensal:    { id: "price_1TYVcYHDmwi8j6XZtmjp3UiS", mode: "subscription" },
+    semestral: { id: "price_1TYVcYHDmwi8j6XZlRjzCAWt", mode: "payment" },
+    anual:     { id: "price_1TYVcZHDmwi8j6XZYcJS6YC8", mode: "payment" },
   },
-  grupo20: {
-    mensal:    { id: "price_1TQauhHDmwi8j6XZVtURafTa", mode: "subscription" },
-    semestral: { id: "price_1TQav8HDmwi8j6XZUNdKtQWd", mode: "payment" },
-    anual:     { id: "price_1TQayCHDmwi8j6XZ1sLzGIhP", mode: "payment" },
+  // Consultor Comercial — até 20 representantes (R$ 497/mês)
+  consultor20: {
+    mensal:    { id: "price_1TYVcZHDmwi8j6XZkAaK2FVV", mode: "subscription" },
+    semestral: { id: "price_1TYVcaHDmwi8j6XZqGcizVoq", mode: "payment" },
+    anual:     { id: "price_1TYVcaHDmwi8j6XZkeMXz3Qj", mode: "payment" },
   },
 };
 
-const APP_URL = "https://soil-to-client.lovable.app/";
+// Aliases retrocompatíveis
+const TIPO_ALIASES: Record<string, string> = {
+  individual: "empresa",
+  grupo10: "gestor10",
+  grupo20: "consultor20",
+};
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -40,13 +47,26 @@ serve(async (req) => {
       Deno.env.get("SUPABASE_ANON_KEY")!
     );
 
+    let userEmail: string | undefined;
+    let userId: string | undefined;
+    const authHeader = req.headers.get("Authorization");
+    if (authHeader) {
+      const token = authHeader.replace("Bearer ", "");
+      const { data } = await supabaseClient.auth.getUser(token);
+      if (data?.user?.email) {
+        userEmail = data.user.email;
+        userId = data.user.id;
+      }
+    }
+
     const body = await req.json().catch(() => ({}));
-    const tipoKey = (body.tipo || "individual").toLowerCase();
+    let tipoKey = (body.tipo || "empresa").toLowerCase();
+    tipoKey = TIPO_ALIASES[tipoKey] || tipoKey;
     const planoKey = (body.plano || "mensal").toLowerCase();
     const product = (body.produto || "agrorc").toLowerCase();
 
     const tipoPrices = PLAN_PRICES[tipoKey];
-    if (!tipoPrices) throw new Error(`Tipo inválido: ${tipoKey}. Use: individual, grupo10 ou grupo20`);
+    if (!tipoPrices) throw new Error(`Tipo inválido: ${tipoKey}. Use: empresa, gestor10 ou consultor20`);
     const priceConfig = tipoPrices[planoKey];
     if (!priceConfig) throw new Error("Plano inválido. Use: mensal, semestral ou anual");
 
@@ -73,7 +93,7 @@ serve(async (req) => {
         produto: product,
         tipo: tipoKey,
         plano: planoKey,
-        user_id: userId,
+        ...(userId ? { user_id: userId } : {}),
       },
     });
 

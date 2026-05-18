@@ -7,25 +7,25 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-// Nutri_Agro Labels — 3 níveis × 3 períodos
+// AgroGestão CRM — 3 níveis × 3 períodos
 const PLAN_PRICES: Record<string, Record<string, { id: string; mode: "subscription" | "payment" }>> = {
   // Empresa — 1 licença (R$ 97/mês)
   empresa: {
-    mensal:    { id: "price_1TYVcbHDmwi8j6XZDkYGH3MC", mode: "subscription" },
-    semestral: { id: "price_1TYVcbHDmwi8j6XZJHVI3xP7", mode: "payment" },
-    anual:     { id: "price_1TYVccHDmwi8j6XZD3lKuXYw", mode: "payment" },
+    mensal:    { id: "price_1TYVcfHDmwi8j6XZWBoYNOHk", mode: "subscription" },
+    semestral: { id: "price_1TYVcgHDmwi8j6XZeqFB7X9j", mode: "payment" },
+    anual:     { id: "price_1TYVcgHDmwi8j6XZJkGv8LOV", mode: "payment" },
   },
   // Gestor Comercial — até 10 representantes (R$ 297/mês)
   gestor10: {
-    mensal:    { id: "price_1TYVccHDmwi8j6XZovdlBfka", mode: "subscription" },
-    semestral: { id: "price_1TYVcdHDmwi8j6XZlUXe6yBE", mode: "payment" },
-    anual:     { id: "price_1TYVcdHDmwi8j6XZuNXGNnHC", mode: "payment" },
+    mensal:    { id: "price_1TYVchHDmwi8j6XZK7sTuJjA", mode: "subscription" },
+    semestral: { id: "price_1TYVchHDmwi8j6XZU88eUO8q", mode: "payment" },
+    anual:     { id: "price_1TYVciHDmwi8j6XZAM599LPg", mode: "payment" },
   },
   // Consultor Comercial — até 20 representantes (R$ 497/mês)
   consultor20: {
-    mensal:    { id: "price_1TYVceHDmwi8j6XZ2hKn8MEb", mode: "subscription" },
-    semestral: { id: "price_1TYVceHDmwi8j6XZ9UTzOrDP", mode: "payment" },
-    anual:     { id: "price_1TYVcfHDmwi8j6XZXsByZFom", mode: "payment" },
+    mensal:    { id: "price_1TYVciHDmwi8j6XZzwtrwUVX", mode: "subscription" },
+    semestral: { id: "price_1TYVcjHDmwi8j6XZdOqfupLY", mode: "payment" },
+    anual:     { id: "price_1TYVcjHDmwi8j6XZaKgG21EL", mode: "payment" },
   },
 };
 
@@ -84,11 +84,11 @@ serve(async (req) => {
       customer_email: customerId ? undefined : userEmail,
       line_items: [{ price: priceConfig.id, quantity: 1 }],
       mode: priceConfig.mode,
-      success_url: `${origin}/rotulos?checkout=success&tipo=${tipoKey}&plano=${planoKey}`,
-      cancel_url: `${origin}/rotulos?checkout=canceled&tipo=${tipoKey}&plano=${planoKey}`,
+      success_url: `${origin}/agrogestao?checkout=success&tipo=${tipoKey}&plano=${planoKey}`,
+      cancel_url: `${origin}/agrogestao?checkout=canceled&tipo=${tipoKey}&plano=${planoKey}`,
       allow_promotion_codes: true,
       metadata: {
-        produto: "nutri_agro_labels",
+        produto: "agrogestao",
         tipo: tipoKey,
         plano: planoKey,
         ...(userId ? { user_id: userId } : {}),
