@@ -4717,6 +4717,10 @@ export type Database = {
         }
         Returns: number
       }
+      pode_usar_empresa: {
+        Args: { _empresa_id: string; _user_id: string }
+        Returns: boolean
+      }
       read_email_batch: {
         Args: { batch_size: number; queue_name: string; vt: number }
         Returns: {
