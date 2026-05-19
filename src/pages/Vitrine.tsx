@@ -53,17 +53,17 @@ const produtos: ProdutoCard[] = [
     logo: logoAuditsBpf,
     desc: "Auditoria interna baseada no Decreto 12.031/2024. Sala do auditor MAPA, cálculo automático de conformidade e planos de ação automatizados.",
     destaques: ["Checklist Decreto 12.031", "Sala do Auditor MAPA", "Planos de Ação (NC)", "Cálculo de Conformidade", "Histórico de Auditorias", "Relatórios Oficiais"],
-    link: "https://friendly-flame-igniter.lovable.app",
-    appLink: "https://friendly-flame-igniter.lovable.app",
+    link: "/auditsbpf",
+    appLink: "/auditsbpf/dashboard",
     gradient: "from-emerald-700 to-emerald-900",
     bgCard: "bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-950/30 dark:to-teal-950/30",
     borderColor: "border-emerald-200 dark:border-emerald-800",
     trial: "7 dias grátis",
-    trialLink: "https://friendly-flame-igniter.lovable.app/auth?mode=signup",
+    trialLink: "/auth?product=auditsbpf&mode=signup&redirect=%2Fauditsbpf%2Fdashboard",
     demoLink: "/demo/auditsbpf",
     preco: "A partir de R$ 297/mês",
-    external: true,
-    trialExternal: true,
+    external: false,
+    trialExternal: false,
   },
   {
     nome: "Agro RC CRM",
@@ -71,17 +71,17 @@ const produtos: ProdutoCard[] = [
     logo: logoAgrorc,
     desc: "Gestão para Representantes Comerciais do agronegócio. Controle de visitas a campo, pipeline Kanban, metas regionais e scores de desempenho.",
     destaques: ["Painel do Representante", "Pipeline Kanban", "Visitas Técnicas/Campo", "Gestão de Metas", "Clientes & Carteira", "Indicadores Regionais"],
-    link: "https://soil-to-client.lovable.app",
-    appLink: "https://soil-to-client.lovable.app",
+    link: "/agro-rc",
+    appLink: "/agrorc/dashboard",
     gradient: "from-purple-700 to-purple-900",
     bgCard: "bg-gradient-to-br from-purple-50 to-indigo-50 dark:from-purple-950/30 dark:to-indigo-950/30",
     borderColor: "border-purple-200 dark:border-purple-800",
     trial: "7 dias grátis",
-    trialLink: "https://soil-to-client.lovable.app/auth?mode=signup",
+    trialLink: "/auth?product=agrorc&mode=signup&redirect=%2Fagrorc%2Fdashboard",
     demoLink: "/demo/agrorc",
     preco: "A partir de R$ 97/mês",
-    external: true,
-    trialExternal: true,
+    external: false,
+    trialExternal: false,
   },
   {
     nome: "Nutri_Agro Labels",
@@ -107,15 +107,15 @@ const produtos: ProdutoCard[] = [
     logo: logoAgroGestao,
     desc: "Plataforma de CRM e gestão completa para o agronegócio. Controle de carteira, oportunidades e indicadores de performance para equipes comerciais.",
     destaques: ["CRM Corporativo", "Gestão de Oportunidades", "Indicadores de Vendas", "Controle de Equipe", "BI & Analytics", "Integração com ERP"],
-    link: "https://regional-fixer-charm.lovable.app",
-    external: true,
-    appLink: "https://regional-fixer-charm.lovable.app",
+    link: "/agrogestao",
+    external: false,
+    appLink: "/agrogestao/dashboard",
     gradient: "from-blue-700 to-blue-900",
     bgCard: "bg-gradient-to-br from-blue-50 to-sky-50 dark:from-blue-950/30 dark:to-sky-950/30",
     borderColor: "border-blue-200 dark:border-blue-800",
     trial: "7 dias grátis",
-    trialLink: "https://regional-fixer-charm.lovable.app/auth?mode=signup",
-    trialExternal: true,
+    trialLink: "/auth?product=agrogestao&mode=signup&redirect=%2Fagrogestao%2Fdashboard",
+    trialExternal: false,
     demoLink: "/demo/agrogestao",
     preco: "A partir de R$ 97/mês",
   },
@@ -226,7 +226,9 @@ export default function Vitrine() {
               key={p.nome} 
               className="group cursor-pointer" 
               onClick={() => {
-                const target = p.appLink || p.link;
+                // Para visitantes, sempre levamos para a landing page (p.link) onde estão os preços.
+                // p.appLink é usado apenas internamente ou quando o usuário já está logado.
+                const target = p.link || p.appLink;
                 if (p.external) {
                   window.open(target, "_blank", "noopener,noreferrer");
                   return;
