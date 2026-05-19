@@ -5,12 +5,17 @@ async function fetchAll(path) {
   let results = [];
   let next = `${PADDLE_API_URL}${path}`;
   while (next) {
-    const res = await fetch(next, {
-      headers: { "Authorization": `Bearer ${PADDLE_API_KEY}` }
-    });
-    const data = await res.json();
-    results = results.concat(data.data);
-    next = data.meta?.pagination?.next;
+    try {
+      const res = await fetch(next, {
+        headers: { "Authorization": `Bearer ${PADDLE_API_KEY}` }
+      });
+      const data = await res.json();
+      if (!data.data) break;
+      results = results.concat(data.data);
+      next = data.meta?.pagination?.next;
+    } catch (e) {
+      break;
+    }
   }
   return results;
 }
@@ -22,12 +27,11 @@ async function run() {
   const mapping = {};
   
   for (const price of prices) {
-    const product = products.find(p => p.id === price.product_id);
+    if (!price || !price.product_id) continue;
+    const product = products.find(p => p && p.id === price.product_id);
     if (!product || !price.import_meta?.external_id) continue;
     
     const extId = price.import_meta.external_id;
-    // Format: productname_tier_period
-    // Example: feedbpf_standard_mensal
     mapping[extId] = {
       id: price.id,
       name: product.name,
