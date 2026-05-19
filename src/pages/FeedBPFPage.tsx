@@ -42,9 +42,11 @@ export default function FeedBPFPage() {
       navigate(signupLink);
       return;
     }
-    // Para o trial de 7 dias ou checkout direto
-    // Implementação simplificada: redireciona para o dashboard onde a empresa será criada e o checkout oferecido
-    navigate(destino);
+    
+    // Obter empresa_id do contexto ou do banco
+    // Para simplificar, redirecionamos para o dashboard onde a empresa será selecionada/criada
+    // e o checkout acionado com o empresa_id correto.
+    navigate(`${destino}?nivel=${encodeURIComponent(nivel)}&periodo=${encodeURIComponent(periodo)}`);
   };
 
 

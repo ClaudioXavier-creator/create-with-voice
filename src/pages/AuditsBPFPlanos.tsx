@@ -239,9 +239,8 @@ export default function AuditsBPFPlanos() {
         )}
 
         <p className="text-center text-xs text-muted-foreground mt-8">
-          Pagamento processado com segurança via Stripe. Você poderá cancelar a qualquer momento.
-          {" "}Empresas excedentes (acima de 10) são cobradas automaticamente: <strong>R$ 311,25/mês</strong> no plano Mensal,
-          ou <strong>+25%</strong> no valor do período no Semestral/Anual.
+          Pagamento processado com segurança via Paddle. Você poderá cancelar a qualquer momento.
+          {" "}Empresas excedentes (acima de 10) são cobradas automaticamente conforme o plano.
         </p>
       </div>
     </div>
