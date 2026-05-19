@@ -1,5 +1,4 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import Stripe from "https://esm.sh/stripe@18.5.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
 
 const corsHeaders = {
@@ -7,14 +6,31 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-import { AGRO_RC_PRICES as PLAN_PRICES } from "../_shared/stripe-prices.ts";
+import { 
+  AGRO_RC_PRICES, 
+  AGROGESTAO_PRICES, 
+  NUTRI_AGRO_LABELS_PRICES,
+  ProductMap
+} from "../_shared/paddle-prices.ts";
 
-// Aliases retrocompatíveis
+const PRODUCT_MAPS: Record<string, ProductMap> = {
+  agrorc: AGRO_RC_PRICES,
+  agrogestao: AGROGESTAO_PRICES,
+  nutricrm: AGROGESTAO_PRICES, // NutriCRM usa o mesmo catálogo do AgroGestão no Paddle
+};
+
+// Aliases retrocompatíveis para o nível do plano
 const TIPO_ALIASES: Record<string, string> = {
   individual: "empresa",
   grupo10: "gestor10",
   grupo20: "consultor20",
 };
+
+const PADDLE_API_URL = Deno.env.get("PADDLE_SANDBOX_API_KEY") 
+  ? "https://sandbox-api.paddle.com" 
+  : "https://api.paddle.com";
+
+const PADDLE_API_KEY = Deno.env.get("PADDLE_SANDBOX_API_KEY") || Deno.env.get("PADDLE_LIVE_API_KEY");
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -27,57 +43,62 @@ serve(async (req) => {
       Deno.env.get("SUPABASE_ANON_KEY")!
     );
 
-    let userEmail: string | undefined;
-    let userId: string | undefined;
+    let user: { id: string; email: string } | null = null;
     const authHeader = req.headers.get("Authorization");
     if (authHeader) {
       const token = authHeader.replace("Bearer ", "");
       const { data } = await supabaseClient.auth.getUser(token);
       if (data?.user?.email) {
-        userEmail = data.user.email;
-        userId = data.user.id;
+        user = { id: data.user.id, email: data.user.email };
       }
     }
+    
+    if (!user) throw new Error("Usuário não autenticado");
 
     const body = await req.json().catch(() => ({}));
+    const product = (body.produto || "agrorc").toLowerCase();
     let tipoKey = (body.tipo || "empresa").toLowerCase();
     tipoKey = TIPO_ALIASES[tipoKey] || tipoKey;
     const planoKey = (body.plano || "mensal").toLowerCase();
-    const product = (body.produto || "agrorc").toLowerCase();
 
-    const tipoPrices = PLAN_PRICES[tipoKey];
+    // Selecionar o mapa de preços correto
+    const pricesMap = PRODUCT_MAPS[product] || AGRO_RC_PRICES;
+    
+    const tipoPrices = pricesMap[tipoKey];
     if (!tipoPrices) throw new Error(`Tipo inválido: ${tipoKey}. Use: empresa, gestor10 ou consultor20`);
+    
     const priceConfig = tipoPrices[planoKey];
-    if (!priceConfig) throw new Error("Plano inválido. Use: mensal, semestral ou anual");
-
-    const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
-      apiVersion: "2025-08-27.basil",
-    });
-
-    let customerId: string | undefined;
-    if (userEmail) {
-      const customers = await stripe.customers.list({ email: userEmail, limit: 1 });
-      if (customers.data.length > 0) customerId = customers.data[0].id;
-    }
+    if (!priceConfig) throw new Error(`Plano inválido: ${planoKey}. Use: mensal, semestral ou anual`);
 
     const origin = req.headers.get("origin") || "https://bpfconsult.com.br";
-    const session = await stripe.checkout.sessions.create({
-      customer: customerId,
-      customer_email: customerId ? undefined : userEmail,
-      line_items: [{ price: priceConfig.id, quantity: 1 }],
-      mode: priceConfig.mode,
-      success_url: `${origin}/${product}?checkout=success`,
-      cancel_url: `${origin}/${product}?checkout=canceled`,
-      allow_promotion_codes: true,
-      metadata: {
-        produto: product,
-        tipo: tipoKey,
-        plano: planoKey,
-        ...(userId ? { user_id: userId } : {}),
+
+    // Criar transação no Paddle
+    const response = await fetch(`${PADDLE_API_URL}/transactions`, {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${PADDLE_API_KEY}`,
+        "Content-Type": "application/json",
       },
+      body: JSON.stringify({
+        items: [{ price_id: priceConfig.id, quantity: 1 }],
+        customer_email: user.email,
+        custom_data: {
+          produto: product,
+          tipo: tipoKey,
+          plano: planoKey,
+          user_id: user.id,
+        },
+        checkout: {
+          confirm_url: `${origin}/${product}?checkout=success`,
+          cancel_url: `${origin}/${product}?checkout=canceled`,
+        }
+      }),
     });
 
-    return new Response(JSON.stringify({ url: session.url }), {
+    const data = await response.json();
+    if (data.error) throw new Error(data.error.detail || "Erro ao criar transação no Paddle");
+
+    return new Response(JSON.stringify({ url: data.data.checkout.url }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 200,
     });
