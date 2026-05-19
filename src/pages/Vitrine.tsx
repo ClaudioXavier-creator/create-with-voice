@@ -226,7 +226,9 @@ export default function Vitrine() {
               key={p.nome} 
               className="group cursor-pointer" 
               onClick={() => {
-                const target = p.appLink || p.link;
+                // Para visitantes, sempre levamos para a landing page (p.link) onde estão os preços.
+                // p.appLink é usado apenas internamente ou quando o usuário já está logado.
+                const target = p.link || p.appLink;
                 if (p.external) {
                   window.open(target, "_blank", "noopener,noreferrer");
                   return;
