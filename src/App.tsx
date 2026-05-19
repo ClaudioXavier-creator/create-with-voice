@@ -239,6 +239,7 @@ const AppRoutes = () => {
         <Route path="/feedbpf/dashboard" element={<Navigate to="/dashboard" replace />} />
         <Route path="/feedbpf" element={<FeedBPFPage />} />
         <Route path="/auditsbpf/planos" element={<AuditsBPFPlanos />} />
+        <Route path="/auditsbpf" element={<AuditsBPFPage />} />
         <Route path="/audits-bpf" element={<Navigate to="/auditsbpf" replace />} />
         <Route path="/agrogestao" element={<AgroGestaoCRMPage />} />
         <Route path="/agro-rc" element={<AgroRCCRMPage />} />
