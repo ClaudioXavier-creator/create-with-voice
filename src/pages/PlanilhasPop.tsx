@@ -173,11 +173,14 @@ export default function PlanilhasPop() {
           >
             <SelectTrigger><SelectValue /></SelectTrigger>
             <SelectContent>
-              {POPS_CONFIG.map((p) => (
-                <SelectItem key={p.codigo} value={p.codigo}>
-                  {p.codigo} - {p.nome}
-                </SelectItem>
-              ))}
+              {POPS_CONFIG.map((p) => {
+                const popNum = p.codigo.split("-")[1]?.replace(/^0+/, "");
+                return (
+                  <SelectItem key={p.codigo} value={p.codigo}>
+                    Pop {popNum} - {p.nome}
+                  </SelectItem>
+                );
+              })}
             </SelectContent>
           </Select>
         </div>
