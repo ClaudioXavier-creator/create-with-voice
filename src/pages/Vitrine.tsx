@@ -62,8 +62,8 @@ const produtos: ProdutoCard[] = [
     trialLink: "https://friendly-flame-igniter.lovable.app/auth?mode=signup",
     demoLink: "/demo/auditsbpf",
     preco: "A partir de R$ 297/mês",
-    external: true,
-    trialExternal: true,
+    external: false,
+    trialExternal: false,
   },
   {
     nome: "Agro RC CRM",
