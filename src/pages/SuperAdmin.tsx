@@ -201,9 +201,9 @@ export default function SuperAdmin() {
               <CardTitle>Assinaturas & Faturamento</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <p className="text-muted-foreground">O controle de assinaturas e faturamento via Stripe está centralizado aqui.</p>
+              <p className="text-muted-foreground">O controle de assinaturas e faturamento via Paddle está centralizado aqui.</p>
               <div className="p-4 bg-muted rounded-lg border border-dashed text-center">
-                 Consolidação de Webhooks do Stripe em desenvolvimento...
+                 Consolidação de Webhooks do Paddle em desenvolvimento...
               </div>
             </CardContent>
           </Card>

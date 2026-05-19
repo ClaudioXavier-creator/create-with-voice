@@ -327,6 +327,10 @@ export default function FeedBPFPage() {
               </Button>
             </Link>
           </div>
+          
+          <p className="text-center text-xs text-muted-foreground mt-12">
+            Pagamento processado com segurança via Paddle. Você poderá cancelar a qualquer momento.
+          </p>
         </section>
       </main>
 
