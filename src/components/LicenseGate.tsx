@@ -318,7 +318,7 @@ export default function LicenseGate({ children, product: initialProduct }: Licen
         <div className="text-center space-y-2">
           <p className="text-xs text-muted-foreground">
             <ShieldCheck aria-hidden="true" className="w-3 h-3 inline mr-1" />
-            Pagamento seguro via Stripe. Cancele a qualquer momento.
+            Pagamento seguro via Paddle. Cancele a qualquer momento.
           </p>
           <p className="text-xs text-muted-foreground">
             Limites por plano: Entrada <strong>1</strong> · Intermediário <strong>até 5</strong> · Avançado <strong>até 10</strong> empresas.
