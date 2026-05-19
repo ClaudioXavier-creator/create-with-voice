@@ -1,5 +1,4 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import Stripe from "https://esm.sh/stripe@18.5.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
 
 const corsHeaders = {
@@ -7,18 +6,20 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-import { FEED_BPF_PRICES as PLAN_PRICES } from "../_shared/stripe-prices.ts";
+import { FEED_BPF_PRICES as PLAN_PRICES } from "../_shared/paddle-prices.ts";
 
-// Aliases retrocompatíveis com nomenclatura antiga
+// Aliases retrocompatíveis
 const NIVEL_ALIASES: Record<string, string> = {
   entrada: "standard",
   intermediario: "intermediaria",
   avancado: "premium",
 };
 
-// Cupom 50% off — válido durante 2026
-const LAUNCH_COUPON_ID = "7QiChQQ1";
-const LAUNCH_END_DATE = new Date("2026-12-31T23:59:59Z");
+const PADDLE_API_URL = Deno.env.get("PADDLE_SANDBOX_API_KEY") 
+  ? "https://sandbox-api.paddle.com" 
+  : "https://api.paddle.com";
+
+const PADDLE_API_KEY = Deno.env.get("PADDLE_SANDBOX_API_KEY") || Deno.env.get("PADDLE_LIVE_API_KEY");
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -47,49 +48,39 @@ serve(async (req) => {
     const planoKey = (plano || "mensal").toLowerCase();
 
     const nivelPrices = PLAN_PRICES[nivelKey];
-    if (!nivelPrices) throw new Error(`Nível inválido: ${nivelKey}. Use: standard, intermediaria ou premium`);
+    if (!nivelPrices) throw new Error(`Nível inválido: ${nivelKey}`);
 
     const priceConfig = nivelPrices[planoKey];
-    if (!priceConfig) throw new Error("Plano inválido. Use: mensal, semestral ou anual");
+    if (!priceConfig) throw new Error(`Plano inválido: ${planoKey}`);
 
-    const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
-      apiVersion: "2025-08-27.basil",
+    // Criar transação no Paddle
+    const response = await fetch(`${PADDLE_API_URL}/transactions`, {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${PADDLE_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        items: [{ price_id: priceConfig.id, quantity: 1 }],
+        customer_email: user.email,
+        custom_data: {
+          produto: "feedbpf",
+          empresa_id,
+          user_id: user.id,
+          plano: planoKey,
+          nivel: nivelKey,
+        },
+        checkout: {
+          confirm_url: `${req.headers.get("origin")}/dashboard?checkout=success&empresa_id=${empresa_id}`,
+          cancel_url: `${req.headers.get("origin")}/dashboard?checkout=canceled&empresa_id=${empresa_id}`,
+        }
+      }),
     });
 
-    const customers = await stripe.customers.list({ email: user.email, limit: 1 });
-    let customerId: string | undefined;
-    if (customers.data.length > 0) {
-      customerId = customers.data[0].id;
-    }
+    const data = await response.json();
+    if (data.error) throw new Error(data.error.detail);
 
-    const now = new Date();
-    const applyLaunchDiscount = now <= LAUNCH_END_DATE;
-
-    const sessionParams: Stripe.Checkout.SessionCreateParams = {
-      customer: customerId,
-      customer_email: customerId ? undefined : user.email,
-      line_items: [{ price: priceConfig.id, quantity: 1 }],
-      mode: priceConfig.mode,
-      success_url: `${req.headers.get("origin")}/dashboard?checkout=success&empresa_id=${empresa_id}`,
-      cancel_url: `${req.headers.get("origin")}/dashboard?checkout=canceled&empresa_id=${empresa_id}`,
-      metadata: {
-        produto: "feedbpf",
-        empresa_id,
-        user_id: user.id,
-        plano: planoKey,
-        nivel: nivelKey,
-      },
-      allow_promotion_codes: true,
-    };
-
-    if (applyLaunchDiscount) {
-      sessionParams.discounts = [{ coupon: LAUNCH_COUPON_ID }];
-      delete sessionParams.allow_promotion_codes;
-    }
-
-    const session = await stripe.checkout.sessions.create(sessionParams);
-
-    return new Response(JSON.stringify({ url: session.url }), {
+    return new Response(JSON.stringify({ url: data.data.checkout.url }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 200,
     });
