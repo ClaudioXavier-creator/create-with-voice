@@ -196,7 +196,7 @@ export const NAV_ENTRIES: NavEntry[] = [
       { path: "https://friendly-flame-igniter.lovable.app", label: "Audits_BPF", icon: ShieldCheck, logo: logoAuditsBpf, external: true },
       { path: "https://soil-to-client.lovable.app", label: "Agro RC CRM", icon: BarChart3, logo: logoAgrorc, external: true },
       { path: "/rotulos/dashboard", label: "Nutri_Agro Labels", icon: Tag, logo: logoRotulos },
-      { path: "https://nutricrm.onrender.com", label: "NutriCRM", icon: Users, logo: logoNutricrm, external: true },
+      // NutriCRM temporariamente removido — produto em manutenção.
       { path: "https://regional-fixer-charm.lovable.app", label: "AgroGestão CRM", icon: Building2, logo: logoAgrogestao, external: true },
     ],
   },
