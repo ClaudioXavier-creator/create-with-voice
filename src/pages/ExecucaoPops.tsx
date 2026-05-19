@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import { PlayCircle, Plus, CheckCircle2, Clock, AlertTriangle, ExternalLink, Loader2, Filter, CalendarIcon, Bell } from "lucide-react";
+import { PlayCircle, Plus, CheckCircle2, Clock, AlertTriangle, Loader2, ExternalLink, Filter, CalendarIcon, Bell } from "lucide-react";
 import { format, parseISO, isAfter, isBefore, differenceInDays } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -83,6 +83,17 @@ export default function ExecucaoPops() {
   const [statusExec, setStatusExec] = useState("concluido");
   const [obs, setObs] = useState("");
   const [checklistTriagem, setChecklistTriagem] = useState<Record<number, boolean | null>>({});
+  
+  // Custom fields
+  const [asoNumero, setAsoNumero] = useState("");
+  const [asoValidade, setAsoValidade] = useState("");
+  const [asoTipo, setAsoTipo] = useState("periodico");
+  const [produtoQuimico, setProdutoQuimico] = useState("");
+  const [concentracaoQuimico, setConcentracaoQuimico] = useState("");
+  const [tempoContato, setTempoContato] = useState("");
+  const [laudoNumero, setLaudoNumero] = useState("");
+  const [laudoLaboratorio, setLaudoLaboratorio] = useState("");
+  const [laudoData, setLaudoData] = useState("");
 
   const fetchData = async () => {
     if (!user) return;
@@ -100,7 +111,6 @@ export default function ExecucaoPops() {
   useEffect(() => { fetchData(); }, [user]);
 
   const selectedDoc = docs.find(d => d.id === docSelecionado);
-
   const isPOP02 = selectedDoc?.codigo?.includes("POP-02");
   const isPOP03 = selectedDoc?.codigo?.includes("POP-03");
   const isPOP04 = selectedDoc?.codigo?.includes("POP-04");
@@ -114,7 +124,12 @@ export default function ExecucaoPops() {
     let obsCompleta = obs;
     if (activeChecklist) {
       const checkItems = activeChecklist.map((item, i) => `${checklistTriagem[i] === true ? "✅" : checklistTriagem[i] === false ? "❌" : "⬜"} ${item}`).join("\n");
-      obsCompleta = `${obsCompleta}\n\nChecklist:\n${checkItems}`;
+      const extraInfo = [];
+      if (asoNumero) extraInfo.push(`ASO: ${asoNumero} (${asoTipo}) - Val: ${asoValidade}`);
+      if (produtoQuimico) extraInfo.push(`Produto: ${produtoQuimico} (Conc: ${concentracaoQuimico}, Tempo: ${tempoContato})`);
+      if (laudoNumero) extraInfo.push(`Laudo: ${laudoNumero} (Lab: ${laudoLaboratorio}, Data: ${laudoData})`);
+      
+      obsCompleta = `${obsCompleta}\n\nChecklist:\n${checkItems}${extraInfo.length > 0 ? '\n\nInformações Extra:\n' + extraInfo.join('\n') : ''}`;
     }
     const { error } = await supabase.from("execucao_pops").insert({
       user_id: user.id, empresa_id: empresaAtiva?.id || null,
@@ -131,7 +146,7 @@ export default function ExecucaoPops() {
       toast.success("Execução registrada!");
       setOpen(false);
       setDocSelecionado(""); setExecutor(""); setSetor(""); setObs(""); setStatusExec("concluido");
-      setChecklistTriagem({});
+      setChecklistTriagem({}); setAsoNumero(""); setAsoValidade(""); setProdutoQuimico(""); setLaudoNumero("");
       fetchData();
     }
     setSaving(false);
@@ -155,59 +170,114 @@ export default function ExecucaoPops() {
 
   return (
     <>
-      <PageHeader icon={PlayCircle} title="Execução de ITs e POPs" description="Diário de bordo" />
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle>Registros</CardTitle>
-            <Dialog open={open} onOpenChange={setOpen}>
-              <DialogTrigger asChild><Button size="sm"><Plus className="w-4 h-4 mr-1" /> Registrar</Button></DialogTrigger>
-              <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto">
-                <DialogHeader><DialogTitle>Nova Execução</DialogTitle></DialogHeader>
-                <Select value={docSelecionado} onValueChange={setDocSelecionado}>
-                  <SelectTrigger><SelectValue placeholder="Selecione o documento" /></SelectTrigger>
-                  <SelectContent>
-                    {docs.map(d => <SelectItem key={d.id} value={d.id}>{d.codigo} — {d.nome}</SelectItem>)}
-                  </SelectContent>
-                </Select>
-                {activeChecklist && (
-                  <div className="space-y-1">
-                    {activeChecklist.map((item, idx) => (
-                      <div key={idx} className="flex gap-2 items-center text-xs">
-                        <Button variant="outline" size="sm" onClick={() => setChecklistTriagem(p => ({...p, [idx]: !p[idx]}))}>
-                          {checklistTriagem[idx] ? "✅" : "⬜"}
-                        </Button>
-                        {item}
+      <PageHeader icon={PlayCircle} title="Execução de ITs e POPs" description="Diário de bordo digital — comprova ao MAPA que os POPs são executados" />
+      
+      <Card className="mb-6">
+          <CardHeader className="flex flex-row items-center justify-between">
+              <CardTitle className="text-lg">Registros de Execução</CardTitle>
+              <Dialog open={open} onOpenChange={setOpen}>
+                  <DialogTrigger asChild><Button size="sm"><Plus className="w-4 h-4 mr-1" /> Registrar Nova</Button></DialogTrigger>
+                  <DialogContent className="max-w-xl max-h-[90vh] overflow-y-auto">
+                      <DialogHeader><DialogTitle>Registrar Execução de POP/IT</DialogTitle></DialogHeader>
+                      <div className="space-y-6 pt-4">
+                          <div className="space-y-2">
+                              <Label>Documento (POP/IT)</Label>
+                              <Select value={docSelecionado} onValueChange={setDocSelecionado}>
+                                  <SelectTrigger><SelectValue placeholder="Selecione o documento" /></SelectTrigger>
+                                  <SelectContent>
+                                      {docs.map(d => <SelectItem key={d.id} value={d.id}>{d.codigo} — {d.nome}</SelectItem>)}
+                                  </SelectContent>
+                              </Select>
+                          </div>
+
+                          <div className="grid grid-cols-2 gap-4">
+                              <div className="space-y-2"><Label>Executor</Label><Input value={executor} onChange={e => setExecutor(e.target.value)} placeholder="Quem executou?" /></div>
+                              <div className="space-y-2"><Label>Setor</Label><Input value={setor} onChange={e => setSetor(e.target.value)} placeholder="Setor/Área" /></div>
+                          </div>
+
+                          {activeChecklist && (
+                              <div className="p-4 rounded-xl bg-primary/5 border border-primary/20 space-y-4">
+                                  <p className="text-xs font-bold uppercase tracking-wider text-primary">Checklist de Verificação</p>
+                                  <div className="grid grid-cols-1 gap-2">
+                                      {activeChecklist.map((item, idx) => (
+                                          <div key={idx} className="flex items-center justify-between p-2 rounded bg-background border text-xs">
+                                              <span>{item}</span>
+                                              <div className="flex gap-1">
+                                                  <Button 
+                                                    size="icon" 
+                                                    className={cn("w-7 h-7", checklistTriagem[idx] === true ? "bg-green-500 hover:bg-green-600" : "bg-muted text-muted-foreground")}
+                                                    onClick={() => setChecklistTriagem(p => ({...p, [idx]: p[idx] === true ? null : true}))}
+                                                  >✓</Button>
+                                                  <Button 
+                                                    size="icon" 
+                                                    className={cn("w-7 h-7", checklistTriagem[idx] === false ? "bg-destructive hover:bg-destructive/90" : "bg-muted text-muted-foreground")}
+                                                    onClick={() => setChecklistTriagem(p => ({...p, [idx]: p[idx] === false ? null : false}))}
+                                                  >✗</Button>
+                                              </div>
+                                          </div>
+                                      ))}
+                                  </div>
+
+                                  {(isPOP02 || isPOP05) && (
+                                      <div className="space-y-3 pt-4 border-t">
+                                          <p className="text-xs font-bold text-emerald-600">Registro de ASO / Exames</p>
+                                          <div className="grid grid-cols-2 gap-3">
+                                              <div className="space-y-1"><Label className="text-[10px]">Nº ASO</Label><Input value={asoNumero} onChange={e => setAsoNumero(e.target.value)} className="h-8 text-xs" /></div>
+                                              <div className="space-y-1"><Label className="text-[10px]">Validade</Label><Input type="date" value={asoValidade} onChange={e => setAsoValidade(e.target.value)} className="h-8 text-xs" /></div>
+                                          </div>
+                                      </div>
+                                  )}
+
+                                  {isPOP03 && (
+                                      <div className="space-y-3 pt-4 border-t">
+                                          <p className="text-xs font-bold text-amber-600">Sanitizantes Utilizados</p>
+                                          <div className="grid grid-cols-2 gap-3">
+                                              <div className="space-y-1"><Label className="text-[10px]">Produto</Label><Input value={produtoQuimico} onChange={e => setProdutoQuimico(e.target.value)} className="h-8 text-xs" /></div>
+                                              <div className="space-y-1"><Label className="text-[10px]">Concentração</Label><Input value={concentracaoQuimico} onChange={e => setConcentracaoQuimico(e.target.value)} className="h-8 text-xs" /></div>
+                                          </div>
+                                      </div>
+                                  )}
+                              </div>
+                          )}
+
+                          <div className="space-y-2"><Label>Observações Adicionais</Label><Textarea value={obs} onChange={e => setObs(e.target.value)} className="min-h-[100px]" /></div>
+                          
+                          <Button onClick={handleAdd} className="w-full" disabled={saving || !docSelecionado || !executor}>
+                              {saving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : "Salvar Registro de Execução"}
+                          </Button>
                       </div>
-                    ))}
-                  </div>
-                )}
-                <Input value={executor} onChange={e => setExecutor(e.target.value)} placeholder="Executor" />
-                <Button onClick={handleAdd} disabled={saving}>Salvar</Button>
-              </DialogContent>
-            </Dialog>
-        </CardHeader>
-        <CardContent className="overflow-x-auto">
-            <Table>
-                <TableHeader>
-                    <TableRow>
-                        <TableHead>Data</TableHead>
-                        <TableHead>POP</TableHead>
-                        <TableHead>Executor</TableHead>
-                        <TableHead>Status</TableHead>
-                    </TableRow>
-                </TableHeader>
-                <TableBody>
-                    {filteredExecucoes.map(e => (
-                        <TableRow key={e.id}>
-                            <TableCell>{e.data_execucao}</TableCell>
-                            <TableCell>{e.codigo_pop}</TableCell>
-                            <TableCell>{e.executor}</TableCell>
-                            <TableCell>{e.status}</TableCell>
-                        </TableRow>
-                    ))}
-                </TableBody>
-            </Table>
-        </CardContent>
+                  </DialogContent>
+              </Dialog>
+          </CardHeader>
+          <CardContent className="overflow-x-auto">
+              <Table>
+                  <TableHeader>
+                      <TableRow>
+                          <TableHead className="w-[120px]">Data</TableHead>
+                          <TableHead>POP/IT</TableHead>
+                          <TableHead>Executor</TableHead>
+                          <TableHead>Status</TableHead>
+                      </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                      {filteredExecucoes.map(e => (
+                          <TableRow key={e.id}>
+                              <TableCell className="text-xs font-mono">{e.data_execucao}</TableCell>
+                              <TableCell>
+                                  <p className="font-bold text-xs">{e.codigo_pop}</p>
+                                  <p className="text-[10px] text-muted-foreground line-clamp-1">{e.nome_pop}</p>
+                              </TableCell>
+                              <TableCell className="text-xs">{e.executor}</TableCell>
+                              <TableCell>
+                                  <Badge variant="outline" className={cn("text-[10px]", statusConfig[e.status || "concluido"].className)}>
+                                      {statusConfig[e.status || "concluido"].label}
+                                  </Badge>
+                              </TableCell>
+                          </TableRow>
+                      ))}
+                  </TableBody>
+              </Table>
+          </CardContent>
       </Card>
     </>
   );
