@@ -139,15 +139,16 @@ const POP09_VEICULO_ITENS = [
 
 // POPs obrigatórios com periodicidade em dias
 const POPS_PERIODICIDADE: Record<string, number> = {
-  "POP-001": 30,
-  "POP-002": 7,
-  "POP-003": 30,
-  "POP-004": 30,
-  "POP-005": 7,
-  "POP-006": 7,
-  "POP-007": 30,
-  "POP-008": 90,
-  "POP-009": 30,
+  "POP-01": 30,
+  "POP-02": 7,
+  "POP-03": 30,
+  "POP-04": 30,
+  "POP-05": 7,
+  "POP-06": 7,
+  "POP-07": 30,
+  "POP-08": 90,
+  "POP-09": 30,
+  "POP-10": 30,
 };
 
 interface Alerta {
