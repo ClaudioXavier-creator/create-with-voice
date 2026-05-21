@@ -3,7 +3,8 @@ import {
   ArrowRight, CheckCircle2, Factory, ClipboardCheck, 
   Search, BarChart3, ShieldCheck, Tag, Building2, 
   MessageCircle, AlertTriangle, CheckCircle, Smartphone, 
-  Layers, Package, FileText, LayoutDashboard, Compass
+  Layers, Package, FileText, LayoutDashboard, Compass,
+  Users
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
