@@ -83,6 +83,7 @@ const AuditorPortal = lazy(() => import("./pages/AuditorPortal"));
 const DemoPage = lazy(() => import("./pages/DemoPage"));
 const AdminAccess = lazy(() => import("./pages/AdminAccess"));
 const NotFound = lazy(() => import("./pages/NotFound"));
+const LandingPageBPF = lazy(() => import("./pages/LandingPageBPF"));
 
 // Agro RC CRM - Páginas Internas
 const AgroRcLayout = lazy(() => import("./components/layout/AgroRcLayout"));
