@@ -83,6 +83,7 @@ const AuditorPortal = lazy(() => import("./pages/AuditorPortal"));
 const DemoPage = lazy(() => import("./pages/DemoPage"));
 const AdminAccess = lazy(() => import("./pages/AdminAccess"));
 const NotFound = lazy(() => import("./pages/NotFound"));
+const LandingPageBPF = lazy(() => import("./pages/LandingPageBPF"));
 
 // Agro RC CRM - Páginas Internas
 const AgroRcLayout = lazy(() => import("./components/layout/AgroRcLayout"));
@@ -236,6 +237,7 @@ const AppRoutes = () => {
         
         {/* Landings de Produtos */}
         <Route path="/nutricrm" element={<NutriCRMPage />} />
+        <Route path="/bpf-consult" element={<LandingPageBPF />} />
         <Route path="/feedbpf/dashboard" element={<Navigate to="/dashboard" replace />} />
         <Route path="/feedbpf" element={<FeedBPFPage />} />
         <Route path="/auditsbpf/planos" element={<AuditsBPFPlanos />} />
