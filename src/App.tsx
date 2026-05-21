@@ -236,6 +236,7 @@ const AppRoutes = () => {
         
         {/* Landings de Produtos */}
         <Route path="/nutricrm" element={<NutriCRMPage />} />
+        <Route path="/bpf-consult" element={<LandingPageBPF />} />
         <Route path="/feedbpf/dashboard" element={<Navigate to="/dashboard" replace />} />
         <Route path="/feedbpf" element={<FeedBPFPage />} />
         <Route path="/auditsbpf/planos" element={<AuditsBPFPlanos />} />
