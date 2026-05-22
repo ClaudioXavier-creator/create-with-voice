@@ -42,7 +42,7 @@ export default function LandingPageBPF() {
           <div className="font-bold text-2xl text-[#173404]">BPF<span className="text-[#97C459]">_Consult</span></div>
         </div>
         <div className="flex items-center gap-4">
-          <Button variant="ghost" onClick={() => navigate("/admin?tab=crm")} className="hidden sm:flex text-slate-600 font-medium">Acessar CRM</Button>
+          <Button variant="ghost" onClick={() => navigate("/admin-access")} className="hidden sm:flex text-slate-600 font-medium">Acessar CRM</Button>
           <Button variant="ghost" onClick={() => navigate("/auth")} className="hidden sm:flex text-slate-600 font-medium">Entrar</Button>
           <Button onClick={scrollToContact} className="bg-[#173404] text-white rounded-full px-6">Agendar Demo</Button>
         </div>
@@ -520,7 +520,7 @@ export default function LandingPageBPF() {
               <Button variant="link" onClick={() => navigate("/termos")} className="p-0 h-auto font-medium hover:text-[#173404]">Termos</Button>
               <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="hover:text-[#173404]">LinkedIn</a>
               <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="hover:text-[#173404]">Instagram</a>
-              <Button variant="link" onClick={() => navigate("/admin")} className="text-slate-400 p-0 h-auto font-medium hover:text-[#173404]">Gestão Interna</Button>
+              <Button variant="link" onClick={() => navigate("/admin-access")} className="text-slate-400 p-0 h-auto font-medium hover:text-[#173404]">Gestão Interna</Button>
             </div>
           </div>
           <Separator className="my-8 opacity-50" />
