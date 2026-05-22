@@ -40,7 +40,10 @@ export default function LandingPageBPF() {
           <img src={logoBpfConsult} alt="BPF_Consult Logo" className="h-8 w-auto object-contain" />
           <div className="font-bold text-2xl text-[#173404]">BPF<span className="text-[#97C459]">_Consult</span></div>
         </div>
-        <Button onClick={scrollToContact} className="bg-[#173404] text-white rounded-full px-6">Agendar Demo</Button>
+        <div className="flex items-center gap-4">
+          <Button variant="ghost" onClick={() => navigate("/auth")} className="hidden sm:flex text-slate-600 font-medium">Entrar</Button>
+          <Button onClick={scrollToContact} className="bg-[#173404] text-white rounded-full px-6">Agendar Demo</Button>
+        </div>
       </nav>
 
 
@@ -515,6 +518,7 @@ export default function LandingPageBPF() {
               <a href="#" className="hover:text-[#173404]">Termos</a>
               <a href="#" className="hover:text-[#173404]">LinkedIn</a>
               <a href="#" className="hover:text-[#173404]">Instagram</a>
+              <Button variant="link" onClick={() => navigate("/admin")} className="text-slate-400 p-0 h-auto font-medium hover:text-[#173404]">Gestão Interna</Button>
             </div>
           </div>
           <Separator className="my-8 opacity-50" />
