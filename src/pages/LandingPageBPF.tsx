@@ -13,7 +13,8 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import logoBpfConsult from "@/assets/logo-bpf-consult.png";
+import logoBpfConsult from "@/assets/logo.png";
+
 
 
 export default function LandingPageBPF() {
@@ -43,7 +44,7 @@ export default function LandingPageBPF() {
             <img 
               src={logoBpfConsult} 
               alt="BPF_Consult Logo" 
-              className="w-24 h-24 sm:w-32 sm:h-32 object-contain opacity-90 drop-shadow-2xl" 
+              className="w-24 h-24 sm:w-32 sm:h-32 object-contain drop-shadow-2xl rounded-xl bg-white p-2" 
             />
           </div>
           <Badge className="mb-6 border-[#97C459] text-[#97C459] bg-transparent px-4 py-1">Consultoria & Tecnologia para Nutrição Animal</Badge>
