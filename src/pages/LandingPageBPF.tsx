@@ -1,11 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { 
   ArrowRight, CheckCircle2, Factory, ClipboardCheck, 
   Search, BarChart3, ShieldCheck, Tag, Building2, 
   MessageCircle, AlertTriangle, CheckCircle, Smartphone, 
   Layers, Package, FileText, LayoutDashboard, Compass,
-  Users
+  Users, X, Send
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -14,6 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { toast } from "sonner";
 import logoBpfConsult from "@/assets/logo-bpf-consult.png";
 
 
@@ -22,7 +23,7 @@ import logoBpfConsult from "@/assets/logo-bpf-consult.png";
 
 export default function LandingPageBPF() {
   const navigate = useNavigate();
-
+  const [showSupport, setShowSupport] = useState(false);
 
   const scrollToContact = () => {
     document.getElementById("contato")?.scrollIntoView({ behavior: "smooth" });
@@ -532,6 +533,54 @@ export default function LandingPageBPF() {
           </div>
         </div>
       </footer>
+      {/* Floating Support Button */}
+      <div className="fixed bottom-6 right-6 z-[60] flex flex-col items-end gap-4">
+        {showSupport && (
+          <Card className="w-80 p-6 shadow-2xl border-none animate-in fade-in slide-in-from-bottom-4 duration-300">
+            <div className="flex justify-between items-center mb-4">
+              <h4 className="font-bold text-[#173404]">Suporte BPF_Consult</h4>
+              <Button variant="ghost" size="sm" onClick={() => setShowSupport(false)} className="h-8 w-8 p-0">
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+            <div className="space-y-4">
+              <p className="text-sm text-slate-600">Como podemos ajudar você hoje?</p>
+              <div className="space-y-2">
+                <Button 
+                  variant="outline" 
+                  className="w-full justify-start text-sm h-10"
+                  onClick={() => {
+                    window.open("https://wa.me/5500000000000", "_blank");
+                    setShowSupport(false);
+                  }}
+                >
+                  <MessageCircle className="h-4 w-4 mr-2 text-green-600" />
+                  Falar com especialista
+                </Button>
+                <Button 
+                  variant="outline" 
+                  className="w-full justify-start text-sm h-10"
+                  onClick={() => {
+                    scrollToContact();
+                    setShowSupport(false);
+                  }}
+                >
+                  <Send className="h-4 w-4 mr-2 text-blue-600" />
+                  Solicitar diagnóstico
+                </Button>
+              </div>
+            </div>
+          </Card>
+        )}
+        <Button 
+          onClick={() => setShowSupport(!showSupport)}
+          className={`h-14 w-14 rounded-full shadow-2xl transition-all duration-300 ${
+            showSupport ? "bg-slate-200 text-slate-600 rotate-90" : "bg-[#173404] text-white hover:scale-110"
+          }`}
+        >
+          {showSupport ? <X /> : <MessageCircle className="h-7 w-7" />}
+        </Button>
+      </div>
     </div>
   );
 }
