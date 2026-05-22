@@ -13,6 +13,8 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import logoBpfConsult from "@/assets/logo-bpf-consult.png";
+
 
 export default function LandingPageBPF() {
   const scrollToContact = () => {
@@ -23,16 +25,28 @@ export default function LandingPageBPF() {
     <div className="min-h-screen bg-white font-sans text-slate-900">
       {/* Navbar Minimalist */}
       <nav className="fixed top-0 w-full bg-white/80 backdrop-blur-md z-50 border-b border-gray-100 py-4 px-6 flex justify-between items-center">
-        <div className="font-bold text-2xl text-[#173404]">BPF<span className="text-[#97C459]">_Consult</span></div>
+        <div className="flex items-center gap-2 cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>
+          <img src={logoBpfConsult} alt="BPF_Consult Logo" className="h-10 w-10 object-contain" />
+          <div className="font-bold text-2xl text-[#173404]">BPF<span className="text-[#97C459]">_Consult</span></div>
+        </div>
         <Button onClick={scrollToContact} className="bg-[#173404] text-white rounded-full px-6">Agendar Demo</Button>
       </nav>
+
 
       {/* BLOCO 1 - HERO PRINCIPAL */}
       <section className="relative overflow-hidden bg-[#173404] pt-32 pb-24 px-4 text-center text-white">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(151,196,89,0.1),transparent_50%)]" />
         <div className="relative max-w-4xl mx-auto z-10">
+          <div className="mb-8 flex justify-center">
+            <img 
+              src={logoBpfConsult} 
+              alt="BPF_Consult Logo" 
+              className="w-24 h-24 sm:w-32 sm:h-32 object-contain filter brightness-0 invert opacity-90 drop-shadow-2xl" 
+            />
+          </div>
           <Badge className="mb-6 border-[#97C459] text-[#97C459] bg-transparent px-4 py-1">Consultoria & Tecnologia para Nutrição Animal</Badge>
           <h1 className="text-4xl sm:text-6xl font-bold mb-6 leading-tight">Sua fábrica em conformidade. Seus processos no digital. Seu negócio no controle.</h1>
+
           <p className="text-lg sm:text-xl text-green-100/80 mb-10 max-w-2xl mx-auto">Plataforma e consultoria especializada em BPF, auditorias digitais, rastreabilidade e CRM para fábricas de rações e suplementos animais - com total aderência à IN 17/2023 do MAPA.</p>
           <div className="flex flex-col items-center gap-6">
             <div className="flex flex-col sm:flex-row gap-4 w-full justify-center">
