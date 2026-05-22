@@ -475,7 +475,10 @@ export default function LandingPageBPF() {
         <div className="max-w-6xl mx-auto">
           <div className="flex flex-col md:flex-row justify-between items-center gap-8 text-center md:text-left">
             <div>
-              <div className="font-bold text-xl text-[#173404] mb-4">BPF<span className="text-[#97C459]">_Consult</span></div>
+              <div className="flex items-center gap-2 mb-4 justify-center md:justify-start">
+                <img src={logoBpfConsult} alt="BPF_Consult Logo" className="h-8 w-8 object-contain" />
+                <div className="font-bold text-xl text-[#173404]">BPF<span className="text-[#97C459]">_Consult</span></div>
+              </div>
               <p className="text-sm text-slate-500 max-w-xs">Consultoria técnica e tecnologia especializada para fábricas de nutrição animal.</p>
             </div>
             <div className="flex gap-8 text-sm font-medium text-slate-600">
