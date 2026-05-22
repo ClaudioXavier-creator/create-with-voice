@@ -13,12 +13,14 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import logoBpfConsult from "@/assets/logo.png";
+import logoFeedBpf from "@/assets/logo-feed-bpf.png";
+import logoBpfConsult from "@/assets/logo-feed-bpf.png";
+
 
 
 
 export default function LandingPageBPF() {
-  console.log("logoBpfConsult path:", logoBpfConsult);
+
 
   const scrollToContact = () => {
     document.getElementById("contato")?.scrollIntoView({ behavior: "smooth" });
