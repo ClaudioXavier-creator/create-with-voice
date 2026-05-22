@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import { 
   ArrowRight, CheckCircle2, Factory, ClipboardCheck, 
   Search, BarChart3, ShieldCheck, Tag, Building2, 
@@ -20,6 +21,7 @@ import logoBpfConsult from "@/assets/logo-bpf-consult.png";
 
 
 export default function LandingPageBPF() {
+  const navigate = useNavigate();
 
 
   const scrollToContact = () => {
@@ -154,7 +156,7 @@ export default function LandingPageBPF() {
               </ul>
               <div className="flex items-center justify-between">
                 <Button variant="link" onClick={scrollToContact} className="p-0 text-[#173404] font-bold">Saia do papel agora →</Button>
-                <Button variant="ghost" size="sm" onClick={() => window.location.href = "/feedbpf"} className="text-slate-400 text-xs">Ver detalhes</Button>
+                <Button variant="ghost" size="sm" onClick={() => navigate("/feedbpf")} className="text-slate-400 text-xs">Ver detalhes</Button>
               </div>
             </Card>
 
@@ -172,7 +174,7 @@ export default function LandingPageBPF() {
               </ul>
               <div className="flex items-center justify-between">
                 <Button variant="link" onClick={scrollToContact} className="p-0 text-[#173404] font-bold">Prepare-se já →</Button>
-                <Button variant="ghost" size="sm" onClick={() => window.location.href = "/auditsbpf"} className="text-slate-400 text-xs">Ver detalhes</Button>
+                <Button variant="ghost" size="sm" onClick={() => navigate("/auditsbpf")} className="text-slate-400 text-xs">Ver detalhes</Button>
               </div>
             </Card>
 
@@ -190,7 +192,7 @@ export default function LandingPageBPF() {
               </ul>
               <div className="flex items-center justify-between">
                 <Button variant="link" onClick={scrollToContact} className="p-0 text-[#173404] font-bold">Controle seus lotes →</Button>
-                <Button variant="ghost" size="sm" onClick={() => window.location.href = "/agro-rc"} className="text-slate-400 text-xs">Ver detalhes</Button>
+                <Button variant="ghost" size="sm" onClick={() => navigate("/agro-rc")} className="text-slate-400 text-xs">Ver detalhes</Button>
               </div>
             </Card>
 
@@ -208,7 +210,7 @@ export default function LandingPageBPF() {
               </ul>
               <div className="flex items-center justify-between">
                 <Button variant="link" onClick={scrollToContact} className="p-0 text-[#173404] font-bold">Rotule com segurança →</Button>
-                <Button variant="ghost" size="sm" onClick={() => window.location.href = "/rotulos"} className="text-slate-400 text-xs">Ver detalhes</Button>
+                <Button variant="ghost" size="sm" onClick={() => navigate("/rotulos")} className="text-slate-400 text-xs">Ver detalhes</Button>
               </div>
             </Card>
 
@@ -226,7 +228,7 @@ export default function LandingPageBPF() {
               </ul>
               <div className="flex items-center justify-between">
                 <Button variant="link" onClick={scrollToContact} className="p-0 text-[#173404] font-bold">Evolua seu comercial →</Button>
-                <Button variant="ghost" size="sm" onClick={() => window.location.href = "/nutricrm"} className="text-slate-400 text-xs">Ver detalhes</Button>
+                <Button variant="ghost" size="sm" onClick={() => navigate("/nutricrm")} className="text-slate-400 text-xs">Ver detalhes</Button>
               </div>
             </Card>
 
@@ -244,7 +246,7 @@ export default function LandingPageBPF() {
               </ul>
               <div className="flex items-center justify-between">
                 <Button variant="link" onClick={scrollToContact} className="p-0 text-[#173404] font-bold">Tome decisões com dados →</Button>
-                <Button variant="ghost" size="sm" onClick={() => window.location.href = "/agrogestao"} className="text-slate-400 text-xs">Ver detalhes</Button>
+                <Button variant="ghost" size="sm" onClick={() => navigate("/agrogestao")} className="text-slate-400 text-xs">Ver detalhes</Button>
               </div>
             </Card>
           </div>
