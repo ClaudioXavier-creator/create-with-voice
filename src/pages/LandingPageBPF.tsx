@@ -29,7 +29,7 @@ export default function LandingPageBPF() {
       {/* Navbar Minimalist */}
       <nav className="fixed top-0 w-full bg-white/80 backdrop-blur-md z-50 border-b border-gray-100 py-4 px-6 flex justify-between items-center">
         <div className="flex items-center gap-2 cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>
-          <img src="/favicon.png" alt="BPF_Consult Logo" className="h-10 w-10 object-contain" />
+          <img src={logoBpfConsult} alt="BPF_Consult Logo" className="max-h-10 w-auto" />
           <div className="font-bold text-2xl text-[#173404]">BPF<span className="text-[#97C459]">_Consult</span></div>
         </div>
         <Button onClick={scrollToContact} className="bg-[#173404] text-white rounded-full px-6">Agendar Demo</Button>
@@ -41,11 +41,13 @@ export default function LandingPageBPF() {
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(151,196,89,0.1),transparent_50%)]" />
         <div className="relative max-w-4xl mx-auto z-10">
           <div className="mb-8 flex justify-center">
-            <img 
-              src={logoBpfConsult} 
-              alt="BPF_Consult Logo" 
-              className="w-24 h-24 sm:w-32 sm:h-32 object-contain drop-shadow-2xl rounded-xl bg-white p-2" 
-            />
+            <div className="bg-white p-4 rounded-3xl shadow-2xl">
+              <img 
+                src={logoBpfConsult} 
+                alt="BPF_Consult Logo" 
+                className="max-h-32 w-auto object-contain" 
+              />
+            </div>
           </div>
           <Badge className="mb-6 border-[#97C459] text-[#97C459] bg-transparent px-4 py-1">Consultoria & Tecnologia para Nutrição Animal</Badge>
           <h1 className="text-4xl sm:text-6xl font-bold mb-6 leading-tight">Sua fábrica em conformidade. Seus processos no digital. Seu negócio no controle.</h1>
