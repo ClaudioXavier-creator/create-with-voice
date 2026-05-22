@@ -152,7 +152,10 @@ export default function LandingPageBPF() {
                   </li>
                 ))}
               </ul>
-              <Button variant="link" onClick={scrollToContact} className="p-0 text-[#173404] font-bold">Saia do papel agora →</Button>
+              <div className="flex items-center justify-between">
+                <Button variant="link" onClick={scrollToContact} className="p-0 text-[#173404] font-bold">Saia do papel agora →</Button>
+                <Button variant="ghost" size="sm" onClick={() => window.location.href = "/feedbpf"} className="text-slate-400 text-xs">Ver detalhes</Button>
+              </div>
             </Card>
 
             {/* Módulo 2 */}
@@ -167,7 +170,10 @@ export default function LandingPageBPF() {
                   </li>
                 ))}
               </ul>
-              <Button variant="link" onClick={scrollToContact} className="p-0 text-[#173404] font-bold">Prepare-se já →</Button>
+              <div className="flex items-center justify-between">
+                <Button variant="link" onClick={scrollToContact} className="p-0 text-[#173404] font-bold">Prepare-se já →</Button>
+                <Button variant="ghost" size="sm" onClick={() => window.location.href = "/auditsbpf"} className="text-slate-400 text-xs">Ver detalhes</Button>
+              </div>
             </Card>
 
             {/* Módulo 3 */}
@@ -182,7 +188,10 @@ export default function LandingPageBPF() {
                   </li>
                 ))}
               </ul>
-              <Button variant="link" onClick={scrollToContact} className="p-0 text-[#173404] font-bold">Controle seus lotes →</Button>
+              <div className="flex items-center justify-between">
+                <Button variant="link" onClick={scrollToContact} className="p-0 text-[#173404] font-bold">Controle seus lotes →</Button>
+                <Button variant="ghost" size="sm" onClick={() => window.location.href = "/agro-rc"} className="text-slate-400 text-xs">Ver detalhes</Button>
+              </div>
             </Card>
 
             {/* Módulo 4 */}
@@ -197,7 +206,10 @@ export default function LandingPageBPF() {
                   </li>
                 ))}
               </ul>
-              <Button variant="link" onClick={scrollToContact} className="p-0 text-[#173404] font-bold">Rotule com segurança →</Button>
+              <div className="flex items-center justify-between">
+                <Button variant="link" onClick={scrollToContact} className="p-0 text-[#173404] font-bold">Rotule com segurança →</Button>
+                <Button variant="ghost" size="sm" onClick={() => window.location.href = "/rotulos"} className="text-slate-400 text-xs">Ver detalhes</Button>
+              </div>
             </Card>
 
             {/* Módulo 5 */}
@@ -212,7 +224,10 @@ export default function LandingPageBPF() {
                   </li>
                 ))}
               </ul>
-              <Button variant="link" onClick={scrollToContact} className="p-0 text-[#173404] font-bold">Evolua seu comercial →</Button>
+              <div className="flex items-center justify-between">
+                <Button variant="link" onClick={scrollToContact} className="p-0 text-[#173404] font-bold">Evolua seu comercial →</Button>
+                <Button variant="ghost" size="sm" onClick={() => window.location.href = "/nutricrm"} className="text-slate-400 text-xs">Ver detalhes</Button>
+              </div>
             </Card>
 
             {/* Módulo 6 */}
@@ -227,7 +242,10 @@ export default function LandingPageBPF() {
                   </li>
                 ))}
               </ul>
-              <Button variant="link" onClick={scrollToContact} className="p-0 text-[#173404] font-bold">Tome decisões com dados →</Button>
+              <div className="flex items-center justify-between">
+                <Button variant="link" onClick={scrollToContact} className="p-0 text-[#173404] font-bold">Tome decisões com dados →</Button>
+                <Button variant="ghost" size="sm" onClick={() => window.location.href = "/agrogestao"} className="text-slate-400 text-xs">Ver detalhes</Button>
+              </div>
             </Card>
           </div>
         </div>
