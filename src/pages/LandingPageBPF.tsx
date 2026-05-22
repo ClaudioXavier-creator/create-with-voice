@@ -17,6 +17,8 @@ import logoBpfConsult from "@/assets/logo-bpf-consult.png";
 
 
 export default function LandingPageBPF() {
+  console.log("logoBpfConsult path:", logoBpfConsult);
+
   const scrollToContact = () => {
     document.getElementById("contato")?.scrollIntoView({ behavior: "smooth" });
   };
