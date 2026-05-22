@@ -516,10 +516,10 @@ export default function LandingPageBPF() {
               <p className="text-sm text-slate-500 max-w-xs">Consultoria técnica e tecnologia especializada para fábricas de nutrição animal.</p>
             </div>
             <div className="flex gap-8 text-sm font-medium text-slate-600">
-              <a href="#" className="hover:text-[#173404]">Privacidade</a>
-              <a href="#" className="hover:text-[#173404]">Termos</a>
-              <a href="#" className="hover:text-[#173404]">LinkedIn</a>
-              <a href="#" className="hover:text-[#173404]">Instagram</a>
+              <Button variant="link" onClick={() => navigate("/privacidade")} className="p-0 h-auto font-medium hover:text-[#173404]">Privacidade</Button>
+              <Button variant="link" onClick={() => navigate("/termos")} className="p-0 h-auto font-medium hover:text-[#173404]">Termos</Button>
+              <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="hover:text-[#173404]">LinkedIn</a>
+              <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="hover:text-[#173404]">Instagram</a>
               <Button variant="link" onClick={() => navigate("/admin")} className="text-slate-400 p-0 h-auto font-medium hover:text-[#173404]">Gestão Interna</Button>
             </div>
           </div>
