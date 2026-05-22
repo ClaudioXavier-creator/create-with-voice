@@ -29,7 +29,7 @@ export default function LandingPageBPF() {
       {/* Navbar Minimalist */}
       <nav className="fixed top-0 w-full bg-white/80 backdrop-blur-md z-50 border-b border-gray-100 py-4 px-6 flex justify-between items-center">
         <div className="flex items-center gap-2 cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>
-          <img src={logoBpfConsult} alt="BPF_Consult Logo" className="h-10 w-10 object-contain" />
+          <img src="/logo-test.png" alt="BPF_Consult Logo" className="h-10 w-10 object-contain" />
           <div className="font-bold text-2xl text-[#173404]">BPF<span className="text-[#97C459]">_Consult</span></div>
         </div>
         <Button onClick={scrollToContact} className="bg-[#173404] text-white rounded-full px-6">Agendar Demo</Button>
