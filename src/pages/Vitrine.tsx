@@ -166,7 +166,7 @@ export default function Vitrine() {
               <img
                 src={logoBpfConsult}
                 alt="BPF_Consult Logo"
-                className="w-32 h-32 sm:w-44 sm:h-44 object-contain filter brightness-0 invert opacity-90"
+                className="w-32 h-32 sm:w-44 sm:h-44 object-contain opacity-90 transition-opacity hover:opacity-100"
               />
             </div>
             
@@ -303,7 +303,7 @@ export default function Vitrine() {
 
       {/* Footer */}
       <footer className="bg-[#173404] py-16 text-center">
-        <img src={logoBpfConsult} alt="BPF_Consult" className="mx-auto w-16 h-16 object-contain mb-6 filter brightness-0 invert opacity-40" />
+        <img src={logoBpfConsult} alt="BPF_Consult" className="mx-auto w-16 h-16 object-contain mb-6 opacity-40" />
         <p className="text-green-100/40 text-sm font-medium">
           BPF_Consult © {new Date().getFullYear()} — Soluções para Nutrição Animal
         </p>

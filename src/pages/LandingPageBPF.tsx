@@ -41,7 +41,7 @@ export default function LandingPageBPF() {
             <img 
               src={logoBpfConsult} 
               alt="BPF_Consult Logo" 
-              className="w-24 h-24 sm:w-32 sm:h-32 object-contain filter brightness-0 invert opacity-90 drop-shadow-2xl" 
+              className="w-24 h-24 sm:w-32 sm:h-32 object-contain opacity-90 drop-shadow-2xl" 
             />
           </div>
           <Badge className="mb-6 border-[#97C459] text-[#97C459] bg-transparent px-4 py-1">Consultoria & Tecnologia para Nutrição Animal</Badge>
