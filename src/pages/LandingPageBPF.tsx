@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import { 
   ArrowRight, CheckCircle2, Factory, ClipboardCheck, 
   Search, BarChart3, ShieldCheck, Tag, Building2, 
@@ -20,10 +21,15 @@ import logoBpfConsult from "@/assets/logo-bpf-consult.png";
 
 
 export default function LandingPageBPF() {
+  const navigate = useNavigate();
 
 
   const scrollToContact = () => {
     document.getElementById("contato")?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  const scrollToModules = () => {
+    document.getElementById("modulos")?.scrollIntoView({ behavior: "smooth" });
   };
 
   return (
@@ -58,7 +64,7 @@ export default function LandingPageBPF() {
               <Button onClick={scrollToContact} size="lg" className="bg-[#97C459] hover:bg-[#86b14d] text-[#173404] font-bold text-lg px-8 py-7 rounded-xl shadow-xl transition-all hover:scale-105 active:scale-95">
                 🟢 Agendar demonstração gratuita
               </Button>
-              <Button variant="outline" className="border-white/20 text-white hover:bg-white/10 h-[60px] rounded-xl px-8">Conhecer a plataforma →</Button>
+              <Button variant="outline" onClick={scrollToModules} className="border-white/20 text-white hover:bg-white/10 h-[60px] rounded-xl px-8">Conhecer a plataforma →</Button>
             </div>
             <p className="text-sm text-green-100/60 font-medium">Sem burocracia. Sem compromisso. Em 30 minutos você vê como funciona na prática.</p>
           </div>
@@ -128,7 +134,7 @@ export default function LandingPageBPF() {
       </section>
 
       {/* BLOCO 4 - MÓDULOS / FUNCIONALIDADES */}
-      <section className="py-24 px-4 bg-slate-50">
+      <section id="modulos" className="py-24 px-4 bg-slate-50">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl sm:text-4xl font-bold text-[#173404] mb-4">Tudo o que sua fábrica precisa, organizado em módulos</h2>
@@ -148,7 +154,10 @@ export default function LandingPageBPF() {
                   </li>
                 ))}
               </ul>
-              <Button variant="link" onClick={scrollToContact} className="p-0 text-[#173404] font-bold">Saia do papel agora →</Button>
+              <div className="flex items-center justify-between">
+                <Button variant="link" onClick={scrollToContact} className="p-0 text-[#173404] font-bold">Saia do papel agora →</Button>
+                <Button variant="ghost" size="sm" onClick={() => navigate("/feedbpf")} className="text-slate-400 text-xs">Ver detalhes</Button>
+              </div>
             </Card>
 
             {/* Módulo 2 */}
@@ -163,7 +172,10 @@ export default function LandingPageBPF() {
                   </li>
                 ))}
               </ul>
-              <Button variant="link" onClick={scrollToContact} className="p-0 text-[#173404] font-bold">Prepare-se já →</Button>
+              <div className="flex items-center justify-between">
+                <Button variant="link" onClick={scrollToContact} className="p-0 text-[#173404] font-bold">Prepare-se já →</Button>
+                <Button variant="ghost" size="sm" onClick={() => navigate("/auditsbpf")} className="text-slate-400 text-xs">Ver detalhes</Button>
+              </div>
             </Card>
 
             {/* Módulo 3 */}
@@ -178,7 +190,10 @@ export default function LandingPageBPF() {
                   </li>
                 ))}
               </ul>
-              <Button variant="link" onClick={scrollToContact} className="p-0 text-[#173404] font-bold">Controle seus lotes →</Button>
+              <div className="flex items-center justify-between">
+                <Button variant="link" onClick={scrollToContact} className="p-0 text-[#173404] font-bold">Controle seus lotes →</Button>
+                <Button variant="ghost" size="sm" onClick={() => navigate("/agro-rc")} className="text-slate-400 text-xs">Ver detalhes</Button>
+              </div>
             </Card>
 
             {/* Módulo 4 */}
@@ -193,7 +208,10 @@ export default function LandingPageBPF() {
                   </li>
                 ))}
               </ul>
-              <Button variant="link" onClick={scrollToContact} className="p-0 text-[#173404] font-bold">Rotule com segurança →</Button>
+              <div className="flex items-center justify-between">
+                <Button variant="link" onClick={scrollToContact} className="p-0 text-[#173404] font-bold">Rotule com segurança →</Button>
+                <Button variant="ghost" size="sm" onClick={() => navigate("/rotulos")} className="text-slate-400 text-xs">Ver detalhes</Button>
+              </div>
             </Card>
 
             {/* Módulo 5 */}
@@ -208,7 +226,10 @@ export default function LandingPageBPF() {
                   </li>
                 ))}
               </ul>
-              <Button variant="link" onClick={scrollToContact} className="p-0 text-[#173404] font-bold">Evolua seu comercial →</Button>
+              <div className="flex items-center justify-between">
+                <Button variant="link" onClick={scrollToContact} className="p-0 text-[#173404] font-bold">Evolua seu comercial →</Button>
+                <Button variant="ghost" size="sm" onClick={() => navigate("/nutricrm")} className="text-slate-400 text-xs">Ver detalhes</Button>
+              </div>
             </Card>
 
             {/* Módulo 6 */}
@@ -223,7 +244,10 @@ export default function LandingPageBPF() {
                   </li>
                 ))}
               </ul>
-              <Button variant="link" onClick={scrollToContact} className="p-0 text-[#173404] font-bold">Tome decisões com dados →</Button>
+              <div className="flex items-center justify-between">
+                <Button variant="link" onClick={scrollToContact} className="p-0 text-[#173404] font-bold">Tome decisões com dados →</Button>
+                <Button variant="ghost" size="sm" onClick={() => navigate("/agrogestao")} className="text-slate-400 text-xs">Ver detalhes</Button>
+              </div>
             </Card>
           </div>
         </div>
