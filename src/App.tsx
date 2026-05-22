@@ -236,6 +236,8 @@ const AppRoutes = () => {
         <Route path="/auditor/:token" element={<AuditorPortal />} />
         <Route path="/demo/:produto" element={<DemoPage />} />
         <Route path="/instalar" element={<Instalar />} />
+        <Route path="/privacidade" element={<PrivacyPolicy />} />
+        <Route path="/termos" element={<TermsOfService />} />
         
         {/* Landings de Produtos */}
         <Route path="/nutricrm" element={<NutriCRMPage />} />
