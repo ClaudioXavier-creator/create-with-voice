@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -7,11 +7,15 @@ import { ArrowLeft } from "lucide-react";
 export default function PrivacyPolicy() {
   const navigate = useNavigate();
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   return (
     <div className="min-h-screen bg-slate-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-3xl mx-auto bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
         <div className="p-6 border-b border-slate-100 flex items-center justify-between bg-white sticky top-0 z-10">
-          <Button variant="ghost" onClick={() => navigate(-1)} className="text-slate-600">
+          <Button variant="ghost" onClick={() => navigate("/bpf-consult")} className="text-slate-600">
             <ArrowLeft className="mr-2 h-4 w-4" /> Voltar
           </Button>
           <h1 className="text-xl font-bold text-[#173404]">Política de Privacidade</h1>
@@ -61,7 +65,7 @@ export default function PrivacyPolicy() {
         </ScrollArea>
         
         <div className="p-6 bg-slate-50 border-t border-slate-100 text-center">
-          <Button onClick={() => navigate("/")} className="bg-[#173404] text-white rounded-full px-8">
+          <Button onClick={() => navigate("/bpf-consult")} className="bg-[#173404] text-white rounded-full px-8">
             Entendido
           </Button>
         </div>
