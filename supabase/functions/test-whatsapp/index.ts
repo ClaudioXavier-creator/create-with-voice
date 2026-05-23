@@ -31,17 +31,31 @@ Deno.serve(async (req) => {
 
   let body: any
   try { body = await req.json() } catch { return bad('Invalid JSON') }
-  const { to, message } = body
+  const { to, message, contentSid, contentVariables } = body
 
-  if (!to || !message) return bad('To and Message required')
+  if (!to || (!message && !contentSid)) return bad('To and (Message or ContentSid) required')
 
   const twilioUrl = `https://api.twilio.com/2010-04-01/Accounts/${accountSid}/Messages.json`
   const auth = btoa(`${accountSid}:${authToken}`)
 
   const formData = new URLSearchParams()
-  formData.append('To', `whatsapp:${to}`)
-  formData.append('From', `whatsapp:${fromNumber}`)
-  formData.append('Body', message)
+  
+  // Trata o número de destino
+  const cleanTo = to.startsWith('whatsapp:') ? to : `whatsapp:${to}`
+  formData.append('To', cleanTo)
+  
+  // Trata o número de origem (evita duplicação de 'whatsapp:')
+  const cleanFrom = fromNumber.startsWith('whatsapp:') ? fromNumber : `whatsapp:${fromNumber}`
+  formData.append('From', cleanFrom)
+
+  if (contentSid) {
+    formData.append('ContentSid', contentSid)
+    if (contentVariables) {
+      formData.append('ContentVariables', typeof contentVariables === 'string' ? contentVariables : JSON.stringify(contentVariables))
+    }
+  } else {
+    formData.append('Body', message)
+  }
 
   try {
     const response = await fetch(twilioUrl, {
