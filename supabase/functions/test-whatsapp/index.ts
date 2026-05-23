@@ -21,6 +21,10 @@ Deno.serve(async (req) => {
   const authToken = Deno.env.get('TWILIO_AUTH_TOKEN')
   const fromNumber = Deno.env.get('TWILIO_PHONE_NUMBER')
 
+  console.log('Using Account SID:', accountSid?.substring(0, 5) + '...')
+  console.log('Using Auth Token length:', authToken?.length)
+  console.log('From Number:', fromNumber)
+
   if (!accountSid || !authToken || !fromNumber) {
     return bad('Twilio configuration missing', 500)
   }
@@ -50,10 +54,12 @@ Deno.serve(async (req) => {
     })
 
     const resData = await response.json()
+    console.log('Twilio response:', resData)
     return new Response(JSON.stringify({ ok: response.ok, data: resData }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     })
   } catch (err: any) {
+    console.error('Fetch error:', err)
     return bad(err.message, 500)
   }
 })
