@@ -1,4 +1,4 @@
-// Forced redeploy - v3 - testing new secrets
+// Forced redeploy - v4 - Ultra robust number parsing
 import { createClient } from 'npm:@supabase/supabase-js@2'
 
 const corsHeaders = {
@@ -45,8 +45,14 @@ Deno.serve(async (req) => {
   const cleanTo = to.startsWith('whatsapp:') ? to : `whatsapp:${to}`
   formData.append('To', cleanTo)
   
-  // Trata o número de origem (evita duplicação de 'whatsapp:')
-  const cleanFrom = fromNumber.startsWith('whatsapp:') ? fromNumber : `whatsapp:${fromNumber}`
+  // Trata o número de origem (limpa qualquer prefixo e garante o formato correto)
+  let rawFrom = fromNumber.trim()
+  // Remove 'whatsapp:' se existir
+  if (rawFrom.startsWith('whatsapp:')) rawFrom = rawFrom.substring(9)
+  // Remove qualquer caractere que não seja número ou '+' no início (como dois pontos ':')
+  rawFrom = rawFrom.replace(/^[^0-9+]+/, '')
+  
+  const cleanFrom = `whatsapp:${rawFrom}`
   formData.append('From', cleanFrom)
 
   if (contentSid) {
