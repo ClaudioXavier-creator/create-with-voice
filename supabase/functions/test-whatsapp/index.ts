@@ -1,3 +1,4 @@
+// Forced redeploy to refresh environment variables - v2
 import { createClient } from 'npm:@supabase/supabase-js@2'
 
 const corsHeaders = {
