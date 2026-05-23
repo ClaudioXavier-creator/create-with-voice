@@ -36,9 +36,10 @@ Deno.serve(async (req) => {
   let body: any
   try { body = await req.json() } catch { return bad('Invalid JSON') }
 
-  const { recipients, emailSubject, emailBodyHtml, senderName, channel } = body
+  const { recipients, emailSubject, emailBodyHtml, senderName, channel, messageText } = body
 
   if (!recipients || !Array.isArray(recipients) || recipients.length === 0) return bad('Recipients required')
+
   
   if (channel === 'email') {
     if (!emailSubject || !emailBodyHtml) return bad('Subject and Body required for email')
@@ -80,7 +81,67 @@ Deno.serve(async (req) => {
     return new Response(JSON.stringify({ ok: true, results }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     })
+  if (channel === 'whatsapp') {
+    if (!messageText) return bad('Message text required for WhatsApp')
+
+    const accountSid = Deno.env.get('TWILIO_ACCOUNT_SID')
+    const authToken = Deno.env.get('TWILIO_AUTH_TOKEN')
+    const fromNumber = Deno.env.get('TWILIO_PHONE_NUMBER')
+
+    if (!accountSid || !authToken || !fromNumber) {
+      return bad('Twilio configuration missing', 500)
+    }
+
+    const results = []
+    const twilioUrl = `https://api.twilio.com/2010-04-01/Accounts/${accountSid}/Messages.json`
+    const auth = btoa(`${accountSid}:${authToken}`)
+
+    for (const rec of recipients) {
+      if (!rec.telefone) continue
+
+      // Format phone number for WhatsApp (must start with whatsapp:)
+      let to = rec.telefone.replace(/\D/g, '')
+      if (!to.startsWith('+')) to = `+${to}`
+      
+      const formData = new URLSearchParams()
+      formData.append('To', `whatsapp:${to}`)
+      formData.append('From', `whatsapp:${fromNumber}`)
+      formData.append('Body', messageText.replace('{{nome}}', rec.nome || 'Cliente'))
+
+      try {
+        const response = await fetch(twilioUrl, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Basic ${auth}`,
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+          body: formData.toString(),
+        })
+
+        const resData = await response.json()
+        const success = response.ok
+
+        results.push({ telefone: rec.telefone, success, error: success ? null : resData.message })
+
+        if (success && rec.pipeline_id) {
+          await admin.from('crm_interacoes').insert({
+            pipeline_id: rec.pipeline_id,
+            tipo: 'whatsapp',
+            descricao: `[Marketing] WhatsApp enviado: ${messageText.substring(0, 50)}...`,
+            autor_id: user.id,
+            autor_nome: user.email
+          })
+        }
+      } catch (err: any) {
+        results.push({ telefone: rec.telefone, success: false, error: err.message })
+      }
+    }
+
+    return new Response(JSON.stringify({ ok: true, results }), {
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+    })
   }
 
   return bad('Invalid channel')
+
 })
