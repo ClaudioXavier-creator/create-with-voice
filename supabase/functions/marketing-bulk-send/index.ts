@@ -81,6 +81,8 @@ Deno.serve(async (req) => {
     return new Response(JSON.stringify({ ok: true, results }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     })
+  }
+
   if (channel === 'whatsapp') {
     if (!messageText) return bad('Message text required for WhatsApp')
 
