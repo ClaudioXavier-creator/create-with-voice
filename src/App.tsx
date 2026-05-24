@@ -222,6 +222,7 @@ const InternalRoutes = () => (
     <Route path="/gerador-pop-ia" element={<GeradorPopIA />} />
     <Route path="/consulta-sipeagro" element={<ConsultaSipeagro />} />
     <Route path="/configurar-pin" element={<ConfigurarPin />} />
+    <Route path="/whatsapp" element={<WhatsAppConfig />} />
     <Route path="*" element={<NotFound />} />
   </Routes>
 );
