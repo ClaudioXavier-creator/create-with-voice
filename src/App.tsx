@@ -79,6 +79,7 @@ const GeracaoManualBPF = lazy(() => import("./pages/GeracaoManualBPF"));
 const GeradorPopIA = lazy(() => import("./pages/GeradorPopIA"));
 const ConsultaSipeagro = lazy(() => import("./pages/ConsultaSipeagro"));
 const ConfigurarPin = lazy(() => import("./pages/ConfigurarPin"));
+const WhatsAppConfig = lazy(() => import("./pages/WhatsAppConfig"));
 const AuditorPortal = lazy(() => import("./pages/AuditorPortal"));
 const DemoPage = lazy(() => import("./pages/DemoPage"));
 const AdminAccess = lazy(() => import("./pages/AdminAccess"));
@@ -221,6 +222,7 @@ const InternalRoutes = () => (
     <Route path="/gerador-pop-ia" element={<GeradorPopIA />} />
     <Route path="/consulta-sipeagro" element={<ConsultaSipeagro />} />
     <Route path="/configurar-pin" element={<ConfigurarPin />} />
+    <Route path="/whatsapp" element={<WhatsAppConfig />} />
     <Route path="*" element={<NotFound />} />
   </Routes>
 );

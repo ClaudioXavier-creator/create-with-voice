@@ -4592,6 +4592,47 @@ export type Database = {
           },
         ]
       }
+      whatsapp_config: {
+        Row: {
+          api_key: string
+          api_url: string
+          created_at: string | null
+          empresa_id: string | null
+          id: string
+          instance_name: string | null
+          is_connected: boolean | null
+          updated_at: string | null
+        }
+        Insert: {
+          api_key: string
+          api_url: string
+          created_at?: string | null
+          empresa_id?: string | null
+          id?: string
+          instance_name?: string | null
+          is_connected?: boolean | null
+          updated_at?: string | null
+        }
+        Update: {
+          api_key?: string
+          api_url?: string
+          created_at?: string | null
+          empresa_id?: string | null
+          id?: string
+          instance_name?: string | null
+          is_connected?: boolean | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "whatsapp_config_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: true
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
