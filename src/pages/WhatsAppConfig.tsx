@@ -10,7 +10,7 @@ import { useEmpresa } from "@/hooks/useEmpresa";
 import { useAuth } from "@/hooks/useAuth";
 
 const WhatsAppConfig = () => {
-  const { empresa } = useEmpresa();
+  const { empresaAtiva } = useEmpresa();
   const { user } = useAuth();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
