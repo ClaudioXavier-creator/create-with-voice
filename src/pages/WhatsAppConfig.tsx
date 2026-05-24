@@ -4,10 +4,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
-import { MessageSquare, Save, RefreshCw, CheckCircle2, XCircle, ExternalLink } from "lucide-react";
+import { MessageSquare, Save, RefreshCw, CheckCircle2, XCircle, ExternalLink, QrCode, LogOut, Trash2, Plus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useEmpresa } from "@/hooks/useEmpresa";
 import { useAuth } from "@/hooks/useAuth";
+import { evolutionService, EvolutionInstance } from "@/services/evolutionApi";
 
 const WhatsAppConfig = () => {
   const { empresaAtiva } = useEmpresa();
@@ -20,6 +21,8 @@ const WhatsAppConfig = () => {
     api_key: "",
     instance_name: "",
   });
+  const [instances, setInstances] = useState<EvolutionInstance[]>([]);
+  const [qrCode, setQrCode] = useState<string | null>(null);
   const [status, setStatus] = useState<"connected" | "disconnected" | "checking">("disconnected");
 
   useEffect(() => {
@@ -45,7 +48,7 @@ const WhatsAppConfig = () => {
           api_key: data.api_key,
           instance_name: data.instance_name || "",
         });
-        checkConnection(data.api_url, data.api_key, data.instance_name);
+        checkConnection(data.api_url, data.api_key);
       }
     } catch (error: any) {
       console.error("Error fetching config:", error);
@@ -54,26 +57,17 @@ const WhatsAppConfig = () => {
     }
   };
 
-  const checkConnection = async (url: string, key: string, instance?: string) => {
+  const checkConnection = async (url: string, key: string) => {
     if (!url || !key) return;
     setStatus("checking");
     try {
-      // Basic check if the API is reachable and key is valid
-      // Note: Evolution API has a /version endpoint or similar
-      const response = await fetch(`${url.replace(/\/$/, "")}/instance/fetchInstances`, {
-        headers: {
-          "apikey": key
-        }
-      });
-      
-      if (response.ok) {
-        setStatus("connected");
-      } else {
-        setStatus("disconnected");
-      }
+      const data = await evolutionService.fetchInstances(url, key);
+      setInstances(data);
+      setStatus("connected");
     } catch (error) {
       console.error("Error checking connection:", error);
       setStatus("disconnected");
+      setInstances([]);
     }
   };
 
@@ -98,7 +92,7 @@ const WhatsAppConfig = () => {
         description: "As credenciais do WhatsApp foram atualizadas com sucesso.",
       });
       
-      checkConnection(config.api_url, config.api_key, config.instance_name);
+      checkConnection(config.api_url, config.api_key);
     } catch (error: any) {
       toast({
         variant: "destructive",
@@ -110,6 +104,100 @@ const WhatsAppConfig = () => {
     }
   };
 
+  const handleCreateInstance = async () => {
+    if (!config.instance_name) {
+      toast({
+        variant: "destructive",
+        title: "Nome necessário",
+        description: "Por favor, defina um nome para a instância antes de criar.",
+      });
+      return;
+    }
+
+    setLoading(true);
+    try {
+      await evolutionService.createInstance(config.api_url, config.api_key, config.instance_name);
+      toast({
+        title: "Instância criada",
+        description: "Agora você pode conectar seu WhatsApp.",
+      });
+      checkConnection(config.api_url, config.api_key);
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Erro ao criar instância",
+        description: error.message,
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleShowQrCode = async (instanceName: string) => {
+    setLoading(true);
+    try {
+      const data = await evolutionService.getQrCode(config.api_url, config.api_key, instanceName);
+      if (data.base64) {
+        setQrCode(data.base64);
+      } else {
+        toast({
+          title: "Aguardando QR Code",
+          description: "Tente novamente em alguns segundos.",
+        });
+      }
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Erro ao buscar QR Code",
+        description: error.message,
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleLogout = async (instanceName: string) => {
+    if (!confirm("Tem certeza que deseja desconectar este WhatsApp?")) return;
+    setLoading(true);
+    try {
+      await evolutionService.logoutInstance(config.api_url, config.api_key, instanceName);
+      toast({
+        title: "Desconectado",
+        description: "WhatsApp desconectado com sucesso.",
+      });
+      checkConnection(config.api_url, config.api_key);
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Erro ao desconectar",
+        description: error.message,
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDeleteInstance = async (instanceName: string) => {
+    if (!confirm("Tem certeza que deseja excluir esta instância?")) return;
+    setLoading(true);
+    try {
+      await evolutionService.deleteInstance(config.api_url, config.api_key, instanceName);
+      toast({
+        title: "Instância excluída",
+        description: "Instância removida com sucesso.",
+      });
+      checkConnection(config.api_url, config.api_key);
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Erro ao excluir instância",
+        description: error.message,
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="container mx-auto py-8">
       <div className="flex items-center gap-2 mb-6">
@@ -117,106 +205,166 @@ const WhatsAppConfig = () => {
         <h1 className="text-3xl font-bold">Configuração do WhatsApp</h1>
       </div>
 
-      <div className="grid gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Credenciais Evolution API</CardTitle>
-            <CardDescription>
-              Insira os dados da sua API Evolution para integrar o WhatsApp ao sistema.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid gap-2">
-              <Label htmlFor="api_url">URL da API</Label>
-              <Input
-                id="api_url"
-                placeholder="https://api.seuservidor.com"
-                value={config.api_url}
-                onChange={(e) => setConfig({ ...config, api_url: e.target.value })}
-              />
-              <p className="text-xs text-muted-foreground">
-                Exemplo: http://{user?.email === "root" ? "seu-ip" : "185.158.133.1"}:8080
+      <div className="grid gap-6 md:grid-cols-2">
+        <div className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Credenciais Evolution API</CardTitle>
+              <CardDescription>
+                Insira os dados da sua API Evolution para integrar o WhatsApp.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid gap-2">
+                <Label htmlFor="api_url">URL da API</Label>
+                <Input
+                  id="api_url"
+                  placeholder="https://api.seuservidor.com"
+                  value={config.api_url}
+                  onChange={(e) => setConfig({ ...config, api_url: e.target.value })}
+                />
+                <p className="text-xs text-muted-foreground">
+                  Exemplo: http://185.158.133.1:8080
+                </p>
+              </div>
+
+              <div className="grid gap-2">
+                <Label htmlFor="api_key">Chave Mestra (Global API Key)</Label>
+                <Input
+                  id="api_key"
+                  type="password"
+                  placeholder="Sua chave mestra"
+                  value={config.api_key}
+                  onChange={(e) => setConfig({ ...config, api_key: e.target.value })}
+                />
+              </div>
+
+              <div className="grid gap-2">
+                <Label htmlFor="instance_name">Nome da Instância Principal</Label>
+                <Input
+                  id="instance_name"
+                  placeholder="Ex: MinhaEmpresa"
+                  value={config.instance_name}
+                  onChange={(e) => setConfig({ ...config, instance_name: e.target.value })}
+                />
+              </div>
+
+              <div className="flex items-center justify-between pt-4">
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-medium">Status:</span>
+                  {status === "checking" && (
+                    <span className="flex items-center gap-1 text-sm text-yellow-600">
+                      <RefreshCw className="w-4 h-4 animate-spin" /> Verificando...
+                    </span>
+                  )}
+                  {status === "connected" && (
+                    <span className="flex items-center gap-1 text-sm text-green-600">
+                      <CheckCircle2 className="w-4 h-4" /> API Online
+                    </span>
+                  )}
+                  {status === "disconnected" && (
+                    <span className="flex items-center gap-1 text-sm text-red-600">
+                      <XCircle className="w-4 h-4" /> API Offline
+                    </span>
+                  )}
+                </div>
+                <div className="flex gap-2">
+                  <Button variant="outline" size="sm" onClick={() => checkConnection(config.api_url, config.api_key)}>
+                    <RefreshCw className="w-4 h-4 mr-2" /> Testar
+                  </Button>
+                  <Button size="sm" onClick={handleSave} disabled={saving}>
+                    <Save className="w-4 h-4 mr-2" /> {saving ? "Salvando..." : "Salvar"}
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Instruções de Instalação</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4 text-sm text-muted-foreground">
+              <p>
+                1. No seu terminal, acesse a VPS: <code>ssh root@185.158.133.1</code>
               </p>
-            </div>
-
-            <div className="grid gap-2">
-              <Label htmlFor="api_key">Chave Mestra (Global API Key)</Label>
-              <Input
-                id="api_key"
-                type="password"
-                placeholder="Sua chave mestra"
-                value={config.api_key}
-                onChange={(e) => setConfig({ ...config, api_key: e.target.value })}
-              />
-            </div>
-
-            <div className="grid gap-2">
-              <Label htmlFor="instance_name">Nome da Instância (Opcional)</Label>
-              <Input
-                id="instance_name"
-                placeholder="Ex: MinhaEmpresa"
-                value={config.instance_name}
-                onChange={(e) => setConfig({ ...config, instance_name: e.target.value })}
-              />
-            </div>
-
-            <div className="flex items-center justify-between pt-4">
-              <div className="flex items-center gap-2">
-                <span className="text-sm font-medium">Status:</span>
-                {status === "checking" && (
-                  <span className="flex items-center gap-1 text-sm text-yellow-600">
-                    <RefreshCw className="w-4 h-4 animate-spin" /> Verificando...
-                  </span>
-                )}
-                {status === "connected" && (
-                  <span className="flex items-center gap-1 text-sm text-green-600">
-                    <CheckCircle2 className="w-4 h-4" /> Conectado
-                  </span>
-                )}
-                {status === "disconnected" && (
-                  <span className="flex items-center gap-1 text-sm text-red-600">
-                    <XCircle className="w-4 h-4" /> Desconectado
-                  </span>
-                )}
-              </div>
-              <div className="flex gap-2">
-                <Button variant="outline" onClick={() => checkConnection(config.api_url, config.api_key, config.instance_name)}>
-                  <RefreshCw className="w-4 h-4 mr-2" /> Testar
-                </Button>
-                <Button onClick={handleSave} disabled={saving}>
-                  <Save className="w-4 h-4 mr-2" /> {saving ? "Salvando..." : "Salvar Configurações"}
+              <p>
+                2. Certifique-se de que o Docker está instalado.
+              </p>
+              <p>
+                3. Rode o comando do Docker Compose que fornecemos anteriormente.
+              </p>
+              <p>
+                4. Após rodar, insira a URL e a Chave Mestra acima.
+              </p>
+              <div className="pt-2">
+                <Button variant="link" className="p-0 h-auto" asChild>
+                  <a href="https://doc.evolution-api.com/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1">
+                    Documentação Oficial <ExternalLink className="w-3 h-3" />
+                  </a>
                 </Button>
               </div>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Instruções</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4 text-sm text-muted-foreground">
-            <p>
-              1. Acesse seu servidor via SSH.
-            </p>
-            <p>
-              2. Certifique-se de que a Evolution API está rodando no Docker.
-            </p>
-            <p>
-              3. Use o IP da sua VPS seguido da porta (padrão 8080) na URL da API.
-            </p>
-            <p>
-              4. A Chave Mestra é o valor definido em <code>AUTHENTICATION_API_KEY</code> no seu arquivo <code>docker-compose.yml</code>.
-            </p>
-            <div className="pt-2">
-              <Button variant="link" className="p-0 h-auto" asChild>
-                <a href="https://doc.evolution-api.com/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1">
-                  Documentação Oficial <ExternalLink className="w-3 h-3" />
-                </a>
+        <div className="space-y-6">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <div>
+                <CardTitle>Instâncias</CardTitle>
+                <CardDescription>
+                  Gerencie suas conexões do WhatsApp.
+                </CardDescription>
+              </div>
+              <Button size="sm" onClick={handleCreateInstance} disabled={loading || !status.includes("connected")}>
+                <Plus className="w-4 h-4 mr-2" /> Criar Nova
               </Button>
-            </div>
-          </CardContent>
-        </Card>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {instances.length === 0 ? (
+                  <div className="text-center py-8 border-2 border-dashed rounded-lg">
+                    <p className="text-sm text-muted-foreground">Nenhuma instância encontrada.</p>
+                  </div>
+                ) : (
+                  instances.map((instance) => (
+                    <div key={instance.instanceName} className="flex items-center justify-between p-4 border rounded-lg bg-card">
+                      <div>
+                        <p className="font-medium">{instance.instanceName}</p>
+                        <p className="text-xs text-muted-foreground capitalize">Status: {instance.status}</p>
+                      </div>
+                      <div className="flex gap-2">
+                        {instance.status !== 'open' ? (
+                          <Button size="icon" variant="outline" title="Ver QR Code" onClick={() => handleShowQrCode(instance.instanceName)}>
+                            <QrCode className="w-4 h-4" />
+                          </Button>
+                        ) : (
+                          <Button size="icon" variant="outline" className="text-orange-600 border-orange-200" title="Desconectar" onClick={() => handleLogout(instance.instanceName)}>
+                            <LogOut className="w-4 h-4" />
+                          </Button>
+                        )}
+                        <Button size="icon" variant="outline" className="text-red-600 border-red-200" title="Excluir" onClick={() => handleDeleteInstance(instance.instanceName)}>
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+
+              {qrCode && (
+                <div className="mt-6 flex flex-col items-center p-6 border rounded-lg bg-white">
+                  <p className="text-sm font-medium mb-4 text-black">Escaneie o QR Code no seu WhatsApp</p>
+                  <img src={qrCode} alt="WhatsApp QR Code" className="w-64 h-64" />
+                  <Button variant="link" size="sm" onClick={() => setQrCode(null)} className="mt-4 text-black">
+                    Fechar QR Code
+                  </Button>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   );
