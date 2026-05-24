@@ -150,6 +150,7 @@ export const NAV_ENTRIES: NavEntry[] = [
       { path: "/substancias", label: "Substâncias / Zap", icon: Zap },
       { path: "/guia-pops?pop=POP-10", label: "Programa PAC", icon: ClipboardCheck },
       { path: "/visitantes", label: "Visitantes", icon: Users },
+      { path: "/whatsapp", label: "Configurar WhatsApp", icon: MessageSquare },
     ],
   },
 
