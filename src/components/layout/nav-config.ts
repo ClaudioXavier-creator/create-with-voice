@@ -9,6 +9,7 @@ import {
   FolderOpen,
   GraduationCap,
   LayoutDashboard,
+  MessageSquare,
   ShieldCheck,
   Tablet,
   Layers,
