@@ -23,10 +23,10 @@ const WhatsAppConfig = () => {
   const [status, setStatus] = useState<"connected" | "disconnected" | "checking">("disconnected");
 
   useEffect(() => {
-    if (empresa?.id) {
+    if (empresaAtiva?.id) {
       fetchConfig();
     }
-  }, [empresa?.id]);
+  }, [empresaAtiva?.id]);
 
   const fetchConfig = async () => {
     setLoading(true);
