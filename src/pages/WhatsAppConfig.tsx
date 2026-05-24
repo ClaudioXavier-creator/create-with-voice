@@ -34,7 +34,7 @@ const WhatsAppConfig = () => {
       const { data, error } = await supabase
         .from("whatsapp_config")
         .select("*")
-        .eq("empresa_id", empresa?.id)
+        .eq("empresa_id", empresaAtiva?.id)
         .single();
 
       if (error && error.code !== "PGRST116") throw error;
