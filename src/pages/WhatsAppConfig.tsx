@@ -78,13 +78,13 @@ const WhatsAppConfig = () => {
   };
 
   const handleSave = async () => {
-    if (!empresa?.id) return;
+    if (!empresaAtiva?.id) return;
     setSaving(true);
     try {
       const { error } = await supabase
         .from("whatsapp_config")
         .upsert({
-          empresa_id: empresa.id,
+          empresa_id: empresaAtiva.id,
           api_url: config.api_url,
           api_key: config.api_key,
           instance_name: config.instance_name,
