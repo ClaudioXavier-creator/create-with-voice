@@ -9,6 +9,7 @@ import {
   FolderOpen,
   GraduationCap,
   LayoutDashboard,
+  Megaphone,
   MessageSquare,
   ShieldCheck,
   Tablet,
@@ -188,6 +189,15 @@ export const NAV_ENTRIES: NavEntry[] = [
   },
   { path: "/modelos", label: "📁 Modelos", icon: FolderOpen },
   { path: "/modo-tablet", label: "🏭 Modo Tablet", icon: Tablet },
+  {
+    label: "Marketing & Growth",
+    icon: Megaphone,
+    items: [
+      { path: "/marketing", label: "Marketing Hub", icon: Megaphone },
+      { path: "/gerador-headlines", label: "Gerador de Headlines", icon: Zap },
+      { path: "/whatsapp", label: "Configurar WhatsApp", icon: MessageSquare },
+    ],
+  },
 
   // --- ECOSSISTEMA BPF_CONSULT ---
   {

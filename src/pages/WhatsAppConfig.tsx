@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
-import { MessageSquare, Save, RefreshCw, CheckCircle2, XCircle, ExternalLink, QrCode, LogOut, Trash2, Plus } from "lucide-react";
+import { MessageSquare, Save, RefreshCw, CheckCircle2, XCircle, ExternalLink, QrCode, LogOut, Trash2, Plus, Smartphone } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useEmpresa } from "@/hooks/useEmpresa";
 import { useAuth } from "@/hooks/useAuth";
@@ -14,6 +15,7 @@ const WhatsAppConfig = () => {
   const { empresaAtiva } = useEmpresa();
   const { user } = useAuth();
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [config, setConfig] = useState({
@@ -297,11 +299,14 @@ const WhatsAppConfig = () => {
               <p>
                 4. Após rodar, insira a URL e a Chave Mestra acima.
               </p>
-              <div className="pt-2">
-                <Button variant="link" className="p-0 h-auto" asChild>
+              <div className="pt-2 flex flex-col gap-2">
+                <Button variant="link" className="p-0 h-auto justify-start" asChild>
                   <a href="https://doc.evolution-api.com/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1">
-                    Documentação Oficial <ExternalLink className="w-3 h-3" />
+                    Documentação Oficial Evolution <ExternalLink className="w-3 h-3" />
                   </a>
+                </Button>
+                <Button variant="link" className="p-0 h-auto justify-start" onClick={() => navigate("/marketing")}>
+                  <Smartphone className="w-3 h-3 mr-1" /> Tutorial Twilio Sandbox (join ...)
                 </Button>
               </div>
             </CardContent>
