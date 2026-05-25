@@ -277,7 +277,14 @@ export default function AdminLicencas({
             <div className="flex items-center gap-3">
               <Shield className="w-7 h-7 text-primary" />
               <div>
-                <h1 className="text-2xl font-bold">Licenças por Empresa</h1>
+                <h1 className="text-2xl font-bold">
+                  {product ? `Licenças: ${getProductLabel(product)}` : "Licenças por Empresa"}
+                </h1>
+                {product && (
+                  <p className="text-sm text-muted-foreground">
+                    Gerenciando acesso específico para este programa
+                  </p>
+                )}
               </div>
             </div>
             <Button variant="outline" size="sm" onClick={fetchEntries} disabled={loading}>
@@ -327,6 +334,7 @@ export default function AdminLicencas({
                   <Select
                     value={createForm.produto}
                     onValueChange={(v) => setCreateForm((p) => ({ ...p, produto: v }))}
+                    disabled={!!product}
                   >
                     <SelectTrigger><SelectValue /></SelectTrigger>
                     <SelectContent>
