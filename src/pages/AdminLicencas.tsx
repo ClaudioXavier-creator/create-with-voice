@@ -48,7 +48,13 @@ const ACCESS_LEVEL_LABELS: Record<string, string> = {
   avancado: "Avançado",
 };
 
-export default function AdminLicencas({ isTab = false }: { isTab?: boolean }) {
+export default function AdminLicencas({ 
+  isTab = false, 
+  product: forcedProduct 
+}: { 
+  isTab?: boolean;
+  product?: string;
+}) {
   const { user, roles, loading: authLoading } = useAuth();
   const [entries, setEntries] = useState<LicenseEntry[]>([]);
   const [loading, setLoading] = useState(true);
@@ -58,7 +64,12 @@ export default function AdminLicencas({ isTab = false }: { isTab?: boolean }) {
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [createOpen, setCreateOpen] = useState(false);
-  const [createForm, setCreateForm] = useState({ email: "", produto: "auditsbpf", dias: "365", nivel: "entrada" });
+  const [createForm, setCreateForm] = useState({ 
+    email: "", 
+    produto: forcedProduct || "auditsbpf", 
+    dias: "365", 
+    nivel: "entrada" 
+  });
   const [creating, setCreating] = useState(false);
 
   const PRODUTOS_OPCOES = useMemo(
@@ -115,7 +126,10 @@ export default function AdminLicencas({ isTab = false }: { isTab?: boolean }) {
     setLoading(true);
     try {
       const { data, error } = await supabase.functions.invoke("admin-licencas", {
-        body: { action: "list" },
+        body: { 
+          action: "list",
+          produto: forcedProduct 
+        },
       });
       if (error) throw error;
       setEntries(data || []);
@@ -124,7 +138,7 @@ export default function AdminLicencas({ isTab = false }: { isTab?: boolean }) {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [forcedProduct]);
 
   useEffect(() => {
     if (isAdmin) fetchEntries();
