@@ -225,6 +225,8 @@ const InternalRoutes = () => (
     <Route path="/consulta-sipeagro" element={<ConsultaSipeagro />} />
     <Route path="/configurar-pin" element={<ConfigurarPin />} />
     <Route path="/whatsapp" element={<WhatsAppConfig />} />
+    <Route path="/marketing" element={<Marketing />} />
+    <Route path="/gerador-headlines" element={<GeradorHeadlines />} />
     <Route path="*" element={<NotFound />} />
   </Routes>
 );
