@@ -227,6 +227,7 @@ const InternalRoutes = () => (
     <Route path="/whatsapp" element={<WhatsAppConfig />} />
     <Route path="/marketing" element={<Marketing />} />
     <Route path="/gerador-headlines" element={<GeradorHeadlines />} />
+    <Route path="/licencas-programa" element={<AdminLicencas isTab />} />
     <Route path="*" element={<NotFound />} />
   </Routes>
 );
