@@ -45,8 +45,11 @@ export const SidebarNav = React.memo(({
       if (isGroup(entry)) {
         const visibleItems = entry.items.filter((item) => {
           if (item.requiredRoles && !item.requiredRoles.some(r => userRoles.includes(r))) {
-             if (item.requiredEmail && userEmail.toLowerCase() === item.requiredEmail.toLowerCase()) {
-                return true;
+             if (item.requiredEmail) {
+                const emails = Array.isArray(item.requiredEmail) ? item.requiredEmail : [item.requiredEmail];
+                if (emails.some(e => e.toLowerCase() === userEmail.toLowerCase())) {
+                   return true;
+                }
              }
              return false;
           }
@@ -61,8 +64,11 @@ export const SidebarNav = React.memo(({
         return visibleItems.length > 0;
       } else {
         if (entry.requiredRoles && !entry.requiredRoles.some(r => userRoles.includes(r))) {
-            if (entry.requiredEmail && userEmail.toLowerCase() === entry.requiredEmail.toLowerCase()) {
-                return true;
+            if (entry.requiredEmail) {
+                const emails = Array.isArray(entry.requiredEmail) ? entry.requiredEmail : [entry.requiredEmail];
+                if (emails.some(e => e.toLowerCase() === userEmail.toLowerCase())) {
+                   return true;
+                }
             }
             return false;
         }
@@ -80,8 +86,11 @@ export const SidebarNav = React.memo(({
           ...entry,
           items: entry.items.filter(item => {
             if (item.requiredRoles && !item.requiredRoles.some(r => userRoles.includes(r))) {
-               if (item.requiredEmail && userEmail.toLowerCase() === item.requiredEmail.toLowerCase()) {
-                  return true;
+               if (item.requiredEmail) {
+                  const emails = Array.isArray(item.requiredEmail) ? item.requiredEmail : [item.requiredEmail];
+                  if (emails.some(e => e.toLowerCase() === userEmail.toLowerCase())) {
+                     return true;
+                  }
                }
                return false;
             }
