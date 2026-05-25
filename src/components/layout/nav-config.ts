@@ -9,6 +9,7 @@ import {
   FolderOpen,
   GraduationCap,
   LayoutDashboard,
+  Megaphone,
   MessageSquare,
   ShieldCheck,
   Tablet,
