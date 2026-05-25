@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
+import { useParams } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { Navigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -48,17 +49,30 @@ const ACCESS_LEVEL_LABELS: Record<string, string> = {
   avancado: "Avançado",
 };
 
-export default function AdminLicencas({ isTab = false }: { isTab?: boolean }) {
+export default function AdminLicencas({ 
+  isTab = false, 
+  product: forcedProduct 
+}: { 
+  isTab?: boolean;
+  product?: string;
+}) {
   const { user, roles, loading: authLoading } = useAuth();
   const [entries, setEntries] = useState<LicenseEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [selectedDays, setSelectedDays] = useState<Record<string, string>>({});
   const [selectedLevels, setSelectedLevels] = useState<Record<string, string>>({});
+  const { product: urlProduct } = useParams();
+  const product = forcedProduct || urlProduct;
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [createOpen, setCreateOpen] = useState(false);
-  const [createForm, setCreateForm] = useState({ email: "", produto: "auditsbpf", dias: "365", nivel: "entrada" });
+  const [createForm, setCreateForm] = useState({ 
+    email: "", 
+    produto: product || "auditsbpf", 
+    dias: "365", 
+    nivel: "entrada" 
+  });
   const [creating, setCreating] = useState(false);
 
   const PRODUTOS_OPCOES = useMemo(
@@ -115,7 +129,10 @@ export default function AdminLicencas({ isTab = false }: { isTab?: boolean }) {
     setLoading(true);
     try {
       const { data, error } = await supabase.functions.invoke("admin-licencas", {
-        body: { action: "list" },
+        body: { 
+          action: "list",
+          produto: product 
+        },
       });
       if (error) throw error;
       setEntries(data || []);
@@ -124,7 +141,7 @@ export default function AdminLicencas({ isTab = false }: { isTab?: boolean }) {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [product]);
 
   useEffect(() => {
     if (isAdmin) fetchEntries();
@@ -260,7 +277,14 @@ export default function AdminLicencas({ isTab = false }: { isTab?: boolean }) {
             <div className="flex items-center gap-3">
               <Shield className="w-7 h-7 text-primary" />
               <div>
-                <h1 className="text-2xl font-bold">Licenças por Empresa</h1>
+                <h1 className="text-2xl font-bold">
+                  {product ? `Licenças: ${getProductLabel(product)}` : "Licenças por Empresa"}
+                </h1>
+                {product && (
+                  <p className="text-sm text-muted-foreground">
+                    Gerenciando acesso específico para este programa
+                  </p>
+                )}
               </div>
             </div>
             <Button variant="outline" size="sm" onClick={fetchEntries} disabled={loading}>
@@ -310,6 +334,7 @@ export default function AdminLicencas({ isTab = false }: { isTab?: boolean }) {
                   <Select
                     value={createForm.produto}
                     onValueChange={(v) => setCreateForm((p) => ({ ...p, produto: v }))}
+                    disabled={!!product}
                   >
                     <SelectTrigger><SelectValue /></SelectTrigger>
                     <SelectContent>

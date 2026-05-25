@@ -83,6 +83,7 @@ const WhatsAppConfig = lazy(() => import("./pages/WhatsAppConfig"));
 const Marketing = lazy(() => import("./pages/Marketing"));
 const GeradorHeadlines = lazy(() => import("./pages/GeradorHeadlines"));
 const AuditorPortal = lazy(() => import("./pages/AuditorPortal"));
+const AdminLicencas = lazy(() => import("./pages/AdminLicencas"));
 const DemoPage = lazy(() => import("./pages/DemoPage"));
 const AdminAccess = lazy(() => import("./pages/AdminAccess"));
 const NotFound = lazy(() => import("./pages/NotFound"));
@@ -227,6 +228,7 @@ const InternalRoutes = () => (
     <Route path="/whatsapp" element={<WhatsAppConfig />} />
     <Route path="/marketing" element={<Marketing />} />
     <Route path="/gerador-headlines" element={<GeradorHeadlines />} />
+    <Route path="/licencas-programa" element={<AdminLicencas isTab />} />
     <Route path="*" element={<NotFound />} />
   </Routes>
 );

@@ -55,11 +55,18 @@ Deno.serve(async (req) => {
     const { action, ...params } = await req.json();
 
     if (action === "list") {
+      const { produto: filterProduto } = params;
+      let licenseQuery = adminClient
+        .from("licencas")
+        .select("*, empresas(nome)")
+        .order("created_at", { ascending: false });
+      
+      if (filterProduto) {
+        licenseQuery = licenseQuery.eq("produto", filterProduto.toLowerCase());
+      }
+
       const [licensesRes, vinculosRes, authUsersRes] = await Promise.all([
-        adminClient
-          .from("licencas")
-          .select("*, empresas(nome)")
-          .order("created_at", { ascending: false }),
+        licenseQuery,
         adminClient
           .from("licenca_empresas")
           .select("id, ativo, excedente, vinculado_em, desvinculado_em, empresa_id, licenca_id, user_id, stripe_invoice_id, empresas(nome), licencas(*)")
@@ -107,7 +114,12 @@ Deno.serve(async (req) => {
         };
       });
 
-      return new Response(JSON.stringify([...consultor, ...diretas]), {
+      let result = [...consultor, ...diretas];
+      if (filterProduto) {
+        result = result.filter(r => r.produto?.toLowerCase() === filterProduto.toLowerCase());
+      }
+
+      return new Response(JSON.stringify(result), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
