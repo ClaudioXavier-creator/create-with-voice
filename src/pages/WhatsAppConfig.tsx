@@ -297,11 +297,14 @@ const WhatsAppConfig = () => {
               <p>
                 4. Após rodar, insira a URL e a Chave Mestra acima.
               </p>
-              <div className="pt-2">
-                <Button variant="link" className="p-0 h-auto" asChild>
+              <div className="pt-2 flex flex-col gap-2">
+                <Button variant="link" className="p-0 h-auto justify-start" asChild>
                   <a href="https://doc.evolution-api.com/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1">
-                    Documentação Oficial <ExternalLink className="w-3 h-3" />
+                    Documentação Oficial Evolution <ExternalLink className="w-3 h-3" />
                   </a>
+                </Button>
+                <Button variant="link" className="p-0 h-auto justify-start" onClick={() => navigate("/marketing")}>
+                  <Smartphone className="w-3 h-3 mr-1" /> Tutorial Twilio Sandbox (join ...)
                 </Button>
               </div>
             </CardContent>
