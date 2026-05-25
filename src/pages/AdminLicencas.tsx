@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
+import { useParams } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { Navigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -61,6 +62,8 @@ export default function AdminLicencas({
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [selectedDays, setSelectedDays] = useState<Record<string, string>>({});
   const [selectedLevels, setSelectedLevels] = useState<Record<string, string>>({});
+  const { product: urlProduct } = useParams();
+  const product = forcedProduct || urlProduct;
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [createOpen, setCreateOpen] = useState(false);
