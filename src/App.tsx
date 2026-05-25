@@ -80,6 +80,8 @@ const GeradorPopIA = lazy(() => import("./pages/GeradorPopIA"));
 const ConsultaSipeagro = lazy(() => import("./pages/ConsultaSipeagro"));
 const ConfigurarPin = lazy(() => import("./pages/ConfigurarPin"));
 const WhatsAppConfig = lazy(() => import("./pages/WhatsAppConfig"));
+const Marketing = lazy(() => import("./pages/Marketing"));
+const GeradorHeadlines = lazy(() => import("./pages/GeradorHeadlines"));
 const AuditorPortal = lazy(() => import("./pages/AuditorPortal"));
 const DemoPage = lazy(() => import("./pages/DemoPage"));
 const AdminAccess = lazy(() => import("./pages/AdminAccess"));
