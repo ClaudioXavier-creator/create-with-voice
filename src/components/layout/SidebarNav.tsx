@@ -50,8 +50,11 @@ export const SidebarNav = React.memo(({
              }
              return false;
           }
-          if (item.requiredEmail && userEmail.toLowerCase() !== item.requiredEmail.toLowerCase()) {
-             return false;
+          if (item.requiredEmail) {
+             const emails = Array.isArray(item.requiredEmail) ? item.requiredEmail : [item.requiredEmail];
+             if (!emails.some(e => e.toLowerCase() === userEmail.toLowerCase())) {
+                return false;
+             }
           }
           return true;
         });
@@ -63,8 +66,11 @@ export const SidebarNav = React.memo(({
             }
             return false;
         }
-        if (entry.requiredEmail && userEmail.toLowerCase() !== entry.requiredEmail.toLowerCase()) {
-            return false;
+        if (entry.requiredEmail) {
+            const emails = Array.isArray(entry.requiredEmail) ? entry.requiredEmail : [entry.requiredEmail];
+            if (!emails.some(e => e.toLowerCase() === userEmail.toLowerCase())) {
+                return false;
+            }
         }
         return true;
       }
@@ -79,8 +85,11 @@ export const SidebarNav = React.memo(({
                }
                return false;
             }
-            if (item.requiredEmail && userEmail.toLowerCase() !== item.requiredEmail.toLowerCase()) {
-               return false;
+            if (item.requiredEmail) {
+               const emails = Array.isArray(item.requiredEmail) ? item.requiredEmail : [item.requiredEmail];
+               if (!emails.some(e => e.toLowerCase() === userEmail.toLowerCase())) {
+                  return false;
+               }
             }
             return true;
           })
