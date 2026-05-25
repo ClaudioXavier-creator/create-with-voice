@@ -83,6 +83,7 @@ const WhatsAppConfig = lazy(() => import("./pages/WhatsAppConfig"));
 const Marketing = lazy(() => import("./pages/Marketing"));
 const GeradorHeadlines = lazy(() => import("./pages/GeradorHeadlines"));
 const AuditorPortal = lazy(() => import("./pages/AuditorPortal"));
+const AdminLicencas = lazy(() => import("./pages/AdminLicencas"));
 const DemoPage = lazy(() => import("./pages/DemoPage"));
 const AdminAccess = lazy(() => import("./pages/AdminAccess"));
 const NotFound = lazy(() => import("./pages/NotFound"));
