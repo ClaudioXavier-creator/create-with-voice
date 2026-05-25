@@ -27,7 +27,11 @@ import {
   Zap,
   History,
   CheckCircle2,
+  Key,
+  ShieldAlert,
 } from "lucide-react";
+
+import { SUPER_ADMIN_EMAILS } from "@/config/adminAccess";
 
 import logoFeedBpf from "@/assets/logo-feed-bpf.png";
 import logoAuditsBpf from "@/assets/logo-audits-bpf.png";
@@ -44,7 +48,7 @@ export interface NavItem {
   logo?: string;
   keywords?: string[];
   requiredRoles?: string[];
-  requiredEmail?: string;
+  requiredEmail?: string | string[];
   external?: boolean;
 }
 
@@ -210,6 +214,26 @@ export const NAV_ENTRIES: NavEntry[] = [
       { path: "/rotulos/dashboard", label: "Nutri_Agro Labels", icon: Tag, logo: logoRotulos },
       // NutriCRM temporariamente removido — produto em manutenção.
       { path: "https://regional-fixer-charm.lovable.app", label: "AgroGestão CRM", icon: Building2, logo: logoAgrogestao, external: true },
+    ],
+  },
+  
+  // --- ADMINISTRAÇÃO (SUPERADMIN) ---
+  {
+    label: "Administração",
+    icon: ShieldAlert,
+    items: [
+      { 
+        path: "/licencas-programa", 
+        label: "Licenças do Programa", 
+        icon: Key, 
+        requiredEmail: [...SUPER_ADMIN_EMAILS] 
+      },
+      { 
+        path: "/admin", 
+        label: "Portal de Gestão Total", 
+        icon: ShieldCheck, 
+        requiredEmail: [...SUPER_ADMIN_EMAILS] 
+      },
     ],
   },
 ];
