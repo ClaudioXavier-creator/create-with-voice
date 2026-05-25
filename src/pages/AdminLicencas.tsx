@@ -69,7 +69,7 @@ export default function AdminLicencas({
   const [createOpen, setCreateOpen] = useState(false);
   const [createForm, setCreateForm] = useState({ 
     email: "", 
-    produto: forcedProduct || "auditsbpf", 
+    produto: product || "auditsbpf", 
     dias: "365", 
     nivel: "entrada" 
   });
@@ -131,7 +131,7 @@ export default function AdminLicencas({
       const { data, error } = await supabase.functions.invoke("admin-licencas", {
         body: { 
           action: "list",
-          produto: forcedProduct 
+          produto: product 
         },
       });
       if (error) throw error;
@@ -141,7 +141,7 @@ export default function AdminLicencas({
     } finally {
       setLoading(false);
     }
-  }, [forcedProduct]);
+  }, [product]);
 
   useEffect(() => {
     if (isAdmin) fetchEntries();
