@@ -656,6 +656,9 @@ export default function Fornecedores() {
                       </TableCell>
                       <TableCell>
                         <div className="flex gap-1">
+                          <Button variant="outline" size="sm" className="text-xs" onClick={() => handleEdit(f)}>
+                            <Edit className="w-3 h-3 mr-1" /> Editar
+                          </Button>
                           <Button variant="outline" size="sm" className="text-xs" onClick={() => {
                             setSelectedId(f.id);
                             setNota(f.nota_avaliacao || 0);
