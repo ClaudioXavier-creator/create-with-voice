@@ -1429,7 +1429,7 @@ export default function HigieneSanitizacao() {
                   </div>
                    <div><Label>Observações</Label><Textarea value={regForm.observacoes} onChange={e => setRegForm(p => ({ ...p, observacoes: e.target.value }))} /></div>
                    <div className="flex gap-2">
-                     <Button variant="outline" className="flex-1" onClick={() => printElement('registro-limpeza-preview', 'Registro de Limpeza')}>
+                     <Button variant="outline" className="flex-1" onClick={() => printElement('registro-limpeza-preview', { title: 'Registro de Limpeza' })}>
                        <Printer className="w-4 h-4 mr-2" /> Imprimir
                      </Button>
                      <Button className="flex-1" onClick={() => addRegistro.mutate()} disabled={!regForm.cronograma_id || !regForm.executor}>Salvar Registro</Button>
@@ -1570,7 +1570,7 @@ export default function HigieneSanitizacao() {
                   </div>
                   <div><Label>Observações</Label><Textarea value={aguaForm.observacoes} onChange={e => setAguaForm(p => ({ ...p, observacoes: e.target.value }))} /></div>
                   <div className="flex gap-2">
-                    <Button variant="outline" className="flex-1" onClick={() => printElement('registro-agua-preview', 'Controle de Água')}>
+                    <Button variant="outline" className="flex-1" onClick={() => printElement('registro-agua-preview', { title: 'Controle de Água' })}>
                       <Printer className="w-4 h-4 mr-2" /> Imprimir
                     </Button>
                     <Button className="flex-1" onClick={() => addRegistroAgua.mutate()} disabled={!aguaForm.responsavel}>Salvar Registro</Button>
