@@ -149,13 +149,17 @@ export default function Auth() {
     setSearchParams(nextParams, { replace: true });
   };
 
-  const getAuthErrorMessage = (error: { message?: string }) => {
+  const getAuthErrorMessage = (error: { message?: string; code?: string }) => {
     const message = error.message?.toLowerCase() ?? "";
+    const code = error.code?.toLowerCase() ?? "";
 
     if (message.includes("invalid login credentials")) return "E-mail ou senha inválidos.";
     if (message.includes("email not confirmed")) return "Confirme seu e-mail antes de entrar.";
     if (message.includes("user already registered")) return "Este e-mail já está cadastrado.";
     if (message.includes("password should be at least")) return "Use uma senha mais forte, com pelo menos 8 caracteres.";
+    if (code === "weak_password" || message.includes("known to be weak") || message.includes("easy to guess") || message.includes("pwned")) {
+      return "Essa senha é fraca ou já apareceu em vazamentos. Escolha uma senha inédita, com letras e números, e evite sequências comuns.";
+    }
     if (message.includes("unable to validate email address") || message.includes("invalid email")) return "Digite um e-mail válido.";
 
     return error.message || "Erro na autenticação.";
@@ -497,6 +501,7 @@ export default function Auth() {
                         {item.valid ? "✓" : "•"} {item.label}
                       </li>
                     ))}
+                    <li>• Não use senha comum ou já usada em outros sites.</li>
                   </ul>
                 )}
               </div>
