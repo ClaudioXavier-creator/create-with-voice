@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState, useCallback } from "react";
 import { Link, useParams } from "react-router-dom";
-import { ChevronDown, Search, Star, Sparkles } from "lucide-react";
+import { ChevronDown, Search, Star, Sparkles, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
