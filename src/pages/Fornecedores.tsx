@@ -166,6 +166,52 @@ export default function Fornecedores() {
   const handleAdd = async () => {
     if (!nome || !user) return;
     setSaving(true);
+    const payload = {
+      user_id: user.id, empresa_id: empresaAtiva?.id || null, nome, cnpj, endereco, contato: contatoQualidade, email: contatoQualidadeTelEmail,
+      tipo_produto: tipoProduto, observacoes,
+      bairro, cep, cidade, estado, inscricao_estadual: inscricaoEstadual,
+      registro_mapa: registroMapa, contato_qualidade: contatoQualidade,
+      contato_qualidade_tel_email: contatoQualidadeTelEmail,
+      contato_comercial: contatoComercial, contato_comercial_tel_email: contatoComercialTelEmail,
+      produtos_fornecidos: produtosFornecidos,
+      doc_certificado_registro_mapa: docCertRegistroMapa,
+      doc_alvara_funcionamento: docAlvara,
+      doc_certificado_registro_produto: docCertRegistroProduto,
+      doc_ficha_tecnica: docFichaTecnica,
+      doc_certificado_analise: docCertAnalise,
+      resultado_qualificacao: resultadoQualificacao,
+      status_qualificacao: resultadoQualificacao,
+      registro_sipeagro: registroSipeagro,
+      sipeagro_verificado: sipeagroVerificado,
+      sipeagro_data_verificacao: sipeagroVerificado ? new Date().toISOString().split("T")[0] : null,
+    } as any;
+
+    let error;
+    if (selectedId) {
+        ({ error } = await supabase.from("fornecedores").update(payload).eq("id", selectedId));
+    } else {
+        ({ error } = await supabase.from("fornecedores").insert(payload));
+    }
+
+    if (error) toast.error("Erro ao salvar");
+    else { toast.success(selectedId ? "Fornecedor atualizado!" : "Fornecedor cadastrado!"); setOpen(false); resetForm(); fetchData(); }
+    setSaving(false);
+  };
+
+  const handleEdit = (f: FornecedorRow) => {
+    setSelectedId(f.id);
+    setNome(f.nome || ""); setCnpj(f.cnpj || ""); setEndereco(f.endereco || ""); setBairro(f.bairro || ""); setCep(f.cep || ""); setCidade(f.cidade || ""); setEstado(f.estado || "");
+    setInscricaoEstadual(f.inscricao_estadual || ""); setRegistroMapa(f.registro_mapa || ""); setContatoQualidade(f.contato_qualidade || ""); setContatoQualidadeTelEmail(f.contato_qualidade_tel_email || "");
+    setContatoComercial(f.contato_comercial || ""); setContatoComercialTelEmail(f.contato_comercial_tel_email || ""); setProdutosFornecidos(f.produtos_fornecidos || ""); setTipoProduto(f.tipo_produto || "");
+    setDocCertRegistroMapa(!!f.doc_certificado_registro_mapa); setDocAlvara(!!f.doc_alvara_funcionamento); setDocCertRegistroProduto(!!f.doc_certificado_registro_produto);
+    setDocFichaTecnica(!!f.doc_ficha_tecnica); setDocCertAnalise(!!f.doc_certificado_analise); setResultadoQualificacao(f.resultado_qualificacao || "pendente");
+    setObservacoes(f.observacoes || ""); setRegistroSipeagro(f.registro_sipeagro || ""); setSipeagroVerificado(!!f.sipeagro_verificado);
+    setOpen(true);
+  };
+
+  const unusedHandleAdd = async () => {
+    if (!nome || !user) return;
+    setSaving(true);
     const { error } = await supabase.from("fornecedores").insert({
       user_id: user.id, empresa_id: empresaAtiva?.id || null, nome, cnpj, endereco, contato: contatoQualidade, email: contatoQualidadeTelEmail,
       tipo_produto: tipoProduto, observacoes,
