@@ -456,7 +456,16 @@ export default function NaoConformidades() {
                                                 Plano de Ação Corretiva
                                               </p>
                                               {temPlano ? (
-                                                <p className="text-sm">{nc.acao_corretiva}</p>
+                                                <div className="space-y-2">
+                                                  <p className="text-sm"><strong>Corretiva:</strong> {nc.acao_corretiva}</p>
+                                                  {nc.acao_preventiva && <p className="text-sm text-muted-foreground"><strong>Preventiva:</strong> {nc.acao_preventiva}</p>}
+                                                  {nc.verificacao_eficacia && (
+                                                    <div className="mt-2 p-2 bg-background rounded border border-primary/20">
+                                                      <p className="text-[10px] font-bold text-primary uppercase">Eficácia Verificada em {nc.data_verificacao}</p>
+                                                      <p className="text-xs italic">{nc.verificacao_eficacia}</p>
+                                                    </div>
+                                                  )}
+                                                </div>
                                               ) : (
                                                 <div className="text-center py-2">
                                                   <p className="text-sm text-muted-foreground mb-2">Nenhum plano de ação definido</p>
@@ -585,6 +594,21 @@ export default function NaoConformidades() {
             <div className="space-y-1">
               <Label>Ação Corretiva *</Label>
               <Textarea value={editAcao} onChange={e => setEditAcao(e.target.value)} placeholder="Descreva a ação corretiva a ser implementada..." />
+            </div>
+            <div className="space-y-1">
+              <Label>Ação Preventiva</Label>
+              <Textarea value={editAcaoPreventiva} onChange={e => setEditAcaoPreventiva(e.target.value)} placeholder="Ação para evitar reincidência..." />
+            </div>
+            <div className="p-3 bg-primary/5 rounded border border-primary/20 space-y-2">
+              <p className="text-xs font-bold text-primary uppercase">Eficácia (CAPA)</p>
+              <div className="space-y-1">
+                <Label className="text-[10px]">Verificação de Eficácia</Label>
+                <Textarea value={editVerificacao} onChange={e => setEditVerificacao(e.target.value)} placeholder="Descreva como a eficácia foi verificada..." className="h-20" />
+              </div>
+              <div className="space-y-1">
+                <Label className="text-[10px]">Data da Verificação</Label>
+                <Input type="date" value={editDataVerificacao} onChange={e => setEditDataVerificacao(e.target.value)} />
+              </div>
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1">
