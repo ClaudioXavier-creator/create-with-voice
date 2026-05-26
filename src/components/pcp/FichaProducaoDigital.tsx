@@ -180,33 +180,17 @@ export default function FichaProducaoDigital({ ordemId, onClose }: Props) {
 
   const handlePrint = async () => {
     if (!printRef.current) return;
-    const { gerarCarimboSync, carimboHTML } = await import("@/utils/carimboDocumento");
-    const carimbo = gerarCarimboSync({
-      documentoTipo: "Ficha de Produção (OP)",
-      documentoId: ordem?.numero_ordem,
-      empresa: empresaAtiva?.nome,
-      usuario: user?.email,
+    
+    // Add an ID to the element we want to print
+    const printId = `print-ficha-${ordem.id}`;
+    printRef.current.id = printId;
+    
+    printElement(printId, { 
+      title: `Ficha de Produção - ${ordem.numero_ordem}`,
+      landscape: numBatidas > 5 // Use landscape if many batches
     });
-    const w = window.open("", "_blank", "width=1200,height=800");
-    if (!w) return;
-    w.document.write(`<!DOCTYPE html><html><head><title>Ficha de Produção - ${ordem?.numero_ordem}</title>
-      <style>
-        body { font-family: Arial, sans-serif; padding: 20px; font-size: 11px; }
-        h1 { font-size: 16px; text-align: center; margin: 0 0 6px; }
-        h2 { font-size: 13px; margin: 12px 0 4px; }
-        table { width: 100%; border-collapse: collapse; margin: 8px 0; }
-        th, td { border: 1px solid #333; padding: 4px 6px; text-align: left; vertical-align: top; }
-        th { background: #eee; font-size: 10px; }
-        .header-info { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 8px; }
-        .header-info div { border: 1px solid #999; padding: 4px 6px; }
-        .signature-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 30px; }
-        .signature-row > div { border-top: 1px solid #000; padding-top: 4px; text-align: center; }
-        .footer { margin-top: 14px; font-size: 10px; }
-        @media print { body { padding: 10px; } }
-      </style></head><body>${printRef.current.innerHTML}${carimboHTML(carimbo)}</body></html>`);
-    w.document.close();
-    setTimeout(() => { w.print(); }, 500);
   };
+
 
   if (loading) return <div className="flex justify-center py-8"><Loader2 className="w-6 h-6 animate-spin text-muted-foreground" /></div>;
   if (!ordem) return <p className="text-center py-8 text-muted-foreground">Ordem não encontrada</p>;
