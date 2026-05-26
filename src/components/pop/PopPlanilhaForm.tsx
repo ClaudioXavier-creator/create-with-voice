@@ -722,6 +722,35 @@ export default function PopPlanilhaForm({ planilhaId, periodicidade, userId, pop
           )}
         </div>
       </div>
+
+      {/* Hidden printable version */}
+      <div className="hidden">
+        <PrintableTemplate
+          id={`printable-pop-${planilhaId}`}
+          title={`${popCodigo || "POP"} — ${popNome || ""}`}
+          subtitle={periodicidade.label}
+          codigo={popCodigo}
+          data={[
+            ["Período", ...periodicidade.areas.map(a => a.area), "Responsável", "Função"],
+            ...periodicidade.periodos.map(periodo => [
+              periodo,
+              ...periodicidade.areas.map(a => {
+                const val = grid[cellKey(periodo, a.area)]?.conforme;
+                return val === true ? "☑C ☐NC" : val === false ? "☐C ☑NC" : "☐C ☐NC";
+              }),
+              getFieldForPeriodo(periodo, "responsavel"),
+              getFieldForPeriodo(periodo, "funcao")
+            ])
+          ]}
+          headerInfo={[
+            { label: "UNIDADE", value: empresaAtiva?.nome || "" },
+            { label: "MÊS/ANO", value: "___/___" },
+            { label: "RESP. TÉCNICO", value: signatures.rt || "" }
+          ]}
+          footerNote={isArchived ? "DOCUMENTO ARQUIVADO DIGITALMENTE" : "EMITIDO PELO SISTEMA BPF DIGITAL"}
+        />
+      </div>
     </div>
   );
 }
+
