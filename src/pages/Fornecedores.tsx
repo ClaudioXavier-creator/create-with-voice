@@ -135,6 +135,7 @@ export default function Fornecedores() {
   const [nota, setNota] = useState(0);
   const [statusQual, setStatusQual] = useState("aprovado");
   const [obsAval, setObsAval] = useState("");
+  const [auditData, setAuditData] = useState<any[]>([]);
 
   const fetchData = async () => {
     if (!user) return;
@@ -487,6 +488,54 @@ export default function Fornecedores() {
                     <Button onClick={handleAdd} disabled={saving || !nome}>
                       {saving && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}Salvar Fornecedor
                     </Button>
+                  </div>
+                </TabsContent>
+
+                {/* ABA 5 — AUDITORIAS */}
+                <TabsContent value="auditorias" className="space-y-4 mt-4">
+                  <h3 className="text-sm font-semibold border-b pb-1">5 — Histórico de Auditorias</h3>
+                  <div className="space-y-4">
+                    {!selectedId ? (
+                      <p className="text-xs text-muted-foreground">Cadastre o fornecedor primeiro para gerenciar auditorias.</p>
+                    ) : (
+                      <>
+                        <div className="flex justify-between items-center">
+                          <p className="text-xs font-semibold">Últimas auditorias realizadas</p>
+                        </div>
+                        <div className="border rounded-lg overflow-hidden">
+                          <Table>
+                            <TableHeader>
+                              <TableRow className="bg-muted/30">
+                                <TableHead className="text-[10px]">Data</TableHead>
+                                <TableHead className="text-[10px]">Tipo</TableHead>
+                                <TableHead className="text-[10px]">Nota</TableHead>
+                                <TableHead className="text-[10px]">Auditor</TableHead>
+                              </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                              {fornecedores.find(f => f.id === selectedId)?.auditorias?.map((a: any) => (
+                                <TableRow key={a.id}>
+                                  <TableCell className="text-xs">{a.data_auditoria}</TableCell>
+                                  <TableCell className="text-xs">{a.tipo_auditoria}</TableCell>
+                                  <TableCell className="text-xs font-bold">{a.pontuacao_obtida}</TableCell>
+                                  <TableCell className="text-xs">{a.auditor}</TableCell>
+                                </TableRow>
+                              ))}
+                              {(!fornecedores.find(f => f.id === selectedId)?.auditorias || fornecedores.find(f => f.id === selectedId)?.auditorias?.length === 0) && (
+                                <TableRow>
+                                  <TableCell colSpan={4} className="text-center py-4 text-xs text-muted-foreground">
+                                    Nenhuma auditoria registrada.
+                                  </TableCell>
+                                </TableRow>
+                              )}
+                            </TableBody>
+                          </Table>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                  <div className="flex justify-start">
+                    <Button type="button" variant="outline" onClick={() => setFormTab("resultado")}>← Anterior</Button>
                   </div>
                 </TabsContent>
               </Tabs>
