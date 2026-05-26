@@ -206,7 +206,9 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
         >
           <img src={config.logo} alt="" className="w-8 h-8 rounded bg-white p-1 object-contain" />
           <div className="min-w-0">
-            <span className="font-display font-bold block truncate tracking-tight text-sm">{config.title}</span>
+            <span className="font-display font-bold block truncate tracking-tight text-sm">
+              {activePageLabel || config.title}
+            </span>
           </div>
         </button>
         <div className="flex items-center gap-0.5">
