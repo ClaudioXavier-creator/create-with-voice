@@ -334,6 +334,7 @@ export default function NaoConformidades() {
                   <div className="space-y-3">
                     <div className="space-y-1"><Label>Causa Raiz / Causa Provável *</Label><Textarea value={formCausa} onChange={e => setFormCausa(e.target.value)} required placeholder="Identifique a causa raiz do problema (5 Porquês, Ishikawa...)" /></div>
                     <div className="space-y-1"><Label>Ação Corretiva *</Label><Textarea value={formAcao} onChange={e => setFormAcao(e.target.value)} required placeholder="Descreva a ação corretiva a ser implementada..." /></div>
+                    <div className="space-y-1"><Label>Ação Preventiva</Label><Textarea value={formAcaoPreventiva} onChange={e => setFormAcaoPreventiva(e.target.value)} placeholder="Descreva a ação preventiva para evitar reincidência..." /></div>
                   </div>
                 </div>
 
