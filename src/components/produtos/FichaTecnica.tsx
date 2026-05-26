@@ -6,6 +6,8 @@ import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { gerarCarimboSync, carimboHTML } from "@/utils/carimboDocumento";
+import { printElement } from "@/utils/printUtils";
+
 
 const CLASSIFICACAO_LABELS: Record<string, string> = {
   racao: "Ração", suplemento: "Suplemento", premix: "Premix",
