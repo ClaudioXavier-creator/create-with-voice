@@ -374,84 +374,99 @@ export default function FichaProducaoDigital({ ordemId, onClose }: Props) {
       )}
 
       {/* Versão para impressão (oculta) */}
-      <div ref={printRef} style={{ display: "none" }}>
-        <h1>ORDEM DE PRODUÇÃO — FÓRMULA E INCLUSÃO DE MATÉRIAS-PRIMAS</h1>
-        <h2 style={{ textAlign: "center" }}>{ordem.produto} {ordem.lote_produto ? `— LOTE: ${ordem.lote_produto}` : ""}</h2>
-        {ordem.formula_nome && (
-          <p style={{ textAlign: "center", fontFamily: "monospace", fontSize: 11, margin: "0 0 8px" }}>
-            <strong>Fórmula Oficial:</strong> {ordem.formula_nome}
-          </p>
-        )}
-        <div className="header-info">
-          <div><strong>OP:</strong> {ordem.numero_ordem}</div>
-          <div><strong>Data:</strong> {new Date(ordem.data_programada + "T00:00").toLocaleDateString("pt-BR")}</div>
-          <div><strong>Sacos:</strong> {qtdSacos || "____"}</div>
-          <div><strong>Misturador:</strong> {volumeMist} kg</div>
-          <div><strong>Batidas:</strong> {numBatidas}</div>
-          <div><strong>Total:</strong> {(volumeMist * numBatidas).toLocaleString("pt-BR")} kg</div>
+      {/* Versão para impressão (oculta) */}
+      <div ref={printRef} className="hidden print:block bg-white text-black p-4" style={{ minWidth: "210mm" }}>
+        <div className="border-[1.5pt] border-black p-4 mb-4">
+          <div className="flex justify-between items-center border-b-[1.5pt] border-black pb-2 mb-4">
+            <div className="text-lg font-bold">ORDEM DE PRODUÇÃO</div>
+            <div className="text-right">
+              <div className="text-sm font-bold">{empresaAtiva?.nome || "BPF DIGITAL"}</div>
+              <div className="text-[10px] text-gray-500 italic">Sistema de Gestão da Qualidade</div>
+            </div>
+          </div>
+
+          <div className="text-center mb-6">
+            <h1 className="text-xl font-bold uppercase">{ordem.produto}</h1>
+            {ordem.lote_produto && <p className="text-sm font-bold text-primary mt-1">LOTE: {ordem.lote_produto}</p>}
+            {ordem.formula_nome && <p className="text-[10px] font-mono mt-1 text-gray-600">Fórmula: {ordem.formula_nome}</p>}
+          </div>
+
+          <div className="grid grid-cols-3 gap-4 mb-6 text-xs border border-gray-300 p-3 bg-gray-50 print-force-bg">
+            <div><span className="font-bold">OP:</span> {ordem.numero_ordem}</div>
+            <div><span className="font-bold">DATA:</span> {new Date(ordem.data_programada + "T00:00").toLocaleDateString("pt-BR")}</div>
+            <div><span className="font-bold">SACOS:</span> {qtdSacos || "____"}</div>
+            <div><span className="font-bold">MISTURADOR:</span> {volumeMist} kg</div>
+            <div><span className="font-bold">BATIDAS:</span> {numBatidas}</div>
+            <div><span className="font-bold">TOTAL OP:</span> {(volumeMist * numBatidas).toLocaleString("pt-BR")} kg</div>
+          </div>
+
+          <table className="w-full border-collapse border-[1pt] border-black text-[10px] mb-6">
+            <thead>
+              <tr className="bg-gray-100 print-force-bg">
+                <th className="border border-black p-2 text-left">MATÉRIA-PRIMA</th>
+                <th className="border border-black p-2 text-center">FÓRMULA (kg)</th>
+                {batidasArr.map(b => (
+                  <th key={b} className="border border-black p-2 text-center text-[9px]">
+                    BATIDA {String(b).padStart(2, "0")}<br />Lote / Real
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {ingredientes.map(ing => {
+                const tot = totalFormula();
+                const qtdPorBatida = tot > 0 ? (Number(ing.quantidade_kg) * volumeMist / tot).toFixed(2) : "0";
+                return (
+                  <tr key={ing.id} className="h-10">
+                    <td className="border border-black p-2 font-medium">{ing.materia_prima}</td>
+                    <td className="border border-black p-2 text-center">{Number(ing.quantidade_kg).toFixed(2)}</td>
+                    {batidasArr.map(b => {
+                      const lote = getValor(ing.materia_prima, b, "lote_mp");
+                      const qtd = getValor(ing.materia_prima, b, "quantidade_kg") || qtdPorBatida;
+                      return (
+                        <td key={b} className="border border-black p-2 text-center text-[9px]">
+                          {lote || "_______"}<br />{qtd} kg
+                        </td>
+                      );
+                    })}
+                  </tr>
+                );
+              })}
+              <tr className="font-bold bg-gray-50 print-force-bg">
+                <td className="border border-black p-2">TOTAL DA BATIDA</td>
+                <td className="border border-black p-2 text-center">{totalFormula().toFixed(2)}</td>
+                {batidasArr.map(b => <td key={b} className="border border-black p-2 text-center">{volumeMist} kg</td>)}
+              </tr>
+            </tbody>
+          </table>
+
+          <div className="space-y-3 text-[10px] mb-8 p-3 border border-gray-200">
+            <p className="flex gap-4">
+              <strong>TEMPO DE MISTURA POR BATIDA:</strong>
+              {batidasArr.slice(0, 5).map(b => <span key={b}>{String(b).padStart(2, "0")} (____ min)</span>)}
+            </p>
+            <div className="flex gap-10">
+              <p><strong>INÍCIO:</strong> ____:____ hs</p>
+              <p><strong>TÉRMINO:</strong> ____:____ hs</p>
+            </div>
+            <div className="grid grid-cols-2 gap-4 border-t pt-3">
+              <p><strong>PRÓXIMO PRODUTO:</strong> {proximoProd || "________________________"}</p>
+              <p><strong>LIMPEZA DE LINHA?</strong> {necessitaFlush ? " (X) Sim  ( ) Não" : " ( ) Sim  (X) Não"}</p>
+              <p className="col-span-2"><strong>MATERIAL FLUSHING:</strong> {materialFlush || "________________________________________"}</p>
+              <p><strong>VERIFICAÇÃO:</strong> {verifResp || "____________________"}</p>
+              <p><strong>DATA:</strong> {verifData ? new Date(verifData + "T00:00").toLocaleDateString("pt-BR") : "____________"}</p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-3 gap-6 text-center text-[9px] mt-12">
+            <div className="border-t border-black pt-2">Responsável (Operador)</div>
+            <div className="border-t border-black pt-2">Monitoria / Supervisão</div>
+            <div className="border-t border-black pt-2">Responsável Técnico (CRMV)</div>
+          </div>
         </div>
-
-        <table>
-          <thead>
-            <tr>
-              <th>MATÉRIA-PRIMA</th>
-              <th>FÓRMULA (kg)</th>
-              {batidasArr.map(b => <th key={b}>BATIDA {String(b).padStart(2, "0")}<br />Lote / kg</th>)}
-            </tr>
-          </thead>
-          <tbody>
-            {ingredientes.map(ing => {
-              const tot = totalFormula();
-              const qtdPorBatida = tot > 0 ? (Number(ing.quantidade_kg) * volumeMist / tot).toFixed(2) : "0";
-              return (
-                <tr key={ing.id}>
-                  <td>{ing.materia_prima}</td>
-                  <td>{Number(ing.quantidade_kg).toFixed(2)}</td>
-                  {batidasArr.map(b => {
-                    const lote = getValor(ing.materia_prima, b, "lote_mp");
-                    const qtd = getValor(ing.materia_prima, b, "quantidade_kg") || qtdPorBatida;
-                    return <td key={b}>{lote || "____"}<br />{qtd} kg</td>;
-                  })}
-                </tr>
-              );
-            })}
-            <tr style={{ fontWeight: "bold" }}>
-              <td>TOTAL</td>
-              <td>{totalFormula().toFixed(2)}</td>
-              {batidasArr.map(b => <td key={b}>{volumeMist} kg</td>)}
-            </tr>
-          </tbody>
-        </table>
-
-        <div style={{ marginTop: 12 }}>
-          <p><strong>Tempo de mistura por batida:</strong> 01 (___ min) &nbsp; 02 (___ min) &nbsp; 03 (___ min) &nbsp; 04 (___ min) &nbsp; 05 (___ min)</p>
-          <p><strong>Início:</strong> ___:___ hs &nbsp;&nbsp; <strong>Término:</strong> ___:___ hs</p>
-        </div>
-
-        <table style={{ marginTop: 8 }}>
-          <tbody>
-            <tr>
-              <td><strong>Próximo produto a produzir:</strong> {proximoProd || "________________________"}</td>
-              <td><strong>Necessidade de limpeza de linha?</strong> {necessitaFlush ? "[ X ] Sim   [ ] Não" : "[ ] Sim   [ X ] Não"}</td>
-            </tr>
-            <tr>
-              <td colSpan={2}><strong>Material usado no flushing:</strong> {materialFlush || "________________________________________"}</td>
-            </tr>
-            <tr>
-              <td><strong>Verificação:</strong> {verifResp || "____________________"}</td>
-              <td><strong>Data:</strong> {verifData ? new Date(verifData + "T00:00").toLocaleDateString("pt-BR") : "____________"}</td>
-            </tr>
-          </tbody>
-        </table>
-
-        <div className="signature-row">
-          <div>Responsável (Operador)</div>
-          <div>Monitoria / Supervisão</div>
-          <div>Responsável Técnico (CRMV)</div>
-        </div>
-
-        <p className="footer">Documento gerado por BPF_Consult — {new Date().toLocaleString("pt-BR")}</p>
+        <p className="text-[8px] text-gray-400 italic text-right mt-2">Documento gerado pelo Sistema BPF Digital — {new Date().toLocaleString("pt-BR")}</p>
       </div>
+
     </div>
   );
 }
