@@ -2265,6 +2265,69 @@ export type Database = {
           },
         ]
       }
+      fornecedor_auditorias: {
+        Row: {
+          auditor: string
+          created_at: string
+          data_auditoria: string
+          empresa_id: string | null
+          fornecedor_id: string
+          id: string
+          itens_auditoria: Json | null
+          observacoes: string | null
+          pontuacao_obtida: number | null
+          status: string | null
+          tipo_auditoria: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          auditor: string
+          created_at?: string
+          data_auditoria?: string
+          empresa_id?: string | null
+          fornecedor_id: string
+          id?: string
+          itens_auditoria?: Json | null
+          observacoes?: string | null
+          pontuacao_obtida?: number | null
+          status?: string | null
+          tipo_auditoria: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          auditor?: string
+          created_at?: string
+          data_auditoria?: string
+          empresa_id?: string | null
+          fornecedor_id?: string
+          id?: string
+          itens_auditoria?: Json | null
+          observacoes?: string | null
+          pontuacao_obtida?: number | null
+          status?: string | null
+          tipo_auditoria?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fornecedor_auditorias_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fornecedor_auditorias_fornecedor_id_fkey"
+            columns: ["fornecedor_id"]
+            isOneToOne: false
+            referencedRelation: "fornecedores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       fornecedores: {
         Row: {
           bairro: string | null
@@ -3055,12 +3118,73 @@ export type Database = {
         }
         Relationships: []
       }
+      monitoramento_pcc: {
+        Row: {
+          acao_corretiva: string | null
+          conformidade: boolean | null
+          created_at: string
+          data: string
+          empresa_id: string | null
+          id: string
+          limite_critico: string | null
+          observacoes: string | null
+          parametro: string
+          ponto_critico: string
+          responsavel: string
+          updated_at: string
+          user_id: string
+          valor_encontrado: string
+        }
+        Insert: {
+          acao_corretiva?: string | null
+          conformidade?: boolean | null
+          created_at?: string
+          data?: string
+          empresa_id?: string | null
+          id?: string
+          limite_critico?: string | null
+          observacoes?: string | null
+          parametro: string
+          ponto_critico: string
+          responsavel: string
+          updated_at?: string
+          user_id: string
+          valor_encontrado: string
+        }
+        Update: {
+          acao_corretiva?: string | null
+          conformidade?: boolean | null
+          created_at?: string
+          data?: string
+          empresa_id?: string | null
+          id?: string
+          limite_critico?: string | null
+          observacoes?: string | null
+          parametro?: string
+          ponto_critico?: string
+          responsavel?: string
+          updated_at?: string
+          user_id?: string
+          valor_encontrado?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "monitoramento_pcc_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       nao_conformidades: {
         Row: {
           acao_corretiva: string | null
+          acao_preventiva: string | null
           causa: string | null
           created_at: string
           data: string
+          data_verificacao: string | null
           descricao: string
           empresa_id: string | null
           id: string
@@ -3070,12 +3194,15 @@ export type Database = {
           status: string | null
           updated_at: string
           user_id: string
+          verificacao_eficacia: string | null
         }
         Insert: {
           acao_corretiva?: string | null
+          acao_preventiva?: string | null
           causa?: string | null
           created_at?: string
           data?: string
+          data_verificacao?: string | null
           descricao: string
           empresa_id?: string | null
           id?: string
@@ -3085,12 +3212,15 @@ export type Database = {
           status?: string | null
           updated_at?: string
           user_id: string
+          verificacao_eficacia?: string | null
         }
         Update: {
           acao_corretiva?: string | null
+          acao_preventiva?: string | null
           causa?: string | null
           created_at?: string
           data?: string
+          data_verificacao?: string | null
           descricao?: string
           empresa_id?: string | null
           id?: string
@@ -3100,6 +3230,7 @@ export type Database = {
           status?: string | null
           updated_at?: string
           user_id?: string
+          verificacao_eficacia?: string | null
         }
         Relationships: [
           {
@@ -3334,6 +3465,59 @@ export type Database = {
             columns: ["ordem_origem_id"]
             isOneToOne: false
             referencedRelation: "ordens_producao"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pac_monitoramento: {
+        Row: {
+          acao_corretiva: string | null
+          conformidade: boolean | null
+          created_at: string
+          data: string
+          elemento_controle: string
+          empresa_id: string | null
+          id: string
+          item_avaliado: string
+          monitor: string
+          resultado: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          acao_corretiva?: string | null
+          conformidade?: boolean | null
+          created_at?: string
+          data?: string
+          elemento_controle: string
+          empresa_id?: string | null
+          id?: string
+          item_avaliado: string
+          monitor: string
+          resultado?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          acao_corretiva?: string | null
+          conformidade?: boolean | null
+          created_at?: string
+          data?: string
+          elemento_controle?: string
+          empresa_id?: string | null
+          id?: string
+          item_avaliado?: string
+          monitor?: string
+          resultado?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pac_monitoramento_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
             referencedColumns: ["id"]
           },
         ]
