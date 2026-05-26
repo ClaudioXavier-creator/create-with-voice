@@ -20,7 +20,6 @@ import {
   CalendarDays,
   Wrench,
   Droplets,
-  Truck,
   Bug,
   Activity,
   Trash2,
@@ -29,6 +28,8 @@ import {
   CheckCircle2,
   Key,
   ShieldAlert,
+  Package,
+  FlaskConical,
 } from "lucide-react";
 
 import { SUPER_ADMIN_EMAILS } from "@/config/adminAccess";
