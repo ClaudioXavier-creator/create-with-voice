@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Lock, Unlock, Download, FileText, BookOpen, ClipboardList, Table2, Shield, Wrench, FlaskConical, Bug, Droplets, Activity, Users, Truck } from "lucide-react";
+import { Lock, Unlock, Download, FileText, BookOpen, ClipboardList, Table2, Shield, Wrench, FlaskConical, Bug, Droplets, Activity, Users, Truck, Printer, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -7,6 +7,10 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import PageHeader from "@/components/PageHeader";
 import { TEMPLATE_GENERATORS } from "@/utils/excelTemplates";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { PrintableTemplate } from "@/components/PrintableTemplate";
+import { printElement } from "@/utils/printUtils";
+
 
 interface ModeloDoc {
   nome: string;
@@ -144,6 +148,8 @@ export default function Modelos() {
   const [senha, setSenha] = useState("");
   const [verificando, setVerificando] = useState(false);
   const [filtro, setFiltro] = useState<string>("todos");
+  const [selectedModelo, setSelectedModelo] = useState<ModeloDoc | null>(null);
+  const [showPreview, setShowPreview] = useState(false);
 
   const verificarSenha = async () => {
     if (!senha.trim()) { toast.error("Digite a senha de acesso"); return; }
@@ -188,6 +194,49 @@ export default function Modelos() {
       toast.info(`${modelo.nome} — modelo em PDF será disponibilizado em breve`);
     }
   };
+
+  const handlePreview = (modelo: ModeloDoc) => {
+    setSelectedModelo(modelo);
+    setShowPreview(true);
+  };
+
+  const handlePrint = () => {
+    if (selectedModelo) {
+      printElement("printable-area", selectedModelo.nome);
+    }
+  };
+
+  // Simplified data for preview based on the template name
+  const getPreviewData = (arquivo: string): (string | number | boolean | null)[][] => {
+    switch (arquivo) {
+      case "PL_POP_1":
+        return [
+          ["Nº", "Fornecedor", "CNPJ", "Registro MAPA", "Produtos", "Status"],
+          ...Array.from({ length: 15 }, (_, i) => [i + 1, "", "", "", "", ""])
+        ];
+      case "PL_POP_2":
+        return [
+          ["Data", "Área/Equipamento", "Tipo Limpeza", "Produto", "Hora Início", "Hora Fim", "Conforme", "Executor"],
+          ...Array.from({ length: 15 }, () => ["", "", "☐Seca ☐Úmida", "", "", "", "☐C ☐NC", ""])
+        ];
+      case "PL_POP_4":
+        return [
+          ["Data", "Ponto de Coleta", "Hora", "Cloro (mg/L)", "pH", "Conforme", "Responsável"],
+          ...Array.from({ length: 15 }, () => ["", "", "", "", "", "☐C ☐NC", ""])
+        ];
+      case "Form_Cloro_Diario":
+        return [
+          ["Data", "Ponto", "Hora", "Cloro Residual", "pH", "Conforme", "Ação Corretiva", "Resp."],
+          ...Array.from({ length: 20 }, () => ["", "", "", "", "", "☐", "", ""])
+        ];
+      default:
+        return [
+          ["Data", "Descrição", "Informação 1", "Informação 2", "Conforme", "Responsável"],
+          ...Array.from({ length: 15 }, () => ["", "", "", "", "☐", ""])
+        ];
+    }
+  };
+
 
   const totalNovos = MODELOS.filter(m => m.novo).length;
 
