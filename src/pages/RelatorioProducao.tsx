@@ -96,16 +96,10 @@ export default function RelatorioProducao() {
     fracionamento: {},
   });
 
-  // Load empresa info
-  useEffect(() => {
-    if (!user) return;
-    supabase.from("empresas").select("nome, cnpj").limit(1).then(({ data }) => {
-      if (data && data.length > 0) {
-        setEmpresaNome(data[0].nome || "");
-        setEmpresaCnpj(data[0].cnpj || "");
-      }
-    });
-  }, [user]);
+  // Use empresaAtiva from hook instead of manual loading
+  const empresaNome = empresaAtiva?.nome || "";
+  const empresaCnpj = empresaAtiva?.cnpj || "";
+
 
   // Load production data and auto-fill the "producao" tab
   useEffect(() => {

@@ -28,19 +28,15 @@ export default function FichaTecnica({ produtoId }: Props) {
   const { user } = useAuth();
   const [produto, setProduto] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [empresa, setEmpresa] = useState<any>(null);
+  const { empresaAtiva, loading: loadingEmpresa } = useEmpresa();
 
   useEffect(() => {
     loadData();
   }, [produtoId]);
 
   async function loadData() {
-    const [{ data: prod }, { data: emp }] = await Promise.all([
-      supabase.from("produtos").select("*").eq("id", produtoId).single(),
-      supabase.from("empresas").select("*").limit(1).maybeSingle(),
-    ]);
+    const { data: prod } = await supabase.from("produtos").select("*").eq("id", produtoId).single();
     setProduto(prod);
-    setEmpresa(emp);
     setLoading(false);
   }
 
@@ -100,11 +96,11 @@ export default function FichaTecnica({ produtoId }: Props) {
               <h1 className="text-3xl font-bold text-foreground font-display tracking-tight uppercase">{produto.nome}</h1>
               <Badge variant="secondary" className="text-primary font-bold uppercase tracking-wider">{CLASSIFICACAO_LABELS[produto.classificacao] || produto.classificacao}</Badge>
             </div>
-            {empresa && (
+            {empresaAtiva && (
               <div className="text-right text-[10px] text-muted-foreground uppercase">
-                <p className="font-bold text-foreground text-[11px]">{empresa.nome}</p>
-                <p>CNPJ: {empresa.cnpj}</p>
-                <p>Resp. Técnico: {empresa.responsavel_tecnico}</p>
+                <p className="font-bold text-foreground text-[11px]">{empresaAtiva.nome}</p>
+                <p>CNPJ: {empresaAtiva.cnpj || "—"}</p>
+                <p>Resp. Técnico: {empresaAtiva.responsavel_tecnico || "—"}</p>
               </div>
             )}
           </div>
