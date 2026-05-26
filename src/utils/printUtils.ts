@@ -1,9 +1,13 @@
 
 /**
  * Simple utility to print a specific HTML element
- * It creates a temporary window or uses a hidden iframe to print
+ * It creates a temporary window and ensures styles are preserved
  */
-export const printElement = (elementId: string, title?: string) => {
+export const printElement = (elementId: string, options: { 
+  title?: string, 
+  landscape?: boolean,
+  className?: string 
+} = {}) => {
   const element = document.getElementById(elementId);
   if (!element) {
     console.error(`Element with id ${elementId} not found`);
@@ -16,36 +20,52 @@ export const printElement = (elementId: string, title?: string) => {
     return;
   }
 
+  // Get all current styles from the main document
   const styles = Array.from(document.querySelectorAll('style, link[rel="stylesheet"]'))
     .map(style => style.outerHTML)
-    .join('');
+    .join('\n');
 
   printWindow.document.write(`
-    <html>
+    <!DOCTYPE html>
+    <html lang="pt-BR">
       <head>
-        <title>${title || 'Impressão'}</title>
+        <meta charset="utf-8">
+        <title>${options.title || 'Impressão BPF Digital'}</title>
         ${styles}
         <style>
           @media print {
-            body { padding: 20px; }
+            @page {
+              size: A4 ${options.landscape ? 'landscape' : 'portrait'};
+              margin: 10mm;
+            }
+            body { 
+              background: white !important;
+              padding: 0 !important;
+              margin: 0 !important;
+            }
             .no-print { display: none !important; }
-            table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
-            th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-            th { background-color: #f2f2f2; }
-            h1, h2, h3 { color: #333; }
           }
-          body { font-family: sans-serif; }
-          table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
-          th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-          th { background-color: #f2f2f2; }
+          body { 
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: #f9f9f9;
+            padding: 20px;
+          }
         </style>
       </head>
-      <body>
-        ${element.innerHTML}
+      <body class="${options.className || ''}">
+        <div class="print-container">
+          ${element.outerHTML}
+        </div>
         <script>
+          window.focus();
+          // Ensure images and fonts are loaded before printing
           window.onload = () => {
-            window.print();
-            window.close();
+            setTimeout(() => {
+              window.print();
+              // In some browsers, we can close the window after print dialog is closed
+              // but we need to wait a bit for the dialog to actually open
+              window.onfocus = () => { window.close(); };
+            }, 500);
           };
         </script>
       </body>
@@ -53,3 +73,4 @@ export const printElement = (elementId: string, title?: string) => {
   `);
   printWindow.document.close();
 };
+
