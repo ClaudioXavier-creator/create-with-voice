@@ -110,6 +110,8 @@ export const NAV_ENTRIES: NavEntry[] = [
     label: "POP 05 - Produção & PCP",
     icon: Layers,
     items: [
+      { path: "/produtos", label: "Cadastro de Produtos", icon: Package },
+      { path: "/formulas", label: "Fórmulas de Produção", icon: FlaskConical },
       { path: "/producao", label: "Controle de Produção", icon: Layers },
       { path: "/pcp", label: "PCP / Sequenciamento", icon: CalendarDays },
       { path: "/guia-pops?pop=POP-05", label: "ITs de Produção", icon: FileText },
