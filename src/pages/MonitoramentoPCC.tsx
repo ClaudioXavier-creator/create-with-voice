@@ -45,7 +45,7 @@ export default function MonitoramentoPCC() {
         conformidade: formData.get("conformidade") === "on",
         acao_corretiva: formData.get("acao_corretiva"),
         responsavel: formData.get("responsavel"),
-    });
+    } as any);
     if (error) toast.error("Erro ao salvar");
     else { toast.success("Monitoramento registrado!"); setOpen(false); fetchData(); }
   };

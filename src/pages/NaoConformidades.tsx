@@ -41,6 +41,9 @@ interface NCRow {
   descricao: string;
   causa: string | null;
   acao_corretiva: string | null;
+  acao_preventiva: string | null;
+  verificacao_eficacia: string | null;
+  data_verificacao: string | null;
   responsavel: string | null;
   prazo: string | null;
   status: string | null;
@@ -63,6 +66,9 @@ export default function NaoConformidades() {
   // Edit form
   const [editCausa, setEditCausa] = useState("");
   const [editAcao, setEditAcao] = useState("");
+  const [editAcaoPreventiva, setEditAcaoPreventiva] = useState("");
+  const [editVerificacao, setEditVerificacao] = useState("");
+  const [editDataVerificacao, setEditDataVerificacao] = useState("");
   const [editResponsavel, setEditResponsavel] = useState("");
   const [editPrazo, setEditPrazo] = useState("");
 
@@ -72,6 +78,7 @@ export default function NaoConformidades() {
   const [formDescricao, setFormDescricao] = useState("");
   const [formCausa, setFormCausa] = useState("");
   const [formAcao, setFormAcao] = useState("");
+  const [formAcaoPreventiva, setFormAcaoPreventiva] = useState("");
   const [formResponsavel, setFormResponsavel] = useState("");
   const [formPrazo, setFormPrazo] = useState("");
 
@@ -92,7 +99,7 @@ export default function NaoConformidades() {
   const resetForm = () => {
     setFormData(new Date().toISOString().split("T")[0]);
     setFormSetor(""); setFormDescricao(""); setFormCausa("");
-    setFormAcao(""); setFormResponsavel(""); setFormPrazo("");
+    setFormAcao(""); setFormAcaoPreventiva(""); setFormResponsavel(""); setFormPrazo("");
   };
 
   const handleAdd = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -106,9 +113,10 @@ export default function NaoConformidades() {
       descricao: formDescricao,
       causa: formCausa,
       acao_corretiva: formAcao,
+      acao_preventiva: formAcaoPreventiva,
       responsavel: formResponsavel,
       prazo: formPrazo || null,
-    });
+    } as any);
     if (error) toast.error("Erro ao salvar");
     else { toast.success("NC registrada com plano de ação!"); setOpen(false); resetForm(); fetchData(); }
     setSaving(false);
@@ -178,6 +186,9 @@ export default function NaoConformidades() {
     const { error } = await supabase.from("nao_conformidades").update({
       causa: editCausa,
       acao_corretiva: editAcao,
+      acao_preventiva: editAcaoPreventiva,
+      verificacao_eficacia: editVerificacao,
+      data_verificacao: editDataVerificacao || null,
       responsavel: editResponsavel,
       prazo: editPrazo || null,
     } as any).eq("id", editId);
@@ -190,6 +201,9 @@ export default function NaoConformidades() {
     setEditId(nc.id);
     setEditCausa(nc.causa || "");
     setEditAcao(nc.acao_corretiva || "");
+    setEditAcaoPreventiva(nc.acao_preventiva || "");
+    setEditVerificacao(nc.verificacao_eficacia || "");
+    setEditDataVerificacao(nc.data_verificacao || "");
     setEditResponsavel(nc.responsavel || "");
     setEditPrazo(nc.prazo || "");
     setEditOpen(true);
