@@ -310,8 +310,9 @@ export function printListaAprovados(fornecedores: FornecedorData[]) {
 <html><head><meta charset="utf-8">
 <title>PL POP 1.1 — Lista de Fornecedores Aprovados</title>
 <style>
-  @media print { @page { size: A4 landscape; margin: 15mm; } }
-  body { font-family: Arial, sans-serif; font-size: 11px; color: #000; }
+  @media print { @page { size: A4 landscape; margin: 10mm; } }
+  body { font-family: 'Inter', Arial, sans-serif; font-size: 11px; color: #000; padding: 20px; }
+
   h2 { font-size: 14px; text-align: center; margin-bottom: 12px; }
   .ref { text-align: right; font-size: 10px; margin-bottom: 8px; }
   table { width: 100%; border-collapse: collapse; }
