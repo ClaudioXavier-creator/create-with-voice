@@ -30,6 +30,7 @@ import {
   ShieldAlert,
   Package,
   FlaskConical,
+  Truck,
 } from "lucide-react";
 
 import { SUPER_ADMIN_EMAILS } from "@/config/adminAccess";
