@@ -14,6 +14,9 @@ import type { PopPeriodicidade } from "@/config/popsConfig";
 import * as XLSX from "xlsx";
 import { format } from "date-fns";
 import { useEmpresa } from "@/hooks/useEmpresa";
+import { PrintableTemplate } from "@/components/PrintableTemplate";
+import { printElement } from "@/utils/printUtils";
+
 
 interface CellData {
   conforme: boolean | null;
