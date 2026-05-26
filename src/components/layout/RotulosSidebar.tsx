@@ -8,9 +8,13 @@ import {
   Layers,
   Printer,
   QrCode,
-  Palette
+  Palette,
+  ShieldAlert,
+  Key,
+  Home
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { SUPER_ADMIN_EMAILS } from "@/config/adminAccess";
 import {
   Sidebar,
   SidebarContent,
@@ -37,9 +41,11 @@ const items = [
 
 export function RotulosSidebar() {
   const location = useLocation();
-  const { signOut } = useAuth();
+  const { signOut, user } = useAuth();
   const { toggleSidebar, state } = useSidebar();
   const isCollapsed = state === "collapsed";
+  
+  const isSuperAdmin = user?.email && SUPER_ADMIN_EMAILS.includes(user.email.toLowerCase() as any);
 
   return (
     <Sidebar collapsible="icon" className="border-r border-border/50 bg-card/50 backdrop-blur-xl">
@@ -86,6 +92,42 @@ export function RotulosSidebar() {
             </SidebarMenuItem>
           ))}
         </SidebarMenu>
+        
+        {isSuperAdmin && (
+          <div className="mt-8 pt-4 border-t border-border/50">
+            {!isCollapsed && (
+              <p className="px-4 mb-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60">
+                Administração
+              </p>
+            )}
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild tooltip="Voltar ao Início">
+                  <Link to="/dashboard" className="flex items-center gap-3 text-muted-foreground hover:text-primary">
+                    <Home className="h-5 w-5 shrink-0" />
+                    {!isCollapsed && <span>Voltar ao Início</span>}
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild tooltip="Gerenciar Licenças">
+                  <Link to="/licencas-programa" className="flex items-center gap-3 text-muted-foreground hover:text-primary">
+                    <Key className="h-5 w-5 shrink-0" />
+                    {!isCollapsed && <span>Licenças Lovable</span>}
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild tooltip="Portal de Gestão">
+                  <Link to="/admin" className="flex items-center gap-3 text-muted-foreground hover:text-primary">
+                    <ShieldAlert className="h-5 w-5 shrink-0" />
+                    {!isCollapsed && <span>Portal de Gestão</span>}
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </div>
+        )}
       </SidebarContent>
 
       <SidebarFooter className="p-4 space-y-2">

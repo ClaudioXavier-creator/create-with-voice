@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ShieldCheck, Users, TrendingUp, Key, CreditCard, Activity, Target, Award, Loader2, Megaphone, FileText, SendHorizontal, Lock } from "lucide-react";
+import { ShieldCheck, Users, TrendingUp, Key, CreditCard, Activity, Target, Award, Loader2, Megaphone, FileText, SendHorizontal, Lock, Zap } from "lucide-react";
 import { canAccessLicenseAdmin } from "@/config/adminAccess";
 import CRM from "./CRM";
 import AdminLicencas from "./AdminLicencas";
@@ -35,6 +35,7 @@ export default function SuperAdmin() {
     leadsPendente: 0,
     vendasGanhos: 0,
     valorTotalGanhos: 0,
+    totalLicencasAtivas: 0,
     loading: true
   });
 
@@ -43,22 +44,32 @@ export default function SuperAdmin() {
 
     async function fetchStats() {
       try {
-        const [leadsRes, crmRes] = await Promise.all([
+        const [leadsRes, crmRes, licensesRes] = await Promise.all([
           supabase.from("leads").select("id, notificado"),
-          supabase.from("crm_pipeline").select("etapa, valor_estimado")
+          supabase.from("crm_pipeline").select("etapa, valor_estimado"),
+          supabase.functions.invoke("admin-licencas", {
+            body: { action: "list" }
+          })
         ]);
 
         const leads = leadsRes.data || [];
         const crm = crmRes.data || [];
+        const licenses = licensesRes.data || [];
 
         const ganhos = crm.filter(i => i.etapa === "ganho");
         const valorGanhos = ganhos.reduce((acc, i) => acc + (Number(i.valor_estimado) || 0), 0);
+        
+        // Count active licenses
+        const activeLicenses = licenses.filter((l: any) => 
+          l.liberado_admin || (l.status === "ativa" && new Date(l.data_expiracao) > new Date())
+        ).length;
 
         setStats({
           totalLeads: leads.length,
           leadsPendente: leads.filter(l => !l.notificado).length,
           vendasGanhos: ganhos.length,
           valorTotalGanhos: valorGanhos,
+          totalLicencasAtivas: activeLicenses,
           loading: false
         });
       } catch (error) {
@@ -171,15 +182,61 @@ export default function SuperAdmin() {
              </Card>
 
              <Card>
-               <CardHeader className="pb-2 flex flex-row items-center justify-between space-y-0">
-                 <CardTitle className="text-sm font-medium">Licenças Ativas</CardTitle>
-                 <Key className="h-4 w-4 text-amber-500" />
-               </CardHeader>
-               <CardContent>
-                 <div className="text-2xl font-bold">Verificar aba</div>
-                 <p className="text-xs text-muted-foreground">Consulte na aba de Licenças</p>
-               </CardContent>
+                <CardHeader className="pb-2 flex flex-row items-center justify-between space-y-0">
+                  <CardTitle className="text-sm font-medium">Licenças Ativas</CardTitle>
+                  <Key className="h-4 w-4 text-amber-500" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">{stats.loading ? "..." : stats.totalLicencasAtivas}</div>
+                  <p className="text-xs text-muted-foreground">Total entre todos os programas</p>
+                </CardContent>
              </Card>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="dashboard" className="mt-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <Card className="bg-gradient-to-br from-primary/10 to-transparent border-primary/20">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Megaphone className="h-5 w-5 text-primary" />
+                  Marketing & Growth Hub
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <p className="text-sm text-muted-foreground">
+                  Acesse as ferramentas de IA para gerar headlines persuasivas e gerencie disparos de marketing para seus leads.
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  <Button size="sm" onClick={() => handleTabChange("marketing")} className="gap-2">
+                    <Zap className="h-4 w-4" />
+                    Gerador de Headlines
+                  </Button>
+                  <Button size="sm" variant="outline" onClick={() => handleTabChange("disparo")} className="gap-2">
+                    <SendHorizontal className="h-4 w-4" />
+                    Central de Disparos
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-gradient-to-br from-amber-500/10 to-transparent border-amber-500/20">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Key className="h-5 w-5 text-amber-500" />
+                  Gestão de Licenças
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <p className="text-sm text-muted-foreground">
+                  Libere acessos manuais, revogue licenças ou altere níveis de permissão (Entrada, Intermediário, Avançado) para qualquer programa.
+                </p>
+                <Button size="sm" variant="outline" onClick={() => handleTabChange("licencas")} className="gap-2 border-amber-500/30 hover:bg-amber-500/10">
+                  <ShieldCheck className="h-4 w-4" />
+                  Administrar Licenças
+                </Button>
+              </CardContent>
+            </Card>
           </div>
         </TabsContent>
 

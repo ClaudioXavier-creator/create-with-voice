@@ -16,7 +16,7 @@ import {
   SelectTrigger, 
   SelectValue 
 } from "@/components/ui/select";
-import { Loader2, RefreshCw, Search, Download, MessageCircle, Mail, FilterX } from "lucide-react";
+import { Loader2, RefreshCw, Search, Download, MessageCircle, Mail, FilterX, TrendingUp } from "lucide-react";
 import { toast } from "sonner";
 import { canAccessLeadsAdmin } from "@/config/adminAccess";
 import { getProductLabel } from "@/utils/productUtils";
@@ -64,6 +64,42 @@ export default function AdminLeads({ isTab = false }: { isTab?: boolean }) {
       setLeads((data ?? []) as Lead[]);
     }
     setLoading(false);
+  };
+
+  const convertToCRM = async (lead: Lead) => {
+    try {
+      // Check if already in CRM
+      const { data: exists } = await supabase
+        .from("crm_pipeline")
+        .select("id")
+        .eq("lead_id", lead.id)
+        .maybeSingle();
+
+      if (exists) {
+        toast.info("Este lead já está no CRM");
+        return;
+      }
+
+      const { error } = await supabase.from("crm_pipeline").insert({
+        lead_id: lead.id,
+        nome: lead.nome,
+        email: lead.email,
+        telefone: lead.telefone,
+        produto_interesse: lead.produto_interesse,
+        lead_origem: "site",
+        etapa: "novo"
+      });
+
+      if (error) throw error;
+
+      // Mark as notified in leads table
+      await supabase.from("leads").update({ notificado: true }).eq("id", lead.id);
+      
+      toast.success("Lead enviado para o CRM com sucesso!");
+      void load();
+    } catch (error: any) {
+      toast.error("Erro ao converter lead: " + error.message);
+    }
   };
 
   useEffect(() => {
@@ -328,6 +364,15 @@ export default function AdminLeads({ isTab = false }: { isTab?: boolean }) {
                                 <a href={`mailto:${lead.email}`} title="Enviar e-mail">
                                   <Mail className="h-4 w-4" />
                                 </a>
+                              </Button>
+                              <Button 
+                                size="sm" 
+                                variant="ghost" 
+                                onClick={() => convertToCRM(lead)}
+                                title="Enviar para o CRM"
+                                className="text-primary hover:text-primary hover:bg-primary/10"
+                              >
+                                <TrendingUp className="h-4 w-4" />
                               </Button>
                             </div>
                           </TableCell>
