@@ -13,11 +13,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { Switch } from "@/components/ui/switch";
-import { Plus, Droplets, CheckCircle2, Clock, Trash2, Beaker, FileText, ClipboardList, Download, ShieldCheck, Layers, FlaskConical, Container, UserCheck, Droplet, HeartPulse, Archive, AlertTriangle } from "lucide-react";
+import { Plus, Droplets, CheckCircle2, Clock, Trash2, Beaker, FileText, ClipboardList, Download, ShieldCheck, Layers, FlaskConical, Container, UserCheck, Droplet, HeartPulse, Archive, AlertTriangle, Printer } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import PageHeader from "@/components/PageHeader";
+import { printElement } from "@/utils/printUtils";
+
 
 const AREAS = ["Recepção de MP", "Mistura", "Ensaque", "Expedição", "Almoxarifado", "Laboratório", "Banheiros", "Refeitório", "Área Externa",
   "Silo 01", "Silo 02", "Silo 03", "Silo 04", "Silo 05", "Misturador", "Moinho", "Peletizadora", "Extrusora", "Transportador / Elevador"];
@@ -1425,8 +1427,41 @@ export default function HigieneSanitizacao() {
                     <input type="checkbox" checked={regForm.conforme} onChange={e => setRegForm(p => ({ ...p, conforme: e.target.checked }))} className="h-4 w-4" />
                     <Label>Conforme</Label>
                   </div>
-                  <div><Label>Observações</Label><Textarea value={regForm.observacoes} onChange={e => setRegForm(p => ({ ...p, observacoes: e.target.value }))} /></div>
-                  <Button onClick={() => addRegistro.mutate()} disabled={!regForm.cronograma_id || !regForm.executor}>Salvar Registro</Button>
+                   <div><Label>Observações</Label><Textarea value={regForm.observacoes} onChange={e => setRegForm(p => ({ ...p, observacoes: e.target.value }))} /></div>
+                   <div className="flex gap-2">
+                     <Button variant="outline" className="flex-1" onClick={() => printElement('registro-limpeza-preview', 'Registro de Limpeza')}>
+                       <Printer className="w-4 h-4 mr-2" /> Imprimir
+                     </Button>
+                     <Button className="flex-1" onClick={() => addRegistro.mutate()} disabled={!regForm.cronograma_id || !regForm.executor}>Salvar Registro</Button>
+                   </div>
+                   
+                   {/* Hidden preview for printing */}
+                   <div id="registro-limpeza-preview" className="hidden">
+                     <div className="p-8 text-black bg-white">
+                       <h1 className="text-xl font-bold mb-4 text-center border-b pb-2 uppercase">Registro de Execução de Limpeza</h1>
+                       <div className="grid grid-cols-2 gap-4 mb-6 border p-4 rounded">
+                         <div><p><strong>Área:</strong> {cronogramas.find((c: any) => c.id === regForm.cronograma_id)?.area || '—'}</p></div>
+                         <div><p><strong>Data:</strong> {regForm.data_execucao}</p></div>
+                         <div><p><strong>Equipamento:</strong> {cronogramas.find((c: any) => c.id === regForm.cronograma_id)?.equipamento || '—'}</p></div>
+                         <div><p><strong>Executor:</strong> {regForm.executor}</p></div>
+                         <div><p><strong>Procedimento:</strong> {cronogramas.find((c: any) => c.id === regForm.cronograma_id)?.procedimento || '—'}</p></div>
+                         <div><p><strong>Status:</strong> {regForm.conforme ? 'CONFORME' : 'NÃO CONFORME'}</p></div>
+                       </div>
+                       <div className="border p-4 rounded min-h-[100px]">
+                         <p className="font-bold mb-2">Observações:</p>
+                         <p>{regForm.observacoes || 'Sem observações adicionais.'}</p>
+                       </div>
+                       <div className="mt-12 flex justify-between">
+                         <div className="border-t border-black pt-2 w-48 text-center">
+                           <p className="text-sm font-bold">Responsável</p>
+                         </div>
+                         <div className="border-t border-black pt-2 w-48 text-center">
+                           <p className="text-sm font-bold">Data</p>
+                         </div>
+                       </div>
+                     </div>
+                   </div>
+
                 </div>
               </DialogContent>
             </Dialog>
@@ -1534,7 +1569,32 @@ export default function HigieneSanitizacao() {
                     <div><Label>Certificado Limpeza Reservatório</Label><Input value={aguaForm.certificado_limpeza} onChange={e => setAguaForm(p => ({ ...p, certificado_limpeza: e.target.value }))} placeholder="Nº ou empresa responsável" /></div>
                   </div>
                   <div><Label>Observações</Label><Textarea value={aguaForm.observacoes} onChange={e => setAguaForm(p => ({ ...p, observacoes: e.target.value }))} /></div>
-                  <Button onClick={() => addRegistroAgua.mutate()} disabled={!aguaForm.responsavel}>Salvar Registro</Button>
+                  <div className="flex gap-2">
+                    <Button variant="outline" className="flex-1" onClick={() => printElement('registro-agua-preview', 'Controle de Água')}>
+                      <Printer className="w-4 h-4 mr-2" /> Imprimir
+                    </Button>
+                    <Button className="flex-1" onClick={() => addRegistroAgua.mutate()} disabled={!aguaForm.responsavel}>Salvar Registro</Button>
+                  </div>
+
+                  {/* Hidden preview for printing */}
+                  <div id="registro-agua-preview" className="hidden">
+                    <div className="p-8 text-black bg-white">
+                      <h1 className="text-xl font-bold mb-4 text-center border-b pb-2 uppercase">Controle de Água e Cloro — POP-04</h1>
+                      <div className="grid grid-cols-2 gap-4 mb-6 border p-4 rounded">
+                        <div><p><strong>Ponto:</strong> {aguaForm.ponto}</p></div>
+                        <div><p><strong>Data:</strong> {aguaForm.data}</p></div>
+                        <div><p><strong>Cloro:</strong> {aguaForm.cloro_residual} mg/L</p></div>
+                        <div><p><strong>Responsável:</strong> {aguaForm.responsavel}</p></div>
+                        <div><p><strong>pH:</strong> {aguaForm.ph || '—'}</p></div>
+                        <div><p><strong>Turbidez:</strong> {aguaForm.turbidez || '—'} NTU</p></div>
+                      </div>
+                      <div className="border p-4 rounded min-h-[100px]">
+                        <p className="font-bold mb-2">Observações:</p>
+                        <p>{aguaForm.observacoes || 'Sem observações adicionais.'}</p>
+                      </div>
+                    </div>
+                  </div>
+
                 </div>
               </DialogContent>
             </Dialog>

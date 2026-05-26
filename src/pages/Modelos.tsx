@@ -1,12 +1,18 @@
 import { useState } from "react";
-import { Lock, Unlock, Download, FileText, BookOpen, ClipboardList, Table2, Shield, Wrench, FlaskConical, Bug, Droplets, Activity, Users, Truck } from "lucide-react";
+import { Lock, Unlock, Download, FileText, BookOpen, ClipboardList, Table2, Shield, Wrench, FlaskConical, Bug, Droplets, Activity, Users, Truck, Printer, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import PageHeader from "@/components/PageHeader";
 import { TEMPLATE_GENERATORS } from "@/utils/excelTemplates";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { PrintableTemplate } from "@/components/PrintableTemplate";
+import { printElement } from "@/utils/printUtils";
+
+
 
 interface ModeloDoc {
   nome: string;
@@ -144,6 +150,8 @@ export default function Modelos() {
   const [senha, setSenha] = useState("");
   const [verificando, setVerificando] = useState(false);
   const [filtro, setFiltro] = useState<string>("todos");
+  const [selectedModelo, setSelectedModelo] = useState<ModeloDoc | null>(null);
+  const [showPreview, setShowPreview] = useState(false);
 
   const verificarSenha = async () => {
     if (!senha.trim()) { toast.error("Digite a senha de acesso"); return; }
@@ -188,6 +196,108 @@ export default function Modelos() {
       toast.info(`${modelo.nome} — modelo em PDF será disponibilizado em breve`);
     }
   };
+
+  const handlePreview = (modelo: ModeloDoc) => {
+    setSelectedModelo(modelo);
+    setShowPreview(true);
+  };
+
+  const handlePrint = () => {
+    if (selectedModelo) {
+      printElement("printable-area", selectedModelo.nome);
+    }
+  };
+
+  // Simplified data for preview based on the template name
+  const getPreviewData = (arquivo: string): (string | number | boolean | null)[][] => {
+    switch (arquivo) {
+      case "PL_POP_1":
+        return [
+          ["Nº", "Fornecedor", "CNPJ", "Registro MAPA", "Produtos Fornecidos", "Status", "Obs."],
+          ...Array.from({ length: 15 }, (_, i) => [i + 1, "", "", "", "", "☐A ☐R", ""])
+        ];
+      case "PL_POP_2":
+        return [
+          ["Data", "Área/Equipamento", "Tipo Limpeza", "Produto", "Hora Início", "Hora Fim", "Conforme", "Executor"],
+          ...Array.from({ length: 15 }, () => ["", "", "☐Seca ☐Úmida", "", "", "", "☐C ☐NC", ""])
+        ];
+      case "PL_POP_3":
+        return [
+          ["Data", "Colaborador", "Uniforme", "Adornos", "Unhas", "Barba", "Mãos", "EPI", "Conforme", "Verificado por"],
+          ...Array.from({ length: 15 }, () => ["", "", "☐", "☐", "☐", "☐", "☐", "☐", "☐C ☐NC", ""])
+        ];
+      case "PL_POP_4":
+        return [
+          ["Data", "Ponto de Coleta", "Hora", "Cloro (mg/L)", "pH", "Conforme", "Responsável"],
+          ...Array.from({ length: 15 }, () => ["", "", "", "", "", "☐C ☐NC", ""])
+        ];
+      case "Form_Recebimento_MP":
+        return [
+          ["Data", "Fornecedor", "Matéria-Prima", "Lote", "Quantidade", "Odor", "Umidade (%)", "Temp. (°C)", "Aprovado"],
+          ...Array.from({ length: 15 }, () => ["", "", "", "", "", "☐N ☐A", "", "", "☐S ☐N"])
+        ];
+      case "Form_Ordem_Producao":
+        return [
+          ["Item", "Ingrediente", "Lote", "Qtd. Prevista (kg)", "Qtd. Real (kg)", "Batida 1", "Batida 2", "Conforme"],
+          ...Array.from({ length: 12 }, (_, i) => [i + 1, "", "", "", "", "☐", "☐", "☐"])
+        ];
+      case "Checklist_Auditoria":
+        return [
+          ["Nº", "Requisito de Auditoria (Decreto 12.031/2024)", "C", "NC", "NA", "Observações / Evidências"],
+          ["1.1", "Edificação e instalações em bom estado", "☐", "☐", "☐", ""],
+          ["1.2", "Fluxo de produção linear", "☐", "☐", "☐", ""],
+          ["2.1", "Equipamentos limpos e conservados", "☐", "☐", "☐", ""],
+          ["3.1", "Água potável com laudos em dia", "☐", "☐", "☐", ""],
+          ["4.1", "Higiene pessoal e uniformes adequados", "☐", "☐", "☐", ""],
+          ...Array.from({ length: 10 }, () => ["", "", "☐", "☐", "☐", ""])
+        ];
+      case "NC_Plano_Acao":
+        return [
+          ["Data", "Descrição da Não Conformidade", "Causa Raiz", "Ação Corretiva", "Prazo", "Responsável", "Status"],
+          ...Array.from({ length: 10 }, () => ["", "", "", "", "", "", "☐Aberto ☐Ok"])
+        ];
+      case "Form_Substancias":
+        return [
+          ["Data", "Ingrediente/Lote", "Substância Pesquisada", "Limite", "Resultado", "Conforme", "Laudo Nº"],
+          ...Array.from({ length: 10 }, () => ["", "", "", "", "", "☐S ☐N", ""])
+        ];
+      case "Form_Analises_Lab":
+        return [
+          ["Data", "Amostra/Lote", "Parâmetro (PB, Umid...)", "Resultado", "Variação Permitida", "Conforme", "Resp."],
+          ...Array.from({ length: 15 }, () => ["", "", "", "", "", "☐S ☐N", ""])
+        ];
+      case "Form_Visitantes":
+        return [
+          ["Data", "Nome Visitante", "Empresa", "Motivo", "EPI Fornecido", "Orientação Bio", "Entrada", "Saída"],
+          ...Array.from({ length: 15 }, () => ["", "", "", "", "☐", "☐", "", ""])
+        ];
+      case "POP-01":
+      case "POP-02":
+      case "POP-03":
+      case "POP-04":
+      case "POP-05":
+      case "POP-06":
+      case "POP-07":
+      case "POP-08":
+      case "POP-09":
+      case "POP-10":
+        return [
+          ["Item", "Procedimento Operacional Padronizado (POP)", "Responsável", "Frequência", "Monitoramento", "Ação Corretiva"],
+          ["1", "Descrição da etapa 1 do procedimento", "RT/Supervisor", "Diário", "Visual", "Re-processar"],
+          ["2", "Descrição da etapa 2 do procedimento", "Operador", "Por Lote", "Checklist", "Registrar NC"],
+          ["3", "Descrição da etapa 3 do procedimento", "Supervisor", "Semanal", "Auditoria", "Treinamento"],
+          ...Array.from({ length: 10 }, (_, i) => [i + 4, "", "", "", "", ""])
+        ];
+
+
+      default:
+        return [
+          ["Data", "Descrição", "Informação 1", "Informação 2", "Conforme", "Responsável"],
+          ...Array.from({ length: 15 }, () => ["", "", "", "", "☐", ""])
+        ];
+    }
+  };
+
 
   const totalNovos = MODELOS.filter(m => m.novo).length;
 
@@ -256,9 +366,9 @@ export default function Modelos() {
           return (
             <Card key={modelo.arquivo} className="hover:shadow-md transition-shadow border-border/50 relative">
               {modelo.novo && (
-                <span className="absolute top-2 right-2 text-[10px] font-bold bg-primary text-primary-foreground px-1.5 py-0.5 rounded-full">
+                <Badge className="absolute top-2 right-2 bg-primary text-primary-foreground">
                   NOVO
-                </span>
+                </Badge>
               )}
               <CardHeader className="pb-2">
                 <div className="flex items-start gap-3">
@@ -274,15 +384,56 @@ export default function Modelos() {
                 </div>
               </CardHeader>
               <CardContent>
-                <p className="text-xs text-muted-foreground mb-3">{modelo.descricao}</p>
-                <Button size="sm" variant="outline" className="w-full" onClick={() => handleDownload(modelo)}>
-                  <Download className="w-4 h-4 mr-1" /> {TEMPLATE_GENERATORS[modelo.arquivo] ? "Baixar Excel" : "Baixar PDF"}
-                </Button>
+                <p className="text-xs text-muted-foreground mb-3 h-8 line-clamp-2">{modelo.descricao}</p>
+                <div className="flex gap-2">
+                  <Button size="sm" variant="outline" className="flex-1" onClick={() => handlePreview(modelo)}>
+                    <Eye className="w-4 h-4 mr-1" /> Ver/Imprimir
+                  </Button>
+                  <Button size="sm" variant="default" className="flex-1" onClick={() => handleDownload(modelo)}>
+                    <Download className="w-4 h-4 mr-1" /> Excel
+                  </Button>
+                </div>
               </CardContent>
             </Card>
           );
         })}
       </div>
+
+      <Dialog open={showPreview} onOpenChange={setShowPreview}>
+        <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Printer className="w-5 h-5" />
+              Modelo para Impressão: {selectedModelo?.nome}
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="bg-muted p-4 rounded-lg overflow-x-auto">
+            {selectedModelo && (
+              <PrintableTemplate
+                id="printable-area"
+                title={selectedModelo.nome}
+                subtitle={selectedModelo.descricao}
+                headerInfo={[
+                  { label: "Empresa", value: "" },
+                  { label: "Unidade", value: "" },
+                  { label: "Data/Mês", value: "" },
+                  { label: "Responsável", value: "" }
+                ]}
+                data={getPreviewData(selectedModelo.arquivo)}
+              />
+            )}
+          </div>
+
+          <DialogFooter className="gap-2 sm:gap-0">
+            <Button variant="outline" onClick={() => setShowPreview(false)}>Fechar</Button>
+            <Button onClick={handlePrint}>
+              <Printer className="w-4 h-4 mr-2" /> Imprimir Agora
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
+
