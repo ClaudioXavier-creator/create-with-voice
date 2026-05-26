@@ -31,6 +31,7 @@ export const SidebarNav = React.memo(({
   userEmail?: string;
 }) => {
   const { product } = useParams();
+  const [searchQuery, setSearchQuery] = useState("");
   const [favorites, setFavorites] = useState<string[]>(() => {
     try {
       return JSON.parse(localStorage.getItem(FAVORITES_KEY) || "[]");
