@@ -3,6 +3,7 @@ import { Lock, Unlock, Download, FileText, BookOpen, ClipboardList, Table2, Shie
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import PageHeader from "@/components/PageHeader";
@@ -10,6 +11,7 @@ import { TEMPLATE_GENERATORS } from "@/utils/excelTemplates";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { PrintableTemplate } from "@/components/PrintableTemplate";
 import { printElement } from "@/utils/printUtils";
+
 
 
 interface ModeloDoc {
@@ -305,9 +307,9 @@ export default function Modelos() {
           return (
             <Card key={modelo.arquivo} className="hover:shadow-md transition-shadow border-border/50 relative">
               {modelo.novo && (
-                <span className="absolute top-2 right-2 text-[10px] font-bold bg-primary text-primary-foreground px-1.5 py-0.5 rounded-full">
+                <Badge className="absolute top-2 right-2 bg-primary text-primary-foreground">
                   NOVO
-                </span>
+                </Badge>
               )}
               <CardHeader className="pb-2">
                 <div className="flex items-start gap-3">
@@ -323,15 +325,56 @@ export default function Modelos() {
                 </div>
               </CardHeader>
               <CardContent>
-                <p className="text-xs text-muted-foreground mb-3">{modelo.descricao}</p>
-                <Button size="sm" variant="outline" className="w-full" onClick={() => handleDownload(modelo)}>
-                  <Download className="w-4 h-4 mr-1" /> {TEMPLATE_GENERATORS[modelo.arquivo] ? "Baixar Excel" : "Baixar PDF"}
-                </Button>
+                <p className="text-xs text-muted-foreground mb-3 h-8 line-clamp-2">{modelo.descricao}</p>
+                <div className="flex gap-2">
+                  <Button size="sm" variant="outline" className="flex-1" onClick={() => handlePreview(modelo)}>
+                    <Eye className="w-4 h-4 mr-1" /> Ver/Imprimir
+                  </Button>
+                  <Button size="sm" variant="default" className="flex-1" onClick={() => handleDownload(modelo)}>
+                    <Download className="w-4 h-4 mr-1" /> Excel
+                  </Button>
+                </div>
               </CardContent>
             </Card>
           );
         })}
       </div>
+
+      <Dialog open={showPreview} onOpenChange={setShowPreview}>
+        <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Printer className="w-5 h-5" />
+              Modelo para Impressão: {selectedModelo?.nome}
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="bg-muted p-4 rounded-lg overflow-x-auto">
+            {selectedModelo && (
+              <PrintableTemplate
+                id="printable-area"
+                title={selectedModelo.nome}
+                subtitle={selectedModelo.descricao}
+                headerInfo={[
+                  { label: "Empresa", value: "" },
+                  { label: "Unidade", value: "" },
+                  { label: "Data/Mês", value: "" },
+                  { label: "Responsável", value: "" }
+                ]}
+                data={getPreviewData(selectedModelo.arquivo)}
+              />
+            )}
+          </div>
+
+          <DialogFooter className="gap-2 sm:gap-0">
+            <Button variant="outline" onClick={() => setShowPreview(false)}>Fechar</Button>
+            <Button onClick={handlePrint}>
+              <Printer className="w-4 h-4 mr-2" /> Imprimir Agora
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
+
