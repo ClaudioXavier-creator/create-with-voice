@@ -72,14 +72,15 @@ export default function FichaTecnica({ produtoId }: Props) {
   }
 
   function handlePrint() {
-    const niveis = (produto?.niveis_garantia as Record<string, any>) || {};
-    const niveisRows = Object.entries(niveis).map(([key, value]) => [key, formatNivel(value)]).filter(([_, v]) => v).map(([key, value]) =>
-      `<tr><td style="border:1px solid #999;padding:4px 8px;font-size:9pt">${NIVEIS_LABELS[key] || key}</td><td style="border:1px solid #999;padding:4px 8px;font-size:9pt;font-family:monospace">${value}</td></tr>`
-    ).join("");
+    printElement(`ficha-tecnica-content-${produtoId}`, { 
+      title: `Ficha Técnica - ${produto?.nome}`,
+      className: "print-mode"
+    });
+  }
 
-    const html = `<!DOCTYPE html>
-<html><head><meta charset="utf-8"><title>Ficha Técnica - ${produto?.nome}</title>
-<style>
+  const oldPrintLogic = () => {
+    const niveis = (produto?.niveis_garantia as Record<string, any>) || {};
+
   @page { margin: 15mm; }
   body { font-family: Arial, sans-serif; font-size: 10pt; color: #111; margin: 0; }
   h1 { font-size: 16pt; margin-bottom: 4px; text-align: center; }
