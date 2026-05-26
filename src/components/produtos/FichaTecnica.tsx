@@ -8,7 +8,6 @@ import { useAuth } from "@/hooks/useAuth";
 import { gerarCarimboSync, carimboHTML } from "@/utils/carimboDocumento";
 import { printElement } from "@/utils/printUtils";
 
-
 const CLASSIFICACAO_LABELS: Record<string, string> = {
   racao: "Ração", suplemento: "Suplemento", premix: "Premix",
   aditivo: "Aditivo", sal_mineral: "Sal Mineral",
@@ -30,7 +29,6 @@ export default function FichaTecnica({ produtoId }: Props) {
   const [produto, setProduto] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [empresa, setEmpresa] = useState<any>(null);
-  // printRef no longer needed - print uses standalone HTML
 
   useEffect(() => {
     loadData();
@@ -50,11 +48,9 @@ export default function FichaTecnica({ produtoId }: Props) {
     if (value == null) return "";
     if (typeof value === "object") {
       const { min, max, unit } = value as { min?: string; max?: string; unit?: string };
-      const u = unit ? ` ${unit}` : "";
-      if (min && max) return `${min} – ${max}${u}`;
-      if (min) return `mín. ${min}${u}`;
-      if (max) return `máx. ${max}${u}`;
-      return "";
+      if (min && max) return `${min} a ${max} ${unit || ""}`;
+      if (min) return `${min} ${unit || ""}`;
+      if (max) return `${max} ${unit || ""}`;
     }
     return String(value);
   }
@@ -63,7 +59,6 @@ export default function FichaTecnica({ produtoId }: Props) {
   function s(value: any): string {
     if (value == null) return "";
     if (typeof value === "object") {
-      // Try formatNivel first (handles {min,max,unit})
       const formatted = formatNivel(value);
       if (formatted) return formatted;
       try { return JSON.stringify(value); } catch { return ""; }
@@ -78,190 +73,131 @@ export default function FichaTecnica({ produtoId }: Props) {
     });
   }
 
-  const oldPrintLogic = () => {
-    const niveis = (produto?.niveis_garantia as Record<string, any>) || {};
+  if (loading) return <div className="p-8 text-center"><Loader2 className="w-8 h-8 animate-spin mx-auto text-primary" /></div>;
+  if (!produto) return <div className="p-8 text-center">Produto não encontrado.</div>;
 
-  @page { margin: 15mm; }
-  body { font-family: Arial, sans-serif; font-size: 10pt; color: #111; margin: 0; }
-  h1 { font-size: 16pt; margin-bottom: 4px; text-align: center; }
-  h2 { font-size: 11pt; border-bottom: 1px solid #999; padding-bottom: 3px; margin: 14px 0 6px; color: #333; }
-  table { width: 100%; border-collapse: collapse; margin: 6px 0; }
-  th, td { border: 1px solid #999; padding: 4px 8px; text-align: left; font-size: 9pt; }
-  th { background: #f0f0f0; font-weight: bold; width: 40%; }
-  .header { text-align: center; margin-bottom: 14px; }
-  .logo-text { font-size: 8pt; color: #666; }
-  .footer { font-size: 7pt; color: #999; margin-top: 24px; text-align: center; }
-  p { font-size: 10pt; margin: 4px 0; }
-</style></head><body>
-<div class="header">
-  ${empresa ? `<p class="logo-text">${empresa.nome} — CNPJ: ${empresa.cnpj}</p>` : ""}
-  <h1>FICHA TÉCNICA DE PRODUTO</h1>
-  <p>${produto?.nome || ""}</p>
-</div>
-
-<h2>1. Identificação do Produto</h2>
-<table>
-  <tr><th>Nome do Produto</th><td>${produto?.nome || ""}</td></tr>
-  <tr><th>Marca</th><td>${produto?.marca || ""}</td></tr>
-  <tr><th>Classificação</th><td>${CLASSIFICACAO_LABELS[produto?.classificacao] || produto?.classificacao || ""}</td></tr>
-  <tr><th>Espécie Alvo</th><td>${produto?.especie_alvo || ""}</td></tr>
-  <tr><th>Categoria Animal</th><td>${produto?.categoria_animal || ""}</td></tr>
-  <tr><th>Registro MAPA</th><td>${produto?.registro_mapa || ""}</td></tr>
-  <tr><th>Forma Física</th><td>${produto?.forma_fisica || ""}</td></tr>
-  <tr><th>Peso Líquido</th><td>${produto?.peso_liquido || ""} ${produto?.unidade_peso || ""}</td></tr>
-  <tr><th>Embalagem</th><td>${produto?.embalagem || ""}</td></tr>
-  <tr><th>Validade</th><td>${produto?.validade_meses || ""} meses</td></tr>
-</table>
-
-<h2>2. Composição</h2>
-<p>${produto?.composicao || "—"}</p>
-
-<h2>3. Níveis de Garantia</h2>
-<table>
-  <tr><th>Parâmetro</th><th>Valor</th></tr>
-  ${niveisRows || '<tr><td colspan="2">—</td></tr>'}
-</table>
-
-<h2>4. Indicações de Uso</h2>
-<p>${produto?.indicacoes || "—"}</p>
-
-<h2>5. Modo de Uso / Preparo</h2>
-<p>${produto?.modo_uso || "—"}</p>
-${produto?.modo_preparo ? `<p><strong>Preparo:</strong> ${produto.modo_preparo}</p>` : ""}
-
-<h2>6. Precauções e Restrições</h2>
-<p>${produto?.precaucoes || "—"}</p>
-
-<h2>7. Armazenamento</h2>
-<p>${produto?.armazenamento || "—"}</p>
-
-${produto?.diferenciais ? `<h2>8. Diferenciais do Produto</h2><p>${produto.diferenciais}</p>` : ""}
-
-${empresa ? `
-<h2>${produto?.diferenciais ? "9" : "8"}. Dados do Fabricante</h2>
-<table>
-  <tr><th>Razão Social</th><td>${empresa.nome}</td></tr>
-  <tr><th>CNPJ</th><td>${empresa.cnpj}</td></tr>
-  <tr><th>Endereço</th><td>${empresa.endereco}</td></tr>
-  <tr><th>Resp. Técnico</th><td>${empresa.responsavel_tecnico} — CRMV: ${empresa.crmv}</td></tr>
-</table>` : ""}
-
-<p class="footer">Documento gerado pelo sistema BPF_Consult — Ficha Técnica conforme exigências MAPA</p>
-${carimboHTML(gerarCarimboSync({
-  documentoTipo: "Ficha Técnica de Produto",
-  documentoId: produto?.nome,
-  empresa: empresa?.nome,
-  usuario: user?.email,
-}))}
-<script>window.print();window.close();</script>
-</body></html>`;
-
-    const w = window.open("", "_blank");
-    if (!w) return;
-    w.document.write(html);
-    w.document.close();
-  }
-
-  if (loading) return <div className="flex justify-center py-8"><Loader2 className="w-6 h-6 animate-spin" /></div>;
-  if (!produto) return <p className="text-muted-foreground text-center py-8">Produto não encontrado.</p>;
-
-  const niveis = (produto.niveis_garantia as Record<string, string>) || {};
+  const niveis = (produto.niveis_garantia as Record<string, any>) || {};
 
   return (
-    <div className="space-y-4">
-      <div className="flex gap-2">
-        <Button variant="outline" size="sm" onClick={handlePrint}>
-          <Printer className="w-4 h-4 mr-1" /> Imprimir Ficha Técnica
-        </Button>
-      </div>
+    <div className="space-y-6">
+      <Card className="no-print">
+        <CardHeader className="flex flex-row items-center justify-between pb-2">
+          <CardTitle className="text-xl font-bold font-display">Ficha Técnica Digital</CardTitle>
+          <Button onClick={handlePrint} variant="outline" className="gap-2">
+            <Printer className="w-4 h-4" /> Imprimir Documento
+          </Button>
+        </CardHeader>
+        <CardContent>
+          <p className="text-sm text-muted-foreground">Esta é a visualização oficial do produto para controle de qualidade e registros do Decreto 12.031/2024.</p>
+        </CardContent>
+      </Card>
 
-      <Card>
-        <CardContent className="pt-6">
-          <div className="header text-center mb-6">
-            {empresa && <p className="text-xs text-muted-foreground">{s(empresa.nome)} — CNPJ: {s(empresa.cnpj)}</p>}
-            <h1 className="text-xl font-bold text-foreground mt-1">FICHA TÉCNICA DE PRODUTO</h1>
-            <p className="text-sm text-muted-foreground">{s(produto.nome)}</p>
+      <div id={`ficha-tecnica-content-${produtoId}`} className="bg-white p-8 rounded-xl shadow-sm border border-border print:shadow-none print:border-none print:p-0">
+        <div className="max-w-[800px] mx-auto space-y-8">
+          {/* Header */}
+          <div className="flex justify-between items-start border-b-2 border-primary/20 pb-4">
+            <div className="space-y-1">
+              <h1 className="text-3xl font-bold text-foreground font-display tracking-tight uppercase">{produto.nome}</h1>
+              <Badge variant="secondary" className="text-primary font-bold uppercase tracking-wider">{CLASSIFICACAO_LABELS[produto.classificacao] || produto.classificacao}</Badge>
+            </div>
+            {empresa && (
+              <div className="text-right text-[10px] text-muted-foreground uppercase">
+                <p className="font-bold text-foreground text-[11px]">{empresa.nome}</p>
+                <p>CNPJ: {empresa.cnpj}</p>
+                <p>Resp. Técnico: {empresa.responsavel_tecnico}</p>
+              </div>
+            )}
           </div>
 
-          <h2 className="text-sm font-semibold border-b border-border pb-1 mb-3 text-foreground">1. Identificação do Produto</h2>
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm border border-border">
-              <tbody>
-                <tr><th className="bg-muted/50 px-3 py-2 text-foreground w-[40%]">Nome do Produto</th><td className="px-3 py-2">{s(produto.nome)}</td></tr>
-                <tr><th className="bg-muted/50 px-3 py-2 text-foreground">Marca</th><td className="px-3 py-2">{s(produto.marca)}</td></tr>
-                <tr><th className="bg-muted/50 px-3 py-2 text-foreground">Classificação</th><td className="px-3 py-2"><Badge variant="secondary">{CLASSIFICACAO_LABELS[produto.classificacao] || s(produto.classificacao)}</Badge></td></tr>
-                <tr><th className="bg-muted/50 px-3 py-2 text-foreground">Espécie Alvo</th><td className="px-3 py-2">{s(produto.especie_alvo)}</td></tr>
-                <tr><th className="bg-muted/50 px-3 py-2 text-foreground">Categoria Animal</th><td className="px-3 py-2">{s(produto.categoria_animal)}</td></tr>
-                <tr><th className="bg-muted/50 px-3 py-2 text-foreground">Registro MAPA</th><td className="px-3 py-2 font-mono">{s(produto.registro_mapa)}</td></tr>
-                <tr><th className="bg-muted/50 px-3 py-2 text-foreground">Forma Física</th><td className="px-3 py-2">{s(produto.forma_fisica)}</td></tr>
-                <tr><th className="bg-muted/50 px-3 py-2 text-foreground">Peso Líquido</th><td className="px-3 py-2">{s(produto.peso_liquido)} {s(produto.unidade_peso)}</td></tr>
-                <tr><th className="bg-muted/50 px-3 py-2 text-foreground">Embalagem</th><td className="px-3 py-2">{s(produto.embalagem)}</td></tr>
-                <tr><th className="bg-muted/50 px-3 py-2 text-foreground">Validade</th><td className="px-3 py-2">{s(produto.validade_meses)} meses</td></tr>
-              </tbody>
-            </table>
-          </div>
+          <div className="grid md:grid-cols-2 gap-8">
+            <div className="space-y-6">
+              <section>
+                <h2 className="text-sm font-bold text-primary uppercase tracking-widest border-l-4 border-primary pl-3 mb-4">1. Identificação</h2>
+                <div className="grid grid-cols-2 gap-y-3 text-sm">
+                  <div className="text-muted-foreground">Marca:</div><div className="font-semibold">{s(produto.marca) || "—"}</div>
+                  <div className="text-muted-foreground">Espécie Alvo:</div><div className="font-semibold">{s(produto.especie_alvo) || "—"}</div>
+                  <div className="text-muted-foreground">Registro MAPA:</div><div className="font-semibold font-mono text-xs">{s(produto.registro_mapa) || "—"}</div>
+                  <div className="text-muted-foreground">Forma Física:</div><div className="font-semibold">{s(produto.forma_fisica) || "—"}</div>
+                  <div className="text-muted-foreground">Peso Líquido:</div><div className="font-semibold">{s(produto.peso_liquido)} {s(produto.unidade_peso)}</div>
+                </div>
+              </section>
 
-          <h2 className="text-sm font-semibold border-b border-border pb-1 mb-3 mt-6 text-foreground">2. Composição</h2>
-          <p className="text-sm text-foreground">{s(produto.composicao) || "—"}</p>
+              <section>
+                <h2 className="text-sm font-bold text-primary uppercase tracking-widest border-l-4 border-primary pl-3 mb-4">2. Composição</h2>
+                <p className="text-sm leading-relaxed text-foreground whitespace-pre-wrap">{s(produto.composicao) || "—"}</p>
+              </section>
+            </div>
 
-          <h2 className="text-sm font-semibold border-b border-border pb-1 mb-3 mt-6 text-foreground">3. Níveis de Garantia</h2>
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm border border-border">
-              <thead>
-                <tr><th className="bg-muted/50 px-3 py-2 text-foreground">Parâmetro</th><th className="bg-muted/50 px-3 py-2 text-foreground">Valor</th></tr>
-              </thead>
-              <tbody>
-                {Object.entries(niveis).map(([key, value]) => [key, formatNivel(value)] as const).filter(([_, v]) => v).map(([key, value]) => (
-                  <tr key={key}>
-                    <td className="px-3 py-1.5">{NIVEIS_LABELS[key] || key}</td>
-                    <td className="px-3 py-1.5 font-mono">{value}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-
-          <h2 className="text-sm font-semibold border-b border-border pb-1 mb-3 mt-6 text-foreground">4. Indicações de Uso</h2>
-          <p className="text-sm text-foreground">{s(produto.indicacoes) || "—"}</p>
-
-          <h2 className="text-sm font-semibold border-b border-border pb-1 mb-3 mt-6 text-foreground">5. Modo de Uso / Preparo</h2>
-          <p className="text-sm text-foreground">{s(produto.modo_uso) || "—"}</p>
-          {produto.modo_preparo && <p className="text-sm text-foreground mt-1"><strong>Preparo:</strong> {s(produto.modo_preparo)}</p>}
-
-          <h2 className="text-sm font-semibold border-b border-border pb-1 mb-3 mt-6 text-foreground">6. Precauções e Restrições</h2>
-          <p className="text-sm text-foreground">{s(produto.precaucoes) || "—"}</p>
-
-          <h2 className="text-sm font-semibold border-b border-border pb-1 mb-3 mt-6 text-foreground">7. Armazenamento</h2>
-          <p className="text-sm text-foreground">{s(produto.armazenamento) || "—"}</p>
-
-          {produto.diferenciais && (
-            <>
-              <h2 className="text-sm font-semibold border-b border-border pb-1 mb-3 mt-6 text-foreground">8. Diferenciais do Produto</h2>
-              <p className="text-sm text-foreground">{s(produto.diferenciais)}</p>
-            </>
-          )}
-
-          {empresa && (
-            <>
-              <h2 className="text-sm font-semibold border-b border-border pb-1 mb-3 mt-6 text-foreground">9. Dados do Fabricante</h2>
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm border border-border">
-                  <tbody>
-                    <tr><th className="bg-muted/50 px-3 py-2 text-foreground w-[40%]">Razão Social</th><td className="px-3 py-2">{s(empresa.nome)}</td></tr>
-                    <tr><th className="bg-muted/50 px-3 py-2 text-foreground">CNPJ</th><td className="px-3 py-2">{s(empresa.cnpj)}</td></tr>
-                    <tr><th className="bg-muted/50 px-3 py-2 text-foreground">Endereço</th><td className="px-3 py-2">{s(empresa.endereco)}</td></tr>
-                    <tr><th className="bg-muted/50 px-3 py-2 text-foreground">Resp. Técnico</th><td className="px-3 py-2">{s(empresa.responsavel_tecnico)} — CRMV: {s(empresa.crmv)}</td></tr>
+            <section>
+              <h2 className="text-sm font-bold text-primary uppercase tracking-widest border-l-4 border-primary pl-3 mb-4">3. Níveis de Garantia</h2>
+              <div className="border border-border rounded-lg overflow-hidden">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="bg-muted/50 border-b border-border">
+                      <th className="px-4 py-2 text-left font-bold text-xs uppercase tracking-wider">Parâmetro</th>
+                      <th className="px-4 py-2 text-center font-bold text-xs uppercase tracking-wider">Valor</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-border">
+                    {Object.entries(niveis).map(([key, value]) => [key, formatNivel(value)] as const).filter(([_, v]) => v).map(([key, value]) => (
+                      <tr key={key} className="hover:bg-muted/30 transition-colors">
+                        <td className="px-4 py-2 text-muted-foreground">{NIVEIS_LABELS[key] || key}</td>
+                        <td className="px-4 py-2 text-center font-mono text-xs font-bold text-primary">{value}</td>
+                      </tr>
+                    ))}
                   </tbody>
                 </table>
               </div>
-            </>
-          )}
+            </section>
+          </div>
 
-          <p className="text-xs text-muted-foreground mt-8 text-center footer">
-            Documento gerado pelo sistema Feed_BPF — Ficha Técnica conforme exigências MAPA
-          </p>
-        </CardContent>
-      </Card>
+          <div className="grid md:grid-cols-2 gap-8 pt-6">
+            <section className="space-y-4">
+              <div>
+                <h2 className="text-xs font-bold text-primary uppercase tracking-widest mb-2 flex items-center gap-2">
+                  <div className="w-1.5 h-1.5 rounded-full bg-primary" /> 4. Indicações de Uso
+                </h2>
+                <p className="text-sm text-foreground bg-muted/30 p-3 rounded-lg border border-border/50">{s(produto.indicacoes) || "—"}</p>
+              </div>
+              <div>
+                <h2 className="text-xs font-bold text-primary uppercase tracking-widest mb-2 flex items-center gap-2">
+                  <div className="w-1.5 h-1.5 rounded-full bg-primary" /> 5. Modo de Uso / Preparo
+                </h2>
+                <p className="text-sm text-foreground bg-muted/30 p-3 rounded-lg border border-border/50">{s(produto.modo_uso) || "—"}</p>
+              </div>
+            </section>
+
+            <section className="space-y-4">
+              <div>
+                <h2 className="text-xs font-bold text-primary uppercase tracking-widest mb-2 flex items-center gap-2">
+                  <div className="w-1.5 h-1.5 rounded-full bg-primary" /> 6. Precauções
+                </h2>
+                <p className="text-sm text-foreground bg-muted/30 p-3 rounded-lg border border-border/50">{s(produto.precaucoes) || "—"}</p>
+              </div>
+              <div>
+                <h2 className="text-xs font-bold text-primary uppercase tracking-widest mb-2 flex items-center gap-2">
+                  <div className="w-1.5 h-1.5 rounded-full bg-primary" /> 7. Armazenamento
+                </h2>
+                <p className="text-sm text-foreground bg-muted/30 p-3 rounded-lg border border-border/50">{s(produto.armazenamento) || "—"}</p>
+              </div>
+            </section>
+          </div>
+
+          {/* Footer with stamp */}
+          <div className="pt-10 mt-10 border-t border-border flex flex-col items-center gap-4">
+            <div dangerouslySetInnerHTML={{ __html: carimboHTML(gerarCarimboSync({ 
+              documentoTipo: "Ficha Técnica", 
+              documentoId: produto.id, 
+              empresa: empresa?.nome, 
+              usuario: user?.email 
+            })) }} />
+            <p className="text-[9px] text-muted-foreground italic text-center max-w-md">
+              Documento gerado eletronicamente pelo Sistema BPF Digital em {new Date().toLocaleString("pt-BR")}. 
+              Conformidade garantida conforme Decreto 12.031/2024.
+            </p>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
