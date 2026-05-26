@@ -72,159 +72,88 @@ export const NAV_ENTRIES: NavEntry[] = [
   { path: "/dashboard", label: "Dashboard Feed_BPF", icon: LayoutDashboard },
   { path: "/cadastro", label: "Dados da Empresa", icon: Building2 },
 
-  // --- PROGRAMAS POP (IN 04/2007) ---
+  // --- GESTÃO OPERACIONAL ---
   {
-    label: "POP 01 - Fornecedores & MP",
-    icon: Users,
+    label: "Gestão Operacional",
+    icon: Layers,
     items: [
+      { path: "/pcp", label: "PCP / Sequenciamento", icon: CalendarDays },
+      { path: "/producao", label: "Controle de Produção", icon: Layers },
+      { path: "/rastreabilidade", label: "Rastreabilidade", icon: History },
+      { path: "/expedicao", label: "Expedição", icon: Truck },
       { path: "/fornecedores", label: "Controle de Fornecedores", icon: Users },
       { path: "/recebimento", label: "Recebimento de MP", icon: ClipboardList },
-      { path: "/guia-pops?pop=POP-01", label: "ITs de Qualificação", icon: FileText },
+      { path: "/produtos", label: "Cadastro de Produtos", icon: Package },
+      { path: "/formulas", label: "Fórmulas de Produção", icon: FlaskConical },
     ],
   },
+
+  // --- QUALIDADE & SEGURANÇA (POPs) ---
   {
-    label: "POP 02 - Higiene & Limpeza",
-    icon: Droplets,
+    label: "Qualidade & Segurança",
+    icon: ShieldCheck,
     items: [
       { path: "/higiene", label: "Higiene / Sanitização", icon: Droplets },
       { path: "/validacao-limpeza", label: "Validação de Limpeza", icon: CheckCircle2 },
-      { path: "/guia-pops?pop=POP-02", label: "ITs de Higienização", icon: FileText },
-    ],
-  },
-  {
-    label: "POP 03 - Saúde dos Colaboradores",
-    icon: Activity,
-    items: [
       { path: "/saude-pessoal", label: "Saúde Pessoal", icon: Activity },
       { path: "/treinamentos", label: "Treinamentos BPF", icon: GraduationCap },
-      { path: "/guia-pops?pop=POP-03", label: "ITs de Saúde e Higiene", icon: FileText },
-    ],
-  },
-  {
-    label: "POP 04 - Potabilidade da Água",
-    icon: Droplets,
-    items: [
       { path: "/potabilidade-agua", label: "Controle da Água", icon: Droplets },
-      { path: "/guia-pops?pop=POP-04", label: "ITs de Potabilidade", icon: FileText },
-    ],
-  },
-  {
-    label: "POP 05 - Produção & PCP",
-    icon: Layers,
-    items: [
-      { path: "/produtos", label: "Cadastro de Produtos", icon: Package },
-      { path: "/formulas", label: "Fórmulas de Produção", icon: FlaskConical },
-      { path: "/producao", label: "Controle de Produção", icon: Layers },
-      { path: "/pcp", label: "PCP / Sequenciamento", icon: CalendarDays },
       { path: "/monitoramento-pcc", label: "Monitoramento PCC", icon: Zap },
-      { path: "/guia-pops?pop=POP-05", label: "ITs de Produção", icon: FileText },
-    ],
-  },
-  {
-    label: "POP 06 - Manutenção & Calibração",
-    icon: Wrench,
-    items: [
       { path: "/manutencao", label: "Manutenção Preventiva", icon: Wrench },
-      { path: "/guia-pops?pop=POP-06", label: "ITs de Manutenção", icon: FileText },
-    ],
-  },
-  {
-    label: "POP 07 - Controle de Pragas",
-    icon: Bug,
-    items: [
       { path: "/pragas", label: "Manejo de Pragas", icon: Bug },
-      { path: "/guia-pops?pop=POP-07", label: "ITs de Pragas", icon: FileText },
-    ],
-  },
-  {
-    label: "POP 08 - Resíduos & Efluentes",
-    icon: Trash2,
-    items: [
       { path: "/residuos", label: "Controle de Resíduos", icon: Trash2 },
-      { path: "/guia-pops?pop=POP-08", label: "ITs de Resíduos", icon: FileText },
-    ],
-  },
-  {
-    label: "POP 09 - Rastreabilidade & Recall",
-    icon: History,
-    items: [
-      { path: "/rastreabilidade", label: "Rastreabilidade", icon: History },
-      { path: "/expedicao", label: "Expedição", icon: Truck },
-      { path: "/guia-pops?pop=POP-09", label: "ITs de Rastreabilidade", icon: FileText },
-    ],
-  },
-  {
-    label: "POPs 10/11/12 - Armazenamento & PAC",
-    icon: Building2,
-    items: [
-      { path: "/armazenamento-transporte", label: "Armazenamento", icon: Building2 },
-      { path: "/substancias", label: "Substâncias / Zap", icon: Zap },
       { path: "/autocontrole", label: "Monitoramento PAC", icon: ClipboardCheck },
-      { path: "/guia-pops?pop=POP-10", label: "Programa PAC", icon: FileText },
-      { path: "/visitantes", label: "Visitantes", icon: Users },
-      { path: "/whatsapp", label: "Configurar WhatsApp", icon: MessageSquare },
+      { path: "/matriz-risco", label: "Matriz de Risco", icon: ShieldAlert },
     ],
   },
 
-  // --- GESTÃO DE DOCUMENTOS ---
+  // --- DOCUMENTAÇÃO & REGISTROS ---
   {
-    label: "Gestão de Documentos",
-    icon: FileText,
-    items: [
-      { path: "/documentos", label: "Documentos e Registros", icon: FileText },
-      { path: "/execucao-pops", label: "Execução ITs/POPs", icon: Clipboard },
-    ],
-  },
-
-  // --- OUTROS MÓDULOS ---
-  { path: "/orientacoes", label: "🎓 Central de Orientações", icon: GraduationCap },
-  {
-    label: "Documentação BPF",
+    label: "Documentação & Registros",
     icon: FileText,
     items: [
       { path: "/manual", label: "Manual Feed_BPF", icon: BookOpen },
-      { path: "/guia-geral-pops", label: "Guia Geral POPs", icon: ClipboardList },
-      { path: "/guia-pops", label: "ITs Detalhadas", icon: Clipboard },
+      { path: "/documentos", label: "Documentos e Registros", icon: FileText },
+      { path: "/execucao-pops", label: "Execução ITs/POPs", icon: Clipboard },
       { path: "/planilhas-pop", label: "Planilhas de POPs", icon: Clipboard },
+      { path: "/guia-geral-pops", label: "Guia Geral POPs", icon: ClipboardList },
+      { path: "/guia-pops", label: "ITs Detalhadas", icon: FileText },
+      { path: "/modelos", label: "Biblioteca de Modelos", icon: FolderOpen },
     ],
   },
+
+  // --- AUDITORIA & MELHORIA ---
   {
-    label: "Auditoria & Qualidade",
+    label: "Auditoria & Melhoria",
     icon: ShieldCheck,
     items: [
       { path: "/auditoria", label: "Auditoria BPF", icon: ClipboardCheck },
       { path: "/nao-conformidades", label: "Não Conformidades", icon: AlertTriangle },
-      { path: "/qualidade-total", label: "Qualidade Total (SAC)", icon: MessageSquare },
       { path: "/sala-auditor", label: "🔍 Sala do Auditor", icon: ClipboardCheck },
-    ],
-  },
-  { path: "/modelos", label: "📁 Modelos", icon: FolderOpen },
-  { path: "/modo-tablet", label: "🏭 Modo Tablet", icon: Tablet },
-  {
-    label: "Marketing & Growth",
-    icon: Megaphone,
-    items: [
-      { path: "/marketing", label: "Marketing Hub", icon: Megaphone },
-      { path: "/gerador-headlines", label: "Gerador de Headlines", icon: Zap },
-      { path: "/whatsapp", label: "Configurar WhatsApp", icon: MessageSquare },
+      { path: "/checklist-pre-auditoria", label: "Checklist Pré-Auditoria", icon: ClipboardList },
+      { path: "/qualidade-total", label: "Qualidade Total (SAC)", icon: MessageSquare },
+      { path: "/indicadores", label: "Indicadores de Qualidade", icon: BarChart3 },
     ],
   },
 
-  // --- ECOSSISTEMA BPF_CONSULT ---
+  // --- ECOSSISTEMA & GROWTH ---
   {
-    label: "Ecossistema BPF_Consult",
-    icon: LayoutDashboard,
+    label: "Ecossistema & Growth",
+    icon: Zap,
     items: [
+      { path: "/marketing", label: "Marketing Hub", icon: Megaphone },
+      { path: "/whatsapp", label: "Configurar WhatsApp", icon: MessageSquare },
+      { path: "/modo-tablet", label: "Factory / Modo Tablet", icon: Tablet },
+      { path: "/orientacoes", label: "Central de Orientações", icon: GraduationCap },
       { path: "/feedbpf/dashboard", label: "Feed_BPF", icon: LayoutDashboard, logo: logoFeedBpf },
       { path: "https://friendly-flame-igniter.lovable.app", label: "Audits_BPF", icon: ShieldCheck, logo: logoAuditsBpf, external: true },
       { path: "https://soil-to-client.lovable.app", label: "Agro RC CRM", icon: BarChart3, logo: logoAgrorc, external: true },
       { path: "/rotulos/dashboard", label: "Nutri_Agro Labels", icon: Tag, logo: logoRotulos },
-      // NutriCRM temporariamente removido — produto em manutenção.
       { path: "https://regional-fixer-charm.lovable.app", label: "AgroGestão CRM", icon: Building2, logo: logoAgrogestao, external: true },
     ],
   },
-  
-  // --- ADMINISTRAÇÃO (SUPERADMIN) ---
+
+  // --- ADMINISTRAÇÃO ---
   {
     label: "Administração",
     icon: ShieldAlert,
