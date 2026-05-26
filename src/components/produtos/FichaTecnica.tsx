@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { useEmpresa } from "@/hooks/useEmpresa";
 import { gerarCarimboSync, carimboHTML } from "@/utils/carimboDocumento";
 import { printElement } from "@/utils/printUtils";
 
@@ -184,7 +185,7 @@ export default function FichaTecnica({ produtoId }: Props) {
             <div dangerouslySetInnerHTML={{ __html: carimboHTML(gerarCarimboSync({ 
               documentoTipo: "Ficha Técnica", 
               documentoId: produto.id, 
-              empresa: empresa?.nome, 
+              empresa: empresaAtiva?.nome || "BPF DIGITAL", 
               usuario: user?.email 
             })) }} />
             <p className="text-[9px] text-muted-foreground italic text-center max-w-md">
