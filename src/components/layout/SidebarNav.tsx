@@ -110,6 +110,21 @@ export const SidebarNav = React.memo(({
   }, [entries, userRoles, userEmail]);
 
   useEffect(() => {
+    if (searchQuery) {
+      const nextOpen = { ...openGroups };
+      filteredByRole.forEach((entry) => {
+        if (isGroup(entry)) {
+          const hasMatch = entry.items.some(item => 
+            item.label.toLowerCase().includes(searchQuery.toLowerCase())
+          );
+          if (hasMatch) nextOpen[entry.label] = true;
+        }
+      });
+      setOpenGroups(nextOpen);
+    }
+  }, [searchQuery, filteredByRole]);
+
+  useEffect(() => {
     setOpenGroups((prev) => {
       const next = { ...prev };
       filteredByRole.forEach((entry) => {
@@ -120,6 +135,34 @@ export const SidebarNav = React.memo(({
       return next;
     });
   }, [currentPath, filteredByRole]);
+
+  const searchedEntries = useMemo(() => {
+    if (!searchQuery) return filteredByRole;
+    
+    const query = searchQuery.toLowerCase();
+    return filteredByRole.map(entry => {
+      if (isGroup(entry)) {
+        const matchingItems = entry.items.filter(item => 
+          item.label.toLowerCase().includes(query) || 
+          (item.keywords && item.keywords.some(k => k.toLowerCase().includes(query)))
+        );
+        
+        if (matchingItems.length > 0) {
+          return { ...entry, items: matchingItems };
+        }
+        
+        if (entry.label.toLowerCase().includes(query)) {
+          return entry;
+        }
+        
+        return null;
+      } else {
+        const matches = entry.label.toLowerCase().includes(query) || 
+                       (entry.keywords && entry.keywords.some(k => k.toLowerCase().includes(query)));
+        return matches ? entry : null;
+      }
+    }).filter(Boolean) as NavEntry[];
+  }, [filteredByRole, searchQuery]);
 
   useEffect(() => {
     localStorage.setItem(FAVORITES_KEY, JSON.stringify(favorites));
