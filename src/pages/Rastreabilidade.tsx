@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useMemo } from "react";
-import { Search, Plus, Loader2, Package, AlertTriangle, Truck, ShieldAlert, Timer, Play, Square, RotateCcw, ArrowUpDown, CheckCircle2, XCircle, Save, Download, FlaskConical, Bell, BarChart3, GitBranch, ChevronRight, AlertCircle } from "lucide-react";
+import { Search, Plus, Loader2, Package, AlertTriangle, Truck, ShieldAlert, Timer, Play, Square, RotateCcw, ArrowUpDown, CheckCircle2, XCircle, Save, Download, FlaskConical, Bell, BarChart3, GitBranch, ChevronRight, AlertCircle, Printer } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
@@ -17,6 +17,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useEmpresa } from "@/hooks/useEmpresa";
 import { toast } from "sonner";
+import { printElement } from "@/utils/printUtils";
+
 
 interface RastreabilidadeRow {
   id: string;
