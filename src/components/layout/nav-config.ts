@@ -116,6 +116,7 @@ export const NAV_ENTRIES: NavEntry[] = [
       { path: "/formulas", label: "Fórmulas de Produção", icon: FlaskConical },
       { path: "/producao", label: "Controle de Produção", icon: Layers },
       { path: "/pcp", label: "PCP / Sequenciamento", icon: CalendarDays },
+      { path: "/monitoramento-pcc", label: "Monitoramento PCC", icon: Zap },
       { path: "/guia-pops?pop=POP-05", label: "ITs de Produção", icon: FileText },
     ],
   },
@@ -158,7 +159,8 @@ export const NAV_ENTRIES: NavEntry[] = [
     items: [
       { path: "/armazenamento-transporte", label: "Armazenamento", icon: Building2 },
       { path: "/substancias", label: "Substâncias / Zap", icon: Zap },
-      { path: "/guia-pops?pop=POP-10", label: "Programa PAC", icon: ClipboardCheck },
+      { path: "/autocontrole", label: "Monitoramento PAC", icon: ClipboardCheck },
+      { path: "/guia-pops?pop=POP-10", label: "Programa PAC", icon: FileText },
       { path: "/visitantes", label: "Visitantes", icon: Users },
       { path: "/whatsapp", label: "Configurar WhatsApp", icon: MessageSquare },
     ],
@@ -192,6 +194,7 @@ export const NAV_ENTRIES: NavEntry[] = [
     items: [
       { path: "/auditoria", label: "Auditoria BPF", icon: ClipboardCheck },
       { path: "/nao-conformidades", label: "Não Conformidades", icon: AlertTriangle },
+      { path: "/qualidade-total", label: "Qualidade Total (SAC)", icon: MessageSquare },
       { path: "/sala-auditor", label: "🔍 Sala do Auditor", icon: ClipboardCheck },
     ],
   },

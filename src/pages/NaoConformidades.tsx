@@ -41,6 +41,9 @@ interface NCRow {
   descricao: string;
   causa: string | null;
   acao_corretiva: string | null;
+  acao_preventiva: string | null;
+  verificacao_eficacia: string | null;
+  data_verificacao: string | null;
   responsavel: string | null;
   prazo: string | null;
   status: string | null;
@@ -63,6 +66,9 @@ export default function NaoConformidades() {
   // Edit form
   const [editCausa, setEditCausa] = useState("");
   const [editAcao, setEditAcao] = useState("");
+  const [editAcaoPreventiva, setEditAcaoPreventiva] = useState("");
+  const [editVerificacao, setEditVerificacao] = useState("");
+  const [editDataVerificacao, setEditDataVerificacao] = useState("");
   const [editResponsavel, setEditResponsavel] = useState("");
   const [editPrazo, setEditPrazo] = useState("");
 
@@ -72,6 +78,7 @@ export default function NaoConformidades() {
   const [formDescricao, setFormDescricao] = useState("");
   const [formCausa, setFormCausa] = useState("");
   const [formAcao, setFormAcao] = useState("");
+  const [formAcaoPreventiva, setFormAcaoPreventiva] = useState("");
   const [formResponsavel, setFormResponsavel] = useState("");
   const [formPrazo, setFormPrazo] = useState("");
 
@@ -92,7 +99,7 @@ export default function NaoConformidades() {
   const resetForm = () => {
     setFormData(new Date().toISOString().split("T")[0]);
     setFormSetor(""); setFormDescricao(""); setFormCausa("");
-    setFormAcao(""); setFormResponsavel(""); setFormPrazo("");
+    setFormAcao(""); setFormAcaoPreventiva(""); setFormResponsavel(""); setFormPrazo("");
   };
 
   const handleAdd = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -106,9 +113,10 @@ export default function NaoConformidades() {
       descricao: formDescricao,
       causa: formCausa,
       acao_corretiva: formAcao,
+      acao_preventiva: formAcaoPreventiva,
       responsavel: formResponsavel,
       prazo: formPrazo || null,
-    });
+    } as any);
     if (error) toast.error("Erro ao salvar");
     else { toast.success("NC registrada com plano de ação!"); setOpen(false); resetForm(); fetchData(); }
     setSaving(false);
@@ -178,6 +186,9 @@ export default function NaoConformidades() {
     const { error } = await supabase.from("nao_conformidades").update({
       causa: editCausa,
       acao_corretiva: editAcao,
+      acao_preventiva: editAcaoPreventiva,
+      verificacao_eficacia: editVerificacao,
+      data_verificacao: editDataVerificacao || null,
       responsavel: editResponsavel,
       prazo: editPrazo || null,
     } as any).eq("id", editId);
@@ -190,6 +201,9 @@ export default function NaoConformidades() {
     setEditId(nc.id);
     setEditCausa(nc.causa || "");
     setEditAcao(nc.acao_corretiva || "");
+    setEditAcaoPreventiva(nc.acao_preventiva || "");
+    setEditVerificacao(nc.verificacao_eficacia || "");
+    setEditDataVerificacao(nc.data_verificacao || "");
     setEditResponsavel(nc.responsavel || "");
     setEditPrazo(nc.prazo || "");
     setEditOpen(true);
@@ -320,6 +334,7 @@ export default function NaoConformidades() {
                   <div className="space-y-3">
                     <div className="space-y-1"><Label>Causa Raiz / Causa Provável *</Label><Textarea value={formCausa} onChange={e => setFormCausa(e.target.value)} required placeholder="Identifique a causa raiz do problema (5 Porquês, Ishikawa...)" /></div>
                     <div className="space-y-1"><Label>Ação Corretiva *</Label><Textarea value={formAcao} onChange={e => setFormAcao(e.target.value)} required placeholder="Descreva a ação corretiva a ser implementada..." /></div>
+                    <div className="space-y-1"><Label>Ação Preventiva</Label><Textarea value={formAcaoPreventiva} onChange={e => setFormAcaoPreventiva(e.target.value)} placeholder="Descreva a ação preventiva para evitar reincidência..." /></div>
                   </div>
                 </div>
 
@@ -441,7 +456,16 @@ export default function NaoConformidades() {
                                                 Plano de Ação Corretiva
                                               </p>
                                               {temPlano ? (
-                                                <p className="text-sm">{nc.acao_corretiva}</p>
+                                                <div className="space-y-2">
+                                                  <p className="text-sm"><strong>Corretiva:</strong> {nc.acao_corretiva}</p>
+                                                  {nc.acao_preventiva && <p className="text-sm text-muted-foreground"><strong>Preventiva:</strong> {nc.acao_preventiva}</p>}
+                                                  {nc.verificacao_eficacia && (
+                                                    <div className="mt-2 p-2 bg-background rounded border border-primary/20">
+                                                      <p className="text-[10px] font-bold text-primary uppercase">Eficácia Verificada em {nc.data_verificacao}</p>
+                                                      <p className="text-xs italic">{nc.verificacao_eficacia}</p>
+                                                    </div>
+                                                  )}
+                                                </div>
                                               ) : (
                                                 <div className="text-center py-2">
                                                   <p className="text-sm text-muted-foreground mb-2">Nenhum plano de ação definido</p>
@@ -570,6 +594,21 @@ export default function NaoConformidades() {
             <div className="space-y-1">
               <Label>Ação Corretiva *</Label>
               <Textarea value={editAcao} onChange={e => setEditAcao(e.target.value)} placeholder="Descreva a ação corretiva a ser implementada..." />
+            </div>
+            <div className="space-y-1">
+              <Label>Ação Preventiva</Label>
+              <Textarea value={editAcaoPreventiva} onChange={e => setEditAcaoPreventiva(e.target.value)} placeholder="Ação para evitar reincidência..." />
+            </div>
+            <div className="p-3 bg-primary/5 rounded border border-primary/20 space-y-2">
+              <p className="text-xs font-bold text-primary uppercase">Eficácia (CAPA)</p>
+              <div className="space-y-1">
+                <Label className="text-[10px]">Verificação de Eficácia</Label>
+                <Textarea value={editVerificacao} onChange={e => setEditVerificacao(e.target.value)} placeholder="Descreva como a eficácia foi verificada..." className="h-20" />
+              </div>
+              <div className="space-y-1">
+                <Label className="text-[10px]">Data da Verificação</Label>
+                <Input type="date" value={editDataVerificacao} onChange={e => setEditDataVerificacao(e.target.value)} />
+              </div>
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1">

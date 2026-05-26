@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Users, Plus, Loader2, Star, AlertCircle, CheckCircle2, Clock, FileText, Download, Printer, ExternalLink, Search } from "lucide-react";
+import { Users, Plus, Loader2, Star, AlertCircle, CheckCircle2, Clock, FileText, Download, Printer, ExternalLink, Search, Edit } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
@@ -59,6 +59,7 @@ interface FornecedorRow {
   doc_certificado_analise: boolean | null;
   resultado_qualificacao: string | null;
   created_at: string;
+  auditorias?: any[];
 }
 
 interface RecebimentoRow {
@@ -134,10 +135,11 @@ export default function Fornecedores() {
   const [nota, setNota] = useState(0);
   const [statusQual, setStatusQual] = useState("aprovado");
   const [obsAval, setObsAval] = useState("");
+  const [auditData, setAuditData] = useState<any[]>([]);
 
   const fetchData = async () => {
     if (!user) return;
-    let fornQ = supabase.from("fornecedores").select("*").order("nome");
+    let fornQ = supabase.from("fornecedores").select("*, auditorias:fornecedor_auditorias(*)").order("nome");
     let recQ = supabase.from("recebimento_mp").select("id, data, fornecedor, materia_prima, lote, aprovado").order("data", { ascending: false }).limit(100);
     if (empresaAtiva) {
       fornQ = fornQ.eq("empresa_id", empresaAtiva.id);
@@ -162,6 +164,52 @@ export default function Fornecedores() {
   };
 
   const handleAdd = async () => {
+    if (!nome || !user) return;
+    setSaving(true);
+    const payload = {
+      user_id: user.id, empresa_id: empresaAtiva?.id || null, nome, cnpj, endereco, contato: contatoQualidade, email: contatoQualidadeTelEmail,
+      tipo_produto: tipoProduto, observacoes,
+      bairro, cep, cidade, estado, inscricao_estadual: inscricaoEstadual,
+      registro_mapa: registroMapa, contato_qualidade: contatoQualidade,
+      contato_qualidade_tel_email: contatoQualidadeTelEmail,
+      contato_comercial: contatoComercial, contato_comercial_tel_email: contatoComercialTelEmail,
+      produtos_fornecidos: produtosFornecidos,
+      doc_certificado_registro_mapa: docCertRegistroMapa,
+      doc_alvara_funcionamento: docAlvara,
+      doc_certificado_registro_produto: docCertRegistroProduto,
+      doc_ficha_tecnica: docFichaTecnica,
+      doc_certificado_analise: docCertAnalise,
+      resultado_qualificacao: resultadoQualificacao,
+      status_qualificacao: resultadoQualificacao,
+      registro_sipeagro: registroSipeagro,
+      sipeagro_verificado: sipeagroVerificado,
+      sipeagro_data_verificacao: sipeagroVerificado ? new Date().toISOString().split("T")[0] : null,
+    } as any;
+
+    let error;
+    if (selectedId) {
+        ({ error } = await supabase.from("fornecedores").update(payload).eq("id", selectedId));
+    } else {
+        ({ error } = await supabase.from("fornecedores").insert(payload));
+    }
+
+    if (error) toast.error("Erro ao salvar");
+    else { toast.success(selectedId ? "Fornecedor atualizado!" : "Fornecedor cadastrado!"); setOpen(false); resetForm(); fetchData(); }
+    setSaving(false);
+  };
+
+  const handleEdit = (f: FornecedorRow) => {
+    setSelectedId(f.id);
+    setNome(f.nome || ""); setCnpj(f.cnpj || ""); setEndereco(f.endereco || ""); setBairro(f.bairro || ""); setCep(f.cep || ""); setCidade(f.cidade || ""); setEstado(f.estado || "");
+    setInscricaoEstadual(f.inscricao_estadual || ""); setRegistroMapa(f.registro_mapa || ""); setContatoQualidade(f.contato_qualidade || ""); setContatoQualidadeTelEmail(f.contato_qualidade_tel_email || "");
+    setContatoComercial(f.contato_comercial || ""); setContatoComercialTelEmail(f.contato_comercial_tel_email || ""); setProdutosFornecidos(f.produtos_fornecidos || ""); setTipoProduto(f.tipo_produto || "");
+    setDocCertRegistroMapa(!!f.doc_certificado_registro_mapa); setDocAlvara(!!f.doc_alvara_funcionamento); setDocCertRegistroProduto(!!f.doc_certificado_registro_produto);
+    setDocFichaTecnica(!!f.doc_ficha_tecnica); setDocCertAnalise(!!f.doc_certificado_analise); setResultadoQualificacao(f.resultado_qualificacao || "pendente");
+    setObservacoes(f.observacoes || ""); setRegistroSipeagro(f.registro_sipeagro || ""); setSipeagroVerificado(!!f.sipeagro_verificado);
+    setOpen(true);
+  };
+
+  const unusedHandleAdd = async () => {
     if (!nome || !user) return;
     setSaving(true);
     const { error } = await supabase.from("fornecedores").insert({
@@ -282,11 +330,12 @@ export default function Fornecedores() {
               </DialogHeader>
 
               <Tabs value={formTab} onValueChange={setFormTab}>
-                <TabsList className="grid grid-cols-4 w-full">
+                <TabsList className="grid grid-cols-5 w-full">
                   <TabsTrigger value="dados" className="text-xs">1. Dados</TabsTrigger>
                   <TabsTrigger value="produtos" className="text-xs">2. Produtos</TabsTrigger>
                   <TabsTrigger value="documentos" className="text-xs">3. Documentos</TabsTrigger>
                   <TabsTrigger value="resultado" className="text-xs">4. Resultado</TabsTrigger>
+                  <TabsTrigger value="auditorias" className="text-xs">5. Auditorias</TabsTrigger>
                 </TabsList>
 
                 {/* ABA 1 — DADOS DO FORNECEDOR */}
@@ -487,6 +536,54 @@ export default function Fornecedores() {
                     </Button>
                   </div>
                 </TabsContent>
+
+                {/* ABA 5 — AUDITORIAS */}
+                <TabsContent value="auditorias" className="space-y-4 mt-4">
+                  <h3 className="text-sm font-semibold border-b pb-1">5 — Histórico de Auditorias</h3>
+                  <div className="space-y-4">
+                    {!selectedId ? (
+                      <p className="text-xs text-muted-foreground">Cadastre o fornecedor primeiro para gerenciar auditorias.</p>
+                    ) : (
+                      <>
+                        <div className="flex justify-between items-center">
+                          <p className="text-xs font-semibold">Últimas auditorias realizadas</p>
+                        </div>
+                        <div className="border rounded-lg overflow-hidden">
+                          <Table>
+                            <TableHeader>
+                              <TableRow className="bg-muted/30">
+                                <TableHead className="text-[10px]">Data</TableHead>
+                                <TableHead className="text-[10px]">Tipo</TableHead>
+                                <TableHead className="text-[10px]">Nota</TableHead>
+                                <TableHead className="text-[10px]">Auditor</TableHead>
+                              </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                              {fornecedores.find(f => f.id === selectedId)?.auditorias?.map((a: any) => (
+                                <TableRow key={a.id}>
+                                  <TableCell className="text-xs">{a.data_auditoria}</TableCell>
+                                  <TableCell className="text-xs">{a.tipo_auditoria}</TableCell>
+                                  <TableCell className="text-xs font-bold">{a.pontuacao_obtida}</TableCell>
+                                  <TableCell className="text-xs">{a.auditor}</TableCell>
+                                </TableRow>
+                              ))}
+                              {(!fornecedores.find(f => f.id === selectedId)?.auditorias || fornecedores.find(f => f.id === selectedId)?.auditorias?.length === 0) && (
+                                <TableRow>
+                                  <TableCell colSpan={4} className="text-center py-4 text-xs text-muted-foreground">
+                                    Nenhuma auditoria registrada.
+                                  </TableCell>
+                                </TableRow>
+                              )}
+                            </TableBody>
+                          </Table>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                  <div className="flex justify-start">
+                    <Button type="button" variant="outline" onClick={() => setFormTab("resultado")}>← Anterior</Button>
+                  </div>
+                </TabsContent>
               </Tabs>
             </DialogContent>
           </Dialog>
@@ -559,6 +656,9 @@ export default function Fornecedores() {
                       </TableCell>
                       <TableCell>
                         <div className="flex gap-1">
+                          <Button variant="outline" size="sm" className="text-xs" onClick={() => handleEdit(f)}>
+                            <Edit className="w-3 h-3 mr-1" /> Editar
+                          </Button>
                           <Button variant="outline" size="sm" className="text-xs" onClick={() => {
                             setSelectedId(f.id);
                             setNota(f.nota_avaliacao || 0);
