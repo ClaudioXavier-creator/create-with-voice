@@ -204,7 +204,7 @@ export default function Modelos() {
 
   const handlePrint = () => {
     if (selectedModelo) {
-      printElement("printable-area", selectedModelo.nome);
+      printElement("printable-area", { title: selectedModelo.nome });
     }
   };
 

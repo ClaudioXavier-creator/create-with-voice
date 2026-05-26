@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useMemo } from "react";
-import { Search, Plus, Loader2, Package, AlertTriangle, Truck, ShieldAlert, Timer, Play, Square, RotateCcw, ArrowUpDown, CheckCircle2, XCircle, Save, Download, FlaskConical, Bell, BarChart3, GitBranch, ChevronRight, AlertCircle } from "lucide-react";
+import { Search, Plus, Loader2, Package, AlertTriangle, Truck, ShieldAlert, Timer, Play, Square, RotateCcw, ArrowUpDown, CheckCircle2, XCircle, Save, Download, FlaskConical, Bell, BarChart3, GitBranch, ChevronRight, AlertCircle, Printer } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
@@ -17,6 +17,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useEmpresa } from "@/hooks/useEmpresa";
 import { toast } from "sonner";
+import { printElement } from "@/utils/printUtils";
+
 
 interface RastreabilidadeRow {
   id: string;
@@ -98,6 +100,9 @@ export default function Rastreabilidade() {
   const [testeLote, setTesteLote] = useState("");
   const [testeRunning, setTesteRunning] = useState(false);
   const [testeTime, setTesteTime] = useState(0);
+  const [certData, setCertData] = useState<any>(null);
+  const certRef = useRef<HTMLDivElement>(null);
+
   const [testeResult, setTesteResult] = useState<TesteResult | null>(null);
   const [testeSaving, setTesteSaving] = useState(false);
   const [testeObs, setTesteObs] = useState("");
@@ -685,117 +690,163 @@ export default function Rastreabilidade() {
     const produto = recs[0].produto;
 
     // MPs únicas
-    const mps = new Map<string, { mp: string; lote: string; fornecedor: string }>();
-    recs.forEach(r => {
-      const k = `${r.materia_prima}|${r.lote_mp || ""}`;
-      if (!mps.has(k)) mps.set(k, { mp: r.materia_prima, lote: r.lote_mp || "—", fornecedor: r.fornecedor || "—" });
-    });
+    const mpsArr = Array.from(new Map(recs.map(r => [`${r.materia_prima}|${r.lote_mp || ""}`, { mp: r.materia_prima, lote: r.lote_mp || "—", fornecedor: r.fornecedor || "—" }])).values());
+    
     // Destinos únicos
-    const destinos = new Map<string, { cliente: string; nf: string; data: string; qtd: string; local: string }>();
-    recs.forEach(r => {
-      if (!r.cliente_destino) return;
-      const k = `${r.cliente_destino}|${r.nota_fiscal || ""}`;
-      if (!destinos.has(k)) destinos.set(k, { cliente: r.cliente_destino, nf: r.nota_fiscal || "—", data: r.data_venda || "—", qtd: r.quantidade_vendida || "—", local: r.local_entrega || "—" });
-    });
+    const destinosArr = Array.from(new Map(recs.filter(r => r.cliente_destino).map(r => [`${r.cliente_destino}|${r.nota_fiscal || ""}`, { cliente: r.cliente_destino!, nf: r.nota_fiscal || "—", data: r.data_venda || "—", qtd: r.quantidade_vendida || "—", local: r.local_entrega || "—" }])).values());
 
     // Buscar contraprova e dados de produção do lote
     const { data: prodInfo } = await supabase.from("producao").select("*").eq("lote", certLote).maybeSingle();
 
-    const empresaNome = empresaAtiva?.nome || "—";
+    const empresaNome = empresaAtiva?.nome || "BPF DIGITAL";
     const rt = empresaAtiva?.responsavel_tecnico || "—";
     const crmv = empresaAtiva?.crmv || "—";
     const dataEmissao = new Date().toLocaleString("pt-BR");
 
-    const html = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>Certificado de Rastreabilidade — Lote ${certLote}</title>
-<style>
-  body { font-family: Arial, sans-serif; padding: 30px; color: #1a1a1a; font-size: 12px; }
-  .header { text-align: center; border-bottom: 3px solid #047857; padding-bottom: 12px; margin-bottom: 20px; }
-  .header h1 { color: #047857; margin: 0; font-size: 20px; }
-  .header h2 { margin: 4px 0; font-size: 14px; color: #555; }
-  .selo { display: inline-block; padding: 6px 14px; background: #047857; color: white; border-radius: 4px; font-weight: bold; font-size: 11px; margin-top: 6px; }
-  .box { border: 1px solid #ccc; padding: 12px; margin-bottom: 14px; border-radius: 4px; }
-  .box h3 { margin: 0 0 8px 0; color: #047857; font-size: 13px; border-bottom: 1px solid #e5e5e5; padding-bottom: 4px; }
-  table { width: 100%; border-collapse: collapse; font-size: 11px; }
-  th { background: #047857; color: white; padding: 6px; text-align: left; }
-  td { padding: 6px; border-bottom: 1px solid #e5e5e5; }
-  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  .label { font-weight: bold; color: #555; }
-  .footer { margin-top: 30px; text-align: center; font-size: 10px; color: #666; border-top: 1px solid #ccc; padding-top: 10px; }
-  .assinatura { margin-top: 40px; display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
-  .assinatura div { border-top: 1px solid #333; padding-top: 4px; text-align: center; font-size: 11px; }
-  @media print { body { padding: 15mm; } }
-</style></head><body>
-  <div class="header">
-    <h1>CERTIFICADO DE RASTREABILIDADE</h1>
-    <h2>${empresaNome}</h2>
-    <span class="selo">Decreto 12.031/2024 — Art. 18 | IN 04/2007</span>
-  </div>
+    const htmlContent = `
+      <div class="p-8 bg-white text-black min-h-screen" style="font-family: 'Inter', sans-serif;">
+        <div class="border-[1.5pt] border-emerald-800 p-6 mb-6">
+          <div class="text-center border-b-[1.5pt] border-emerald-800 pb-4 mb-6">
+            <h1 class="text-2xl font-bold text-emerald-800 uppercase tracking-tight">Certificado de Rastreabilidade</h1>
+            <h2 class="text-lg font-semibold text-gray-600 mt-1">${empresaNome}</h2>
+            <div class="inline-block px-4 py-1 bg-emerald-800 text-white text-[10px] font-bold rounded mt-2 uppercase">
+              Decreto 12.031/2024 — Art. 18 | IN 04/2007
+            </div>
+          </div>
 
-  <div class="box">
-    <h3>📦 Identificação do Lote</h3>
-    <div class="grid">
-      <div><span class="label">Produto:</span> ${produto}</div>
-      <div><span class="label">Lote PA:</span> <strong>${certLote}</strong></div>
-      <div><span class="label">Data Fabricação:</span> ${prodInfo?.data ? new Date(prodInfo.data).toLocaleDateString("pt-BR") : "—"}</div>
-      <div><span class="label">Quantidade Produzida:</span> ${prodInfo?.quantidade || "—"}</div>
-      <div><span class="label">Operador:</span> ${prodInfo?.operador || "—"}</div>
-      <div><span class="label">Tempo de Mistura:</span> ${prodInfo?.tempo_mistura || "—"}</div>
-    </div>
-  </div>
+          <div class="grid grid-cols-1 gap-6">
+            <div class="border border-gray-200 p-4 rounded-lg bg-gray-50/50 print-force-bg">
+              <h3 class="text-emerald-800 font-bold border-b border-gray-300 pb-2 mb-3 text-sm">📦 Identificação do Lote</h3>
+              <div class="grid grid-cols-2 gap-y-2 text-xs">
+                <div><span class="font-bold text-gray-500">PRODUTO:</span> ${produto}</div>
+                <div><span class="font-bold text-gray-500">LOTE PA:</span> <span class="text-emerald-700 font-bold">${certLote}</span></div>
+                <div><span class="font-bold text-gray-500">DATA FABRICAÇÃO:</span> ${prodInfo?.data ? new Date(prodInfo.data).toLocaleDateString("pt-BR") : "—"}</div>
+                <div><span class="font-bold text-gray-500">QTD PRODUZIDA:</span> ${prodInfo?.quantidade || "—"}</div>
+                <div><span class="font-bold text-gray-500">OPERADOR:</span> ${prodInfo?.operador || "—"}</div>
+                <div><span class="font-bold text-gray-500">TEMPO MISTURA:</span> ${prodInfo?.tempo_mistura || "—"}</div>
+              </div>
+            </div>
 
-  <div class="box">
-    <h3>🌾 Composição (Rastreabilidade Montante)</h3>
-    <table>
-      <thead><tr><th>Matéria-Prima</th><th>Lote MP</th><th>Fornecedor</th></tr></thead>
-      <tbody>
-        ${Array.from(mps.values()).map(m => `<tr><td>${m.mp}</td><td>${m.lote}</td><td>${m.fornecedor}</td></tr>`).join("") || "<tr><td colspan='3'>Sem registros</td></tr>"}
-      </tbody>
-    </table>
-  </div>
+            <div class="border border-gray-200 p-4 rounded-lg">
+              <h3 class="text-emerald-800 font-bold border-b border-gray-300 pb-2 mb-3 text-sm">🌾 Composição (Montante)</h3>
+              <table class="w-full text-xs">
+                <thead>
+                  <tr class="bg-emerald-50 print-force-bg">
+                    <th class="border border-gray-300 p-2 text-left text-emerald-800">Matéria-Prima</th>
+                    <th class="border border-gray-300 p-2 text-left text-emerald-800">Lote MP</th>
+                    <th class="border border-gray-300 p-2 text-left text-emerald-800">Fornecedor</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${mpsArr.map(m => `
+                    <tr>
+                      <td class="border border-gray-300 p-2 font-medium">${m.mp}</td>
+                      <td class="border border-gray-300 p-2">${m.lote}</td>
+                      <td class="border border-gray-300 p-2">${m.fornecedor}</td>
+                    </tr>
+                  `).join("") || "<tr><td colspan='3' class='p-4 text-center text-gray-400 italic'>Sem registros</td></tr>"}
+                </tbody>
+              </table>
+            </div>
 
-  <div class="box">
-    <h3>🚚 Destinos (Rastreabilidade Jusante)</h3>
-    <table>
-      <thead><tr><th>Cliente</th><th>NF</th><th>Data</th><th>Qtd</th><th>Local Entrega</th></tr></thead>
-      <tbody>
-        ${Array.from(destinos.values()).map(d => `<tr><td>${d.cliente}</td><td>${d.nf}</td><td>${d.data !== "—" ? new Date(d.data).toLocaleDateString("pt-BR") : "—"}</td><td>${d.qtd}</td><td>${d.local}</td></tr>`).join("") || "<tr><td colspan='5'>Lote ainda não expedido</td></tr>"}
-      </tbody>
-    </table>
-  </div>
+            <div class="border border-gray-200 p-4 rounded-lg">
+              <h3 class="text-emerald-800 font-bold border-b border-gray-300 pb-2 mb-3 text-sm">🚚 Destinos (Jusante)</h3>
+              <table class="w-full text-xs">
+                <thead>
+                  <tr class="bg-emerald-50 print-force-bg">
+                    <th class="border border-gray-300 p-2 text-left text-emerald-800">Cliente</th>
+                    <th class="border border-gray-300 p-2 text-left text-emerald-800">NF</th>
+                    <th class="border border-gray-300 p-2 text-left text-emerald-800">Data</th>
+                    <th class="border border-gray-300 p-2 text-left text-emerald-800">Qtd</th>
+                    <th class="border border-gray-300 p-2 text-left text-emerald-800">Local Entrega</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${destinosArr.map(d => `
+                    <tr>
+                      <td class="border border-gray-300 p-2 font-medium">${d.cliente}</td>
+                      <td class="border border-gray-300 p-2">${d.nf}</td>
+                      <td class="border border-gray-300 p-2">${d.data !== "—" ? new Date(d.data).toLocaleDateString("pt-BR") : "—"}</td>
+                      <td class="border border-gray-300 p-2">${d.qtd}</td>
+                      <td class="border border-gray-300 p-2">${d.local}</td>
+                    </tr>
+                  `).join("") || "<tr><td colspan='5' class='p-4 text-center text-gray-400 italic'>Lote ainda não expedido</td></tr>"}
+                </tbody>
+              </table>
+            </div>
 
-  <div class="box">
-    <h3>🧪 Contraprova Retida</h3>
-    <div class="grid">
-      <div><span class="label">Coletada:</span> ${prodInfo?.contraprova_retida ? "Sim" : "Não"}</div>
-      <div><span class="label">Local:</span> ${prodInfo?.contraprova_local || "—"}</div>
-      <div><span class="label">Quantidade:</span> ${prodInfo?.contraprova_quantidade || "—"}</div>
-      <div><span class="label">Validade:</span> ${prodInfo?.contraprova_validade ? new Date(prodInfo.contraprova_validade).toLocaleDateString("pt-BR") : "—"}</div>
-    </div>
-  </div>
+            <div class="border border-gray-200 p-4 rounded-lg bg-emerald-50/20 print-force-bg">
+              <h3 class="text-emerald-800 font-bold border-b border-gray-300 pb-2 mb-3 text-sm">🧪 Contraprova Retida</h3>
+              <div class="grid grid-cols-4 gap-4 text-xs">
+                <div><span class="font-bold text-gray-500">COLETADA:</span> ${prodInfo?.contraprova_retida ? "Sim" : "Não"}</div>
+                <div><span class="font-bold text-gray-500">LOCAL:</span> ${prodInfo?.contraprova_local || "—"}</div>
+                <div><span class="font-bold text-gray-500">QUANTIDADE:</span> ${prodInfo?.contraprova_quantidade || "—"}</div>
+                <div><span class="font-bold text-gray-500">VALIDADE:</span> ${prodInfo?.contraprova_validade ? new Date(prodInfo.contraprova_validade).toLocaleDateString("pt-BR") : "—"}</div>
+              </div>
+            </div>
+          </div>
 
-  <div class="assinatura">
-    <div>${rt}<br><small>Responsável Técnico — CRMV ${crmv}</small></div>
-    <div>_____________________________<br><small>Cliente / Auditor</small></div>
-  </div>
+          <div class="grid grid-cols-2 gap-12 mt-12 px-6">
+            <div class="border-t border-black pt-2 text-center text-xs">
+              <div class="font-bold uppercase">${rt}</div>
+              <div class="text-[10px] text-gray-600">Responsável Técnico — CRMV ${crmv}</div>
+            </div>
+            <div class="border-t border-black pt-2 text-center text-xs">
+              <div class="font-bold uppercase italic text-gray-300">ASSINATURA DO CLIENTE</div>
+              <div class="text-[10px] text-gray-600">Cliente / Auditor</div>
+            </div>
+          </div>
 
-  <div class="footer">
-    Documento emitido em ${dataEmissao} pelo sistema BPF_Consult.<br>
-    Conformidade: Decreto 12.031/2024 (Art. 18) • IN 04/2007 (MAPA) • Rastreabilidade bidirecional comprovada.
-  </div>
-</body></html>`;
+          <div class="mt-10 pt-4 border-t border-gray-200 text-center text-[9px] text-gray-500 italic space-y-1">
+            <p>Documento emitido em ${dataEmissao} pelo sistema BPF Digital.</p>
+            <p>Conformidade: Decreto 12.031/2024 (Art. 18) • IN 04/2007 (MAPA) • Rastreabilidade bidirecional comprovada eletronicamente.</p>
+          </div>
+        </div>
+      </div>
+    `;
 
-    const w = window.open("", "_blank", "width=900,height=700");
-    if (!w) { toast.error("Habilite popups para gerar o certificado"); return; }
-    w.document.write(html);
-    w.document.close();
-    setTimeout(() => { w.focus(); w.print(); }, 400);
+    const printWin = window.open("", "_blank");
+    if (!printWin) { toast.error("Habilite popups"); return; }
+    
+    // Get all current styles
+    const styles = Array.from(document.querySelectorAll('style, link[rel="stylesheet"]'))
+      .map(style => style.outerHTML)
+      .join('\n');
+
+    printWin.document.write(`
+      <html>
+        <head>
+          <title>Certificado Rastreabilidade - ${certLote}</title>
+          ${styles}
+          <style>
+            @media print { @page { size: A4; margin: 10mm; } body { padding: 0; } }
+            body { background: #f3f4f6; padding: 20px; }
+          </style>
+        </head>
+        <body>${htmlContent}</body>
+        <script>
+          window.onload = () => { setTimeout(() => { window.print(); window.onfocus = () => window.close(); }, 500); };
+        </script>
+      </html>
+    `);
+    printWin.document.close();
 
     if (user) {
-      await supabase.from("relatorios").insert({ user_id: user.id, empresa_id: empresaAtiva?.id || null, titulo: `Certificado de Rastreabilidade — Lote ${certLote}`, tipo: "digital", modulo: "rastreabilidade", descricao: `Certificado formal do lote ${certLote} (${produto}) com ${mps.size} MPs e ${destinos.size} destinos. Decreto 12.031/2024 Art. 18.`, data_geracao: new Date().toISOString().split("T")[0], status: "ativo" });
+      await supabase.from("relatorios").insert({ 
+        user_id: user.id, 
+        empresa_id: empresaAtiva?.id || null, 
+        titulo: `Certificado de Rastreabilidade — Lote ${certLote}`, 
+        tipo: "digital", 
+        modulo: "rastreabilidade", 
+        descricao: `Certificado formal do lote ${certLote} (${produto}). Decreto 12.031/2024 Art. 18.`, 
+        data_geracao: new Date().toISOString().split("T")[0], 
+        status: "ativo" 
+      });
     }
     toast.success("Certificado gerado!");
     setCertLoteOpen(false);
   };
+
 
   // ──── MELHORIA 1: Preencher formulário a partir do Recebimento ────
   const preencherDeRecebimento = (mp: string, lote: string, forn: string) => {
