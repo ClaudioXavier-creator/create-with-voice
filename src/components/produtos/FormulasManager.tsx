@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Plus, Loader2, Trash2, FileText, Copy, CheckCircle2 } from "lucide-react";
+import { Plus, Loader2, Trash2, FileText, Copy, CheckCircle2, Factory } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
@@ -222,6 +222,57 @@ export default function FormulasManager({ produtoIdFixo, produtoNomeFixo }: Prop
   const ingredientesDaFormula = (fid: string) => ingredientes.filter(i => i.formula_id === fid);
   const totalKg = (fid: string) => ingredientesDaFormula(fid).reduce((s, i) => s + Number(i.quantidade_kg), 0);
 
+  const handleEnviarProducao = async (f: Formula) => {
+    if (!user) return;
+    setSaving(true);
+    
+    // 1. Criar a Ordem de Produção
+    const numeroOrdem = `OP-${new Date().getTime().toString().slice(-6)}`;
+    const { data: ordem, error: oError } = await supabase.from("ordens_producao").insert({
+      user_id: user.id,
+      empresa_id: empresaAtiva?.id || null,
+      numero_ordem: numeroOrdem,
+      produto: f.produto_nome,
+      formula_id: f.id,
+      formula_nome: f.codigo,
+      data_programada: new Date().toISOString().split("T")[0],
+      status: "programada",
+      prioridade: "normal",
+      tipo_ordem: "normal"
+    } as any).select().single();
+
+    if (oError || !ordem) {
+      toast.error("Erro ao gerar ordem de produção");
+      setSaving(false);
+      return;
+    }
+
+    // 2. Copiar ingredientes para formula_itens (que o PCP usa)
+    const formulaIngredientes = ingredientes.filter(i => i.formula_id === f.id);
+    if (formulaIngredientes.length > 0) {
+      const { error: iError } = await supabase.from("formula_itens").insert(
+        formulaIngredientes.map(i => ({
+          user_id: user.id,
+          empresa_id: empresaAtiva?.id || null,
+          ordem_id: (ordem as any).id,
+          materia_prima: i.materia_prima,
+          quantidade_formula: String(i.quantidade_kg),
+          unidade: "kg"
+        })) as any
+      );
+      
+      if (iError) {
+        toast.warning("Ordem gerada, mas erro ao copiar ingredientes.");
+      }
+    }
+
+    toast.success(`Ordem de Produção ${numeroOrdem} gerada com sucesso!`);
+    setSaving(false);
+    
+    // Opcional: Redirecionar para o PCP
+    window.location.href = "/pcp";
+  };
+
   if (loading) return <div className="flex justify-center py-8"><Loader2 className="w-6 h-6 animate-spin text-muted-foreground" /></div>;
 
   return (
@@ -275,6 +326,9 @@ export default function FormulasManager({ produtoIdFixo, produtoNomeFixo }: Prop
                       <div className="flex gap-1 justify-end">
                         <Button variant="ghost" size="sm" onClick={() => { setEditFormula(f); setIngOpen(true); }}>
                           Ingredientes
+                        </Button>
+                        <Button variant="ghost" size="icon" className="h-8 w-8 text-primary" title="Enviar para Produção" onClick={() => handleEnviarProducao(f)}>
+                          <Factory className="w-4 h-4" />
                         </Button>
                         <Button variant="ghost" size="icon" className="h-8 w-8" title="Duplicar como nova versão" onClick={() => handleDuplicar(f)}>
                           <Copy className="w-4 h-4" />
