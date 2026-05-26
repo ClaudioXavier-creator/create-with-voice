@@ -1,4 +1,4 @@
-import { useEffect, useState, memo, Suspense, useCallback } from "react";
+import { useEffect, useState, memo, Suspense, useCallback, useMemo } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import {
   LogOut,
@@ -73,6 +73,21 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
   const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);
   const { user, roles, signOut } = useAuth();
+
+  const activePageLabel = useMemo(() => {
+    const findLabel = (entries: typeof NAV_ENTRIES): string | null => {
+      for (const entry of entries) {
+        if ("items" in entry) {
+          const item = entry.items.find(i => i.path === location.pathname);
+          if (item) return item.label;
+        } else if (entry.path === location.pathname) {
+          return entry.label;
+        }
+      }
+      return null;
+    };
+    return findLabel(NAV_ENTRIES);
+  }, [location.pathname]);
   
   
 
@@ -191,7 +206,9 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
         >
           <img src={config.logo} alt="" className="w-8 h-8 rounded bg-white p-1 object-contain" />
           <div className="min-w-0">
-            <span className="font-display font-bold block truncate tracking-tight text-sm">{config.title}</span>
+            <span className="font-display font-bold block truncate tracking-tight text-sm">
+              {activePageLabel || config.title}
+            </span>
           </div>
         </button>
         <div className="flex items-center gap-0.5">
