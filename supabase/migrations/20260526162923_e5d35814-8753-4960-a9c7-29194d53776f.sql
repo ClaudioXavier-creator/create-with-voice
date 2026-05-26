@@ -1,0 +1,1 @@
+DROP POLICY IF EXISTS "Empresas can view their own WhatsApp config" ON public.whatsapp_config;
