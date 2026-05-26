@@ -830,18 +830,23 @@ export default function Rastreabilidade() {
       </html>
     `);
     printWin.document.close();
-  };
-
-    w.document.write(html);
-    w.document.close();
-    setTimeout(() => { w.focus(); w.print(); }, 400);
 
     if (user) {
-      await supabase.from("relatorios").insert({ user_id: user.id, empresa_id: empresaAtiva?.id || null, titulo: `Certificado de Rastreabilidade — Lote ${certLote}`, tipo: "digital", modulo: "rastreabilidade", descricao: `Certificado formal do lote ${certLote} (${produto}) com ${mps.size} MPs e ${destinos.size} destinos. Decreto 12.031/2024 Art. 18.`, data_geracao: new Date().toISOString().split("T")[0], status: "ativo" });
+      await supabase.from("relatorios").insert({ 
+        user_id: user.id, 
+        empresa_id: empresaAtiva?.id || null, 
+        titulo: `Certificado de Rastreabilidade — Lote ${certLote}`, 
+        tipo: "digital", 
+        modulo: "rastreabilidade", 
+        descricao: `Certificado formal do lote ${certLote} (${produto}). Decreto 12.031/2024 Art. 18.`, 
+        data_geracao: new Date().toISOString().split("T")[0], 
+        status: "ativo" 
+      });
     }
     toast.success("Certificado gerado!");
     setCertLoteOpen(false);
   };
+
 
   // ──── MELHORIA 1: Preencher formulário a partir do Recebimento ────
   const preencherDeRecebimento = (mp: string, lote: string, forn: string) => {
