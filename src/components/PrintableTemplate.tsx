@@ -1,6 +1,7 @@
 
 import React from "react";
 import { format } from "date-fns";
+import { useEmpresa } from "@/hooks/useEmpresa";
 
 interface PrintableTemplateProps {
   id: string;
@@ -25,6 +26,18 @@ export const PrintableTemplate: React.FC<PrintableTemplateProps> = ({
   footerNote,
   showSignatureBlocks = true
 }) => {
+  const { empresaAtiva } = useEmpresa();
+
+  const empresaInfo = empresaAtiva ? [
+    { label: "EMPRESA", value: empresaAtiva.nome },
+    { label: "CNPJ", value: empresaAtiva.cnpj || "" },
+    { label: "RESP. TÉCNICO", value: empresaAtiva.responsavel_tecnico || "" },
+  ] : [];
+
+  const combinedHeaderInfo = headerInfo 
+    ? [...empresaInfo, ...headerInfo]
+    : empresaInfo;
+
   return (
     <div 
       id={id} 
@@ -68,9 +81,9 @@ export const PrintableTemplate: React.FC<PrintableTemplateProps> = ({
           </div>
         </div>
 
-        {headerInfo && (
+        {combinedHeaderInfo.length > 0 && (
           <div className="grid grid-cols-2 gap-x-6 gap-y-2 p-4 text-[10px] border-t-[1.5pt] border-black bg-gray-50/30 print-force-bg">
-            {headerInfo.map((info, idx) => (
+            {combinedHeaderInfo.map((info, idx) => (
               <div key={idx} className="flex gap-2 items-baseline">
                 <span className="font-bold whitespace-nowrap uppercase text-[9px] text-gray-700">{info.label}:</span>
                 <span className="border-b border-dotted border-gray-400 flex-1 font-medium">
