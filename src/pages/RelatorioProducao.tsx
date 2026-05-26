@@ -84,9 +84,8 @@ export default function RelatorioProducao() {
   const [mes, setMes] = useState(String(currentMonth));
   const [activeTab, setActiveTab] = useState<AtividadeTab>("producao");
   const [loading, setLoading] = useState(true);
-  const [empresaNome, setEmpresaNome] = useState("");
-  const [empresaCnpj, setEmpresaCnpj] = useState("");
   const [empresaRegistroSipeagro, setEmpresaRegistroSipeagro] = useState("");
+
 
   // Values per tab per item
   const [valores, setValores] = useState<ValoresMap>({
@@ -96,16 +95,10 @@ export default function RelatorioProducao() {
     fracionamento: {},
   });
 
-  // Load empresa info
-  useEffect(() => {
-    if (!user) return;
-    supabase.from("empresas").select("nome, cnpj").limit(1).then(({ data }) => {
-      if (data && data.length > 0) {
-        setEmpresaNome(data[0].nome || "");
-        setEmpresaCnpj(data[0].cnpj || "");
-      }
-    });
-  }, [user]);
+  // Use empresaAtiva from hook instead of manual loading
+  const empresaNome = empresaAtiva?.nome || "";
+  const empresaCnpj = empresaAtiva?.cnpj || "";
+
 
   // Load production data and auto-fill the "producao" tab
   useEffect(() => {

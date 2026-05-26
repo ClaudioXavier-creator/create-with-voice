@@ -381,7 +381,12 @@ export default function FichaProducaoDigital({ ordemId, onClose }: Props) {
             <div className="text-lg font-bold">ORDEM DE PRODUÇÃO</div>
             <div className="text-right">
               <div className="text-sm font-bold">{empresaAtiva?.nome || "BPF DIGITAL"}</div>
-              <div className="text-[10px] text-gray-500 italic">Sistema de Gestão da Qualidade</div>
+              <div className="text-[10px] text-gray-500 italic">
+                {empresaAtiva?.cnpj ? `CNPJ: ${empresaAtiva.cnpj}` : "Sistema de Gestão da Qualidade"}
+              </div>
+              {empresaAtiva?.responsavel_tecnico && (
+                <div className="text-[10px] text-gray-500 uppercase">RT: {empresaAtiva.responsavel_tecnico}</div>
+              )}
             </div>
           </div>
 
