@@ -367,7 +367,7 @@ export type Database = {
           ip_address: string | null
           registro_id: string | null
           tabela: string
-          user_id: string
+          user_id: string | null
         }
         Insert: {
           acao?: string
@@ -379,7 +379,7 @@ export type Database = {
           ip_address?: string | null
           registro_id?: string | null
           tabela: string
-          user_id: string
+          user_id?: string | null
         }
         Update: {
           acao?: string
@@ -391,7 +391,7 @@ export type Database = {
           ip_address?: string | null
           registro_id?: string | null
           tabela?: string
-          user_id?: string
+          user_id?: string | null
         }
         Relationships: [
           {
