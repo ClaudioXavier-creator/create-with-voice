@@ -241,7 +241,29 @@ export const SidebarNav = React.memo(({
   return (
     <ScrollArea className="flex-1 px-3">
       <div className="space-y-6 py-4">
-        {favoriteItems.length > 0 && (
+        {/* Busca Local */}
+        <div className="px-3 pb-2 sticky top-0 bg-sidebar/95 backdrop-blur-sm z-20">
+          <div className="relative group">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-sidebar-foreground/30 group-focus-within:text-primary transition-colors" />
+            <input
+              type="text"
+              placeholder="Localizar no menu..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full bg-sidebar-accent/50 border border-sidebar-border/50 rounded-lg py-2 pl-9 pr-3 text-xs focus:outline-none focus:ring-1 focus:ring-primary focus:bg-sidebar-accent transition-all placeholder:text-sidebar-foreground/30"
+            />
+            {searchQuery && (
+              <button 
+                onClick={() => setSearchQuery("")}
+                className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-sidebar-foreground/30 hover:text-sidebar-foreground"
+              >
+                <X className="h-3 w-3" />
+              </button>
+            )}
+          </div>
+        </div>
+
+        {favoriteItems.length > 0 && !searchQuery && (
           <section className="space-y-2">
             <div className="flex items-center justify-between px-3 mb-1">
               <div className="flex items-center gap-2">
@@ -255,49 +277,65 @@ export const SidebarNav = React.memo(({
         )}
 
         <section className="space-y-1">
-          <div className="px-3 mb-2">
-            <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-sidebar-foreground/30">Módulos do Sistema</p>
+          <div className="px-3 mb-2 flex items-center justify-between">
+            <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-sidebar-foreground/30">
+              {searchQuery ? `Resultados (${searchedEntries.length})` : "Módulos do Sistema"}
+            </p>
           </div>
           <div className="space-y-0.5">
-            {filteredByRole.map((entry) => {
-              if (!isGroup(entry)) {
-                return renderLink(entry);
-              }
+            {searchedEntries.length === 0 ? (
+              <div className="px-3 py-8 text-center">
+                <p className="text-xs text-sidebar-foreground/40">Nenhum item encontrado.</p>
+                <Button 
+                  variant="link" 
+                  size="sm" 
+                  onClick={() => setSearchQuery("")}
+                  className="text-[10px] text-primary"
+                >
+                  Limpar busca
+                </Button>
+              </div>
+            ) : (
+              searchedEntries.map((entry) => {
+                if (!isGroup(entry)) {
+                  return renderLink(entry);
+                }
 
-              const groupOpen = openGroups[entry.label] ?? false;
-              const hasActive = entry.items.some((item) => item.path === currentPath);
+                const groupOpen = openGroups[entry.label] ?? false;
+                const hasActive = entry.items.some((item) => item.path === currentPath);
 
-              return (
-                <div key={entry.label} className="space-y-0.5">
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    onClick={() => toggleGroup(entry.label)}
-                    aria-expanded={groupOpen}
-                    className={cn(
-                      "h-auto w-full justify-start gap-3 rounded-xl px-3 py-2 text-left text-sm transition-all duration-200",
-                      hasActive && !groupOpen
-                        ? "bg-sidebar-primary/20 text-sidebar-primary-foreground border border-sidebar-border/30 shadow-sm"
-                        : "text-sidebar-foreground/60 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground",
+                return (
+                  <div key={entry.label} className="space-y-0.5">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      onClick={() => toggleGroup(entry.label)}
+                      aria-expanded={groupOpen}
+                      className={cn(
+                        "h-auto w-full justify-start gap-3 rounded-xl px-3 py-2 text-left text-sm transition-all duration-200",
+                        hasActive && !groupOpen
+                          ? "bg-sidebar-primary/20 text-sidebar-primary-foreground border border-sidebar-border/30 shadow-sm"
+                          : "text-sidebar-foreground/60 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground",
+                      )}
+                    >
+                      {entry.logo ? (
+                        <img src={entry.logo} alt="" className={cn("h-5 w-5 shrink-0 transition-transform duration-200 rounded bg-white p-0.5 shadow-sm")} />
+                      ) : (
+                        <entry.icon aria-hidden="true" className={cn("h-4 w-4 shrink-0 transition-colors duration-200", hasActive ? "text-sidebar-primary" : "text-sidebar-foreground/30")} />
+                      )}
+                      <span className="flex-1 whitespace-normal leading-snug">{entry.label}</span>
+                      <ChevronDown aria-hidden="true" className={cn("h-3.5 w-3.5 shrink-0 transition-transform duration-300 opacity-30", (groupOpen || searchQuery) && "rotate-180 opacity-60")} />
+                    </Button>
+                    
+                    {(groupOpen || searchQuery) && (
+                      <div className="mt-0.5 space-y-0.5 animate-in slide-in-from-top-1 duration-200">
+                        {entry.items.map((item) => renderLink(item, true))}
+                      </div>
                     )}
-                  >
-                    {entry.logo ? (
-                      <img src={entry.logo} alt="" className={cn("h-5 w-5 shrink-0 transition-transform duration-200 rounded bg-white p-0.5 shadow-sm")} />
-                    ) : (
-                      <entry.icon aria-hidden="true" className={cn("h-4 w-4 shrink-0 transition-colors duration-200", hasActive ? "text-sidebar-primary" : "text-sidebar-foreground/30")} />
-                    )}
-                    <span className="flex-1 whitespace-normal leading-snug">{entry.label}</span>
-                    <ChevronDown aria-hidden="true" className={cn("h-3.5 w-3.5 shrink-0 transition-transform duration-300 opacity-30", groupOpen && "rotate-180 opacity-60")} />
-                  </Button>
-                  
-                  {groupOpen && (
-                    <div className="mt-0.5 space-y-0.5 animate-in slide-in-from-top-1 duration-200">
-                      {entry.items.map((item) => renderLink(item, true))}
-                    </div>
-                  )}
-                </div>
-              );
-            })}
+                  </div>
+                );
+              })
+            )}
           </div>
         </section>
       </div>
