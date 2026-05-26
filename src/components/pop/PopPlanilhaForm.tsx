@@ -303,86 +303,12 @@ export default function PopPlanilhaForm({ planilhaId, periodicidade, userId, pop
   }
 
   function printPlanilha() {
-    const areas = periodicidade.areas.map((a) => a.area);
-    const headerCells = areas.map((a) => `<th style="border:1px solid #333;padding:4px 6px;background:#d0d0d0;font-size:9px;text-align:center;white-space:nowrap">${a}</th>`).join("");
-
-    const bodyRows = periodicidade.periodos.map((periodo, idx) => {
-      const cells = areas.map((a) => {
-        const key = cellKey(periodo, a);
-        const val = grid[key]?.conforme ?? null;
-        const text = val === true ? "C" : val === false ? "NC" : "";
-        const bg = val === true ? "#d4edda" : val === false ? "#f8d7da" : "#fff";
-        return `<td style="border:1px solid #333;padding:3px 6px;text-align:center;font-size:9px;font-weight:bold;background:${bg}">${text}</td>`;
-      }).join("");
-      const resp = getFieldForPeriodo(periodo, "responsavel");
-      const func = getFieldForPeriodo(periodo, "funcao");
-      const rowBg = idx % 2 === 0 ? "#fff" : "#f9f9f9";
-      return `<tr style="background:${rowBg}">
-        <td style="border:1px solid #333;padding:3px 6px;font-size:9px;font-weight:600;white-space:nowrap">${periodo}</td>
-        ${cells}
-        <td style="border:1px solid #333;padding:3px 6px;font-size:9px">${resp}</td>
-        <td style="border:1px solid #333;padding:3px 6px;font-size:9px">${func}</td>
-      </tr>`;
-    }).join("");
-
-    const signBlock = `
-      <div style="margin-top:24px;display:flex;justify-content:space-between;gap:20px">
-        <div style="flex:1;text-align:center">
-          <div style="border-top:1px solid #000;margin-top:50px;padding-top:4px;font-size:9px">
-            Responsável pela Execução${signatures.executor ? `<br><strong>${signatures.executor}</strong>` : ""}
-            ${signatures.executorData ? `<br>${formatSignDate(signatures.executorData)}` : ""}
-          </div>
-        </div>
-        <div style="flex:1;text-align:center">
-          <div style="border-top:1px solid #000;margin-top:50px;padding-top:4px;font-size:9px">
-            Verificador / Supervisor${signatures.supervisor ? `<br><strong>${signatures.supervisor}</strong>` : ""}
-            ${signatures.supervisorData ? `<br>${formatSignDate(signatures.supervisorData)}` : ""}
-          </div>
-        </div>
-        <div style="flex:1;text-align:center">
-          <div style="border-top:1px solid #000;margin-top:50px;padding-top:4px;font-size:9px">
-            Responsável Técnico${signatures.rt ? `<br><strong>${signatures.rt}</strong> — CRMV: ${signatures.rtCrmv}` : ""}
-            ${signatures.rtData ? `<br>${formatSignDate(signatures.rtData)}` : ""}
-          </div>
-        </div>
-      </div>
-    `;
-
-    const html = `<!DOCTYPE html>
-<html><head><meta charset="utf-8">
-<title>${popCodigo} - ${periodicidade.label}</title>
-<style>
-  @media print { @page { size: A4 landscape; margin: 10mm; } }
-  body { font-family: Arial, sans-serif; font-size: 10px; color: #000; margin: 0; }
-  h2 { font-size: 13px; text-align: center; margin-bottom: 2px; }
-  .sub { text-align: center; font-size: 10px; color: #555; margin-bottom: 10px; }
-  table { width: 100%; border-collapse: collapse; }
-  .legenda { font-size: 8px; color: #555; margin-top: 8px; }
-</style></head><body>
-<h2>${popCodigo || "POP"} — ${popNome || ""}</h2>
-<div class="sub">${periodicidade.label} | Mês/Ano: ___/___</div>
-<table>
-  <thead>
-    <tr>
-      <th style="border:1px solid #333;padding:4px 6px;background:#d0d0d0;font-size:9px;text-align:left;min-width:60px">Período</th>
-      ${headerCells}
-      <th style="border:1px solid #333;padding:4px 6px;background:#d0d0d0;font-size:9px;text-align:center">Responsável</th>
-      <th style="border:1px solid #333;padding:4px 6px;background:#d0d0d0;font-size:9px;text-align:center">Função</th>
-    </tr>
-  </thead>
-  <tbody>${bodyRows}</tbody>
-</table>
-<p class="legenda">*C = Conforme | NC = Não Conforme | Em caso de NC, emitir RNC (Registro de Não Conformidade).</p>
-${signBlock}
-</body></html>`;
-
-    const win = window.open("", "_blank");
-    if (win) {
-      win.document.write(html);
-      win.document.close();
-      win.onload = () => { win.print(); };
-    }
+    printElement(`printable-pop-${planilhaId}`, { 
+      title: `${popCodigo} - ${periodicidade.label}`,
+      landscape: true 
+    });
   }
+
 
   function downloadTemplate() {
     const areas = periodicidade.areas.map((a) => a.area);
