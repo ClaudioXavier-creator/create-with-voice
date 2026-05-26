@@ -213,24 +213,50 @@ export default function Modelos() {
     switch (arquivo) {
       case "PL_POP_1":
         return [
-          ["Nº", "Fornecedor", "CNPJ", "Registro MAPA", "Produtos", "Status"],
-          ...Array.from({ length: 15 }, (_, i) => [i + 1, "", "", "", "", ""])
+          ["Nº", "Fornecedor", "CNPJ", "Registro MAPA", "Produtos Fornecidos", "Status", "Obs."],
+          ...Array.from({ length: 15 }, (_, i) => [i + 1, "", "", "", "", "☐A ☐R", ""])
         ];
       case "PL_POP_2":
         return [
           ["Data", "Área/Equipamento", "Tipo Limpeza", "Produto", "Hora Início", "Hora Fim", "Conforme", "Executor"],
           ...Array.from({ length: 15 }, () => ["", "", "☐Seca ☐Úmida", "", "", "", "☐C ☐NC", ""])
         ];
+      case "PL_POP_3":
+        return [
+          ["Data", "Colaborador", "Uniforme", "Adornos", "Unhas", "Barba", "Mãos", "EPI", "Conforme", "Verificado por"],
+          ...Array.from({ length: 15 }, () => ["", "", "☐", "☐", "☐", "☐", "☐", "☐", "☐C ☐NC", ""])
+        ];
       case "PL_POP_4":
         return [
           ["Data", "Ponto de Coleta", "Hora", "Cloro (mg/L)", "pH", "Conforme", "Responsável"],
           ...Array.from({ length: 15 }, () => ["", "", "", "", "", "☐C ☐NC", ""])
         ];
-      case "Form_Cloro_Diario":
+      case "Form_Recebimento_MP":
         return [
-          ["Data", "Ponto", "Hora", "Cloro Residual", "pH", "Conforme", "Ação Corretiva", "Resp."],
-          ...Array.from({ length: 20 }, () => ["", "", "", "", "", "☐", "", ""])
+          ["Data", "Fornecedor", "Matéria-Prima", "Lote", "Quantidade", "Odor", "Umidade (%)", "Temp. (°C)", "Aprovado"],
+          ...Array.from({ length: 15 }, () => ["", "", "", "", "", "☐N ☐A", "", "", "☐S ☐N"])
         ];
+      case "Form_Ordem_Producao":
+        return [
+          ["Item", "Ingrediente", "Lote", "Qtd. Prevista (kg)", "Qtd. Real (kg)", "Batida 1", "Batida 2", "Conforme"],
+          ...Array.from({ length: 12 }, (_, i) => [i + 1, "", "", "", "", "☐", "☐", "☐"])
+        ];
+      case "Checklist_Auditoria":
+        return [
+          ["Nº", "Requisito de Auditoria (Decreto 12.031/2024)", "C", "NC", "NA", "Observações / Evidências"],
+          ["1.1", "Edificação e instalações em bom estado", "☐", "☐", "☐", ""],
+          ["1.2", "Fluxo de produção linear", "☐", "☐", "☐", ""],
+          ["2.1", "Equipamentos limpos e conservados", "☐", "☐", "☐", ""],
+          ["3.1", "Água potável com laudos em dia", "☐", "☐", "☐", ""],
+          ["4.1", "Higiene pessoal e uniformes adequados", "☐", "☐", "☐", ""],
+          ...Array.from({ length: 10 }, () => ["", "", "☐", "☐", "☐", ""])
+        ];
+      case "NC_Plano_Acao":
+        return [
+          ["Data", "Descrição da Não Conformidade", "Causa Raiz", "Ação Corretiva", "Prazo", "Responsável", "Status"],
+          ...Array.from({ length: 10 }, () => ["", "", "", "", "", "", "☐Aberto ☐Ok"])
+        ];
+
       default:
         return [
           ["Data", "Descrição", "Informação 1", "Informação 2", "Conforme", "Responsável"],
