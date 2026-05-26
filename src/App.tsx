@@ -55,6 +55,8 @@ const PotabilidadeAgua = lazy(() => import("./pages/PotabilidadeAgua"));
 const SaudePessoal = lazy(() => import("./pages/SaudePessoal"));
 const ControleVisitantes = lazy(() => import("./pages/ControleVisitantes"));
 const DocumentosBPF = lazy(() => import("./pages/DocumentosBPF"));
+const MonitoramentoPCC = lazy(() => import("./pages/MonitoramentoPCC"));
+const Autocontrole = lazy(() => import("./pages/Autocontrole"));
 const Auth = lazy(() => import("./pages/Auth"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 
@@ -212,6 +214,8 @@ const InternalRoutes = () => (
     <Route path="/potabilidade-agua" element={<PotabilidadeAgua />} />
     <Route path="/saude-pessoal" element={<SaudePessoal />} />
     <Route path="/visitantes" element={<ControleVisitantes />} />
+    <Route path="/monitoramento-pcc" element={<MonitoramentoPCC />} />
+    <Route path="/autocontrole" element={<Autocontrole />} />
     <Route path="/modelos" element={<Modelos />} />
     <Route path="/checklist-pre-auditoria" element={<ChecklistPreAuditoria />} />
     <Route path="/simulacao-recall" element={<SimulacaoRecall />} />
