@@ -256,6 +256,39 @@ export default function Modelos() {
           ["Data", "Descrição da Não Conformidade", "Causa Raiz", "Ação Corretiva", "Prazo", "Responsável", "Status"],
           ...Array.from({ length: 10 }, () => ["", "", "", "", "", "", "☐Aberto ☐Ok"])
         ];
+      case "Form_Substancias":
+        return [
+          ["Data", "Ingrediente/Lote", "Substância Pesquisada", "Limite", "Resultado", "Conforme", "Laudo Nº"],
+          ...Array.from({ length: 10 }, () => ["", "", "", "", "", "☐S ☐N", ""])
+        ];
+      case "Form_Analises_Lab":
+        return [
+          ["Data", "Amostra/Lote", "Parâmetro (PB, Umid...)", "Resultado", "Variação Permitida", "Conforme", "Resp."],
+          ...Array.from({ length: 15 }, () => ["", "", "", "", "", "☐S ☐N", ""])
+        ];
+      case "Form_Visitantes":
+        return [
+          ["Data", "Nome Visitante", "Empresa", "Motivo", "EPI Fornecido", "Orientação Bio", "Entrada", "Saída"],
+          ...Array.from({ length: 15 }, () => ["", "", "", "", "☐", "☐", "", ""])
+        ];
+      case "POP-01":
+      case "POP-02":
+      case "POP-03":
+      case "POP-04":
+      case "POP-05":
+      case "POP-06":
+      case "POP-07":
+      case "POP-08":
+      case "POP-09":
+      case "POP-10":
+        return [
+          ["Item", "Procedimento Operacional Padronizado (POP)", "Responsável", "Frequência", "Monitoramento", "Ação Corretiva"],
+          ["1", "Descrição da etapa 1 do procedimento", "RT/Supervisor", "Diário", "Visual", "Re-processar"],
+          ["2", "Descrição da etapa 2 do procedimento", "Operador", "Por Lote", "Checklist", "Registrar NC"],
+          ["3", "Descrição da etapa 3 do procedimento", "Supervisor", "Semanal", "Auditoria", "Treinamento"],
+          ...Array.from({ length: 10 }, (_, i) => [i + 4, "", "", "", "", ""])
+        ];
+
 
       default:
         return [
