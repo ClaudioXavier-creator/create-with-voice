@@ -59,6 +59,7 @@ interface FornecedorRow {
   doc_certificado_analise: boolean | null;
   resultado_qualificacao: string | null;
   created_at: string;
+  auditorias?: any[];
 }
 
 interface RecebimentoRow {
@@ -137,7 +138,7 @@ export default function Fornecedores() {
 
   const fetchData = async () => {
     if (!user) return;
-    let fornQ = supabase.from("fornecedores").select("*").order("nome");
+    let fornQ = supabase.from("fornecedores").select("*, auditorias:fornecedor_auditorias(*)").order("nome");
     let recQ = supabase.from("recebimento_mp").select("id, data, fornecedor, materia_prima, lote, aprovado").order("data", { ascending: false }).limit(100);
     if (empresaAtiva) {
       fornQ = fornQ.eq("empresa_id", empresaAtiva.id);
@@ -282,11 +283,12 @@ export default function Fornecedores() {
               </DialogHeader>
 
               <Tabs value={formTab} onValueChange={setFormTab}>
-                <TabsList className="grid grid-cols-4 w-full">
+                <TabsList className="grid grid-cols-5 w-full">
                   <TabsTrigger value="dados" className="text-xs">1. Dados</TabsTrigger>
                   <TabsTrigger value="produtos" className="text-xs">2. Produtos</TabsTrigger>
                   <TabsTrigger value="documentos" className="text-xs">3. Documentos</TabsTrigger>
                   <TabsTrigger value="resultado" className="text-xs">4. Resultado</TabsTrigger>
+                  <TabsTrigger value="auditorias" className="text-xs">5. Auditorias</TabsTrigger>
                 </TabsList>
 
                 {/* ABA 1 — DADOS DO FORNECEDOR */}
