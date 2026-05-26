@@ -73,6 +73,21 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
   const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);
   const { user, roles, signOut } = useAuth();
+
+  const activePageLabel = useMemo(() => {
+    const findLabel = (entries: typeof NAV_ENTRIES): string | null => {
+      for (const entry of entries) {
+        if ("items" in entry) {
+          const item = entry.items.find(i => i.path === location.pathname);
+          if (item) return item.label;
+        } else if (entry.path === location.pathname) {
+          return entry.label;
+        }
+      }
+      return null;
+    };
+    return findLabel(NAV_ENTRIES);
+  }, [location.pathname]);
   
   
 
