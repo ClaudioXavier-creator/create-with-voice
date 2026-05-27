@@ -12,6 +12,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useEmpresa } from "@/hooks/useEmpresa";
 import { toast } from "sonner";
 import { printElement } from "@/utils/printUtils";
+import { registrarAuditLog } from "@/utils/auditLog";
 
 
 interface Props {
@@ -154,31 +155,49 @@ export default function FichaProducaoDigital({ ordemId, onClose }: Props) {
     if (!user) return;
 
     // Validação de Lote e Saldo (Mass Balance & FIFO)
-    if (campo === "lote_mp" || campo === "quantidade_kg") {
-      const loteInformado = campo === "lote_mp" ? valor : getValor(matPrima, batida, "lote_mp");
-      const qtdInformada = campo === "quantidade_kg" ? parseFloat(valor) || 0 : parseFloat(getValor(matPrima, batida, "quantidade_kg")) || 0;
+    const loteInformado = campo === "lote_mp" ? valor : getValor(matPrima, batida, "lote_mp");
+    const qtdInformada = campo === "quantidade_kg" ? parseFloat(valor) || 0 : parseFloat(getValor(matPrima, batida, "quantidade_kg")) || 0;
 
-      if (loteInformado) {
-        const infoLote = lotesDisp.find(l => 
-          l.lote === loteInformado && 
-          (l.materia_prima.toLowerCase() === matPrima.toLowerCase() || matPrima.toLowerCase().includes(l.materia_prima.toLowerCase()))
-        );
+    if (loteInformado) {
+      const infoLote = lotesDisp.find(l => 
+        l.lote === loteInformado && 
+        (l.materia_prima.toLowerCase() === matPrima.toLowerCase() || matPrima.toLowerCase().includes(l.materia_prima.toLowerCase()))
+      );
 
-        if (!infoLote) {
-          toast.error(`Atenção: Lote ${loteInformado} não encontrado para ${matPrima}.`);
-          // return; // We allow it for now but alert. User said "bloquear a produção" if error in annotation.
-        } else {
-          // Check FIFO
-          if (infoLote.status === 'bloqueado') {
-            toast.error(`BLOQUEIO FIFO: O lote ${loteInformado} ainda está bloqueado. Use o lote anterior primeiro.`);
-            return;
-          }
+      if (!infoLote) {
+        toast.error(`Atenção: Lote ${loteInformado} não encontrado para ${matPrima}.`);
+        await registrarAuditLog({
+          userId: user.id,
+          empresaId: empresaAtiva?.id,
+          tabela: "batida_lotes",
+          acao: "editar",
+          dadosNovos: { erro: "Lote não encontrado", materia_prima: matPrima, lote: loteInformado, batida }
+        });
+      } else {
+        // Check FIFO
+        if (infoLote.status === 'bloqueado') {
+          toast.error(`BLOQUEIO FIFO: O lote ${loteInformado} ainda está bloqueado. Use o lote anterior primeiro.`);
+          await registrarAuditLog({
+            userId: user.id,
+            empresaId: empresaAtiva?.id,
+            tabela: "batida_lotes",
+            acao: "editar",
+            dadosNovos: { erro: "Bloqueio FIFO", materia_prima: matPrima, lote: loteInformado, batida }
+          });
+          return;
+        }
 
-          // Check Balance
-          if (qtdInformada > infoLote.saldo) {
-            toast.error(`ERRO DE CONSUMO: Saldo insuficiente no lote ${loteInformado}. Saldo: ${infoLote.saldo} kg. Consumo: ${qtdInformada} kg.`);
-            return;
-          }
+        // Check Balance
+        if (qtdInformada > infoLote.saldo) {
+          toast.error(`ERRO DE CONSUMO: Saldo insuficiente no lote ${loteInformado}. Saldo: ${infoLote.saldo} kg. Consumo: ${qtdInformada} kg.`);
+          await registrarAuditLog({
+            userId: user.id,
+            empresaId: empresaAtiva?.id,
+            tabela: "batida_lotes",
+            acao: "editar",
+            dadosNovos: { erro: "Saldo insuficiente", materia_prima: matPrima, lote: loteInformado, batida, saldo: infoLote.saldo, consumo: qtdInformada }
+          });
+          return;
         }
       }
     }
@@ -186,7 +205,18 @@ export default function FichaProducaoDigital({ ordemId, onClose }: Props) {
     const existente = lotes.find(l => l.materia_prima === matPrima && l.numero_batida === batida);
     if (existente) {
       const upd: any = { [campo]: campo === "quantidade_kg" ? parseFloat(valor) || 0 : valor };
-      await supabase.from("batida_lotes" as any).update(upd).eq("id", existente.id);
+      const { error } = await supabase.from("batida_lotes" as any).update(upd).eq("id", existente.id);
+      if (!error) {
+        await registrarAuditLog({
+          userId: user.id,
+          empresaId: empresaAtiva?.id,
+          tabela: "batida_lotes",
+          registroId: existente.id,
+          acao: "editar",
+          dadosAnteriores: existente,
+          dadosNovos: { ...existente, ...upd }
+        });
+      }
     } else {
       const ing = ingredientes.find(i => i.materia_prima === matPrima);
       const qtdPadrao = ing ? (Number(ing.quantidade_kg) * volumeMist / totalFormula()) : 0;
@@ -199,7 +229,17 @@ export default function FichaProducaoDigital({ ordemId, onClose }: Props) {
         lote_mp: campo === "lote_mp" ? valor : "",
         quantidade_kg: campo === "quantidade_kg" ? (parseFloat(valor) || 0) : qtdPadrao,
       };
-      await supabase.from("batida_lotes" as any).insert(novo);
+      const { data: created, error } = await supabase.from("batida_lotes" as any).insert(novo).select().single();
+      if (!error && created) {
+        await registrarAuditLog({
+          userId: user.id,
+          empresaId: empresaAtiva?.id,
+          tabela: "batida_lotes",
+          registroId: (created as any).id,
+          acao: "criar",
+          dadosNovos: created as any
+        });
+      }
     }
     fetchData();
   };

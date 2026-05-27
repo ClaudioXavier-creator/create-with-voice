@@ -89,16 +89,28 @@ export default function Recebimento() {
   const handleAdd = async () => {
     if (!fornecedor || !materiaPrima || !user) return;
     setSaving(true);
-    const { error } = await supabase.from("recebimento_mp").insert({
+    
+    const { data: newBatch, error } = await supabase.from("recebimento_mp").insert({
       user_id: user.id, empresa_id: empresaAtiva?.id || null,
       fornecedor, materia_prima: materiaPrima, lote: lote || null,
       quantidade: quantidade || null, unidade: unidade || null,
       aprovado,
       observacoes: observacoes || null,
       status: 'bloqueado'
-    });
-    if (error) toast.error("Erro: " + error.message);
-    else {
+    }).select().single();
+
+    if (error) {
+      toast.error("Erro: " + error.message);
+    } else {
+      await registrarAuditLog({
+        userId: user.id,
+        empresaId: empresaAtiva?.id,
+        tabela: "recebimento_mp",
+        registroId: newBatch.id,
+        acao: "criar",
+        dadosNovos: newBatch
+      });
+
       toast.success("Recebimento registrado!");
       setOpen(false);
       fetchData();
