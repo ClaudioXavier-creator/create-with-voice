@@ -146,14 +146,16 @@ export default function RTPIEditor({ produtoId }: Props) {
   };
 
   function buildPrintHTML(): string {
+    const e = (s: unknown) => String(s ?? "")
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
     const row = (num: string, title: string, content: string) =>
       `<tr><td style="border:1px solid #000;padding:6px 10px;font-weight:bold;width:100%;font-size:10pt;" colspan="2">
-        <strong>${num}) ${title}</strong>
+        <strong>${e(num)}) ${e(title)}</strong>
       </td></tr>
-      <tr><td style="border:1px solid #000;padding:8px 14px;font-size:10pt;white-space:pre-wrap;" colspan="2">${content}</td></tr>`;
+      <tr><td style="border:1px solid #000;padding:8px 14px;font-size:10pt;white-space:pre-wrap;" colspan="2">${e(content)}</td></tr>`;
 
     return `<!DOCTYPE html><html><head><meta charset="utf-8">
-<title>RTPI - ${rtpi.nome_produto}</title>
+<title>RTPI - ${e(rtpi.nome_produto)}</title>
 <style>
   @page { margin: 20mm; size: A4; }
   body { font-family: Arial, sans-serif; font-size: 10pt; color: #000; margin: 0; }
@@ -185,11 +187,11 @@ export default function RTPIEditor({ produtoId }: Props) {
   ${row("18", "ANEXO - Croqui do rótulo aprovado e assinado pelo RT", "")}
 </table>
 <div style="margin-top:40px;text-align:center;font-size:10pt;">
-  <p>${rtpi.local_data}</p>
+  <p>${e(rtpi.local_data)}</p>
   <br/><br/>
   <p>_______________________________________</p>
-  <p><strong>${rtpi.rt_nome}</strong></p>
-  <p>CRMV: ${rtpi.rt_crmv}</p>
+  <p><strong>${e(rtpi.rt_nome)}</strong></p>
+  <p>CRMV: ${e(rtpi.rt_crmv)}</p>
 </div>
 ${carimboHTML(gerarCarimboSync({
   documentoTipo: "RTPI — Relatório Técnico Produto Isento",
