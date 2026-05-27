@@ -163,6 +163,7 @@ export default function SalaAuditor() {
           <TabsTrigger value="acesso_externo">🔗 Acesso do Auditor</TabsTrigger>
           <TabsTrigger value="checklist">📋 Checklist Decreto 12.031</TabsTrigger>
           <TabsTrigger value="modulos">📂 Módulos do Sistema</TabsTrigger>
+          <TabsTrigger value="audit">🔍 Auditoria de Lotes</TabsTrigger>
         </TabsList>
 
         <TabsContent value="acesso_externo">
@@ -289,7 +290,110 @@ export default function SalaAuditor() {
             </CardContent>
           </Card>
         </TabsContent>
+        <TabsContent value="audit" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle className="font-display text-base text-red-600">Histórico de Auditoria (Lotes e Consumo)</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <AuditHistoryTable />
+            </CardContent>
+          </Card>
+        </TabsContent>
       </Tabs>
     </>
   );
 }
+
+function AuditHistoryTable() {
+  const [logs, setLogs] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState("");
+
+  useEffect(() => {
+    const fetchLogs = async () => {
+      const { data, error } = await supabase
+        .from("audit_log")
+        .select("*")
+        .or("tabela.eq.recebimento_mp,tabela.eq.batida_lotes")
+        .order("created_at", { ascending: false })
+        .limit(200);
+      
+      if (!error) setLogs(data);
+      setLoading(false);
+    };
+    fetchLogs();
+  }, []);
+
+  const filtered = logs.filter(log => {
+    const searchLower = search.toLowerCase();
+    const matchesSearch = 
+      log.tabela.toLowerCase().includes(searchLower) ||
+      JSON.stringify(log.dados_novos || {}).toLowerCase().includes(searchLower) ||
+      JSON.stringify(log.dados_anteriores || {}).toLowerCase().includes(searchLower);
+    return matchesSearch;
+  });
+
+  if (loading) return <div className="flex justify-center p-8"><Loader2 className="animate-spin" /></div>;
+
+  return (
+    <div className="space-y-4">
+      <div className="relative">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+        <Input 
+          placeholder="Pesquisar no histórico (Lote, MP, Erro...)" 
+          value={search} 
+          onChange={e => setSearch(e.target.value)} 
+          className="pl-10"
+        />
+      </div>
+
+      <div className="border rounded-md">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Data/Hora</TableHead>
+              <TableHead>Tabela</TableHead>
+              <TableHead>Ação</TableHead>
+              <TableHead>Detalhes</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {filtered.map(log => {
+              const dados = log.dados_novos || {};
+              const isError = dados.erro || dados.status === 'bloqueado';
+              
+              return (
+                <TableRow key={log.id} className={isError ? "bg-red-50" : ""}>
+                  <TableCell className="text-xs whitespace-nowrap">
+                    {new Date(log.created_at).toLocaleString('pt-BR')}
+                  </TableCell>
+                  <TableCell className="text-xs font-mono">{log.tabela}</TableCell>
+                  <TableCell>
+                    <Badge variant={log.acao === 'criar' ? 'default' : 'outline'}>{log.acao}</Badge>
+                  </TableCell>
+                  <TableCell className="text-xs max-w-md truncate">
+                    {dados.erro ? (
+                      <span className="text-red-600 font-bold flex items-center gap-1">
+                        <AlertTriangle className="w-3 h-3" /> {dados.erro}: {dados.lote || dados.lote_mp}
+                      </span>
+                    ) : (
+                      <span>
+                        {dados.status === 'liberado' ? "Lote Liberado: " : ""}
+                        {dados.materia_prima || dados.produto} - Lote: {dados.lote || dados.lote_mp}
+                        {dados.quantidade_kg ? ` (${dados.quantidade_kg}kg)` : ""}
+                        {dados.justificativa_liberacao ? ` - Just: ${dados.justificativa_liberacao}` : ""}
+                      </span>
+                    )}
+                  </TableCell>
+                </TableRow>
+              );
+            })}
+          </TableBody>
+        </Table>
+      </div>
+    </div>
+  );
+}
+
+import { Loader2 } from "lucide-react";
