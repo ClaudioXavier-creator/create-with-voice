@@ -99,7 +99,6 @@ Deno.serve(async (req) => {
         success: true,
         usuarios_alertados: Object.keys(alertasPorUsuario).length,
         total_alertas: totalAlertas,
-        detalhes: alertasPorUsuario,
       }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
