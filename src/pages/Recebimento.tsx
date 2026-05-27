@@ -42,7 +42,7 @@ interface RecebimentoRow {
 }
 
 export default function Recebimento() {
-  const { user } = useAuth();
+  const { user, roles } = useAuth();
   const { empresaAtiva } = useEmpresa();
   const [items, setItems] = useState<RecebimentoRow[]>([]);
   const [loading, setLoading] = useState(true);
@@ -65,6 +65,12 @@ export default function Recebimento() {
   const [certUrl, setCertUrl] = useState("");
   const [certValido, setCertValido] = useState<boolean | null>(null);
   const [observacoes, setObservacoes] = useState("");
+
+  const [liberarDialogOpen, setLiberarDialogOpen] = useState(false);
+  const [selectedLoteId, setSelectedLoteId] = useState<string | null>(null);
+  const [justificativa, setJustificativa] = useState("");
+
+  const isAdmin = roles.includes("admin");
 
   const fetchData = async () => {
     if (!user) return;
@@ -100,13 +106,45 @@ export default function Recebimento() {
     setSaving(false);
   };
 
-  const handleLiberarLote = async (id: string) => {
-    const { error } = await supabase.from("recebimento_mp").update({ status: 'liberado' }).eq("id", id);
-    if (error) toast.error("Erro: " + error.message);
-    else {
-      toast.success("Lote liberado!");
+  const handleLiberarLote = async () => {
+    if (!selectedLoteId || !user) return;
+    if (!isAdmin) {
+      toast.error("Apenas administradores podem liberar lotes manualmente.");
+      return;
+    }
+    if (!justificativa.trim()) {
+      toast.error("Informe uma justificativa para a liberação.");
+      return;
+    }
+
+    setSaving(true);
+    const item = items.find(i => i.id === selectedLoteId);
+    
+    const { error } = await supabase.from("recebimento_mp").update({ 
+      status: 'liberado',
+      observacoes: (item?.observacoes || "") + "\n\n[Liberação Manual] Justificativa: " + justificativa
+    }).eq("id", selectedLoteId);
+
+    if (error) {
+      toast.error("Erro: " + error.message);
+    } else {
+      await registrarAuditLog({
+        userId: user.id,
+        empresaId: empresaAtiva?.id,
+        tabela: "recebimento_mp",
+        registroId: selectedLoteId,
+        acao: "editar",
+        dadosAnteriores: item,
+        dadosNovos: { status: 'liberado', justificativa_liberacao: justificativa }
+      });
+
+      toast.success("Lote liberado e registrado na auditoria!");
+      setLiberarDialogOpen(false);
+      setJustificativa("");
+      setSelectedLoteId(null);
       fetchData();
     }
+    setSaving(false);
   };
 
   const filtered = items.filter(r =>
@@ -158,13 +196,69 @@ export default function Recebimento() {
               </TableCell>
               <TableCell>
                 {item.status === 'bloqueado' && (
-                  <Button size="sm" variant="outline" onClick={() => handleLiberarLote(item.id)}>Liberar</Button>
+                  <Button 
+                    size="sm" 
+                    variant="outline" 
+                    onClick={() => {
+                      setSelectedLoteId(item.id);
+                      setLiberarDialogOpen(true);
+                    }}
+                    disabled={!isAdmin}
+                    title={!isAdmin ? "Apenas administradores podem liberar lotes" : ""}
+                  >
+                    <ShieldAlert className="w-4 h-4 mr-1 text-red-500" />
+                    Liberar
+                  </Button>
                 )}
               </TableCell>
             </TableRow>
           ))}
         </TableBody>
       </Table>
+
+      <Dialog open={liberarDialogOpen} onOpenChange={setLiberarDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Liberação Manual de Lote</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 pt-4">
+            <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4">
+              <div className="flex">
+                <div className="flex-shrink-0">
+                  <AlertTriangle className="h-5 w-5 text-yellow-400" />
+                </div>
+                <div className="ml-3">
+                  <p className="text-sm text-yellow-700">
+                    A liberação manual exige uma justificativa clara que será registrada para fins de auditoria.
+                  </p>
+                </div>
+              </div>
+            </div>
+            
+            <div className="space-y-2">
+              <Label>Justificativa da Liberação (Ex: Correção de estoque, ajuste de FIFO)</Label>
+              <Textarea 
+                placeholder="Descreva o motivo da liberação manual..."
+                value={justificativa}
+                onChange={e => setJustificativa(e.target.value)}
+                className="min-h-[100px]"
+              />
+            </div>
+
+            <div className="flex justify-end gap-2">
+              <Button variant="outline" onClick={() => setLiberarDialogOpen(false)}>Cancelar</Button>
+              <Button 
+                onClick={handleLiberarLote} 
+                disabled={saving || !justificativa.trim()}
+                variant="destructive"
+              >
+                {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Confirmar Liberação
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }
