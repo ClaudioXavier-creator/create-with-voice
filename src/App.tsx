@@ -253,6 +253,7 @@ const AppRoutes = () => {
         <Route path="/instalar" element={<Instalar />} />
         <Route path="/privacidade" element={<PrivacyPolicy />} />
         <Route path="/termos" element={<TermsOfService />} />
+        <Route path="/reembolso" element={<RefundPolicy />} />
         
         {/* Landings de Produtos */}
         <Route path="/nutricrm" element={<NutriCRMPage />} />
