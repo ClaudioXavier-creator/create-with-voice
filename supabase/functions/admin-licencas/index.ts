@@ -299,7 +299,7 @@ Deno.serve(async (req) => {
 
       // Bloquear revogação se houver assinatura Stripe ativa e paga (não liberada manualmente)
       const temStripeAtivo =
-        licencaAtual?.stripe_subscription_id &&
+        (licencaAtual?.stripe_subscription_id || licencaAtual?.stripe_customer_id) &&
         licencaAtual?.status === "ativa" &&
         !licencaAtual?.liberado_admin &&
         new Date(licencaAtual.data_expiracao) > new Date();
@@ -308,7 +308,7 @@ Deno.serve(async (req) => {
         return new Response(
           JSON.stringify({
             error:
-              "Esta licença possui assinatura Stripe ativa e paga. Não é possível revogar enquanto o pagamento estiver vigente. Cancele a assinatura no Stripe primeiro.",
+              "Esta licença possui uma assinatura ativa (Stripe/Paddle). Não é possível revogar enquanto o pagamento estiver vigente. Cancele a assinatura no provedor primeiro ou use 'Forçar Revogação'.",
             stripe_protected: true,
           }),
           { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
