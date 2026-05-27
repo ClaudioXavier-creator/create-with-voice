@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import { Search, Shield, CheckCircle2, XCircle, AlertTriangle, FileText, ExternalLink, Download, Filter } from "lucide-react";
+import { Search, Shield, CheckCircle2, XCircle, AlertTriangle, FileText, ExternalLink, Download, Filter, Loader2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -395,5 +395,3 @@ function AuditHistoryTable() {
     </div>
   );
 }
-
-import { Loader2 } from "lucide-react";
