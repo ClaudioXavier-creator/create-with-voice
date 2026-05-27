@@ -106,6 +106,8 @@ export default function PCP() {
   const [motivoRetrabalho, setMotivoRetrabalho] = useState("");
   const [qtdSobra, setQtdSobra] = useState("");
   const [destinoSobra, setDestinoSobra] = useState("");
+  const [ingredientesFormulaSelecionada, setIngredientesFormulaSelecionada] = useState<any[]>([]);
+
 
   // Formula item form
   const [itemOpen, setItemOpen] = useState(false);
