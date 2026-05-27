@@ -12,6 +12,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useEmpresa } from "@/hooks/useEmpresa";
 import { toast } from "sonner";
 import { printElement } from "@/utils/printUtils";
+import { registrarAuditLog } from "@/utils/auditLog";
 
 
 interface Props {
@@ -234,9 +235,9 @@ export default function FichaProducaoDigital({ ordemId, onClose }: Props) {
           userId: user.id,
           empresaId: empresaAtiva?.id,
           tabela: "batida_lotes",
-          registroId: created.id,
+          registroId: (created as any).id,
           acao: "criar",
-          dadosNovos: created
+          dadosNovos: created as any
         });
       }
     }
