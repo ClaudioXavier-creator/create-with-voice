@@ -94,6 +94,8 @@ const StatusLotes = lazy(() => import("./pages/StatusLotes"));
 const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
 const TermsOfService = lazy(() => import("./pages/TermsOfService"));
 const RefundPolicy = lazy(() => import("./pages/RefundPolicy"));
+const AuditLog = lazy(() => import("./pages/AuditLog"));
+
 
 // Agro RC CRM - Páginas Internas
 const AgroRcLayout = lazy(() => import("./components/layout/AgroRcLayout"));
@@ -235,8 +237,10 @@ const InternalRoutes = () => (
     <Route path="/marketing" element={<Marketing />} />
     <Route path="/gerador-headlines" element={<GeradorHeadlines />} />
     <Route path="/status-lotes" element={<StatusLotes />} />
+    <Route path="/audit-log" element={<AuditLog />} />
     <Route path="/licencas-programa" element={<AdminLicencas isTab />} />
     <Route path="*" element={<NotFound />} />
+
   </Routes>
 );
 
