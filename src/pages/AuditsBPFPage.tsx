@@ -198,10 +198,7 @@ export default function AuditsBPFPage() {
         </section>
       </main>
 
-      <footer className="border-t border-border py-8 text-center">
-        <img src={logoBpfConsult} alt="BPF_Consult" className="mx-auto w-10 h-10 object-contain mb-2 opacity-60" />
-        <p className="text-sm text-muted-foreground">Audits_BPF © {new Date().getFullYear()} — by BPF_Consult</p>
-      </footer>
+      <PublicFooter />
     </div>
   );
 }
