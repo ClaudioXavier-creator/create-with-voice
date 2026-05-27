@@ -698,9 +698,10 @@ export default function Rastreabilidade() {
     // Buscar contraprova e dados de produção do lote
     const { data: prodInfo } = await supabase.from("producao").select("*").eq("lote", certLote).maybeSingle();
 
-    const empresaNome = empresaAtiva?.nome || "BPF DIGITAL";
-    const rt = empresaAtiva?.responsavel_tecnico || "—";
-    const crmv = empresaAtiva?.crmv || "—";
+    const esc = (s: unknown) => String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+    const empresaNome = esc(empresaAtiva?.nome || "BPF DIGITAL");
+    const rt = esc(empresaAtiva?.responsavel_tecnico || "—");
+    const crmv = esc(empresaAtiva?.crmv || "—");
     const dataEmissao = new Date().toLocaleString("pt-BR");
 
     const htmlContent = `
@@ -718,12 +719,12 @@ export default function Rastreabilidade() {
             <div class="border border-gray-200 p-4 rounded-lg bg-gray-50/50 print-force-bg">
               <h3 class="text-emerald-800 font-bold border-b border-gray-300 pb-2 mb-3 text-sm">📦 Identificação do Lote</h3>
               <div class="grid grid-cols-2 gap-y-2 text-xs">
-                <div><span class="font-bold text-gray-500">PRODUTO:</span> ${produto}</div>
-                <div><span class="font-bold text-gray-500">LOTE PA:</span> <span class="text-emerald-700 font-bold">${certLote}</span></div>
+                <div><span class="font-bold text-gray-500">PRODUTO:</span> ${esc(produto)}</div>
+                <div><span class="font-bold text-gray-500">LOTE PA:</span> <span class="text-emerald-700 font-bold">${esc(certLote)}</span></div>
                 <div><span class="font-bold text-gray-500">DATA FABRICAÇÃO:</span> ${prodInfo?.data ? new Date(prodInfo.data).toLocaleDateString("pt-BR") : "—"}</div>
-                <div><span class="font-bold text-gray-500">QTD PRODUZIDA:</span> ${prodInfo?.quantidade || "—"}</div>
-                <div><span class="font-bold text-gray-500">OPERADOR:</span> ${prodInfo?.operador || "—"}</div>
-                <div><span class="font-bold text-gray-500">TEMPO MISTURA:</span> ${prodInfo?.tempo_mistura || "—"}</div>
+                <div><span class="font-bold text-gray-500">QTD PRODUZIDA:</span> ${esc(prodInfo?.quantidade || "—")}</div>
+                <div><span class="font-bold text-gray-500">OPERADOR:</span> ${esc(prodInfo?.operador || "—")}</div>
+                <div><span class="font-bold text-gray-500">TEMPO MISTURA:</span> ${esc(prodInfo?.tempo_mistura || "—")}</div>
               </div>
             </div>
 
@@ -740,9 +741,9 @@ export default function Rastreabilidade() {
                 <tbody>
                   ${mpsArr.map(m => `
                     <tr>
-                      <td class="border border-gray-300 p-2 font-medium">${m.mp}</td>
-                      <td class="border border-gray-300 p-2">${m.lote}</td>
-                      <td class="border border-gray-300 p-2">${m.fornecedor}</td>
+                      <td class="border border-gray-300 p-2 font-medium">${esc(m.mp)}</td>
+                      <td class="border border-gray-300 p-2">${esc(m.lote)}</td>
+                      <td class="border border-gray-300 p-2">${esc(m.fornecedor)}</td>
                     </tr>
                   `).join("") || "<tr><td colspan='3' class='p-4 text-center text-gray-400 italic'>Sem registros</td></tr>"}
                 </tbody>
@@ -764,11 +765,11 @@ export default function Rastreabilidade() {
                 <tbody>
                   ${destinosArr.map(d => `
                     <tr>
-                      <td class="border border-gray-300 p-2 font-medium">${d.cliente}</td>
-                      <td class="border border-gray-300 p-2">${d.nf}</td>
+                      <td class="border border-gray-300 p-2 font-medium">${esc(d.cliente)}</td>
+                      <td class="border border-gray-300 p-2">${esc(d.nf)}</td>
                       <td class="border border-gray-300 p-2">${d.data !== "—" ? new Date(d.data).toLocaleDateString("pt-BR") : "—"}</td>
-                      <td class="border border-gray-300 p-2">${d.qtd}</td>
-                      <td class="border border-gray-300 p-2">${d.local}</td>
+                      <td class="border border-gray-300 p-2">${esc(d.qtd)}</td>
+                      <td class="border border-gray-300 p-2">${esc(d.local)}</td>
                     </tr>
                   `).join("") || "<tr><td colspan='5' class='p-4 text-center text-gray-400 italic'>Lote ainda não expedido</td></tr>"}
                 </tbody>
@@ -779,8 +780,8 @@ export default function Rastreabilidade() {
               <h3 class="text-emerald-800 font-bold border-b border-gray-300 pb-2 mb-3 text-sm">🧪 Contraprova Retida</h3>
               <div class="grid grid-cols-4 gap-4 text-xs">
                 <div><span class="font-bold text-gray-500">COLETADA:</span> ${prodInfo?.contraprova_retida ? "Sim" : "Não"}</div>
-                <div><span class="font-bold text-gray-500">LOCAL:</span> ${prodInfo?.contraprova_local || "—"}</div>
-                <div><span class="font-bold text-gray-500">QUANTIDADE:</span> ${prodInfo?.contraprova_quantidade || "—"}</div>
+                <div><span class="font-bold text-gray-500">LOCAL:</span> ${esc(prodInfo?.contraprova_local || "—")}</div>
+                <div><span class="font-bold text-gray-500">QUANTIDADE:</span> ${esc(prodInfo?.contraprova_quantidade || "—")}</div>
                 <div><span class="font-bold text-gray-500">VALIDADE:</span> ${prodInfo?.contraprova_validade ? new Date(prodInfo.contraprova_validade).toLocaleDateString("pt-BR") : "—"}</div>
               </div>
             </div>
