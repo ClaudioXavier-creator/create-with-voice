@@ -172,7 +172,44 @@ export default function PCP() {
   const [flushInspecaoVisual, setFlushInspecaoVisual] = useState("aprovado");
   const [flushEquipVerificado, setFlushEquipVerificado] = useState<string[]>([]);
 
+  useEffect(() => {
+    const batidas = parseInt(numBatidas) || 0;
+    const peso = parseFloat(pesoBatida) || 0;
+    if (batidas > 0 && peso > 0) {
+      const total = (batidas * peso).toFixed(2);
+      setQtdProgramada(String(total));
+    }
+  }, [numBatidas, pesoBatida]);
+
+  const handleFormulaChange = async (v: string) => {
+    setFormulaId(v);
+    const f = formulasDisponiveis.find((x: any) => x.id === v);
+    if (f) {
+      setFormulaNome(f.codigo);
+      if (!produto) setProduto(f.produto_nome);
+      if (f.status !== 'ativa') {
+        toast.warning("Atenção: Esta fórmula não está marcada como ATIVA.");
+      }
+      
+      const { data, error } = await supabase
+        .from("formula_ingredientes" as any)
+        .select("*")
+        .eq("formula_id", v)
+        .order("ordem");
+      
+      if (error) {
+        toast.error("Erro ao carregar ingredientes da fórmula");
+      } else {
+        setIngredientesFormulaSelecionada(data || []);
+        if (!data || data.length === 0) {
+          toast.warning("Esta fórmula não possui ingredientes cadastrados.");
+        }
+      }
+    }
+  };
+
   const fetchData = async () => {
+
     if (!user) return;
     const [ordensRes, itensRes, batidasRes, matrizRes, coRes, flushRes, formRes] = await Promise.all([
       (() => { let q = supabase.from("ordens_producao").select("*").order("data_programada", { ascending: false }); if (empresaAtiva) q = q.eq("empresa_id", empresaAtiva.id); return q; })(),
