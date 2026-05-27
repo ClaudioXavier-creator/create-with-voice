@@ -234,8 +234,19 @@ export default function PCP() {
 
   const handleAddOrdem = async () => {
     if (!numOrdem || !produto || !user) return;
+    
+    if (tipoOrdem === 'normal' && !formulaId) {
+      toast.error("Selecione uma fórmula para ordens normais.");
+      return;
+    }
+
+    if (formulaId && ingredientesFormulaSelecionada.length === 0) {
+      toast.error("A fórmula selecionada não possui ingredientes.");
+      return;
+    }
+
     setSaving(true);
-    const { error } = await supabase.from("ordens_producao").insert({
+    const { data: newOrdem, error } = await supabase.from("ordens_producao").insert({
       user_id: user.id, empresa_id: empresaAtiva?.id || null,
       numero_ordem: numOrdem,
       produto,
@@ -252,18 +263,48 @@ export default function PCP() {
       motivo_retrabalho: motivoRetrabalho || null,
       quantidade_sobra: qtdSobra || null,
       destino_sobra: destinoSobra || null,
-    } as any);
-    if (error) toast.error("Erro ao salvar");
-    else {
+      status: "programada"
+    } as any).select().single();
+
+    if (error) {
+      toast.error("Erro ao salvar ordem");
+    } else {
+      if (formulaId && ingredientesFormulaSelecionada.length > 0) {
+        const totalKgFormula = ingredientesFormulaSelecionada.reduce((acc, curr) => acc + (parseFloat(curr.quantidade_kg) || 0), 0);
+        const totalProgramado = parseFloat(qtdProgramada) || 0;
+
+        const itemsToInsert = ingredientesFormulaSelecionada.map(ing => {
+          const percentage = totalKgFormula > 0 ? (parseFloat(ing.quantidade_kg) / totalKgFormula) : 0;
+          const qtdCalculada = (totalProgramado * percentage).toFixed(3);
+          
+          return {
+            user_id: user.id,
+            empresa_id: empresaAtiva?.id || null,
+            ordem_id: (newOrdem as any).id,
+            materia_prima: ing.materia_prima,
+            quantidade_formula: qtdCalculada,
+            percentual: (percentage * 100).toFixed(2),
+            unidade: "kg"
+          };
+        });
+
+        const { error: itemsError } = await supabase.from("formula_itens").insert(itemsToInsert as any);
+        if (itemsError) {
+          toast.warning("Ordem criada, mas erro ao inserir ingredientes: " + itemsError.message);
+        }
+      }
+
       toast.success("Ordem criada!");
       setOrdemOpen(false);
       setNumOrdem(""); setProduto(""); setFormulaId(""); setFormulaNome(""); setLotePA(""); setQtdProgramada("");
       setNumBatidas("1"); setPesoBatida(""); setPrioridade("normal"); setObsOrdem("");
       setTipoOrdem("normal"); setOrdemOrigemId(""); setMotivoRetrabalho(""); setQtdSobra(""); setDestinoSobra("");
+      setIngredientesFormulaSelecionada([]);
       fetchData();
     }
     setSaving(false);
   };
+
 
   const handleAddItem = async () => {
     if (!itemMP || !itemOrdemId || !user) return;
