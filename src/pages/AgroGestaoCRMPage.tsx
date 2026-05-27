@@ -36,8 +36,8 @@ export default function AgroGestaoCRMPage() {
     const key = `${tipo}-${plano}`;
     setLoadingPlan(key);
     try {
-      const { data, error } = await supabase.functions.invoke("create-checkout-agrorc", {
-        body: { tipo, plano, produto: "agrogestao" },
+      const { data, error } = await supabase.functions.invoke("create-checkout-agrogestao", {
+        body: { tipo, plano },
       });
       if (error) throw error;
       if (!data?.url) throw new Error("URL de checkout não retornada");
