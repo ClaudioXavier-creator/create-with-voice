@@ -18,6 +18,18 @@ Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders })
   if (req.method !== 'POST') return bad('Method not allowed', 405)
 
+  // Auth: require an authenticated user with admin/comercial role
+  const authHeader = req.headers.get('Authorization')
+  if (!authHeader?.startsWith('Bearer ')) return bad('Unauthorized', 401)
+  const supabaseUrl = Deno.env.get('SUPABASE_URL')!
+  const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+  const admin = createClient(supabaseUrl, serviceKey)
+  const { data: { user }, error: userErr } = await admin.auth.getUser(authHeader.replace('Bearer ', ''))
+  if (userErr || !user) return bad('Unauthorized', 401)
+  const { data: roleRows } = await admin.from('user_roles').select('role').eq('user_id', user.id)
+  const roles = (roleRows ?? []).map((r: any) => r.role)
+  if (!roles.includes('admin') && !roles.includes('comercial')) return bad('Forbidden', 403)
+
   const accountSid = Deno.env.get('TWILIO_ACCOUNT_SID')
   const authToken = Deno.env.get('TWILIO_AUTH_TOKEN')
   const fromNumber = Deno.env.get('TWILIO_PHONE_NUMBER')
