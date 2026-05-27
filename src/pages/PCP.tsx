@@ -106,6 +106,8 @@ export default function PCP() {
   const [motivoRetrabalho, setMotivoRetrabalho] = useState("");
   const [qtdSobra, setQtdSobra] = useState("");
   const [destinoSobra, setDestinoSobra] = useState("");
+  const [ingredientesFormulaSelecionada, setIngredientesFormulaSelecionada] = useState<any[]>([]);
+
 
   // Formula item form
   const [itemOpen, setItemOpen] = useState(false);
@@ -170,7 +172,44 @@ export default function PCP() {
   const [flushInspecaoVisual, setFlushInspecaoVisual] = useState("aprovado");
   const [flushEquipVerificado, setFlushEquipVerificado] = useState<string[]>([]);
 
+  useEffect(() => {
+    const batidas = parseInt(numBatidas) || 0;
+    const peso = parseFloat(pesoBatida) || 0;
+    if (batidas > 0 && peso > 0) {
+      const total = (batidas * peso).toFixed(2);
+      setQtdProgramada(String(total));
+    }
+  }, [numBatidas, pesoBatida]);
+
+  const handleFormulaChange = async (v: string) => {
+    setFormulaId(v);
+    const f = formulasDisponiveis.find((x: any) => x.id === v);
+    if (f) {
+      setFormulaNome(f.codigo);
+      if (!produto) setProduto(f.produto_nome);
+      if (f.status !== 'ativa') {
+        toast.warning("Atenção: Esta fórmula não está marcada como ATIVA.");
+      }
+      
+      const { data, error } = await supabase
+        .from("formula_ingredientes" as any)
+        .select("*")
+        .eq("formula_id", v)
+        .order("ordem");
+      
+      if (error) {
+        toast.error("Erro ao carregar ingredientes da fórmula");
+      } else {
+        setIngredientesFormulaSelecionada(data || []);
+        if (!data || data.length === 0) {
+          toast.warning("Esta fórmula não possui ingredientes cadastrados.");
+        }
+      }
+    }
+  };
+
   const fetchData = async () => {
+
     if (!user) return;
     const [ordensRes, itensRes, batidasRes, matrizRes, coRes, flushRes, formRes] = await Promise.all([
       (() => { let q = supabase.from("ordens_producao").select("*").order("data_programada", { ascending: false }); if (empresaAtiva) q = q.eq("empresa_id", empresaAtiva.id); return q; })(),
@@ -195,8 +234,19 @@ export default function PCP() {
 
   const handleAddOrdem = async () => {
     if (!numOrdem || !produto || !user) return;
+    
+    if (tipoOrdem === 'normal' && !formulaId) {
+      toast.error("Selecione uma fórmula para ordens normais.");
+      return;
+    }
+
+    if (formulaId && ingredientesFormulaSelecionada.length === 0) {
+      toast.error("A fórmula selecionada não possui ingredientes.");
+      return;
+    }
+
     setSaving(true);
-    const { error } = await supabase.from("ordens_producao").insert({
+    const { data: newOrdem, error } = await supabase.from("ordens_producao").insert({
       user_id: user.id, empresa_id: empresaAtiva?.id || null,
       numero_ordem: numOrdem,
       produto,
@@ -213,18 +263,48 @@ export default function PCP() {
       motivo_retrabalho: motivoRetrabalho || null,
       quantidade_sobra: qtdSobra || null,
       destino_sobra: destinoSobra || null,
-    } as any);
-    if (error) toast.error("Erro ao salvar");
-    else {
+      status: "programada"
+    } as any).select().single();
+
+    if (error) {
+      toast.error("Erro ao salvar ordem");
+    } else {
+      if (formulaId && ingredientesFormulaSelecionada.length > 0) {
+        const totalKgFormula = ingredientesFormulaSelecionada.reduce((acc, curr) => acc + (parseFloat(curr.quantidade_kg) || 0), 0);
+        const totalProgramado = parseFloat(qtdProgramada) || 0;
+
+        const itemsToInsert = ingredientesFormulaSelecionada.map(ing => {
+          const percentage = totalKgFormula > 0 ? (parseFloat(ing.quantidade_kg) / totalKgFormula) : 0;
+          const qtdCalculada = (totalProgramado * percentage).toFixed(3);
+          
+          return {
+            user_id: user.id,
+            empresa_id: empresaAtiva?.id || null,
+            ordem_id: (newOrdem as any).id,
+            materia_prima: ing.materia_prima,
+            quantidade_formula: qtdCalculada,
+            percentual: (percentage * 100).toFixed(2),
+            unidade: "kg"
+          };
+        });
+
+        const { error: itemsError } = await supabase.from("formula_itens").insert(itemsToInsert as any);
+        if (itemsError) {
+          toast.warning("Ordem criada, mas erro ao inserir ingredientes: " + itemsError.message);
+        }
+      }
+
       toast.success("Ordem criada!");
       setOrdemOpen(false);
       setNumOrdem(""); setProduto(""); setFormulaId(""); setFormulaNome(""); setLotePA(""); setQtdProgramada("");
       setNumBatidas("1"); setPesoBatida(""); setPrioridade("normal"); setObsOrdem("");
       setTipoOrdem("normal"); setOrdemOrigemId(""); setMotivoRetrabalho(""); setQtdSobra(""); setDestinoSobra("");
+      setIngredientesFormulaSelecionada([]);
       fetchData();
     }
     setSaving(false);
   };
+
 
   const handleAddItem = async () => {
     if (!itemMP || !itemOrdemId || !user) return;
@@ -627,14 +707,8 @@ export default function PCP() {
                 </div>
                 <div>
                   <Label>Fórmula Oficial (versionada)</Label>
-                  <Select value={formulaId} onValueChange={(v) => {
-                    setFormulaId(v);
-                    const f = formulasDisponiveis.find((x: any) => x.id === v);
-                    if (f) {
-                      setFormulaNome(f.codigo);
-                      if (!produto) setProduto(f.produto_nome);
-                    }
-                  }}>
+                  <Select value={formulaId} onValueChange={handleFormulaChange}>
+
                     <SelectTrigger><SelectValue placeholder="Selecione a fórmula ativa" /></SelectTrigger>
                     <SelectContent>
                       {formulasDisponiveis.length === 0 && (
