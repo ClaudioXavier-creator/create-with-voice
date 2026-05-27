@@ -85,6 +85,7 @@ export const NAV_ENTRIES: NavEntry[] = [
       { path: "/recebimento", label: "Recebimento de MP", icon: ClipboardList, keywords: ["matéria-prima", "conferência", "entrada"] },
       { path: "/produtos", label: "Cadastro de Produtos", icon: Package, keywords: ["itens", "mercadoria", "sku"] },
       { path: "/formulas", label: "Fórmulas de Produção", icon: FlaskConical, keywords: ["receita", "composição", "mistura"] },
+      { path: "/status-lotes", label: "Status & Fila de Lotes", icon: Tag, keywords: ["estoque", "fifo", "bloqueio", "mp"] },
     ],
   },
 
