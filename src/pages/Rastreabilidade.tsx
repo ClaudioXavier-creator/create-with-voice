@@ -817,7 +817,7 @@ export default function Rastreabilidade() {
     printWin.document.write(`
       <html>
         <head>
-          <title>Certificado Rastreabilidade - ${certLote}</title>
+          <title>Certificado Rastreabilidade - ${esc(certLote)}</title>
           ${styles}
           <style>
             @media print { @page { size: A4; margin: 10mm; } body { padding: 0; } }
