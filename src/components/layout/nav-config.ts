@@ -131,9 +131,11 @@ export const NAV_ENTRIES: NavEntry[] = [
       { path: "/auditoria", label: "Auditoria BPF", icon: ClipboardCheck },
       { path: "/nao-conformidades", label: "Não Conformidades", icon: AlertTriangle },
       { path: "/sala-auditor", label: "🔍 Sala do Auditor", icon: ClipboardCheck },
+      { path: "/audit-log", label: "Log de Atividades", icon: History },
       { path: "/checklist-pre-auditoria", label: "Checklist Pré-Auditoria", icon: ClipboardList },
       { path: "/qualidade-total", label: "Qualidade Total (SAC)", icon: MessageSquare },
       { path: "/indicadores", label: "Indicadores de Qualidade", icon: BarChart3 },
+
     ],
   },
 

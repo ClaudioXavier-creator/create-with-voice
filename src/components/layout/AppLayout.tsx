@@ -25,6 +25,8 @@ import OfflineBanner from "@/components/OfflineBanner";
 import PageLoader from "@/components/PageLoader";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import ClearCacheButton from "@/components/ClearCacheButton";
+import Breadcrumbs from "@/components/Breadcrumbs";
+
 
 const PRODUCT_CONFIGS: Record<string, { logo: string; title: string; subtitle: string }> = {
   feedbpf: {
@@ -270,12 +272,14 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
         <div className="flex-1 w-full max-w-[1920px] mx-auto p-3 sm:p-4 md:p-6 lg:p-8 xl:p-10 animate-fade-in relative z-10">
           <LicenseGate product={product as any}>
             <TierGate>
+              <Breadcrumbs />
               <Suspense fallback={<PageLoader />}>
                 {children}
               </Suspense>
             </TierGate>
           </LicenseGate>
         </div>
+
         
         {/* Floating elements backdrop decoration - Refined for better performance and responsiveness */}
         <div className="fixed top-0 right-0 -z-0 w-[300px] h-[300px] md:w-[600px] md:h-[600px] bg-primary/5 rounded-full blur-[80px] md:blur-[120px] opacity-30 pointer-events-none translate-x-1/4 -translate-y-1/4 select-none" />
