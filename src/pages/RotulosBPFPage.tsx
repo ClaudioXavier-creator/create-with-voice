@@ -1,6 +1,7 @@
 import { Link, useSearchParams, useNavigate } from "react-router-dom";
 import { useState, useEffect, useMemo } from "react";
 import { ArrowLeft, Sparkles, Tag, FileText, Printer, ShieldCheck, Lock, Layers, Palette, QrCode, Building2, Loader2, CheckCircle2, XCircle, Mail } from "lucide-react";
+import { PublicFooter } from "@/components/layout/PublicFooter";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
