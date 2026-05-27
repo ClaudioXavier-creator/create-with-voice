@@ -15,7 +15,7 @@ export default function TermsOfService() {
     <div className="min-h-screen bg-slate-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-3xl mx-auto bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
         <div className="p-6 border-b border-slate-100 flex items-center justify-between bg-white sticky top-0 z-10">
-          <Button variant="ghost" onClick={() => navigate("/bpf-consult")} className="text-slate-600">
+          <Button variant="ghost" onClick={() => navigate(-1)} className="text-slate-600">
             <ArrowLeft className="mr-2 h-4 w-4" /> Voltar
           </Button>
           <h1 className="text-xl font-bold text-[#173404]">Termos de Uso</h1>
@@ -24,43 +24,44 @@ export default function TermsOfService() {
         
         <ScrollArea className="h-[70vh] p-8">
           <div className="prose prose-slate max-w-none">
-            <p className="text-slate-600 mb-6">Última atualização: {new Date().toLocaleDateString('pt-BR')}</p>
+            <p className="text-slate-600 mb-6 font-semibold">BPF_Consult / Claudio Luiz Nunes</p>
+            <p className="text-slate-600 mb-6 text-sm italic">Última atualização: 27 de maio de 2026</p>
             
-            <h2 className="text-lg font-bold text-[#173404] mt-8 mb-4">1. Aceitação dos Termos</h2>
+            <h2 className="text-lg font-bold text-[#173404] mt-8 mb-4">1. Aceitação</h2>
             <p className="text-slate-600 mb-4">
-              Ao acessar a plataforma BPF_Consult, você concorda em cumprir estes termos de serviço, todas as leis e regulamentos aplicáveis. Se você não concordar com algum destes termos, está proibido de usar ou acessar este site.
+              Ao acessar nossas plataformas, você aceita estes termos. O serviço é destinado ao setor agroindustrial e de nutrição animal.
             </p>
 
-            <h2 className="text-lg font-bold text-[#173404] mt-8 mb-4">2. Licença de Uso</h2>
+            <h2 className="text-lg font-bold text-[#173404] mt-8 mb-4">2. Licenciamento e Assinaturas</h2>
             <p className="text-slate-600 mb-4">
-              É concedida permissão para acessar os módulos contratados (Feed_BPF, Agro RC, NutriCRM, etc.) exclusivamente para fins de gestão interna e conformidade regulatória da sua empresa.
+              O acesso aos sistemas é concedido mediante assinatura recorrente ou pagamento único, conforme o plano escolhido. O uso é intransferível e vinculado ao CNPJ/Empresa cadastrada.
             </p>
 
-            <h2 className="text-lg font-bold text-[#173404] mt-8 mb-4">3. Responsabilidades</h2>
-            <p className="text-slate-600 mb-4">
-              A BPF_Consult fornece ferramentas para auxiliar na conformidade com a IN 17/2023 do MAPA. No entanto, a responsabilidade final pela veracidade das informações inseridas e pelo cumprimento das normas vigentes é do usuário e da empresa contratante.
+            <h2 className="text-lg font-bold text-[#173404] mt-8 mb-4">3. Pagamentos e Merchant of Record (Paddle)</h2>
+            <p className="text-slate-600 mb-4 border-l-4 border-primary pl-4">
+              Nossos pedidos são processados pelo nosso parceiro de faturamento, o Paddle. O Paddle atua como nosso revendedor autorizado e Merchant of Record, sendo responsável por todas as consultas de serviço ao cliente relacionadas ao pagamento e devoluções.
             </p>
 
-            <h2 className="text-lg font-bold text-[#173404] mt-8 mb-4">4. Limitações</h2>
+            <h2 className="text-lg font-bold text-[#173404] mt-8 mb-4">4. Proibições</h2>
             <p className="text-slate-600 mb-4">
-              Em nenhum caso a BPF_Consult ou seus fornecedores serão responsáveis por quaisquer danos decorrentes do uso ou da incapacidade de usar os materiais na plataforma, mesmo que tenhamos sido notificados da possibilidade de tais danos.
+              É proibido: Realizar engenharia reversa, sublicenciar o software sem autorização, ou utilizar a plataforma para fins ilegais ou fora do escopo técnico de boas práticas de fabricação.
             </p>
 
-            <h2 className="text-lg font-bold text-[#173404] mt-8 mb-4">5. Modificações</h2>
+            <h2 className="text-lg font-bold text-[#173404] mt-8 mb-4">5. Propriedade Intelectual</h2>
             <p className="text-slate-600 mb-4">
-              A BPF_Consult pode revisar estes termos de serviço a qualquer momento, sem aviso prévio. Ao usar este site, você concorda em ficar vinculado à versão atual desses termos.
+              Todos os algoritmos, templates de POPs, checklists baseados em decretos oficiais e interfaces são de propriedade intelectual da BPF_Consult.
             </p>
-            
-            <h2 className="text-lg font-bold text-[#173404] mt-8 mb-4">6. Lei Aplicável</h2>
+
+            <h2 className="text-lg font-bold text-[#173404] mt-8 mb-4">6. Suporte</h2>
             <p className="text-slate-600 mb-4">
-              Estes termos e condições são regidos e interpretados de acordo com as leis brasileiras e você se submete irrevogavelmente à jurisdição exclusiva dos tribunais naquele estado ou localidade.
+              O suporte técnico é realizado via e-mail (contato@bpfconsult.com.br) ou WhatsApp oficial, dentro do horário comercial.
             </p>
           </div>
         </ScrollArea>
         
         <div className="p-6 bg-slate-50 border-t border-slate-100 text-center">
-          <Button onClick={() => navigate("/bpf-consult")} className="bg-[#173404] text-white rounded-full px-8">
-            Aceitar Termos
+          <Button onClick={() => navigate(-1)} className="bg-[#173404] text-white rounded-full px-8">
+            Entendido
           </Button>
         </div>
       </div>

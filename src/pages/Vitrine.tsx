@@ -307,10 +307,11 @@ export default function Vitrine() {
         <p className="text-green-100/40 text-sm font-medium">
           BPF_Consult © {new Date().getFullYear()} — Soluções para Nutrição Animal
         </p>
-        <div className="mt-4 flex justify-center gap-6 text-green-100/20 text-xs font-bold uppercase tracking-widest">
-          <a href="#" className="hover:text-white transition-colors">Privacidade</a>
-          <a href="#" className="hover:text-white transition-colors">Termos</a>
-          <a href="#" className="hover:text-white transition-colors">Suporte</a>
+        <div className="mt-4 flex flex-wrap justify-center gap-x-6 gap-y-2 text-green-100/20 text-[10px] sm:text-xs font-bold uppercase tracking-widest">
+          <Link to="/privacidade" className="hover:text-white transition-colors">Privacidade</Link>
+          <Link to="/termos" className="hover:text-white transition-colors">Termos</Link>
+          <Link to="/reembolso" className="hover:text-white transition-colors">Reembolso</Link>
+          <a href="mailto:contato@bpfconsult.com.br" className="hover:text-white transition-colors">Suporte</a>
           <Link to="/admin-access" className="hover:text-white transition-colors">Acesso Restrito</Link>
         </div>
       </footer>

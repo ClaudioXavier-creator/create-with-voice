@@ -93,6 +93,7 @@ const LandingPageBPF = lazy(() => import("./pages/LandingPageBPF"));
 const StatusLotes = lazy(() => import("./pages/StatusLotes"));
 const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
 const TermsOfService = lazy(() => import("./pages/TermsOfService"));
+const RefundPolicy = lazy(() => import("./pages/RefundPolicy"));
 
 // Agro RC CRM - Páginas Internas
 const AgroRcLayout = lazy(() => import("./components/layout/AgroRcLayout"));
@@ -252,6 +253,7 @@ const AppRoutes = () => {
         <Route path="/instalar" element={<Instalar />} />
         <Route path="/privacidade" element={<PrivacyPolicy />} />
         <Route path="/termos" element={<TermsOfService />} />
+        <Route path="/reembolso" element={<RefundPolicy />} />
         
         {/* Landings de Produtos */}
         <Route path="/nutricrm" element={<NutriCRMPage />} />
