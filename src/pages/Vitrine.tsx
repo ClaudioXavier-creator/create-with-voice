@@ -1,5 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { ArrowRight, Lock, ShieldCheck, Factory, Beaker, BarChart3, GraduationCap, ClipboardCheck, Sparkles, Building2, Users, LayoutDashboard, Tag, CheckCircle2, AlertCircle } from "lucide-react";
+import { PublicFooter } from "@/components/layout/PublicFooter";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import logoBpfConsult from "@/assets/logo-bpf-consult.png";
