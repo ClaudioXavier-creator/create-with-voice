@@ -316,25 +316,7 @@ export default function LicenseGate({ children, product: initialProduct }: Licen
           })}
         </div>
 
-        <div className="text-center space-y-2">
-          <p className="text-xs text-muted-foreground">
-            <ShieldCheck aria-hidden="true" className="w-3 h-3 inline mr-1" />
-            Pagamento seguro via Paddle. Cancele a qualquer momento.
-          </p>
-          <p className="text-xs text-muted-foreground">
-            Limites por plano: Entrada <strong>1</strong> · Intermediário <strong>até 5</strong> · Avançado <strong>até 10</strong> empresas.
-          </p>
-          <div className="flex items-center justify-center gap-4 pt-2">
-            <a
-              href="mailto:contato@bpfconsult.com.br"
-              className="inline-flex items-center gap-1.5 text-xs text-primary hover:underline"
-            >
-              <Mail aria-hidden="true" className="w-3.5 h-3.5" />
-              contato@bpfconsult.com.br
-            </a>
-            <ContactFormDialog programa={product} />
-          </div>
-        </div>
+        <PublicFooter />
       </div>
     </div>
   );
