@@ -16,7 +16,6 @@ serve(async (req) => {
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");
-    if (!stripeKey) throw new Error("STRIPE_SECRET_KEY not set");
 
     const supabaseClient = createClient(supabaseUrl, Deno.env.get("SUPABASE_ANON_KEY")!);
     const adminClient = createClient(supabaseUrl, serviceKey);
@@ -28,82 +27,68 @@ serve(async (req) => {
     const { data: { user }, error: userError } = await supabaseClient.auth.getUser(token);
     if (userError || !user?.email) throw new Error("Usuário não autenticado");
 
-    const { empresa_id } = await req.json();
-    if (!empresa_id) throw new Error("empresa_id é obrigatório");
+    const { empresa_id, produto } = await req.json();
+    if (!empresa_id && !produto) throw new Error("empresa_id ou produto é obrigatório");
 
-    // Check if admin has manually granted access
-    const { data: licenca } = await adminClient
+    // 1. Verificar licença no banco de dados (abrange Admin, Trial e Paddle via Webhook)
+    let dbQuery = adminClient
       .from("licencas")
       .select("*")
-      .eq("empresa_id", empresa_id)
-      .maybeSingle();
+      .eq("user_id", user.id)
+      .eq("status", "ativa");
+    
+    if (empresa_id) dbQuery = dbQuery.eq("empresa_id", empresa_id);
+    if (produto) dbQuery = dbQuery.eq("produto", produto);
+    
+    const { data: licenca } = await dbQuery.maybeSingle();
 
-    if (licenca?.liberado_admin && licenca?.status === "ativa") {
-      return new Response(JSON.stringify({
-        subscribed: true,
-        source: "admin",
-        plano: licenca.plano,
-        subscription_end: licenca.data_expiracao,
-      }), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-
-    // Check Stripe subscription
-    const stripe = new Stripe(stripeKey, { apiVersion: "2025-08-27.basil" });
-    const customers = await stripe.customers.list({ email: user.email, limit: 1 });
-
-    if (customers.data.length === 0) {
-      return new Response(JSON.stringify({ subscribed: false }), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-
-    const customerId = customers.data[0].id;
-    const subscriptions = await stripe.subscriptions.list({
-      customer: customerId,
-      status: "active",
-    });
-
-    // Find subscription with matching empresa_id in metadata
-    const matching = subscriptions.data.find(
-      (sub) => sub.metadata?.empresa_id === empresa_id
-    );
-
-    if (matching) {
-      const subscriptionEnd = new Date(matching.current_period_end * 1000).toISOString();
-
-      // Update local license
-      if (licenca) {
-        await adminClient
-          .from("licencas")
-          .update({
-            status: "ativa",
-            data_expiracao: subscriptionEnd.split("T")[0],
-            stripe_customer_id: customerId,
-          })
-          .eq("id", licenca.id);
+    if (licenca) {
+      const expDate = new Date(licenca.data_expiracao);
+      if (expDate > new Date()) {
+        return new Response(JSON.stringify({
+          subscribed: true,
+          source: licenca.liberado_admin ? "admin" : (licenca.plano === "trial" ? "trial" : "database"),
+          plano: licenca.plano,
+          nivel: licenca.nivel,
+          subscription_end: licenca.data_expiracao,
+        }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
       }
-
-      return new Response(JSON.stringify({
-        subscribed: true,
-        source: "stripe",
-        subscription_end: subscriptionEnd,
-      }), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
     }
 
-    // Check if local license is still valid (trial)
-    if (licenca && licenca.status === "ativa" && new Date(licenca.data_expiracao) > new Date()) {
-      return new Response(JSON.stringify({
-        subscribed: true,
-        source: "trial",
-        plano: licenca.plano,
-        subscription_end: licenca.data_expiracao,
-      }), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+    // 2. Fallback para Stripe (legado ou contas específicas)
+    if (stripeKey && user.email) {
+      try {
+        const stripe = new Stripe(stripeKey, { apiVersion: "2025-08-27.basil" });
+        const customers = await stripe.customers.list({ email: user.email, limit: 1 });
+
+        if (customers.data.length > 0) {
+          const customerId = customers.data[0].id;
+          const subscriptions = await stripe.subscriptions.list({
+            customer: customerId,
+            status: "active",
+          });
+
+          // Se tiver empresa_id, tenta encontrar o match no metadata do Stripe
+          const matching = empresa_id 
+            ? subscriptions.data.find((sub) => sub.metadata?.empresa_id === empresa_id)
+            : subscriptions.data[0];
+
+          if (matching) {
+            const subscriptionEnd = new Date(matching.current_period_end * 1000).toISOString();
+            return new Response(JSON.stringify({
+              subscribed: true,
+              source: "stripe",
+              subscription_end: subscriptionEnd,
+            }), {
+              headers: { ...corsHeaders, "Content-Type": "application/json" },
+            });
+          }
+        }
+      } catch (e) {
+        console.error("Stripe check error (silent):", e.message);
+      }
     }
 
     return new Response(JSON.stringify({ subscribed: false }), {
