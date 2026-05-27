@@ -1,6 +1,7 @@
 import { Link, useSearchParams, useNavigate } from "react-router-dom";
 import { useState, useEffect, useMemo } from "react";
 import { ArrowLeft, Sparkles, Tag, FileText, Printer, ShieldCheck, Lock, Layers, Palette, QrCode, Building2, Loader2, CheckCircle2, XCircle, Mail } from "lucide-react";
+import { PublicFooter } from "@/components/layout/PublicFooter";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -393,10 +394,7 @@ export default function RotulosBPFPage() {
         </section>
       </main>
 
-      <footer className="border-t border-border py-8 text-center">
-        <img src={logoBpfConsult} alt="BPF_Consult" width={40} height={40} loading="lazy" className="mx-auto w-10 h-10 object-contain mb-2 opacity-60" />
-        <p className="text-sm text-muted-foreground">Nutri_Agro Labels © {new Date().getFullYear()} — by BPF_Consult</p>
-      </footer>
+      <PublicFooter />
     </div>
   );
 }

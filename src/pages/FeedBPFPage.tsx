@@ -1,14 +1,13 @@
 import { Link, useNavigate } from "react-router-dom";
 import { ArrowLeft, Check, Sparkles, BookOpen, Factory, GitBranch, ShieldCheck, Beaker, Bug, Wrench, BarChart3, CalendarRange, ClipboardCheck, Droplets, GraduationCap, Activity, Lock, FileCheck, LogIn, CreditCard } from "lucide-react";
-
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import logoFeedBpf from "@/assets/logo-feed-bpf.png";
 import logoBpfConsult from "@/assets/logo-bpf-consult.png";
 import dashboardPreview from "@/assets/feedbpf-dashboard-preview.jpg";
-
 import { useAuth } from "@/hooks/useAuth";
+import { PublicFooter } from "@/components/layout/PublicFooter";
 
 const funcionalidades = [
   { icon: BookOpen, title: "Manual BPF Completo", desc: "Manual de Boas Práticas de Fabricação com todos os capítulos exigidos pela IN 04/2007." },
@@ -42,17 +41,11 @@ export default function FeedBPFPage() {
       navigate(signupLink);
       return;
     }
-    
-    // Obter empresa_id do contexto ou do banco
-    // Para simplificar, redirecionamos para o dashboard onde a empresa será selecionada/criada
-    // e o checkout acionado com o empresa_id correto.
     navigate(`${destino}?nivel=${encodeURIComponent(nivel)}&periodo=${encodeURIComponent(periodo)}`);
   };
 
-
   return (
-    <div className="min-h-screen bg-background">
-      {/* Hero */}
+    <div className="min-h-screen bg-background flex flex-col">
       <header className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-sky-500/10 via-blue-500/5 to-primary/10" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,hsl(200,80%,50%,0.08),transparent_60%)]" />
@@ -74,9 +67,6 @@ export default function FeedBPFPage() {
                 Plataforma completa de Boas Práticas de Fabricação para nutrição animal. 
                 Em conformidade com <strong className="text-foreground">IN 04/2007</strong> e <strong className="text-foreground">Decreto 12.031/2024</strong>.
               </p>
-              <p className="text-sm text-muted-foreground max-w-xl leading-relaxed mb-6">
-                <strong className="text-foreground">Feed_BPF</strong> é o programa de gestão desenvolvido pela <strong className="text-foreground">BPF_Consult</strong> — consultoria especializada em Boas Práticas de Fabricação para a indústria de nutrição animal.
-              </p>
               <div className="flex flex-col sm:flex-row gap-3">
                 <Link to={signupLink}>
                   <Button size="lg" className="gap-2 shadow-lg shadow-primary/20">
@@ -91,33 +81,16 @@ export default function FeedBPFPage() {
                   </Button>
                 </Link>
               </div>
-              <p className="text-xs text-muted-foreground mt-2">Sem cartão de crédito • Acesso completo</p>
             </div>
           </div>
         </div>
       </header>
 
-      {/* Preview do Dashboard */}
-      <section className="max-w-5xl mx-auto px-4 -mt-4 mb-12 sm:mb-16">
-        <div className="relative rounded-xl overflow-hidden border border-border shadow-2xl shadow-primary/5">
-          <img
-            src={dashboardPreview}
-            alt="Preview do dashboard Feed_BPF com ordens de produção, POPs e rastreabilidade"
-            className="w-full h-auto"
-            width={1280}
-            height={720}
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-background/40 via-transparent to-transparent pointer-events-none" />
-        </div>
-      </section>
-
-      <main className="max-w-6xl mx-auto px-4 py-12 sm:py-16">
-        {/* Funcionalidades */}
+      <main className="max-w-6xl mx-auto px-4 py-12 sm:py-16 flex-1">
         <section className="mb-20">
           <div className="text-center mb-12">
             <Badge variant="outline" className="mb-3 text-xs tracking-widest uppercase px-4 py-1">Funcionalidades</Badge>
             <h2 className="text-3xl font-bold font-display text-foreground mb-2">Tudo que sua fábrica precisa</h2>
-            <p className="text-muted-foreground">Mais de 30 módulos integrados em uma única plataforma</p>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {funcionalidades.map((f) => (
@@ -134,12 +107,7 @@ export default function FeedBPFPage() {
           </div>
         </section>
 
-        {/* Diferenciais */}
         <section className="mb-20">
-          <div className="text-center mb-10">
-            <Badge variant="outline" className="mb-3 text-xs tracking-widest uppercase px-4 py-1">Diferenciais</Badge>
-            <h2 className="text-3xl font-bold font-display text-foreground mb-2">Por que escolher o Feed_BPF?</h2>
-          </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 max-w-3xl mx-auto">
             {diferenciais.map((d) => (
               <div key={d.title} className="p-6 rounded-xl border border-border bg-card/50 backdrop-blur-sm">
@@ -154,190 +122,9 @@ export default function FeedBPFPage() {
             ))}
           </div>
         </section>
-
-        {/* Pricing */}
-        <section>
-          <div className="text-center mb-10">
-            <Badge variant="outline" className="mb-3 text-xs tracking-widest uppercase px-4 py-1">Planos e Preços</Badge>
-            <h2 className="text-3xl font-bold font-display text-foreground mb-2">Planos Feed_BPF</h2>
-            <p className="text-muted-foreground">Três níveis × três periodicidades — escolha o ideal para sua empresa</p>
-          </div>
-
-          {/* Explicação dos níveis */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5 max-w-5xl mx-auto mb-12">
-            {[
-              {
-                nivel: "Entrada",
-                publico: "Fábricas iniciando a estruturação BPF",
-                ideal: "Pequenas fábricas, granjas integradas e operações em fase de implantação do programa de autocontrole.",
-                inclui: [
-                  "Até 1 empresa cadastrada",
-                  "Manual BPF + 10 POPs obrigatórios (IN 04/2007)",
-                  "Planilhas digitais de execução dos POPs",
-                  "Controle de fornecedores, recebimento de MP e produção",
-                  "Rastreabilidade básica e contraprovas",
-                  "Trial de 7 dias incluso",
-                ],
-                cor: "border-border",
-              },
-              {
-                nivel: "Intermediário",
-                publico: "Fábricas em consolidação operacional",
-                ideal: "Fábricas com produção regular que precisam estruturar APPCC, calibração, treinamentos e auditorias internas.",
-                inclui: [
-                  "Tudo do Entrada +",
-                  "Matriz de Risco APPCC (banco de ~50 perigos)",
-                  "Manutenção preventiva e calibração de equipamentos",
-                  "Gestão de treinamentos e ASO (saúde do pessoal)",
-                  "Checklist pré-auditoria e Sala do Auditor",
-                  "Análise de tendências por IA + alertas automáticos",
-                ],
-                cor: "border-primary/40 bg-primary/5",
-                destaque: true,
-              },
-              {
-                nivel: "Avançado",
-                publico: "Fábricas com gestão completa e auditoria MAPA",
-                ideal: "Fábricas registradas no MAPA/SIPEAGRO que exigem rastreabilidade total, simulação de recall e relatórios oficiais.",
-                inclui: [
-                  "Tudo do Intermediário +",
-                  "Múltiplas empresas/unidades fabris",
-                  "Simulação de Recall (Decreto 12.031/2024)",
-                  "Relatório Anual de Autocontrole + SIPEAGRO",
-                  "Selos SHA-256 e trilha de auditoria completa",
-                  "Modo Tablet (chão de fábrica) + biblioteca de modelos",
-                ],
-                cor: "border-border",
-              },
-            ].map((n) => (
-              <Card key={n.nivel} className={`relative ${n.cor}`}>
-                {n.destaque && (
-                  <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground text-xs shadow-lg">
-                    Mais Popular
-                  </Badge>
-                )}
-                <CardContent className="p-6 space-y-4">
-                  <div>
-                    <h3 className="text-lg font-bold font-display text-foreground">Plano {n.nivel}</h3>
-                    <p className="text-xs text-muted-foreground mt-1">{n.publico}</p>
-                  </div>
-                  <p className="text-sm text-foreground/80 leading-relaxed">{n.ideal}</p>
-                  <div>
-                    <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">O que inclui</p>
-                    <ul className="space-y-1.5">
-                      {n.inclui.map((item) => (
-                        <li key={item} className="text-xs text-foreground/80 flex gap-2">
-                          <span className="text-primary mt-0.5">✓</span>
-                          <span>{item}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-
-          {[
-            {
-              nivel: "Entrada",
-              desc: "Para fábricas iniciando a estruturação BPF",
-              destaque: false,
-              planos: [
-                { periodo: "Mensal", preco: "R$ 495", sub: "/mês", nota: "Sem compromisso de fidelidade" },
-                { periodo: "Semestral", preco: "R$ 2.524,50", sub: "", nota: "≈ R$ 420,75/mês • 15% OFF", badge: "15% OFF" },
-                { periodo: "Anual", preco: "R$ 4.455", sub: "", nota: "≈ R$ 371,25/mês • 25% OFF", badge: "25% OFF" },
-              ],
-            },
-            {
-              nivel: "Intermediário",
-              desc: "Para fábricas em consolidação operacional",
-              destaque: true,
-              planos: [
-                { periodo: "Mensal", preco: "R$ 890", sub: "/mês", nota: "Sem compromisso de fidelidade" },
-                { periodo: "Semestral", preco: "R$ 4.539", sub: "", nota: "≈ R$ 756,50/mês • 15% OFF", badge: "15% OFF" },
-                { periodo: "Anual", preco: "R$ 8.010", sub: "", nota: "≈ R$ 667,50/mês • 25% OFF", badge: "25% OFF" },
-              ],
-            },
-            {
-              nivel: "Avançado",
-              desc: "Para fábricas com gestão completa e auditoria MAPA",
-              destaque: false,
-              planos: [
-                { periodo: "Mensal", preco: "R$ 1.490", sub: "/mês", nota: "Sem compromisso de fidelidade" },
-                { periodo: "Semestral", preco: "R$ 7.599", sub: "", nota: "≈ R$ 1.266,50/mês • 15% OFF", badge: "15% OFF" },
-                { periodo: "Anual", preco: "R$ 13.410", sub: "", nota: "≈ R$ 1.117,50/mês • 25% OFF", badge: "25% OFF" },
-              ],
-            },
-          ].map((tier) => (
-            <div key={tier.nivel} className="mb-10">
-              <div className="text-center mb-5">
-                <h3 className="text-xl font-bold font-display text-foreground">
-                  Plano {tier.nivel}
-                  {tier.destaque && (
-                    <Badge className="ml-2 bg-primary text-primary-foreground text-xs">Mais Popular</Badge>
-                  )}
-                </h3>
-                <p className="text-sm text-muted-foreground">{tier.desc}</p>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 max-w-4xl mx-auto">
-                {tier.planos.map((plan) => (
-                  <Card
-                    key={plan.periodo}
-                    className={`transition-all hover:shadow-xl relative flex flex-col ${
-                      tier.destaque ? "border-primary/40 bg-primary/5" : "border-border"
-                    }`}
-                  >
-                    {plan.badge && (
-                      <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground text-xs shadow-lg">
-                        {plan.badge}
-                      </Badge>
-                    )}
-                    <CardContent className="p-5 text-center space-y-4 flex-1 flex flex-col justify-between">
-                      <div className="space-y-2">
-                        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{plan.periodo}</p>
-                        <div>
-                          <span className="text-2xl font-bold text-foreground">{plan.preco}</span>
-                          <span className="text-muted-foreground text-sm">{plan.sub}</span>
-                        </div>
-                        <p className="text-xs text-muted-foreground">{plan.nota}</p>
-                      </div>
-                      <Button 
-                        onClick={() => handleCheckout(tier.nivel, plan.periodo)}
-                        variant={tier.destaque ? "default" : "outline"} 
-                        className="w-full gap-2 mt-2"
-                      >
-                        <CreditCard className="h-4 w-4" />
-                        Selecionar Plano
-                      </Button>
-                    </CardContent>
-                  </Card>
-
-                ))}
-              </div>
-            </div>
-          ))}
-          <div className="mt-12 text-center">
-            <h3 className="text-xl font-bold font-display text-foreground mb-3">Experimente grátis por 7 dias!</h3>
-            <p className="text-muted-foreground mb-6">Crie sua conta e tenha acesso completo ao Feed_BPF durante o período trial.</p>
-            <Link to={signupLink}>
-              <Button size="lg" className="gap-2 shadow-lg shadow-primary/25">
-                <Sparkles className="h-4 w-4" />
-                Começar Trial Grátis
-              </Button>
-            </Link>
-          </div>
-          
-          <p className="text-center text-xs text-muted-foreground mt-12">
-            Pagamento processado com segurança via Paddle. Você poderá cancelar a qualquer momento.
-          </p>
-        </section>
       </main>
 
-      <footer className="border-t border-border py-8 text-center">
-        <img src={logoBpfConsult} alt="BPF_Consult" className="mx-auto w-10 h-10 object-contain mb-2 opacity-60" />
-        <p className="text-sm text-muted-foreground">Feed_BPF © {new Date().getFullYear()} — by BPF_Consult</p>
-      </footer>
+      <PublicFooter />
     </div>
   );
 }

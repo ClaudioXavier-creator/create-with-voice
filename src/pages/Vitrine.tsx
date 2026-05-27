@@ -1,5 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { ArrowRight, Lock, ShieldCheck, Factory, Beaker, BarChart3, GraduationCap, ClipboardCheck, Sparkles, Building2, Users, LayoutDashboard, Tag, CheckCircle2, AlertCircle } from "lucide-react";
+import { PublicFooter } from "@/components/layout/PublicFooter";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import logoBpfConsult from "@/assets/logo-bpf-consult.png";
@@ -301,20 +302,7 @@ export default function Vitrine() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="bg-[#173404] py-16 text-center">
-        <img src={logoBpfConsult} alt="BPF_Consult" className="mx-auto w-16 h-16 object-contain mb-6 opacity-40" />
-        <p className="text-green-100/40 text-sm font-medium">
-          BPF_Consult © {new Date().getFullYear()} — Soluções para Nutrição Animal
-        </p>
-        <div className="mt-4 flex flex-wrap justify-center gap-x-6 gap-y-2 text-green-100/20 text-[10px] sm:text-xs font-bold uppercase tracking-widest">
-          <Link to="/privacidade" className="hover:text-white transition-colors">Privacidade</Link>
-          <Link to="/termos" className="hover:text-white transition-colors">Termos</Link>
-          <Link to="/reembolso" className="hover:text-white transition-colors">Reembolso</Link>
-          <a href="mailto:contato@bpfconsult.com.br" className="hover:text-white transition-colors">Suporte</a>
-          <Link to="/admin-access" className="hover:text-white transition-colors">Acesso Restrito</Link>
-        </div>
-      </footer>
+      <PublicFooter />
     </div>
   );
 }
