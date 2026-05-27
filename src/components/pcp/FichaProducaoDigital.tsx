@@ -165,37 +165,55 @@ export default function FichaProducaoDigital({ ordemId, onClose }: Props) {
       );
 
       if (!infoLote) {
-        toast.error(`Atenção: Lote ${loteInformado} não encontrado para ${matPrima}.`);
+        const errorMsg = `ERRO CRÍTICO: Lote ${loteInformado} não encontrado para ${matPrima}. Produção bloqueada para esta batida.`;
+        toast.error(errorMsg, { duration: 10000 });
         await registrarAuditLog({
           userId: user.id,
           empresaId: empresaAtiva?.id,
           tabela: "batida_lotes",
           acao: "editar",
-          dadosNovos: { erro: "Lote não encontrado", materia_prima: matPrima, lote: loteInformado, batida }
+          dadosNovos: { erro: "Lote não encontrado", materia_prima: matPrima, lote: loteInformado, batida, bloqueio_producao: true }
         });
+        return; // Bloqueia a inserção/atualização
       } else {
         // Check FIFO
         if (infoLote.status === 'bloqueado') {
-          toast.error(`BLOQUEIO FIFO: O lote ${loteInformado} ainda está bloqueado. Use o lote anterior primeiro.`);
+          const errorMsg = `BLOQUEIO FIFO: O lote ${loteInformado} está bloqueado. O lote anterior deve ser consumido primeiro.`;
+          toast.error(errorMsg, { 
+            duration: 10000,
+            icon: <Lock className="w-5 h-5 text-red-500" />
+          });
           await registrarAuditLog({
             userId: user.id,
             empresaId: empresaAtiva?.id,
             tabela: "batida_lotes",
             acao: "editar",
-            dadosNovos: { erro: "Bloqueio FIFO", materia_prima: matPrima, lote: loteInformado, batida }
+            dadosNovos: { erro: "Bloqueio FIFO", materia_prima: matPrima, lote: loteInformado, batida, bloqueio_producao: true }
           });
           return;
         }
 
         // Check Balance
         if (qtdInformada > infoLote.saldo) {
-          toast.error(`ERRO DE CONSUMO: Saldo insuficiente no lote ${loteInformado}. Saldo: ${infoLote.saldo} kg. Consumo: ${qtdInformada} kg.`);
+          const errorMsg = `ERRO DE CONSUMO: Saldo insuficiente no lote ${loteInformado}. Disponível: ${infoLote.saldo}kg. Tentativa: ${qtdInformada}kg.`;
+          toast.error(errorMsg, { 
+            duration: 10000,
+            icon: <AlertTriangle className="w-5 h-5 text-red-600" />
+          });
           await registrarAuditLog({
             userId: user.id,
             empresaId: empresaAtiva?.id,
             tabela: "batida_lotes",
             acao: "editar",
-            dadosNovos: { erro: "Saldo insuficiente", materia_prima: matPrima, lote: loteInformado, batida, saldo: infoLote.saldo, consumo: qtdInformada }
+            dadosNovos: { 
+              erro: "Saldo insuficiente", 
+              materia_prima: matPrima, 
+              lote: loteInformado, 
+              batida, 
+              saldo_disponivel: infoLote.saldo, 
+              consumo_tentado: qtdInformada,
+              bloqueio_producao: true 
+            }
           });
           return;
         }
