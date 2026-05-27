@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useLocation, useParams } from "react-router-dom";
 import { AlertTriangle, CreditCard, Loader2, Clock, ShieldCheck, Mail, MessageCircle, X } from "lucide-react";
+import { PublicFooter } from "@/components/layout/PublicFooter";
 
 // Rotas livres — conteúdo 100% educativo / sandbox.
 // Sempre acessíveis, mesmo sem licença ativa ou empresa selecionada,
