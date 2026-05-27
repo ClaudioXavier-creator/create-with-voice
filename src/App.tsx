@@ -90,6 +90,7 @@ const DemoPage = lazy(() => import("./pages/DemoPage"));
 const AdminAccess = lazy(() => import("./pages/AdminAccess"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const LandingPageBPF = lazy(() => import("./pages/LandingPageBPF"));
+const StatusLotes = lazy(() => import("./pages/StatusLotes"));
 const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
 const TermsOfService = lazy(() => import("./pages/TermsOfService"));
 
@@ -232,6 +233,7 @@ const InternalRoutes = () => (
     <Route path="/whatsapp" element={<WhatsAppConfig />} />
     <Route path="/marketing" element={<Marketing />} />
     <Route path="/gerador-headlines" element={<GeradorHeadlines />} />
+    <Route path="/status-lotes" element={<StatusLotes />} />
     <Route path="/licencas-programa" element={<AdminLicencas isTab />} />
     <Route path="*" element={<NotFound />} />
   </Routes>
