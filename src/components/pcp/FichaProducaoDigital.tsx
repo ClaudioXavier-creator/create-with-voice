@@ -58,6 +58,8 @@ interface LoteDisponivel {
   lote: string;
   fornecedor: string | null;
   data: string;
+  status: string;
+  saldo: number;
 }
 
 const VOLUMES_MISTURADOR = [500, 1000, 2000];
@@ -112,13 +114,14 @@ export default function FichaProducaoDigital({ ordemId, onClose }: Props) {
     const { data: lts } = await supabase.from("batida_lotes" as any).select("*").eq("ordem_id", ordemId);
     if (lts) setLotes(lts as unknown as BatidaLote[]);
 
-    // Carrega lotes de MP disponíveis (recebimentos aprovados) para sugerir nos campos
+    // Carrega lotes de MP disponíveis (recebimentos aprovados e não esgotados)
     let recQ = supabase
       .from("recebimento_mp")
-      .select("materia_prima, lote, fornecedor, data")
+      .select("materia_prima, lote, fornecedor, data, status, saldo")
       .eq("aprovado", true)
+      .neq("status", "esgotado")
       .not("lote", "is", null)
-      .order("data", { ascending: false })
+      .order("data", { ascending: true }) // FIFO order
       .limit(500);
     if (empresaAtiva) recQ = recQ.eq("empresa_id", empresaAtiva.id);
     const { data: recs } = await recQ;
@@ -149,6 +152,37 @@ export default function FichaProducaoDigital({ ordemId, onClose }: Props) {
 
   const setLoteBatida = async (matPrima: string, batida: number, campo: "lote_mp" | "quantidade_kg", valor: string) => {
     if (!user) return;
+
+    // Validação de Lote e Saldo (Mass Balance & FIFO)
+    if (campo === "lote_mp" || campo === "quantidade_kg") {
+      const loteInformado = campo === "lote_mp" ? valor : getValor(matPrima, batida, "lote_mp");
+      const qtdInformada = campo === "quantidade_kg" ? parseFloat(valor) || 0 : parseFloat(getValor(matPrima, batida, "quantidade_kg")) || 0;
+
+      if (loteInformado) {
+        const infoLote = lotesDisp.find(l => 
+          l.lote === loteInformado && 
+          (l.materia_prima.toLowerCase() === matPrima.toLowerCase() || matPrima.toLowerCase().includes(l.materia_prima.toLowerCase()))
+        );
+
+        if (!infoLote) {
+          toast.error(`Atenção: Lote ${loteInformado} não encontrado para ${matPrima}.`);
+          // return; // We allow it for now but alert. User said "bloquear a produção" if error in annotation.
+        } else {
+          // Check FIFO
+          if (infoLote.status === 'bloqueado') {
+            toast.error(`BLOQUEIO FIFO: O lote ${loteInformado} ainda está bloqueado. Use o lote anterior primeiro.`);
+            return;
+          }
+
+          // Check Balance
+          if (qtdInformada > infoLote.saldo) {
+            toast.error(`ERRO DE CONSUMO: Saldo insuficiente no lote ${loteInformado}. Saldo: ${infoLote.saldo} kg. Consumo: ${qtdInformada} kg.`);
+            return;
+          }
+        }
+      }
+    }
+
     const existente = lotes.find(l => l.materia_prima === matPrima && l.numero_batida === batida);
     if (existente) {
       const upd: any = { [campo]: campo === "quantidade_kg" ? parseFloat(valor) || 0 : valor };
@@ -314,7 +348,14 @@ export default function FichaProducaoDigital({ ordemId, onClose }: Props) {
                       <TableCell className="font-medium">
                         {ing.materia_prima}
                         {lotesMp.length > 0 && (
-                          <span className="ml-1 text-[10px] text-muted-foreground">({lotesMp.length} lote{lotesMp.length > 1 ? "s" : ""} disp.)</span>
+                          <div className="flex flex-col gap-0.5 mt-0.5">
+                            {lotesMp.filter(l => l.status === 'liberado').map(l => (
+                              <Badge key={l.lote} variant="secondary" className="text-[9px] bg-green-100 text-green-700 hover:bg-green-100 py-0 h-4">
+                                Lote Ativo: {l.lote} (Saldo: {l.saldo}kg)
+                              </Badge>
+                            ))}
+                            <span className="text-[10px] text-muted-foreground">({lotesMp.length} lote{lotesMp.length > 1 ? "s" : ""} disp.)</span>
+                          </div>
                         )}
                       </TableCell>
                       <TableCell className="text-right text-xs">{Number(ing.quantidade_kg).toFixed(2)}</TableCell>

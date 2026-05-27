@@ -37,6 +37,8 @@ interface RecebimentoRow {
   unidade: string | null;
   temperatura: string | null;
   observacoes: string | null;
+  status: 'bloqueado' | 'liberado' | 'esgotado';
+  saldo: number | null;
 }
 
 export default function Recebimento() {
@@ -210,10 +212,19 @@ export default function Recebimento() {
     setSaving(false);
   };
 
+  const handleLiberarLote = async (id: string) => {
+    const { error } = await supabase.from("recebimento_mp").update({ status: 'liberado' }).eq("id", id);
+    if (error) toast.error("Erro ao liberar lote: " + error.message);
+    else {
+      toast.success("Lote liberado para produção!");
+      fetchData();
+    }
+  };
+
   const exportCSV = async () => {
-    const headers = ["Data", "Fornecedor", "Matéria-Prima", "Lote", "Quantidade", "Unidade", "Odor", "Umidade", "Temperatura", "Insetos", "Aprovado", "Cert. Análise Nº", "Cert. Válido", "Validade", "Observações"];
+    const headers = ["Data", "Fornecedor", "Matéria-Prima", "Lote", "Quantidade", "Saldo", "Unidade", "Status", "Odor", "Umidade", "Temperatura", "Insetos", "Aprovado", "Cert. Análise Nº", "Cert. Válido", "Validade", "Observações"];
     const rows = items.map(r => [
-      r.data, r.fornecedor, r.materia_prima, r.lote || "", r.quantidade || "", r.unidade || "",
+      r.data, r.fornecedor, r.materia_prima, r.lote || "", r.quantidade || "", r.saldo || "0", r.unidade || "", r.status || "",
       r.odor || "", r.umidade || "", r.temperatura || "", r.insetos || "",
       r.aprovado ? "Sim" : "Não", r.certificado_analise_numero || "",
       r.certificado_analise_valido === true ? "Sim" : r.certificado_analise_valido === false ? "Não" : "",
