@@ -707,14 +707,8 @@ export default function PCP() {
                 </div>
                 <div>
                   <Label>Fórmula Oficial (versionada)</Label>
-                  <Select value={formulaId} onValueChange={(v) => {
-                    setFormulaId(v);
-                    const f = formulasDisponiveis.find((x: any) => x.id === v);
-                    if (f) {
-                      setFormulaNome(f.codigo);
-                      if (!produto) setProduto(f.produto_nome);
-                    }
-                  }}>
+                  <Select value={formulaId} onValueChange={handleFormulaChange}>
+
                     <SelectTrigger><SelectValue placeholder="Selecione a fórmula ativa" /></SelectTrigger>
                     <SelectContent>
                       {formulasDisponiveis.length === 0 && (
