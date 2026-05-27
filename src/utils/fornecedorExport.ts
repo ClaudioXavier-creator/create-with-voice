@@ -196,6 +196,8 @@ export function exportListaAprovadosXlsx(fornecedores: FornecedorData[]) {
 export function printQuestionario(f?: FornecedorData) {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const { gerarCarimboSync, carimboHTML } = require("./carimboDocumento");
+  const e = (s: unknown) => String(s ?? "")
+    .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
   const carimbo = gerarCarimboSync({
     documentoTipo: "PL POP 1.1 — Questionário Qualificação Fornecedor",
     documentoId: f?.nome,
@@ -233,17 +235,17 @@ export function printQuestionario(f?: FornecedorData) {
 
 <div class="section">1 — Dados do Fornecedor</div>
 <table>
-  <tr><td class="field-label">NOME:</td><td class="field-value">${nome}</td><td class="field-label">DATA:</td><td class="field-value">${f ? new Date().toLocaleDateString("pt-BR") : ""}</td></tr>
-  <tr><td class="field-label">ENDEREÇO:</td><td class="field-value">${f?.endereco || ""}</td><td class="field-label">Nº REGISTRO MAPA:</td><td class="field-value">${f?.registro_mapa || ""}</td></tr>
-  <tr><td class="field-label">BAIRRO:</td><td class="field-value">${f?.bairro || ""}</td><td class="field-label">CEP:</td><td class="field-value">${f?.cep || ""}</td></tr>
-  <tr><td class="field-label">CIDADE:</td><td class="field-value">${f?.cidade || ""}</td><td class="field-label">ESTADO:</td><td class="field-value">${f?.estado || ""}</td></tr>
-  <tr><td class="field-label">CNPJ:</td><td class="field-value">${f?.cnpj || ""}</td><td class="field-label">INSCRIÇÃO ESTADUAL:</td><td class="field-value">${f?.inscricao_estadual || ""}</td></tr>
-  <tr><td class="field-label">CONTATO QUALIDADE:</td><td class="field-value">${f?.contato_qualidade || ""}</td><td class="field-label">TELEFONE / EMAIL:</td><td class="field-value">${f?.contato_qualidade_tel_email || ""}</td></tr>
-  <tr><td class="field-label">CONTATO COMERCIAL:</td><td class="field-value">${f?.contato_comercial || ""}</td><td class="field-label">TELEFONE / EMAIL:</td><td class="field-value">${f?.contato_comercial_tel_email || ""}</td></tr>
+  <tr><td class="field-label">NOME:</td><td class="field-value">${e(nome)}</td><td class="field-label">DATA:</td><td class="field-value">${f ? new Date().toLocaleDateString("pt-BR") : ""}</td></tr>
+  <tr><td class="field-label">ENDEREÇO:</td><td class="field-value">${e(f?.endereco)}</td><td class="field-label">Nº REGISTRO MAPA:</td><td class="field-value">${e(f?.registro_mapa)}</td></tr>
+  <tr><td class="field-label">BAIRRO:</td><td class="field-value">${e(f?.bairro)}</td><td class="field-label">CEP:</td><td class="field-value">${e(f?.cep)}</td></tr>
+  <tr><td class="field-label">CIDADE:</td><td class="field-value">${e(f?.cidade)}</td><td class="field-label">ESTADO:</td><td class="field-value">${e(f?.estado)}</td></tr>
+  <tr><td class="field-label">CNPJ:</td><td class="field-value">${e(f?.cnpj)}</td><td class="field-label">INSCRIÇÃO ESTADUAL:</td><td class="field-value">${e(f?.inscricao_estadual)}</td></tr>
+  <tr><td class="field-label">CONTATO QUALIDADE:</td><td class="field-value">${e(f?.contato_qualidade)}</td><td class="field-label">TELEFONE / EMAIL:</td><td class="field-value">${e(f?.contato_qualidade_tel_email)}</td></tr>
+  <tr><td class="field-label">CONTATO COMERCIAL:</td><td class="field-value">${e(f?.contato_comercial)}</td><td class="field-label">TELEFONE / EMAIL:</td><td class="field-value">${e(f?.contato_comercial_tel_email)}</td></tr>
 </table>
 
 <div class="section">2 — Produto(s) Fornecido(s)</div>
-<table><tr><td style="min-height:40px">${f?.produtos_fornecidos || f?.tipo_produto || ""}</td></tr></table>
+<table><tr><td style="min-height:40px">${e(f?.produtos_fornecidos || f?.tipo_produto)}</td></tr></table>
 
 <div class="section">3 — Documento(s) Exigido(s) para Qualificação</div>
 <table class="check-table">
@@ -262,7 +264,7 @@ export function printQuestionario(f?: FornecedorData) {
   <div class="${f?.status_qualificacao === "reprovado" ? "selected" : ""}">REPROVADO</div>
 </div>
 
-${f?.observacoes ? `<p><strong>Observações:</strong> ${f.observacoes}</p>` : ""}
+${f?.observacoes ? `<p><strong>Observações:</strong> ${e(f.observacoes)}</p>` : ""}
 
 <div class="assinaturas">
   <div><div class="line">Controle de Qualidade</div></div>
@@ -289,11 +291,14 @@ export function printListaAprovados(fornecedores: FornecedorData[]) {
     f.status_qualificacao === "aprovado" || f.status_qualificacao === "aprovado_com_restricoes"
   );
 
+  const e = (s: unknown) => String(s ?? "")
+    .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+
   const linhas = aprovados.map((f, i) => `
     <tr>
       <td style="text-align:center">${i + 1}</td>
-      <td>${f.nome}</td>
-      <td>${f.produtos_fornecidos || f.tipo_produto || ""}</td>
+      <td>${e(f.nome)}</td>
+      <td>${e(f.produtos_fornecidos || f.tipo_produto)}</td>
       <td style="text-align:center">${f.status_qualificacao === "aprovado" ? "X" : ""}</td>
       <td style="text-align:center">${f.status_qualificacao === "aprovado_com_restricoes" ? "X" : ""}</td>
       <td style="text-align:center"></td>

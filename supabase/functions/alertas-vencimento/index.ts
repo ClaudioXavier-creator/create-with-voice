@@ -9,9 +9,22 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
+    // Restrict to internal/cron callers: require service-role or matching CRON_SECRET header.
+    const authHeader = req.headers.get("Authorization") ?? "";
+    const cronSecret = req.headers.get("x-cron-secret") ?? "";
+    const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const expectedCron = Deno.env.get("CRON_SECRET") ?? "";
+    const isServiceRole = authHeader === `Bearer ${serviceKey}`;
+    const isCron = expectedCron.length > 0 && cronSecret === expectedCron;
+    if (!isServiceRole && !isCron) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL")!,
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
+      serviceKey,
     );
 
     const hoje = new Date();
@@ -86,7 +99,6 @@ Deno.serve(async (req) => {
         success: true,
         usuarios_alertados: Object.keys(alertasPorUsuario).length,
         total_alertas: totalAlertas,
-        detalhes: alertasPorUsuario,
       }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
