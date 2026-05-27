@@ -4040,6 +4040,8 @@ export type Database = {
           quantidade: string | null
           registro_mapa_isento: boolean | null
           registro_mapa_produto: string | null
+          saldo: number | null
+          status: string | null
           temperatura: string | null
           temperatura_veiculo: string | null
           umidade: string | null
@@ -4071,6 +4073,8 @@ export type Database = {
           quantidade?: string | null
           registro_mapa_isento?: boolean | null
           registro_mapa_produto?: string | null
+          saldo?: number | null
+          status?: string | null
           temperatura?: string | null
           temperatura_veiculo?: string | null
           umidade?: string | null
@@ -4102,6 +4106,8 @@ export type Database = {
           quantidade?: string | null
           registro_mapa_isento?: boolean | null
           registro_mapa_produto?: string | null
+          saldo?: number | null
+          status?: string | null
           temperatura?: string | null
           temperatura_veiculo?: string | null
           umidade?: string | null
