@@ -291,11 +291,14 @@ export function printListaAprovados(fornecedores: FornecedorData[]) {
     f.status_qualificacao === "aprovado" || f.status_qualificacao === "aprovado_com_restricoes"
   );
 
+  const e = (s: unknown) => String(s ?? "")
+    .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+
   const linhas = aprovados.map((f, i) => `
     <tr>
       <td style="text-align:center">${i + 1}</td>
-      <td>${f.nome}</td>
-      <td>${f.produtos_fornecidos || f.tipo_produto || ""}</td>
+      <td>${e(f.nome)}</td>
+      <td>${e(f.produtos_fornecidos || f.tipo_produto)}</td>
       <td style="text-align:center">${f.status_qualificacao === "aprovado" ? "X" : ""}</td>
       <td style="text-align:center">${f.status_qualificacao === "aprovado_com_restricoes" ? "X" : ""}</td>
       <td style="text-align:center"></td>
