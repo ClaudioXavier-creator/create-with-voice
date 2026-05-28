@@ -646,8 +646,12 @@ export default function HigieneSanitizacao() {
 
   return (
     <div className="space-y-6">
-      <PageHeader title="POP 02/03/04 — Limpeza, Higiene Pessoal e Água" description="POP 02 (Limpeza de Instalações), POP 03 (Higiene e Saúde Pessoal), POP 04 (Potabilidade da Água) — IN 04/2007 e IN 15/2009"
-        orientacaoModuloId="higiene" />
+      <PageHeader 
+        icon={Droplets}
+        title="POP 02 - Limpeza de Instalações, Equipamentos e Utensílios" 
+        description="Procedimentos de limpeza e higienização conforme IN 04/2007 e IN 15/2009"
+        orientacaoModuloId="higiene" 
+      />
 
       <Tabs defaultValue="preop">
         <div className="w-full overflow-x-auto pb-1">
