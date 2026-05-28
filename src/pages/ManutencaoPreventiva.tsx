@@ -194,7 +194,7 @@ export default function ManutencaoPreventiva() {
 
   return (
     <div className="space-y-6">
-      <PageHeader title="POP 06 — Manutenção Preventiva e Calibração" description="Plano de manutenção de máquinas conforme IN 15/2009 — Calibração e verificação intermediária — IN 04/2007"
+      <PageHeader title="POP 06 - Manutenção e Calibração de Equipamentos e Instrumentos" description="Plano de manutenção preventiva e calibração de instrumentos — IN 04/2007 e IN 15/2009"
         orientacaoModuloId="manutencao" />
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">

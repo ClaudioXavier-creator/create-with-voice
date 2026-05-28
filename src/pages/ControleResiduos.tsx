@@ -122,7 +122,7 @@ export default function ControleResiduos() {
 
   return (
     <div className="space-y-6">
-      <PageHeader title="POP 05 — Manejo de Resíduos e Efluentes" description="IN 04/2007 (POP-05), IN 15/2009, Decreto 12.031/2024 — Gestão ambiental completa"
+      <PageHeader title="POP 08 - Controle de Resíduos e Efluentes" description="Procedimentos de coleta, segregação e destinação de resíduos sólidos e efluentes — IN 04/2007 e Decreto 12.031/2024"
         orientacaoModuloId="residuos" />
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">

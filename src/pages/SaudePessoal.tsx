@@ -108,8 +108,8 @@ export default function SaudePessoal() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Saúde do Pessoal"
-        description="POP-03 — Registro de ASO e exames médicos conforme IN 04/2007 e NR-7"
+        title="POP 03 - Higiene e Saúde Pessoal"
+        description="Procedimentos de higiene pessoal, saúde dos colaboradores e uso de EPIs — IN 04/2007"
         orientacaoModuloId="saude-pessoal"
       />
 
