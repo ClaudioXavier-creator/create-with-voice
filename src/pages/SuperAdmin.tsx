@@ -354,6 +354,102 @@ export default function SuperAdmin() {
             </CardContent>
           </Card>
         </TabsContent>
+        <TabsContent value="whatsapp">
+          <WhatsAppConfig />
+        </TabsContent>
+
+        <TabsContent value="modulos">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <Card className="hover:border-primary/50 transition-colors">
+              <CardHeader>
+                <div className="flex items-center gap-3">
+                  <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                    <Tag className="h-6 w-6 text-primary" />
+                  </div>
+                  <CardTitle>Nutri_Agro Labels</CardTitle>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <p className="text-sm text-muted-foreground">Sistema de geração de rótulos e etiquetas para o setor agroindustrial.</p>
+                <Link to="/rotulos/dashboard">
+                  <Button variant="outline" className="w-full gap-2">
+                    Abrir Módulo <ExternalLink className="h-4 w-4" />
+                  </Button>
+                </Link>
+              </CardContent>
+            </Card>
+
+            <Card className="hover:border-primary/50 transition-colors">
+              <CardHeader>
+                <div className="flex items-center gap-3">
+                  <div className="h-10 w-10 rounded-lg bg-emerald-500/10 flex items-center justify-center">
+                    <TrendingUp className="h-6 w-6 text-emerald-500" />
+                  </div>
+                  <CardTitle>Agro RC CRM</CardTitle>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <p className="text-sm text-muted-foreground">Plataforma externa de CRM especializada em representantes comerciais do agronegócio.</p>
+                <Button variant="outline" className="w-full gap-2" onClick={() => window.open("https://soil-to-client.lovable.app", "_blank")}>
+                  Acessar CRM Externo <ExternalLink className="h-4 w-4" />
+                </Button>
+              </CardContent>
+            </Card>
+
+            <Card className="hover:border-primary/50 transition-colors">
+              <CardHeader>
+                <div className="flex items-center gap-3">
+                  <div className="h-10 w-10 rounded-lg bg-blue-500/10 flex items-center justify-center">
+                    <Building2 className="h-6 w-6 text-blue-500" />
+                  </div>
+                  <CardTitle>AgroGestão CRM</CardTitle>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <p className="text-sm text-muted-foreground">Sistema de gestão estratégica e CRM para consultorias e empresas de gestão agro.</p>
+                <Button variant="outline" className="w-full gap-2" onClick={() => window.open("https://regional-fixer-charm.lovable.app", "_blank")}>
+                  Acessar CRM Externo <ExternalLink className="h-4 w-4" />
+                </Button>
+              </CardContent>
+            </Card>
+
+            <Card className="hover:border-primary/50 transition-colors">
+              <CardHeader>
+                <div className="flex items-center gap-3">
+                  <div className="h-10 w-10 rounded-lg bg-amber-500/10 flex items-center justify-center">
+                    <ShieldCheck className="h-6 w-6 text-amber-500" />
+                  </div>
+                  <CardTitle>Audits_BPF</CardTitle>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <p className="text-sm text-muted-foreground">Módulo especializado em auditorias avançadas e gestão de conformidades BPF.</p>
+                <Button variant="outline" className="w-full gap-2" onClick={() => window.open("https://friendly-flame-igniter.lovable.app", "_blank")}>
+                  Acessar Auditorias <ExternalLink className="h-4 w-4" />
+                </Button>
+              </CardContent>
+            </Card>
+
+            <Card className="hover:border-primary/50 transition-colors">
+              <CardHeader>
+                <div className="flex items-center gap-3">
+                  <div className="h-10 w-10 rounded-lg bg-indigo-500/10 flex items-center justify-center">
+                    <LayoutDashboard className="h-6 w-6 text-indigo-500" />
+                  </div>
+                  <CardTitle>Feed_BPF</CardTitle>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <p className="text-sm text-muted-foreground">Painel principal do sistema Feed_BPF para gestão de segurança alimentar.</p>
+                <Link to="/dashboard">
+                  <Button variant="outline" className="w-full gap-2">
+                    Voltar ao Dashboard <LayoutDashboard className="h-4 w-4" />
+                  </Button>
+                </Link>
+              </CardContent>
+            </Card>
+          </div>
+        </TabsContent>
 
       </Tabs>
     </div>
