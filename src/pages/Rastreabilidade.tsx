@@ -899,7 +899,7 @@ export default function Rastreabilidade() {
 
   return (
     <>
-      <PageHeader icon={Search} title="Rastreabilidade" description="Cadeia completa: MP → PA → Venda/Entrega → Recall — Decreto 12.031/2024"
+      <PageHeader icon={History} title="POP 09 - Programa de Rastreabilidade e Recolhimento (Recall)" description="Rastreabilidade de produtos, controle de RNC e programa de recolhimento — IN 04/2007" 
         orientacaoModuloId="rastreabilidade" />
 
       {/* ══════════ MELHORIA 5: DASHBOARD DE COBERTURA ══════════ */}
