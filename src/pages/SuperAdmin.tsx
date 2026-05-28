@@ -5,18 +5,20 @@ import { supabase } from "@/integrations/supabase/client";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ShieldCheck, Users, TrendingUp, Key, CreditCard, Activity, Target, Award, Loader2, Megaphone, FileText, SendHorizontal, Lock, Zap } from "lucide-react";
+import { ShieldCheck, Users, TrendingUp, Key, CreditCard, Activity, Target, Award, Loader2, Megaphone, FileText, SendHorizontal, Lock, Zap, MessageSquare, ExternalLink, Tag, LayoutDashboard, Building2 } from "lucide-react";
 import { canAccessLicenseAdmin } from "@/config/adminAccess";
 import CRM from "./CRM";
 import AdminLicencas from "./AdminLicencas";
 import AdminLeads from "./AdminLeads";
 import GeradorHeadlines from "./GeradorHeadlines";
 import DisparadorMarketing from "@/components/marketing/DisparadorMarketing";
+import WhatsAppConfig from "./WhatsAppConfig";
+import { useLocation } from "react-router-dom";
 
 export default function SuperAdmin() {
   const { user, roles, loading: authLoading } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
-  const validTabs = ["dashboard", "leads", "crm", "licencas", "assinaturas", "marketing", "plano-vendas", "disparo"];
+  const validTabs = ["dashboard", "leads", "crm", "licencas", "assinaturas", "marketing", "plano-vendas", "disparo", "whatsapp", "modulos"];
 
   const initialTab = searchParams.get("tab");
   const [activeTab, setActiveTab] = useState(
@@ -107,7 +109,7 @@ export default function SuperAdmin() {
 
       <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-6">
         <div className="overflow-x-auto pb-2 -mx-4 px-4 md:mx-0 md:px-0">
-          <TabsList className="flex md:grid md:grid-cols-8 lg:grid-cols-8 w-max md:w-full h-auto gap-2 bg-transparent">
+          <TabsList className="flex md:grid md:grid-cols-10 lg:grid-cols-10 w-max md:w-full h-auto gap-2 bg-transparent">
             <TabsTrigger value="dashboard" className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground py-2 border flex-1">
               <Activity className="h-4 w-4" />
               <span>Dashboard</span>
@@ -118,7 +120,11 @@ export default function SuperAdmin() {
             </TabsTrigger>
             <TabsTrigger value="crm" className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground py-2 border flex-1">
               <TrendingUp className="h-4 w-4" />
-              <span className="text-xs">CRM e Vendas</span>
+              <span className="text-xs">CRM/Vendas</span>
+            </TabsTrigger>
+            <TabsTrigger value="whatsapp" className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground py-2 border flex-1">
+              <MessageSquare className="h-4 w-4" />
+              <span>WhatsApp</span>
             </TabsTrigger>
             <TabsTrigger value="disparo" className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground py-2 border flex-1">
               <SendHorizontal className="h-4 w-4" />
@@ -134,11 +140,15 @@ export default function SuperAdmin() {
             </TabsTrigger>
             <TabsTrigger value="marketing" className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground py-2 border flex-1">
               <Megaphone className="h-4 w-4" />
-              <span>Copy/IA</span>
+              <span>Marketing</span>
             </TabsTrigger>
             <TabsTrigger value="plano-vendas" className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground py-2 border flex-1">
               <FileText className="h-4 w-4" />
-              <span className="text-xs">Plano Vendas</span>
+              <span className="text-xs">Vendas/Plano</span>
+            </TabsTrigger>
+            <TabsTrigger value="modulos" className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground py-2 border flex-1">
+              <Zap className="h-4 w-4" />
+              <span>Módulos</span>
             </TabsTrigger>
           </TabsList>
 
@@ -343,6 +353,102 @@ export default function SuperAdmin() {
               />
             </CardContent>
           </Card>
+        </TabsContent>
+        <TabsContent value="whatsapp">
+          <WhatsAppConfig />
+        </TabsContent>
+
+        <TabsContent value="modulos">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <Card className="hover:border-primary/50 transition-colors">
+              <CardHeader>
+                <div className="flex items-center gap-3">
+                  <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                    <Tag className="h-6 w-6 text-primary" />
+                  </div>
+                  <CardTitle>Nutri_Agro Labels</CardTitle>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <p className="text-sm text-muted-foreground">Sistema de geração de rótulos e etiquetas para o setor agroindustrial.</p>
+                <Link to="/rotulos/dashboard">
+                  <Button variant="outline" className="w-full gap-2">
+                    Abrir Módulo <ExternalLink className="h-4 w-4" />
+                  </Button>
+                </Link>
+              </CardContent>
+            </Card>
+
+            <Card className="hover:border-primary/50 transition-colors">
+              <CardHeader>
+                <div className="flex items-center gap-3">
+                  <div className="h-10 w-10 rounded-lg bg-emerald-500/10 flex items-center justify-center">
+                    <TrendingUp className="h-6 w-6 text-emerald-500" />
+                  </div>
+                  <CardTitle>Agro RC CRM</CardTitle>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <p className="text-sm text-muted-foreground">Plataforma externa de CRM especializada em representantes comerciais do agronegócio.</p>
+                <Button variant="outline" className="w-full gap-2" onClick={() => window.open("https://soil-to-client.lovable.app", "_blank")}>
+                  Acessar CRM Externo <ExternalLink className="h-4 w-4" />
+                </Button>
+              </CardContent>
+            </Card>
+
+            <Card className="hover:border-primary/50 transition-colors">
+              <CardHeader>
+                <div className="flex items-center gap-3">
+                  <div className="h-10 w-10 rounded-lg bg-blue-500/10 flex items-center justify-center">
+                    <Building2 className="h-6 w-6 text-blue-500" />
+                  </div>
+                  <CardTitle>AgroGestão CRM</CardTitle>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <p className="text-sm text-muted-foreground">Sistema de gestão estratégica e CRM para consultorias e empresas de gestão agro.</p>
+                <Button variant="outline" className="w-full gap-2" onClick={() => window.open("https://regional-fixer-charm.lovable.app", "_blank")}>
+                  Acessar CRM Externo <ExternalLink className="h-4 w-4" />
+                </Button>
+              </CardContent>
+            </Card>
+
+            <Card className="hover:border-primary/50 transition-colors">
+              <CardHeader>
+                <div className="flex items-center gap-3">
+                  <div className="h-10 w-10 rounded-lg bg-amber-500/10 flex items-center justify-center">
+                    <ShieldCheck className="h-6 w-6 text-amber-500" />
+                  </div>
+                  <CardTitle>Audits_BPF</CardTitle>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <p className="text-sm text-muted-foreground">Módulo especializado em auditorias avançadas e gestão de conformidades BPF.</p>
+                <Button variant="outline" className="w-full gap-2" onClick={() => window.open("https://friendly-flame-igniter.lovable.app", "_blank")}>
+                  Acessar Auditorias <ExternalLink className="h-4 w-4" />
+                </Button>
+              </CardContent>
+            </Card>
+
+            <Card className="hover:border-primary/50 transition-colors">
+              <CardHeader>
+                <div className="flex items-center gap-3">
+                  <div className="h-10 w-10 rounded-lg bg-indigo-500/10 flex items-center justify-center">
+                    <LayoutDashboard className="h-6 w-6 text-indigo-500" />
+                  </div>
+                  <CardTitle>Feed_BPF</CardTitle>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <p className="text-sm text-muted-foreground">Painel principal do sistema Feed_BPF para gestão de segurança alimentar.</p>
+                <Link to="/dashboard">
+                  <Button variant="outline" className="w-full gap-2">
+                    Voltar ao Dashboard <LayoutDashboard className="h-4 w-4" />
+                  </Button>
+                </Link>
+              </CardContent>
+            </Card>
+          </div>
         </TabsContent>
 
       </Tabs>

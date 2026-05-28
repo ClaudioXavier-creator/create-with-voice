@@ -68,111 +68,89 @@ export function isGroup(entry: NavEntry): entry is NavGroup {
 }
 
 export const NAV_ENTRIES: NavEntry[] = [
-  // --- NAVEGAÇÃO PRINCIPAL ---
-  { path: "/dashboard", label: "Dashboard Feed_BPF", icon: LayoutDashboard },
+  // --- NAVEGAÇÃO PRINCIPAL (FLAT) ---
+  { path: "/dashboard", label: "Dashboard Principal", icon: LayoutDashboard },
   { path: "/cadastro", label: "Dados da Empresa", icon: Building2 },
 
-  // --- GESTÃO OPERACIONAL ---
-  {
-    label: "Gestão Operacional",
-    icon: Layers,
-    items: [
-      { path: "/pcp", label: "PCP / Sequenciamento", icon: CalendarDays, keywords: ["planejamento", "programação", "sequenciamento", "ordem"] },
-      { path: "/producao", label: "Controle de Produção", icon: Layers, keywords: ["fabricação", "lote", "rendimento"] },
-      { path: "/rastreabilidade", label: "Rastreabilidade", icon: History, keywords: ["lote", "origem", "destino", "recall"] },
-      { path: "/expedicao", label: "Expedição", icon: Truck, keywords: ["carregamento", "transporte", "entrega"] },
-      { path: "/fornecedores", label: "Controle de Fornecedores", icon: Users, keywords: ["parceiros", "compras", "homologação"] },
-      { path: "/recebimento", label: "Recebimento de MP", icon: ClipboardList, keywords: ["matéria-prima", "conferência", "entrada"] },
-      { path: "/produtos", label: "Cadastro de Produtos", icon: Package, keywords: ["itens", "mercadoria", "sku"] },
-      { path: "/formulas", label: "Fórmulas de Produção", icon: FlaskConical, keywords: ["receita", "composição", "mistura"] },
-      { path: "/status-lotes", label: "Status & Fila de Lotes", icon: Tag, keywords: ["estoque", "fifo", "bloqueio", "mp"] },
-    ],
-  },
+  // --- GESTÃO OPERACIONAL (AGORA SEPARADO) ---
+  { path: "/pcp", label: "PCP / Sequenciamento", icon: CalendarDays, keywords: ["planejamento", "programação", "sequenciamento", "ordem"] },
+  { path: "/producao", label: "Controle de Produção", icon: Layers, keywords: ["fabricação", "lote", "rendimento"] },
+  { path: "/rastreabilidade", label: "Rastreabilidade", icon: History, keywords: ["lote", "origem", "destino", "recall"] },
+  { path: "/expedicao", label: "Expedição", icon: Truck, keywords: ["carregamento", "transporte", "entrega"] },
+  { path: "/fornecedores", label: "Controle de Fornecedores", icon: Users, keywords: ["parceiros", "compras", "homologação"] },
+  { path: "/recebimento", label: "Recebimento de MP", icon: ClipboardList, keywords: ["matéria-prima", "conferência", "entrada"] },
+  { path: "/produtos", label: "Cadastro de Produtos", icon: Package, keywords: ["itens", "mercadoria", "sku"] },
+  { path: "/formulas", label: "Fórmulas de Produção", icon: FlaskConical, keywords: ["receita", "composição", "mistura"] },
+  { path: "/status-lotes", label: "Status & Fila de Lotes", icon: Tag, keywords: ["estoque", "fifo", "bloqueio", "mp"] },
 
-  // --- QUALIDADE & SEGURANÇA (POPs) ---
-  {
-    label: "Qualidade & Segurança",
-    icon: ShieldCheck,
-    items: [
-      { path: "/higiene", label: "Higiene / Sanitização", icon: Droplets, keywords: ["limpeza", "faxina", "sanitização"] },
-      { path: "/validacao-limpeza", label: "Validação de Limpeza", icon: CheckCircle2, keywords: ["suabe", "microbiologia", "atp"] },
-      { path: "/saude-pessoal", label: "Saúde Pessoal", icon: Activity, keywords: ["aso", "exames", "colaboradores"] },
-      { path: "/treinamentos", label: "Treinamentos BPF", icon: GraduationCap, keywords: ["capacitação", "cursos", "conscientização"] },
-      { path: "/potabilidade-agua", label: "Controle da Água", icon: Droplets, keywords: ["cloro", "ph", "análise"] },
-      { path: "/monitoramento-pcc", label: "Monitoramento PCC", icon: Zap, keywords: ["perigo", "crítico", "limite"] },
-      { path: "/manutencao", label: "Manutenção Preventiva", icon: Wrench, keywords: ["máquinas", "equipamentos", "reparo"] },
-      { path: "/pragas", label: "Manejo de Pragas", icon: Bug, keywords: ["insetos", "roedores", "controle"] },
-      { path: "/residuos", label: "Controle de Resíduos", icon: Trash2, keywords: ["lixo", "efluentes", "descarte"] },
-      { path: "/autocontrole", label: "Monitoramento PAC", icon: ClipboardCheck, keywords: ["checklists", "diário", "fiscalização"] },
-      { path: "/matriz-risco", label: "Matriz de Risco", icon: ShieldAlert, keywords: ["análise", "perigos", "severidade"] },
-    ],
-  },
+  // --- QUALIDADE & SEGURANÇA - POPs (SEPARADOS CONFORME SOLICITADO) ---
+  { path: "/higiene", label: "POP 01 - Higiene e Sanitização", icon: Droplets, keywords: ["limpeza", "faxina", "sanitização"] },
+  { path: "/validacao-limpeza", label: "Validação de Limpeza", icon: CheckCircle2, keywords: ["suabe", "microbiologia", "atp"] },
+  { path: "/saude-pessoal", label: "POP 02 - Saúde Pessoal", icon: Activity, keywords: ["aso", "exames", "colaboradores"] },
+  { path: "/treinamentos", label: "POP 03 - Treinamentos BPF", icon: GraduationCap, keywords: ["capacitação", "cursos", "conscientização"] },
+  { path: "/potabilidade-agua", label: "POP 04 - Controle da Água", icon: Droplets, keywords: ["cloro", "ph", "análise"] },
+  { path: "/monitoramento-pcc", label: "POP 05 - Monitoramento PCC", icon: Zap, keywords: ["perigo", "crítico", "limite"] },
+  { path: "/manutencao", label: "POP 06 - Manutenção Preventiva", icon: Wrench, keywords: ["máquinas", "equipamentos", "reparo"] },
+  { path: "/pragas", label: "POP 07 - Manejo de Pragas", icon: Bug, keywords: ["insetos", "roedores", "controle"] },
+  { path: "/residuos", label: "POP 08 - Controle de Resíduos", icon: Trash2, keywords: ["lixo", "efluentes", "descarte"] },
+  { path: "/autocontrole", label: "Monitoramento PAC", icon: ClipboardCheck, keywords: ["checklists", "diário", "fiscalização"] },
+  { path: "/matriz-risco", label: "Matriz de Risco", icon: ShieldAlert, keywords: ["análise", "perigos", "severidade"] },
 
-  // --- DOCUMENTAÇÃO & REGISTROS ---
-  {
-    label: "Documentação & Registros",
-    icon: FileText,
-    items: [
-      { path: "/manual", label: "Manual Feed_BPF", icon: BookOpen },
-      { path: "/documentos", label: "Documentos e Registros", icon: FileText },
-      { path: "/execucao-pops", label: "Execução ITs/POPs", icon: Clipboard },
-      { path: "/planilhas-pop", label: "Planilhas de POPs", icon: Clipboard },
-      { path: "/guia-geral-pops", label: "Guia Geral POPs", icon: ClipboardList },
-      { path: "/guia-pops", label: "ITs Detalhadas", icon: FileText },
-      { path: "/modelos", label: "Biblioteca de Modelos", icon: FolderOpen },
-    ],
-  },
+  // --- DOCUMENTAÇÃO & REGISTROS (FLAT) ---
+  { path: "/manual", label: "Manual Feed_BPF", icon: BookOpen },
+  { path: "/documentos", label: "Documentos e Registros", icon: FileText },
+  { path: "/execucao-pops", label: "Execução ITs/POPs", icon: Clipboard },
+  { path: "/planilhas-pop", label: "Planilhas de POPs", icon: Clipboard },
+  { path: "/guia-geral-pops", label: "Guia Geral POPs", icon: ClipboardList },
+  { path: "/guia-pops", label: "ITs Detalhadas", icon: FileText },
+  { path: "/modelos", label: "Biblioteca de Modelos", icon: FolderOpen },
+  { path: "/orientacoes", label: "Central de Orientações", icon: GraduationCap },
 
-  // --- AUDITORIA & MELHORIA ---
-  {
-    label: "Auditoria & Melhoria",
-    icon: ShieldCheck,
-    items: [
-      { path: "/auditoria", label: "Auditoria BPF", icon: ClipboardCheck },
-      { path: "/nao-conformidades", label: "Não Conformidades", icon: AlertTriangle },
-      { path: "/sala-auditor", label: "🔍 Sala do Auditor", icon: ClipboardCheck },
-      { path: "/audit-log", label: "Log de Atividades", icon: History },
-      { path: "/checklist-pre-auditoria", label: "Checklist Pré-Auditoria", icon: ClipboardList },
-      { path: "/qualidade-total", label: "Qualidade Total (SAC)", icon: MessageSquare },
-      { path: "/indicadores", label: "Indicadores de Qualidade", icon: BarChart3 },
+  // --- AUDITORIA & MELHORIA (FLAT) ---
+  { path: "/auditoria", label: "Auditoria BPF", icon: ClipboardCheck },
+  { path: "/nao-conformidades", label: "Não Conformidades", icon: AlertTriangle },
+  { path: "/sala-auditor", label: "🔍 Sala do Auditor", icon: ClipboardCheck },
+  { path: "/audit-log", label: "Log de Atividades", icon: History },
+  { path: "/checklist-pre-auditoria", label: "Checklist Pré-Auditoria", icon: ClipboardList },
+  { path: "/qualidade-total", label: "Qualidade Total (SAC)", icon: MessageSquare },
+  { path: "/indicadores", label: "Indicadores de Qualidade", icon: BarChart3 },
 
-    ],
-  },
+  // --- OUTROS ---
+  { path: "/modo-tablet", label: "Factory / Modo Tablet", icon: Tablet },
 
-  // --- ECOSSISTEMA & GROWTH ---
+  // --- PORTAL DE GESTÃO (RESTRITO AO ADMIN) ---
   {
-    label: "Ecossistema & Growth",
-    icon: Zap,
-    items: [
-      { path: "/marketing", label: "Marketing Hub", icon: Megaphone },
-      { path: "/whatsapp", label: "Configurar WhatsApp", icon: MessageSquare },
-      { path: "/modo-tablet", label: "Factory / Modo Tablet", icon: Tablet },
-      { path: "/orientacoes", label: "Central de Orientações", icon: GraduationCap },
-      { path: "/feedbpf/dashboard", label: "Feed_BPF", icon: LayoutDashboard, logo: logoFeedBpf },
-      { path: "https://friendly-flame-igniter.lovable.app", label: "Audits_BPF", icon: ShieldCheck, logo: logoAuditsBpf, external: true },
-      { path: "https://soil-to-client.lovable.app", label: "Agro RC CRM", icon: BarChart3, logo: logoAgrorc, external: true },
-      { path: "/rotulos/dashboard", label: "Nutri_Agro Labels", icon: Tag, logo: logoRotulos },
-      { path: "https://regional-fixer-charm.lovable.app", label: "AgroGestão CRM", icon: Building2, logo: logoAgrogestao, external: true },
-    ],
-  },
-
-  // --- ADMINISTRAÇÃO ---
-  {
-    label: "Administração",
+    label: "Portal de Gestão & Vendas",
     icon: ShieldAlert,
     items: [
+      { 
+        path: "/admin", 
+        label: "Painel Administrativo Total", 
+        icon: ShieldCheck, 
+        requiredEmail: [...SUPER_ADMIN_EMAILS] 
+      },
+      { 
+        path: "/marketing", 
+        label: "Marketing Hub", 
+        icon: Megaphone,
+        requiredEmail: [...SUPER_ADMIN_EMAILS]
+      },
+      { 
+        path: "/whatsapp", 
+        label: "Configurar WhatsApp", 
+        icon: MessageSquare,
+        requiredEmail: [...SUPER_ADMIN_EMAILS]
+      },
       { 
         path: "/licencas-programa", 
         label: "Licenças do Programa", 
         icon: Key, 
         requiredEmail: [...SUPER_ADMIN_EMAILS] 
       },
-      { 
-        path: "/admin", 
-        label: "Portal de Gestão Total", 
-        icon: ShieldCheck, 
-        requiredEmail: [...SUPER_ADMIN_EMAILS] 
-      },
+      { path: "/rotulos/dashboard", label: "Nutri_Agro Labels", icon: Tag, logo: logoRotulos, requiredEmail: [...SUPER_ADMIN_EMAILS] },
+      { path: "https://soil-to-client.lovable.app", label: "Agro RC CRM", icon: BarChart3, logo: logoAgrorc, external: true, requiredEmail: [...SUPER_ADMIN_EMAILS] },
+      { path: "https://regional-fixer-charm.lovable.app", label: "AgroGestão CRM", icon: Building2, logo: logoAgrogestao, external: true, requiredEmail: [...SUPER_ADMIN_EMAILS] },
+      { path: "https://friendly-flame-igniter.lovable.app", label: "Audits_BPF", icon: ShieldCheck, logo: logoAuditsBpf, external: true, requiredEmail: [...SUPER_ADMIN_EMAILS] },
     ],
   },
 ];
