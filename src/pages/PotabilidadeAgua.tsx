@@ -189,8 +189,8 @@ export default function PotabilidadeAgua() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Potabilidade da Água"
-        description="POP-04 — Controle de qualidade da água conforme IN 04/2007 e Portaria GM/MS 888/2021"
+        title="POP 04 - Potabilidade da Água"
+        description="Controle de potabilidade da água e higienização de reservatórios — IN 04/2007"
         orientacaoModuloId="potabilidade-agua"
       />
 

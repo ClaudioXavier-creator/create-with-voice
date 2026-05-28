@@ -52,7 +52,7 @@ export default function MonitoramentoPCC() {
 
   return (
     <>
-      <PageHeader icon={Zap} title="Monitoramento PCC" description="Monitoramento de Pontos Críticos de Controle (PCC)" />
+      <PageHeader icon={Zap} title="POP 05 - Controle da Produção e Prevenção da Contaminação Cruzada" description="Monitoramento de Pontos Críticos de Controle (PCC) e prevenção de contaminação cruzada — IN 04/2007" />
       <Card>
         <CardHeader className="flex flex-row justify-between">
             <CardTitle>Registros de Monitoramento</CardTitle>

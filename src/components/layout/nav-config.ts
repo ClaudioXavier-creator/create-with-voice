@@ -88,12 +88,12 @@ export const NAV_ENTRIES: NavEntry[] = [
   { path: "/saude-pessoal", label: "POP 03 - Higiene e Saúde Pessoal", icon: Activity, keywords: ["aso", "exames", "colaboradores"] },
   { path: "/treinamentos", label: "Treinamentos BPF", icon: GraduationCap, keywords: ["capacitação", "cursos", "conscientização"] },
   { path: "/potabilidade-agua", label: "POP 04 - Potabilidade da Água", icon: Droplets, keywords: ["cloro", "ph", "análise"] },
-  { path: "/monitoramento-pcc", label: "POP 05 - Prevenção de Contaminação Cruzada", icon: Zap, keywords: ["perigo", "crítico", "limite", "carry-over"] },
-  { path: "/manutencao", label: "POP 06 - Manutenção e Calibração de Equipamentos", icon: Wrench, keywords: ["máquinas", "equipamentos", "reparo", "calibração"] },
+  { path: "/monitoramento-pcc", label: "POP 05 - Controle da Produção e Prevenção da Contaminação Cruzada", icon: Zap, keywords: ["perigo", "crítico", "limite", "carry-over"] },
+  { path: "/manutencao", label: "POP 06 - Manutenção e Calibração de Equipamentos e Instrumentos", icon: Wrench, keywords: ["máquinas", "equipamentos", "reparo", "calibração"] },
   { path: "/pragas", label: "POP 07 - Controle Integrado de Pragas", icon: Bug, keywords: ["insetos", "roedores", "controle"] },
   { path: "/residuos", label: "POP 08 - Controle de Resíduos e Efluentes", icon: Trash2, keywords: ["lixo", "efluentes", "descarte"] },
-  { path: "/rastreabilidade", label: "POP 09 - Rastreabilidade e Recolhimento (Recall)", icon: History, keywords: ["lote", "origem", "destino", "recall"] },
-  { path: "/autocontrole", label: "PAC - Programa de Autocontrole", icon: ClipboardCheck, keywords: ["checklists", "diário", "fiscalização", "pac"] },
+  { path: "/rastreabilidade", label: "POP 09 - Programa de Rastreabilidade e Recolhimento (Recall)", icon: History, keywords: ["lote", "origem", "destino", "recall"] },
+  { path: "/autocontrole", label: "POP 10 - PAC - Programa de Autocontrole", icon: ClipboardCheck, keywords: ["checklists", "diário", "fiscalização", "pac"] },
   { path: "/matriz-risco", label: "Matriz de Risco / APPCC", icon: ShieldAlert, keywords: ["análise", "perigos", "severidade"] },
 
 
