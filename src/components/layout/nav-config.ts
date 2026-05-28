@@ -72,29 +72,30 @@ export const NAV_ENTRIES: NavEntry[] = [
   { path: "/dashboard", label: "Dashboard Principal", icon: LayoutDashboard },
   { path: "/cadastro", label: "Dados da Empresa", icon: Building2 },
 
-  // --- GESTÃO OPERACIONAL (AGORA SEPARADO) ---
+  // --- GESTÃO OPERACIONAL ---
   { path: "/pcp", label: "PCP / Sequenciamento", icon: CalendarDays, keywords: ["planejamento", "programação", "sequenciamento", "ordem"] },
   { path: "/producao", label: "Controle de Produção", icon: Layers, keywords: ["fabricação", "lote", "rendimento"] },
-  { path: "/rastreabilidade", label: "Rastreabilidade", icon: History, keywords: ["lote", "origem", "destino", "recall"] },
   { path: "/expedicao", label: "Expedição", icon: Truck, keywords: ["carregamento", "transporte", "entrega"] },
-  { path: "/fornecedores", label: "Controle de Fornecedores", icon: Users, keywords: ["parceiros", "compras", "homologação"] },
   { path: "/recebimento", label: "Recebimento de MP", icon: ClipboardList, keywords: ["matéria-prima", "conferência", "entrada"] },
   { path: "/produtos", label: "Cadastro de Produtos", icon: Package, keywords: ["itens", "mercadoria", "sku"] },
   { path: "/formulas", label: "Fórmulas de Produção", icon: FlaskConical, keywords: ["receita", "composição", "mistura"] },
   { path: "/status-lotes", label: "Status & Fila de Lotes", icon: Tag, keywords: ["estoque", "fifo", "bloqueio", "mp"] },
 
-  // --- QUALIDADE & SEGURANÇA - POPs (SEPARADOS CONFORME SOLICITADO) ---
-  { path: "/higiene", label: "POP 01 - Higiene e Sanitização", icon: Droplets, keywords: ["limpeza", "faxina", "sanitização"] },
-  { path: "/validacao-limpeza", label: "Validação de Limpeza", icon: CheckCircle2, keywords: ["suabe", "microbiologia", "atp"] },
-  { path: "/saude-pessoal", label: "POP 02 - Saúde Pessoal", icon: Activity, keywords: ["aso", "exames", "colaboradores"] },
-  { path: "/treinamentos", label: "POP 03 - Treinamentos BPF", icon: GraduationCap, keywords: ["capacitação", "cursos", "conscientização"] },
-  { path: "/potabilidade-agua", label: "POP 04 - Controle da Água", icon: Droplets, keywords: ["cloro", "ph", "análise"] },
-  { path: "/monitoramento-pcc", label: "POP 05 - Monitoramento PCC", icon: Zap, keywords: ["perigo", "crítico", "limite"] },
-  { path: "/manutencao", label: "POP 06 - Manutenção Preventiva", icon: Wrench, keywords: ["máquinas", "equipamentos", "reparo"] },
-  { path: "/pragas", label: "POP 07 - Manejo de Pragas", icon: Bug, keywords: ["insetos", "roedores", "controle"] },
-  { path: "/residuos", label: "POP 08 - Controle de Resíduos", icon: Trash2, keywords: ["lixo", "efluentes", "descarte"] },
-  { path: "/autocontrole", label: "Monitoramento PAC", icon: ClipboardCheck, keywords: ["checklists", "diário", "fiscalização"] },
-  { path: "/matriz-risco", label: "Matriz de Risco", icon: ShieldAlert, keywords: ["análise", "perigos", "severidade"] },
+  // --- POPs (SEQUÊNCIA OFICIAL IN 04/2007 + PAC) ---
+  { path: "/fornecedores", label: "POP 01 - Qualificação de Fornecedores", icon: Users, keywords: ["parceiros", "compras", "homologação"] },
+  { path: "/higiene", label: "POP 02 - Limpeza de Instalações, Equipamentos e Utensílios", icon: Droplets, keywords: ["limpeza", "faxina", "sanitização"] },
+  { path: "/validacao-limpeza", label: "Validação de Limpeza de Linha", icon: CheckCircle2, keywords: ["suabe", "microbiologia", "atp"] },
+  { path: "/saude-pessoal", label: "POP 03 - Higiene e Saúde Pessoal", icon: Activity, keywords: ["aso", "exames", "colaboradores"] },
+  { path: "/treinamentos", label: "Treinamentos BPF", icon: GraduationCap, keywords: ["capacitação", "cursos", "conscientização"] },
+  { path: "/potabilidade-agua", label: "POP 04 - Potabilidade da Água", icon: Droplets, keywords: ["cloro", "ph", "análise"] },
+  { path: "/monitoramento-pcc", label: "POP 05 - Prevenção de Contaminação Cruzada", icon: Zap, keywords: ["perigo", "crítico", "limite", "carry-over"] },
+  { path: "/manutencao", label: "POP 06 - Manutenção e Calibração de Equipamentos", icon: Wrench, keywords: ["máquinas", "equipamentos", "reparo", "calibração"] },
+  { path: "/pragas", label: "POP 07 - Controle Integrado de Pragas", icon: Bug, keywords: ["insetos", "roedores", "controle"] },
+  { path: "/residuos", label: "POP 08 - Controle de Resíduos e Efluentes", icon: Trash2, keywords: ["lixo", "efluentes", "descarte"] },
+  { path: "/rastreabilidade", label: "POP 09 - Rastreabilidade e Recolhimento (Recall)", icon: History, keywords: ["lote", "origem", "destino", "recall"] },
+  { path: "/autocontrole", label: "PAC - Programa de Autocontrole", icon: ClipboardCheck, keywords: ["checklists", "diário", "fiscalização", "pac"] },
+  { path: "/matriz-risco", label: "Matriz de Risco / APPCC", icon: ShieldAlert, keywords: ["análise", "perigos", "severidade"] },
+
 
   // --- DOCUMENTAÇÃO & REGISTROS (FLAT) ---
   { path: "/manual", label: "Manual Feed_BPF", icon: BookOpen },
