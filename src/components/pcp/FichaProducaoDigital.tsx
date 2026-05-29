@@ -271,16 +271,133 @@ export default function FichaProducaoDigital({ ordemId, onClose }: Props) {
   const totalFormula = () => ingredientes.reduce((s, i) => s + Number(i.quantidade_kg), 0);
 
   const handlePrint = async () => {
-    if (!printRef.current) return;
+    if (!printRef.current || !ordem) return;
     
-    // Add an ID to the element we want to print
-    const printId = `print-ficha-${ordem.id}`;
-    printRef.current.id = printId;
+    // Create a temporary element for printing to apply specific print styles
+    const printContainer = document.createElement('div');
+    printContainer.className = "print-only p-8 space-y-6";
+    printContainer.style.backgroundColor = "white";
+    printContainer.style.color = "black";
     
-    printElement(printId, { 
-      title: `Ficha de Produção - ${ordem.numero_ordem}`,
-      landscape: numBatidas > 5 // Use landscape if many batches
+    // Header section
+    const header = `
+      <div class="flex justify-between items-start border-b-2 border-gray-800 pb-4 mb-6">
+        <div>
+          <h1 class="text-2xl font-bold uppercase">Ficha de Produção - PAC/BPF</h1>
+          <p class="text-sm font-mono mt-1">Nº Ordem: <strong>${ordem.numero_ordem}</strong></p>
+          <p class="text-sm">Data Programada: ${new Date(ordem.data_programada).toLocaleDateString('pt-BR')}</p>
+        </div>
+        <div class="text-right">
+          <p class="text-lg font-bold">${ordem.produto}</p>
+          <p class="text-sm text-gray-600">Lote: ${ordem.lote_produto || '---'}</p>
+        </div>
+      </div>
+    `;
+
+    // Production Config section
+    const config = `
+      <div class="grid grid-cols-3 gap-4 border p-4 mb-6 rounded-md">
+        <div>
+          <p class="text-xs font-semibold uppercase text-gray-500">Volume Misturador</p>
+          <p class="text-sm font-bold">${volumeMist} kg</p>
+        </div>
+        <div>
+          <p class="text-xs font-semibold uppercase text-gray-500">Nº de Batidas</p>
+          <p class="text-sm font-bold">${numBatidas}</p>
+        </div>
+        <div>
+          <p class="text-xs font-semibold uppercase text-gray-500">Total Programado</p>
+          <p class="text-sm font-bold">${(volumeMist * numBatidas).toLocaleString('pt-BR')} kg</p>
+        </div>
+        <div>
+          <p class="text-xs font-semibold uppercase text-gray-500">Qtd. Sacos</p>
+          <p class="text-sm font-bold">${qtdSacos || '---'}</p>
+        </div>
+        <div>
+          <p class="text-xs font-semibold uppercase text-gray-500">Próximo Produto</p>
+          <p class="text-sm font-bold">${proximoProd || '---'}</p>
+        </div>
+        <div>
+          <p class="text-xs font-semibold uppercase text-gray-500">Limpeza (Flushing)</p>
+          <p class="text-sm font-bold">${necessitaFlush ? 'SIM (' + materialFlush + ')' : 'NÃO'}</p>
+        </div>
+      </div>
+    `;
+
+    // Table section (Ingredients and batches)
+    const tot = totalFormula();
+    const rows = ingredientes.map(ing => {
+      const qtdPorBatida = tot > 0 ? (Number(ing.quantidade_kg) * volumeMist / tot) : 0;
+      let batchCols = "";
+      for (let i = 1; i <= numBatidas; i++) {
+        const valLote = getValor(ing.materia_prima, i, "lote_mp");
+        const valQtd = getValor(ing.materia_prima, i, "quantidade_kg");
+        batchCols += `
+          <td class="border p-2 text-center text-[10px]">
+            <div class="border-b border-gray-200 pb-1 mb-1 font-mono">${valLote || '_________'}</div>
+            <div>${valQtd ? Number(valQtd).toFixed(2) + ' kg' : '_________'}</div>
+          </td>
+        `;
+      }
+      return `
+        <tr>
+          <td class="border p-2 font-semibold text-xs">${ing.materia_prima}</td>
+          <td class="border p-2 text-right text-xs">${Number(ing.quantidade_kg).toFixed(2)}</td>
+          <td class="border p-2 text-right text-xs bg-gray-50">${qtdPorBatida.toFixed(2)}</td>
+          ${batchCols}
+        </tr>
+      `;
+    }).join("");
+
+    const batchHeaders = Array.from({ length: numBatidas }, (_, i) => `<th class="border p-2 text-[10px]">Batida ${i + 1}</th>`).join("");
+
+    const table = `
+      <table class="w-full border-collapse border border-gray-800 mb-8">
+        <thead>
+          <tr class="bg-gray-100 text-xs">
+            <th class="border p-2 text-left">Matéria-Prima</th>
+            <th class="border p-2 text-right">Fórmula (kg)</th>
+            <th class="border p-2 text-right">Por Batida (kg)</th>
+            ${batchHeaders}
+          </tr>
+        </thead>
+        <tbody>
+          ${rows}
+        </tbody>
+      </table>
+    `;
+
+    // Footer section (Signatures)
+    const footer = `
+      <div class="grid grid-cols-2 gap-12 mt-12 pt-12">
+        <div class="text-center border-t border-black pt-2">
+          <p class="text-sm font-bold">Responsável Produção</p>
+          <p class="text-xs text-gray-500">${verifResp || 'Assinatura / Nome'}</p>
+        </div>
+        <div class="text-center border-t border-black pt-2">
+          <p class="text-sm font-bold">Data / Hora</p>
+          <p class="text-xs text-gray-500">${verifData ? new Date(verifData).toLocaleDateString('pt-BR') : '____/____/____'}</p>
+        </div>
+      </div>
+      <div class="mt-8 text-[10px] text-gray-400 text-center italic">
+        Documento gerado pelo sistema Lovable - Módulo PCP / PAC
+      </div>
+    `;
+
+    printContainer.innerHTML = header + config + table + footer;
+    document.body.appendChild(printContainer);
+
+    // Create a temporary ID and print
+    const tempId = "temp-print-element";
+    printContainer.id = tempId;
+    
+    printElement(tempId, { 
+      title: `Ficha_Producao_${ordem.numero_ordem}`,
+      landscape: numBatidas > 4
     });
+    
+    // Cleanup
+    document.body.removeChild(printContainer);
   };
 
 
