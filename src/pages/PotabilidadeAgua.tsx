@@ -460,7 +460,19 @@ export default function PotabilidadeAgua() {
                       <TableCell>{l.data_execucao}</TableCell>
                       <TableCell>{l.executor}</TableCell>
                       <TableCell><Badge variant={l.conforme ? "default" : "destructive"}>{l.conforme ? "Conforme" : "NC"}</Badge></TableCell>
+                      <TableCell>
+                        {l.status_verificacao === 'aprovado' ? (
+                          <Badge variant="outline" className="text-green-600 border-green-600 gap-1 text-[10px]">
+                            <CheckCircle2 className="w-3 h-3" /> {l.verificado_por}
+                          </Badge>
+                        ) : (
+                          <Button size="sm" variant="ghost" className="h-7 text-[10px] gap-1 px-2" onClick={() => handleVerificar('registros_limpeza', l.id)}>
+                            <ShieldCheck className="w-3 h-3 text-primary" /> Verificar
+                          </Button>
+                        )}
+                      </TableCell>
                       <TableCell className="text-xs max-w-xs truncate">{l.observacoes}</TableCell>
+
                       <TableCell>
                         <Button variant="ghost" size="icon" onClick={async () => {
                           await supabase.from("registros_limpeza").delete().eq("id", l.id);
