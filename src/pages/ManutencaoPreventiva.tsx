@@ -13,7 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Plus, Wrench, Trash2, AlertTriangle, Scale, Cog, Calendar } from "lucide-react";
+import { Plus, Wrench, Trash2, AlertTriangle, Scale, Cog, Calendar, ClipboardList } from "lucide-react";
 import PageHeader from "@/components/PageHeader";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
@@ -49,6 +49,9 @@ export default function ManutencaoPreventiva() {
   const [open, setOpen] = useState(false);
   const [openCalib, setOpenCalib] = useState(false);
   const [filtroEquip, setFiltroEquip] = useState("");
+  const [openEquip, setOpenEquip] = useState(false);
+  const [editingEquip, setEditingEquip] = useState<any>(null);
+
 
   const [form, setForm] = useState({
     equipamento: "", codigo_equipamento: "", tipo: "preventiva", descricao: "",
@@ -73,6 +76,13 @@ export default function ManutencaoPreventiva() {
     certificado_numero: "", observacoes: "", status: "calibrado",
     proxima_verificacao_intermediaria: "", verificacao_conforme: true, resultado_verificacao: "",
   });
+
+  const [equipForm, setEquipForm] = useState({
+    nome: "", codigo: "", fabricante: "", modelo: "", serie: "",
+    data_aquisicao: "", setor: "", requisitos_manutencao: "",
+    periodicidade_manutencao: "", status: "ativo"
+  });
+
 
   const { data: manutencoes = [] } = useQuery({
     queryKey: ["manutencoes", filtroEquip],
@@ -162,6 +172,47 @@ export default function ManutencaoPreventiva() {
     },
     onSuccess: () => { qc.invalidateQueries({ queryKey: ["calibracoes"] }); toast.success("Calibração removida"); },
   });
+
+  const { data: equipamentos = [] } = useQuery({
+    queryKey: ["equipamentos"],
+    queryFn: async () => {
+      let q = supabase.from("equipamentos").select("*").order("nome");
+      if (empresaAtiva) q = q.eq("empresa_id", empresaAtiva.id);
+      const { data, error } = await q;
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const saveEquipamento = useMutation({
+    mutationFn: async () => {
+      const payload: any = { ...equipForm, user_id: user!.id, empresa_id: empresaAtiva?.id || null };
+      if (editingEquip) {
+        const { error } = await supabase.from("equipamentos").update(payload).eq("id", editingEquip.id);
+        if (error) throw error;
+      } else {
+        const { error } = await supabase.from("equipamentos").insert(payload);
+        if (error) throw error;
+      }
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["equipamentos"] });
+      toast.success(editingEquip ? "Equipamento atualizado" : "Equipamento cadastrado");
+      setOpenEquip(false);
+      setEditingEquip(null);
+      setEquipForm({ nome: "", codigo: "", fabricante: "", modelo: "", serie: "", data_aquisicao: "", setor: "", requisitos_manutencao: "", periodicidade_manutencao: "", status: "ativo" });
+    },
+    onError: () => toast.error("Erro ao salvar equipamento"),
+  });
+
+  const deleteEquip = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from("equipamentos").delete().eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ["equipamentos"] }); toast.success("Equipamento removido"); },
+  });
+
 
   // Stats from calibracoes table
   const { data: calibracoes = [] } = useQuery({
@@ -253,6 +304,7 @@ export default function ManutencaoPreventiva() {
       <Tabs defaultValue="manutencoes">
         <TabsList className="flex-wrap">
           <TabsTrigger value="manutencoes">Manutenções ({manutencoes.length})</TabsTrigger>
+          <TabsTrigger value="inventario">📋 Inventário de Equipamentos ({equipamentos.length})</TabsTrigger>
           <TabsTrigger value="plano_preventivo">📋 Plano Preventivo</TabsTrigger>
           <TabsTrigger value="trocas">Troca de Peças ({trocasPecas.length})</TabsTrigger>
           <TabsTrigger value="calibracoes">Calibrações ({calibracoes.length})</TabsTrigger>
@@ -268,10 +320,28 @@ export default function ManutencaoPreventiva() {
             <DialogHeader><DialogTitle>Registrar Manutenção</DialogTitle></DialogHeader>
             <div className="grid gap-3">
               <div className="grid grid-cols-2 gap-3">
-                <div><Label>Equipamento *</Label><Input value={form.equipamento} onChange={e => setForm(p => ({ ...p, equipamento: e.target.value }))} placeholder="Ex: Misturador 01" />
-                  <p className="text-[10px] text-muted-foreground mt-1">Inclua moinhos, misturadores, peletizadoras, silos, balanças, etc.</p>
+                <div><Label>Equipamento *</Label>
+                  <div className="flex gap-2">
+                    <div className="flex-1">
+                      {equipamentos.length > 0 ? (
+                        <Select value={form.equipamento} onValueChange={v => {
+                          const eq = equipamentos.find((e: any) => e.nome === v);
+                          if (eq) setForm(p => ({ ...p, equipamento: eq.nome, codigo_equipamento: eq.codigo || "" }));
+                        }}>
+                          <SelectTrigger><SelectValue placeholder="Selecionar..." /></SelectTrigger>
+                          <SelectContent>
+                            {equipamentos.map((eq: any) => <SelectItem key={eq.id} value={eq.nome}>{eq.nome}</SelectItem>)}
+                          </SelectContent>
+                        </Select>
+                      ) : (
+                        <Input value={form.equipamento} onChange={e => setForm(p => ({ ...p, equipamento: e.target.value }))} placeholder="Ex: Misturador 01" />
+                      )}
+                    </div>
+                  </div>
+                  <p className="text-[10px] text-muted-foreground mt-1">Selecione do inventário ou digite o nome.</p>
                 </div>
                 <div><Label>Código</Label><Input value={form.codigo_equipamento} onChange={e => setForm(p => ({ ...p, codigo_equipamento: e.target.value }))} placeholder="MX-001" /></div>
+
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
@@ -342,6 +412,134 @@ export default function ManutencaoPreventiva() {
         </Card>
       )}
         </TabsContent>
+
+        {/* ── INVENTÁRIO DE EQUIPAMENTOS ── */}
+        <TabsContent value="inventario" className="space-y-4">
+          <div className="flex justify-between items-center gap-4 flex-wrap">
+            <div>
+              <h3 className="text-lg font-semibold">Inventário de Máquinas e Equipamentos</h3>
+              <p className="text-sm text-muted-foreground">Cadastro detalhado conforme IN 15/2009 e IN 04/2007</p>
+            </div>
+            <Dialog open={openEquip} onOpenChange={setOpenEquip}>
+              <DialogTrigger asChild>
+                <Button onClick={() => {
+                  setEditingEquip(null);
+                  setEquipForm({ nome: "", codigo: "", fabricante: "", modelo: "", serie: "", data_aquisicao: "", setor: "", requisitos_manutencao: "", periodicidade_manutencao: "", status: "ativo" });
+                }}>
+                  <Plus className="w-4 h-4 mr-2" />Novo Equipamento
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+                <DialogHeader><DialogTitle>{editingEquip ? "Editar Equipamento" : "Cadastrar Equipamento"}</DialogTitle></DialogHeader>
+                <div className="grid gap-4">
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="space-y-2"><Label>Nome do Equipamento *</Label><Input value={equipForm.nome} onChange={e => setEquipForm(p => ({ ...p, nome: e.target.value }))} placeholder="Ex: Moinho de Martelos 01" /></div>
+                    <div className="space-y-2"><Label>Código Interno</Label><Input value={equipForm.codigo} onChange={e => setEquipForm(p => ({ ...p, codigo: e.target.value }))} placeholder="Ex: MOI-01" /></div>
+                  </div>
+                  <div className="grid grid-cols-3 gap-3">
+                    <div className="space-y-2"><Label>Fabricante</Label><Input value={equipForm.fabricante} onChange={e => setEquipForm(p => ({ ...p, fabricante: e.target.value }))} /></div>
+                    <div className="space-y-2"><Label>Modelo</Label><Input value={equipForm.modelo} onChange={e => setEquipForm(p => ({ ...p, modelo: e.target.value }))} /></div>
+                    <div className="space-y-2"><Label>Nº de Série</Label><Input value={equipForm.serie} onChange={e => setEquipForm(p => ({ ...p, serie: e.target.value }))} /></div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="space-y-2"><Label>Data de Aquisição</Label><Input type="date" value={equipForm.data_aquisicao} onChange={e => setEquipForm(p => ({ ...p, data_aquisicao: e.target.value }))} /></div>
+                    <div className="space-y-2"><Label>Setor / Localização</Label><Input value={equipForm.setor} onChange={e => setEquipForm(p => ({ ...p, setor: e.target.value }))} placeholder="Ex: Moagem" /></div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Requisitos de Manutenção (IN 15/2009) *</Label>
+                    <Textarea 
+                      value={equipForm.requisitos_manutencao} 
+                      onChange={e => setEquipForm(p => ({ ...p, requisitos_manutencao: e.target.value }))} 
+                      placeholder="Descreva o que deve ser verificado (ex: lubrificação, aperto de correias, troca de peneiras)"
+                      className="min-h-[80px]"
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="space-y-2">
+                      <Label>Periodicidade Recomendada</Label>
+                      <Input value={equipForm.periodicidade_manutencao} onChange={e => setEquipForm(p => ({ ...p, periodicidade_manutencao: e.target.value }))} placeholder="Ex: Mensal, 500 horas" />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Status Atual</Label>
+                      <Select value={equipForm.status} onValueChange={v => setEquipForm(p => ({ ...p, status: v }))}>
+                        <SelectTrigger><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="ativo">Operacional / Ativo</SelectItem>
+                          <SelectItem value="manutencao">Em Manutenção</SelectItem>
+                          <SelectItem value="inativo">Inativo / Reserva</SelectItem>
+                          <SelectItem value="baixado">Baixado / Fora de Uso</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                  <Button onClick={() => saveEquipamento.mutate()} disabled={!equipForm.nome || !equipForm.requisitos_manutencao}>
+                    {editingEquip ? "Atualizar" : "Salvar no Inventário"}
+                  </Button>
+                </div>
+              </DialogContent>
+            </Dialog>
+          </div>
+
+          <div className="grid grid-cols-1 gap-4">
+            {equipamentos.length === 0 ? (
+              <Card><CardContent className="py-12 text-center text-muted-foreground"><ClipboardList className="w-12 h-12 mx-auto mb-3 opacity-40" /><p>Nenhum equipamento cadastrado no inventário.</p></CardContent></Card>
+            ) : (
+              <Card>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Equipamento</TableHead>
+                      <TableHead>Código/Série</TableHead>
+                      <TableHead>Setor</TableHead>
+                      <TableHead>Requisitos de Manutenção</TableHead>
+                      <TableHead>Periodicidade</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead className="text-right">Ações</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {equipamentos.map((eq: any) => (
+                      <TableRow key={eq.id}>
+                        <TableCell>
+                          <div className="font-medium">{eq.nome}</div>
+                          <div className="text-[10px] text-muted-foreground">{eq.fabricante} {eq.modelo}</div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="text-sm font-mono">{eq.codigo || "—"}</div>
+                          <div className="text-[10px] text-muted-foreground">{eq.serie ? `S/N: ${eq.serie}` : ""}</div>
+                        </TableCell>
+                        <TableCell>{eq.setor || "—"}</TableCell>
+                        <TableCell className="max-w-[250px]">
+                          <p className="text-xs line-clamp-2" title={eq.requisitos_manutencao}>{eq.requisitos_manutencao}</p>
+                        </TableCell>
+                        <TableCell><Badge variant="outline">{eq.periodicidade_manutencao || "—"}</Badge></TableCell>
+                        <TableCell>
+                          <Badge variant={eq.status === "ativo" ? "default" : eq.status === "manutencao" ? "destructive" : "outline"}>
+                            {eq.status === "ativo" ? "Ativo" : eq.status === "manutencao" ? "Em Manutenção" : eq.status}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="text-right space-x-2">
+                          <Button variant="ghost" size="icon" onClick={() => {
+                            setEditingEquip(eq);
+                            setEquipForm({
+                              nome: eq.nome, codigo: eq.codigo || "", fabricante: eq.fabricante || "",
+                              modelo: eq.modelo || "", serie: eq.serie || "", data_aquisicao: eq.data_aquisicao || "",
+                              setor: eq.setor || "", requisitos_manutencao: eq.requisitos_manutencao || "",
+                              periodicidade_manutencao: eq.periodicidade_manutencao || "", status: eq.status || "ativo"
+                            });
+                            setOpenEquip(true);
+                          }}><Cog className="w-4 h-4" /></Button>
+                          <Button variant="ghost" size="icon" onClick={() => deleteEquip.mutate(eq.id)}><Trash2 className="w-4 h-4 text-destructive" /></Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </Card>
+            )}
+          </div>
+        </TabsContent>
+
 
         <TabsContent value="calibracoes" className="space-y-4">
           <div className="flex justify-between items-center gap-4 flex-wrap">
@@ -588,13 +786,26 @@ export default function ManutencaoPreventiva() {
                     <Label>Equipamento Crítico</Label>
                     <Select value={equipSelecionado} onValueChange={v => {
                       setEquipSelecionado(v);
-                      const eq = EQUIPAMENTOS_CRITICOS.find(e => e.nome === v);
-                      if (eq) {
-                        setTrocaForm(p => ({ ...p, equipamento: eq.nome, codigo_equipamento: eq.codigo + "-" }));
+                      // Try to find in database equipments first, then in constant
+                      const eqDb = equipamentos.find((e: any) => e.nome === v);
+                      if (eqDb) {
+                        setTrocaForm(p => ({ ...p, equipamento: eqDb.nome, codigo_equipamento: eqDb.codigo || "" }));
+                      } else {
+                        const eq = EQUIPAMENTOS_CRITICOS.find(e => e.nome === v);
+                        if (eq) {
+                          setTrocaForm(p => ({ ...p, equipamento: eq.nome, codigo_equipamento: eq.codigo + "-" }));
+                        }
                       }
                     }}>
                       <SelectTrigger><SelectValue placeholder="Selecionar equipamento..." /></SelectTrigger>
                       <SelectContent>
+                        {equipamentos.length > 0 && (
+                          <div className="p-2 text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Inventário Cadastrado</div>
+                        )}
+                        {equipamentos.map((eq: any) => (
+                          <SelectItem key={eq.id} value={eq.nome}>{eq.nome} {eq.codigo ? `(${eq.codigo})` : ""}</SelectItem>
+                        ))}
+                        <div className="p-2 text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Modelos Sugeridos</div>
                         {EQUIPAMENTOS_CRITICOS.map(eq => (
                           <SelectItem key={eq.nome} value={eq.nome}>{eq.nome} ({eq.codigo})</SelectItem>
                         ))}
