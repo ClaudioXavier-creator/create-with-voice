@@ -462,7 +462,19 @@ export default function HigieneSanitizacao() {
     },
   });
 
+  // Histórico de Silos
+  const { data: historicoSilos = [] } = useQuery({
+    queryKey: ["historico_silos"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("execucao_pops").select("*")
+        .eq("codigo_pop", "POP-03-SILOS").order("data_execucao", { ascending: false }).limit(50);
+      if (error) throw error;
+      return data;
+    },
+  });
+
   const [mesAno, setMesAno] = useState(() => {
+
 
     const d = new Date();
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
