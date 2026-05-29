@@ -28,6 +28,7 @@ import {
   FlaskConical,
   Truck,
   ShieldAlert,
+  ShieldCheck,
 } from "lucide-react";
 
 import { SUPER_ADMIN_EMAILS } from "@/config/adminAccess";
@@ -47,7 +48,7 @@ export interface NavItem {
   logo?: string;
   keywords?: string[];
   requiredRoles?: string[];
-  requiredEmail?: string | string[];
+  requiredEmail?: string | string[] | readonly string[];
   external?: boolean;
 }
 
