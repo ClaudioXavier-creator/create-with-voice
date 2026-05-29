@@ -224,9 +224,11 @@ export default function Pragas() {
                     <TableHead>Tipo</TableHead>
                     <TableHead>Ação</TableHead>
                     <TableHead>Responsável</TableHead>
+                    <TableHead>Verificação</TableHead>
                     <TableHead></TableHead>
                   </TableRow>
                 </TableHeader>
+
                 <TableBody>
                   {registrosPragas.length === 0 && (
                     <TableRow><TableCell colSpan={6} className="text-center text-muted-foreground">Nenhum registro</TableCell></TableRow>
