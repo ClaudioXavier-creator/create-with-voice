@@ -94,7 +94,7 @@ export default function PlanilhasPop() {
   }, [user, selectedPop, selectedPeriodicidade, mes, ano]);
 
   const exportToExcel = async () => {
-    if (!planilhaId || !selectedPeriodicidade) return;
+    if (!planilhaId || !selectedPeriodicidade || !selectedPop) return;
 
     const { data: itens } = await supabase
       .from("pop_planilha_itens")
@@ -102,34 +102,18 @@ export default function PlanilhasPop() {
       .eq("planilha_id", planilhaId);
 
     const rows = itens || [];
-    const periodos = selectedPeriodicidade.periodos;
-    const areas = selectedPeriodicidade.areas;
-
-    // Build CSV
-    let csv = `${selectedPop.codigo} - ${selectedPop.nome}\n`;
-    csv += `${selectedPeriodicidade.label} - ${MESES[mes - 1]}/${ano}\n\n`;
-    csv += `Período,${areas.map((a) => a.area).join(",")},Responsável,Função\n`;
-
-    for (const p of periodos) {
-      const cells = areas.map((a) => {
-        const item = rows.find((r) => r.periodo_label === p && r.area === a.area);
-        if (!item || item.conforme === null) return "-";
-        return item.conforme ? "C" : "NC";
-      });
-      const resp = rows.find((r) => r.periodo_label === p)?.responsavel || "";
-      const func = rows.find((r) => r.periodo_label === p)?.funcao || "";
-      csv += `${p},${cells.join(",")},${resp},${func}\n`;
-    }
-
-    const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `${selectedPop.codigo}_${selectedPeriodicidade.key}_${MESES[mes - 1]}_${ano}.csv`;
-    a.click();
-    URL.revokeObjectURL(url);
+    
+    exportPopDataToExcel(
+      { codigo: selectedPop.codigo, nome: selectedPop.nome },
+      selectedPeriodicidade,
+      mes,
+      ano,
+      rows
+    );
+    
     toast.success("Planilha exportada com sucesso!");
   };
+
 
   if (showForm && planilhaId && selectedPeriodicidade) {
     return (
