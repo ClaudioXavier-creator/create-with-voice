@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Zap, Plus, Loader2, ClipboardList, AlertCircle, CheckCircle2 } from "lucide-react";
+import { Zap, Plus, Loader2, ClipboardList, AlertCircle, CheckCircle2, ShieldCheck } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
@@ -14,6 +14,8 @@ import { useAuth } from "@/hooks/useAuth";
 import { useEmpresa } from "@/hooks/useEmpresa";
 import { toast } from "sonner";
 import { Switch } from "@/components/ui/switch";
+import { Badge } from "@/components/ui/badge";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function MonitoramentoPCC() {
   const { user } = useAuth();
