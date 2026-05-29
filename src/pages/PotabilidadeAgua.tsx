@@ -15,7 +15,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Switch } from "@/components/ui/switch";
-import { Plus, Droplet, CheckCircle2, AlertTriangle, Trash2, FileText, Beaker, Container, Download } from "lucide-react";
+import { Plus, Droplet, CheckCircle2, AlertTriangle, Trash2, FileText, Beaker, Container, Download, ShieldCheck } from "lucide-react";
 import PageHeader from "@/components/PageHeader";
 
 const PONTOS_COLETA = [
