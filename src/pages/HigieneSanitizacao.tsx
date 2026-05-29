@@ -1059,8 +1059,9 @@ export default function HigieneSanitizacao() {
               <Table>
                 <TableHeader><TableRow>
                   <TableHead>Data</TableHead><TableHead>Executor</TableHead><TableHead>Setor</TableHead>
-                  <TableHead>Status</TableHead><TableHead className="max-w-[250px]">Detalhes</TableHead>
+                  <TableHead>Status</TableHead><TableHead>Verificação</TableHead><TableHead className="max-w-[250px]">Detalhes</TableHead>
                 </TableRow></TableHeader>
+
                 <TableBody>
                   {historicoSup.map((r: any) => (
                     <TableRow key={r.id}>
