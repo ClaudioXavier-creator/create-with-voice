@@ -501,8 +501,20 @@ export default function HigieneSanitizacao() {
   const addRegistro = useMutation({
     mutationFn: async () => {
       const payload = { ...regForm, user_id: user!.id, tipo_limpeza: (regForm as any).tipo_limpeza || "umida" };
-      const { error } = await supabase.from("registros_limpeza").insert(payload as any);
+      const { data, error } = await supabase.from("registros_limpeza").insert(payload as any).select().single();
       if (error) throw error;
+      
+      // Automatic NC Flow
+      if (!regForm.conforme) {
+        await supabase.from("nao_conformidades").insert({
+          user_id: user!.id,
+          empresa_id: empresaAtiva?.id || null,
+          data: regForm.data_execucao,
+          setor: "Higiene / Sanitização",
+          descricao: `NC identificada no registro de limpeza: ${regForm.observacoes || "Sem descrição"}`,
+          status: "pendente"
+        });
+      }
     },
     onSuccess: () => { qc.invalidateQueries({ queryKey: ["registros_limpeza"] }); toast.success("Registro salvo"); setOpenRegistro(false); },
     onError: () => toast.error("Erro ao registrar"),
