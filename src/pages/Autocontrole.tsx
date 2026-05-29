@@ -44,22 +44,66 @@ export default function Autocontrole() {
 
   useEffect(() => { fetchData(); }, [empresaAtiva]);
 
+  const handleVerificar = async (id: string) => {
+    if (!user) return;
+    const { data: profile } = await supabase.from('profiles').select('nome').eq('user_id', user.id).single();
+    const verificador = profile?.nome || user.email;
+    
+    const { error } = await (supabase.from("pac_monitoramento" as any) as any).update({
+      verificado_por: verificador,
+      data_verificacao: new Date().toISOString(),
+      status_verificacao: 'aprovado'
+    }).eq('id', id);
+
+    if (error) toast.error("Erro ao verificar");
+    else {
+      toast.success("Registro verificado!");
+      fetchData();
+    }
+  };
+
   const handleAdd = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
-    const { error } = await supabase.from("pac_monitoramento").insert({
+    const conformidade = formData.get("conformidade") === "on";
+    const acaoCorretiva = formData.get("acao_corretiva") as string;
+
+    if (!conformidade && !acaoCorretiva) {
+      toast.error("Ação corretiva é obrigatória para itens não conformes!");
+      return;
+    }
+
+    const { data: record, error } = await supabase.from("pac_monitoramento").insert({
         user_id: user?.id as any,
         empresa_id: empresaAtiva?.id as any,
         data: formData.get("data") as string,
         elemento_controle: formData.get("elemento_controle") as string,
         item_avaliado: formData.get("item_avaliado") as string,
         resultado: formData.get("resultado") as string,
-        conformidade: formData.get("conformidade") === "on",
-        acao_corretiva: formData.get("acao_corretiva") as string,
+        conformidade: conformidade,
+        acao_corretiva: acaoCorretiva,
         monitor: formData.get("monitor") as string,
-    } as any);
+    } as any).select().single();
+
     if (error) toast.error("Erro ao salvar");
-    else { toast.success("Monitoramento PAC registrado!"); setOpen(false); fetchData(); }
+    else { 
+      toast.success("Monitoramento PAC registrado!"); 
+      
+      // Automatic NC Flow
+      if (!conformidade) {
+        await supabase.from("nao_conformidades").insert({
+          user_id: user?.id,
+          empresa_id: empresaAtiva?.id || null,
+          data: formData.get("data"),
+          setor: `PAC / ${formData.get("elemento_controle")}`,
+          descricao: `NC no PAC (${formData.get("item_avaliado")}): ${acaoCorretiva}`,
+          status: "pendente"
+        } as any);
+      }
+      
+      setOpen(false); 
+      fetchData(); 
+    }
   };
 
   return (
