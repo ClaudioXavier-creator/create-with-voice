@@ -183,6 +183,17 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
         </div>
 
         <div className="mt-auto px-4 py-4 border-t border-sidebar-border/50 space-y-3 bg-sidebar/30 shrink-0">
+          {canAccessLicenseAdmin(roles, user?.email) && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => navigate("/admin")}
+              className="w-full justify-start gap-2 bg-primary/10 border-primary/20 hover:bg-primary/20 hover:border-primary/30 text-primary font-bold shadow-sm"
+            >
+              <ShieldCheck className="h-4 w-4" />
+              <span>Portal de Gestão</span>
+            </Button>
+          )}
           <EmpresaSelector />
           <div className="flex items-center justify-between px-2 gap-2">
             <p className="text-[11px] font-medium text-sidebar-foreground/50 truncate flex-1">{user?.email}</p>
