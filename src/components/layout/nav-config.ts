@@ -72,7 +72,7 @@ export const NAV_ENTRIES: NavEntry[] = [
   { path: "/dashboard", label: "Dashboard Principal", icon: LayoutDashboard },
   { path: "/cadastro", label: "Dados da Empresa", icon: Building2 },
 
-  // --- POPs (SEQUÊNCIA OFICIAL IN 04/2007 + PAC) ---
+  // --- POPs (SEQUÊNCIA OFICIAL IN 04/2007 — 09 POPs + PAC) ---
   {
     label: "POP 01 - Qualificação de Fornecedores",
     icon: Users,
@@ -81,10 +81,23 @@ export const NAV_ENTRIES: NavEntry[] = [
       { path: "/recebimento", label: "Recebimento de Matéria Prima e Embalagens", icon: ClipboardList, keywords: ["matéria-prima", "conferência", "entrada", "embalagens"] },
     ],
   },
-  { path: "/higiene", label: "POP 02 - Limpeza de Instalações, Equipamentos e Utensílios", icon: Droplets, keywords: ["limpeza", "faxina", "sanitização"] },
-  { path: "/validacao-limpeza", label: "Validação de Limpeza de Linha", icon: CheckCircle2, keywords: ["suabe", "microbiologia", "atp"] },
-  { path: "/saude-pessoal", label: "POP 03 - Higiene e Saúde Pessoal", icon: Activity, keywords: ["aso", "exames", "colaboradores"] },
-  { path: "/treinamentos", label: "Treinamentos BPF", icon: GraduationCap, keywords: ["capacitação", "cursos", "conscientização"] },
+  {
+    label: "POP 02 - Limpeza de Instalações, Equipamentos e Utensílios",
+    icon: Droplets,
+    items: [
+      { path: "/higiene", label: "Higiene / Sanitização", icon: Droplets, keywords: ["limpeza", "faxina", "sanitização"] },
+      { path: "/validacao-limpeza", label: "Validação de Limpeza de Linha", icon: CheckCircle2, keywords: ["suabe", "microbiologia", "atp"] },
+    ],
+  },
+  {
+    label: "POP 03 - Higiene e Saúde Pessoal",
+    icon: Activity,
+    items: [
+      { path: "/saude-pessoal", label: "Saúde Pessoal", icon: Activity, keywords: ["aso", "exames", "colaboradores"] },
+      { path: "/treinamentos", label: "Treinamentos BPF", icon: GraduationCap, keywords: ["capacitação", "cursos", "conscientização"] },
+      { path: "/visitantes", label: "Controle de Visitantes", icon: Users, keywords: ["visitas", "biosseguridade", "epi"] },
+    ],
+  },
   { path: "/potabilidade-agua", label: "POP 04 - Potabilidade da Água", icon: Droplets, keywords: ["cloro", "ph", "análise"] },
   {
     label: "POP 05 - Controle da Produção e Prevenção da Contaminação Cruzada",
@@ -99,12 +112,25 @@ export const NAV_ENTRIES: NavEntry[] = [
       { path: "/status-lotes", label: "Status & Fila de Lotes", icon: Tag, keywords: ["estoque", "fifo", "bloqueio", "mp"] },
     ],
   },
-  { path: "/manutencao", label: "POP 06 - Manutenção e Calibração de Equipamentos e Instrumentos", icon: Wrench, keywords: ["máquinas", "equipamentos", "reparo", "calibração"] },
+  { path: "/manutencao", label: "POP 06 - Manutenção e Calibração de Equipamentos e Instrumentos", icon: Wrench, keywords: ["máquinas", "equipamentos", "reparo", "calibração", "inventário"] },
   { path: "/pragas", label: "POP 07 - Controle Integrado de Pragas", icon: Bug, keywords: ["insetos", "roedores", "controle"] },
   { path: "/residuos", label: "POP 08 - Controle de Resíduos e Efluentes", icon: Trash2, keywords: ["lixo", "efluentes", "descarte"] },
-  { path: "/rastreabilidade", label: "POP 09 - Programa de Rastreabilidade e Recolhimento (Recall)", icon: History, keywords: ["lote", "origem", "destino", "recall"] },
-  { path: "/autocontrole", label: "POP 10 - PAC - Programa de Autocontrole", icon: ClipboardCheck, keywords: ["checklists", "diário", "fiscalização", "pac"] },
-  { path: "/matriz-risco", label: "Matriz de Risco / APPCC", icon: ShieldAlert, keywords: ["análise", "perigos", "severidade"] },
+  {
+    label: "POP 09 - Programa de Rastreabilidade e Recolhimento (Recall)",
+    icon: History,
+    items: [
+      { path: "/rastreabilidade", label: "Rastreabilidade", icon: History, keywords: ["lote", "origem", "destino"] },
+      { path: "/simulacao-recall", label: "Simulação de Recall", icon: AlertTriangle, keywords: ["recall", "recolhimento", "simulação"] },
+    ],
+  },
+  {
+    label: "POP 10 - PAC - Programa de Autocontrole",
+    icon: ClipboardCheck,
+    items: [
+      { path: "/autocontrole", label: "Programa de Autocontrole", icon: ClipboardCheck, keywords: ["checklists", "diário", "fiscalização", "pac"] },
+      { path: "/matriz-risco", label: "Matriz de Risco / APPCC", icon: ShieldAlert, keywords: ["análise", "perigos", "severidade", "haccp"] },
+    ],
+  },
 
 
   // --- DOCUMENTAÇÃO & REGISTROS (FLAT) ---
