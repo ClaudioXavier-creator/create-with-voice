@@ -145,18 +145,36 @@ export default function Autocontrole() {
                             <TableHead>Item</TableHead>
                             <TableHead>Status</TableHead>
                             <TableHead>Monitor</TableHead>
+                            <TableHead>Verificação</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
                         {data.map(item => (
                             <TableRow key={item.id}>
                                 <TableCell>{item.data}</TableCell>
-                                <TableCell>{item.elemento_controle}</TableCell>
-                                <TableCell>{item.item_avaliado}</TableCell>
-                                <TableCell>{item.conformidade ? <CheckCircle2 className="text-green-500" /> : <AlertCircle className="text-red-500" />}</TableCell>
-                                <TableCell>{item.monitor}</TableCell>
+                                <TableCell className="text-xs font-semibold">{item.elemento_controle}</TableCell>
+                                <TableCell className="text-xs">{item.item_avaliado}</TableCell>
+                                <TableCell>
+                                  {item.conformidade ? 
+                                    <Badge className="bg-green-100 text-green-700 border-green-200">Conforme</Badge> : 
+                                    <Badge variant="destructive">NC</Badge>
+                                  }
+                                </TableCell>
+                                <TableCell className="text-xs">{item.monitor}</TableCell>
+                                <TableCell>
+                                  {item.status_verificacao === 'aprovado' ? (
+                                    <Badge variant="outline" className="text-green-600 border-green-600 gap-1 text-[10px]">
+                                      <CheckCircle2 className="w-3 h-3" /> {item.verificado_por}
+                                    </Badge>
+                                  ) : (
+                                    <Button size="sm" variant="ghost" className="h-7 text-[10px] gap-1 px-2" onClick={() => handleVerificar(item.id)}>
+                                      <ShieldCheck className="w-3 h-3 text-primary" /> Verificar
+                                    </Button>
+                                  )}
+                                </TableCell>
                             </TableRow>
                         ))}
+
                     </TableBody>
                 </Table>
             )}
