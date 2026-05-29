@@ -63,6 +63,24 @@ export default function Pragas() {
   const registrosPragas = pragas.filter((p: any) => p.tipo_praga !== "Expurgo");
   const registrosExpurgo = pragas.filter((p: any) => p.tipo_praga === "Expurgo");
 
+  const handleVerificar = async (id: string) => {
+    if (!user) return;
+    const { data: profile } = await supabase.from('profiles').select('nome').eq('user_id', user.id).single();
+    const verificador = profile?.nome || user.email;
+    
+    const { error } = await (supabase.from("controle_pragas" as any) as any).update({
+      verificado_por: verificador,
+      data_verificacao: new Date().toISOString(),
+      status_verificacao: 'aprovado'
+    }).eq('id', id);
+
+    if (error) toast.error("Erro ao verificar");
+    else {
+      toast.success("Registro verificado!");
+      qc.invalidateQueries({ queryKey: ["controle_pragas"] });
+    }
+  };
+
   // --- Mutations ---
   const addPraga = useMutation({
     mutationFn: async () => {
@@ -80,6 +98,11 @@ export default function Pragas() {
 
   const addExpurgo = useMutation({
     mutationFn: async () => {
+      if (!expurgoForm.resultado_conforme && !expurgoForm.observacoes) {
+        toast.error("Ação corretiva (Observações) é obrigatória para expurgos não conformes!");
+        throw new Error("Ação corretiva obrigatória");
+      }
+
       // Salva como tipo_praga=Expurgo, dados extras no campo acao (JSON stringified)
       const extras = {
         tipo_produto: expurgoForm.tipo_produto,
@@ -97,22 +120,37 @@ export default function Pragas() {
         epi_adequado: expurgoForm.epi_adequado,
         resultado_conforme: expurgoForm.resultado_conforme,
       };
-      const { error } = await supabase.from("controle_pragas").insert({
+      const { data: record, error } = await supabase.from("controle_pragas").insert({
         local: expurgoForm.local,
         tipo_praga: "Expurgo",
         acao: JSON.stringify(extras),
         responsavel: expurgoForm.responsavel_tecnico,
         data: expurgoForm.data_inicio,
         user_id: user!.id,
-      });
+      }).select().single();
+
       if (error) throw error;
+
+      // Automatic NC Flow
+      if (!expurgoForm.resultado_conforme) {
+        await supabase.from("nao_conformidades").insert({
+          user_id: user!.id,
+          empresa_id: empresaAtiva?.id || null,
+          data: expurgoForm.data_inicio,
+          setor: "Manejo de Pragas / Expurgo",
+          descricao: `NC identificada no expurgo (${expurgoForm.local}): ${expurgoForm.observacoes}`,
+          status: "pendente"
+        } as any);
+      }
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["controle_pragas"] });
       toast.success("Registro de expurgo salvo");
       setOpenExpurgo(false);
     },
-    onError: () => toast.error("Erro ao salvar expurgo"),
+    onError: (err: any) => {
+      if (err.message !== "Ação corretiva obrigatória") toast.error("Erro ao salvar expurgo");
+    },
   });
 
   const deletePraga = useMutation({
