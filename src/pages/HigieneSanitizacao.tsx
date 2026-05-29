@@ -452,7 +452,18 @@ export default function HigieneSanitizacao() {
     },
   });
 
+  const { data: historicoPreOp = [] } = useQuery({
+    queryKey: ["historico_preop"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("execucao_pops").select("*")
+        .eq("codigo_pop", "POP-02/03-PREOP").order("data_execucao", { ascending: false }).limit(50);
+      if (error) throw error;
+      return data;
+    },
+  });
+
   const [mesAno, setMesAno] = useState(() => {
+
     const d = new Date();
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
   });
