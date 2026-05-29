@@ -1784,6 +1784,68 @@ export type Database = {
         }
         Relationships: []
       }
+      equipamentos: {
+        Row: {
+          codigo: string | null
+          created_at: string
+          data_aquisicao: string | null
+          empresa_id: string | null
+          fabricante: string | null
+          id: string
+          modelo: string | null
+          nome: string
+          periodicidade_manutencao: string | null
+          requisitos_manutencao: string | null
+          serie: string | null
+          setor: string | null
+          status: string | null
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          codigo?: string | null
+          created_at?: string
+          data_aquisicao?: string | null
+          empresa_id?: string | null
+          fabricante?: string | null
+          id?: string
+          modelo?: string | null
+          nome: string
+          periodicidade_manutencao?: string | null
+          requisitos_manutencao?: string | null
+          serie?: string | null
+          setor?: string | null
+          status?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          codigo?: string | null
+          created_at?: string
+          data_aquisicao?: string | null
+          empresa_id?: string | null
+          fabricante?: string | null
+          id?: string
+          modelo?: string | null
+          nome?: string
+          periodicidade_manutencao?: string | null
+          requisitos_manutencao?: string | null
+          serie?: string | null
+          setor?: string | null
+          status?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "equipamentos_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       execucao_pop_carimbos: {
         Row: {
           carimbo_data: string
