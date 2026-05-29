@@ -1415,8 +1415,9 @@ export default function HigieneSanitizacao() {
               <Table>
                 <TableHeader><TableRow>
                   <TableHead>Data</TableHead><TableHead>Executor</TableHead><TableHead>Tipo Limpeza</TableHead><TableHead>Horário</TableHead>
-                  <TableHead>Conforme</TableHead><TableHead>Observações</TableHead>
+                  <TableHead>Conforme</TableHead><TableHead>Verificação</TableHead><TableHead>Observações</TableHead>
                 </TableRow></TableHeader>
+
                 <TableBody>
                   {registros.map((r: any) => (
                     <TableRow key={r.id}>
