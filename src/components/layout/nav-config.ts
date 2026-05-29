@@ -9,9 +9,7 @@ import {
   FolderOpen,
   GraduationCap,
   LayoutDashboard,
-  Megaphone,
   MessageSquare,
-  ShieldCheck,
   Tablet,
   Layers,
   Tag,
@@ -26,11 +24,10 @@ import {
   Zap,
   History,
   CheckCircle2,
-  Key,
-  ShieldAlert,
   Package,
   FlaskConical,
   Truck,
+  ShieldAlert,
 } from "lucide-react";
 
 import { SUPER_ADMIN_EMAILS } from "@/config/adminAccess";
