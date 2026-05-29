@@ -2,17 +2,25 @@ import * as XLSX from "xlsx";
 import { DESVIOS_CBAA_2017 } from "@/config/desviosAnaliticos";
 
 // Helper to create a styled worksheet with proper column widths and formatting
-function createSheet(data: (string | number | boolean | null)[][], colWidths: number[]): XLSX.WorkSheet {
+function createSheet(data: (string | number | boolean | null)[][], colWidths: number[], merges: XLSX.Range[] = []): XLSX.WorkSheet {
   const ws = XLSX.utils.aoa_to_sheet(data);
   ws["!cols"] = colWidths.map(w => ({ wch: w }));
+  if (merges.length > 0) {
+    ws["!merges"] = merges;
+  }
   // Set print area
   ws["!printarea"] = XLSX.utils.encode_range({ s: { r: 0, c: 0 }, e: { r: data.length - 1, c: colWidths.length - 1 } });
+  
+  // Set basic page setup for better printing
+  ws["!margins"] = { left: 0.5, right: 0.5, top: 0.5, bottom: 0.5, header: 0.3, footer: 0.3 };
+  
   return ws;
 }
 
 function downloadWorkbook(wb: XLSX.WorkBook, filename: string) {
-  XLSX.writeFile(wb, `${filename}.xlsx`, { bookType: "xlsx", cellStyles: true });
+  XLSX.writeFile(wb, `${filename}.xlsx`, { bookType: "xlsx" });
 }
+
 
 // ─── POP 1: Fornecedores ───
 export function gerarPL_POP_1() {
