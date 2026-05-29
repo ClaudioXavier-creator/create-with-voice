@@ -73,7 +73,14 @@ export const NAV_ENTRIES: NavEntry[] = [
   { path: "/cadastro", label: "Dados da Empresa", icon: Building2 },
 
   // --- POPs (SEQUÊNCIA OFICIAL IN 04/2007 + PAC) ---
-  { path: "/fornecedores", label: "POP 01 - Qualificação de Fornecedores", icon: Users, keywords: ["parceiros", "compras", "homologação"] },
+  {
+    label: "POP 01 - Qualificação de Fornecedores",
+    icon: Users,
+    items: [
+      { path: "/fornecedores", label: "Qualificação de Fornecedores", icon: Users, keywords: ["parceiros", "compras", "homologação"] },
+      { path: "/recebimento", label: "Recebimento de Matéria Prima e Embalagens", icon: ClipboardList, keywords: ["matéria-prima", "conferência", "entrada", "embalagens"] },
+    ],
+  },
   { path: "/higiene", label: "POP 02 - Limpeza de Instalações, Equipamentos e Utensílios", icon: Droplets, keywords: ["limpeza", "faxina", "sanitização"] },
   { path: "/validacao-limpeza", label: "Validação de Limpeza de Linha", icon: CheckCircle2, keywords: ["suabe", "microbiologia", "atp"] },
   { path: "/saude-pessoal", label: "POP 03 - Higiene e Saúde Pessoal", icon: Activity, keywords: ["aso", "exames", "colaboradores"] },
@@ -87,7 +94,7 @@ export const NAV_ENTRIES: NavEntry[] = [
       { path: "/pcp", label: "PCP / Sequenciamento", icon: CalendarDays, keywords: ["planejamento", "programação", "sequenciamento", "ordem"] },
       { path: "/producao", label: "Controle de Produção", icon: Layers, keywords: ["fabricação", "lote", "rendimento"] },
       { path: "/expedicao", label: "Expedição", icon: Truck, keywords: ["carregamento", "transporte", "entrega"] },
-      { path: "/recebimento", label: "Recebimento de MP", icon: ClipboardList, keywords: ["matéria-prima", "conferência", "entrada"] },
+      
       { path: "/produtos", label: "Cadastro de Produtos", icon: Package, keywords: ["itens", "mercadoria", "sku"] },
       { path: "/formulas", label: "Fórmulas de Produção", icon: FlaskConical, keywords: ["receita", "composição", "mistura"] },
       { path: "/status-lotes", label: "Status & Fila de Lotes", icon: Tag, keywords: ["estoque", "fifo", "bloqueio", "mp"] },
