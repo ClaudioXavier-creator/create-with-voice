@@ -384,6 +384,78 @@ export function gerarPL_POP_9() {
   downloadWorkbook(wb, "PL_POP_9_Rastreabilidade");
 }
 
+// ─── POP 10: PAC (Programa de Autocontrole) ───
+export function gerarPL_POP_10() {
+  const wb = XLSX.utils.book_new();
+
+  // 10.1 Checklist de Autocontrole
+  const checklist = [
+    ["", "PLANILHA 10.1 — CHECKLIST DE AUTOCONTROLE (PAC)"],
+    ["", "Empresa:", "________________________", "", "Mês/Ano:", "____/____"],
+    [""],
+    ["Nº", "ITEM DE VERIFICAÇÃO / POP", "S", "N", "N/A", "OBSERVAÇÃO / AÇÃO CORRETIVA"],
+    ["1", "POP 01 — Qualificação de Fornecedores e Matérias-Primas", "☐", "☐", "☐", ""],
+    ["2", "POP 02 — Higiene e Sanitização de Instalações/Equipamentos", "☐", "☐", "☐", ""],
+    ["3", "POP 03 — Higiene e Saúde Pessoal / Treinamentos", "☐", "☐", "☐", ""],
+    ["4", "POP 04 — Potabilidade da Água", "☐", "☐", "☐", ""],
+    ["5", "POP 05 — Controle da Produção / Contaminação Cruzada", "☐", "☐", "☐", ""],
+    ["6", "POP 06 — Manutenção e Calibração", "☐", "☐", "☐", ""],
+    ["7", "POP 07 — Controle Integrado de Pragas", "☐", "☐", "☐", ""],
+    ["8", "POP 08 — Controle de Resíduos e Efluentes", "☐", "☐", "☐", ""],
+    ["9", "POP 09 — Rastreabilidade e Recolhimento (Recall)", "☐", "☐", "☐", ""],
+    ["10", "Manual de BPF atualizado e disponível", "☐", "☐", "☐", ""],
+    ["11", "Registros de todos os POPs completos e assinados", "☐", "☐", "☐", ""],
+    ["12", "Não Conformidades anteriores foram tratadas?", "☐", "☐", "☐", ""],
+    [""],
+    ["Parecer do RT:", ""],
+    [""],
+    ["Assinatura RT:", "________________________", "Data:", "__/__/__"],
+  ];
+  const ws1 = createSheet(checklist, [5, 50, 4, 4, 4, 30], [
+    { s: { r: 0, c: 1 }, e: { r: 0, c: 5 } }
+  ]);
+  XLSX.utils.book_append_sheet(wb, ws1, "10.1 Checklist PAC");
+
+  // 10.2 Auditoria Interna
+  const auditoria = [
+    ["", "PLANILHA 10.2 — REGISTRO DE AUDITORIA INTERNA"],
+    ["", "Data:", "__/__/__", "Auditor:", "________________________"],
+    [""],
+    ["SETOR / POP AUDITADO", "NÃO CONFORMIDADE (DESCRIÇÃO)", "GRAV.", "AÇÃO CORRETIVA", "PRAZO", "RESP.", "STATUS"],
+    ...Array.from({ length: 15 }, () => ["", "", "☐L ☐M ☐G", "", "", "", "☐A ☐F"]),
+    [""],
+    ["Gravidade: L (Leve) | M (Moderada) | G (Grave)"],
+    ["Status: A (Aberta) | F (Fechada)"],
+  ];
+  const ws2 = createSheet(auditoria, [25, 30, 10, 25, 12, 15, 10], [
+    { s: { r: 0, c: 1 }, e: { r: 0, c: 6 } }
+  ]);
+  XLSX.utils.book_append_sheet(wb, ws2, "10.2 Auditoria Interna");
+
+  // 10.3 Indicadores
+  const indicadores = [
+    ["", "PLANILHA 10.3 — INDICADORES DE DESEMPENHO DO PAC"],
+    ["", "Ano:", "______"],
+    [""],
+    ["INDICADOR", "UNID.", "JAN", "FEV", "MAR", "ABR", "MAI", "JUN", "JUL", "AGO", "SET", "OUT", "NOV", "DEZ"],
+    ["% Conformidade POPs", "%", "", "", "", "", "", "", "", "", "", "", "", ""],
+    ["Nº Não Conformidades", "un.", "", "", "", "", "", "", "", "", "", "", "", ""],
+    ["Nº Reclamações SAC", "un.", "", "", "", "", "", "", "", "", "", "", "", ""],
+    ["% Treinamentos Realiz.", "%", "", "", "", "", "", "", "", "", "", "", "", ""],
+    ["Aproveitamento Produção", "%", "", "", "", "", "", "", "", "", "", "", "", ""],
+    [""],
+    ["Meta Estabelecida:", ""],
+    ["Obs:", ""],
+  ];
+  const ws3 = createSheet(indicadores, [25, 8, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6], [
+    { s: { r: 0, c: 1 }, e: { r: 0, c: 13 } }
+  ]);
+  XLSX.utils.book_append_sheet(wb, ws3, "10.3 Indicadores PAC");
+
+  downloadWorkbook(wb, "PL_POP_10_PAC");
+}
+
+
 // ─── Formulários individuais ───
 export function gerarFormRecebimentoMP() {
   const wb = XLSX.utils.book_new();
