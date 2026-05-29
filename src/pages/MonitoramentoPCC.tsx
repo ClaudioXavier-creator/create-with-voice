@@ -23,6 +23,7 @@ export default function MonitoramentoPCC() {
   const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
+  const qc = useQueryClient();
 
   const fetchData = async () => {
     let q = supabase.from("monitoramento_pcc").select("*").order("data", { ascending: false });
@@ -34,22 +35,66 @@ export default function MonitoramentoPCC() {
 
   useEffect(() => { fetchData(); }, [empresaAtiva]);
 
+  const handleVerificar = async (id: string) => {
+    if (!user) return;
+    const { data: profile } = await supabase.from('profiles').select('nome').eq('user_id', user.id).single();
+    const verificador = profile?.nome || user.email;
+    
+    const { error } = await (supabase.from("monitoramento_pcc" as any) as any).update({
+      verificado_por: verificador,
+      data_verificacao: new Date().toISOString(),
+      status_verificacao: 'aprovado'
+    }).eq('id', id);
+
+    if (error) toast.error("Erro ao verificar");
+    else {
+      toast.success("Registro verificado com sucesso!");
+      fetchData();
+    }
+  };
+
   const handleAdd = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
-    const { error } = await supabase.from("monitoramento_pcc").insert({
+    const conformidade = formData.get("conformidade") === "on";
+    const acaoCorretiva = formData.get("acao_corretiva") as string;
+    
+    if (!conformidade && !acaoCorretiva) {
+      toast.error("Ação corretiva é obrigatória para itens não conformes!");
+      return;
+    }
+
+    const { data: record, error } = await supabase.from("monitoramento_pcc").insert({
         user_id: user?.id,
         empresa_id: empresaAtiva?.id,
         data: formData.get("data"),
         ponto_critico: formData.get("ponto_critico"),
         parametro: formData.get("parametro"),
         valor_encontrado: formData.get("valor_encontrado"),
-        conformidade: formData.get("conformidade") === "on",
-        acao_corretiva: formData.get("acao_corretiva"),
+        conformidade: conformidade,
+        acao_corretiva: acaoCorretiva,
         responsavel: formData.get("responsavel"),
-    } as any);
+    } as any).select().single();
+
     if (error) toast.error("Erro ao salvar");
-    else { toast.success("Monitoramento registrado!"); setOpen(false); fetchData(); }
+    else { 
+      toast.success("Monitoramento registrado!"); 
+      
+      // Automatic NC Flow
+      if (!conformidade) {
+        await supabase.from("nao_conformidades").insert({
+          user_id: user?.id,
+          empresa_id: empresaAtiva?.id || null,
+          data: formData.get("data"),
+          setor: "PCC / Contaminação Cruzada",
+          descricao: `NC no monitoramento de PCC (${formData.get("ponto_critico")}): ${acaoCorretiva}`,
+          status: "pendente"
+        } as any);
+      }
+      
+      setOpen(false); 
+      fetchData(); 
+    }
   };
 
   return (
