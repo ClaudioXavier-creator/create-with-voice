@@ -116,10 +116,34 @@ export default function PotabilidadeAgua() {
     enabled: !!user,
   });
 
+  const handleVerificar = async (tabela: string, id: string) => {
+    if (!user) return;
+    const { data: profile } = await supabase.from('profiles').select('nome').eq('user_id', user.id).single();
+    const verificador = profile?.nome || user.email;
+    
+    const { error } = await (supabase.from(tabela as any) as any).update({
+      verificado_por: verificador,
+      data_verificacao: new Date().toISOString(),
+      status_verificacao: 'aprovado'
+    }).eq('id', id);
+
+    if (error) toast.error("Erro ao verificar");
+    else {
+      toast.success("Registro verificado!");
+      queryClient.invalidateQueries();
+    }
+  };
+
   const addAnalise = useMutation({
     mutationFn: async () => {
       const paramInfo = PARAMETROS_ANALISE.find(p => p.param === parametro);
-      const { error } = await supabase.from("analises_laboratorio").insert({
+      
+      if (!conforme && !obs) {
+        toast.error("Ação corretiva (Observações) é obrigatória para itens não conformes!");
+        throw new Error("Ação corretiva obrigatória");
+      }
+
+      const { data: record, error } = await supabase.from("analises_laboratorio").insert({
         user_id: user!.id,
         empresa_id: empresaAtiva?.id || null,
         tipo_analise: "potabilidade_agua",
@@ -134,8 +158,21 @@ export default function PotabilidadeAgua() {
         laudo_numero: laudoNumero,
         observacoes: obs,
         status: conforme ? "conforme" : "nao_conforme",
-      });
+      }).select().single();
+
       if (error) throw error;
+
+      // Automatic NC Flow
+      if (!conforme) {
+        await supabase.from("nao_conformidades").insert({
+          user_id: user!.id,
+          empresa_id: empresaAtiva?.id || null,
+          data: dataColeta,
+          setor: "Qualidade / Água",
+          descricao: `NC na análise de potabilidade (${parametro}): ${obs}`,
+          status: "pendente"
+        } as any);
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["potabilidade-agua"] });
@@ -145,22 +182,44 @@ export default function PotabilidadeAgua() {
       setObs("");
       setLaudoNumero("");
     },
-    onError: () => toast.error("Erro ao salvar registro"),
+    onError: (err: any) => {
+      if (err.message !== "Ação corretiva obrigatória") toast.error("Erro ao salvar registro");
+    },
   });
 
   const addLimpeza = useMutation({
     mutationFn: async () => {
       const itensOk = Object.values(limpChecklist).filter(Boolean).length;
-      const { error } = await supabase.from("registros_limpeza").insert({
+      const conformeLimpeza = itensOk === CHECKLIST_RESERVATORIO.length;
+
+      if (!conformeLimpeza && !limpObs) {
+        toast.error("Ação corretiva (Observações) é obrigatória para checklists incompletos!");
+        throw new Error("Ação corretiva obrigatória");
+      }
+
+      const { data: record, error } = await supabase.from("registros_limpeza").insert({
         user_id: user!.id,
         empresa_id: empresaAtiva?.id || null,
         tipo_limpeza: "reservatorio",
         data_execucao: limpDataExec,
         executor: limpResponsavel || limpEmpresa,
-        conforme: itensOk === CHECKLIST_RESERVATORIO.length,
+        conforme: conformeLimpeza,
         observacoes: `Reservatório: ${limpReservatorio} | Empresa: ${limpEmpresa} | Checklist: ${itensOk}/${CHECKLIST_RESERVATORIO.length} | ${limpObs}`,
-      });
+      }).select().single();
+
       if (error) throw error;
+
+      // Automatic NC Flow
+      if (!conformeLimpeza) {
+        await supabase.from("nao_conformidades").insert({
+          user_id: user!.id,
+          empresa_id: empresaAtiva?.id || null,
+          data: limpDataExec,
+          setor: "Higiene / Reservatório",
+          descricao: `NC na limpeza do reservatório ${limpReservatorio}: ${limpObs}`,
+          status: "pendente"
+        } as any);
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["limpeza-reservatorio"] });
@@ -169,7 +228,9 @@ export default function PotabilidadeAgua() {
       setLimpChecklist({});
       setLimpObs("");
     },
-    onError: () => toast.error("Erro ao salvar limpeza"),
+    onError: (err: any) => {
+      if (err.message !== "Ação corretiva obrigatória") toast.error("Erro ao salvar limpeza");
+    },
   });
 
   const deleteAnalise = useMutation({
