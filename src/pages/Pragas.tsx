@@ -240,9 +240,21 @@ export default function Pragas() {
                       <TableCell><Badge variant="outline">{r.tipo_praga}</Badge></TableCell>
                       <TableCell>{r.acao}</TableCell>
                       <TableCell>{r.responsavel}</TableCell>
+                      <TableCell>
+                        {r.status_verificacao === 'aprovado' ? (
+                          <Badge variant="outline" className="text-green-600 border-green-600 gap-1 text-[10px]">
+                            <CheckCircle2 className="w-3 h-3" /> {r.verificado_por}
+                          </Badge>
+                        ) : (
+                          <Button size="sm" variant="ghost" className="h-7 text-[10px] gap-1 px-2" onClick={() => handleVerificar(r.id)}>
+                            <ShieldCheck className="w-3 h-3 text-primary" /> Verificar
+                          </Button>
+                        )}
+                      </TableCell>
                       <TableCell><Button size="icon" variant="ghost" onClick={() => deletePraga.mutate(r.id)}><Trash2 className="w-4 h-4 text-destructive" /></Button></TableCell>
                     </TableRow>
                   ))}
+
                 </TableBody>
               </Table>
             </CardContent>
