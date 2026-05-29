@@ -349,13 +349,14 @@ export default function PotabilidadeAgua() {
                       <TableHead>Resultado</TableHead>
                       <TableHead>Limite</TableHead>
                       <TableHead>Status</TableHead>
+                      <TableHead>Verificação</TableHead>
                       <TableHead>Laudo</TableHead>
                       <TableHead></TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {analises.length === 0 && (
-                      <TableRow><TableCell colSpan={8} className="text-center text-muted-foreground py-8">Nenhuma análise registrada</TableCell></TableRow>
+                      <TableRow><TableCell colSpan={9} className="text-center text-muted-foreground py-8">Nenhuma análise registrada</TableCell></TableRow>
                     )}
                     {analises.map(a => (
                       <TableRow key={a.id}>
@@ -369,12 +370,24 @@ export default function PotabilidadeAgua() {
                             {a.conforme ? "Conforme" : "NC"}
                           </Badge>
                         </TableCell>
+                        <TableCell>
+                          {a.status_verificacao === 'aprovado' ? (
+                            <Badge variant="outline" className="text-green-600 border-green-600 gap-1 text-[10px]">
+                              <CheckCircle2 className="w-3 h-3" /> {a.verificado_por}
+                            </Badge>
+                          ) : (
+                            <Button size="sm" variant="ghost" className="h-7 text-[10px] gap-1 px-2" onClick={() => handleVerificar('analises_laboratorio', a.id)}>
+                              <ShieldCheck className="w-3 h-3 text-primary" /> Verificar
+                            </Button>
+                          )}
+                        </TableCell>
                         <TableCell className="text-xs">{a.laudo_numero || "—"}</TableCell>
                         <TableCell>
                           <Button variant="ghost" size="icon" onClick={() => deleteAnalise.mutate(a.id)}><Trash2 className="w-4 h-4 text-destructive" /></Button>
                         </TableCell>
                       </TableRow>
                     ))}
+
                   </TableBody>
                 </Table>
               </div>
