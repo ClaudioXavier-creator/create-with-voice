@@ -108,9 +108,9 @@ export default function SuperAdmin() {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" onClick={() => (window.location.href = "/dashboard")} className="gap-2">
+          <Button variant="outline" onClick={() => (window.location.href = "/dashboard")} className="gap-2 bg-emerald-500/10 border-emerald-500/20 text-emerald-700 hover:bg-emerald-500/20">
             <LayoutDashboard className="h-4 w-4" />
-            Voltar ao Feed_BPF
+            Acessar Feed_BPF
           </Button>
         </div>
       </div>
