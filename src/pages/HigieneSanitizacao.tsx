@@ -664,7 +664,7 @@ export default function HigieneSanitizacao() {
       `[ASSINATURA DIGITAL: ${supResp} — ${new Date().toLocaleString("pt-BR")} — MP 2.200-2/2001]`,
     ].filter(Boolean).join("\n");
 
-    const { error } = await supabase.from("execucao_pops").insert({
+    const { data: record, error } = await supabase.from("execucao_pops").insert({
       user_id: user.id, empresa_id: empresaAtiva?.id || null,
       codigo_pop: "POP-02-SUPERFICIE",
       nome_pop: "Monitoramento de Limpeza de Superfícies",
@@ -673,7 +673,18 @@ export default function HigieneSanitizacao() {
       status: todosOk ? "concluido" : "nao_conforme",
       observacoes: obs,
       data_execucao: supData,
-    });
+    }).select().single();
+
+    if (!error && !todosOk) {
+      await supabase.from("nao_conformidades").insert({
+        user_id: user.id,
+        empresa_id: empresaAtiva?.id || null,
+        data: supData,
+        setor: "Higiene / Superfícies",
+        descricao: `NC identificada no Monitoramento de Superfícies: ${ncs.join("; ")}`,
+        status: "pendente"
+      });
+    }
     if (error) toast.error("Erro ao salvar: " + error.message);
     else {
       toast.success("Monitoramento de superfícies salvo!");
