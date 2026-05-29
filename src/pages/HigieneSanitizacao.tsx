@@ -1287,7 +1287,45 @@ export default function HigieneSanitizacao() {
               </div>
             );
           })()}
+
+          {/* Histórico Silos */}
+          {historicoSilos.length > 0 && (
+            <Card>
+              <CardHeader><CardTitle className="text-sm">Histórico de Limpeza de Silos</CardTitle></CardHeader>
+              <Table>
+                <TableHeader><TableRow>
+                  <TableHead>Data</TableHead><TableHead>Executor</TableHead><TableHead>Equipamento</TableHead>
+                  <TableHead>Status</TableHead><TableHead>Verificação</TableHead><TableHead className="max-w-[250px]">Detalhes</TableHead>
+                </TableRow></TableHeader>
+                <TableBody>
+                  {historicoSilos.map((r: any) => (
+                    <TableRow key={r.id}>
+                      <TableCell className="whitespace-nowrap">{r.data_execucao}</TableCell>
+                      <TableCell>{r.executor}</TableCell>
+                      <TableCell>{r.setor}</TableCell>
+                      <TableCell>
+                        {r.status === "concluido" ? <Badge className="bg-primary/20 text-primary">Conforme</Badge> : <Badge variant="destructive">NC</Badge>}
+                      </TableCell>
+                      <TableCell>
+                        {r.status_verificacao === 'aprovado' ? (
+                          <Badge variant="outline" className="text-green-600 border-green-600 gap-1 text-[10px]">
+                            <CheckCircle2 className="w-3 h-3" /> {r.verificado_por}
+                          </Badge>
+                        ) : (
+                          <Button size="sm" variant="ghost" className="h-7 text-[10px] gap-1 px-2" onClick={() => handleVerificar('execucao_pops', r.id)}>
+                            <ShieldCheck className="w-3 h-3 text-primary" /> Verificar
+                          </Button>
+                        )}
+                      </TableCell>
+                      <TableCell className="max-w-[250px] text-xs whitespace-pre-line truncate">{(r.observacoes || "").slice(0, 120)}{(r.observacoes?.length || 0) > 120 ? "…" : ""}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </Card>
+          )}
         </TabsContent>
+
 
 
         {/* ── CRONOGRAMAS ── */}
