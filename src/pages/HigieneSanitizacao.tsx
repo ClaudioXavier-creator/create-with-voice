@@ -1162,7 +1162,7 @@ export default function HigieneSanitizacao() {
                       ncs.length > 0 ? `NCs: ${ncs.join("; ")}` : "Todos conformes ✅",
                       silosObs ? `Obs: ${silosObs}` : "",
                     ].filter(Boolean).join("\n");
-                    const { error } = await supabase.from("execucao_pops").insert({
+                    const { data: record, error } = await supabase.from("execucao_pops").insert({
                       user_id: user.id, empresa_id: empresaAtiva?.id || null,
                       codigo_pop: "POP-03-SILOS",
                       nome_pop: "Limpeza de Silos & Transportadores",
@@ -1171,7 +1171,18 @@ export default function HigieneSanitizacao() {
                       status: todosOk ? "concluido" : "nao_conforme",
                       observacoes: obs,
                       data_execucao: silosData,
-                    });
+                    }).select().single();
+
+                    if (!error && !todosOk) {
+                      await supabase.from("nao_conformidades").insert({
+                        user_id: user.id,
+                        empresa_id: empresaAtiva?.id || null,
+                        data: silosData,
+                        setor: `Higiene / ${silosEquipamento}`,
+                        descricao: `NC identificada na Limpeza de Silos: ${ncs.join("; ")}`,
+                        status: "pendente"
+                      });
+                    }
                     if (error) toast.error("Erro ao salvar: " + error.message);
                     else {
                       toast.success("Checklist de silos & transportadores salvo!");
