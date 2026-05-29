@@ -125,8 +125,9 @@ export default function PlanilhasPop() {
             ← Voltar
           </Button>
           <Button variant="outline" size="sm" onClick={exportToExcel}>
-            <Download className="w-4 h-4 mr-1" /> Exportar CSV
+            <Download className="w-4 h-4 mr-1" /> Exportar Excel
           </Button>
+
         </div>
         <PopPlanilhaForm
           planilhaId={planilhaId}
