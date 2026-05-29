@@ -99,11 +99,19 @@ export default function SuperAdmin() {
 
   return (
     <div className="min-h-screen bg-background p-4 md:p-8 space-y-6">
-      <div className="flex items-center gap-3">
-        <ShieldCheck className="h-8 w-8 text-primary" />
-        <div>
-          <h1 className="text-3xl font-bold">Portal de Gestão (CRM & Licenças)</h1>
-          <p className="text-muted-foreground">Controle central de leads, vendas e licenças de todos os programas</p>
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <ShieldCheck className="h-8 w-8 text-primary" />
+          <div>
+            <h1 className="text-3xl font-bold">Portal de Gestão (CRM & Licenças)</h1>
+            <p className="text-muted-foreground">Controle central de leads, vendas e licenças de todos os programas</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" onClick={() => (window.location.href = "/dashboard")} className="gap-2">
+            <LayoutDashboard className="h-4 w-4" />
+            Voltar ao Feed_BPF
+          </Button>
         </div>
       </div>
 
