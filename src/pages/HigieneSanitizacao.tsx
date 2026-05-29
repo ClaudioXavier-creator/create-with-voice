@@ -662,7 +662,7 @@ export default function HigieneSanitizacao() {
             <TabsTrigger value="silos" className="whitespace-nowrap"><Container className="w-4 h-4 mr-1" />Silos & Transportadores</TabsTrigger>
             <TabsTrigger value="cronogramas" className="whitespace-nowrap"><Droplets className="w-4 h-4 mr-1" />Cronogramas</TabsTrigger>
             <TabsTrigger value="registros" className="whitespace-nowrap"><CheckCircle2 className="w-4 h-4 mr-1" />Registros Limpeza</TabsTrigger>
-            <TabsTrigger value="laudos" className="whitespace-nowrap"><FileText className="w-4 h-4 mr-1" />Laudos Vinculados</TabsTrigger>
+            
             <TabsTrigger value="planilha" className="whitespace-nowrap"><ClipboardList className="w-4 h-4 mr-1" />Planilha Mensal</TabsTrigger>
             <TabsTrigger value="arquivo" className="whitespace-nowrap"><Archive className="w-4 h-4 mr-1" />Arquivo 2 Anos</TabsTrigger>
           </TabsList>
@@ -1338,61 +1338,6 @@ export default function HigieneSanitizacao() {
 
 
         {/* ── LAUDOS VINCULADOS ── */}
-        <TabsContent value="laudos" className="space-y-4">
-          <Card className="border-blue-500/20 bg-blue-50 dark:bg-blue-900/10">
-            <CardContent className="pt-4">
-              <div className="flex items-start gap-3">
-                <FileText className="w-6 h-6 text-blue-600 mt-0.5" />
-                <div>
-                  <h4 className="font-semibold text-sm">Laudos Laboratoriais de Água — POP-05 (IN 04/2007)</h4>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Laudos de potabilidade cadastrados no módulo de Análises Laboratoriais, vinculados automaticamente
-                    por parâmetros de água (cloro, pH, coliformes, turbidez). Laudos mensais obrigatórios.
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {laudosAgua.length === 0 ? (
-            <Card><CardContent className="py-12 text-center text-muted-foreground">
-              <FileText className="w-12 h-12 mx-auto mb-3 opacity-40" />
-              <p>Nenhum laudo de água encontrado.</p>
-              <p className="text-xs mt-1">Cadastre análises com parâmetros de água no módulo Análises Laboratoriais.</p>
-            </CardContent></Card>
-          ) : (
-            <Card>
-              <Table>
-                <TableHeader><TableRow>
-                  <TableHead>Data Análise</TableHead>
-                  <TableHead>Produto/Amostra</TableHead>
-                  <TableHead>Parâmetro</TableHead>
-                  <TableHead>Resultado</TableHead>
-                  <TableHead>Limite Ref.</TableHead>
-                  <TableHead>Laudo Nº</TableHead>
-                  <TableHead>Conforme</TableHead>
-                </TableRow></TableHeader>
-                <TableBody>
-                  {laudosAgua.map((l: any) => (
-                    <TableRow key={l.id}>
-                      <TableCell className="whitespace-nowrap">{l.data_analise}</TableCell>
-                      <TableCell className="font-medium">{l.produto}</TableCell>
-                      <TableCell>{l.parametro || "—"}</TableCell>
-                      <TableCell className="font-mono">{l.resultado || "—"} {l.unidade || ""}</TableCell>
-                      <TableCell className="text-xs text-muted-foreground">{l.limite_referencia || "—"}</TableCell>
-                      <TableCell className="font-mono text-xs">{l.laudo_numero || "—"}</TableCell>
-                      <TableCell>
-                        {l.conforme === true ? <Badge className="bg-primary/20 text-primary">Conforme</Badge> :
-                         l.conforme === false ? <Badge variant="destructive">NC</Badge> :
-                         <Badge variant="outline">Pendente</Badge>}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </Card>
-          )}
-        </TabsContent>
 
         {/* ── PLANILHA MENSAL ── */}
         <TabsContent value="planilha" className="space-y-4">
