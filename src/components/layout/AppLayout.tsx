@@ -6,6 +6,7 @@ import {
   Target,
   X,
   Search,
+  ShieldCheck,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
@@ -26,6 +27,7 @@ import PageLoader from "@/components/PageLoader";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import ClearCacheButton from "@/components/ClearCacheButton";
 import Breadcrumbs from "@/components/Breadcrumbs";
+import { canAccessLicenseAdmin } from "@/config/adminAccess";
 
 
 const PRODUCT_CONFIGS: Record<string, { logo: string; title: string; subtitle: string }> = {
