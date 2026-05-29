@@ -624,7 +624,26 @@ export default function HigieneSanitizacao() {
     setSavingLibLinha(false);
   };
 
+  const handleVerificar = async (tabela: string, id: string) => {
+    if (!user) return;
+    const { data: profile } = await supabase.from('profiles').select('nome').eq('user_id', user.id).single();
+    const verificador = profile?.nome || user.email;
+    
+    const { error } = await supabase.from(tabela).update({
+      verificado_por: verificador,
+      data_verificacao: new Date().toISOString(),
+      status_verificacao: 'aprovado'
+    } as any).eq('id', id);
+
+    if (error) toast.error("Erro ao verificar");
+    else {
+      toast.success("Registro verificado com sucesso!");
+      qc.invalidateQueries();
+    }
+  };
+
   // ── Save Monitoramento de Superfícies ──
+
   const salvarSup = async () => {
     if (!user) return;
     setSavingSup(true);
