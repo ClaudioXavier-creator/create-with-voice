@@ -1017,3 +1017,53 @@ export function gerarFormExpedicaoCompleta() {
   XLSX.utils.book_append_sheet(wb, ws, "Expedição NF");
   downloadWorkbook(wb, "Registro_Expedicao_Completa_por_NF");
 }
+
+// ─── Exportador Dinâmico para Dados de Planilhas (Digital) ───
+export function exportPopDataToExcel(
+  pop: { codigo: string; nome: string },
+  periodicidade: { label: string; key: string; periodos: string[]; areas: { area: string }[] },
+  mes: number,
+  ano: number,
+  rows: any[]
+) {
+  const wb = XLSX.utils.book_new();
+  const MESES = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+
+  const header = [
+    ["", `REGISTRO DIGITAL — ${pop.codigo} - ${pop.nome}`],
+    ["", `Periodicidade: ${periodicidade.label}`, "", "", `Mês/Ano: ${MESES[mes - 1]}/${ano}`],
+    [""],
+    ["Período", ...periodicidade.areas.map(a => a.area), "Responsável", "Função"]
+  ];
+
+  const dataRows = periodicidade.periodos.map(p => {
+    const cells = periodicidade.areas.map(a => {
+      const item = rows.find(r => r.periodo_label === p && r.area === a.area);
+      if (!item || item.conforme === null) return "-";
+      return item.conforme ? "C" : "NC";
+    });
+    const firstRowItem = rows.find(r => r.periodo_label === p);
+    const resp = firstRowItem?.responsavel || "";
+    const func = firstRowItem?.funcao || "";
+    return [p, ...cells, resp, func];
+  });
+
+  const footer = [
+    [""],
+    ["", "Este registro foi gerado digitalmente pelo sistema Feed_BPF."],
+    ["", "Data da Exportação:", new Date().toLocaleDateString("pt-BR")],
+  ];
+
+  const allData = [...header, ...dataRows, ...footer];
+  
+  // Calculate column widths
+  const colWidths = [15, ...periodicidade.areas.map(() => 15), 20, 20];
+  
+  const ws = createSheet(allData, colWidths, [
+    { s: { r: 0, c: 1 }, e: { r: 0, c: periodicidade.areas.length + 2 } }
+  ]);
+
+  XLSX.utils.book_append_sheet(wb, ws, "Registro");
+  downloadWorkbook(wb, `${pop.codigo}_${periodicidade.key}_${MESES[mes - 1]}_${ano}`);
+}
+
