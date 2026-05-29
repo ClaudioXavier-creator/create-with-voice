@@ -1071,7 +1071,19 @@ export default function HigieneSanitizacao() {
                       <TableCell>
                         {r.status === "concluido" ? <Badge className="bg-primary/20 text-primary">Conforme</Badge> : <Badge variant="destructive">NC</Badge>}
                       </TableCell>
+                      <TableCell>
+                        {r.status_verificacao === 'aprovado' ? (
+                          <Badge variant="outline" className="text-green-600 border-green-600 gap-1 text-[10px]">
+                            <CheckCircle2 className="w-3 h-3" /> {r.verificado_por}
+                          </Badge>
+                        ) : (
+                          <Button size="sm" variant="ghost" className="h-7 text-[10px] gap-1 px-2" onClick={() => handleVerificar('execucao_pops', r.id)}>
+                            <ShieldCheck className="w-3 h-3 text-primary" /> Verificar
+                          </Button>
+                        )}
+                      </TableCell>
                       <TableCell className="max-w-[250px] text-xs whitespace-pre-line truncate">{(r.observacoes || "").slice(0, 120)}{(r.observacoes?.length || 0) > 120 ? "…" : ""}</TableCell>
+
                     </TableRow>
                   ))}
                 </TableBody>
