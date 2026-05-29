@@ -155,39 +155,4 @@ export const NAV_ENTRIES: NavEntry[] = [
   // --- OUTROS ---
   { path: "/modo-tablet", label: "Factory / Modo Tablet", icon: Tablet },
 
-  // --- PORTAL DE GESTÃO (RESTRITO AO ADMIN) ---
-  {
-    label: "Portal de Gestão & Vendas",
-    icon: ShieldAlert,
-    items: [
-      { 
-        path: "/admin", 
-        label: "Painel Administrativo Total", 
-        icon: ShieldCheck, 
-        requiredEmail: [...SUPER_ADMIN_EMAILS] 
-      },
-      { 
-        path: "/marketing", 
-        label: "Marketing Hub", 
-        icon: Megaphone,
-        requiredEmail: [...SUPER_ADMIN_EMAILS]
-      },
-      { 
-        path: "/whatsapp", 
-        label: "Configurar WhatsApp", 
-        icon: MessageSquare,
-        requiredEmail: [...SUPER_ADMIN_EMAILS]
-      },
-      { 
-        path: "/licencas-programa", 
-        label: "Licenças do Programa", 
-        icon: Key, 
-        requiredEmail: [...SUPER_ADMIN_EMAILS] 
-      },
-      { path: "/rotulos/dashboard", label: "Nutri_Agro Labels", icon: Tag, logo: logoRotulos, requiredEmail: [...SUPER_ADMIN_EMAILS] },
-      { path: "https://soil-to-client.lovable.app", label: "Agro RC CRM", icon: BarChart3, logo: logoAgrorc, external: true, requiredEmail: [...SUPER_ADMIN_EMAILS] },
-      { path: "https://regional-fixer-charm.lovable.app", label: "AgroGestão CRM", icon: Building2, logo: logoAgrogestao, external: true, requiredEmail: [...SUPER_ADMIN_EMAILS] },
-      { path: "https://friendly-flame-igniter.lovable.app", label: "Audits_BPF", icon: ShieldCheck, logo: logoAuditsBpf, external: true, requiredEmail: [...SUPER_ADMIN_EMAILS] },
-    ],
-  },
 ];
