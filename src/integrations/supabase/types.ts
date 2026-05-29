@@ -225,6 +225,7 @@ export type Database = {
           created_at: string
           data_analise: string | null
           data_resultado: string | null
+          data_verificacao: string | null
           empresa_id: string | null
           id: string
           laboratorio: string | null
@@ -238,16 +239,19 @@ export type Database = {
           produto: string
           resultado: string | null
           status: string | null
+          status_verificacao: string | null
           tipo_analise: string
           unidade: string | null
           updated_at: string
           user_id: string
+          verificado_por: string | null
         }
         Insert: {
           conforme?: boolean | null
           created_at?: string
           data_analise?: string | null
           data_resultado?: string | null
+          data_verificacao?: string | null
           empresa_id?: string | null
           id?: string
           laboratorio?: string | null
@@ -261,16 +265,19 @@ export type Database = {
           produto: string
           resultado?: string | null
           status?: string | null
+          status_verificacao?: string | null
           tipo_analise?: string
           unidade?: string | null
           updated_at?: string
           user_id: string
+          verificado_por?: string | null
         }
         Update: {
           conforme?: boolean | null
           created_at?: string
           data_analise?: string | null
           data_resultado?: string | null
+          data_verificacao?: string | null
           empresa_id?: string | null
           id?: string
           laboratorio?: string | null
@@ -284,10 +291,12 @@ export type Database = {
           produto?: string
           resultado?: string | null
           status?: string | null
+          status_verificacao?: string | null
           tipo_analise?: string
           unidade?: string | null
           updated_at?: string
           user_id?: string
+          verificado_por?: string | null
         }
         Relationships: [
           {
@@ -750,34 +759,43 @@ export type Database = {
           acao: string | null
           created_at: string
           data: string
+          data_verificacao: string | null
           empresa_id: string | null
           id: string
           local: string
           responsavel: string | null
+          status_verificacao: string | null
           tipo_praga: string
           user_id: string
+          verificado_por: string | null
         }
         Insert: {
           acao?: string | null
           created_at?: string
           data?: string
+          data_verificacao?: string | null
           empresa_id?: string | null
           id?: string
           local: string
           responsavel?: string | null
+          status_verificacao?: string | null
           tipo_praga: string
           user_id: string
+          verificado_por?: string | null
         }
         Update: {
           acao?: string | null
           created_at?: string
           data?: string
+          data_verificacao?: string | null
           empresa_id?: string | null
           id?: string
           local?: string
           responsavel?: string | null
+          status_verificacao?: string | null
           tipo_praga?: string
           user_id?: string
+          verificado_por?: string | null
         }
         Relationships: [
           {
@@ -1899,6 +1917,7 @@ export type Database = {
           codigo_pop: string
           created_at: string
           data_execucao: string
+          data_verificacao: string | null
           documento_id: string | null
           empresa_id: string | null
           executor: string
@@ -1907,13 +1926,16 @@ export type Database = {
           observacoes: string | null
           setor: string | null
           status: string | null
+          status_verificacao: string | null
           user_id: string
+          verificado_por: string | null
         }
         Insert: {
           checklist_auditoria_ref?: string | null
           codigo_pop: string
           created_at?: string
           data_execucao?: string
+          data_verificacao?: string | null
           documento_id?: string | null
           empresa_id?: string | null
           executor: string
@@ -1922,13 +1944,16 @@ export type Database = {
           observacoes?: string | null
           setor?: string | null
           status?: string | null
+          status_verificacao?: string | null
           user_id: string
+          verificado_por?: string | null
         }
         Update: {
           checklist_auditoria_ref?: string | null
           codigo_pop?: string
           created_at?: string
           data_execucao?: string
+          data_verificacao?: string | null
           documento_id?: string | null
           empresa_id?: string | null
           executor?: string
@@ -1937,7 +1962,9 @@ export type Database = {
           observacoes?: string | null
           setor?: string | null
           status?: string | null
+          status_verificacao?: string | null
           user_id?: string
+          verificado_por?: string | null
         }
         Relationships: [
           {
@@ -2402,6 +2429,7 @@ export type Database = {
           contato_qualidade: string | null
           contato_qualidade_tel_email: string | null
           created_at: string
+          data_verificacao: string | null
           doc_alvara_funcionamento: boolean | null
           doc_certificado_analise: boolean | null
           doc_certificado_registro_mapa: boolean | null
@@ -2424,10 +2452,12 @@ export type Database = {
           sipeagro_data_verificacao: string | null
           sipeagro_verificado: boolean | null
           status_qualificacao: string | null
+          status_verificacao: string | null
           tipo_produto: string | null
           ultima_avaliacao: string | null
           updated_at: string
           user_id: string
+          verificado_por: string | null
         }
         Insert: {
           bairro?: string | null
@@ -2440,6 +2470,7 @@ export type Database = {
           contato_qualidade?: string | null
           contato_qualidade_tel_email?: string | null
           created_at?: string
+          data_verificacao?: string | null
           doc_alvara_funcionamento?: boolean | null
           doc_certificado_analise?: boolean | null
           doc_certificado_registro_mapa?: boolean | null
@@ -2462,10 +2493,12 @@ export type Database = {
           sipeagro_data_verificacao?: string | null
           sipeagro_verificado?: boolean | null
           status_qualificacao?: string | null
+          status_verificacao?: string | null
           tipo_produto?: string | null
           ultima_avaliacao?: string | null
           updated_at?: string
           user_id: string
+          verificado_por?: string | null
         }
         Update: {
           bairro?: string | null
@@ -2478,6 +2511,7 @@ export type Database = {
           contato_qualidade?: string | null
           contato_qualidade_tel_email?: string | null
           created_at?: string
+          data_verificacao?: string | null
           doc_alvara_funcionamento?: boolean | null
           doc_certificado_analise?: boolean | null
           doc_certificado_registro_mapa?: boolean | null
@@ -2500,10 +2534,12 @@ export type Database = {
           sipeagro_data_verificacao?: string | null
           sipeagro_verificado?: boolean | null
           status_qualificacao?: string | null
+          status_verificacao?: string | null
           tipo_produto?: string | null
           ultima_avaliacao?: string | null
           updated_at?: string
           user_id?: string
+          verificado_por?: string | null
         }
         Relationships: [
           {
@@ -3186,6 +3222,7 @@ export type Database = {
           conformidade: boolean | null
           created_at: string
           data: string
+          data_verificacao: string | null
           empresa_id: string | null
           id: string
           limite_critico: string | null
@@ -3193,15 +3230,18 @@ export type Database = {
           parametro: string
           ponto_critico: string
           responsavel: string
+          status_verificacao: string | null
           updated_at: string
           user_id: string
           valor_encontrado: string
+          verificado_por: string | null
         }
         Insert: {
           acao_corretiva?: string | null
           conformidade?: boolean | null
           created_at?: string
           data?: string
+          data_verificacao?: string | null
           empresa_id?: string | null
           id?: string
           limite_critico?: string | null
@@ -3209,15 +3249,18 @@ export type Database = {
           parametro: string
           ponto_critico: string
           responsavel: string
+          status_verificacao?: string | null
           updated_at?: string
           user_id: string
           valor_encontrado: string
+          verificado_por?: string | null
         }
         Update: {
           acao_corretiva?: string | null
           conformidade?: boolean | null
           created_at?: string
           data?: string
+          data_verificacao?: string | null
           empresa_id?: string | null
           id?: string
           limite_critico?: string | null
@@ -3225,9 +3268,11 @@ export type Database = {
           parametro?: string
           ponto_critico?: string
           responsavel?: string
+          status_verificacao?: string | null
           updated_at?: string
           user_id?: string
           valor_encontrado?: string
+          verificado_por?: string | null
         }
         Relationships: [
           {
@@ -3537,42 +3582,51 @@ export type Database = {
           conformidade: boolean | null
           created_at: string
           data: string
+          data_verificacao: string | null
           elemento_controle: string
           empresa_id: string | null
           id: string
           item_avaliado: string
           monitor: string
           resultado: string | null
+          status_verificacao: string | null
           updated_at: string
           user_id: string
+          verificado_por: string | null
         }
         Insert: {
           acao_corretiva?: string | null
           conformidade?: boolean | null
           created_at?: string
           data?: string
+          data_verificacao?: string | null
           elemento_controle: string
           empresa_id?: string | null
           id?: string
           item_avaliado: string
           monitor: string
           resultado?: string | null
+          status_verificacao?: string | null
           updated_at?: string
           user_id: string
+          verificado_por?: string | null
         }
         Update: {
           acao_corretiva?: string | null
           conformidade?: boolean | null
           created_at?: string
           data?: string
+          data_verificacao?: string | null
           elemento_controle?: string
           empresa_id?: string | null
           id?: string
           item_avaliado?: string
           monitor?: string
           resultado?: string | null
+          status_verificacao?: string | null
           updated_at?: string
           user_id?: string
+          verificado_por?: string | null
         }
         Relationships: [
           {
@@ -4089,6 +4143,7 @@ export type Database = {
           contraprova_validade: string | null
           created_at: string
           data: string
+          data_verificacao: string | null
           empresa_id: string | null
           fornecedor: string
           id: string
@@ -4104,12 +4159,14 @@ export type Database = {
           registro_mapa_produto: string | null
           saldo: number | null
           status: string | null
+          status_verificacao: string | null
           temperatura: string | null
           temperatura_veiculo: string | null
           umidade: string | null
           unidade: string | null
           user_id: string
           validade: string | null
+          verificado_por: string | null
         }
         Insert: {
           aprovado?: boolean | null
@@ -4122,6 +4179,7 @@ export type Database = {
           contraprova_validade?: string | null
           created_at?: string
           data?: string
+          data_verificacao?: string | null
           empresa_id?: string | null
           fornecedor: string
           id?: string
@@ -4137,12 +4195,14 @@ export type Database = {
           registro_mapa_produto?: string | null
           saldo?: number | null
           status?: string | null
+          status_verificacao?: string | null
           temperatura?: string | null
           temperatura_veiculo?: string | null
           umidade?: string | null
           unidade?: string | null
           user_id: string
           validade?: string | null
+          verificado_por?: string | null
         }
         Update: {
           aprovado?: boolean | null
@@ -4155,6 +4215,7 @@ export type Database = {
           contraprova_validade?: string | null
           created_at?: string
           data?: string
+          data_verificacao?: string | null
           empresa_id?: string | null
           fornecedor?: string
           id?: string
@@ -4170,12 +4231,14 @@ export type Database = {
           registro_mapa_produto?: string | null
           saldo?: number | null
           status?: string | null
+          status_verificacao?: string | null
           temperatura?: string | null
           temperatura_veiculo?: string | null
           umidade?: string | null
           unidade?: string | null
           user_id?: string
           validade?: string | null
+          verificado_por?: string | null
         }
         Relationships: [
           {
@@ -4333,42 +4396,51 @@ export type Database = {
           created_at: string
           cronograma_id: string | null
           data_execucao: string
+          data_verificacao: string | null
           empresa_id: string | null
           executor: string
           hora_fim: string | null
           hora_inicio: string | null
           id: string
           observacoes: string | null
+          status_verificacao: string | null
           tipo_limpeza: string | null
           user_id: string
+          verificado_por: string | null
         }
         Insert: {
           conforme?: boolean | null
           created_at?: string
           cronograma_id?: string | null
           data_execucao?: string
+          data_verificacao?: string | null
           empresa_id?: string | null
           executor: string
           hora_fim?: string | null
           hora_inicio?: string | null
           id?: string
           observacoes?: string | null
+          status_verificacao?: string | null
           tipo_limpeza?: string | null
           user_id: string
+          verificado_por?: string | null
         }
         Update: {
           conforme?: boolean | null
           created_at?: string
           cronograma_id?: string | null
           data_execucao?: string
+          data_verificacao?: string | null
           empresa_id?: string | null
           executor?: string
           hora_fim?: string | null
           hora_inicio?: string | null
           id?: string
           observacoes?: string | null
+          status_verificacao?: string | null
           tipo_limpeza?: string | null
           user_id?: string
+          verificado_por?: string | null
         }
         Relationships: [
           {

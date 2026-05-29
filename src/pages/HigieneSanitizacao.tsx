@@ -452,7 +452,30 @@ export default function HigieneSanitizacao() {
     },
   });
 
+  const { data: historicoPreOp = [] } = useQuery({
+    queryKey: ["historico_preop"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("execucao_pops").select("*")
+        .eq("codigo_pop", "POP-02/03-PREOP").order("data_execucao", { ascending: false }).limit(50);
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  // Histórico de Silos
+  const { data: historicoSilos = [] } = useQuery({
+    queryKey: ["historico_silos"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("execucao_pops").select("*")
+        .eq("codigo_pop", "POP-03-SILOS").order("data_execucao", { ascending: false }).limit(50);
+      if (error) throw error;
+      return data;
+    },
+  });
+
   const [mesAno, setMesAno] = useState(() => {
+
+
     const d = new Date();
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
   });
@@ -501,8 +524,20 @@ export default function HigieneSanitizacao() {
   const addRegistro = useMutation({
     mutationFn: async () => {
       const payload = { ...regForm, user_id: user!.id, tipo_limpeza: (regForm as any).tipo_limpeza || "umida" };
-      const { error } = await supabase.from("registros_limpeza").insert(payload as any);
+      const { data, error } = await supabase.from("registros_limpeza").insert(payload as any).select().single();
       if (error) throw error;
+      
+      // Automatic NC Flow
+      if (!regForm.conforme) {
+        await supabase.from("nao_conformidades").insert({
+          user_id: user!.id,
+          empresa_id: empresaAtiva?.id || null,
+          data: regForm.data_execucao,
+          setor: "Higiene / Sanitização",
+          descricao: `NC identificada no registro de limpeza: ${regForm.observacoes || "Sem descrição"}`,
+          status: "pendente"
+        });
+      }
     },
     onSuccess: () => { qc.invalidateQueries({ queryKey: ["registros_limpeza"] }); toast.success("Registro salvo"); setOpenRegistro(false); },
     onError: () => toast.error("Erro ao registrar"),
@@ -577,7 +612,7 @@ export default function HigieneSanitizacao() {
       `[ASSINATURA DIGITAL: ${libLinhaResp} — ${new Date().toLocaleString("pt-BR")} — MP 2.200-2/2001]`,
     ].filter(Boolean).join("\n");
 
-    const { error } = await supabase.from("execucao_pops").insert({
+    const { data: record, error } = await supabase.from("execucao_pops").insert({
       user_id: user.id, empresa_id: empresaAtiva?.id || null,
       codigo_pop: "POP-02-LIB-LINHA",
       nome_pop: "Checklist Liberação de Linha",
@@ -586,7 +621,18 @@ export default function HigieneSanitizacao() {
       status: todosOk ? "concluido" : "nao_conforme",
       observacoes: obs,
       data_execucao: libLinhaData,
-    });
+    }).select().single();
+
+    if (!error && !todosOk) {
+      await supabase.from("nao_conformidades").insert({
+        user_id: user.id,
+        empresa_id: empresaAtiva?.id || null,
+        data: libLinhaData,
+        setor: "Produção / Liberação de Linha",
+        descricao: `NC identificada na Liberação de Linha: ${ncs.join("; ")}`,
+        status: "pendente"
+      });
+    }
     if (error) toast.error("Erro ao salvar: " + error.message);
     else {
       toast.success("Checklist de Liberação de Linha salvo!");
@@ -601,7 +647,28 @@ export default function HigieneSanitizacao() {
     setSavingLibLinha(false);
   };
 
+  const handleVerificar = async (tabela: string, id: string) => {
+    if (!user) return;
+    const { data: profile } = await supabase.from('profiles').select('nome').eq('user_id', user.id).single();
+    const verificador = profile?.nome || user.email;
+    
+    const { error } = await (supabase.from(tabela as any) as any).update({
+      verificado_por: verificador,
+      data_verificacao: new Date().toISOString(),
+      status_verificacao: 'aprovado'
+    }).eq('id', id);
+
+
+
+    if (error) toast.error("Erro ao verificar");
+    else {
+      toast.success("Registro verificado com sucesso!");
+      qc.invalidateQueries();
+    }
+  };
+
   // ── Save Monitoramento de Superfícies ──
+
   const salvarSup = async () => {
     if (!user) return;
     setSavingSup(true);
@@ -620,7 +687,7 @@ export default function HigieneSanitizacao() {
       `[ASSINATURA DIGITAL: ${supResp} — ${new Date().toLocaleString("pt-BR")} — MP 2.200-2/2001]`,
     ].filter(Boolean).join("\n");
 
-    const { error } = await supabase.from("execucao_pops").insert({
+    const { data: record, error } = await supabase.from("execucao_pops").insert({
       user_id: user.id, empresa_id: empresaAtiva?.id || null,
       codigo_pop: "POP-02-SUPERFICIE",
       nome_pop: "Monitoramento de Limpeza de Superfícies",
@@ -629,7 +696,18 @@ export default function HigieneSanitizacao() {
       status: todosOk ? "concluido" : "nao_conforme",
       observacoes: obs,
       data_execucao: supData,
-    });
+    }).select().single();
+
+    if (!error && !todosOk) {
+      await supabase.from("nao_conformidades").insert({
+        user_id: user.id,
+        empresa_id: empresaAtiva?.id || null,
+        data: supData,
+        setor: "Higiene / Superfícies",
+        descricao: `NC identificada no Monitoramento de Superfícies: ${ncs.join("; ")}`,
+        status: "pendente"
+      });
+    }
     if (error) toast.error("Erro ao salvar: " + error.message);
     else {
       toast.success("Monitoramento de superfícies salvo!");
@@ -756,7 +834,7 @@ export default function HigieneSanitizacao() {
                       ncs.length > 0 ? `NCs: ${ncs.join("; ")}` : "Todos conformes",
                       `[ASSINATURA DIGITAL: ${preOpResponsavel} — ${new Date().toLocaleString("pt-BR")} — MP 2.200-2/2001]`,
                     ].join("\n");
-                    const { error } = await supabase.from("execucao_pops").insert({
+                    const { data: record, error } = await supabase.from("execucao_pops").insert({
                       user_id: user.id, empresa_id: empresaAtiva?.id || null,
                       codigo_pop: "POP-02/03-PREOP",
                       nome_pop: "Checklist Pré-Operacional Limpeza",
@@ -765,7 +843,18 @@ export default function HigieneSanitizacao() {
                       status: todosOk ? "concluido" : "nao_conforme",
                       observacoes: obs,
                       data_execucao: preOpData,
-                    });
+                    }).select().single();
+
+                    if (!error && !todosOk) {
+                      await supabase.from("nao_conformidades").insert({
+                        user_id: user.id,
+                        empresa_id: empresaAtiva?.id || null,
+                        data: preOpData,
+                        setor: "Higiene / Pré-Operacional",
+                        descricao: `NC identificada no Checklist Pré-Operacional: ${ncs.join("; ")}`,
+                        status: "pendente"
+                      });
+                    }
                     if (error) toast.error("Erro ao salvar: " + error.message);
                     else {
                       toast.success("Checklist pré-operacional salvo!");
@@ -781,7 +870,45 @@ export default function HigieneSanitizacao() {
               </div>
             );
           })()}
+
+          {/* Histórico Pré-Op */}
+          {historicoPreOp.length > 0 && (
+            <Card>
+              <CardHeader><CardTitle className="text-sm">Histórico Pré-Operacional</CardTitle></CardHeader>
+              <Table>
+                <TableHeader><TableRow>
+                  <TableHead>Data</TableHead><TableHead>Responsável</TableHead><TableHead>Turno</TableHead>
+                  <TableHead>Status</TableHead><TableHead>Verificação</TableHead><TableHead className="max-w-[250px]">Detalhes</TableHead>
+                </TableRow></TableHeader>
+                <TableBody>
+                  {historicoPreOp.map((r: any) => (
+                    <TableRow key={r.id}>
+                      <TableCell className="whitespace-nowrap">{r.data_execucao}</TableCell>
+                      <TableCell>{r.executor}</TableCell>
+                      <TableCell>{r.setor}</TableCell>
+                      <TableCell>
+                        {r.status === "concluido" ? <Badge className="bg-primary/20 text-primary">Conforme</Badge> : <Badge variant="destructive">NC</Badge>}
+                      </TableCell>
+                      <TableCell>
+                        {r.status_verificacao === 'aprovado' ? (
+                          <Badge variant="outline" className="text-green-600 border-green-600 gap-1 text-[10px]">
+                            <CheckCircle2 className="w-3 h-3" /> {r.verificado_por}
+                          </Badge>
+                        ) : (
+                          <Button size="sm" variant="ghost" className="h-7 text-[10px] gap-1 px-2" onClick={() => handleVerificar('execucao_pops', r.id)}>
+                            <ShieldCheck className="w-3 h-3 text-primary" /> Verificar
+                          </Button>
+                        )}
+                      </TableCell>
+                      <TableCell className="max-w-[250px] text-xs whitespace-pre-line truncate">{(r.observacoes || "").slice(0, 120)}{(r.observacoes?.length || 0) > 120 ? "…" : ""}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </Card>
+          )}
         </TabsContent>
+
 
         {/* ── LIBERAÇÃO DE LINHA (POP-02 / IN 04/2007 | IN 15/2009) ── */}
         <TabsContent value="liberacao" className="space-y-4">
@@ -865,8 +992,9 @@ export default function HigieneSanitizacao() {
               <Table>
                 <TableHeader><TableRow>
                   <TableHead>Data</TableHead><TableHead>Executor</TableHead><TableHead>Linha/Setor</TableHead>
-                  <TableHead>Status</TableHead><TableHead className="max-w-[250px]">Detalhes</TableHead>
+                  <TableHead>Status</TableHead><TableHead>Verificação</TableHead><TableHead className="max-w-[250px]">Detalhes</TableHead>
                 </TableRow></TableHeader>
+
                 <TableBody>
                   {historicoLibLinha.map((r: any) => (
                     <TableRow key={r.id}>
@@ -876,7 +1004,19 @@ export default function HigieneSanitizacao() {
                       <TableCell>
                         {r.status === "concluido" ? <Badge className="bg-primary/20 text-primary">Liberada</Badge> : <Badge variant="destructive">NC</Badge>}
                       </TableCell>
+                      <TableCell>
+                        {r.status_verificacao === 'aprovado' ? (
+                          <Badge variant="outline" className="text-green-600 border-green-600 gap-1 text-[10px]">
+                            <CheckCircle2 className="w-3 h-3" /> {r.verificado_por}
+                          </Badge>
+                        ) : (
+                          <Button size="sm" variant="ghost" className="h-7 text-[10px] gap-1 px-2" onClick={() => handleVerificar('execucao_pops', r.id)}>
+                            <ShieldCheck className="w-3 h-3 text-primary" /> Verificar
+                          </Button>
+                        )}
+                      </TableCell>
                       <TableCell className="max-w-[250px] text-xs whitespace-pre-line truncate">{(r.observacoes || "").slice(0, 120)}{(r.observacoes?.length || 0) > 120 ? "…" : ""}</TableCell>
+
                     </TableRow>
                   ))}
                 </TableBody>
@@ -980,8 +1120,9 @@ export default function HigieneSanitizacao() {
               <Table>
                 <TableHeader><TableRow>
                   <TableHead>Data</TableHead><TableHead>Executor</TableHead><TableHead>Setor</TableHead>
-                  <TableHead>Status</TableHead><TableHead className="max-w-[250px]">Detalhes</TableHead>
+                  <TableHead>Status</TableHead><TableHead>Verificação</TableHead><TableHead className="max-w-[250px]">Detalhes</TableHead>
                 </TableRow></TableHeader>
+
                 <TableBody>
                   {historicoSup.map((r: any) => (
                     <TableRow key={r.id}>
@@ -991,7 +1132,19 @@ export default function HigieneSanitizacao() {
                       <TableCell>
                         {r.status === "concluido" ? <Badge className="bg-primary/20 text-primary">Conforme</Badge> : <Badge variant="destructive">NC</Badge>}
                       </TableCell>
+                      <TableCell>
+                        {r.status_verificacao === 'aprovado' ? (
+                          <Badge variant="outline" className="text-green-600 border-green-600 gap-1 text-[10px]">
+                            <CheckCircle2 className="w-3 h-3" /> {r.verificado_por}
+                          </Badge>
+                        ) : (
+                          <Button size="sm" variant="ghost" className="h-7 text-[10px] gap-1 px-2" onClick={() => handleVerificar('execucao_pops', r.id)}>
+                            <ShieldCheck className="w-3 h-3 text-primary" /> Verificar
+                          </Button>
+                        )}
+                      </TableCell>
                       <TableCell className="max-w-[250px] text-xs whitespace-pre-line truncate">{(r.observacoes || "").slice(0, 120)}{(r.observacoes?.length || 0) > 120 ? "…" : ""}</TableCell>
+
                     </TableRow>
                   ))}
                 </TableBody>
@@ -1096,7 +1249,7 @@ export default function HigieneSanitizacao() {
                       ncs.length > 0 ? `NCs: ${ncs.join("; ")}` : "Todos conformes ✅",
                       silosObs ? `Obs: ${silosObs}` : "",
                     ].filter(Boolean).join("\n");
-                    const { error } = await supabase.from("execucao_pops").insert({
+                    const { data: record, error } = await supabase.from("execucao_pops").insert({
                       user_id: user.id, empresa_id: empresaAtiva?.id || null,
                       codigo_pop: "POP-03-SILOS",
                       nome_pop: "Limpeza de Silos & Transportadores",
@@ -1105,7 +1258,18 @@ export default function HigieneSanitizacao() {
                       status: todosOk ? "concluido" : "nao_conforme",
                       observacoes: obs,
                       data_execucao: silosData,
-                    });
+                    }).select().single();
+
+                    if (!error && !todosOk) {
+                      await supabase.from("nao_conformidades").insert({
+                        user_id: user.id,
+                        empresa_id: empresaAtiva?.id || null,
+                        data: silosData,
+                        setor: `Higiene / ${silosEquipamento}`,
+                        descricao: `NC identificada na Limpeza de Silos: ${ncs.join("; ")}`,
+                        status: "pendente"
+                      });
+                    }
                     if (error) toast.error("Erro ao salvar: " + error.message);
                     else {
                       toast.success("Checklist de silos & transportadores salvo!");
@@ -1123,7 +1287,45 @@ export default function HigieneSanitizacao() {
               </div>
             );
           })()}
+
+          {/* Histórico Silos */}
+          {historicoSilos.length > 0 && (
+            <Card>
+              <CardHeader><CardTitle className="text-sm">Histórico de Limpeza de Silos</CardTitle></CardHeader>
+              <Table>
+                <TableHeader><TableRow>
+                  <TableHead>Data</TableHead><TableHead>Executor</TableHead><TableHead>Equipamento</TableHead>
+                  <TableHead>Status</TableHead><TableHead>Verificação</TableHead><TableHead className="max-w-[250px]">Detalhes</TableHead>
+                </TableRow></TableHeader>
+                <TableBody>
+                  {historicoSilos.map((r: any) => (
+                    <TableRow key={r.id}>
+                      <TableCell className="whitespace-nowrap">{r.data_execucao}</TableCell>
+                      <TableCell>{r.executor}</TableCell>
+                      <TableCell>{r.setor}</TableCell>
+                      <TableCell>
+                        {r.status === "concluido" ? <Badge className="bg-primary/20 text-primary">Conforme</Badge> : <Badge variant="destructive">NC</Badge>}
+                      </TableCell>
+                      <TableCell>
+                        {r.status_verificacao === 'aprovado' ? (
+                          <Badge variant="outline" className="text-green-600 border-green-600 gap-1 text-[10px]">
+                            <CheckCircle2 className="w-3 h-3" /> {r.verificado_por}
+                          </Badge>
+                        ) : (
+                          <Button size="sm" variant="ghost" className="h-7 text-[10px] gap-1 px-2" onClick={() => handleVerificar('execucao_pops', r.id)}>
+                            <ShieldCheck className="w-3 h-3 text-primary" /> Verificar
+                          </Button>
+                        )}
+                      </TableCell>
+                      <TableCell className="max-w-[250px] text-xs whitespace-pre-line truncate">{(r.observacoes || "").slice(0, 120)}{(r.observacoes?.length || 0) > 120 ? "…" : ""}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </Card>
+          )}
         </TabsContent>
+
 
 
         {/* ── CRONOGRAMAS ── */}
@@ -1312,8 +1514,9 @@ export default function HigieneSanitizacao() {
               <Table>
                 <TableHeader><TableRow>
                   <TableHead>Data</TableHead><TableHead>Executor</TableHead><TableHead>Tipo Limpeza</TableHead><TableHead>Horário</TableHead>
-                  <TableHead>Conforme</TableHead><TableHead>Observações</TableHead>
+                  <TableHead>Conforme</TableHead><TableHead>Verificação</TableHead><TableHead>Observações</TableHead>
                 </TableRow></TableHeader>
+
                 <TableBody>
                   {registros.map((r: any) => (
                     <TableRow key={r.id}>
@@ -1326,8 +1529,20 @@ export default function HigieneSanitizacao() {
                       </TableCell>
                       <TableCell>{r.hora_inicio}{r.hora_fim ? ` — ${r.hora_fim}` : ""}</TableCell>
                       <TableCell>{r.conforme ? <CheckCircle2 className="w-4 h-4 text-green-600" /> : <Badge variant="destructive">NC</Badge>}</TableCell>
+                      <TableCell>
+                        {r.status_verificacao === 'aprovado' ? (
+                          <Badge variant="outline" className="text-green-600 border-green-600 gap-1 text-[10px]">
+                            <CheckCircle2 className="w-3 h-3" /> {r.verificado_por}
+                          </Badge>
+                        ) : (
+                          <Button size="sm" variant="ghost" className="h-7 text-[10px] gap-1 px-2" onClick={() => handleVerificar('registros_limpeza', r.id)}>
+                            <ShieldCheck className="w-3 h-3 text-primary" /> Verificar
+                          </Button>
+                        )}
+                      </TableCell>
                       <TableCell className="max-w-[200px] truncate">{r.observacoes}</TableCell>
                     </TableRow>
+
                   ))}
                 </TableBody>
               </Table>

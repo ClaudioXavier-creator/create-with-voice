@@ -4,7 +4,7 @@ import { useEmpresa } from "@/hooks/useEmpresa";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Bug, Plus, Trash2, Flame, AlertTriangle } from "lucide-react";
+import { Bug, Plus, Trash2, Flame, AlertTriangle, ShieldCheck, CheckCircle2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
@@ -63,6 +63,24 @@ export default function Pragas() {
   const registrosPragas = pragas.filter((p: any) => p.tipo_praga !== "Expurgo");
   const registrosExpurgo = pragas.filter((p: any) => p.tipo_praga === "Expurgo");
 
+  const handleVerificar = async (id: string) => {
+    if (!user) return;
+    const { data: profile } = await supabase.from('profiles').select('nome').eq('user_id', user.id).single();
+    const verificador = profile?.nome || user.email;
+    
+    const { error } = await (supabase.from("controle_pragas" as any) as any).update({
+      verificado_por: verificador,
+      data_verificacao: new Date().toISOString(),
+      status_verificacao: 'aprovado'
+    }).eq('id', id);
+
+    if (error) toast.error("Erro ao verificar");
+    else {
+      toast.success("Registro verificado!");
+      qc.invalidateQueries({ queryKey: ["controle_pragas"] });
+    }
+  };
+
   // --- Mutations ---
   const addPraga = useMutation({
     mutationFn: async () => {
@@ -80,6 +98,11 @@ export default function Pragas() {
 
   const addExpurgo = useMutation({
     mutationFn: async () => {
+      if (!expurgoForm.resultado_conforme && !expurgoForm.observacoes) {
+        toast.error("Ação corretiva (Observações) é obrigatória para expurgos não conformes!");
+        throw new Error("Ação corretiva obrigatória");
+      }
+
       // Salva como tipo_praga=Expurgo, dados extras no campo acao (JSON stringified)
       const extras = {
         tipo_produto: expurgoForm.tipo_produto,
@@ -97,22 +120,37 @@ export default function Pragas() {
         epi_adequado: expurgoForm.epi_adequado,
         resultado_conforme: expurgoForm.resultado_conforme,
       };
-      const { error } = await supabase.from("controle_pragas").insert({
+      const { data: record, error } = await supabase.from("controle_pragas").insert({
         local: expurgoForm.local,
         tipo_praga: "Expurgo",
         acao: JSON.stringify(extras),
         responsavel: expurgoForm.responsavel_tecnico,
         data: expurgoForm.data_inicio,
         user_id: user!.id,
-      });
+      }).select().single();
+
       if (error) throw error;
+
+      // Automatic NC Flow
+      if (!expurgoForm.resultado_conforme) {
+        await supabase.from("nao_conformidades").insert({
+          user_id: user!.id,
+          empresa_id: empresaAtiva?.id || null,
+          data: expurgoForm.data_inicio,
+          setor: "Manejo de Pragas / Expurgo",
+          descricao: `NC identificada no expurgo (${expurgoForm.local}): ${expurgoForm.observacoes}`,
+          status: "pendente"
+        } as any);
+      }
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["controle_pragas"] });
       toast.success("Registro de expurgo salvo");
       setOpenExpurgo(false);
     },
-    onError: () => toast.error("Erro ao salvar expurgo"),
+    onError: (err: any) => {
+      if (err.message !== "Ação corretiva obrigatória") toast.error("Erro ao salvar expurgo");
+    },
   });
 
   const deletePraga = useMutation({
@@ -186,9 +224,11 @@ export default function Pragas() {
                     <TableHead>Tipo</TableHead>
                     <TableHead>Ação</TableHead>
                     <TableHead>Responsável</TableHead>
+                    <TableHead>Verificação</TableHead>
                     <TableHead></TableHead>
                   </TableRow>
                 </TableHeader>
+
                 <TableBody>
                   {registrosPragas.length === 0 && (
                     <TableRow><TableCell colSpan={6} className="text-center text-muted-foreground">Nenhum registro</TableCell></TableRow>
@@ -200,9 +240,21 @@ export default function Pragas() {
                       <TableCell><Badge variant="outline">{r.tipo_praga}</Badge></TableCell>
                       <TableCell>{r.acao}</TableCell>
                       <TableCell>{r.responsavel}</TableCell>
+                      <TableCell>
+                        {r.status_verificacao === 'aprovado' ? (
+                          <Badge variant="outline" className="text-green-600 border-green-600 gap-1 text-[10px]">
+                            <CheckCircle2 className="w-3 h-3" /> {r.verificado_por}
+                          </Badge>
+                        ) : (
+                          <Button size="sm" variant="ghost" className="h-7 text-[10px] gap-1 px-2" onClick={() => handleVerificar(r.id)}>
+                            <ShieldCheck className="w-3 h-3 text-primary" /> Verificar
+                          </Button>
+                        )}
+                      </TableCell>
                       <TableCell><Button size="icon" variant="ghost" onClick={() => deletePraga.mutate(r.id)}><Trash2 className="w-4 h-4 text-destructive" /></Button></TableCell>
                     </TableRow>
                   ))}
+
                 </TableBody>
               </Table>
             </CardContent>

@@ -99,6 +99,18 @@ export default function Recebimento() {
       status: 'bloqueado'
     }).select().single();
 
+    if (!error && !aprovado) {
+      await supabase.from("nao_conformidades").insert({
+        user_id: user.id,
+        empresa_id: empresaAtiva?.id || null,
+        data: new Date().toISOString().split("T")[0],
+        setor: "Recebimento de MP",
+        descricao: `NC no recebimento da MP ${materiaPrima} (Lote: ${lote || "—"}): ${observacoes}`,
+        status: "pendente"
+      } as any);
+    }
+
+
     if (error) {
       toast.error("Erro: " + error.message);
     } else {

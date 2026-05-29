@@ -15,7 +15,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Switch } from "@/components/ui/switch";
-import { Plus, Droplet, CheckCircle2, AlertTriangle, Trash2, FileText, Beaker, Container, Download } from "lucide-react";
+import { Plus, Droplet, CheckCircle2, AlertTriangle, Trash2, FileText, Beaker, Container, Download, ShieldCheck } from "lucide-react";
 import PageHeader from "@/components/PageHeader";
 
 const PONTOS_COLETA = [
@@ -116,10 +116,34 @@ export default function PotabilidadeAgua() {
     enabled: !!user,
   });
 
+  const handleVerificar = async (tabela: string, id: string) => {
+    if (!user) return;
+    const { data: profile } = await supabase.from('profiles').select('nome').eq('user_id', user.id).single();
+    const verificador = profile?.nome || user.email;
+    
+    const { error } = await (supabase.from(tabela as any) as any).update({
+      verificado_por: verificador,
+      data_verificacao: new Date().toISOString(),
+      status_verificacao: 'aprovado'
+    }).eq('id', id);
+
+    if (error) toast.error("Erro ao verificar");
+    else {
+      toast.success("Registro verificado!");
+      queryClient.invalidateQueries();
+    }
+  };
+
   const addAnalise = useMutation({
     mutationFn: async () => {
       const paramInfo = PARAMETROS_ANALISE.find(p => p.param === parametro);
-      const { error } = await supabase.from("analises_laboratorio").insert({
+      
+      if (!conforme && !obs) {
+        toast.error("Ação corretiva (Observações) é obrigatória para itens não conformes!");
+        throw new Error("Ação corretiva obrigatória");
+      }
+
+      const { data: record, error } = await supabase.from("analises_laboratorio").insert({
         user_id: user!.id,
         empresa_id: empresaAtiva?.id || null,
         tipo_analise: "potabilidade_agua",
@@ -134,8 +158,21 @@ export default function PotabilidadeAgua() {
         laudo_numero: laudoNumero,
         observacoes: obs,
         status: conforme ? "conforme" : "nao_conforme",
-      });
+      }).select().single();
+
       if (error) throw error;
+
+      // Automatic NC Flow
+      if (!conforme) {
+        await supabase.from("nao_conformidades").insert({
+          user_id: user!.id,
+          empresa_id: empresaAtiva?.id || null,
+          data: dataColeta,
+          setor: "Qualidade / Água",
+          descricao: `NC na análise de potabilidade (${parametro}): ${obs}`,
+          status: "pendente"
+        } as any);
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["potabilidade-agua"] });
@@ -145,22 +182,44 @@ export default function PotabilidadeAgua() {
       setObs("");
       setLaudoNumero("");
     },
-    onError: () => toast.error("Erro ao salvar registro"),
+    onError: (err: any) => {
+      if (err.message !== "Ação corretiva obrigatória") toast.error("Erro ao salvar registro");
+    },
   });
 
   const addLimpeza = useMutation({
     mutationFn: async () => {
       const itensOk = Object.values(limpChecklist).filter(Boolean).length;
-      const { error } = await supabase.from("registros_limpeza").insert({
+      const conformeLimpeza = itensOk === CHECKLIST_RESERVATORIO.length;
+
+      if (!conformeLimpeza && !limpObs) {
+        toast.error("Ação corretiva (Observações) é obrigatória para checklists incompletos!");
+        throw new Error("Ação corretiva obrigatória");
+      }
+
+      const { data: record, error } = await supabase.from("registros_limpeza").insert({
         user_id: user!.id,
         empresa_id: empresaAtiva?.id || null,
         tipo_limpeza: "reservatorio",
         data_execucao: limpDataExec,
         executor: limpResponsavel || limpEmpresa,
-        conforme: itensOk === CHECKLIST_RESERVATORIO.length,
+        conforme: conformeLimpeza,
         observacoes: `Reservatório: ${limpReservatorio} | Empresa: ${limpEmpresa} | Checklist: ${itensOk}/${CHECKLIST_RESERVATORIO.length} | ${limpObs}`,
-      });
+      }).select().single();
+
       if (error) throw error;
+
+      // Automatic NC Flow
+      if (!conformeLimpeza) {
+        await supabase.from("nao_conformidades").insert({
+          user_id: user!.id,
+          empresa_id: empresaAtiva?.id || null,
+          data: limpDataExec,
+          setor: "Higiene / Reservatório",
+          descricao: `NC na limpeza do reservatório ${limpReservatorio}: ${limpObs}`,
+          status: "pendente"
+        } as any);
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["limpeza-reservatorio"] });
@@ -169,7 +228,9 @@ export default function PotabilidadeAgua() {
       setLimpChecklist({});
       setLimpObs("");
     },
-    onError: () => toast.error("Erro ao salvar limpeza"),
+    onError: (err: any) => {
+      if (err.message !== "Ação corretiva obrigatória") toast.error("Erro ao salvar limpeza");
+    },
   });
 
   const deleteAnalise = useMutation({
@@ -288,13 +349,14 @@ export default function PotabilidadeAgua() {
                       <TableHead>Resultado</TableHead>
                       <TableHead>Limite</TableHead>
                       <TableHead>Status</TableHead>
+                      <TableHead>Verificação</TableHead>
                       <TableHead>Laudo</TableHead>
                       <TableHead></TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {analises.length === 0 && (
-                      <TableRow><TableCell colSpan={8} className="text-center text-muted-foreground py-8">Nenhuma análise registrada</TableCell></TableRow>
+                      <TableRow><TableCell colSpan={9} className="text-center text-muted-foreground py-8">Nenhuma análise registrada</TableCell></TableRow>
                     )}
                     {analises.map(a => (
                       <TableRow key={a.id}>
@@ -308,12 +370,24 @@ export default function PotabilidadeAgua() {
                             {a.conforme ? "Conforme" : "NC"}
                           </Badge>
                         </TableCell>
+                        <TableCell>
+                          {a.status_verificacao === 'aprovado' ? (
+                            <Badge variant="outline" className="text-green-600 border-green-600 gap-1 text-[10px]">
+                              <CheckCircle2 className="w-3 h-3" /> {a.verificado_por}
+                            </Badge>
+                          ) : (
+                            <Button size="sm" variant="ghost" className="h-7 text-[10px] gap-1 px-2" onClick={() => handleVerificar('analises_laboratorio', a.id)}>
+                              <ShieldCheck className="w-3 h-3 text-primary" /> Verificar
+                            </Button>
+                          )}
+                        </TableCell>
                         <TableCell className="text-xs">{a.laudo_numero || "—"}</TableCell>
                         <TableCell>
                           <Button variant="ghost" size="icon" onClick={() => deleteAnalise.mutate(a.id)}><Trash2 className="w-4 h-4 text-destructive" /></Button>
                         </TableCell>
                       </TableRow>
                     ))}
+
                   </TableBody>
                 </Table>
               </div>
@@ -371,9 +445,11 @@ export default function PotabilidadeAgua() {
                     <TableHead>Data</TableHead>
                     <TableHead>Executor</TableHead>
                     <TableHead>Status</TableHead>
+                    <TableHead>Verificação</TableHead>
                     <TableHead>Observações</TableHead>
                     <TableHead></TableHead>
                   </TableRow>
+
                 </TableHeader>
                 <TableBody>
                   {limpezas.length === 0 && (
@@ -384,7 +460,19 @@ export default function PotabilidadeAgua() {
                       <TableCell>{l.data_execucao}</TableCell>
                       <TableCell>{l.executor}</TableCell>
                       <TableCell><Badge variant={l.conforme ? "default" : "destructive"}>{l.conforme ? "Conforme" : "NC"}</Badge></TableCell>
+                      <TableCell>
+                        {l.status_verificacao === 'aprovado' ? (
+                          <Badge variant="outline" className="text-green-600 border-green-600 gap-1 text-[10px]">
+                            <CheckCircle2 className="w-3 h-3" /> {l.verificado_por}
+                          </Badge>
+                        ) : (
+                          <Button size="sm" variant="ghost" className="h-7 text-[10px] gap-1 px-2" onClick={() => handleVerificar('registros_limpeza', l.id)}>
+                            <ShieldCheck className="w-3 h-3 text-primary" /> Verificar
+                          </Button>
+                        )}
+                      </TableCell>
                       <TableCell className="text-xs max-w-xs truncate">{l.observacoes}</TableCell>
+
                       <TableCell>
                         <Button variant="ghost" size="icon" onClick={async () => {
                           await supabase.from("registros_limpeza").delete().eq("id", l.id);

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { ClipboardCheck, Plus, Loader2, CheckCircle2, AlertCircle } from "lucide-react";
+import { ClipboardCheck, Plus, Loader2, CheckCircle2, AlertCircle, ShieldCheck } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
@@ -14,6 +14,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useEmpresa } from "@/hooks/useEmpresa";
 import { toast } from "sonner";
 import { Switch } from "@/components/ui/switch";
+import { Badge } from "@/components/ui/badge";
 
 const ELEMENTOS = [
   "Água de Abastecimento",
@@ -43,22 +44,66 @@ export default function Autocontrole() {
 
   useEffect(() => { fetchData(); }, [empresaAtiva]);
 
+  const handleVerificar = async (id: string) => {
+    if (!user) return;
+    const { data: profile } = await supabase.from('profiles').select('nome').eq('user_id', user.id).single();
+    const verificador = profile?.nome || user.email;
+    
+    const { error } = await (supabase.from("pac_monitoramento" as any) as any).update({
+      verificado_por: verificador,
+      data_verificacao: new Date().toISOString(),
+      status_verificacao: 'aprovado'
+    }).eq('id', id);
+
+    if (error) toast.error("Erro ao verificar");
+    else {
+      toast.success("Registro verificado!");
+      fetchData();
+    }
+  };
+
   const handleAdd = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
-    const { error } = await supabase.from("pac_monitoramento").insert({
+    const conformidade = formData.get("conformidade") === "on";
+    const acaoCorretiva = formData.get("acao_corretiva") as string;
+
+    if (!conformidade && !acaoCorretiva) {
+      toast.error("Ação corretiva é obrigatória para itens não conformes!");
+      return;
+    }
+
+    const { data: record, error } = await supabase.from("pac_monitoramento").insert({
         user_id: user?.id as any,
         empresa_id: empresaAtiva?.id as any,
         data: formData.get("data") as string,
         elemento_controle: formData.get("elemento_controle") as string,
         item_avaliado: formData.get("item_avaliado") as string,
         resultado: formData.get("resultado") as string,
-        conformidade: formData.get("conformidade") === "on",
-        acao_corretiva: formData.get("acao_corretiva") as string,
+        conformidade: conformidade,
+        acao_corretiva: acaoCorretiva,
         monitor: formData.get("monitor") as string,
-    } as any);
+    } as any).select().single();
+
     if (error) toast.error("Erro ao salvar");
-    else { toast.success("Monitoramento PAC registrado!"); setOpen(false); fetchData(); }
+    else { 
+      toast.success("Monitoramento PAC registrado!"); 
+      
+      // Automatic NC Flow
+      if (!conformidade) {
+        await supabase.from("nao_conformidades").insert({
+          user_id: user?.id,
+          empresa_id: empresaAtiva?.id || null,
+          data: formData.get("data"),
+          setor: `PAC / ${formData.get("elemento_controle")}`,
+          descricao: `NC no PAC (${formData.get("item_avaliado")}): ${acaoCorretiva}`,
+          status: "pendente"
+        } as any);
+      }
+      
+      setOpen(false); 
+      fetchData(); 
+    }
   };
 
   return (
@@ -100,18 +145,36 @@ export default function Autocontrole() {
                             <TableHead>Item</TableHead>
                             <TableHead>Status</TableHead>
                             <TableHead>Monitor</TableHead>
+                            <TableHead>Verificação</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
                         {data.map(item => (
                             <TableRow key={item.id}>
                                 <TableCell>{item.data}</TableCell>
-                                <TableCell>{item.elemento_controle}</TableCell>
-                                <TableCell>{item.item_avaliado}</TableCell>
-                                <TableCell>{item.conformidade ? <CheckCircle2 className="text-green-500" /> : <AlertCircle className="text-red-500" />}</TableCell>
-                                <TableCell>{item.monitor}</TableCell>
+                                <TableCell className="text-xs font-semibold">{item.elemento_controle}</TableCell>
+                                <TableCell className="text-xs">{item.item_avaliado}</TableCell>
+                                <TableCell>
+                                  {item.conformidade ? 
+                                    <Badge className="bg-green-100 text-green-700 border-green-200">Conforme</Badge> : 
+                                    <Badge variant="destructive">NC</Badge>
+                                  }
+                                </TableCell>
+                                <TableCell className="text-xs">{item.monitor}</TableCell>
+                                <TableCell>
+                                  {item.status_verificacao === 'aprovado' ? (
+                                    <Badge variant="outline" className="text-green-600 border-green-600 gap-1 text-[10px]">
+                                      <CheckCircle2 className="w-3 h-3" /> {item.verificado_por}
+                                    </Badge>
+                                  ) : (
+                                    <Button size="sm" variant="ghost" className="h-7 text-[10px] gap-1 px-2" onClick={() => handleVerificar(item.id)}>
+                                      <ShieldCheck className="w-3 h-3 text-primary" /> Verificar
+                                    </Button>
+                                  )}
+                                </TableCell>
                             </TableRow>
                         ))}
+
                     </TableBody>
                 </Table>
             )}
