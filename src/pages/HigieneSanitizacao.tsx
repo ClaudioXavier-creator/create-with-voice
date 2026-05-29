@@ -811,7 +811,7 @@ export default function HigieneSanitizacao() {
                       ncs.length > 0 ? `NCs: ${ncs.join("; ")}` : "Todos conformes",
                       `[ASSINATURA DIGITAL: ${preOpResponsavel} — ${new Date().toLocaleString("pt-BR")} — MP 2.200-2/2001]`,
                     ].join("\n");
-                    const { error } = await supabase.from("execucao_pops").insert({
+                    const { data: record, error } = await supabase.from("execucao_pops").insert({
                       user_id: user.id, empresa_id: empresaAtiva?.id || null,
                       codigo_pop: "POP-02/03-PREOP",
                       nome_pop: "Checklist Pré-Operacional Limpeza",
@@ -820,7 +820,18 @@ export default function HigieneSanitizacao() {
                       status: todosOk ? "concluido" : "nao_conforme",
                       observacoes: obs,
                       data_execucao: preOpData,
-                    });
+                    }).select().single();
+
+                    if (!error && !todosOk) {
+                      await supabase.from("nao_conformidades").insert({
+                        user_id: user.id,
+                        empresa_id: empresaAtiva?.id || null,
+                        data: preOpData,
+                        setor: "Higiene / Pré-Operacional",
+                        descricao: `NC identificada no Checklist Pré-Operacional: ${ncs.join("; ")}`,
+                        status: "pendente"
+                      });
+                    }
                     if (error) toast.error("Erro ao salvar: " + error.message);
                     else {
                       toast.success("Checklist pré-operacional salvo!");
