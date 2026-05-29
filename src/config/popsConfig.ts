@@ -420,5 +420,13 @@ export const POPS_CONFIG: PopConfig[] = [
       "ANEXO 2: Auditoria Interna – PL POP 10.2",
       "ANEXO 3: Indicadores de Desempenho – PL POP 10.3",
     ],
+    planilhas_impressao: [
+      {
+        label: "PL POP 10 — PAC (Programa de Autocontrole)",
+        descricao: "Modelos em branco de checklist de autocontrole, auditoria interna e indicadores para registro manual.",
+        arquivo: "PL_POP_10",
+      },
+    ],
   },
 ];
+

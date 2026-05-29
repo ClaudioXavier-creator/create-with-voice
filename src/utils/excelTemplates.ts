@@ -2,17 +2,25 @@ import * as XLSX from "xlsx";
 import { DESVIOS_CBAA_2017 } from "@/config/desviosAnaliticos";
 
 // Helper to create a styled worksheet with proper column widths and formatting
-function createSheet(data: (string | number | boolean | null)[][], colWidths: number[]): XLSX.WorkSheet {
+function createSheet(data: (string | number | boolean | null)[][], colWidths: number[], merges: XLSX.Range[] = []): XLSX.WorkSheet {
   const ws = XLSX.utils.aoa_to_sheet(data);
   ws["!cols"] = colWidths.map(w => ({ wch: w }));
+  if (merges.length > 0) {
+    ws["!merges"] = merges;
+  }
   // Set print area
   ws["!printarea"] = XLSX.utils.encode_range({ s: { r: 0, c: 0 }, e: { r: data.length - 1, c: colWidths.length - 1 } });
+  
+  // Set basic page setup for better printing
+  ws["!margins"] = { left: 0.5, right: 0.5, top: 0.5, bottom: 0.5, header: 0.3, footer: 0.3 };
+  
   return ws;
 }
 
 function downloadWorkbook(wb: XLSX.WorkBook, filename: string) {
-  XLSX.writeFile(wb, `${filename}.xlsx`, { bookType: "xlsx", cellStyles: true });
+  XLSX.writeFile(wb, `${filename}.xlsx`, { bookType: "xlsx" });
 }
+
 
 // ─── POP 1: Fornecedores ───
 export function gerarPL_POP_1() {
@@ -20,44 +28,51 @@ export function gerarPL_POP_1() {
 
   // 1.1 Qualificação de Fornecedores
   const qual = [
-    ["PLANILHA 1.1 — QUALIFICAÇÃO DE FORNECEDORES"],
-    ["Empresa:", "", "", "Responsável:", ""],
+    ["", "PLANILHA 1.1 — QUALIFICAÇÃO DE FORNECEDORES"],
+    ["", "Empresa:", "________________________", "", "Responsável:", "________________________"],
     [""],
     ["Nº", "Fornecedor", "CNPJ", "Registro MAPA/SIPEAGRO", "Produtos Fornecidos", "Ficha Técnica", "Cert. Análise", "Alvará", "Registro Produto", "Nota Avaliação (0-10)", "Status", "Próx. Avaliação", "Observações"],
     ...Array.from({ length: 20 }, (_, i) => [i + 1, "", "", "", "", "☐", "☐", "☐", "☐", "", "", "", ""]),
     [""],
-    ["Critérios: ≥8 Aprovado | 6-7 Aprovado com restrição | <6 Reprovado"],
-    ["Assinatura RT:", "", "", "CRMV:", "", "Data:", ""],
+    ["", "Critérios: ≥8 Aprovado | 6-7 Aprovado com restrição | <6 Reprovado"],
+    ["", "Assinatura RT:", "________________________", "CRMV:", "____________", "Data:", "__/__/__"],
   ];
-  const ws1 = createSheet(qual, [5, 25, 18, 22, 25, 12, 12, 10, 14, 14, 12, 14, 20]);
+  const ws1 = createSheet(qual, [5, 25, 18, 22, 25, 12, 12, 10, 14, 14, 12, 14, 20], [
+    { s: { r: 0, c: 1 }, e: { r: 0, c: 12 } }
+  ]);
   XLSX.utils.book_append_sheet(wb, ws1, "1.1 Qualificação");
 
   // 1.2 Recebimento de MP
   const receb = [
-    ["PLANILHA 1.2 — RECEBIMENTO DE MATÉRIA-PRIMA"],
-    ["Empresa:", "", "", "Mês/Ano:", ""],
+    ["", "PLANILHA 1.2 — RECEBIMENTO DE MATÉRIA-PRIMA"],
+    ["", "Empresa:", "________________________", "", "Mês/Ano:", "____/____"],
     [""],
     ["Data", "Fornecedor", "Matéria-Prima", "Lote", "Quantidade", "Unid.", "Validade", "Odor", "Insetos", "Umidade (%)", "Temp. (°C)", "Cert. Análise", "Aprovado", "Responsável", "Obs."],
     ...Array.from({ length: 30 }, () => ["", "", "", "", "", "", "", "☐N ☐A", "☐Aus ☐Pres", "", "", "☐", "☐S ☐N", "", ""]),
     [""],
-    ["Assinatura Executor:", "", "", "Assinatura Supervisor:", "", "Data:", ""],
+    ["", "Assinatura Executor:", "________________________", "Assinatura Supervisor:", "________________________", "Data:", "__/__/__"],
   ];
-  const ws2 = createSheet(receb, [10, 20, 20, 12, 10, 6, 10, 10, 12, 10, 10, 12, 10, 15, 15]);
+  const ws2 = createSheet(receb, [10, 20, 20, 12, 10, 6, 10, 10, 12, 10, 10, 12, 10, 15, 15], [
+    { s: { r: 0, c: 1 }, e: { r: 0, c: 14 } }
+  ]);
   XLSX.utils.book_append_sheet(wb, ws2, "1.2 Recebimento MP");
 
   // 1.3 Recebimento de Embalagens
   const emb = [
-    ["PLANILHA 1.3 — RECEBIMENTO DE EMBALAGENS"],
-    ["Empresa:", "", "", "Mês/Ano:", ""],
+    ["", "PLANILHA 1.3 — RECEBIMENTO DE EMBALAGENS"],
+    ["", "Empresa:", "________________________", "", "Mês/Ano:", "____/____"],
     [""],
     ["Data", "Fornecedor", "Tipo Embalagem", "Lote", "Quantidade", "Integridade", "Limpeza", "Aprovado", "Responsável", "Obs."],
     ...Array.from({ length: 20 }, () => ["", "", "", "", "", "☐C ☐NC", "☐C ☐NC", "☐S ☐N", "", ""]),
   ];
-  const ws3 = createSheet(emb, [10, 20, 18, 12, 10, 12, 12, 10, 15, 20]);
+  const ws3 = createSheet(emb, [10, 20, 18, 12, 10, 12, 12, 10, 15, 20], [
+    { s: { r: 0, c: 1 }, e: { r: 0, c: 9 } }
+  ]);
   XLSX.utils.book_append_sheet(wb, ws3, "1.3 Embalagens");
 
   downloadWorkbook(wb, "PL_POP_1_Fornecedores");
 }
+
 
 // ─── POP 2: Limpeza ───
 export function gerarPL_POP_2() {
@@ -376,6 +391,78 @@ export function gerarPL_POP_9() {
   downloadWorkbook(wb, "PL_POP_9_Rastreabilidade");
 }
 
+// ─── POP 10: PAC (Programa de Autocontrole) ───
+export function gerarPL_POP_10() {
+  const wb = XLSX.utils.book_new();
+
+  // 10.1 Checklist de Autocontrole
+  const checklist = [
+    ["", "PLANILHA 10.1 — CHECKLIST DE AUTOCONTROLE (PAC)"],
+    ["", "Empresa:", "________________________", "", "Mês/Ano:", "____/____"],
+    [""],
+    ["Nº", "ITEM DE VERIFICAÇÃO / POP", "S", "N", "N/A", "OBSERVAÇÃO / AÇÃO CORRETIVA"],
+    ["1", "POP 01 — Qualificação de Fornecedores e Matérias-Primas", "☐", "☐", "☐", ""],
+    ["2", "POP 02 — Higiene e Sanitização de Instalações/Equipamentos", "☐", "☐", "☐", ""],
+    ["3", "POP 03 — Higiene e Saúde Pessoal / Treinamentos", "☐", "☐", "☐", ""],
+    ["4", "POP 04 — Potabilidade da Água", "☐", "☐", "☐", ""],
+    ["5", "POP 05 — Controle da Produção / Contaminação Cruzada", "☐", "☐", "☐", ""],
+    ["6", "POP 06 — Manutenção e Calibração", "☐", "☐", "☐", ""],
+    ["7", "POP 07 — Controle Integrado de Pragas", "☐", "☐", "☐", ""],
+    ["8", "POP 08 — Controle de Resíduos e Efluentes", "☐", "☐", "☐", ""],
+    ["9", "POP 09 — Rastreabilidade e Recolhimento (Recall)", "☐", "☐", "☐", ""],
+    ["10", "Manual de BPF atualizado e disponível", "☐", "☐", "☐", ""],
+    ["11", "Registros de todos os POPs completos e assinados", "☐", "☐", "☐", ""],
+    ["12", "Não Conformidades anteriores foram tratadas?", "☐", "☐", "☐", ""],
+    [""],
+    ["Parecer do RT:", ""],
+    [""],
+    ["Assinatura RT:", "________________________", "Data:", "__/__/__"],
+  ];
+  const ws1 = createSheet(checklist, [5, 50, 4, 4, 4, 30], [
+    { s: { r: 0, c: 1 }, e: { r: 0, c: 5 } }
+  ]);
+  XLSX.utils.book_append_sheet(wb, ws1, "10.1 Checklist PAC");
+
+  // 10.2 Auditoria Interna
+  const auditoria = [
+    ["", "PLANILHA 10.2 — REGISTRO DE AUDITORIA INTERNA"],
+    ["", "Data:", "__/__/__", "Auditor:", "________________________"],
+    [""],
+    ["SETOR / POP AUDITADO", "NÃO CONFORMIDADE (DESCRIÇÃO)", "GRAV.", "AÇÃO CORRETIVA", "PRAZO", "RESP.", "STATUS"],
+    ...Array.from({ length: 15 }, () => ["", "", "☐L ☐M ☐G", "", "", "", "☐A ☐F"]),
+    [""],
+    ["Gravidade: L (Leve) | M (Moderada) | G (Grave)"],
+    ["Status: A (Aberta) | F (Fechada)"],
+  ];
+  const ws2 = createSheet(auditoria, [25, 30, 10, 25, 12, 15, 10], [
+    { s: { r: 0, c: 1 }, e: { r: 0, c: 6 } }
+  ]);
+  XLSX.utils.book_append_sheet(wb, ws2, "10.2 Auditoria Interna");
+
+  // 10.3 Indicadores
+  const indicadores = [
+    ["", "PLANILHA 10.3 — INDICADORES DE DESEMPENHO DO PAC"],
+    ["", "Ano:", "______"],
+    [""],
+    ["INDICADOR", "UNID.", "JAN", "FEV", "MAR", "ABR", "MAI", "JUN", "JUL", "AGO", "SET", "OUT", "NOV", "DEZ"],
+    ["% Conformidade POPs", "%", "", "", "", "", "", "", "", "", "", "", "", ""],
+    ["Nº Não Conformidades", "un.", "", "", "", "", "", "", "", "", "", "", "", ""],
+    ["Nº Reclamações SAC", "un.", "", "", "", "", "", "", "", "", "", "", "", ""],
+    ["% Treinamentos Realiz.", "%", "", "", "", "", "", "", "", "", "", "", "", ""],
+    ["Aproveitamento Produção", "%", "", "", "", "", "", "", "", "", "", "", "", ""],
+    [""],
+    ["Meta Estabelecida:", ""],
+    ["Obs:", ""],
+  ];
+  const ws3 = createSheet(indicadores, [25, 8, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6], [
+    { s: { r: 0, c: 1 }, e: { r: 0, c: 13 } }
+  ]);
+  XLSX.utils.book_append_sheet(wb, ws3, "10.3 Indicadores PAC");
+
+  downloadWorkbook(wb, "PL_POP_10_PAC");
+}
+
+
 // ─── Formulários individuais ───
 export function gerarFormRecebimentoMP() {
   const wb = XLSX.utils.book_new();
@@ -638,7 +725,9 @@ export const TEMPLATE_GENERATORS: Record<string, () => void> = {
   "PL_POP_7": gerarPL_POP_7,
   "PL_POP_8": gerarPL_POP_8,
   "PL_POP_9": gerarPL_POP_9,
+  "PL_POP_10": gerarPL_POP_10,
   "Form_Recebimento_MP": gerarFormRecebimentoMP,
+
   "Form_Ordem_Producao": gerarFormOrdemProducao,
   "Form_Validacao_Limpeza": gerarFormValidacaoLimpeza,
   "Form_Matriz_Sensibilidade": gerarFormMatrizSensibilidade,
@@ -928,3 +1017,53 @@ export function gerarFormExpedicaoCompleta() {
   XLSX.utils.book_append_sheet(wb, ws, "Expedição NF");
   downloadWorkbook(wb, "Registro_Expedicao_Completa_por_NF");
 }
+
+// ─── Exportador Dinâmico para Dados de Planilhas (Digital) ───
+export function exportPopDataToExcel(
+  pop: { codigo: string; nome: string },
+  periodicidade: { label: string; key: string; periodos: string[]; areas: { area: string }[] },
+  mes: number,
+  ano: number,
+  rows: any[]
+) {
+  const wb = XLSX.utils.book_new();
+  const MESES = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+
+  const header = [
+    ["", `REGISTRO DIGITAL — ${pop.codigo} - ${pop.nome}`],
+    ["", `Periodicidade: ${periodicidade.label}`, "", "", `Mês/Ano: ${MESES[mes - 1]}/${ano}`],
+    [""],
+    ["Período", ...periodicidade.areas.map(a => a.area), "Responsável", "Função"]
+  ];
+
+  const dataRows = periodicidade.periodos.map(p => {
+    const cells = periodicidade.areas.map(a => {
+      const item = rows.find(r => r.periodo_label === p && r.area === a.area);
+      if (!item || item.conforme === null) return "-";
+      return item.conforme ? "C" : "NC";
+    });
+    const firstRowItem = rows.find(r => r.periodo_label === p);
+    const resp = firstRowItem?.responsavel || "";
+    const func = firstRowItem?.funcao || "";
+    return [p, ...cells, resp, func];
+  });
+
+  const footer = [
+    [""],
+    ["", "Este registro foi gerado digitalmente pelo sistema Feed_BPF."],
+    ["", "Data da Exportação:", new Date().toLocaleDateString("pt-BR")],
+  ];
+
+  const allData = [...header, ...dataRows, ...footer];
+  
+  // Calculate column widths
+  const colWidths = [15, ...periodicidade.areas.map(() => 15), 20, 20];
+  
+  const ws = createSheet(allData, colWidths, [
+    { s: { r: 0, c: 1 }, e: { r: 0, c: periodicidade.areas.length + 2 } }
+  ]);
+
+  XLSX.utils.book_append_sheet(wb, ws, "Registro");
+  downloadWorkbook(wb, `${pop.codigo}_${periodicidade.key}_${MESES[mes - 1]}_${ano}`);
+}
+
