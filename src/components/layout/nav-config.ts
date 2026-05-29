@@ -28,6 +28,7 @@ import {
   FlaskConical,
   Truck,
   ShieldAlert,
+  ShieldCheck,
 } from "lucide-react";
 
 import { SUPER_ADMIN_EMAILS } from "@/config/adminAccess";
@@ -47,7 +48,7 @@ export interface NavItem {
   logo?: string;
   keywords?: string[];
   requiredRoles?: string[];
-  requiredEmail?: string | string[];
+  requiredEmail?: string | string[] | readonly string[];
   external?: boolean;
 }
 
@@ -152,4 +153,11 @@ export const NAV_ENTRIES: NavEntry[] = [
   // --- OUTROS ---
   { path: "/modo-tablet", label: "Factory / Modo Tablet", icon: Tablet },
 
+  // --- PORTAL DE GESTÃO (PARA ADMINISTRADORES) ---
+  {
+    path: "/admin",
+    label: "Portal de Gestão & Vendas",
+    icon: ShieldCheck,
+    requiredEmail: SUPER_ADMIN_EMAILS,
+  },
 ];

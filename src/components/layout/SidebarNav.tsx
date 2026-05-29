@@ -48,7 +48,7 @@ export const SidebarNav = React.memo(({
           if (item.requiredRoles && !item.requiredRoles.some(r => userRoles.includes(r))) {
              if (item.requiredEmail) {
                 const emails = Array.isArray(item.requiredEmail) ? item.requiredEmail : [item.requiredEmail];
-                if (emails.some(e => e.toLowerCase() === userEmail.toLowerCase())) {
+                if (emails.some(e => String(e).toLowerCase() === userEmail.toLowerCase())) {
                    return true;
                 }
              }
@@ -56,7 +56,7 @@ export const SidebarNav = React.memo(({
           }
           if (item.requiredEmail) {
              const emails = Array.isArray(item.requiredEmail) ? item.requiredEmail : [item.requiredEmail];
-             if (!emails.some(e => e.toLowerCase() === userEmail.toLowerCase())) {
+             if (!emails.some(e => String(e).toLowerCase() === userEmail.toLowerCase())) {
                 return false;
              }
           }
@@ -67,7 +67,7 @@ export const SidebarNav = React.memo(({
         if (entry.requiredRoles && !entry.requiredRoles.some(r => userRoles.includes(r))) {
             if (entry.requiredEmail) {
                 const emails = Array.isArray(entry.requiredEmail) ? entry.requiredEmail : [entry.requiredEmail];
-                if (emails.some(e => e.toLowerCase() === userEmail.toLowerCase())) {
+                if (emails.some(e => String(e).toLowerCase() === userEmail.toLowerCase())) {
                    return true;
                 }
             }
@@ -75,7 +75,7 @@ export const SidebarNav = React.memo(({
         }
         if (entry.requiredEmail) {
             const emails = Array.isArray(entry.requiredEmail) ? entry.requiredEmail : [entry.requiredEmail];
-            if (!emails.some(e => e.toLowerCase() === userEmail.toLowerCase())) {
+            if (!emails.some(e => String(e).toLowerCase() === userEmail.toLowerCase())) {
                 return false;
             }
         }
@@ -89,7 +89,7 @@ export const SidebarNav = React.memo(({
             if (item.requiredRoles && !item.requiredRoles.some(r => userRoles.includes(r))) {
                if (item.requiredEmail) {
                   const emails = Array.isArray(item.requiredEmail) ? item.requiredEmail : [item.requiredEmail];
-                  if (emails.some(e => e.toLowerCase() === userEmail.toLowerCase())) {
+                  if (emails.some(e => String(e).toLowerCase() === userEmail.toLowerCase())) {
                      return true;
                   }
                }
@@ -97,7 +97,7 @@ export const SidebarNav = React.memo(({
             }
             if (item.requiredEmail) {
                const emails = Array.isArray(item.requiredEmail) ? item.requiredEmail : [item.requiredEmail];
-               if (!emails.some(e => e.toLowerCase() === userEmail.toLowerCase())) {
+               if (!emails.some(e => String(e).toLowerCase() === userEmail.toLowerCase())) {
                   return false;
                }
             }
