@@ -807,10 +807,23 @@ export default function PCP() {
                               <TabsTrigger value="carryover"><TestTube className="w-3 h-3 mr-1" /> Carry-over</TabsTrigger>
                             </TabsList>
                             <div className="flex gap-2">
+                              <Button 
+                                size="sm" 
+                                variant="outline" 
+                                className="h-8 text-xs gap-1 border-primary/50 hover:bg-primary/5"
+                                onClick={() => {
+                                  // Find the specific component logic for PDF generation
+                                  // We can trigger it by mounting the component hidden or using a shared function
+                                  // For now, let's open the dialog which is safer as it loads data correctly
+                                  document.getElementById(`open-ficha-${o.id}`)?.click();
+                                }}
+                              >
+                                <Printer className="w-3 h-3" /> Imprimir Ficha
+                              </Button>
                               <Dialog>
                                 <DialogTrigger asChild>
-                                  <Button size="sm" variant="default" className="h-8 text-xs gap-1">
-                                    <FileText className="w-3 h-3" /> Ficha Digital + PDF
+                                  <Button id={`open-ficha-${o.id}`} size="sm" variant="default" className="h-8 text-xs gap-1">
+                                    <FileText className="w-3 h-3" /> Ficha Digital
                                   </Button>
                                 </DialogTrigger>
                                 <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
