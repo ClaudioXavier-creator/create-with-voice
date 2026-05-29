@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { ClipboardCheck, Plus, Loader2, CheckCircle2, AlertCircle } from "lucide-react";
+import { ClipboardCheck, Plus, Loader2, CheckCircle2, AlertCircle, ShieldCheck } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
@@ -14,6 +14,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useEmpresa } from "@/hooks/useEmpresa";
 import { toast } from "sonner";
 import { Switch } from "@/components/ui/switch";
+import { Badge } from "@/components/ui/badge";
 
 const ELEMENTOS = [
   "Água de Abastecimento",
