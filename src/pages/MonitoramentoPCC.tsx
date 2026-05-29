@@ -133,6 +133,7 @@ export default function MonitoramentoPCC() {
                             <TableHead>Parâmetro</TableHead>
                             <TableHead>Valor</TableHead>
                             <TableHead>Status</TableHead>
+                            <TableHead>Verificação</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -142,9 +143,26 @@ export default function MonitoramentoPCC() {
                                 <TableCell>{item.ponto_critico}</TableCell>
                                 <TableCell>{item.parametro}</TableCell>
                                 <TableCell>{item.valor_encontrado}</TableCell>
-                                <TableCell>{item.conformidade ? <CheckCircle2 className="text-green-500" /> : <AlertCircle className="text-red-500" />}</TableCell>
+                                <TableCell>
+                                  {item.conformidade ? 
+                                    <Badge className="bg-green-100 text-green-700 border-green-200">Conforme</Badge> : 
+                                    <Badge variant="destructive">NC</Badge>
+                                  }
+                                </TableCell>
+                                <TableCell>
+                                  {item.status_verificacao === 'aprovado' ? (
+                                    <Badge variant="outline" className="text-green-600 border-green-600 gap-1 text-[10px]">
+                                      <CheckCircle2 className="w-3 h-3" /> {item.verificado_por}
+                                    </Badge>
+                                  ) : (
+                                    <Button size="sm" variant="ghost" className="h-7 text-[10px] gap-1 px-2" onClick={() => handleVerificar(item.id)}>
+                                      <ShieldCheck className="w-3 h-3 text-primary" /> Verificar
+                                    </Button>
+                                  )}
+                                </TableCell>
                             </TableRow>
                         ))}
+
                     </TableBody>
                 </Table>
             )}
