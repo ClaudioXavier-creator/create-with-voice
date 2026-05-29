@@ -258,6 +258,20 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
                 </div>
                 
                 <div className="p-4 border-t border-sidebar-border/50 bg-sidebar-accent/20">
+                  {canAccessLicenseAdmin(roles, user?.email) && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        navigate("/admin");
+                        closeMobile();
+                      }}
+                      className="w-full justify-start gap-3 mb-3 bg-primary/10 border-primary/20 text-primary font-bold h-10 px-4 rounded-xl shadow-sm"
+                    >
+                      <ShieldCheck className="w-4 h-4" />
+                      Portal de Gestão
+                    </Button>
+                  )}
                   <div className="flex items-center justify-between mb-2 px-2">
                     <span className="text-xs text-sidebar-foreground/50 truncate">{user?.email}</span>
                     <span className="px-2 py-0.5 rounded-full bg-primary/20 text-primary text-[10px] font-bold uppercase tracking-wider">Premium</span>
