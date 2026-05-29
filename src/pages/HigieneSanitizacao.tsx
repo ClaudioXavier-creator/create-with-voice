@@ -629,11 +629,13 @@ export default function HigieneSanitizacao() {
     const { data: profile } = await supabase.from('profiles').select('nome').eq('user_id', user.id).single();
     const verificador = profile?.nome || user.email;
     
+    // @ts-ignore - Dynamic table name
     const { error } = await supabase.from(tabela).update({
       verificado_por: verificador,
       data_verificacao: new Date().toISOString(),
       status_verificacao: 'aprovado'
-    } as any).eq('id', id);
+    }).eq('id', id);
+
 
     if (error) toast.error("Erro ao verificar");
     else {
