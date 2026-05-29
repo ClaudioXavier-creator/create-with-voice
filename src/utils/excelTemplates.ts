@@ -28,44 +28,51 @@ export function gerarPL_POP_1() {
 
   // 1.1 Qualificação de Fornecedores
   const qual = [
-    ["PLANILHA 1.1 — QUALIFICAÇÃO DE FORNECEDORES"],
-    ["Empresa:", "", "", "Responsável:", ""],
+    ["", "PLANILHA 1.1 — QUALIFICAÇÃO DE FORNECEDORES"],
+    ["", "Empresa:", "________________________", "", "Responsável:", "________________________"],
     [""],
     ["Nº", "Fornecedor", "CNPJ", "Registro MAPA/SIPEAGRO", "Produtos Fornecidos", "Ficha Técnica", "Cert. Análise", "Alvará", "Registro Produto", "Nota Avaliação (0-10)", "Status", "Próx. Avaliação", "Observações"],
     ...Array.from({ length: 20 }, (_, i) => [i + 1, "", "", "", "", "☐", "☐", "☐", "☐", "", "", "", ""]),
     [""],
-    ["Critérios: ≥8 Aprovado | 6-7 Aprovado com restrição | <6 Reprovado"],
-    ["Assinatura RT:", "", "", "CRMV:", "", "Data:", ""],
+    ["", "Critérios: ≥8 Aprovado | 6-7 Aprovado com restrição | <6 Reprovado"],
+    ["", "Assinatura RT:", "________________________", "CRMV:", "____________", "Data:", "__/__/__"],
   ];
-  const ws1 = createSheet(qual, [5, 25, 18, 22, 25, 12, 12, 10, 14, 14, 12, 14, 20]);
+  const ws1 = createSheet(qual, [5, 25, 18, 22, 25, 12, 12, 10, 14, 14, 12, 14, 20], [
+    { s: { r: 0, c: 1 }, e: { r: 0, c: 12 } }
+  ]);
   XLSX.utils.book_append_sheet(wb, ws1, "1.1 Qualificação");
 
   // 1.2 Recebimento de MP
   const receb = [
-    ["PLANILHA 1.2 — RECEBIMENTO DE MATÉRIA-PRIMA"],
-    ["Empresa:", "", "", "Mês/Ano:", ""],
+    ["", "PLANILHA 1.2 — RECEBIMENTO DE MATÉRIA-PRIMA"],
+    ["", "Empresa:", "________________________", "", "Mês/Ano:", "____/____"],
     [""],
     ["Data", "Fornecedor", "Matéria-Prima", "Lote", "Quantidade", "Unid.", "Validade", "Odor", "Insetos", "Umidade (%)", "Temp. (°C)", "Cert. Análise", "Aprovado", "Responsável", "Obs."],
     ...Array.from({ length: 30 }, () => ["", "", "", "", "", "", "", "☐N ☐A", "☐Aus ☐Pres", "", "", "☐", "☐S ☐N", "", ""]),
     [""],
-    ["Assinatura Executor:", "", "", "Assinatura Supervisor:", "", "Data:", ""],
+    ["", "Assinatura Executor:", "________________________", "Assinatura Supervisor:", "________________________", "Data:", "__/__/__"],
   ];
-  const ws2 = createSheet(receb, [10, 20, 20, 12, 10, 6, 10, 10, 12, 10, 10, 12, 10, 15, 15]);
+  const ws2 = createSheet(receb, [10, 20, 20, 12, 10, 6, 10, 10, 12, 10, 10, 12, 10, 15, 15], [
+    { s: { r: 0, c: 1 }, e: { r: 0, c: 14 } }
+  ]);
   XLSX.utils.book_append_sheet(wb, ws2, "1.2 Recebimento MP");
 
   // 1.3 Recebimento de Embalagens
   const emb = [
-    ["PLANILHA 1.3 — RECEBIMENTO DE EMBALAGENS"],
-    ["Empresa:", "", "", "Mês/Ano:", ""],
+    ["", "PLANILHA 1.3 — RECEBIMENTO DE EMBALAGENS"],
+    ["", "Empresa:", "________________________", "", "Mês/Ano:", "____/____"],
     [""],
     ["Data", "Fornecedor", "Tipo Embalagem", "Lote", "Quantidade", "Integridade", "Limpeza", "Aprovado", "Responsável", "Obs."],
     ...Array.from({ length: 20 }, () => ["", "", "", "", "", "☐C ☐NC", "☐C ☐NC", "☐S ☐N", "", ""]),
   ];
-  const ws3 = createSheet(emb, [10, 20, 18, 12, 10, 12, 12, 10, 15, 20]);
+  const ws3 = createSheet(emb, [10, 20, 18, 12, 10, 12, 12, 10, 15, 20], [
+    { s: { r: 0, c: 1 }, e: { r: 0, c: 9 } }
+  ]);
   XLSX.utils.book_append_sheet(wb, ws3, "1.3 Embalagens");
 
   downloadWorkbook(wb, "PL_POP_1_Fornecedores");
 }
+
 
 // ─── POP 2: Limpeza ───
 export function gerarPL_POP_2() {
