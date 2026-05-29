@@ -445,9 +445,11 @@ export default function PotabilidadeAgua() {
                     <TableHead>Data</TableHead>
                     <TableHead>Executor</TableHead>
                     <TableHead>Status</TableHead>
+                    <TableHead>Verificação</TableHead>
                     <TableHead>Observações</TableHead>
                     <TableHead></TableHead>
                   </TableRow>
+
                 </TableHeader>
                 <TableBody>
                   {limpezas.length === 0 && (
