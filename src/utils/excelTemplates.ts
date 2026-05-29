@@ -718,7 +718,9 @@ export const TEMPLATE_GENERATORS: Record<string, () => void> = {
   "PL_POP_7": gerarPL_POP_7,
   "PL_POP_8": gerarPL_POP_8,
   "PL_POP_9": gerarPL_POP_9,
+  "PL_POP_10": gerarPL_POP_10,
   "Form_Recebimento_MP": gerarFormRecebimentoMP,
+
   "Form_Ordem_Producao": gerarFormOrdemProducao,
   "Form_Validacao_Limpeza": gerarFormValidacaoLimpeza,
   "Form_Matriz_Sensibilidade": gerarFormMatrizSensibilidade,
