@@ -16,6 +16,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useEmpresa } from "@/hooks/useEmpresa";
 import FichaProducaoDigital from "@/components/pcp/FichaProducaoDigital";
 import PlanejamentoDoDia from "@/components/pcp/PlanejamentoDoDia";
+import { printElement } from "@/utils/printUtils";
 import { toast } from "sonner";
 
 interface OrdemProd {
