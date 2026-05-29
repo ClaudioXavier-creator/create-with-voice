@@ -34,6 +34,7 @@ export default function Producao() {
   const { user } = useAuth();
   const { empresaAtiva } = useEmpresa();
   const [items, setItems] = useState<ProdRow[]>([]);
+  const [produtosCadastrados, setProdutosCadastrados] = useState<{id: string, nome: string}[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [open, setOpen] = useState(false);
@@ -58,6 +59,43 @@ export default function Producao() {
   const [prodAnteriorMedicado, setProdAnteriorMedicado] = useState(false);
   const [obsFlush, setObsFlush] = useState("");
 
+  const fetchProdutos = async () => {
+    let q = supabase.from("produtos").select("id, nome").eq("status", "ativo");
+    if (empresaAtiva) q = q.eq("empresa_id", empresaAtiva.id);
+    const { data } = await q;
+    if (data) setProdutosCadastrados(data);
+  };
+
+  const gerarLoteAutomatico = async (nomeProduto: string) => {
+    if (!nomeProduto) return;
+    
+    const hoje = new Date();
+    const prefixo = `${hoje.getFullYear()}${(hoje.getMonth() + 1).toString().padStart(2, '0')}${hoje.getDate().toString().padStart(2, '0')}`;
+    
+    // Buscar último lote do dia para este produto
+    let q = supabase
+      .from("producao")
+      .select("lote")
+      .ilike("lote", `%${prefixo}%`)
+      .order("created_at", { ascending: false })
+      .limit(1);
+    
+    if (empresaAtiva) q = q.eq("empresa_id", empresaAtiva.id);
+    
+    const { data } = await q;
+    let sequencial = 1;
+    
+    if (data && data.length > 0 && data[0].lote) {
+      const parts = data[0].lote.split('-');
+      const lastSeq = parseInt(parts[parts.length - 1]);
+      if (!isNaN(lastSeq)) sequencial = lastSeq + 1;
+    }
+
+    // Extrair um código do produto (3 primeiras letras maiúsculas)
+    const codigoProd = nomeProduto.substring(0, 3).toUpperCase();
+    setLote(`${codigoProd}-${prefixo}-${sequencial.toString().padStart(3, '0')}`);
+  };
+
   const fetchData = async () => {
     if (!user) return;
     let q = supabase.from("producao").select("*").order("data", { ascending: false });
@@ -67,7 +105,10 @@ export default function Producao() {
     setLoading(false);
   };
 
-  useEffect(() => { fetchData(); }, [user, empresaAtiva]);
+  useEffect(() => { 
+    fetchData();
+    fetchProdutos();
+  }, [user, empresaAtiva]);
 
   const tempoMisturaValido = () => {
     const min = parseFloat(tempoMistura);
@@ -185,7 +226,22 @@ export default function Producao() {
                 <div className="space-y-3">
                   <div>
                     <Label>Produto *</Label>
-                    <Input value={produto} onChange={e => setProduto(e.target.value)} placeholder="Ex: Ração Bovinos 22%" />
+                    <Select 
+                      value={produto} 
+                      onValueChange={(val) => {
+                        setProduto(val);
+                        gerarLoteAutomatico(val);
+                      }}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecione o produto..." />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {produtosCadastrados.map(p => (
+                          <SelectItem key={p.id} value={p.nome}>{p.nome}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
