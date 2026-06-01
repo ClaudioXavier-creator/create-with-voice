@@ -347,6 +347,45 @@ export default function Recebimento() {
                       <FlaskConical className="h-4 w-4 text-purple-500" />
                     </Button>
                   )}
+                  <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => {
+                    const el = document.getElementById(`print-rec-${item.id}`);
+                    if (el) printElement(el);
+                  }} title="Imprimir Ficha de Recebimento">
+                    <Printer className="h-4 w-4 text-gray-500" />
+                  </Button>
+                </div>
+                {/* Hidden print template */}
+                <div id={`print-rec-${item.id}`} className="hidden print:block p-8 space-y-6">
+                  <div className="text-center border-b pb-4">
+                    <h1 className="text-2xl font-bold">FICHA DE RECEBIMENTO DE MATÉRIA-PRIMA (POP-01)</h1>
+                    <p className="text-sm">Controle de Qualidade e Boas Práticas de Fabricação</p>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4 text-sm">
+                    <p><strong>Data:</strong> {item.data}</p>
+                    <p><strong>Fornecedor:</strong> {item.fornecedor}</p>
+                    <p><strong>Matéria-Prima:</strong> {item.materia_prima}</p>
+                    <p><strong>Lote:</strong> {item.lote}</p>
+                    <p><strong>Nota Fiscal:</strong> {item.numero_nota_fiscal || "—"}</p>
+                    <p><strong>Quantidade:</strong> {item.quantidade} {item.unidade}</p>
+                  </div>
+                  <div className="border p-4 rounded-md space-y-2">
+                    <h3 className="font-bold border-b pb-1">Análise Sensorial e Qualidade</h3>
+                    <div className="grid grid-cols-2 gap-2 text-sm">
+                      <p>Odor: {item.odor}</p>
+                      <p>Umidade: {item.umidade || "—"}</p>
+                      <p>Presença de Insetos: {item.insetos}</p>
+                      <p>Temperatura: {item.temperatura ? `${item.temperatura} ºC` : "—"}</p>
+                      <p>Certificado de Análise: {item.certificado_analise_numero || "—"}</p>
+                      <p>Aprovado: {item.aprovado ? "SIM" : "NÃO"}</p>
+                    </div>
+                  </div>
+                  <div className="pt-8">
+                    <p>Observações: {item.observacoes || "Nenhuma"}</p>
+                  </div>
+                  <div className="pt-20 flex justify-between px-10">
+                    <div className="text-center border-t w-64 pt-2">Assinatura do Responsável</div>
+                    <div className="text-center border-t w-64 pt-2">Assinatura do Transportador</div>
+                  </div>
                 </div>
               </TableCell>
               <TableCell>
