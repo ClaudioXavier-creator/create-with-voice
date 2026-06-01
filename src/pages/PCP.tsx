@@ -107,6 +107,9 @@ export default function PCP() {
   const [motivoRetrabalho, setMotivoRetrabalho] = useState("");
   const [qtdSobra, setQtdSobra] = useState("");
   const [destinoSobra, setDestinoSobra] = useState("");
+  const [tempoMisturaPadrao, setTempoMisturaPadrao] = useState("3");
+  const [tipoEmbalagem, setTipoEmbalagem] = useState("Sacos 25kg");
+  const [localArmazenamento, setLocalArmazenamento] = useState("Depósito de PA");
   const [ingredientesFormulaSelecionada, setIngredientesFormulaSelecionada] = useState<any[]>([]);
 
 
