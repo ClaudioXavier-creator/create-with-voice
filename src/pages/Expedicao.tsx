@@ -414,10 +414,18 @@ export default function Expedicao() {
         </CardHeader>
         <CardContent className="flex flex-wrap gap-2">
           <Button variant="outline" size="sm" onClick={() => gerarFormExpedicaoSimples()}>
-            <Download className="h-4 w-4 mr-2" />Lista Simples (cliente, NF, lote)
+            <Download className="h-4 w-4 mr-2" />Lista Simples (manual)
           </Button>
           <Button variant="outline" size="sm" onClick={() => gerarFormExpedicaoCompleta()}>
-            <Download className="h-4 w-4 mr-2" />Completo por NF (com transporte)
+            <Download className="h-4 w-4 mr-2" />Romaneio por NF
+          </Button>
+          <Button variant="default" size="sm" onClick={async () => {
+            // Fetch all items for the filtered exports to generate a full map
+            const { data } = await supabase.from("expedicao_itens" as any).select("*");
+            const mapped = filtered.map(f => ({ ...f, itens: data?.filter((i: any) => i.expedicao_id === f.id) }));
+            gerarMapaExpedicaoMAPA(mapped, empresaAtiva);
+          }}>
+            <ClipboardCheck className="h-4 w-4 mr-2" />Mapa de Expedição (MAPA)
           </Button>
         </CardContent>
       </Card>
