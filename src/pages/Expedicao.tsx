@@ -59,6 +59,7 @@ export default function Expedicao() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [busca, setBusca] = useState("");
+  const [filtroLote, setFiltroLote] = useState("");
   const [dataIni, setDataIni] = useState("");
   const [dataFim, setDataFim] = useState("");
   const [filtroCliente, setFiltroCliente] = useState("__all__");
@@ -66,6 +67,7 @@ export default function Expedicao() {
   const [editId, setEditId] = useState<string | null>(null);
   const [detalheOpen, setDetalheOpen] = useState(false);
   const [detalheItens, setDetalheItens] = useState<any[]>([]);
+  const [todosItens, setTodosItens] = useState<any[]>([]);
   const [detalheExp, setDetalheExp] = useState<Expedicao | null>(null);
   const [mapaOpen, setMapaOpen] = useState(false);
   const [mapaDados, setMapaDados] = useState<any[]>([]);
@@ -107,6 +109,12 @@ export default function Expedicao() {
     if (error) toast.error("Erro ao carregar: " + error.message);
     else setExpedicoes((data as any) || []);
 
+    // Carregar itens para o filtro de lotes
+    let qi = supabase.from("expedicao_itens" as any).select("expedicao_id, lote_produto");
+    if (empresaAtiva) qi = qi.eq("empresa_id", empresaAtiva.id);
+    const { data: ditens } = await qi;
+    setTodosItens(ditens || []);
+
     // Lotes em recall ativo
     let qr = supabase.from("rastreabilidade" as any).select("lote_produto").eq("recall_ativo", true);
     if (empresaAtiva) qr = qr.eq("empresa_id", empresaAtiva.id);
@@ -125,15 +133,20 @@ export default function Expedicao() {
 
   const filtered = useMemo(() => {
     const t = busca.toLowerCase().trim();
+    const l = filtroLote.toLowerCase().trim();
     return expedicoes.filter(e => {
       if (t && !(e.numero_nf?.toLowerCase().includes(t) || e.cliente_nome?.toLowerCase().includes(t) || e.cliente_cnpj?.toLowerCase().includes(t))) return false;
+      if (l) {
+        const itensDaNF = todosItens.filter(i => i.expedicao_id === e.id);
+        if (!itensDaNF.some(i => i.lote_produto?.toLowerCase().includes(l))) return false;
+      }
       if (filtroCliente !== "__all__" && e.cliente_nome !== filtroCliente) return false;
       const data = e.data_saida || e.data_emissao || e.created_at?.slice(0, 10);
       if (dataIni && data && data < dataIni) return false;
       if (dataFim && data && data > dataFim) return false;
       return true;
     });
-  }, [expedicoes, busca, dataIni, dataFim, filtroCliente]);
+  }, [expedicoes, busca, filtroLote, todosItens, dataIni, dataFim, filtroCliente]);
 
   // Dashboard mês corrente
   const dashboard = useMemo(() => {
@@ -595,6 +608,10 @@ export default function Expedicao() {
               <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input placeholder="NF, cliente ou CNPJ..." value={busca} onChange={e => setBusca(e.target.value)} className="pl-8 w-64" />
             </div>
+            <div className="relative">
+              <Package className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input placeholder="Filtrar por Lote..." value={filtroLote} onChange={e => setFiltroLote(e.target.value)} className="pl-8 w-48" />
+            </div>
             <div>
               <Label className="text-xs">De</Label>
               <Input type="date" value={dataIni} onChange={e => setDataIni(e.target.value)} className="w-40" />
@@ -610,8 +627,8 @@ export default function Expedicao() {
                 {clientesUnicos.map(c => <option key={c} value={c}>{c}</option>)}
               </select>
             </div>
-            {(busca || dataIni || dataFim || filtroCliente !== "__all__") && (
-              <Button variant="ghost" size="sm" onClick={() => { setBusca(""); setDataIni(""); setDataFim(""); setFiltroCliente("__all__"); }}>
+            {(busca || filtroLote || dataIni || dataFim || filtroCliente !== "__all__") && (
+              <Button variant="ghost" size="sm" onClick={() => { setBusca(""); setFiltroLote(""); setDataIni(""); setDataFim(""); setFiltroCliente("__all__"); }}>
                 <Filter className="h-3 w-3 mr-1" />Limpar
               </Button>
             )}
