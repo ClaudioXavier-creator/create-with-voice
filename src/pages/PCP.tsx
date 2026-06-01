@@ -735,23 +735,45 @@ export default function PCP() {
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <Label>Lote do PA</Label>
-                    <Input value={lotePA} onChange={e => setLotePA(e.target.value)} placeholder="Ex: L2026-0321" />
+                    <Label>Lote do PA (Automático)</Label>
+                    <Input value={lotePA} onChange={e => setLotePA(e.target.value)} placeholder="PROD-YYYYMMDD-001" />
                   </div>
                   <div>
-                    <Label>Quantidade Programada</Label>
-                    <Input value={qtdProgramada} onChange={e => setQtdProgramada(e.target.value)} placeholder="Ex: 10000 kg" />
+                    <Label>Tempo Mistura Alvo (min)</Label>
+                    <Input type="number" value={tempoMisturaPadrao} onChange={e => setTempoMisturaPadrao(e.target.value)} placeholder="3" />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <Label>Tipo de Ensaque</Label>
+                    <Select value={tipoEmbalagem} onValueChange={setTipoEmbalagem}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Sacos 25kg">Sacos 25kg</SelectItem>
+                        <SelectItem value="Sacos 40kg">Sacos 40kg</SelectItem>
+                        <SelectItem value="Big Bag 1000kg">Big Bag 1000kg</SelectItem>
+                        <SelectItem value="Big Bag 500kg">Big Bag 500kg</SelectItem>
+                        <SelectItem value="Granel">Granel</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label>Local Armazenamento</Label>
+                    <Input value={localArmazenamento} onChange={e => setLocalArmazenamento(e.target.value)} placeholder="Depósito de PA" />
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <Label>Nº de Batidas</Label>
-                    <Input type="number" value={numBatidas} onChange={e => setNumBatidas(e.target.value)} min="1" />
+                    <Input type="number" value={numBatidas} onChange={e => setNumBatidas(e.target.value)} />
                   </div>
                   <div>
                     <Label>Peso por Batida (kg)</Label>
-                    <Input value={pesoBatida} onChange={e => setPesoBatida(e.target.value)} placeholder="Ex: 2000" />
+                    <Input value={pesoBatida} onChange={e => setPesoBatida(e.target.value)} />
                   </div>
+                </div>
+                <div className="p-2 rounded bg-muted/30">
+                  <p className="text-xs text-muted-foreground">Total Programado: <strong>{qtdProgramada} kg</strong></p>
                 </div>
                 <div>
                   <Label>Observações</Label>
