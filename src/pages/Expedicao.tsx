@@ -133,15 +133,20 @@ export default function Expedicao() {
 
   const filtered = useMemo(() => {
     const t = busca.toLowerCase().trim();
+    const l = filtroLote.toLowerCase().trim();
     return expedicoes.filter(e => {
       if (t && !(e.numero_nf?.toLowerCase().includes(t) || e.cliente_nome?.toLowerCase().includes(t) || e.cliente_cnpj?.toLowerCase().includes(t))) return false;
+      if (l) {
+        const itensDaNF = todosItens.filter(i => i.expedicao_id === e.id);
+        if (!itensDaNF.some(i => i.lote_produto?.toLowerCase().includes(l))) return false;
+      }
       if (filtroCliente !== "__all__" && e.cliente_nome !== filtroCliente) return false;
       const data = e.data_saida || e.data_emissao || e.created_at?.slice(0, 10);
       if (dataIni && data && data < dataIni) return false;
       if (dataFim && data && data > dataFim) return false;
       return true;
     });
-  }, [expedicoes, busca, dataIni, dataFim, filtroCliente]);
+  }, [expedicoes, busca, filtroLote, todosItens, dataIni, dataFim, filtroCliente]);
 
   // Dashboard mês corrente
   const dashboard = useMemo(() => {
