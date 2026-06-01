@@ -608,6 +608,10 @@ export default function Expedicao() {
               <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input placeholder="NF, cliente ou CNPJ..." value={busca} onChange={e => setBusca(e.target.value)} className="pl-8 w-64" />
             </div>
+            <div className="relative">
+              <Package className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input placeholder="Filtrar por Lote..." value={filtroLote} onChange={e => setFiltroLote(e.target.value)} className="pl-8 w-48" />
+            </div>
             <div>
               <Label className="text-xs">De</Label>
               <Input type="date" value={dataIni} onChange={e => setDataIni(e.target.value)} className="w-40" />
