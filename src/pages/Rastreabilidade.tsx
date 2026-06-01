@@ -1501,10 +1501,42 @@ export default function Rastreabilidade() {
                     <div className="p-3 rounded-lg bg-accent/5 border border-accent/20">
                       <p className="text-xs font-bold flex items-center gap-1 mb-2"><CheckCircle2 className="w-3 h-3 text-primary" /> MONTANTE (← Matérias-Primas) — {testeResult.montante.length} encontradas</p>
                       {testeResult.montante.length > 0 ? (
-                        <Table><TableHeader><TableRow><TableHead className="py-1 text-xs">Matéria-Prima</TableHead><TableHead className="py-1 text-xs">Lote MP</TableHead><TableHead className="py-1 text-xs">Fornecedor</TableHead></TableRow></TableHeader>
-                          <TableBody>{testeResult.montante.map((m, i) => (<TableRow key={i}><TableCell className="py-1 text-xs">{m.materia_prima}</TableCell><TableCell className="py-1 text-xs font-mono">{m.lote_mp}</TableCell><TableCell className="py-1 text-xs">{m.fornecedor}</TableCell></TableRow>))}</TableBody>
+                        <Table className="border rounded-md">
+                          <TableHeader className="bg-muted/50">
+                            <TableRow>
+                              <TableHead className="py-1 text-[10px] h-8">MP</TableHead>
+                              <TableHead className="py-1 text-[10px] h-8">Lote</TableHead>
+                              <TableHead className="py-1 text-[10px] h-8">Fornecedor</TableHead>
+                              <TableHead className="py-1 text-[10px] h-8">NF / Laudo</TableHead>
+                            </TableRow>
+                          </TableHeader>
+                          <TableBody>
+                            {testeResult.montante.map((m, i) => (
+                              <TableRow key={i}>
+                                <TableCell className="py-1 text-xs">{m.materia_prima}</TableCell>
+                                <TableCell className="py-1 text-xs font-mono">{m.lote_mp}</TableCell>
+                                <TableCell className="py-1 text-xs">{m.fornecedor}</TableCell>
+                                <TableCell className="py-1 text-xs">
+                                  <div className="flex gap-1">
+                                    {m.nota_fiscal_url ? (
+                                      <Button size="icon" variant="ghost" className="h-6 w-6" onClick={() => window.open(m.nota_fiscal_url!, "_blank")} title={`NF: ${m.nota_fiscal || 'Ver'}`}>
+                                        <FileText className="h-3 w-3 text-blue-500" />
+                                      </Button>
+                                    ) : <span className="text-[9px] text-muted-foreground">S/ NF</span>}
+                                    {m.laudo_url ? (
+                                      <Button size="icon" variant="ghost" className="h-6 w-6" onClick={() => window.open(m.laudo_url!, "_blank")} title="Ver Laudo">
+                                        <FlaskConical className="h-3 w-3 text-purple-500" />
+                                      </Button>
+                                    ) : <span className="text-[9px] text-muted-foreground">S/ L</span>}
+                                  </div>
+                                </TableCell>
+                              </TableRow>
+                            ))}
+                          </TableBody>
                         </Table>
-                      ) : <p className="text-xs text-muted-foreground">Nenhuma MP encontrada</p>}
+                      ) : (
+                        <p className="text-xs text-muted-foreground italic">Nenhuma matéria-prima vinculada.</p>
+                      )}
                     </div>
                     <div className="p-3 rounded-lg bg-muted/50 border">
                       <p className="text-xs font-bold flex items-center gap-1 mb-2">
