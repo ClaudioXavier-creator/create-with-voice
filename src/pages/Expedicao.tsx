@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useMemo } from "react";
-import { Plus, Loader2, Truck, Upload, Search, Trash2, FileText, Package, Eye, Download, Pencil, AlertTriangle, TrendingUp, Users, Weight, Filter, CheckCircle2, ClipboardCheck } from "lucide-react";
+import { Plus, Loader2, Truck, Upload, Search, Trash2, FileText, Package, Eye, Download, Pencil, AlertTriangle, TrendingUp, Users, Weight, Filter, CheckCircle2, ClipboardCheck, FileSpreadsheet } from "lucide-react";
+import * as XLSX from "xlsx";
 import { gerarFormExpedicaoSimples, gerarFormExpedicaoCompleta, gerarMapaExpedicaoMAPA } from "@/utils/excelTemplates";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -222,6 +223,80 @@ export default function Expedicao() {
       toast.success(`XML importado: ${novosItens.length} item(ns)`);
     } catch (err: any) {
       toast.error("Erro ao ler XML: " + err.message);
+    }
+  };
+
+  const handleExcelUpload = async (file: File) => {
+    try {
+      const data = await file.arrayBuffer();
+      const workbook = XLSX.read(data);
+      const sheet = workbook.Sheets[workbook.SheetNames[0]];
+      const json = XLSX.utils.sheet_to_json(sheet, { header: 1 }) as any[][];
+
+      if (json.length < 2) {
+        toast.error("Planilha vazia ou sem dados suficientes.");
+        return;
+      }
+
+      // Procura a linha de cabeçalho (pode não ser a primeira)
+      let headerIdx = 0;
+      for (let i = 0; i < Math.min(json.length, 10); i++) {
+        const row = (json[i] || []).map(c => String(c || "").toLowerCase());
+        if (row.some(c => c.includes("cliente") || c.includes("nf") || c.includes("nota") || c.includes("lote"))) {
+          headerIdx = i;
+          break;
+        }
+      }
+
+      const headers = json[headerIdx].map(h => String(h || "").toLowerCase().trim());
+      const findCol = (terms: string[]) => headers.findIndex(h => terms.some(t => h.includes(t)));
+
+      const colNF = findCol(["nf", "nota", "numero", "nº", "faturamento"]);
+      const colCliente = findCol(["cliente", "razao", "destinatario", "nome"]);
+      const colLote = findCol(["lote", "pa", "lote de pa", "lote pa", "rastro"]);
+      const colProd = findCol(["produto", "descricao", "item", "nome do produto"]);
+      const colQtde = findCol(["qtd", "quantidade", "peso", "volume", "liquido"]);
+      const colData = findCol(["data", "emissao", "saida"]);
+      const colPedido = findCol(["pedido", "ordem", "op", "numero pedido"]);
+
+      const firstRow = json[headerIdx + 1];
+      if (!firstRow) return;
+
+      setForm(f => ({
+        ...f,
+        numero_nf: colNF !== -1 ? String(firstRow[colNF] || "") : f.numero_nf,
+        cliente_nome: colCliente !== -1 ? String(firstRow[colCliente] || "") : f.cliente_nome,
+        observacoes: colPedido !== -1 ? `Pedido/OP: ${firstRow[colPedido]}` : f.observacoes,
+      }));
+
+      if (colData !== -1) {
+        const d = firstRow[colData];
+        if (typeof d === 'number') {
+          const date = new Date((d - 25569) * 86400 * 1000);
+          setForm(f => ({ ...f, data_emissao: date.toISOString().slice(0, 10) }));
+        } else if (d) {
+          const dateStr = String(d).split(' ')[0].split('T')[0];
+          if (dateStr.includes('-')) setForm(f => ({ ...f, data_emissao: dateStr }));
+        }
+      }
+
+      const novosItens: Item[] = json.slice(headerIdx + 1).map(row => ({
+        produto: colProd !== -1 ? String(row[colProd] || "") : "Produto não identificado",
+        codigo_produto: "",
+        lote_produto: colLote !== -1 ? String(row[colLote] || "") : "",
+        quantidade: colQtde !== -1 ? parseFloat(String(row[colQtde]).replace(",", ".")) || 0 : 0,
+        unidade: "kg",
+      })).filter(i => (i.produto && i.produto !== "undefined") || (i.lote_produto && i.lote_produto !== "undefined"));
+
+      if (novosItens.length > 0) {
+        setItens(novosItens);
+        setOrigem("manual");
+        toast.success(`Varredura concluída: ${novosItens.length} itens/lotes encontrados.`);
+      } else {
+        toast.warning("Nenhum item válido encontrado na planilha.");
+      }
+    } catch (err: any) {
+      toast.error("Erro ao ler Planilha: " + err.message);
     }
   };
 
@@ -472,6 +547,7 @@ export default function Expedicao() {
                 <Tabs defaultValue="entrada" className="w-full">
                   <TabsList>
                     <TabsTrigger value="entrada"><Upload className="h-4 w-4 mr-2" />Importar XML NF-e</TabsTrigger>
+                    <TabsTrigger value="excel"><FileSpreadsheet className="h-4 w-4 mr-2" />Varredura Excel</TabsTrigger>
                     <TabsTrigger value="simples"><Package className="h-4 w-4 mr-2" />Lista Simples</TabsTrigger>
                     <TabsTrigger value="manual"><FileText className="h-4 w-4 mr-2" />Manual Completo</TabsTrigger>
                   </TabsList>
@@ -498,6 +574,28 @@ export default function Expedicao() {
                           Extrai: NF, cliente, transportadora, motorista, placa, produtos e <strong>lotes (rastro/nLote)</strong>.
                         </p>
                         {origem === "xml" && <Badge variant="secondary" className="mt-3">XML carregado — revise e salve</Badge>}
+                      </CardContent>
+                    </Card>
+                  </TabsContent>
+
+                  <TabsContent value="excel" className="space-y-3">
+                    <Card>
+                      <CardContent className="pt-6">
+                        <Label>Selecione a Planilha de Faturamento/Pedidos</Label>
+                        <Input type="file" accept=".xlsx,.xls,.csv"
+                          onChange={(e) => { const f = e.target.files?.[0]; if (f) handleExcelUpload(f); }}
+                          className="mt-2" />
+                        <div className="mt-3 p-3 bg-secondary/30 rounded-md text-xs space-y-2">
+                          <p className="font-semibold text-primary flex items-center gap-1">
+                            <CheckCircle2 className="h-3 w-3" /> Varredura Inteligente Ativa
+                          </p>
+                          <p className="text-muted-foreground">
+                            O sistema identifica automaticamente colunas de: <strong>Cliente, NF, Pedido, Produto e Lote de PA</strong>.
+                          </p>
+                          <p className="text-muted-foreground italic">
+                            Ideal para empresas que controlam expedição via planilhas de romaneio ou pedidos.
+                          </p>
+                        </div>
                       </CardContent>
                     </Card>
                   </TabsContent>
