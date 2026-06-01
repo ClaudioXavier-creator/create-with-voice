@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useMemo } from "react";
-import { Plus, Loader2, Truck, Upload, Search, Trash2, FileText, Package, Eye, Download, Pencil, AlertTriangle, TrendingUp, Users, Weight, Filter } from "lucide-react";
-import { gerarFormExpedicaoSimples, gerarFormExpedicaoCompleta } from "@/utils/excelTemplates";
+import { Plus, Loader2, Truck, Upload, Search, Trash2, FileText, Package, Eye, Download, Pencil, AlertTriangle, TrendingUp, Users, Weight, Filter, CheckCircle2, ClipboardCheck } from "lucide-react";
+import { gerarFormExpedicaoSimples, gerarFormExpedicaoCompleta, gerarMapaExpedicaoMAPA } from "@/utils/excelTemplates";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
@@ -15,6 +15,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useEmpresa } from "@/hooks/useEmpresa";
 import { toast } from "sonner";
+import { LoteProdutoPicker } from "@/components/expedicao/LoteProdutoPicker";
 
 interface Expedicao {
   id: string;
@@ -42,6 +43,7 @@ interface Item {
   lote_produto: string;
   quantidade: number;
   unidade: string;
+  quantidade_sacos?: number;
   valor_unitario?: number;
   valor_total?: number;
 }
