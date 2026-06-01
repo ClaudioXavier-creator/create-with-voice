@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import { PlayCircle, Plus, CheckCircle2, Clock, AlertTriangle, Loader2, ExternalLink, Filter, CalendarIcon, Bell } from "lucide-react";
+import { PlayCircle, Plus, CheckCircle2, Clock, AlertTriangle, Loader2, ExternalLink, Filter, CalendarIcon, Bell, ShieldCheck } from "lucide-react";
 import { format, parseISO, isAfter, isBefore, differenceInDays } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -37,6 +37,9 @@ interface ExecRow {
   status: string | null;
   observacoes: string | null;
   documento_id: string | null;
+  verificado_por: string | null;
+  data_verificacao: string | null;
+  status_verificacao: string | null;
 }
 
 interface ArquivoRow {
@@ -152,6 +155,24 @@ export default function ExecucaoPops() {
     setSaving(false);
   };
 
+  const handleVerificar = async (id: string) => {
+    if (!user) return;
+    const { data: profile } = await supabase.from('profiles').select('nome').eq('user_id', user.id).single();
+    const verificador = profile?.nome || user.email;
+    
+    const { error } = await supabase.from("execucao_pops").update({
+      verificado_por: verificador,
+      data_verificacao: new Date().toISOString(),
+      status_verificacao: 'aprovado'
+    } as any).eq('id', id);
+
+    if (error) toast.error("Erro ao verificar");
+    else {
+      toast.success("Registro verificado pelo supervisor!");
+      fetchData();
+    }
+  };
+
   const filteredExecucoes = useMemo(() => {
     return execucoes.filter(e => {
       if (filtroStatus !== "todos" && e.status !== filtroStatus) return false;
@@ -257,12 +278,13 @@ export default function ExecucaoPops() {
                           <TableHead>POP/IT</TableHead>
                           <TableHead>Executor</TableHead>
                           <TableHead>Status</TableHead>
+                          <TableHead>Verificação (Supervisor)</TableHead>
                       </TableRow>
                   </TableHeader>
                   <TableBody>
                       {filteredExecucoes.map(e => (
                           <TableRow key={e.id}>
-                              <TableCell className="text-xs font-mono">{e.data_execucao}</TableCell>
+                              <TableCell className="text-xs font-mono">{format(parseISO(e.data_execucao), "dd/MM/yy")}</TableCell>
                               <TableCell>
                                   <p className="font-bold text-xs">{e.codigo_pop}</p>
                                   <p className="text-[10px] text-muted-foreground line-clamp-1">{e.nome_pop}</p>
@@ -272,6 +294,17 @@ export default function ExecucaoPops() {
                                   <Badge variant="outline" className={cn("text-[10px]", statusConfig[e.status || "concluido"].className)}>
                                       {statusConfig[e.status || "concluido"].label}
                                   </Badge>
+                              </TableCell>
+                              <TableCell>
+                                {e.status_verificacao === 'aprovado' ? (
+                                  <Badge variant="outline" className="text-emerald-600 border-emerald-600 gap-1 text-[10px] bg-emerald-50">
+                                    <CheckCircle2 className="w-3 h-3" /> {e.verificado_por}
+                                  </Badge>
+                                ) : (
+                                  <Button size="sm" variant="ghost" className="h-7 text-[10px] gap-1 px-2 text-amber-600 hover:text-amber-700 hover:bg-amber-50" onClick={() => handleVerificar(e.id)}>
+                                    <ShieldCheck className="w-3 h-3" /> Verificar
+                                  </Button>
+                                )}
                               </TableCell>
                           </TableRow>
                       ))}

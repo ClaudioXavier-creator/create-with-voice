@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import { Search, Shield, CheckCircle2, XCircle, AlertTriangle, FileText, ExternalLink, Download, Filter, Loader2 } from "lucide-react";
+import { Search, Shield, CheckCircle2, XCircle, AlertTriangle, FileText, ExternalLink, Download, Filter, Loader2, Printer } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -175,9 +175,14 @@ export default function SalaAuditor() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between flex-wrap gap-2">
               <CardTitle className="font-display text-base">Verificação de Conformidade</CardTitle>
-              <Button size="sm" variant="outline" onClick={exportChecklist}>
-                <Download className="w-4 h-4 mr-1" /> Exportar Checklist
-              </Button>
+              <div className="flex gap-2">
+                <Button size="sm" variant="outline" onClick={() => window.print()} className="hidden sm:flex">
+                  <Printer className="w-4 h-4 mr-1" /> Imprimir Relatório
+                </Button>
+                <Button size="sm" variant="outline" onClick={exportChecklist}>
+                  <Download className="w-4 h-4 mr-1" /> Exportar Checklist
+                </Button>
+              </div>
             </CardHeader>
             <CardContent className="space-y-4">
               {/* Search and Filters */}
@@ -315,7 +320,6 @@ function AuditHistoryTable() {
       const { data, error } = await supabase
         .from("audit_log")
         .select("*")
-        .or("tabela.eq.recebimento_mp,tabela.eq.batida_lotes")
         .order("created_at", { ascending: false })
         .limit(200);
       
