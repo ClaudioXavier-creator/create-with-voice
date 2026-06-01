@@ -153,11 +153,4 @@ export const NAV_ENTRIES: NavEntry[] = [
   // --- OUTROS ---
   { path: "/modo-tablet", label: "Factory / Modo Tablet", icon: Tablet },
 
-  // --- PORTAL DE GESTÃO (PARA ADMINISTRADORES) ---
-  {
-    path: "/admin",
-    label: "Portal de Gestão & Vendas",
-    icon: ShieldCheck,
-    requiredEmail: SUPER_ADMIN_EMAILS,
-  },
 ];
