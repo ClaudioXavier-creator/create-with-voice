@@ -627,8 +627,8 @@ export default function Expedicao() {
                 {clientesUnicos.map(c => <option key={c} value={c}>{c}</option>)}
               </select>
             </div>
-            {(busca || dataIni || dataFim || filtroCliente !== "__all__") && (
-              <Button variant="ghost" size="sm" onClick={() => { setBusca(""); setDataIni(""); setDataFim(""); setFiltroCliente("__all__"); }}>
+            {(busca || filtroLote || dataIni || dataFim || filtroCliente !== "__all__") && (
+              <Button variant="ghost" size="sm" onClick={() => { setBusca(""); setFiltroLote(""); setDataIni(""); setDataFim(""); setFiltroCliente("__all__"); }}>
                 <Filter className="h-3 w-3 mr-1" />Limpar
               </Button>
             )}
