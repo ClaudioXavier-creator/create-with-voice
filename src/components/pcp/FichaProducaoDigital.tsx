@@ -31,6 +31,9 @@ interface Ordem {
   numero_batidas: number | null;
   volume_misturador_kg: number | null;
   quantidade_sacos: number | null;
+  tempo_mistura_padrao_minutos: number | null;
+  tipo_embalagem: string | null;
+  local_armazenamento: string | null;
   data_programada: string;
   proximo_produto: string | null;
   necessita_flushing: boolean | null;
@@ -84,6 +87,9 @@ export default function FichaProducaoDigital({ ordemId, onClose }: Props) {
   const [materialFlush, setMaterialFlush] = useState("");
   const [verifResp, setVerifResp] = useState("");
   const [verifData, setVerifData] = useState("");
+  const [tempoMisturaAlvo, setTempoMisturaAlvo] = useState("3");
+  const [tipoEmb, setTipoEmb] = useState("");
+  const [localArm, setLocalArm] = useState("");
 
   const printRef = useRef<HTMLDivElement>(null);
 
@@ -102,6 +108,9 @@ export default function FichaProducaoDigital({ ordemId, onClose }: Props) {
       setMaterialFlush(o.material_flushing || "");
       setVerifResp(o.verificacao_responsavel || "");
       setVerifData(o.verificacao_data || "");
+      setTempoMisturaAlvo(o.tempo_mistura_padrao_minutos?.toString() || "3");
+      setTipoEmb(o.tipo_embalagem || "");
+      setLocalArm(o.local_armazenamento || "");
 
       if (o.formula_id) {
         const { data: ings } = await supabase
@@ -145,6 +154,9 @@ export default function FichaProducaoDigital({ ordemId, onClose }: Props) {
       material_flushing: materialFlush,
       verificacao_responsavel: verifResp,
       verificacao_data: verifData || null,
+      tempo_mistura_padrao_minutos: parseInt(tempoMisturaAlvo) || 3,
+      tipo_embalagem: tipoEmb,
+      local_armazenamento: localArm,
     } as any).eq("id", ordemId);
     if (error) toast.error("Erro: " + error.message);
     else { toast.success("Ficha atualizada!"); fetchData(); }
@@ -311,7 +323,15 @@ export default function FichaProducaoDigital({ ordemId, onClose }: Props) {
         </div>
         <div>
           <p class="text-xs font-semibold uppercase text-gray-500">Qtd. Sacos</p>
-          <p class="text-sm font-bold">${qtdSacos || '---'}</p>
+          <p class="text-sm font-bold">${qtdSacos || '---'} (${tipoEmb || 'Sacos 25kg'})</p>
+        </div>
+        <div>
+          <p class="text-xs font-semibold uppercase text-gray-500">Tempo Mistura</p>
+          <p class="text-sm font-bold">${tempoMisturaAlvo} min (alvo)</p>
+        </div>
+        <div>
+          <p class="text-xs font-semibold uppercase text-gray-500">Local Estocagem</p>
+          <p class="text-sm font-bold">${localArm || 'Expedição'}</p>
         </div>
         <div>
           <p class="text-xs font-semibold uppercase text-gray-500">Próximo Produto</p>
@@ -435,12 +455,26 @@ export default function FichaProducaoDigital({ ordemId, onClose }: Props) {
               <Input type="number" min={1} max={20} value={numBatidas} onChange={e => setNumBatidas(parseInt(e.target.value) || 1)} />
             </div>
             <div>
-              <Label>Quantidade de Sacos</Label>
+              <Label>Qtd. Sacos / Volume</Label>
               <Input type="number" value={qtdSacos} onChange={e => setQtdSacos(e.target.value)} />
             </div>
-            <div className="flex items-end">
-              <p className="text-xs text-muted-foreground">
-                Total: <strong>{(volumeMist * numBatidas).toLocaleString("pt-BR")} kg</strong>
+            <div>
+              <Label>Tempo Mistura Alvo (min)</Label>
+              <Input type="number" value={tempoMisturaAlvo} onChange={e => setTempoMisturaAlvo(e.target.value)} />
+            </div>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <div>
+              <Label>Tipo Ensaque</Label>
+              <Input value={tipoEmb} onChange={e => setTipoEmb(e.target.value)} placeholder="Sacos 25kg" />
+            </div>
+            <div>
+              <Label>Local Armazenamento</Label>
+              <Input value={localArm} onChange={e => setLocalArm(e.target.value)} placeholder="Expedição" />
+            </div>
+            <div className="flex items-end col-span-2">
+              <p className="text-xs text-muted-foreground pb-2">
+                Total: <strong>{(volumeMist * numBatidas).toLocaleString("pt-BR")} kg</strong> | {(volumeMist * numBatidas / 25).toFixed(1)} sacos equivalentes (25kg)
               </p>
             </div>
           </div>

@@ -16,6 +16,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useEmpresa } from "@/hooks/useEmpresa";
 import FichaProducaoDigital from "@/components/pcp/FichaProducaoDigital";
 import PlanejamentoDoDia from "@/components/pcp/PlanejamentoDoDia";
+import SequenciamentoPlanilha from "@/components/pcp/SequenciamentoPlanilha";
 import { printElement } from "@/utils/printUtils";
 import { toast } from "sonner";
 
@@ -107,6 +108,9 @@ export default function PCP() {
   const [motivoRetrabalho, setMotivoRetrabalho] = useState("");
   const [qtdSobra, setQtdSobra] = useState("");
   const [destinoSobra, setDestinoSobra] = useState("");
+  const [tempoMisturaPadrao, setTempoMisturaPadrao] = useState("3");
+  const [tipoEmbalagem, setTipoEmbalagem] = useState("Sacos 25kg");
+  const [localArmazenamento, setLocalArmazenamento] = useState("Depósito de PA");
   const [ingredientesFormulaSelecionada, setIngredientesFormulaSelecionada] = useState<any[]>([]);
 
 
@@ -264,11 +268,14 @@ export default function PCP() {
       motivo_retrabalho: motivoRetrabalho || null,
       quantidade_sobra: qtdSobra || null,
       destino_sobra: destinoSobra || null,
+      tempo_mistura_padrao_minutos: parseInt(tempoMisturaPadrao) || 3,
+      tipo_embalagem: tipoEmbalagem,
+      local_armazenamento: localArmazenamento,
       status: "programada"
     } as any).select().single();
 
     if (error) {
-      toast.error("Erro ao salvar ordem");
+      toast.error("Erro ao salvar ordem: " + error.message);
     } else {
       if (formulaId && ingredientesFormulaSelecionada.length > 0) {
         const totalKgFormula = ingredientesFormulaSelecionada.reduce((acc, curr) => acc + (parseFloat(curr.quantidade_kg) || 0), 0);
@@ -295,11 +302,12 @@ export default function PCP() {
         }
       }
 
-      toast.success("Ordem criada!");
+      toast.success("Ordem criada com parâmetros de BPF!");
       setOrdemOpen(false);
       setNumOrdem(""); setProduto(""); setFormulaId(""); setFormulaNome(""); setLotePA(""); setQtdProgramada("");
       setNumBatidas("1"); setPesoBatida(""); setPrioridade("normal"); setObsOrdem("");
       setTipoOrdem("normal"); setOrdemOrigemId(""); setMotivoRetrabalho(""); setQtdSobra(""); setDestinoSobra("");
+      setTempoMisturaPadrao("3"); setTipoEmbalagem("Sacos 25kg"); setLocalArmazenamento("Depósito de PA");
       setIngredientesFormulaSelecionada([]);
       fetchData();
     }
@@ -502,6 +510,12 @@ export default function PCP() {
         }))}
         matriz={matrizSensibilidade as any}
         onAplicado={fetchData}
+      />
+
+      {/* ── PLANILHA DE SEQUENCIAMENTO COMPLETA ── */}
+      <SequenciamentoPlanilha
+        ordens={ordens as any}
+        matriz={matrizSensibilidade as any}
       />
 
       {/* ── SEQUENCIAMENTO DE PRODUÇÃO — PREVENÇÃO CONTAMINAÇÃO CRUZADA (visão geral) ── */}
@@ -728,23 +742,45 @@ export default function PCP() {
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <Label>Lote do PA</Label>
-                    <Input value={lotePA} onChange={e => setLotePA(e.target.value)} placeholder="Ex: L2026-0321" />
+                    <Label>Lote do PA (Automático)</Label>
+                    <Input value={lotePA} onChange={e => setLotePA(e.target.value)} placeholder="PROD-YYYYMMDD-001" />
                   </div>
                   <div>
-                    <Label>Quantidade Programada</Label>
-                    <Input value={qtdProgramada} onChange={e => setQtdProgramada(e.target.value)} placeholder="Ex: 10000 kg" />
+                    <Label>Tempo Mistura Alvo (min)</Label>
+                    <Input type="number" value={tempoMisturaPadrao} onChange={e => setTempoMisturaPadrao(e.target.value)} placeholder="3" />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <Label>Tipo de Ensaque</Label>
+                    <Select value={tipoEmbalagem} onValueChange={setTipoEmbalagem}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Sacos 25kg">Sacos 25kg</SelectItem>
+                        <SelectItem value="Sacos 40kg">Sacos 40kg</SelectItem>
+                        <SelectItem value="Big Bag 1000kg">Big Bag 1000kg</SelectItem>
+                        <SelectItem value="Big Bag 500kg">Big Bag 500kg</SelectItem>
+                        <SelectItem value="Granel">Granel</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label>Local Armazenamento</Label>
+                    <Input value={localArmazenamento} onChange={e => setLocalArmazenamento(e.target.value)} placeholder="Depósito de PA" />
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <Label>Nº de Batidas</Label>
-                    <Input type="number" value={numBatidas} onChange={e => setNumBatidas(e.target.value)} min="1" />
+                    <Input type="number" value={numBatidas} onChange={e => setNumBatidas(e.target.value)} />
                   </div>
                   <div>
                     <Label>Peso por Batida (kg)</Label>
-                    <Input value={pesoBatida} onChange={e => setPesoBatida(e.target.value)} placeholder="Ex: 2000" />
+                    <Input value={pesoBatida} onChange={e => setPesoBatida(e.target.value)} />
                   </div>
+                </div>
+                <div className="p-2 rounded bg-muted/30">
+                  <p className="text-xs text-muted-foreground">Total Programado: <strong>{qtdProgramada} kg</strong></p>
                 </div>
                 <div>
                   <Label>Observações</Label>
