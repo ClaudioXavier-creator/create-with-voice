@@ -3461,6 +3461,7 @@ export type Database = {
           formula_id: string | null
           formula_nome: string
           id: string
+          local_armazenamento: string | null
           lote_produto: string | null
           material_flushing: string | null
           motivo_retrabalho: string | null
@@ -3478,6 +3479,8 @@ export type Database = {
           quantidade_sobra: string | null
           sequencia_producao: number | null
           status: string | null
+          tempo_mistura_padrao_minutos: number | null
+          tipo_embalagem: string | null
           tipo_ordem: string
           unidade: string | null
           updated_at: string
@@ -3494,6 +3497,7 @@ export type Database = {
           formula_id?: string | null
           formula_nome?: string
           id?: string
+          local_armazenamento?: string | null
           lote_produto?: string | null
           material_flushing?: string | null
           motivo_retrabalho?: string | null
@@ -3511,6 +3515,8 @@ export type Database = {
           quantidade_sobra?: string | null
           sequencia_producao?: number | null
           status?: string | null
+          tempo_mistura_padrao_minutos?: number | null
+          tipo_embalagem?: string | null
           tipo_ordem?: string
           unidade?: string | null
           updated_at?: string
@@ -3527,6 +3533,7 @@ export type Database = {
           formula_id?: string | null
           formula_nome?: string
           id?: string
+          local_armazenamento?: string | null
           lote_produto?: string | null
           material_flushing?: string | null
           motivo_retrabalho?: string | null
@@ -3544,6 +3551,8 @@ export type Database = {
           quantidade_sobra?: string | null
           sequencia_producao?: number | null
           status?: string | null
+          tempo_mistura_padrao_minutos?: number | null
+          tipo_embalagem?: string | null
           tipo_ordem?: string
           unidade?: string | null
           updated_at?: string
