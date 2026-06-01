@@ -42,7 +42,7 @@ export default function LandingPageBPF() {
           <div className="font-bold text-2xl text-[#173404]">BPF<span className="text-[#97C459]">_Consult</span></div>
         </div>
         <div className="flex items-center gap-4">
-          <Button variant="ghost" onClick={() => navigate("/admin-access")} className="hidden sm:flex text-slate-600 font-medium">Acessar CRM</Button>
+          
           <Button variant="ghost" onClick={() => navigate("/auth")} className="hidden sm:flex text-slate-600 font-medium">Entrar</Button>
           <Button onClick={scrollToContact} className="bg-[#173404] text-white rounded-full px-6">Agendar Demo</Button>
         </div>
