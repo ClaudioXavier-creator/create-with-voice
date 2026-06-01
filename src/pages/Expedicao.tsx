@@ -302,6 +302,7 @@ export default function Expedicao() {
       lote_produto: i.lote_produto,
       quantidade: i.quantidade || 0,
       unidade: i.unidade,
+      quantidade_sacos: i.quantidade_sacos || null,
       valor_unitario: i.valor_unitario || null,
       valor_total: i.valor_total || null,
     }));
