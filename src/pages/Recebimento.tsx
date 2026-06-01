@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Package, Plus, CheckCircle2, Loader2, Search, FileText, Download, Truck, AlertTriangle, ShieldAlert, FlaskConical } from "lucide-react";
+import { Package, Plus, CheckCircle2, Loader2, Search, FileText, Download, Truck, AlertTriangle, ShieldAlert, FlaskConical, Printer } from "lucide-react";
 import FileUploadComponent from "@/components/FileUpload";
 import { registrarAuditLog } from "@/utils/auditLog";
 import { gerarHashIntegridade, adicionarRodapeIntegridade } from "@/utils/integridade";
@@ -18,6 +18,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useEmpresa } from "@/hooks/useEmpresa";
 import { toast } from "sonner";
+import { printElement } from "@/utils/printUtils";
 
 interface RecebimentoRow {
   id: string;
