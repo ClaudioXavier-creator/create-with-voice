@@ -109,6 +109,7 @@ export default function Rastreabilidade() {
   const [testeTime, setTesteTime] = useState(0);
   const [certData, setCertData] = useState<any>(null);
   const certRef = useRef<HTMLDivElement>(null);
+  const mapaRef = useRef<HTMLDivElement>(null);
 
   const [testeResult, setTesteResult] = useState<TesteResult | null>(null);
   const [testeSaving, setTesteSaving] = useState(false);
