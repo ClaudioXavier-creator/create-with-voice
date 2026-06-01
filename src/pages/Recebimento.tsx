@@ -348,8 +348,7 @@ export default function Recebimento() {
                     </Button>
                   )}
                   <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => {
-                    const el = document.getElementById(`print-rec-${item.id}`);
-                    if (el) printElement(el);
+                    printElement(`print-rec-${item.id}`);
                   }} title="Imprimir Ficha de Recebimento">
                     <Printer className="h-4 w-4 text-gray-500" />
                   </Button>
