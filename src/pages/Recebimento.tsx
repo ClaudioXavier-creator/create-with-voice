@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Package, Plus, CheckCircle2, Loader2, Search, FileText, Download, Truck, AlertTriangle, ShieldAlert } from "lucide-react";
+import { Package, Plus, CheckCircle2, Loader2, Search, FileText, Download, Truck, AlertTriangle, ShieldAlert, FlaskConical } from "lucide-react";
 import FileUploadComponent from "@/components/FileUpload";
 import { registrarAuditLog } from "@/utils/auditLog";
 import { gerarHashIntegridade, adicionarRodapeIntegridade } from "@/utils/integridade";
