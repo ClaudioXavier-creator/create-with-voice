@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { Package, Plus, CheckCircle2, Loader2, Search, FileText, Download, Truck, AlertTriangle, ShieldAlert, FlaskConical, Printer } from "lucide-react";
+import { Package, Plus, CheckCircle2, Loader2, Search, FileText, Download, Truck, AlertTriangle, ShieldAlert, FlaskConical, Printer, Camera } from "lucide-react";
+
 import FileUploadComponent from "@/components/FileUpload";
 import { registrarAuditLog } from "@/utils/auditLog";
 import { gerarHashIntegridade, adicionarRodapeIntegridade } from "@/utils/integridade";
@@ -13,6 +14,8 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
 import PageHeader from "@/components/PageHeader";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -51,7 +54,9 @@ export default function Recebimento() {
   const [items, setItems] = useState<RecebimentoRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [isScanning, setIsScanning] = useState(false);
   const [open, setOpen] = useState(false);
+
   const [busca, setBusca] = useState("");
 
   const [fornecedor, setFornecedor] = useState("");
@@ -92,8 +97,40 @@ export default function Recebimento() {
   };
 
   useEffect(() => { fetchData(); }, [user, empresaAtiva]);
+  
+  const handlePhotoUpload = async (file: File) => {
+    try {
+      setIsScanning(true);
+      const formData = new FormData();
+      formData.append('file', file);
+      
+      const { data, error } = await supabase.functions.invoke('process-document', {
+        body: formData,
+      });
+
+      if (error) throw error;
+
+      if (data) {
+        setFornecedor(data.fornecedor_nome || data.cliente_nome || fornecedor);
+        setMateriaPrima(data.materia_prima || materiaPrima);
+        setLote(data.lote || lote);
+        setNumNF(data.numero_nf || numNF);
+        setQuantidade(data.quantidade?.toString() || quantidade);
+        if (data.unidade) setUnidade(data.unidade);
+        setObservacoes(data.observacoes || observacoes);
+        
+        toast.success("Documento processado por IA com sucesso!");
+      }
+    } catch (err: any) {
+      console.error("Erro OCR:", err);
+      toast.error("Erro ao processar imagem. Verifique a iluminação.");
+    } finally {
+      setIsScanning(false);
+    }
+  };
 
   const handleAdd = async () => {
+
     if (!fornecedor || !materiaPrima || !user) return;
     setSaving(true);
     
@@ -197,8 +234,38 @@ export default function Recebimento() {
           <DialogTrigger asChild><Button><Plus className="mr-2" /> Novo</Button></DialogTrigger>
           <DialogContent>
             <DialogHeader><DialogTitle>Receber MP</DialogTitle></DialogHeader>
-            <div className="space-y-4 max-h-[70vh] overflow-y-auto pr-2">
+            <div className="space-y-4 max-h-[70vh] overflow-y-auto pr-2 pt-2">
+              <Tabs defaultValue="manual" className="mb-4">
+                <TabsList className="grid w-full grid-cols-2">
+                  <TabsTrigger value="manual">Manual</TabsTrigger>
+                  <TabsTrigger value="foto" className="flex items-center gap-1">
+                    <Camera className="h-3 w-3" /> Captura por IA
+                  </TabsTrigger>
+                </TabsList>
+                <TabsContent value="foto" className="pt-2">
+                  <div className="flex flex-col items-center justify-center p-4 border-2 border-dashed border-primary/20 rounded-lg bg-primary/5">
+                    <Camera className="h-8 w-8 text-primary/40 mb-2" />
+                    <p className="text-xs font-medium text-center">Tire foto do Romaneio ou NF de Recebimento</p>
+                    <p className="text-[10px] text-muted-foreground mb-3">Ideal para documentos manuscritos</p>
+                    <Input type="file" accept="image/*" capture="environment"
+                      onChange={(e) => { const f = e.target.files?.[0]; if (f) handlePhotoUpload(f); }}
+                      className="hidden" id="photo-upload-rec" />
+                    <Button asChild disabled={isScanning} size="sm" variant="outline">
+                      <label htmlFor="photo-upload-rec" className="cursor-pointer">
+                        {isScanning ? (
+                          <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Processando...</>
+                        ) : (
+                          <><Camera className="h-4 w-4 mr-2" /> Capturar Documento</>
+                        )}
+                      </label>
+                    </Button>
+                  </div>
+                </TabsContent>
+                <TabsContent value="manual" />
+              </Tabs>
+
               <div className="grid grid-cols-2 gap-4">
+
                 <div className="space-y-2">
                   <Label>Fornecedor</Label>
                   <Input placeholder="Ex: Fornecedor Ltda" value={fornecedor} onChange={e => setFornecedor(e.target.value)} />
