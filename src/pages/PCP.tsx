@@ -512,6 +512,12 @@ export default function PCP() {
         onAplicado={fetchData}
       />
 
+      {/* ── PLANILHA DE SEQUENCIAMENTO COMPLETA ── */}
+      <SequenciamentoPlanilha
+        ordens={ordens as any}
+        matriz={matrizSensibilidade as any}
+      />
+
       {/* ── SEQUENCIAMENTO DE PRODUÇÃO — PREVENÇÃO CONTAMINAÇÃO CRUZADA (visão geral) ── */}
       <Card className="mb-6 border-yellow-500/20">
         <CardHeader className="flex flex-row items-center justify-between">
