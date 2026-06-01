@@ -470,7 +470,6 @@ export default function FichaProducaoDigital({ ordemId, onClose }: Props) {
               </p>
             </div>
           </div>
-          </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <div>
               <Label>Próximo produto a produzir</Label>
