@@ -386,6 +386,13 @@ export default function Rastreabilidade() {
       const elapsed = 2;
       setTesteTime(elapsed);
       setTesteResult({ lote, produto: produtoNome, montante: uniqueMontante, jusante: uniqueJusante, tempoSegundos: elapsed });
+      setCertData({ 
+        lote, 
+        produto: produtoNome, 
+        montante: uniqueMontante, 
+        jusante: uniqueJusante, 
+        data_teste: new Date().toLocaleDateString('pt-BR') 
+      });
       toast.success(`Rastreabilidade completa do lote ${lote} em ${elapsed}s!`);
     }, 2000);
   };
