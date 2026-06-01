@@ -154,6 +154,9 @@ export default function FichaProducaoDigital({ ordemId, onClose }: Props) {
       material_flushing: materialFlush,
       verificacao_responsavel: verifResp,
       verificacao_data: verifData || null,
+      tempo_mistura_padrao_minutos: parseInt(tempoMisturaAlvo) || 3,
+      tipo_embalagem: tipoEmb,
+      local_armazenamento: localArm,
     } as any).eq("id", ordemId);
     if (error) toast.error("Erro: " + error.message);
     else { toast.success("Ficha atualizada!"); fetchData(); }
