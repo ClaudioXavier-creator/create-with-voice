@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import { PlayCircle, Plus, CheckCircle2, Clock, AlertTriangle, Loader2, ExternalLink, Filter, CalendarIcon, Bell } from "lucide-react";
+import { PlayCircle, Plus, CheckCircle2, Clock, AlertTriangle, Loader2, ExternalLink, Filter, CalendarIcon, Bell, ShieldCheck } from "lucide-react";
 import { format, parseISO, isAfter, isBefore, differenceInDays } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -37,6 +37,9 @@ interface ExecRow {
   status: string | null;
   observacoes: string | null;
   documento_id: string | null;
+  verificado_por: string | null;
+  data_verificacao: string | null;
+  status_verificacao: string | null;
 }
 
 interface ArquivoRow {
@@ -150,6 +153,24 @@ export default function ExecucaoPops() {
       fetchData();
     }
     setSaving(false);
+  };
+
+  const handleVerificar = async (id: string) => {
+    if (!user) return;
+    const { data: profile } = await supabase.from('profiles').select('nome').eq('user_id', user.id).single();
+    const verificador = profile?.nome || user.email;
+    
+    const { error } = await supabase.from("execucao_pops").update({
+      verificado_por: verificador,
+      data_verificacao: new Date().toISOString(),
+      status_verificacao: 'aprovado'
+    } as any).eq('id', id);
+
+    if (error) toast.error("Erro ao verificar");
+    else {
+      toast.success("Registro verificado pelo supervisor!");
+      fetchData();
+    }
   };
 
   const filteredExecucoes = useMemo(() => {
