@@ -12,7 +12,7 @@ serve(async (req) => {
 
   try {
     const formData = await req.formData()
-    const file = formData.get('file')
+    const file = formData.get('file') as File
 
     if (!file) {
       return new Response(JSON.stringify({ error: 'No file uploaded' }), {
@@ -21,27 +21,75 @@ serve(async (req) => {
       })
     }
 
-    // Simulando processamento por IA/OCR
-    // Em um cenário real, aqui chamaríamos uma API como Google Vision, AWS Textract ou OpenAI Vision
-    // Para este protótipo, vamos retornar uma estrutura de exemplo que demonstra a capacidade
-    
-    console.log("Processando arquivo:", (file as File).name)
-
-    const mockData = {
-      numero_nf: Math.floor(Math.random() * 100000).toString(),
-      cliente_nome: "Cliente Identificado por Foto",
-      data_emissao: new Date().toISOString().slice(0, 10),
-      observacoes: "Documento processado via Captura de Imagem (OCR)",
-      itens: [
-        { produto: "Produto Detectado na Imagem", lote_produto: "LOTE-FOTO-001", quantidade: 1000, unidade: "kg" }
-      ]
+    const openAiKey = Deno.env.get('OPENAI_API_KEY')
+    if (!openAiKey) {
+      console.warn("OPENAI_API_KEY não configurada, retornando mock.")
+      return new Response(JSON.stringify({
+        numero_nf: "MOCK-" + Math.floor(Math.random() * 1000).toString(),
+        cliente_nome: "Simulação: Configure a OPENAI_API_KEY",
+        data_emissao: new Date().toISOString().slice(0, 10),
+        observacoes: "Mock: Chave API OpenAI ausente.",
+        itens: [{ produto: "Item de Teste", lote_produto: "LOTE-MOCK", quantidade: 1, unidade: "kg" }]
+      }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 200,
+      })
     }
 
-    return new Response(JSON.stringify(mockData), {
+    const arrayBuffer = await file.arrayBuffer()
+    const base64Image = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)))
+
+    console.log(`Enviando imagem (${file.name}) para OpenAI Vision...`)
+
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${openAiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: "gpt-4o-mini",
+        messages: [
+          {
+            role: "system",
+            content: "Você é um assistente especializado em extrair dados de documentos de expedição, romaneios e notas fiscais (inclusive manuscritos). Retorne apenas um JSON puro, sem markdown, contendo: numero_nf (string), cliente_nome (string), data_emissao (string YYYY-MM-DD), observacoes (string) e itens (array de objetos com: produto, lote_produto, quantidade, unidade)."
+          },
+          {
+            role: "user",
+            content: [
+              {
+                type: "text",
+                text: "Extraia os dados deste documento de expedição. Se houver campos escritos à mão, tente decifrá-los cuidadosamente, especialmente o lote e a quantidade. Se não encontrar um campo, deixe-o vazio ou null."
+              },
+              {
+                type: "image_url",
+                image_url: {
+                  url: `data:${file.type};base64,${base64Image}`
+                }
+              }
+            ]
+          }
+        ],
+        response_format: { type: "json_object" },
+        max_tokens: 1000,
+      }),
+    })
+
+    const result = await response.json()
+    console.log("Resposta da OpenAI recebida.")
+
+    if (result.error) {
+      throw new Error(result.error.message)
+    }
+
+    const extraction = JSON.parse(result.choices[0].message.content)
+
+    return new Response(JSON.stringify(extraction), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       status: 200,
     })
   } catch (error) {
+    console.error("Erro no process-document:", error)
     return new Response(JSON.stringify({ error: error.message }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       status: 500,
