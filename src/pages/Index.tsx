@@ -21,6 +21,7 @@ import { DashboardOperationalHealth } from "@/components/dashboard/DashboardOper
 import { DashboardRecentNCs } from "@/components/dashboard/DashboardRecentNCs";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { DashboardPopStatus } from "@/components/dashboard/DashboardPopStatus";
 
 const getPeriodoCutoff = (periodo: string) => {
   if (periodo === "todos") return null;
@@ -190,6 +191,7 @@ export default function Index() {
         <div className="space-y-6">
           <DashboardPriorities acoes={data.acoesPrioritarias} />
           <DashboardOperationalHealth items={data.saudeOperacional} />
+          <DashboardPopStatus execucoes={data.execucoes} />
           <DashboardAlerts alertas={data.alertasVencimento} />
         </div>
       </div>
