@@ -41,7 +41,14 @@ interface RastreabilidadeRow {
 interface TesteResult {
   lote: string;
   produto: string;
-  montante: { materia_prima: string; lote_mp: string; fornecedor: string }[];
+  montante: { 
+    materia_prima: string; 
+    lote_mp: string; 
+    fornecedor: string; 
+    nota_fiscal?: string | null;
+    nota_fiscal_url?: string | null;
+    laudo_url?: string | null;
+  }[];
   jusante: { cliente: string; local: string; nf: string; data_venda: string }[];
   tempoSegundos: number;
 }
@@ -344,11 +351,18 @@ export default function Rastreabilidade() {
     }
 
     const produtoNome = lotRecords[0].produto;
-    const montante = lotRecords.map(r => ({
-      materia_prima: r.materia_prima,
-      lote_mp: r.lote_mp || "—",
-      fornecedor: r.fornecedor || "—",
-    }));
+    const montante = lotRecords.map(r => {
+      // Tentar encontrar o recebimento correspondente para pegar a NF e Laudo
+      const rec = recebimentos.find(rc => rc.materia_prima === r.materia_prima && rc.lote === r.lote_mp);
+      return {
+        materia_prima: r.materia_prima,
+        lote_mp: r.lote_mp || "—",
+        fornecedor: r.fornecedor || "—",
+        nota_fiscal: rec?.numero_nota_fiscal || null,
+        nota_fiscal_url: rec?.nota_fiscal_url || null,
+        laudo_url: rec?.certificado_analise_url || null, // Usamos o certificado_analise_url como laudo principal
+      };
+    });
     const jusante = lotRecords
       .filter(r => r.cliente_destino)
       .map(r => ({
