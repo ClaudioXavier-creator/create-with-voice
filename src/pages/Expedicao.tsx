@@ -535,10 +535,21 @@ export default function Expedicao() {
                       const recall = it.lote_produto && lotesEmRecall.has(it.lote_produto);
                       return (
                         <div key={idx} className={`grid grid-cols-12 gap-2 items-end border-b pb-2 ${recall ? "bg-destructive/10 rounded p-2" : ""}`}>
-                          <div className="col-span-4"><Label className="text-xs">Produto *</Label><Input value={it.produto} onChange={e => updateItem(idx, "produto", e.target.value)} /></div>
-                          <div className="col-span-2"><Label className="text-xs flex items-center gap-1">Lote *{recall && <AlertTriangle className="h-3 w-3 text-destructive" />}</Label><Input value={it.lote_produto} onChange={e => updateItem(idx, "lote_produto", e.target.value)} placeholder="lote PA" className={recall ? "border-destructive" : ""} /></div>
-                          <div className="col-span-2"><Label className="text-xs">Qtde</Label><Input type="number" value={it.quantidade} onChange={e => updateItem(idx, "quantidade", Number(e.target.value))} /></div>
+                          <div className="col-span-3"><Label className="text-xs">Produto *</Label><Input value={it.produto} onChange={e => updateItem(idx, "produto", e.target.value)} /></div>
+                          <div className="col-span-3">
+                            <Label className="text-xs flex items-center gap-1">Lote *{recall && <AlertTriangle className="h-3 w-3 text-destructive" />}</Label>
+                            <LoteProdutoPicker 
+                              value={it.lote_produto} 
+                              produtoNome={it.produto}
+                              onChange={(lote, prod) => {
+                                updateItem(idx, "lote_produto", lote);
+                                if (prod) updateItem(idx, "produto", prod);
+                              }} 
+                            />
+                          </div>
+                          <div className="col-span-1"><Label className="text-xs">Qtde</Label><Input type="number" value={it.quantidade} onChange={e => updateItem(idx, "quantidade", Number(e.target.value))} /></div>
                           <div className="col-span-1"><Label className="text-xs">Un.</Label><Input value={it.unidade} onChange={e => updateItem(idx, "unidade", e.target.value)} /></div>
+                          <div className="col-span-1"><Label className="text-xs">Sacos</Label><Input type="number" value={it.quantidade_sacos} onChange={e => updateItem(idx, "quantidade_sacos", Number(e.target.value))} placeholder="ex: 20" /></div>
                           <div className="col-span-2"><Label className="text-xs">Cód. Prod.</Label><Input value={it.codigo_produto} onChange={e => updateItem(idx, "codigo_produto", e.target.value)} /></div>
                           <div className="col-span-1">
                             <Button size="icon" variant="ghost" onClick={() => setItens(itens.filter((_, i) => i !== idx))} disabled={itens.length === 1}>
