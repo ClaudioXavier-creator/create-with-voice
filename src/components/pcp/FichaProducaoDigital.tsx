@@ -323,7 +323,15 @@ export default function FichaProducaoDigital({ ordemId, onClose }: Props) {
         </div>
         <div>
           <p class="text-xs font-semibold uppercase text-gray-500">Qtd. Sacos</p>
-          <p class="text-sm font-bold">${qtdSacos || '---'}</p>
+          <p class="text-sm font-bold">${qtdSacos || '---'} (${tipoEmb || 'Sacos 25kg'})</p>
+        </div>
+        <div>
+          <p class="text-xs font-semibold uppercase text-gray-500">Tempo Mistura</p>
+          <p class="text-sm font-bold">${tempoMisturaAlvo} min (alvo)</p>
+        </div>
+        <div>
+          <p class="text-xs font-semibold uppercase text-gray-500">Local Estocagem</p>
+          <p class="text-sm font-bold">${localArm || 'Expedição'}</p>
         </div>
         <div>
           <p class="text-xs font-semibold uppercase text-gray-500">Próximo Produto</p>
