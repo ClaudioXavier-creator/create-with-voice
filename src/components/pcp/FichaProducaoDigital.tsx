@@ -447,14 +447,29 @@ export default function FichaProducaoDigital({ ordemId, onClose }: Props) {
               <Input type="number" min={1} max={20} value={numBatidas} onChange={e => setNumBatidas(parseInt(e.target.value) || 1)} />
             </div>
             <div>
-              <Label>Quantidade de Sacos</Label>
+              <Label>Qtd. Sacos / Volume</Label>
               <Input type="number" value={qtdSacos} onChange={e => setQtdSacos(e.target.value)} />
             </div>
-            <div className="flex items-end">
-              <p className="text-xs text-muted-foreground">
-                Total: <strong>{(volumeMist * numBatidas).toLocaleString("pt-BR")} kg</strong>
+            <div>
+              <Label>Tempo Mistura Alvo (min)</Label>
+              <Input type="number" value={tempoMisturaAlvo} onChange={e => setTempoMisturaAlvo(e.target.value)} />
+            </div>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <div>
+              <Label>Tipo Ensaque</Label>
+              <Input value={tipoEmb} onChange={e => setTipoEmb(e.target.value)} placeholder="Sacos 25kg" />
+            </div>
+            <div>
+              <Label>Local Armazenamento</Label>
+              <Input value={localArm} onChange={e => setLocalArm(e.target.value)} placeholder="Expedição" />
+            </div>
+            <div className="flex items-end col-span-2">
+              <p className="text-xs text-muted-foreground pb-2">
+                Total: <strong>{(volumeMist * numBatidas).toLocaleString("pt-BR")} kg</strong> | {(volumeMist * numBatidas / 25).toFixed(1)} sacos equivalentes (25kg)
               </p>
             </div>
+          </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <div>
