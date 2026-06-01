@@ -7,8 +7,11 @@ import "./index.css";
 function cleanupStaleServiceWorkers() {
   if (typeof window === "undefined") return;
 
-  // Manual cache busting version - update this to force a full refresh.
-  const APP_VERSION = "2026.05.17.v01-AUTO-CLEANUP-" + (import.meta.env.VITE_BUILD_TIME || Date.now());
+  // APP_VERSION is automatically generated from the build timestamp injected by Vite
+  // (see `define` in vite.config.ts). Each new build produces a new version string,
+  // which forces clients to clear stale service workers and cached chunks.
+  const BUILD_TIME = import.meta.env.VITE_BUILD_TIME || "dev";
+  const APP_VERSION = `auto-${BUILD_TIME}`;
 
   let isInIframe = false;
   try {
@@ -19,6 +22,7 @@ function cleanupStaleServiceWorkers() {
 
   const isPreviewHost =
     window.location.hostname.includes("lovableproject.com") ||
+    window.location.hostname.includes("lovable.app") ||
     window.location.hostname.includes("id-preview--");
 
   const isPublishedHost =
@@ -27,13 +31,17 @@ function cleanupStaleServiceWorkers() {
 
   const storedVersion = localStorage.getItem("__app_version__");
   const versionMismatch = storedVersion !== APP_VERSION;
-  
-  const shouldCleanup = versionMismatch;
+
+  // In preview environments, always force cleanup on every load to guarantee
+  // the freshest build is served (avoids stale chunk import errors).
+  const shouldCleanup = versionMismatch || isPreviewHost;
 
   if (!shouldCleanup) return;
 
-  console.log("[CacheBuster] Executing forced cleanup...", { 
-    versionMismatch 
+  console.log("[CacheBuster] Executing forced cleanup...", {
+    versionMismatch,
+    isPreviewHost,
+    APP_VERSION,
   });
 
   // 1. Unregister EVERY service worker found
@@ -56,17 +64,19 @@ function cleanupStaleServiceWorkers() {
     });
   }
 
-  // 3. Clear storage that might hold old state
-  if (versionMismatch) {
-    localStorage.setItem("__app_version__", APP_VERSION);
-    
-    // We avoid hard reload in previews to prevent reload loops if the environment 
-    // is unstable, but for production domains it ensures users get the latest bits.
-    if (!isInIframe && isPublishedHost) {
+  localStorage.setItem("__app_version__", APP_VERSION);
+
+  // Hard reload on real version mismatch (new build deployed). Use a session flag
+  // to guarantee we never loop, even in preview iframes.
+  if (versionMismatch && storedVersion !== null) {
+    const reloadFlag = "__app_version_reloaded__";
+    if (!sessionStorage.getItem(reloadFlag)) {
+      sessionStorage.setItem(reloadFlag, APP_VERSION);
       console.log("[CacheBuster] Version mismatch, forcing hard reload...");
       setTimeout(() => {
-        window.location.href = window.location.href.split('#')[0].split('?')[0] + '?v=' + Date.now();
-      }, 500);
+        const base = window.location.href.split("#")[0].split("?")[0];
+        window.location.replace(base + "?v=" + Date.now());
+      }, 300);
     }
   }
 }
