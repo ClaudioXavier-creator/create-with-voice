@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useMemo } from "react";
-import { Plus, Loader2, Truck, Upload, Search, Trash2, FileText, Package, Eye, Download, Pencil, AlertTriangle, TrendingUp, Users, Weight, Filter } from "lucide-react";
-import { gerarFormExpedicaoSimples, gerarFormExpedicaoCompleta } from "@/utils/excelTemplates";
+import { Plus, Loader2, Truck, Upload, Search, Trash2, FileText, Package, Eye, Download, Pencil, AlertTriangle, TrendingUp, Users, Weight, Filter, CheckCircle2, ClipboardCheck } from "lucide-react";
+import { gerarFormExpedicaoSimples, gerarFormExpedicaoCompleta, gerarMapaExpedicaoMAPA } from "@/utils/excelTemplates";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
@@ -15,6 +15,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useEmpresa } from "@/hooks/useEmpresa";
 import { toast } from "sonner";
+import { LoteProdutoPicker } from "@/components/expedicao/LoteProdutoPicker";
 
 interface Expedicao {
   id: string;
@@ -42,6 +43,7 @@ interface Item {
   lote_produto: string;
   quantidade: number;
   unidade: string;
+  quantidade_sacos?: number;
   valor_unitario?: number;
   valor_total?: number;
 }
@@ -226,6 +228,7 @@ export default function Expedicao() {
     setItens(((data as any) || []).map((i: any) => ({
       produto: i.produto, codigo_produto: i.codigo_produto || "", lote_produto: i.lote_produto || "",
       quantidade: Number(i.quantidade) || 0, unidade: i.unidade || "kg",
+      quantidade_sacos: i.quantidade_sacos || undefined,
       valor_unitario: i.valor_unitario, valor_total: i.valor_total,
     })));
     setOrigem(e.origem || "manual");
@@ -299,6 +302,7 @@ export default function Expedicao() {
       lote_produto: i.lote_produto,
       quantidade: i.quantidade || 0,
       unidade: i.unidade,
+      quantidade_sacos: i.quantidade_sacos || null,
       valor_unitario: i.valor_unitario || null,
       valor_total: i.valor_total || null,
     }));
@@ -410,10 +414,18 @@ export default function Expedicao() {
         </CardHeader>
         <CardContent className="flex flex-wrap gap-2">
           <Button variant="outline" size="sm" onClick={() => gerarFormExpedicaoSimples()}>
-            <Download className="h-4 w-4 mr-2" />Lista Simples (cliente, NF, lote)
+            <Download className="h-4 w-4 mr-2" />Lista Simples (manual)
           </Button>
           <Button variant="outline" size="sm" onClick={() => gerarFormExpedicaoCompleta()}>
-            <Download className="h-4 w-4 mr-2" />Completo por NF (com transporte)
+            <Download className="h-4 w-4 mr-2" />Romaneio por NF
+          </Button>
+          <Button variant="default" size="sm" onClick={async () => {
+            // Fetch all items for the filtered exports to generate a full map
+            const { data } = await supabase.from("expedicao_itens" as any).select("*");
+            const mapped = filtered.map(f => ({ ...f, itens: data?.filter((i: any) => i.expedicao_id === f.id) }));
+            gerarMapaExpedicaoMAPA(mapped, empresaAtiva);
+          }}>
+            <ClipboardCheck className="h-4 w-4 mr-2" />Mapa de Expedição (MAPA)
           </Button>
         </CardContent>
       </Card>
@@ -523,10 +535,21 @@ export default function Expedicao() {
                       const recall = it.lote_produto && lotesEmRecall.has(it.lote_produto);
                       return (
                         <div key={idx} className={`grid grid-cols-12 gap-2 items-end border-b pb-2 ${recall ? "bg-destructive/10 rounded p-2" : ""}`}>
-                          <div className="col-span-4"><Label className="text-xs">Produto *</Label><Input value={it.produto} onChange={e => updateItem(idx, "produto", e.target.value)} /></div>
-                          <div className="col-span-2"><Label className="text-xs flex items-center gap-1">Lote *{recall && <AlertTriangle className="h-3 w-3 text-destructive" />}</Label><Input value={it.lote_produto} onChange={e => updateItem(idx, "lote_produto", e.target.value)} placeholder="lote PA" className={recall ? "border-destructive" : ""} /></div>
-                          <div className="col-span-2"><Label className="text-xs">Qtde</Label><Input type="number" value={it.quantidade} onChange={e => updateItem(idx, "quantidade", Number(e.target.value))} /></div>
+                          <div className="col-span-3"><Label className="text-xs">Produto *</Label><Input value={it.produto} onChange={e => updateItem(idx, "produto", e.target.value)} /></div>
+                          <div className="col-span-3">
+                            <Label className="text-xs flex items-center gap-1">Lote *{recall && <AlertTriangle className="h-3 w-3 text-destructive" />}</Label>
+                            <LoteProdutoPicker 
+                              value={it.lote_produto} 
+                              produtoNome={it.produto}
+                              onChange={(lote, prod) => {
+                                updateItem(idx, "lote_produto", lote);
+                                if (prod) updateItem(idx, "produto", prod);
+                              }} 
+                            />
+                          </div>
+                          <div className="col-span-1"><Label className="text-xs">Qtde</Label><Input type="number" value={it.quantidade} onChange={e => updateItem(idx, "quantidade", Number(e.target.value))} /></div>
                           <div className="col-span-1"><Label className="text-xs">Un.</Label><Input value={it.unidade} onChange={e => updateItem(idx, "unidade", e.target.value)} /></div>
+                          <div className="col-span-1"><Label className="text-xs">Sacos</Label><Input type="number" value={it.quantidade_sacos} onChange={e => updateItem(idx, "quantidade_sacos", Number(e.target.value))} placeholder="ex: 20" /></div>
                           <div className="col-span-2"><Label className="text-xs">Cód. Prod.</Label><Input value={it.codigo_produto} onChange={e => updateItem(idx, "codigo_produto", e.target.value)} /></div>
                           <div className="col-span-1">
                             <Button size="icon" variant="ghost" onClick={() => setItens(itens.filter((_, i) => i !== idx))} disabled={itens.length === 1}>

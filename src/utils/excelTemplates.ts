@@ -1018,6 +1018,49 @@ export function gerarFormExpedicaoCompleta() {
   downloadWorkbook(wb, "Registro_Expedicao_Completa_por_NF");
 }
 
+// ─── MAPA: Mapa de Expedição (Romaneio de Saída) ───
+export function gerarMapaExpedicaoMAPA(dados: any[], empresa: any) {
+  const wb = XLSX.utils.book_new();
+  
+  const header = [
+    ["", "MAPA DE EXPEDIÇÃO E RASTREABILIDADE DE PRODUTO ACABADO"],
+    ["", `Empresa: ${empresa?.nome || "________________________"}`, "", "", `Período: ${new Date().toLocaleDateString("pt-BR", { month: "long", year: "numeric" })}`],
+    [""],
+    ["Data", "NF", "Cliente", "Cidade/UF", "Produto", "Lote", "Quantidade", "Unid.", "Sacos", "Transportadora", "Motorista", "Placa"],
+  ];
+
+  const dataRows = dados.map(e => [
+    e.data_saida || e.data_emissao || "",
+    e.numero_nf || "",
+    e.cliente_nome || "",
+    `${e.cliente_cidade || ""}/${e.cliente_uf || ""}`,
+    e.itens?.[0]?.produto || "Ver detalhes",
+    e.itens?.[0]?.lote_produto || "NÃO INFORMADO",
+    e.itens?.[0]?.quantidade || 0,
+    e.itens?.[0]?.unidade || "kg",
+    e.itens?.[0]?.quantidade_sacos || "—",
+    e.transportadora_nome || "",
+    e.motorista_nome || "",
+    e.veiculo_placa || "",
+  ]);
+
+  const footer = [
+    [""],
+    ["Total de Registros:", dados.length, "", "", "", "", "Gerado em:", new Date().toLocaleDateString("pt-BR")],
+    [""],
+    ["", "Assinatura RT:", "________________________", "", "Assinatura Expedição:", "________________________"],
+  ];
+
+  const allData = [...header, ...dataRows, ...footer];
+  const ws = createSheet(allData, [12, 10, 25, 18, 25, 14, 12, 8, 8, 20, 18, 12], [
+    { s: { r: 0, c: 1 }, e: { r: 0, c: 11 } }
+  ]);
+
+  XLSX.utils.book_append_sheet(wb, ws, "Mapa Expedição");
+  downloadWorkbook(wb, "Mapa_Expedicao_MAPA");
+}
+
+
 // ─── Exportador Dinâmico para Dados de Planilhas (Digital) ───
 export function exportPopDataToExcel(
   pop: { codigo: string; nome: string },

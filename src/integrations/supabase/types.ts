@@ -1997,6 +1997,7 @@ export type Database = {
           pin_hash_confirmacao: string | null
           produto: string
           quantidade: number
+          quantidade_sacos: number | null
           rastreabilidade_id: string | null
           unidade: string | null
           user_id: string
@@ -2016,6 +2017,7 @@ export type Database = {
           pin_hash_confirmacao?: string | null
           produto: string
           quantidade?: number
+          quantidade_sacos?: number | null
           rastreabilidade_id?: string | null
           unidade?: string | null
           user_id: string
@@ -2035,6 +2037,7 @@ export type Database = {
           pin_hash_confirmacao?: string | null
           produto?: string
           quantidade?: number
+          quantidade_sacos?: number | null
           rastreabilidade_id?: string | null
           unidade?: string | null
           user_id?: string
