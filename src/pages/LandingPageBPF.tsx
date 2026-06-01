@@ -520,7 +520,7 @@ export default function LandingPageBPF() {
               <Button variant="link" onClick={() => navigate("/termos")} className="p-0 h-auto font-medium hover:text-[#173404]">Termos</Button>
               <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="hover:text-[#173404]">LinkedIn</a>
               <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="hover:text-[#173404]">Instagram</a>
-              <Button variant="link" onClick={() => navigate("/admin-access")} className="text-slate-400 p-0 h-auto font-medium hover:text-[#173404]">Gestão Interna</Button>
+              
             </div>
           </div>
           <Separator className="my-8 opacity-50" />
