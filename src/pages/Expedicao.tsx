@@ -228,6 +228,7 @@ export default function Expedicao() {
     setItens(((data as any) || []).map((i: any) => ({
       produto: i.produto, codigo_produto: i.codigo_produto || "", lote_produto: i.lote_produto || "",
       quantidade: Number(i.quantidade) || 0, unidade: i.unidade || "kg",
+      quantidade_sacos: i.quantidade_sacos || undefined,
       valor_unitario: i.valor_unitario, valor_total: i.valor_total,
     })));
     setOrigem(e.origem || "manual");
