@@ -67,6 +67,7 @@ export default function Expedicao() {
   const [editId, setEditId] = useState<string | null>(null);
   const [detalheOpen, setDetalheOpen] = useState(false);
   const [detalheItens, setDetalheItens] = useState<any[]>([]);
+  const [todosItens, setTodosItens] = useState<any[]>([]);
   const [detalheExp, setDetalheExp] = useState<Expedicao | null>(null);
   const [mapaOpen, setMapaOpen] = useState(false);
   const [mapaDados, setMapaDados] = useState<any[]>([]);
