@@ -16,6 +16,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useEmpresa } from "@/hooks/useEmpresa";
 import { toast } from "sonner";
 import { LoteProdutoPicker } from "@/components/expedicao/LoteProdutoPicker";
+import { MapaExpedicaoDigital } from "@/components/expedicao/MapaExpedicaoDigital";
 
 interface Expedicao {
   id: string;
@@ -66,6 +67,8 @@ export default function Expedicao() {
   const [detalheOpen, setDetalheOpen] = useState(false);
   const [detalheItens, setDetalheItens] = useState<any[]>([]);
   const [detalheExp, setDetalheExp] = useState<Expedicao | null>(null);
+  const [mapaOpen, setMapaOpen] = useState(false);
+  const [mapaDados, setMapaDados] = useState<any[]>([]);
   const fileRef = useRef<HTMLInputElement>(null);
 
   const [form, setForm] = useState({
@@ -420,12 +423,19 @@ export default function Expedicao() {
             <Download className="h-4 w-4 mr-2" />Romaneio por NF
           </Button>
           <Button variant="default" size="sm" onClick={async () => {
-            // Fetch all items for the filtered exports to generate a full map
+            const { data } = await supabase.from("expedicao_itens" as any).select("*");
+            const mapped = filtered.map(f => ({ ...f, itens: data?.filter((i: any) => i.expedicao_id === f.id) }));
+            setMapaDados(mapped);
+            setMapaOpen(true);
+          }}>
+            <Eye className="h-4 w-4 mr-2" />Visualizar Mapa de Expedição (Digital)
+          </Button>
+          <Button variant="outline" size="sm" onClick={async () => {
             const { data } = await supabase.from("expedicao_itens" as any).select("*");
             const mapped = filtered.map(f => ({ ...f, itens: data?.filter((i: any) => i.expedicao_id === f.id) }));
             gerarMapaExpedicaoMAPA(mapped, empresaAtiva);
           }}>
-            <ClipboardCheck className="h-4 w-4 mr-2" />Mapa de Expedição (MAPA)
+            <Download className="h-4 w-4 mr-2" />Mapa para Excel
           </Button>
         </CardContent>
       </Card>
@@ -658,6 +668,20 @@ export default function Expedicao() {
           )}
         </CardContent>
       </Card>
+
+      <Dialog open={mapaOpen} onOpenChange={setMapaOpen}>
+        <DialogContent className="max-w-[95vw] w-full max-h-[95vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Mapa de Expedição (Fiscalização)</DialogTitle>
+          </DialogHeader>
+          <MapaExpedicaoDigital 
+            expedicoes={mapaDados} 
+            empresa={empresaAtiva} 
+            dataInicio={dataIni} 
+            dataFim={dataFim} 
+          />
+        </DialogContent>
+      </Dialog>
 
       <Dialog open={detalheOpen} onOpenChange={setDetalheOpen}>
         <DialogContent className="max-w-3xl">
