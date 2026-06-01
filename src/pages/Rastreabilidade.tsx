@@ -153,6 +153,14 @@ export default function Rastreabilidade() {
     setSifDipoa("");
   };
 
+  const handlePrintMapa = () => {
+    if (!testeResult) return;
+    printElement("mapa-rastreabilidade-print", {
+      title: `Mapa_Rastreabilidade_${testeResult.lote}`,
+      landscape: true
+    });
+  };
+
   const fetchData = async () => {
     if (!user) return;
     let q = supabase.from("rastreabilidade").select("*").order("created_at", { ascending: false });
