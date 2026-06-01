@@ -58,7 +58,7 @@ export default function Index() {
         return r;
       };
 
-      const [ncsRes, checklistRes, treinamentosRes, recentNcsRes, planejamentoRes, calibracoesRes, documentosRes] = await Promise.all([
+      const [ncsRes, checklistRes, treinamentosRes, recentNcsRes, planejamentoRes, calibracoesRes, documentosRes, execPopsRes] = await Promise.all([
         addEmpresa(supabase.from("nao_conformidades").select("data, status")),
         addEmpresa(supabase.from("checklist_items").select("area, conforme, auditoria_data")),
         addEmpresa(supabase.from("treinamentos").select("funcionario, treinamento, validade")),
@@ -66,6 +66,7 @@ export default function Index() {
         addEmpresa(supabase.from("planejamento_anual").select("atividade, proxima_execucao, categoria")).not("proxima_execucao", "is", null),
         addEmpresa(supabase.from("calibracoes").select("equipamento, proxima_calibracao, status")),
         addEmpresa(supabase.from("documentos").select("nome, codigo, proxima_revisao, validade_revisao, status")),
+        addEmpresa(supabase.from("execucao_pops").select("codigo_pop, data_execucao, status")).order("data_execucao", { ascending: false }),
       ]);
 
       const ncs = ncsRes.data || [];
@@ -149,7 +150,8 @@ export default function Index() {
           { label: "Agenda regulatória", valor: progressFromOverdue(calibracoesVencidas + docsVencidos, Math.max(alertas.length, 1)), descricao: `${alertas.length} alerta(s) monitorado(s).`, link: "/documentos" },
           { label: "Treinamento da equipe", valor: progressFromOverdue(treinamentosPendentes, Math.max(treinamentos.length, 1)), descricao: `${treinamentosPendentes} pendência(s).`, link: "/treinamentos" },
           { label: "Resposta a desvios", valor: progressFromOverdue(ncAbertas, Math.max(ncs.length, 1)), descricao: `${ncAbertas} NC(s) em aberto.`, link: "/nao-conformidades" },
-        ]
+        ],
+        execucoes: execPopsRes.data || []
       };
     },
     enabled: !!user,
