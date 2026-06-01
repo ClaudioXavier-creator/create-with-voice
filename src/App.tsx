@@ -238,7 +238,6 @@ const InternalRoutes = () => (
     <Route path="/gerador-headlines" element={<GeradorHeadlines />} />
     <Route path="/status-lotes" element={<StatusLotes />} />
     <Route path="/audit-log" element={<AuditLog />} />
-    <Route path="/licencas-programa" element={<AdminLicencas isTab />} />
     <Route path="*" element={<NotFound />} />
 
   </Routes>
@@ -324,6 +323,7 @@ const AppRoutes = () => {
         <Route path="/leads" element={<ProtectedRoute requireAdmin><Navigate to="/admin?tab=leads" replace /></ProtectedRoute>} />
         <Route path="/licencas" element={<ProtectedRoute requireAdmin><Navigate to="/admin?tab=licencas" replace /></ProtectedRoute>} />
         <Route path="/assinaturas" element={<ProtectedRoute requireAdmin><Navigate to="/admin?tab=assinaturas" replace /></ProtectedRoute>} />
+        <Route path="/licencas-programa" element={<ProtectedRoute requireAdmin><Navigate to="/admin?tab=licencas" replace /></ProtectedRoute>} />
 
         <Route
           path="/*"

@@ -9,8 +9,6 @@ import {
   Printer,
   QrCode,
   Palette,
-  ShieldAlert,
-  Key,
   Home
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -93,33 +91,6 @@ export function RotulosSidebar() {
           ))}
         </SidebarMenu>
         
-        {isSuperAdmin && (
-          <div className="mt-8 pt-4 border-t border-border/50">
-            {!isCollapsed && (
-              <p className="px-4 mb-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60">
-                Administração
-              </p>
-            )}
-            <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild tooltip="Voltar ao Início">
-                  <Link to="/dashboard" className="flex items-center gap-3 text-muted-foreground hover:text-primary">
-                    <Home className="h-5 w-5 shrink-0" />
-                    {!isCollapsed && <span>Voltar ao Início</span>}
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild tooltip="Gerenciar Licenças">
-                  <Link to="/licencas-programa" className="flex items-center gap-3 text-muted-foreground hover:text-primary">
-                    <Key className="h-5 w-5 shrink-0" />
-                    {!isCollapsed && <span>Licenças Lovable</span>}
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            </SidebarMenu>
-          </div>
-        )}
       </SidebarContent>
 
       <SidebarFooter className="p-4 space-y-2">
