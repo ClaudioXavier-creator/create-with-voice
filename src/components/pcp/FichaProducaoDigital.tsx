@@ -31,6 +31,9 @@ interface Ordem {
   numero_batidas: number | null;
   volume_misturador_kg: number | null;
   quantidade_sacos: number | null;
+  tempo_mistura_padrao_minutos: number | null;
+  tipo_embalagem: string | null;
+  local_armazenamento: string | null;
   data_programada: string;
   proximo_produto: string | null;
   necessita_flushing: boolean | null;
