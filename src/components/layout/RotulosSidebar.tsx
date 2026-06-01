@@ -117,14 +117,6 @@ export function RotulosSidebar() {
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild tooltip="Portal de Gestão">
-                  <Link to="/admin" className="flex items-center gap-3 text-muted-foreground hover:text-primary">
-                    <ShieldAlert className="h-5 w-5 shrink-0" />
-                    {!isCollapsed && <span>Portal de Gestão</span>}
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
             </SidebarMenu>
           </div>
         )}
