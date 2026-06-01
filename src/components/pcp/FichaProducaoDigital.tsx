@@ -87,6 +87,9 @@ export default function FichaProducaoDigital({ ordemId, onClose }: Props) {
   const [materialFlush, setMaterialFlush] = useState("");
   const [verifResp, setVerifResp] = useState("");
   const [verifData, setVerifData] = useState("");
+  const [tempoMisturaAlvo, setTempoMisturaAlvo] = useState("3");
+  const [tipoEmb, setTipoEmb] = useState("");
+  const [localArm, setLocalArm] = useState("");
 
   const printRef = useRef<HTMLDivElement>(null);
 
