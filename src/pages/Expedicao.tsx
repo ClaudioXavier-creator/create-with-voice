@@ -59,6 +59,7 @@ export default function Expedicao() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [busca, setBusca] = useState("");
+  const [filtroLote, setFiltroLote] = useState("");
   const [dataIni, setDataIni] = useState("");
   const [dataFim, setDataFim] = useState("");
   const [filtroCliente, setFiltroCliente] = useState("__all__");
