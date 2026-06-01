@@ -1569,6 +1569,9 @@ export default function Rastreabilidade() {
                     <Button onClick={salvarTesteResultado} className="w-full" disabled={testeSaving}>
                       {testeSaving ? <Loader2 className="w-4 h-4 mr-1 animate-spin" /> : <Save className="w-4 h-4 mr-1" />} Salvar Resultado do Teste
                     </Button>
+                    <Button onClick={handlePrintMapa} className="w-full" variant="outline" disabled={!testeResult}>
+                      <Printer className="w-4 h-4 mr-1" /> Imprimir Mapa de Rastreabilidade (Planilha 9.1)
+                    </Button>
                   </div>
                 )}
                 {testesHistorico.length > 0 && !testeResult && (
