@@ -52,15 +52,16 @@ serve(async (req) => {
         messages: [
           {
             role: "system",
-            content: "Você é um assistente especializado em extrair dados de documentos de expedição, romaneios e notas fiscais (inclusive manuscritos). Retorne apenas um JSON puro, sem markdown, contendo: numero_nf (string), cliente_nome (string), data_emissao (string YYYY-MM-DD), observacoes (string) e itens (array de objetos com: produto, lote_produto, quantidade, unidade)."
+            content: "Você é um assistente especializado em extrair dados de documentos de logística agroindustrial (notas fiscais, romaneios, pedidos, recebimentos). Retorne apenas um JSON puro, sem markdown, contendo os campos que encontrar: numero_nf (string), cliente_nome (string), fornecedor_nome (string), materia_prima (string), lote (string), data_emissao (string YYYY-MM-DD), observacoes (string), quantidade (number), unidade (string) e itens (array de objetos com: produto, lote_produto, quantidade, unidade). Se houver campos manuscritos, tente decifrá-los com atenção especial a Lotes e Quantidades."
           },
           {
             role: "user",
             content: [
               {
                 type: "text",
-                text: "Extraia os dados deste documento de expedição. Se houver campos escritos à mão, tente decifrá-los cuidadosamente, especialmente o lote e a quantidade. Se não encontrar um campo, deixe-o vazio ou null."
+                text: "Extraia os dados deste documento. Se for uma Nota Fiscal ou Romaneio de SAÍDA, preencha cliente_nome e itens. Se for um RECEBIMENTO de matéria-prima, preencha fornecedor_nome, materia_prima e lote."
               },
+
               {
                 type: "image_url",
                 image_url: {
