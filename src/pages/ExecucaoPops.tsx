@@ -278,12 +278,13 @@ export default function ExecucaoPops() {
                           <TableHead>POP/IT</TableHead>
                           <TableHead>Executor</TableHead>
                           <TableHead>Status</TableHead>
+                          <TableHead>Verificação (Supervisor)</TableHead>
                       </TableRow>
                   </TableHeader>
                   <TableBody>
                       {filteredExecucoes.map(e => (
                           <TableRow key={e.id}>
-                              <TableCell className="text-xs font-mono">{e.data_execucao}</TableCell>
+                              <TableCell className="text-xs font-mono">{format(parseISO(e.data_execucao), "dd/MM/yy")}</TableCell>
                               <TableCell>
                                   <p className="font-bold text-xs">{e.codigo_pop}</p>
                                   <p className="text-[10px] text-muted-foreground line-clamp-1">{e.nome_pop}</p>
@@ -293,6 +294,17 @@ export default function ExecucaoPops() {
                                   <Badge variant="outline" className={cn("text-[10px]", statusConfig[e.status || "concluido"].className)}>
                                       {statusConfig[e.status || "concluido"].label}
                                   </Badge>
+                              </TableCell>
+                              <TableCell>
+                                {e.status_verificacao === 'aprovado' ? (
+                                  <Badge variant="outline" className="text-emerald-600 border-emerald-600 gap-1 text-[10px] bg-emerald-50">
+                                    <CheckCircle2 className="w-3 h-3" /> {e.verificado_por}
+                                  </Badge>
+                                ) : (
+                                  <Button size="sm" variant="ghost" className="h-7 text-[10px] gap-1 px-2 text-amber-600 hover:text-amber-700 hover:bg-amber-50" onClick={() => handleVerificar(e.id)}>
+                                    <ShieldCheck className="w-3 h-3" /> Verificar
+                                  </Button>
+                                )}
                               </TableCell>
                           </TableRow>
                       ))}
