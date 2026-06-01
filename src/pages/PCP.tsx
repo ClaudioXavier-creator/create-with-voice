@@ -267,11 +267,14 @@ export default function PCP() {
       motivo_retrabalho: motivoRetrabalho || null,
       quantidade_sobra: qtdSobra || null,
       destino_sobra: destinoSobra || null,
+      tempo_mistura_padrao_minutos: parseInt(tempoMisturaPadrao) || 3,
+      tipo_embalagem: tipoEmbalagem,
+      local_armazenamento: localArmazenamento,
       status: "programada"
     } as any).select().single();
 
     if (error) {
-      toast.error("Erro ao salvar ordem");
+      toast.error("Erro ao salvar ordem: " + error.message);
     } else {
       if (formulaId && ingredientesFormulaSelecionada.length > 0) {
         const totalKgFormula = ingredientesFormulaSelecionada.reduce((acc, curr) => acc + (parseFloat(curr.quantidade_kg) || 0), 0);
@@ -298,11 +301,12 @@ export default function PCP() {
         }
       }
 
-      toast.success("Ordem criada!");
+      toast.success("Ordem criada com parâmetros de BPF!");
       setOrdemOpen(false);
       setNumOrdem(""); setProduto(""); setFormulaId(""); setFormulaNome(""); setLotePA(""); setQtdProgramada("");
       setNumBatidas("1"); setPesoBatida(""); setPrioridade("normal"); setObsOrdem("");
       setTipoOrdem("normal"); setOrdemOrigemId(""); setMotivoRetrabalho(""); setQtdSobra(""); setDestinoSobra("");
+      setTempoMisturaPadrao("3"); setTipoEmbalagem("Sacos 25kg"); setLocalArmazenamento("Depósito de PA");
       setIngredientesFormulaSelecionada([]);
       fetchData();
     }
