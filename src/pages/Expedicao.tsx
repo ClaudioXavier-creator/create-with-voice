@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useMemo } from "react";
-import { Plus, Loader2, Truck, Upload, Search, Trash2, FileText, Package, Eye, Download, Pencil, AlertTriangle, TrendingUp, Users, Weight, Filter, CheckCircle2, ClipboardCheck, FileSpreadsheet } from "lucide-react";
+import { Plus, Loader2, Truck, Upload, Search, Trash2, FileText, Package, Eye, Download, Pencil, AlertTriangle, TrendingUp, Users, Weight, Filter, CheckCircle2, ClipboardCheck, FileSpreadsheet, Camera } from "lucide-react";
 import * as XLSX from "xlsx";
 import { gerarFormExpedicaoSimples, gerarFormExpedicaoCompleta, gerarMapaExpedicaoMAPA } from "@/utils/excelTemplates";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -59,6 +59,7 @@ export default function Expedicao() {
   const [lotesEmRecall, setLotesEmRecall] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [isScanning, setIsScanning] = useState(false);
   const [busca, setBusca] = useState("");
   const [filtroLote, setFiltroLote] = useState("");
   const [dataIni, setDataIni] = useState("");
@@ -297,6 +298,51 @@ export default function Expedicao() {
       }
     } catch (err: any) {
       toast.error("Erro ao ler Planilha: " + err.message);
+    }
+  };
+
+  const handlePhotoUpload = async (file: File) => {
+    try {
+      setIsScanning(true);
+      
+      // Criar FormData para enviar a imagem para a Edge Function
+      const formData = new FormData();
+      formData.append('file', file);
+      
+      // Chamada para a Edge Function de OCR/Processamento de Documentos
+      // Nota: Esta função precisa ser implementada no Supabase
+      const { data, error } = await supabase.functions.invoke('process-document', {
+        body: formData,
+      });
+
+      if (error) throw error;
+
+      if (data) {
+        setForm(f => ({
+          ...f,
+          numero_nf: data.numero_nf || f.numero_nf,
+          cliente_nome: data.cliente_nome || f.cliente_nome,
+          data_emissao: data.data_emissao || f.data_emissao,
+          observacoes: data.observacoes || f.observacoes,
+        }));
+
+        if (data.itens && data.itens.length > 0) {
+          setItens(data.itens.map((i: any) => ({
+            produto: i.produto || "Item escaneado",
+            codigo_produto: i.codigo_produto || "",
+            lote_produto: i.lote_produto || "",
+            quantidade: parseFloat(i.quantidade) || 0,
+            unidade: i.unidade || "kg",
+          })));
+        }
+        
+        toast.success("Documento processado por IA com sucesso!");
+      }
+    } catch (err: any) {
+      console.error("Erro OCR:", err);
+      toast.error("Erro ao processar imagem. Verifique a iluminação e tente novamente.");
+    } finally {
+      setIsScanning(false);
     }
   };
 
@@ -547,10 +593,43 @@ export default function Expedicao() {
                 <Tabs defaultValue="entrada" className="w-full">
                   <TabsList>
                     <TabsTrigger value="entrada"><Upload className="h-4 w-4 mr-2" />Importar XML NF-e</TabsTrigger>
+                    <TabsTrigger value="foto"><Camera className="h-4 w-4 mr-2" />Foto / Escaneado</TabsTrigger>
                     <TabsTrigger value="excel"><FileSpreadsheet className="h-4 w-4 mr-2" />Varredura Excel</TabsTrigger>
                     <TabsTrigger value="simples"><Package className="h-4 w-4 mr-2" />Lista Simples</TabsTrigger>
                     <TabsTrigger value="manual"><FileText className="h-4 w-4 mr-2" />Manual Completo</TabsTrigger>
                   </TabsList>
+
+                  <TabsContent value="foto" className="space-y-3">
+                    <Card className="border-primary/30 bg-primary/5">
+                      <CardContent className="pt-6 space-y-4">
+                        <div className="flex flex-col items-center justify-center p-6 border-2 border-dashed border-primary/20 rounded-lg bg-background/50">
+                          <Camera className="h-10 w-10 text-primary/40 mb-2" />
+                          <p className="text-sm font-medium">Tire uma foto ou envie a imagem</p>
+                          <p className="text-xs text-muted-foreground mb-4">Ideal para documentos preenchidos à mão ou romaneios físicos</p>
+                          <Input type="file" accept="image/*" capture="environment"
+                            onChange={(e) => { const f = e.target.files?.[0]; if (f) handlePhotoUpload(f); }}
+                            className="hidden" id="photo-upload" />
+                          <Button asChild disabled={isScanning}>
+                            <label htmlFor="photo-upload">
+                              {isScanning ? (
+                                <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Processando com IA...</>
+                              ) : (
+                                <><Camera className="h-4 w-4 mr-2" /> Capturar Documento</>
+                              )}
+                            </label>
+                          </Button>
+                        </div>
+                        <div className="p-3 bg-secondary/30 rounded-md text-xs space-y-2">
+                          <p className="font-semibold text-primary">Dicas para melhor leitura:</p>
+                          <ul className="list-disc list-inside text-muted-foreground">
+                            <li>Centralize o documento na foto</li>
+                            <li>Evite sombras sobre o papel</li>
+                            <li>Mantenha a câmera estável</li>
+                          </ul>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </TabsContent>
 
                   <TabsContent value="simples" className="space-y-3">
                     <Card className="border-primary/30 bg-primary/5">
