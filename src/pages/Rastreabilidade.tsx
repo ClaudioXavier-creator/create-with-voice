@@ -109,6 +109,7 @@ export default function Rastreabilidade() {
   const [testeTime, setTesteTime] = useState(0);
   const [certData, setCertData] = useState<any>(null);
   const certRef = useRef<HTMLDivElement>(null);
+  const mapaRef = useRef<HTMLDivElement>(null);
 
   const [testeResult, setTesteResult] = useState<TesteResult | null>(null);
   const [testeSaving, setTesteSaving] = useState(false);
@@ -150,6 +151,14 @@ export default function Rastreabilidade() {
     setTempoMistura(""); setTesteHomogeneidade("");
     setContraprovaColetada(false); setContraprovaLocal(""); setContraprovaValidade("");
     setSifDipoa("");
+  };
+
+  const handlePrintMapa = () => {
+    if (!testeResult) return;
+    printElement("mapa-rastreabilidade-print", {
+      title: `Mapa_Rastreabilidade_${testeResult.lote}`,
+      landscape: true
+    });
   };
 
   const fetchData = async () => {
@@ -385,6 +394,13 @@ export default function Rastreabilidade() {
       const elapsed = 2;
       setTesteTime(elapsed);
       setTesteResult({ lote, produto: produtoNome, montante: uniqueMontante, jusante: uniqueJusante, tempoSegundos: elapsed });
+      setCertData({ 
+        lote, 
+        produto: produtoNome, 
+        montante: uniqueMontante, 
+        jusante: uniqueJusante, 
+        data_teste: new Date().toLocaleDateString('pt-BR') 
+      });
       toast.success(`Rastreabilidade completa do lote ${lote} em ${elapsed}s!`);
     }, 2000);
   };
@@ -1553,6 +1569,9 @@ export default function Rastreabilidade() {
                     <Button onClick={salvarTesteResultado} className="w-full" disabled={testeSaving}>
                       {testeSaving ? <Loader2 className="w-4 h-4 mr-1 animate-spin" /> : <Save className="w-4 h-4 mr-1" />} Salvar Resultado do Teste
                     </Button>
+                    <Button onClick={handlePrintMapa} className="w-full" variant="outline" disabled={!testeResult}>
+                      <Printer className="w-4 h-4 mr-1" /> Imprimir Mapa de Rastreabilidade (Planilha 9.1)
+                    </Button>
                   </div>
                 )}
                 {testesHistorico.length > 0 && !testeResult && (
@@ -2278,6 +2297,91 @@ export default function Rastreabilidade() {
           </div>
         </DialogContent>
       </Dialog>
+      {/* Mapa de Rastreabilidade (Planilha 9.1) — Invisível para Impressão */}
+      <div className="hidden print:block" id="mapa-rastreabilidade-print">
+        <div className="p-8 bg-white text-black min-w-[210mm]">
+          <div className="flex justify-between items-start border-b-2 border-gray-800 pb-4 mb-6">
+            <div>
+              <h1 className="text-xl font-bold uppercase">Planilha 9.1 — Mapa de Rastreabilidade (POP 05)</h1>
+              <p className="text-sm font-mono mt-1">Lote PA: <strong>{testeResult?.lote}</strong></p>
+              <p className="text-sm">Produto: <strong>{testeResult?.produto}</strong></p>
+            </div>
+            <div className="text-right">
+              <p className="text-sm font-bold">{empresaAtiva?.nome || "BPF DIGITAL"}</p>
+              <p className="text-[10px] text-gray-500 italic">Data do Teste: {new Date().toLocaleDateString('pt-BR')}</p>
+              <p className="text-[10px] text-gray-500 italic">Tempo de Resposta: {testeResult?.tempoSegundos} segundos</p>
+            </div>
+          </div>
+
+          <div className="mb-6">
+            <h2 className="text-sm font-bold uppercase bg-gray-100 p-2 mb-2 border">1. Montante (Matérias-Primas / Origem)</h2>
+            <Table className="border border-black">
+              <TableHeader className="bg-gray-50">
+                <TableRow>
+                  <TableHead className="border border-black text-[10px] font-bold h-8">Ingrediente / MP</TableHead>
+                  <TableHead className="border border-black text-[10px] font-bold h-8">Lote MP</TableHead>
+                  <TableHead className="border border-black text-[10px] font-bold h-8">Fornecedor</TableHead>
+                  <TableHead className="border border-black text-[10px] font-bold h-8 text-center">NF Entrada</TableHead>
+                  <TableHead className="border border-black text-[10px] font-bold h-8 text-center">Laudo / CA</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {testeResult?.montante.map((m, i) => (
+                  <TableRow key={i}>
+                    <TableCell className="border border-black py-1 text-[10px]">{m.materia_prima}</TableCell>
+                    <TableCell className="border border-black py-1 text-[10px] font-mono">{m.lote_mp}</TableCell>
+                    <TableCell className="border border-black py-1 text-[10px]">{m.fornecedor}</TableCell>
+                    <TableCell className="border border-black py-1 text-[10px] text-center">{m.nota_fiscal || "___"}</TableCell>
+                    <TableCell className="border border-black py-1 text-[10px] text-center">{m.laudo_url ? "SIM ✓" : "NÃO ✗"}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+
+          <div className="mb-6">
+            <h2 className="text-sm font-bold uppercase bg-gray-100 p-2 mb-2 border">2. Jusante (Destinos / Clientes)</h2>
+            <Table className="border border-black">
+              <TableHeader className="bg-gray-50">
+                <TableRow>
+                  <TableHead className="border border-black text-[10px] font-bold h-8">Cliente / Destinatário</TableHead>
+                  <TableHead className="border border-black text-[10px] font-bold h-8">Local de Entrega</TableHead>
+                  <TableHead className="border border-black text-[10px] font-bold h-8 text-center">NF Saída</TableHead>
+                  <TableHead className="border border-black text-[10px] font-bold h-8 text-center">Data Venda</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {testeResult?.jusante.map((j, i) => (
+                  <TableRow key={i}>
+                    <TableCell className="border border-black py-1 text-[10px]">{j.cliente}</TableCell>
+                    <TableCell className="border border-black py-1 text-[10px]">{j.local}</TableCell>
+                    <TableCell className="border border-black py-1 text-[10px] text-center font-mono">{j.nf}</TableCell>
+                    <TableCell className="border border-black py-1 text-[10px] text-center">{j.data_venda}</TableCell>
+                  </TableRow>
+                ))}
+                {testeResult?.jusante.length === 0 && (
+                  <TableRow><TableCell colSpan={4} className="border border-black py-4 text-center text-[10px] italic">Produto em estoque / Nenhuma venda registrada</TableCell></TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </div>
+
+          <div className="grid grid-cols-2 gap-12 mt-12">
+            <div className="text-center border-t border-black pt-2">
+              <p className="text-[10px] font-bold">Responsável Técnico / Qualidade</p>
+              <p className="text-[9px] text-gray-500 mt-4">Assinatura / Carimbo</p>
+            </div>
+            <div className="text-center border-t border-black pt-2">
+              <p className="text-[10px] font-bold">Data da Validação</p>
+              <p className="text-[9px] text-gray-500 mt-4">____/____/____</p>
+            </div>
+          </div>
+
+          <div className="mt-8 text-[8px] text-gray-400 italic text-center">
+            Este mapa de rastreabilidade foi gerado automaticamente e atende ao Art. 18 do Decreto 12.031/2024 e ao POP 05.
+          </div>
+        </div>
+      </div>
     </>
   );
 }
