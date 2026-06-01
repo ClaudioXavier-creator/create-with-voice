@@ -109,6 +109,12 @@ export default function Expedicao() {
     if (error) toast.error("Erro ao carregar: " + error.message);
     else setExpedicoes((data as any) || []);
 
+    // Carregar itens para o filtro de lotes
+    let qi = supabase.from("expedicao_itens" as any).select("expedicao_id, lote_produto");
+    if (empresaAtiva) qi = qi.eq("empresa_id", empresaAtiva.id);
+    const { data: ditens } = await qi;
+    setTodosItens(ditens || []);
+
     // Lotes em recall ativo
     let qr = supabase.from("rastreabilidade" as any).select("lote_produto").eq("recall_ativo", true);
     if (empresaAtiva) qr = qr.eq("empresa_id", empresaAtiva.id);
