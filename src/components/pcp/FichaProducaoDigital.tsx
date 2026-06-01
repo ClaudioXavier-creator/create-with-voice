@@ -108,6 +108,9 @@ export default function FichaProducaoDigital({ ordemId, onClose }: Props) {
       setMaterialFlush(o.material_flushing || "");
       setVerifResp(o.verificacao_responsavel || "");
       setVerifData(o.verificacao_data || "");
+      setTempoMisturaAlvo(o.tempo_mistura_padrao_minutos?.toString() || "3");
+      setTipoEmb(o.tipo_embalagem || "");
+      setLocalArm(o.local_armazenamento || "");
 
       if (o.formula_id) {
         const { data: ings } = await supabase
