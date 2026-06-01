@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Package, Plus, CheckCircle2, Loader2, Search, FileText, Download, Truck, AlertTriangle, ShieldAlert } from "lucide-react";
+import { Package, Plus, CheckCircle2, Loader2, Search, FileText, Download, Truck, AlertTriangle, ShieldAlert, FlaskConical, Printer } from "lucide-react";
 import FileUploadComponent from "@/components/FileUpload";
 import { registrarAuditLog } from "@/utils/auditLog";
 import { gerarHashIntegridade, adicionarRodapeIntegridade } from "@/utils/integridade";
@@ -18,6 +18,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useEmpresa } from "@/hooks/useEmpresa";
 import { toast } from "sonner";
+import { printElement } from "@/utils/printUtils";
 
 interface RecebimentoRow {
   id: string;
@@ -32,6 +33,9 @@ interface RecebimentoRow {
   certificado_analise_numero: string | null;
   certificado_analise_url: string | null;
   certificado_analise_valido: boolean | null;
+  numero_nota_fiscal: string | null;
+  nota_fiscal_url: string | null;
+  laudo_url: string | null;
   validade: string | null;
   quantidade: string | null;
   unidade: string | null;
@@ -64,6 +68,9 @@ export default function Recebimento() {
   const [certNumero, setCertNumero] = useState("");
   const [certUrl, setCertUrl] = useState("");
   const [certValido, setCertValido] = useState<boolean | null>(null);
+  const [numNF, setNumNF] = useState("");
+  const [nfUrl, setNfUrl] = useState("");
+  const [laudoUrl, setLaudoUrl] = useState("");
   const [observacoes, setObservacoes] = useState("");
 
   const [liberarDialogOpen, setLiberarDialogOpen] = useState(false);
@@ -95,6 +102,12 @@ export default function Recebimento() {
       fornecedor, materia_prima: materiaPrima, lote: lote || null,
       quantidade: quantidade || null, unidade: unidade || null,
       aprovado,
+      odor, umidade, insetos, temperatura,
+      certificado_analise_numero: certNumero || null,
+      certificado_analise_url: certUrl || null,
+      numero_nota_fiscal: numNF || null,
+      nota_fiscal_url: nfUrl || null,
+      laudo_url: laudoUrl || null,
       observacoes: observacoes || null,
       status: 'bloqueado'
     }).select().single();
@@ -184,12 +197,115 @@ export default function Recebimento() {
           <DialogTrigger asChild><Button><Plus className="mr-2" /> Novo</Button></DialogTrigger>
           <DialogContent>
             <DialogHeader><DialogTitle>Receber MP</DialogTitle></DialogHeader>
-            <div className="space-y-4">
-              <Input placeholder="Fornecedor" value={fornecedor} onChange={e => setFornecedor(e.target.value)} />
-              <Input placeholder="Matéria-Prima" value={materiaPrima} onChange={e => setMateriaPrima(e.target.value)} />
-              <Input placeholder="Lote" value={lote} onChange={e => setLote(e.target.value)} />
-              <Input placeholder="Qtd" value={quantidade} onChange={e => setQuantidade(e.target.value)} />
-              <Button onClick={handleAdd} disabled={saving} className="w-full">Registrar</Button>
+            <div className="space-y-4 max-h-[70vh] overflow-y-auto pr-2">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>Fornecedor</Label>
+                  <Input placeholder="Ex: Fornecedor Ltda" value={fornecedor} onChange={e => setFornecedor(e.target.value)} />
+                </div>
+                <div className="space-y-2">
+                  <Label>Matéria-Prima</Label>
+                  <Input placeholder="Ex: Milho Moído" value={materiaPrima} onChange={e => setMateriaPrima(e.target.value)} />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>Lote Fornecedor</Label>
+                  <Input placeholder="Lote" value={lote} onChange={e => setLote(e.target.value)} />
+                </div>
+                <div className="space-y-2">
+                  <Label>Nota Fiscal (Nº)</Label>
+                  <Input placeholder="Nº NF-e" value={numNF} onChange={e => setNumNF(e.target.value)} />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>Quantidade</Label>
+                  <div className="flex gap-2">
+                    <Input placeholder="Qtd" value={quantidade} onChange={e => setQuantidade(e.target.value)} />
+                    <Select value={unidade} onValueChange={setUnidade}>
+                      <SelectTrigger className="w-24"><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="kg">kg</SelectItem>
+                        <SelectItem value="un">un</SelectItem>
+                        <SelectItem value="t">t</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label>Temperatura (ºC)</Label>
+                  <Input placeholder="Ex: 25" value={temperatura} onChange={e => setTemperatura(e.target.value)} />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-3 gap-4 border p-3 rounded-lg bg-gray-50">
+                <div className="space-y-2">
+                  <Label>Odor</Label>
+                  <Select value={odor} onValueChange={setOdor}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="normal">Normal</SelectItem>
+                      <SelectItem value="alterado">Alterado</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label>Umidade</Label>
+                  <Input placeholder="Ex: 12%" value={umidade} onChange={e => setUmidade(e.target.value)} />
+                </div>
+                <div className="space-y-2">
+                  <Label>Insetos</Label>
+                  <Select value={insetos} onValueChange={setInsetos}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="ausente">Ausente</SelectItem>
+                      <SelectItem value="presente">Presente</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label>Certificado de Análise / Laudo (Nº)</Label>
+                <Input placeholder="Nº do Certificado" value={certNumero} onChange={e => setCertNumero(e.target.value)} />
+              </div>
+
+              <div className="grid grid-cols-1 gap-4">
+                <div className="space-y-2">
+                  <Label>Upload da Nota Fiscal</Label>
+                  <FileUploadComponent 
+                    bucket="documentos_bpf" 
+                    onUploadComplete={(url) => setNfUrl(url)} 
+                    label="Clique para subir a NF"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Upload do Laudo/Certificado</Label>
+                  <FileUploadComponent 
+                    bucket="documentos_bpf" 
+                    onUploadComplete={(url) => setCertUrl(url)} 
+                    label="Clique para subir o Laudo"
+                  />
+                </div>
+              </div>
+
+              <div className="flex items-center space-x-2">
+                <Switch id="aprovado" checked={aprovado} onCheckedChange={setAprovado} />
+                <Label htmlFor="aprovado">Aprovado no Recebimento</Label>
+              </div>
+
+              <div className="space-y-2">
+                <Label>Observações</Label>
+                <Textarea value={observacoes} onChange={e => setObservacoes(e.target.value)} />
+              </div>
+
+              <Button onClick={handleAdd} disabled={saving} className="w-full">
+                {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Registrar Recebimento
+              </Button>
             </div>
           </DialogContent>
         </Dialog>
@@ -203,6 +319,7 @@ export default function Recebimento() {
             <TableHead>Lote</TableHead>
             <TableHead>Saldo</TableHead>
             <TableHead>Status (FIFO)</TableHead>
+            <TableHead>Documentos</TableHead>
             <TableHead>Ações</TableHead>
           </TableRow>
         </TableHeader>
@@ -217,6 +334,58 @@ export default function Recebimento() {
                 <Badge className={item.status === 'liberado' ? "bg-green-500" : "bg-yellow-500"}>
                   {item.status}
                 </Badge>
+              </TableCell>
+              <TableCell>
+                <div className="flex gap-1">
+                  {item.nota_fiscal_url && (
+                    <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => window.open(item.nota_fiscal_url!, "_blank")} title="Nota Fiscal">
+                      <FileText className="h-4 w-4 text-blue-500" />
+                    </Button>
+                  )}
+                  {item.certificado_analise_url && (
+                    <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => window.open(item.certificado_analise_url!, "_blank")} title="Laudo/Certificado">
+                      <FlaskConical className="h-4 w-4 text-purple-500" />
+                    </Button>
+                  )}
+                  <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => {
+                    printElement(`print-rec-${item.id}`);
+                  }} title="Imprimir Ficha de Recebimento">
+                    <Printer className="h-4 w-4 text-gray-500" />
+                  </Button>
+                </div>
+                {/* Hidden print template */}
+                <div id={`print-rec-${item.id}`} className="hidden print:block p-8 space-y-6">
+                  <div className="text-center border-b pb-4">
+                    <h1 className="text-2xl font-bold">FICHA DE RECEBIMENTO DE MATÉRIA-PRIMA (POP-01)</h1>
+                    <p className="text-sm">Controle de Qualidade e Boas Práticas de Fabricação</p>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4 text-sm">
+                    <p><strong>Data:</strong> {item.data}</p>
+                    <p><strong>Fornecedor:</strong> {item.fornecedor}</p>
+                    <p><strong>Matéria-Prima:</strong> {item.materia_prima}</p>
+                    <p><strong>Lote:</strong> {item.lote}</p>
+                    <p><strong>Nota Fiscal:</strong> {item.numero_nota_fiscal || "—"}</p>
+                    <p><strong>Quantidade:</strong> {item.quantidade} {item.unidade}</p>
+                  </div>
+                  <div className="border p-4 rounded-md space-y-2">
+                    <h3 className="font-bold border-b pb-1">Análise Sensorial e Qualidade</h3>
+                    <div className="grid grid-cols-2 gap-2 text-sm">
+                      <p>Odor: {item.odor}</p>
+                      <p>Umidade: {item.umidade || "—"}</p>
+                      <p>Presença de Insetos: {item.insetos}</p>
+                      <p>Temperatura: {item.temperatura ? `${item.temperatura} ºC` : "—"}</p>
+                      <p>Certificado de Análise: {item.certificado_analise_numero || "—"}</p>
+                      <p>Aprovado: {item.aprovado ? "SIM" : "NÃO"}</p>
+                    </div>
+                  </div>
+                  <div className="pt-8">
+                    <p>Observações: {item.observacoes || "Nenhuma"}</p>
+                  </div>
+                  <div className="pt-20 flex justify-between px-10">
+                    <div className="text-center border-t w-64 pt-2">Assinatura do Responsável</div>
+                    <div className="text-center border-t w-64 pt-2">Assinatura do Transportador</div>
+                  </div>
+                </div>
               </TableCell>
               <TableCell>
                 {item.status === 'bloqueado' && (

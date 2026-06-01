@@ -4150,8 +4150,11 @@ export type Database = {
           insetos: string | null
           integridade_carga: boolean | null
           integridade_observacoes: string | null
+          laudo_url: string | null
           lote: string | null
           materia_prima: string
+          nota_fiscal_url: string | null
+          numero_nota_fiscal: string | null
           observacoes: string | null
           odor: string | null
           quantidade: string | null
@@ -4186,8 +4189,11 @@ export type Database = {
           insetos?: string | null
           integridade_carga?: boolean | null
           integridade_observacoes?: string | null
+          laudo_url?: string | null
           lote?: string | null
           materia_prima: string
+          nota_fiscal_url?: string | null
+          numero_nota_fiscal?: string | null
           observacoes?: string | null
           odor?: string | null
           quantidade?: string | null
@@ -4222,8 +4228,11 @@ export type Database = {
           insetos?: string | null
           integridade_carga?: boolean | null
           integridade_observacoes?: string | null
+          laudo_url?: string | null
           lote?: string | null
           materia_prima?: string
+          nota_fiscal_url?: string | null
+          numero_nota_fiscal?: string | null
           observacoes?: string | null
           odor?: string | null
           quantidade?: string | null

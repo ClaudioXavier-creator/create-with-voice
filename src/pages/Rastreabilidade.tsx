@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useMemo } from "react";
-import { Search, Plus, Loader2, Package, AlertTriangle, Truck, ShieldAlert, Timer, Play, Square, RotateCcw, ArrowUpDown, CheckCircle2, XCircle, Save, Download, FlaskConical, Bell, BarChart3, GitBranch, ChevronRight, AlertCircle, Printer, History } from "lucide-react";
+import { Search, Plus, Loader2, Package, AlertTriangle, Truck, ShieldAlert, Timer, Play, Square, RotateCcw, ArrowUpDown, CheckCircle2, XCircle, Save, Download, FlaskConical, Bell, BarChart3, GitBranch, ChevronRight, AlertCircle, Printer, History, FileText } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
@@ -41,7 +41,14 @@ interface RastreabilidadeRow {
 interface TesteResult {
   lote: string;
   produto: string;
-  montante: { materia_prima: string; lote_mp: string; fornecedor: string }[];
+  montante: { 
+    materia_prima: string; 
+    lote_mp: string; 
+    fornecedor: string; 
+    nota_fiscal?: string | null;
+    nota_fiscal_url?: string | null;
+    laudo_url?: string | null;
+  }[];
   jusante: { cliente: string; local: string; nf: string; data_venda: string }[];
   tempoSegundos: number;
 }
@@ -344,11 +351,18 @@ export default function Rastreabilidade() {
     }
 
     const produtoNome = lotRecords[0].produto;
-    const montante = lotRecords.map(r => ({
-      materia_prima: r.materia_prima,
-      lote_mp: r.lote_mp || "—",
-      fornecedor: r.fornecedor || "—",
-    }));
+    const montante = lotRecords.map(r => {
+      // Tentar encontrar o recebimento correspondente para pegar a NF e Laudo
+      const rec = recebimentos.find(rc => rc.materia_prima === r.materia_prima && rc.lote === r.lote_mp);
+      return {
+        materia_prima: r.materia_prima,
+        lote_mp: r.lote_mp || "—",
+        fornecedor: r.fornecedor || "—",
+        nota_fiscal: rec?.numero_nota_fiscal || null,
+        nota_fiscal_url: rec?.nota_fiscal_url || null,
+        laudo_url: rec?.certificado_analise_url || null, // Usamos o certificado_analise_url como laudo principal
+      };
+    });
     const jusante = lotRecords
       .filter(r => r.cliente_destino)
       .map(r => ({
@@ -1487,10 +1501,42 @@ export default function Rastreabilidade() {
                     <div className="p-3 rounded-lg bg-accent/5 border border-accent/20">
                       <p className="text-xs font-bold flex items-center gap-1 mb-2"><CheckCircle2 className="w-3 h-3 text-primary" /> MONTANTE (← Matérias-Primas) — {testeResult.montante.length} encontradas</p>
                       {testeResult.montante.length > 0 ? (
-                        <Table><TableHeader><TableRow><TableHead className="py-1 text-xs">Matéria-Prima</TableHead><TableHead className="py-1 text-xs">Lote MP</TableHead><TableHead className="py-1 text-xs">Fornecedor</TableHead></TableRow></TableHeader>
-                          <TableBody>{testeResult.montante.map((m, i) => (<TableRow key={i}><TableCell className="py-1 text-xs">{m.materia_prima}</TableCell><TableCell className="py-1 text-xs font-mono">{m.lote_mp}</TableCell><TableCell className="py-1 text-xs">{m.fornecedor}</TableCell></TableRow>))}</TableBody>
+                        <Table className="border rounded-md">
+                          <TableHeader className="bg-muted/50">
+                            <TableRow>
+                              <TableHead className="py-1 text-[10px] h-8">MP</TableHead>
+                              <TableHead className="py-1 text-[10px] h-8">Lote</TableHead>
+                              <TableHead className="py-1 text-[10px] h-8">Fornecedor</TableHead>
+                              <TableHead className="py-1 text-[10px] h-8">NF / Laudo</TableHead>
+                            </TableRow>
+                          </TableHeader>
+                          <TableBody>
+                            {testeResult.montante.map((m, i) => (
+                              <TableRow key={i}>
+                                <TableCell className="py-1 text-xs">{m.materia_prima}</TableCell>
+                                <TableCell className="py-1 text-xs font-mono">{m.lote_mp}</TableCell>
+                                <TableCell className="py-1 text-xs">{m.fornecedor}</TableCell>
+                                <TableCell className="py-1 text-xs">
+                                  <div className="flex gap-1">
+                                    {m.nota_fiscal_url ? (
+                                      <Button size="icon" variant="ghost" className="h-6 w-6" onClick={() => window.open(m.nota_fiscal_url!, "_blank")} title={`NF: ${m.nota_fiscal || 'Ver'}`}>
+                                        <FileText className="h-3 w-3 text-blue-500" />
+                                      </Button>
+                                    ) : <span className="text-[9px] text-muted-foreground">S/ NF</span>}
+                                    {m.laudo_url ? (
+                                      <Button size="icon" variant="ghost" className="h-6 w-6" onClick={() => window.open(m.laudo_url!, "_blank")} title="Ver Laudo">
+                                        <FlaskConical className="h-3 w-3 text-purple-500" />
+                                      </Button>
+                                    ) : <span className="text-[9px] text-muted-foreground">S/ L</span>}
+                                  </div>
+                                </TableCell>
+                              </TableRow>
+                            ))}
+                          </TableBody>
                         </Table>
-                      ) : <p className="text-xs text-muted-foreground">Nenhuma MP encontrada</p>}
+                      ) : (
+                        <p className="text-xs text-muted-foreground italic">Nenhuma matéria-prima vinculada.</p>
+                      )}
                     </div>
                     <div className="p-3 rounded-lg bg-muted/50 border">
                       <p className="text-xs font-bold flex items-center gap-1 mb-2">
