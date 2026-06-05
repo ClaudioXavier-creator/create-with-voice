@@ -21,6 +21,7 @@ import { DashboardPriorities } from "@/components/dashboard/DashboardPriorities"
 import { DashboardOperationalHealth } from "@/components/dashboard/DashboardOperationalHealth";
 import { DashboardRecentNCs } from "@/components/dashboard/DashboardRecentNCs";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { DashboardPopStatus } from "@/components/dashboard/DashboardPopStatus";
 
