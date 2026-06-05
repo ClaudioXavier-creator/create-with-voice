@@ -1,7 +1,8 @@
 import { useEffect, useState, useMemo } from "react";
+import { Link } from "react-router-dom";
 import {
   LayoutDashboard, AlertTriangle, ClipboardCheck, GraduationCap, CheckCircle2,
-  CalendarDays, Wrench, FileText, Droplets
+  CalendarDays, Wrench, FileText, Droplets, Building2
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { differenceInDays, parseISO } from "date-fns";
@@ -20,6 +21,7 @@ import { DashboardPriorities } from "@/components/dashboard/DashboardPriorities"
 import { DashboardOperationalHealth } from "@/components/dashboard/DashboardOperationalHealth";
 import { DashboardRecentNCs } from "@/components/dashboard/DashboardRecentNCs";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { DashboardPopStatus } from "@/components/dashboard/DashboardPopStatus";
 
@@ -164,6 +166,22 @@ export default function Index() {
 
   return (
     <div className="space-y-8 pb-10">
+      {data.ncAbertas === 0 && data.auditoriasRealizadas === 0 && (
+        <div className="p-4 rounded-xl bg-primary/10 border border-primary/20 flex flex-col sm:flex-row items-center justify-between gap-4 animate-in fade-in slide-in-from-top-4 duration-500">
+          <div className="flex items-center gap-3">
+            <div className="bg-primary p-2 rounded-lg text-white">
+              <Building2 className="w-5 h-5" />
+            </div>
+            <div>
+              <p className="font-bold text-sm">Bem-vindo ao Feed_BPF!</p>
+              <p className="text-xs text-muted-foreground">Para começar a operar, certifique-se de que sua empresa está cadastrada corretamente.</p>
+            </div>
+          </div>
+          <Link to="/cadastro">
+            <Button size="sm" variant="outline" className="whitespace-nowrap">Ver Cadastro de Empresas</Button>
+          </Link>
+        </div>
+      )}
       <div className="flex items-center justify-between gap-4 flex-wrap">
         <PageHeader icon={LayoutDashboard} title="Painel de Controle" description="Visão geral da conformidade e indicadores de BPF" />
         <div className="flex items-center gap-3">

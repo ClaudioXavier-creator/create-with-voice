@@ -75,8 +75,9 @@ export default function Cadastro() {
 
   const salvar = async () => {
     if (!form.nome.trim()) { toast.error("Nome da empresa é obrigatório"); return; }
-    if (!user) return;
+    if (!user) { toast.error("Usuário não identificado. Tente fazer login novamente."); return; }
     setSaving(true);
+    console.log("Iniciando salvamento da empresa...", { editId, userId: user.id });
     try {
       if (editId) {
         const { error } = await supabase.from("empresas").update({
@@ -99,7 +100,8 @@ export default function Cadastro() {
       await recarregar();
       setOpen(false);
     } catch (err: any) {
-      toast.error(err.message || "Erro ao salvar");
+      console.error("Erro completo ao salvar empresa:", err);
+      toast.error(err.message || "Erro ao salvar. Verifique sua conexão ou se o limite foi atingido.");
     } finally { setSaving(false); }
   };
 
@@ -139,7 +141,7 @@ export default function Cadastro() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>Nome da Empresa *</Label>
-                <Input value={form.nome} onChange={e => setForm(p => ({ ...p, nome: e.target.value }))} placeholder="Ex: AgroNutri Rações Ltda" />
+                <Input value={form.nome} onChange={e => setForm(p => ({ ...p, nome: e.target.value }))} placeholder="Ex: AgroNutri Rações Ltda" autoFocus />
               </div>
               <div className="space-y-2">
                 <Label>CNPJ</Label>
@@ -182,12 +184,14 @@ export default function Cadastro() {
       </div>
 
       {empresas.length === 0 ? (
-        <Card className="border-dashed border-2">
+        <Card className="border-dashed border-2 bg-muted/30">
           <CardContent className="flex flex-col items-center justify-center py-12 text-center">
-            <Building2 className="w-16 h-16 text-muted-foreground/30 mb-4" />
-            <h3 className="text-lg font-semibold mb-2">Nenhuma empresa cadastrada</h3>
-            <p className="text-muted-foreground text-sm mb-4">Cadastre sua primeira unidade fabril para começar a usar o sistema.</p>
-            <Button onClick={openNew}><Plus className="w-4 h-4 mr-1" /> Cadastrar Empresa</Button>
+            <div className="bg-primary/10 p-4 rounded-full mb-4">
+              <Building2 className="w-12 h-12 text-primary animate-pulse" />
+            </div>
+            <h3 className="text-xl font-bold mb-2">Primeiro passo: Cadastre sua empresa</h3>
+            <p className="text-muted-foreground text-sm mb-6 max-w-md">Para começar a usar o Feed_BPF, você precisa cadastrar pelo menos uma unidade fabril. Seus dados serão organizados por empresa.</p>
+            <Button size="lg" onClick={openNew} className="shadow-lg"><Plus className="w-5 h-5 mr-2" /> Cadastrar Minha Primeira Empresa</Button>
           </CardContent>
         </Card>
       ) : (
