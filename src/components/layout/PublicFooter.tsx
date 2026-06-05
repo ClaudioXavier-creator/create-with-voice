@@ -17,8 +17,8 @@ export function PublicFooter() {
           <Link to="/privacidade" className="hover:text-white transition-colors">Privacidade</Link>
           <Link to="/termos" className="hover:text-white transition-colors">Termos</Link>
           <Link to="/reembolso" className="hover:text-white transition-colors">Reembolso</Link>
+          <Link to="/admin" className="hover:text-[#97C459] transition-colors border-l border-green-100/10 pl-8">Portal de Gestão</Link>
           <a href="mailto:contato@bpfconsult.com.br" className="hover:text-white transition-colors">Suporte</a>
-          
         </div>
         <p className="mt-8 text-[10px] text-green-100/20 max-w-2xl mx-auto">
           Pagamentos processados com segurança via Paddle. O Paddle atua como nosso Merchant of Record e revendedor oficial.
