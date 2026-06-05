@@ -75,8 +75,9 @@ export default function Cadastro() {
 
   const salvar = async () => {
     if (!form.nome.trim()) { toast.error("Nome da empresa é obrigatório"); return; }
-    if (!user) return;
+    if (!user) { toast.error("Usuário não identificado. Tente fazer login novamente."); return; }
     setSaving(true);
+    console.log("Iniciando salvamento da empresa...", { editId, userId: user.id });
     try {
       if (editId) {
         const { error } = await supabase.from("empresas").update({
@@ -99,7 +100,8 @@ export default function Cadastro() {
       await recarregar();
       setOpen(false);
     } catch (err: any) {
-      toast.error(err.message || "Erro ao salvar");
+      console.error("Erro completo ao salvar empresa:", err);
+      toast.error(err.message || "Erro ao salvar. Verifique sua conexão ou se o limite foi atingido.");
     } finally { setSaving(false); }
   };
 
@@ -139,7 +141,7 @@ export default function Cadastro() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>Nome da Empresa *</Label>
-                <Input value={form.nome} onChange={e => setForm(p => ({ ...p, nome: e.target.value }))} placeholder="Ex: AgroNutri Rações Ltda" />
+                <Input value={form.nome} onChange={e => setForm(p => ({ ...p, nome: e.target.value }))} placeholder="Ex: AgroNutri Rações Ltda" autoFocus />
               </div>
               <div className="space-y-2">
                 <Label>CNPJ</Label>
