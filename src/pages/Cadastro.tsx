@@ -184,12 +184,14 @@ export default function Cadastro() {
       </div>
 
       {empresas.length === 0 ? (
-        <Card className="border-dashed border-2">
+        <Card className="border-dashed border-2 bg-muted/30">
           <CardContent className="flex flex-col items-center justify-center py-12 text-center">
-            <Building2 className="w-16 h-16 text-muted-foreground/30 mb-4" />
-            <h3 className="text-lg font-semibold mb-2">Nenhuma empresa cadastrada</h3>
-            <p className="text-muted-foreground text-sm mb-4">Cadastre sua primeira unidade fabril para começar a usar o sistema.</p>
-            <Button onClick={openNew}><Plus className="w-4 h-4 mr-1" /> Cadastrar Empresa</Button>
+            <div className="bg-primary/10 p-4 rounded-full mb-4">
+              <Building2 className="w-12 h-12 text-primary animate-pulse" />
+            </div>
+            <h3 className="text-xl font-bold mb-2">Primeiro passo: Cadastre sua empresa</h3>
+            <p className="text-muted-foreground text-sm mb-6 max-w-md">Para começar a usar o Feed_BPF, você precisa cadastrar pelo menos uma unidade fabril. Seus dados serão organizados por empresa.</p>
+            <Button size="lg" onClick={openNew} className="shadow-lg"><Plus className="w-5 h-5 mr-2" /> Cadastrar Minha Primeira Empresa</Button>
           </CardContent>
         </Card>
       ) : (
