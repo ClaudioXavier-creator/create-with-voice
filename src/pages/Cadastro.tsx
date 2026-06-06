@@ -81,28 +81,51 @@ export default function Cadastro() {
     try {
       if (editId) {
         const { error } = await supabase.from("empresas").update({
-          nome: form.nome, cnpj: form.cnpj, endereco: form.endereco,
-          responsavel_tecnico: form.responsavel_tecnico, crmv: form.crmv,
-          capacidade: form.capacidade, tipo_producao: form.tipo_producao,
+          nome: form.nome.trim(), 
+          cnpj: form.cnpj.trim(), 
+          endereco: form.endereco.trim(),
+          responsavel_tecnico: form.responsavel_tecnico.trim(), 
+          crmv: form.crmv.trim(),
+          capacidade: form.capacidade.trim(), 
+          tipo_producao: form.tipo_producao,
         }).eq("id", editId);
+        
         if (error) throw error;
-        toast.success("Empresa atualizada!");
+        toast.success("Empresa atualizada com sucesso!");
       } else {
         const { data, error } = await supabase.from("empresas").insert({
-          user_id: user.id, nome: form.nome, cnpj: form.cnpj, endereco: form.endereco,
-          responsavel_tecnico: form.responsavel_tecnico, crmv: form.crmv,
-          capacidade: form.capacidade, tipo_producao: form.tipo_producao,
+          user_id: user.id, 
+          nome: form.nome.trim(), 
+          cnpj: form.cnpj.trim(), 
+          endereco: form.endereco.trim(),
+          responsavel_tecnico: form.responsavel_tecnico.trim(), 
+          crmv: form.crmv.trim(),
+          capacidade: form.capacidade.trim(), 
+          tipo_producao: form.tipo_producao,
         }).select().single();
-        if (error) throw error;
-        toast.success("Empresa cadastrada!");
+        
+        if (error) {
+          if (error.code === "23505") { // Unique constraint
+             throw new Error("Já existe uma empresa cadastrada com este CNPJ.");
+          }
+          throw error;
+        }
+        
+        toast.success("Empresa cadastrada com sucesso!");
         if (data) setEmpresaAtiva(data as any);
       }
+      
       await recarregar();
       setOpen(false);
     } catch (err: any) {
-      console.error("Erro completo ao salvar empresa:", err);
-      toast.error(err.message || "Erro ao salvar. Verifique sua conexão ou se o limite foi atingido.");
-    } finally { setSaving(false); }
+      console.error("Erro ao salvar empresa:", err);
+      const message = err.message || "Não foi possível salvar os dados. Verifique sua conexão.";
+      toast.error(message, {
+        description: "Se o erro persistir, verifique se o CNPJ já está em uso.",
+      });
+    } finally { 
+      setSaving(false); 
+    }
   };
 
   const excluir = async (id: string) => {
