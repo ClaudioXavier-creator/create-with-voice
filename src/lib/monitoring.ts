@@ -1,37 +1,34 @@
 import * as Sentry from "@sentry/react";
 
+// Sentry DSN é uma chave pública por design - seguro estar no código
+const SENTRY_DSN = "https://d7a8cb48cdf7c7b4f4d554f6dd67d3fd@o4511515922006016.ingest.us.sentry.io/4511515977777152";
+
 export const initSentry = () => {
-  const dsn = import.meta.env.VITE_SENTRY_DSN;
-  
-  if (dsn) {
+  if (SENTRY_DSN) {
     Sentry.init({
-      dsn,
+      dsn: SENTRY_DSN,
       integrations: [
         Sentry.browserTracingIntegration(),
         Sentry.replayIntegration(),
       ],
-      // Performance Monitoring
-      tracesSampleRate: 1.0, 
-      // Session Replay
+      tracesSampleRate: 1.0,
       replaysSessionSampleRate: 0.1,
       replaysOnErrorSampleRate: 1.0,
       environment: import.meta.env.MODE,
     });
     console.log("Sentry initialized");
-  } else {
-    console.log("Sentry DSN not found, monitoring disabled");
   }
 };
 
 export const captureError = (error: any, context?: any) => {
   console.error("Captured Error:", error, context);
-  if (import.meta.env.VITE_SENTRY_DSN) {
+  if (SENTRY_DSN) {
     Sentry.captureException(error, { extra: context });
   }
 };
 
 export const captureMessage = (message: string, level: Sentry.SeverityLevel = "info") => {
-  if (import.meta.env.VITE_SENTRY_DSN) {
+  if (SENTRY_DSN) {
     Sentry.captureMessage(message, level);
   }
 };
