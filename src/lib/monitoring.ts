@@ -7,7 +7,7 @@ const DSN_DEFAULT = "https://d7a8cb48cdf7c7b4f4d554f6dd67d3fd@o4511515922006016.
 
 const DSN_BY_PRODUCT: Record<string, string> = {
   "audits-bpf": "https://8578fc93c64b486225957e22e281937d@o4511515922006016.ingest.us.sentry.io/4511520860733440",
-  // "nutri-agro-labels": "https://<KEY>@o4511515922006016.ingest.us.sentry.io/4511521005764608",
+  "nutri-agro-labels": "https://748d4b0598699748ac3e3178ccf77e4b@o4511515922006016.ingest.us.sentry.io/4511521005764608",
 };
 
 function detectProduct(): string | null {
