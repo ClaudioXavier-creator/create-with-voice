@@ -2,7 +2,6 @@
 name: configure-sentry
 description: Installs and configures Sentry error monitoring in a React project with a hardcoded DSN.
 ---
-
 # Configure Sentry Monitoring
 
 Configure Sentry error tracking in a React project using a hardcoded DSN.
