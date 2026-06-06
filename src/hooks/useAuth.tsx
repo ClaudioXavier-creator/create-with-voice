@@ -1,6 +1,8 @@
 import { createContext, useContext, useEffect, useState, ReactNode, useMemo, useCallback } from "react";
 import { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
+import * as Sentry from "@sentry/react";
+
 
 interface AuthContextType {
   session: Session | null;
@@ -39,8 +41,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         supabase.from("profiles").select("tipo_usuario").eq("user_id", userId).maybeSingle(),
       ]);
 
-      setRoles((rolesData ?? []).map((item) => item.role));
+      const userRoles = (rolesData ?? []).map((item) => item.role);
+      setRoles(userRoles);
       setUserType(profileData?.tipo_usuario ?? null);
+
+      if (userId) {
+        Sentry.setUser({
+          id: userId,
+          email: session?.user?.email,
+          roles: userRoles,
+          userType: profileData?.tipo_usuario
+        });
+      }
+
     } catch (error) {
       console.error("Erro ao carregar contexto de acesso:", error);
     }
@@ -93,6 +106,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setSession(null);
       setRoles([]);
       setUserType(null);
+      Sentry.setUser(null);
+
     } catch (error) {
       console.error("Erro ao sair:", error);
     }
