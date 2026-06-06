@@ -7,6 +7,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider, useAuth } from "@/hooks/useAuth";
 import { EmpresaProvider } from "@/hooks/useEmpresa";
+import { initSentry } from "@/lib/monitoring";
 import AppLayout from "@/components/layout/AppLayout";
 import LicenseGate from "@/components/LicenseGate";
 import PageLoader from "@/components/PageLoader";
@@ -148,6 +149,8 @@ const queryClient = new QueryClient({
     },
   },
 });
+
+initSentry();
 
 const ProtectedRoute = ({ children, requireAdmin }: { children: React.ReactNode; requireAdmin?: boolean }) => {
   const { session, loading, roles, user } = useAuth();
