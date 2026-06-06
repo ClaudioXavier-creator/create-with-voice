@@ -51,7 +51,7 @@ export function EmpresaProvider({ children }: { children: ReactNode }) {
         supabase.from("empresa_membros").select("empresa_id").eq("user_id", user.id).eq("ativo", true),
         supabase.from("licenca_empresas").select("empresa_id").eq("user_id", user.id).eq("ativo", true),
         user.email
-          ? supabase.from("convites_empresa").select("empresa_id, aceito_em, aceito_por").eq("email", user.email)
+          ? supabase.from("convites_empresa").select("empresa_id, aceito_em, aceito_por").eq("email", user.email.toLowerCase())
           : Promise.resolve({ data: [], error: null }),
       ]);
 
