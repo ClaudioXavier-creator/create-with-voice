@@ -1,6 +1,9 @@
 import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
 import "./index.css";
+import { initSentry } from "./lib/monitoring";
+
+initSentry();
 
 // Unregister stale service workers and clear caches so the latest vitrine is
 // always served instead of an older offline copy.
