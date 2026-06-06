@@ -13,6 +13,7 @@ import { useEmpresa } from "@/hooks/useEmpresa";
 import { useLicense } from "@/hooks/useLicense";
 import { TIER_MAX_EMPRESAS, TIER_LABEL } from "@/config/tiers";
 import { toast } from "sonner";
+import { captureError } from "@/lib/monitoring";
 
 const TIPOS = ["Ração farelada", "Ração peletizada", "Núcleo", "Premix", "Suplemento mineral", "Sal mineral"];
 
@@ -119,6 +120,7 @@ export default function Cadastro() {
       setOpen(false);
     } catch (err: any) {
       console.error("Erro ao salvar empresa:", err);
+      captureError(err, { form, editId, userId: user?.id });
       const message = err.message || "Não foi possível salvar os dados. Verifique sua conexão.";
       toast.error(message, {
         description: "Se o erro persistir, verifique se o CNPJ já está em uso.",
