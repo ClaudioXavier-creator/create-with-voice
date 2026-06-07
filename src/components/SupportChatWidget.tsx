@@ -35,6 +35,7 @@ const WELCOME: Msg = {
 const HIDDEN_ROUTES = ["/auditor/", "/instalar", "/admin-access"];
 
 export default function SupportChatWidget() {
+  console.log("SupportChatWidget mounting...");
   const location = useLocation();
   const { user } = useAuth();
   const [open, setOpen] = useState(false);
