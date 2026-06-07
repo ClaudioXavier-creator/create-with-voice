@@ -36,3 +36,7 @@ verify_jwt = true
 [functions.alertas-vencimento]
 verify_jwt = true
 
+[functions.support-chat]
+verify_jwt = false
+
+
