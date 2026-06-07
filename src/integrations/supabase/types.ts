@@ -219,6 +219,36 @@ export type Database = {
           },
         ]
       }
+      ai_chat_feedback: {
+        Row: {
+          assistant_response: string
+          created_at: string
+          feedback_text: string | null
+          id: string
+          rating: number
+          user_id: string | null
+          user_query: string | null
+        }
+        Insert: {
+          assistant_response: string
+          created_at?: string
+          feedback_text?: string | null
+          id?: string
+          rating: number
+          user_id?: string | null
+          user_query?: string | null
+        }
+        Update: {
+          assistant_response?: string
+          created_at?: string
+          feedback_text?: string | null
+          id?: string
+          rating?: number
+          user_id?: string | null
+          user_query?: string | null
+        }
+        Relationships: []
+      }
       analises_laboratorio: {
         Row: {
           conforme: boolean | null
