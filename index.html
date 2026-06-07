@@ -85,6 +85,21 @@
         if (!loader) return;
         var root = document.getElementById('root');
         if (root && root.children.length > 0) return; // app mounted
+        // Marca para o app logar o failsafe assim que o supabase client estiver disponível
+        try {
+          var elapsed = Date.now() - (window.__BOOT_T0__ || Date.now());
+          var pending = JSON.parse(localStorage.getItem('__pending_boot_errors__') || '[]');
+          pending.push({
+            type: 'boot_failsafe',
+            message: 'App did not mount within 15s',
+            elapsedMs: elapsed,
+            route: window.location.pathname + window.location.search,
+            userAgent: navigator.userAgent,
+            timestamp: new Date().toISOString(),
+          });
+          localStorage.setItem('__pending_boot_errors__', JSON.stringify(pending.slice(-10)));
+          console.error('[BootFailsafe] App did not mount within 15s', { elapsedMs: elapsed });
+        } catch (e) {}
         loader.innerHTML =
           '<div style="max-width:420px;text-align:center;padding:24px">' +
           '<div style="font-size:32px;margin-bottom:12px">⚠️</div>' +

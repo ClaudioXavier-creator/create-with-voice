@@ -23,6 +23,17 @@ export default class AppErrorBoundary extends React.Component<
     } catch {
       // ignore
     }
+    // Persist to DB so admins can inspect later
+    import("@/lib/errorLogger")
+      .then(({ logAppError }) =>
+        logAppError({
+          type: "boundary",
+          message: error.message,
+          stack: error.stack,
+          componentStack: info.componentStack ?? undefined,
+        })
+      )
+      .catch(() => {});
   }
 
   handleReload = () => {
