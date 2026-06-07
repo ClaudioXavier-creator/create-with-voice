@@ -84,7 +84,7 @@ export async function logAppError(payload: LogPayload): Promise<void> {
     const { data: sessionData } = await supabase.auth.getSession();
     const userId = sessionData?.session?.user?.id ?? null;
 
-    await supabase.from("app_error_logs").insert({
+    await (supabase.from("app_error_logs") as any).insert({
       user_id: userId,
       error_type: payload.type,
       message: payload.message ?? null,
@@ -94,7 +94,7 @@ export async function logAppError(payload: LogPayload): Promise<void> {
       user_agent: userAgent,
       app_version: appVersion,
       boot_elapsed_ms: bootElapsed,
-      extra: payload.extra ? (payload.extra as Record<string, unknown>) : null,
+      extra: payload.extra ?? null,
     });
   } catch (err) {
     // eslint-disable-next-line no-console
