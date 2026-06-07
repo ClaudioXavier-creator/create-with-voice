@@ -4,6 +4,13 @@ import "./index.css";
 import { initSentry } from "./lib/monitoring";
 import AppErrorBoundary from "./components/AppErrorBoundary";
 
+declare global {
+  interface Window {
+    __BOOT_FAILSAFE__?: ReturnType<typeof setTimeout>;
+    __BOOT_T0__?: number;
+  }
+}
+
 initSentry();
 
 // Remove o boot loader assim que o React montar
