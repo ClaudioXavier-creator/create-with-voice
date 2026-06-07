@@ -2,8 +2,40 @@ import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
 import "./index.css";
 import { initSentry } from "./lib/monitoring";
+import AppErrorBoundary from "./components/AppErrorBoundary";
 
 initSentry();
+
+// Remove o boot loader assim que o React montar
+function removeBootLoader() {
+  const loader = document.getElementById("boot-loader");
+  if (!loader) return;
+  if (window.__BOOT_FAILSAFE__) clearTimeout(window.__BOOT_FAILSAFE__);
+  loader.classList.add("fade-out");
+  setTimeout(() => loader.remove(), 320);
+}
+
+// Captura erros não tratados (ex.: chunk falhou ao carregar após restart do dev server)
+window.addEventListener("error", (e) => {
+  const msg = e?.message || "";
+  if (/Loading chunk|Failed to fetch dynamically imported module|ChunkLoadError/i.test(msg)) {
+    console.warn("[main] Chunk load error detected — reloading", msg);
+    if (!sessionStorage.getItem("__chunk_reload__")) {
+      sessionStorage.setItem("__chunk_reload__", "1");
+      setTimeout(() => window.location.reload(), 500);
+    }
+  }
+});
+window.addEventListener("unhandledrejection", (e) => {
+  const msg = (e?.reason && (e.reason.message || String(e.reason))) || "";
+  if (/Loading chunk|Failed to fetch dynamically imported module/i.test(msg)) {
+    console.warn("[main] Dynamic import failed — reloading", msg);
+    if (!sessionStorage.getItem("__chunk_reload__")) {
+      sessionStorage.setItem("__chunk_reload__", "1");
+      setTimeout(() => window.location.reload(), 500);
+    }
+  }
+});
 
 // Unregister stale service workers and clear caches so the latest vitrine is
 // always served instead of an older offline copy.
@@ -88,4 +120,12 @@ cleanupStaleServiceWorkers();
 
 // Removed automatic logout in preview as it can interfere with testing session-based features.
 
-createRoot(document.getElementById("root")!).render(<App />);
+createRoot(document.getElementById("root")!).render(
+  <AppErrorBoundary>
+    <App />
+  </AppErrorBoundary>
+);
+
+// Limpa flag de reload se o app montou com sucesso
+sessionStorage.removeItem("__chunk_reload__");
+removeBootLoader();
