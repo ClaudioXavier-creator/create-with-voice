@@ -371,6 +371,10 @@ export default function SuperAdmin() {
           <WhatsAppConfig />
         </TabsContent>
 
+        <TabsContent value="error-logs">
+          <AppErrorLogsViewer />
+        </TabsContent>
+
         <TabsContent value="modulos">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <Card className="hover:border-primary/50 transition-colors">
