@@ -58,7 +58,7 @@ export default function SupportChatWidget() {
     if (!text || isLoading) return;
 
     const userMsg: Msg = { 
-      id: crypto.randomUUID(),
+      id: Math.random().toString(36).substring(2, 15),
       role: "user", 
       content: text 
     };
@@ -67,7 +67,7 @@ export default function SupportChatWidget() {
     setInput("");
     setIsLoading(true);
 
-    const assistantId = crypto.randomUUID();
+    const assistantId = Math.random().toString(36).substring(2, 15);
 
     let assistantSoFar = "";
     const upsert = (chunk: string) => {
