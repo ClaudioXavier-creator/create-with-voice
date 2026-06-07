@@ -12,6 +12,8 @@ import AppLayout from "@/components/layout/AppLayout";
 import LicenseGate from "@/components/LicenseGate";
 import PageLoader from "@/components/PageLoader";
 import { ExternalRedirect } from "@/components/ExternalRedirect";
+import SupportChatWidget from "@/components/SupportChatWidget";
+
 
 
 
@@ -352,8 +354,10 @@ const App = () => (
         <AuthProvider>
           <EmpresaProvider>
             <AppRoutes />
+            <SupportChatWidget />
           </EmpresaProvider>
         </AuthProvider>
+
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
