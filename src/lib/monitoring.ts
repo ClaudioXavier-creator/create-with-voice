@@ -1,5 +1,7 @@
 import * as Sentry from "@sentry/react";
 
+let sentryInitialized = false;
+
 // Sentry DSN é uma chave pública por design - seguro estar no código.
 // Cada produto tem seu próprio projeto Sentry. Roteamos pelo hostname /
 // pathname / query param "?product" para enviar erros ao projeto correto.
@@ -37,6 +39,11 @@ function resolveDsn(): string {
 }
 
 export const initSentry = () => {
+  if (sentryInitialized || Sentry.getClient()) {
+    sentryInitialized = true;
+    return;
+  }
+
   const dsn = resolveDsn();
   const product = detectProduct() ?? "default";
   if (dsn) {
@@ -52,6 +59,7 @@ export const initSentry = () => {
       environment: import.meta.env.MODE,
       initialScope: { tags: { product } },
     });
+    sentryInitialized = true;
     console.log(`Sentry initialized (product: ${product})`);
   }
 };
