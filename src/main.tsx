@@ -140,7 +140,28 @@ function cleanupStaleServiceWorkers() {
 
 cleanupStaleServiceWorkers();
 
-// Removed automatic logout in preview as it can interfere with testing session-based features.
+// Flush boot failsafe errors logged antes do React montar
+function flushPendingBootErrors() {
+  try {
+    const raw = localStorage.getItem("__pending_boot_errors__");
+    if (!raw) return;
+    const items: Array<any> = JSON.parse(raw);
+    localStorage.removeItem("__pending_boot_errors__");
+    if (!items.length) return;
+    import("./lib/errorLogger").then(({ logAppError }) => {
+      items.forEach((it) =>
+        logAppError({
+          type: it.type || "boot_failsafe",
+          message: it.message,
+          extra: { elapsedMs: it.elapsedMs, originalRoute: it.route, originalTs: it.timestamp },
+        })
+      );
+    }).catch(() => {});
+  } catch {
+    // ignore
+  }
+}
+flushPendingBootErrors();
 
 createRoot(document.getElementById("root")!).render(
   <AppErrorBoundary>
