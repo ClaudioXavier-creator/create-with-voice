@@ -25,22 +25,37 @@ function removeBootLoader() {
 // Captura erros não tratados (ex.: chunk falhou ao carregar após restart do dev server)
 window.addEventListener("error", (e) => {
   const msg = e?.message || "";
-  if (/Loading chunk|Failed to fetch dynamically imported module|ChunkLoadError/i.test(msg)) {
-    console.warn("[main] Chunk load error detected — reloading", msg);
-    if (!sessionStorage.getItem("__chunk_reload__")) {
-      sessionStorage.setItem("__chunk_reload__", "1");
-      setTimeout(() => window.location.reload(), 500);
-    }
+  const isChunk = /Loading chunk|Failed to fetch dynamically imported module|ChunkLoadError/i.test(msg);
+  // Import dinâmico para evitar bundle inicial pesado e quebrar se supabase falhar
+  import("./lib/errorLogger").then(({ logAppError }) =>
+    logAppError({
+      type: isChunk ? "chunk_error" : "unhandled_error",
+      message: msg,
+      stack: e?.error?.stack,
+      extra: { filename: e?.filename, lineno: e?.lineno, colno: e?.colno },
+    })
+  ).catch(() => {});
+  if (isChunk && !sessionStorage.getItem("__chunk_reload__")) {
+    console.warn("[main] Chunk load error — reloading", msg);
+    sessionStorage.setItem("__chunk_reload__", "1");
+    setTimeout(() => window.location.reload(), 500);
   }
 });
 window.addEventListener("unhandledrejection", (e) => {
-  const msg = (e?.reason && (e.reason.message || String(e.reason))) || "";
-  if (/Loading chunk|Failed to fetch dynamically imported module/i.test(msg)) {
+  const reason: any = e?.reason;
+  const msg = (reason && (reason.message || String(reason))) || "";
+  const isChunk = /Loading chunk|Failed to fetch dynamically imported module/i.test(msg);
+  import("./lib/errorLogger").then(({ logAppError }) =>
+    logAppError({
+      type: isChunk ? "chunk_error" : "promise_rejection",
+      message: msg,
+      stack: reason?.stack,
+    })
+  ).catch(() => {});
+  if (isChunk && !sessionStorage.getItem("__chunk_reload__")) {
     console.warn("[main] Dynamic import failed — reloading", msg);
-    if (!sessionStorage.getItem("__chunk_reload__")) {
-      sessionStorage.setItem("__chunk_reload__", "1");
-      setTimeout(() => window.location.reload(), 500);
-    }
+    sessionStorage.setItem("__chunk_reload__", "1");
+    setTimeout(() => window.location.reload(), 500);
   }
 });
 
@@ -125,7 +140,28 @@ function cleanupStaleServiceWorkers() {
 
 cleanupStaleServiceWorkers();
 
-// Removed automatic logout in preview as it can interfere with testing session-based features.
+// Flush boot failsafe errors logged antes do React montar
+function flushPendingBootErrors() {
+  try {
+    const raw = localStorage.getItem("__pending_boot_errors__");
+    if (!raw) return;
+    const items: Array<any> = JSON.parse(raw);
+    localStorage.removeItem("__pending_boot_errors__");
+    if (!items.length) return;
+    import("./lib/errorLogger").then(({ logAppError }) => {
+      items.forEach((it) =>
+        logAppError({
+          type: it.type || "boot_failsafe",
+          message: it.message,
+          extra: { elapsedMs: it.elapsedMs, originalRoute: it.route, originalTs: it.timestamp },
+        })
+      );
+    }).catch(() => {});
+  } catch {
+    // ignore
+  }
+}
+flushPendingBootErrors();
 
 createRoot(document.getElementById("root")!).render(
   <AppErrorBoundary>

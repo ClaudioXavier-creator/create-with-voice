@@ -5,7 +5,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ShieldCheck, Users, TrendingUp, Key, CreditCard, Activity, Target, Award, Loader2, Megaphone, FileText, SendHorizontal, Lock, Zap, MessageSquare, ExternalLink, Tag, LayoutDashboard, Building2 } from "lucide-react";
+import { ShieldCheck, Users, TrendingUp, Key, CreditCard, Activity, Target, Award, Loader2, Megaphone, FileText, SendHorizontal, Lock, Zap, MessageSquare, ExternalLink, Tag, LayoutDashboard, Building2, AlertTriangle } from "lucide-react";
+import AppErrorLogsViewer from "@/components/admin/AppErrorLogsViewer";
 import { canAccessLicenseAdmin } from "@/config/adminAccess";
 import CRM from "./CRM";
 import AdminLicencas from "./AdminLicencas";
@@ -117,7 +118,7 @@ export default function SuperAdmin() {
 
       <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-6">
         <div className="overflow-x-auto pb-2 -mx-4 px-4 md:mx-0 md:px-0">
-          <TabsList className="flex md:grid md:grid-cols-10 lg:grid-cols-10 w-max md:w-full h-auto gap-2 bg-transparent">
+          <TabsList className="flex md:grid md:grid-cols-11 lg:grid-cols-11 w-max md:w-full h-auto gap-2 bg-transparent">
             <TabsTrigger value="dashboard" className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground py-2 border flex-1">
               <Activity className="h-4 w-4" />
               <span>Dashboard</span>
@@ -157,6 +158,10 @@ export default function SuperAdmin() {
             <TabsTrigger value="modulos" className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground py-2 border flex-1">
               <Zap className="h-4 w-4" />
               <span>Módulos</span>
+            </TabsTrigger>
+            <TabsTrigger value="error-logs" className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground py-2 border flex-1">
+              <AlertTriangle className="h-4 w-4" />
+              <span>Erros</span>
             </TabsTrigger>
           </TabsList>
 
@@ -364,6 +369,10 @@ export default function SuperAdmin() {
         </TabsContent>
         <TabsContent value="whatsapp">
           <WhatsAppConfig />
+        </TabsContent>
+
+        <TabsContent value="error-logs">
+          <AppErrorLogsViewer />
         </TabsContent>
 
         <TabsContent value="modulos">

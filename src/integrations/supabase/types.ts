@@ -338,6 +338,51 @@ export type Database = {
           },
         ]
       }
+      app_error_logs: {
+        Row: {
+          app_version: string | null
+          boot_elapsed_ms: number | null
+          component_stack: string | null
+          created_at: string
+          error_type: string
+          extra: Json | null
+          id: string
+          message: string | null
+          route: string | null
+          stack: string | null
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          app_version?: string | null
+          boot_elapsed_ms?: number | null
+          component_stack?: string | null
+          created_at?: string
+          error_type: string
+          extra?: Json | null
+          id?: string
+          message?: string | null
+          route?: string | null
+          stack?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          app_version?: string | null
+          boot_elapsed_ms?: number | null
+          component_stack?: string | null
+          created_at?: string
+          error_type?: string
+          extra?: Json | null
+          id?: string
+          message?: string | null
+          route?: string | null
+          stack?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       arquivos_bpf: {
         Row: {
           arquivo_nome: string | null
