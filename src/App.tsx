@@ -1,4 +1,6 @@
+// App Validation - HMR Check: 2026-06-07T01:56:00
 import React, { Suspense, lazy, useEffect } from "react";
+
 import { Tag, FileText, Layers, Palette, Printer } from "lucide-react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Route, Routes, Navigate, useLocation, useParams } from "react-router-dom";
