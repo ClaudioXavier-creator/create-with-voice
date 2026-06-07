@@ -1,4 +1,4 @@
-import { test as base, expect } from "lovable-agent-playwright-config/fixture";
+import { test as base, expect } from "@playwright/test";
 
 export const test = base.extend({
   page: async ({ page }, use) => {
@@ -6,8 +6,11 @@ export const test = base.extend({
     const errors: Error[] = [];
 
     page.on("console", (msg) => {
+      // Falhar explicitamente em erros de console
       if (msg.type() === "error") {
-        logs.push(msg.text());
+        // Opcional: Ignorar erros conhecidos do Sentry se necessário, 
+        // mas o usuário pediu para incluir Sentry.
+        logs.push(`[${msg.type()}] ${msg.text()}`);
       }
     });
 
@@ -19,13 +22,12 @@ export const test = base.extend({
 
     if (errors.length > 0) {
       throw new Error(
-        `Page errors detected:\n${errors.map((e) => e.stack || e.message).join("\n")}`
+        `Page errors detected during test:\n${errors.map((e) => e.stack || e.message).join("\n")}`
       );
     }
 
     if (logs.length > 0) {
-      // Filtrando warnings conhecidos se necessário, mas o usuário pediu para falhar em erros
-      throw new Error(`Console errors detected:\n${logs.join("\n")}`);
+      throw new Error(`Console errors detected during test:\n${logs.join("\n")}`);
     }
   },
 });
