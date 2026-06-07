@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
-import { MessageCircle, X, Send, Loader2, HeadphonesIcon, Sparkles } from "lucide-react";
+import { MessageCircle, X, Send, Loader2, HeadphonesIcon, Sparkles, ThumbsUp, ThumbsDown, Check } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,9 +17,15 @@ import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
-type Msg = { role: "user" | "assistant"; content: string };
+type Msg = { 
+  id?: string;
+  role: "user" | "assistant"; 
+  content: string;
+  userQuery?: string;
+};
 
 const WELCOME: Msg = {
+  id: "welcome",
   role: "assistant",
   content:
     "Olá! 👋 Sou o **Assistente BPF_Consult**. Posso ajudar com dúvidas sobre **BPF**, **legislação MAPA** (Decreto 12.031/2024, IN 04/2007) e **uso da plataforma**.\n\nComo posso ajudar hoje?",
@@ -36,6 +42,7 @@ export default function SupportChatWidget() {
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [contactOpen, setContactOpen] = useState(false);
+  const [ratedMessages, setRatedMessages] = useState<Record<string, boolean>>({});
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -50,21 +57,32 @@ export default function SupportChatWidget() {
     const text = input.trim();
     if (!text || isLoading) return;
 
-    const userMsg: Msg = { role: "user", content: text };
+    const userMsg: Msg = { 
+      id: crypto.randomUUID(),
+      role: "user", 
+      content: text 
+    };
     const history = [...messages.filter((m) => m !== WELCOME || messages.length > 1), userMsg];
     setMessages((prev) => [...prev, userMsg]);
     setInput("");
     setIsLoading(true);
+
+    const assistantId = crypto.randomUUID();
 
     let assistantSoFar = "";
     const upsert = (chunk: string) => {
       assistantSoFar += chunk;
       setMessages((prev) => {
         const last = prev[prev.length - 1];
-        if (last?.role === "assistant" && last !== WELCOME) {
+        if (last?.role === "assistant" && last.id === assistantId) {
           return prev.map((m, i) => (i === prev.length - 1 ? { ...m, content: assistantSoFar } : m));
         }
-        return [...prev, { role: "assistant", content: assistantSoFar }];
+        return [...prev, { 
+          id: assistantId, 
+          role: "assistant", 
+          content: assistantSoFar,
+          userQuery: text
+        }];
       });
     };
 
@@ -214,8 +232,21 @@ export default function SupportChatWidget() {
                   )}
                 >
                   {m.role === "assistant" ? (
-                    <div className="prose prose-sm max-w-none dark:prose-invert prose-p:my-1 prose-ul:my-1 prose-ol:my-1">
-                      <ReactMarkdown>{m.content}</ReactMarkdown>
+                    <div className="space-y-2">
+                      <div className="prose prose-sm max-w-none dark:prose-invert prose-p:my-1 prose-ul:my-1 prose-ol:my-1">
+                        <ReactMarkdown>{m.content}</ReactMarkdown>
+                      </div>
+                      
+                      {m.id !== "welcome" && !isLoading && i === messages.length - 1 && (
+                        <FeedbackArea 
+                          messageId={m.id!} 
+                          assistantResponse={m.content}
+                          userQuery={m.userQuery}
+                          onRated={() => setRatedMessages(prev => ({ ...prev, [m.id!]: true }))}
+                          isRated={ratedMessages[m.id!]}
+                          user={user}
+                        />
+                      )}
                     </div>
                   ) : (
                     <p className="whitespace-pre-wrap">{m.content}</p>
@@ -279,6 +310,118 @@ export default function SupportChatWidget() {
         user={user}
       />
     </>
+  );
+}
+
+function FeedbackArea({
+  messageId,
+  assistantResponse,
+  userQuery,
+  onRated,
+  isRated,
+  user,
+}: {
+  messageId: string;
+  assistantResponse: string;
+  userQuery?: string;
+  onRated: () => void;
+  isRated: boolean;
+  user: any;
+}) {
+  const [rating, setRating] = useState<number | null>(null);
+  const [feedback, setFeedback] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+
+  const handleRate = async (val: number) => {
+    setRating(val);
+    // Auto-submit if it's a positive rating and no feedback is needed immediately
+    if (val === 1) {
+      await submitFeedback(val, "");
+    }
+  };
+
+  const submitFeedback = async (val: number, text: string) => {
+    setIsSubmitting(true);
+    try {
+      const { error } = await supabase.from("ai_chat_feedback").insert({
+        user_id: user?.id || null,
+        user_query: userQuery || null,
+        assistant_response: assistantResponse,
+        rating: val,
+        feedback_text: text || null,
+      });
+
+      if (error) throw error;
+      setSubmitted(true);
+      onRated();
+    } catch (err) {
+      console.error("Error submitting feedback:", err);
+      toast.error("Erro ao enviar avaliação.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  if (submitted || isRated) {
+    return (
+      <div className="mt-2 flex items-center gap-1.5 text-[11px] text-emerald-600 font-medium animate-in fade-in slide-in-from-bottom-1">
+        <Check className="h-3 w-3" />
+        Obrigado pelo feedback!
+      </div>
+    );
+  }
+
+  return (
+    <div className="mt-2 border-t border-border/50 pt-2 space-y-2 animate-in fade-in duration-500">
+      <div className="flex items-center gap-2">
+        <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">Avalie a resposta:</span>
+        <div className="flex items-center gap-1">
+          <button
+            onClick={() => handleRate(1)}
+            disabled={isSubmitting}
+            className={cn(
+              "p-1 rounded-md transition-colors",
+              rating === 1 ? "bg-emerald-100 text-emerald-600" : "hover:bg-muted text-muted-foreground"
+            )}
+          >
+            <ThumbsUp className="h-3.5 w-3.5" />
+          </button>
+          <button
+            onClick={() => handleRate(-1)}
+            disabled={isSubmitting}
+            className={cn(
+              "p-1 rounded-md transition-colors",
+              rating === -1 ? "bg-red-100 text-red-600" : "hover:bg-muted text-muted-foreground"
+            )}
+          >
+            <ThumbsDown className="h-3.5 w-3.5" />
+          </button>
+        </div>
+      </div>
+
+      {rating === -1 && (
+        <div className="space-y-2 animate-in zoom-in-95 duration-200">
+          <Textarea
+            placeholder="Como podemos melhorar esta resposta?"
+            value={feedback}
+            onChange={(e) => setFeedback(e.target.value)}
+            className="text-[11px] min-h-[50px] bg-muted/50 border-none focus-visible:ring-1"
+            rows={2}
+          />
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={() => submitFeedback(-1, feedback)}
+            disabled={isSubmitting}
+            className="h-7 text-[10px] w-full bg-primary/5 hover:bg-primary/10"
+          >
+            {isSubmitting ? <Loader2 className="h-3 w-3 animate-spin mr-1" /> : null}
+            Enviar Feedback
+          </Button>
+        </div>
+      )}
+    </div>
   );
 }
 
