@@ -92,9 +92,9 @@ const WhatsAppTwilio = () => {
       <div className="flex items-center gap-2">
         <MessageSquare className="w-8 h-8 text-green-600" />
         <div>
-          <h1 className="text-3xl font-bold">WhatsApp via Twilio</h1>
+          <h1 className="text-3xl font-bold">WhatsApp Cloud API (Meta)</h1>
           <p className="text-sm text-muted-foreground">
-            Envie mensagens e veja o histórico de conversas (Sandbox ou número aprovado).
+            Envie mensagens e veja o histórico de conversas usando a API oficial da Meta.
           </p>
         </div>
       </div>
@@ -106,8 +106,7 @@ const WhatsAppTwilio = () => {
               <Send className="w-5 h-5" /> Enviar mensagem
             </CardTitle>
             <CardDescription>
-              Use o formato internacional E.164 (ex: <code>+5511999999999</code>). No Sandbox,
-              o destinatário precisa ter enviado <code>join &lt;código&gt;</code> antes.
+              Use o formato internacional (ex: <code>5561996757585</code>). A Meta permite enviar mensagens livremente se o cliente tiver respondido nas últimas 24h.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -132,7 +131,7 @@ const WhatsAppTwilio = () => {
             </div>
             <Button onClick={handleSend} disabled={sending} className="w-full">
               <Send className="w-4 h-4 mr-2" />
-              {sending ? "Enviando..." : "Enviar via Twilio"}
+              {sending ? "Enviando..." : "Enviar via WhatsApp API"}
             </Button>
           </CardContent>
         </Card>
@@ -140,10 +139,10 @@ const WhatsAppTwilio = () => {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Inbox className="w-5 h-5" /> Webhook de recebimento
+              <Inbox className="w-5 h-5" /> Configuração do Webhook (Meta)
             </CardTitle>
             <CardDescription>
-              Cole esta URL no Twilio Sandbox em <em>Sandbox settings → When a message comes in</em>.
+              No painel da Meta, em <em>WhatsApp → Configuration</em>, use esta URL e o seu <code>Verify Token</code>.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
