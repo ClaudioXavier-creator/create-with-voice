@@ -39,4 +39,8 @@ verify_jwt = true
 [functions.support-chat]
 verify_jwt = false
 
+[functions.whatsapp-webhook]
+verify_jwt = false
+
+
 
