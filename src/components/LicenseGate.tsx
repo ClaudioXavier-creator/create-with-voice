@@ -126,10 +126,11 @@ export default function LicenseGate({ children, product: initialProduct }: Licen
   const { license, loading, isActive, daysRemaining } = useLicense(product);
   const { empresaAtiva, loading: empresaLoading } = useEmpresa();
   const { user, roles, loading: authLoading } = useAuth();
-  const SUPER_ADMIN_EMAIL = "claudiolx.nunes@gmail.com";
+  const SUPER_ADMIN_EMAILS = ["claudiolx.nunes@gmail.com", "clxn2000@hotmail.com", "contato@bpfconsult.com.br"];
   const isSuperAdmin =
     roles?.includes("admin") ||
-    user?.email?.toLowerCase() === SUPER_ADMIN_EMAIL;
+    (user?.email && SUPER_ADMIN_EMAILS.includes(user.email.toLowerCase()));
+
   const location = useLocation();
   const [checkoutLoading, setCheckoutLoading] = useState<string | null>(null);
   const [nivelSelecionado, setNivelSelecionado] = useState<NivelKey>("intermediario");

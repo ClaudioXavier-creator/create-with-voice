@@ -25,7 +25,7 @@ export function useLicense(productParam?: string) {
   const [license, setLicense] = useState<LicenseInfo | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const targetProduct = (productParam || urlProduct || "feedbpf").toLowerCase().replace(/[-_]/g, "");
+  const targetProduct = (productParam || urlProduct || "feedbpf").toLowerCase().replace(/-/g, "_");
 
   const tier: Tier = useMemo(() => resolveLicenseTier(license), [license]);
 

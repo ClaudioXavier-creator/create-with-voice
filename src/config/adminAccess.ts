@@ -6,17 +6,19 @@ export const SUPER_ADMIN_EMAILS = [
 ] as const;
 
 export function canAccessLicenseAdmin(roles?: string[] | null, email?: string | null) {
-  if (!email) return false;
-  // Apenas o Super Admin tem acesso total às licenças e CRM administrativo
-  return SUPER_ADMIN_EMAILS.includes(email.toLowerCase() as any);
+  const isSuperAdmin = email && SUPER_ADMIN_EMAILS.includes(email.toLowerCase() as any);
+  const isAdminRole = roles?.includes("admin");
+  return !!(isSuperAdmin || isAdminRole);
 }
 
 export function canAccessLeadsAdmin(roles?: string[] | null, email?: string | null) {
-  if (!email) return false;
-  return SUPER_ADMIN_EMAILS.includes(email.toLowerCase() as any);
+  const isSuperAdmin = email && SUPER_ADMIN_EMAILS.includes(email.toLowerCase() as any);
+  const isAdminRole = roles?.includes("admin") || roles?.includes("comercial");
+  return !!(isSuperAdmin || isAdminRole);
 }
 
 export function canAccessCRM(roles?: string[] | null, email?: string | null) {
-  if (!email) return false;
-  return SUPER_ADMIN_EMAILS.includes(email.toLowerCase() as any);
+  const isSuperAdmin = email && SUPER_ADMIN_EMAILS.includes(email.toLowerCase() as any);
+  const isAdminRole = roles?.includes("admin") || roles?.includes("comercial");
+  return !!(isSuperAdmin || isAdminRole);
 }
