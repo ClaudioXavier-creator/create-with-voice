@@ -14,7 +14,7 @@ Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders })
 
   try {
-    const { id, type, message, route, version } = await req.json()
+    const { type, message, route, version, appVersion, userAgent, stack } = await req.json()
 
     const accountSid = Deno.env.get('TWILIO_ACCOUNT_SID')
     const authToken = Deno.env.get('TWILIO_AUTH_TOKEN')
@@ -38,12 +38,17 @@ Deno.serve(async (req) => {
       rawFrom = rawFrom.replace(/^[^0-9+]+/, '')
       body.append('From', `whatsapp:${rawFrom}`)
       
+      const displayVersion = appVersion || version || 'unknown'
+      const stackSnippet = stack ? `\n\n*Stack Trace:* \n\`\`\`\n${stack.split('\n').slice(0, 3).join('\n')}\n\`\`\`` : ''
+      
       const msg = `🚨 *ALERTA DE BUG CRÍTICO*\n\n` +
                   `*Tipo:* ${type}\n` +
                   `*Mensagem:* ${message || 'N/A'}\n` +
                   `*Rota:* ${route || '/'}\n` +
-                  `*Versão:* ${version || 'unknown'}\n\n` +
-                  `👉 Visualize no Portal: https://www.bpfconsult.com.br/superadmin?tab=error-logs`
+                  `*Versão:* ${displayVersion}\n` +
+                  `*Navegador:* ${userAgent || 'N/A'}` +
+                  stackSnippet +
+                  `\n\n👉 Visualize no Portal: https://www.bpfconsult.com.br/superadmin?tab=error-logs`
 
       body.append('Body', msg)
 
