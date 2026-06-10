@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { 
-  History, Users, Building2, Key, AlertTriangle, 
+  History as HistoryIcon, Users, Building2, Key, AlertTriangle, 
   Search, RefreshCw, Loader2, ShieldCheck, 
   FileText, Activity, Database, Filter
 } from "lucide-react";
