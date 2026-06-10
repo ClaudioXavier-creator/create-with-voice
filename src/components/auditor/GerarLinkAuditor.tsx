@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Copy, Link2, QrCode, ShieldCheck, Trash2 } from "lucide-react";
+import { AlertTriangle, Copy, Link2, ShieldCheck, Trash2 } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -15,7 +15,6 @@ import { toast } from "sonner";
 
 interface TokenRow {
   id: string;
-  token: string;
   nome_auditor: string | null;
   orgao_fiscalizador: string | null;
   expira_em: string;
@@ -37,12 +36,12 @@ export default function GerarLinkAuditor() {
     if (!empresaAtiva) return;
     const { data, error } = await supabase
       .from("auditor_tokens")
-      .select("id, token, nome_auditor, orgao_fiscalizador, expira_em, ativo, total_acessos, ultimo_acesso_em, created_at")
+      .select("id, nome_auditor, orgao_fiscalizador, expira_em, ativo, total_acessos, ultimo_acesso_em, created_at")
       .eq("empresa_id", empresaAtiva.id)
       .order("created_at", { ascending: false })
       .limit(50);
     if (error) toast.error("Erro ao carregar tokens");
-    else setTokens(data ?? []);
+    else setTokens((data ?? []) as TokenRow[]);
   };
 
   useEffect(() => { fetchTokens(); }, [empresaAtiva?.id]);
@@ -55,26 +54,21 @@ export default function GerarLinkAuditor() {
       return;
     }
     setLoading(true);
-    const expira_em = new Date(Date.now() + Number(form.duracao_horas) * 60 * 60 * 1000).toISOString();
-    const { data: { user } } = await supabase.auth.getUser();
-    const { data, error } = await supabase
-      .from("auditor_tokens")
-      .insert({
-        empresa_id: empresaAtiva.id,
-        criado_por: user?.id,
-        nome_auditor: form.nome_auditor || null,
-        orgao_fiscalizador: form.orgao_fiscalizador || null,
-        expira_em,
-      })
-      .select("token")
-      .maybeSingle();
-
+    const { data, error } = await supabase.rpc("criar_auditor_token", {
+      _empresa_id: empresaAtiva.id,
+      _nome_auditor: form.nome_auditor || null,
+      _orgao_fiscalizador: form.orgao_fiscalizador || null,
+      _duracao_horas: Number(form.duracao_horas),
+      _observacoes: "",
+    });
     setLoading(false);
-    if (error || !data) {
-      toast.error("Falha ao gerar token: " + (error?.message ?? ""));
+
+    const res = data as { ok?: boolean; token?: string; error?: string } | null;
+    if (error || !res?.ok || !res.token) {
+      toast.error("Falha ao gerar token: " + (res?.error ?? error?.message ?? ""));
       return;
     }
-    setGeneratedToken(data.token);
+    setGeneratedToken(res.token);
     setDialogOpen(true);
     fetchTokens();
   };
@@ -168,21 +162,11 @@ export default function GerarLinkAuditor() {
                       </TableCell>
                       <TableCell><Badge variant={statusVariant}>{statusLabel}</Badge></TableCell>
                       <TableCell className="text-right">
-                        <div className="flex justify-end gap-1">
-                          {t.ativo && !expired && (
-                            <>
-                              <Button size="sm" variant="ghost" onClick={() => copiar(t.token)} title="Copiar link">
-                                <Copy className="w-3 h-3" />
-                              </Button>
-                              <Button size="sm" variant="ghost" onClick={() => { setGeneratedToken(t.token); setDialogOpen(true); }} title="Ver QR">
-                                <QrCode className="w-3 h-3" />
-                              </Button>
-                              <Button size="sm" variant="ghost" onClick={() => revogar(t.id)} title="Revogar" className="text-destructive">
-                                <Trash2 className="w-3 h-3" />
-                              </Button>
-                            </>
-                          )}
-                        </div>
+                        {t.ativo && !expired && (
+                          <Button size="sm" variant="ghost" onClick={() => revogar(t.id)} title="Revogar" className="text-destructive">
+                            <Trash2 className="w-3 h-3" />
+                          </Button>
+                        )}
                       </TableCell>
                     </TableRow>
                   );
@@ -192,11 +176,17 @@ export default function GerarLinkAuditor() {
           </div>
         )}
 
-        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <Dialog open={dialogOpen} onOpenChange={(open) => { setDialogOpen(open); if (!open) setGeneratedToken(null); }}>
           <DialogContent className="max-w-md">
             <DialogHeader><DialogTitle>Link de acesso do auditor</DialogTitle></DialogHeader>
             {generatedToken && (
               <div className="space-y-4">
+                <div className="flex items-start gap-2 rounded-md border border-amber-500/40 bg-amber-500/10 p-3 text-xs">
+                  <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+                  <span>
+                    <strong>Este token será exibido apenas uma vez.</strong> Por segurança, ele é armazenado em hash no banco e não poderá ser visualizado novamente. Copie ou compartilhe o QR agora.
+                  </span>
+                </div>
                 <div className="flex justify-center bg-white p-4 rounded-lg">
                   <QRCodeSVG value={portalUrl(generatedToken)} size={220} />
                 </div>
