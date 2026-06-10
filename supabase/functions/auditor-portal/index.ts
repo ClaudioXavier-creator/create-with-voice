@@ -23,26 +23,29 @@ interface ValidateResult {
 async function validateToken(token: string): Promise<ValidateResult> {
   if (!token || token.length < 20) return { ok: false, error: "Token inválido" };
 
-  const { data, error } = await supabase
-    .from("auditor_tokens")
-    .select("id, empresa_id, expira_em, ativo, empresas(nome)")
-    .eq("token", token)
-    .maybeSingle();
-
-  if (error || !data) return { ok: false, error: "Token não encontrado" };
-  if (!data.ativo) return { ok: false, error: "Token revogado" };
-  if (new Date(data.expira_em).getTime() < Date.now()) {
+  const { data: rows, error } = await supabase.rpc("validar_auditor_token", { _token: token });
+  const row = Array.isArray(rows) ? rows[0] : null;
+  if (error || !row) return { ok: false, error: "Token não encontrado" };
+  if (!row.ativo) return { ok: false, error: "Token revogado" };
+  if (new Date(row.expira_em).getTime() < Date.now()) {
     return { ok: false, error: "Token expirado" };
   }
 
+  const { data: empresa } = await supabase
+    .from("empresas")
+    .select("nome")
+    .eq("id", row.empresa_id)
+    .maybeSingle();
+
   return {
     ok: true,
-    token_id: data.id,
-    empresa_id: data.empresa_id,
-    empresa_nome: (data.empresas as { nome?: string } | null)?.nome ?? "Empresa",
-    expira_em: data.expira_em,
+    token_id: row.id,
+    empresa_id: row.empresa_id,
+    empresa_nome: empresa?.nome ?? "Empresa",
+    expira_em: row.expira_em,
   };
 }
+
 
 async function logAccess(
   token_id: string,
