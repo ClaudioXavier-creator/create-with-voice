@@ -5065,6 +5065,53 @@ export type Database = {
           },
         ]
       }
+      whatsapp_mensagens: {
+        Row: {
+          body: string | null
+          created_at: string
+          direction: string
+          empresa_id: string | null
+          from_number: string | null
+          id: string
+          message_sid: string | null
+          raw: Json | null
+          status: string | null
+          to_number: string | null
+        }
+        Insert: {
+          body?: string | null
+          created_at?: string
+          direction?: string
+          empresa_id?: string | null
+          from_number?: string | null
+          id?: string
+          message_sid?: string | null
+          raw?: Json | null
+          status?: string | null
+          to_number?: string | null
+        }
+        Update: {
+          body?: string | null
+          created_at?: string
+          direction?: string
+          empresa_id?: string | null
+          from_number?: string | null
+          id?: string
+          message_sid?: string | null
+          raw?: Json | null
+          status?: string | null
+          to_number?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "whatsapp_mensagens_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
