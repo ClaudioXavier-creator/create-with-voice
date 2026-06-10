@@ -1,66 +1,65 @@
 import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
 
-const TWILIO_ACCOUNT_SID = Deno.env.get('TWILIO_ACCOUNT_SID');
-const TWILIO_AUTH_TOKEN = Deno.env.get('TWILIO_AUTH_TOKEN');
-const TWILIO_PHONE_NUMBER = Deno.env.get('TWILIO_PHONE_NUMBER'); // ex: +14155238886 (sandbox)
+const WHATSAPP_ACCESS_TOKEN = Deno.env.get('WHATSAPP_ACCESS_TOKEN');
+const WHATSAPP_PHONE_NUMBER_ID = Deno.env.get('WHATSAPP_PHONE_NUMBER_ID');
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
 
   try {
-    if (!TWILIO_ACCOUNT_SID || !TWILIO_AUTH_TOKEN || !TWILIO_PHONE_NUMBER) {
+    if (!WHATSAPP_ACCESS_TOKEN || !WHATSAPP_PHONE_NUMBER_ID) {
       return new Response(
-        JSON.stringify({ error: 'Twilio secrets não configurados' }),
+        JSON.stringify({ error: 'Configurações do WhatsApp Cloud API ausentes (Tokens)' }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
     const body = await req.json().catch(() => ({}));
-    const { to, message, mediaUrl } = body as { to?: string; message?: string; mediaUrl?: string };
+    const { to, message } = body as { to?: string; message?: string };
 
     if (!to || !message) {
       return new Response(
-        JSON.stringify({ error: 'Campos obrigatórios: to (E.164, ex: +5511999999999) e message' }),
+        JSON.stringify({ error: 'Campos obrigatórios: to e message' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    const toFormatted = to.startsWith('whatsapp:') ? to : `whatsapp:${to}`;
-    const fromFormatted = TWILIO_PHONE_NUMBER.startsWith('whatsapp:')
-      ? TWILIO_PHONE_NUMBER
-      : `whatsapp:${TWILIO_PHONE_NUMBER}`;
+    // Limpa o número para a Meta (apenas dígitos, deve começar com DDI)
+    const cleanTo = to.replace(/\D/g, '');
 
-    const params = new URLSearchParams({
-      To: toFormatted,
-      From: fromFormatted,
-      Body: message,
-    });
-    if (mediaUrl) params.append('MediaUrl', mediaUrl);
-
-    const auth = btoa(`${TWILIO_ACCOUNT_SID}:${TWILIO_AUTH_TOKEN}`);
-    const resp = await fetch(
-      `https://api.twilio.com/2010-04-01/Accounts/${TWILIO_ACCOUNT_SID}/Messages.json`,
+    const response = await fetch(
+      `https://graph.facebook.com/v21.0/${WHATSAPP_PHONE_NUMBER_ID}/messages`,
       {
         method: 'POST',
         headers: {
-          Authorization: `Basic ${auth}`,
-          'Content-Type': 'application/x-www-form-urlencoded',
+          Authorization: `Bearer ${WHATSAPP_ACCESS_TOKEN}`,
+          'Content-Type': 'application/json',
         },
-        body: params,
+        body: JSON.stringify({
+          messaging_product: 'whatsapp',
+          to: cleanTo,
+          type: 'text',
+          text: { body: message },
+        }),
       }
     );
 
-    const data = await resp.json();
-    if (!resp.ok) {
-      console.error('Twilio error', resp.status, data);
+    const data = await response.json();
+
+    if (!response.ok) {
+      console.error('Meta API error', response.status, data);
       return new Response(
-        JSON.stringify({ error: 'Falha ao enviar', details: data }),
-        { status: resp.status, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        JSON.stringify({ error: 'Falha ao enviar via Meta', details: data }),
+        { status: response.status, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
     return new Response(
-      JSON.stringify({ success: true, sid: data.sid, status: data.status }),
+      JSON.stringify({ 
+        success: true, 
+        sid: data.messages?.[0]?.id, 
+        status: 'sent' 
+      }),
       { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   } catch (err) {
