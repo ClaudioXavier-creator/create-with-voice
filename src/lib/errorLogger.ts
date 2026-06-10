@@ -96,6 +96,16 @@ export async function logAppError(payload: LogPayload): Promise<void> {
       boot_elapsed_ms: bootElapsed,
       extra: payload.extra ?? null,
     });
+    
+    // 4. WhatsApp Notification for critical errors
+    if (["boundary", "chunk_error", "boot_failsafe"].includes(payload.type)) {
+      supabase.functions.invoke("notify-error-whatsapp", {
+        body: enriched
+      }).catch(err => {
+        // eslint-disable-next-line no-console
+        console.warn("[errorLogger] WhatsApp notification failed:", err);
+      });
+    }
   } catch (err) {
     // eslint-disable-next-line no-console
     console.warn("[errorLogger] Failed to persist error log:", err);
