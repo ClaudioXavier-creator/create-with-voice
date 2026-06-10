@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ShieldCheck, Users, TrendingUp, Key, CreditCard, Activity, Target, Award, Loader2, Megaphone, FileText, SendHorizontal, Lock, Zap, MessageSquare, ExternalLink, Tag, LayoutDashboard, Building2, AlertTriangle } from "lucide-react";
+import { ShieldCheck, Users, TrendingUp, Key, CreditCard, Activity, Target, Award, Loader2, Megaphone, FileText, SendHorizontal, Lock, Zap, MessageSquare, ExternalLink, Tag, LayoutDashboard, Building2, AlertTriangle, History as HistoryIcon } from "lucide-react";
 import AppErrorLogsViewer from "@/components/admin/AppErrorLogsViewer";
 import { canAccessLicenseAdmin } from "@/config/adminAccess";
 import CRM from "./CRM";
@@ -257,6 +257,23 @@ export default function SuperAdmin() {
                 <Button size="sm" variant="outline" onClick={() => handleTabChange("licencas")} className="gap-2 border-amber-500/30 hover:bg-amber-500/10">
                   <ShieldCheck className="h-4 w-4" />
                   Administrar Licenças
+                </Button>
+              </CardContent>
+            </Card>
+            <Card className="bg-gradient-to-br from-indigo-500/10 to-transparent border-indigo-500/20">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <HistoryIcon className="h-5 w-5 text-indigo-500" />
+                  Auditoria Feed_BPF
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <p className="text-sm text-muted-foreground">
+                  Verifique o status de todos os cadastros, logs de auditoria e erros recentes específicos do programa Feed_BPF.
+                </p>
+                <Button size="sm" variant="outline" onClick={() => window.location.href = "/admin/auditoria-feedbpf"} className="gap-2 border-indigo-500/30 hover:bg-indigo-500/10">
+                  <ShieldCheck className="h-4 w-4" />
+                  Abrir Auditoria
                 </Button>
               </CardContent>
             </Card>

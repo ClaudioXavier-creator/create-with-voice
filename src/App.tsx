@@ -99,6 +99,7 @@ const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
 const TermsOfService = lazy(() => import("./pages/TermsOfService"));
 const RefundPolicy = lazy(() => import("./pages/RefundPolicy"));
 const AuditLog = lazy(() => import("./pages/AuditLog"));
+const AdminFeedBPFAuditoria = lazy(() => import("./pages/AdminFeedBPFAuditoria"));
 
 
 // Agro RC CRM - Páginas Internas
@@ -323,6 +324,7 @@ const AppRoutes = () => {
         {/* Portal de Gestão (BPF_Consult) - rotas standalone, fora do AppLayout do Feed_BPF */}
         <Route path="/admin-access" element={<AdminAccess />} />
         <Route path="/admin" element={<ProtectedRoute requireAdmin><SuperAdmin /></ProtectedRoute>} />
+        <Route path="/admin/auditoria-feedbpf" element={<ProtectedRoute requireAdmin><AdminFeedBPFAuditoria /></ProtectedRoute>} />
         <Route path="/crm" element={<ProtectedRoute requireAdmin><Navigate to="/admin?tab=crm" replace /></ProtectedRoute>} />
         <Route path="/leads" element={<ProtectedRoute requireAdmin><Navigate to="/admin?tab=leads" replace /></ProtectedRoute>} />
         <Route path="/licencas" element={<ProtectedRoute requireAdmin><Navigate to="/admin?tab=licencas" replace /></ProtectedRoute>} />
