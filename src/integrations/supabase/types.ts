@@ -346,10 +346,14 @@ export type Database = {
           created_at: string
           error_type: string
           extra: Json | null
+          fixed_in_version: string | null
           id: string
           message: string | null
+          resolution_notes: string | null
+          resolved_at: string | null
           route: string | null
           stack: string | null
+          status: string | null
           user_agent: string | null
           user_id: string | null
         }
@@ -360,10 +364,14 @@ export type Database = {
           created_at?: string
           error_type: string
           extra?: Json | null
+          fixed_in_version?: string | null
           id?: string
           message?: string | null
+          resolution_notes?: string | null
+          resolved_at?: string | null
           route?: string | null
           stack?: string | null
+          status?: string | null
           user_agent?: string | null
           user_id?: string | null
         }
@@ -374,10 +382,14 @@ export type Database = {
           created_at?: string
           error_type?: string
           extra?: Json | null
+          fixed_in_version?: string | null
           id?: string
           message?: string | null
+          resolution_notes?: string | null
+          resolved_at?: string | null
           route?: string | null
           stack?: string | null
+          status?: string | null
           user_agent?: string | null
           user_id?: string | null
         }
