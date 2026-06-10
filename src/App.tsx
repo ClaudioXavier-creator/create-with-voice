@@ -99,6 +99,7 @@ const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
 const TermsOfService = lazy(() => import("./pages/TermsOfService"));
 const RefundPolicy = lazy(() => import("./pages/RefundPolicy"));
 const AuditLog = lazy(() => import("./pages/AuditLog"));
+const AdminFeedBPFAuditoria = lazy(() => import("./pages/AdminFeedBPFAuditoria"));
 
 
 // Agro RC CRM - Páginas Internas
