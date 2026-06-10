@@ -263,7 +263,7 @@ export default function SuperAdmin() {
             <Card className="bg-gradient-to-br from-indigo-500/10 to-transparent border-indigo-500/20">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <History className="h-5 w-5 text-indigo-500" />
+                  <HistoryIcon className="h-5 w-5 text-indigo-500" />
                   Auditoria Feed_BPF
                 </CardTitle>
               </CardHeader>
