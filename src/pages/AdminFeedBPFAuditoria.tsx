@@ -136,7 +136,7 @@ export default function AdminFeedBPFAuditoria() {
     <div className="min-h-screen bg-background p-4 md:p-8 space-y-6">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <History className="h-8 w-8 text-primary" />
+          <HistoryIcon className="h-8 w-8 text-primary" />
           <div>
             <h1 className="text-2xl font-bold">Auditoria Feed_BPF</h1>
             <p className="text-sm text-muted-foreground">Status detalhado de registros, acessos e erros do programa</p>
