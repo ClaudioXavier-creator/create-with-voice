@@ -17,7 +17,13 @@ initSentry();
 function removeBootLoader() {
   const loader = document.getElementById("boot-loader");
   if (!loader) return;
-  if (window.__BOOT_FAILSAFE__) clearTimeout(window.__BOOT_FAILSAFE__);
+  
+  if (window.__BOOT_FAILSAFE__) {
+    clearTimeout(window.__BOOT_FAILSAFE__);
+    // Remove flag de erro se o app montou a tempo
+    localStorage.removeItem("__boot_critical_error__");
+  }
+  
   loader.classList.add("fade-out");
   setTimeout(() => loader.remove(), 320);
 }
@@ -91,7 +97,8 @@ function cleanupStaleServiceWorkers() {
 
   // In preview environments, always force cleanup on every load to guarantee
   // the freshest build is served (avoids stale chunk import errors).
-  const shouldCleanup = versionMismatch || isPreviewHost;
+  const criticalError = localStorage.getItem("__boot_critical_error__") === "true";
+  const shouldCleanup = versionMismatch || isPreviewHost || criticalError;
 
   if (!shouldCleanup) return;
 
