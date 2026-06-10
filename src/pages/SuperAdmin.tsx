@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ShieldCheck, Users, TrendingUp, Key, CreditCard, Activity, Target, Award, Loader2, Megaphone, FileText, SendHorizontal, Lock, Zap, MessageSquare, ExternalLink, Tag, LayoutDashboard, Building2, AlertTriangle, History as HistoryIcon } from "lucide-react";
 import AppErrorLogsViewer from "@/components/admin/AppErrorLogsViewer";
+import VersionHistory from "@/components/admin/VersionHistory";
 import { canAccessLicenseAdmin } from "@/config/adminAccess";
 import CRM from "./CRM";
 import AdminLicencas from "./AdminLicencas";
@@ -19,7 +20,7 @@ import { useLocation } from "react-router-dom";
 export default function SuperAdmin() {
   const { user, roles, loading: authLoading } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
-  const validTabs = ["dashboard", "leads", "crm", "licencas", "assinaturas", "marketing", "plano-vendas", "disparo", "whatsapp", "modulos"];
+  const validTabs = ["dashboard", "leads", "crm", "licencas", "assinaturas", "marketing", "plano-vendas", "disparo", "whatsapp", "modulos", "error-logs", "historico"];
 
   const initialTab = searchParams.get("tab");
   const [activeTab, setActiveTab] = useState(
@@ -162,6 +163,10 @@ export default function SuperAdmin() {
             <TabsTrigger value="error-logs" className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground py-2 border flex-1">
               <AlertTriangle className="h-4 w-4" />
               <span>Erros</span>
+            </TabsTrigger>
+            <TabsTrigger value="historico" className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground py-2 border flex-1">
+              <HistoryIcon className="h-4 w-4" />
+              <span>Histórico</span>
             </TabsTrigger>
           </TabsList>
 
@@ -390,6 +395,10 @@ export default function SuperAdmin() {
 
         <TabsContent value="error-logs">
           <AppErrorLogsViewer />
+        </TabsContent>
+
+        <TabsContent value="historico">
+          <VersionHistory />
         </TabsContent>
 
         <TabsContent value="modulos">
