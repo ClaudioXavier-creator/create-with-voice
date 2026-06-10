@@ -260,6 +260,23 @@ export default function SuperAdmin() {
                 </Button>
               </CardContent>
             </Card>
+            <Card className="bg-gradient-to-br from-indigo-500/10 to-transparent border-indigo-500/20">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <History className="h-5 w-5 text-indigo-500" />
+                  Auditoria Feed_BPF
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <p className="text-sm text-muted-foreground">
+                  Verifique o status de todos os cadastros, logs de auditoria e erros recentes específicos do programa Feed_BPF.
+                </p>
+                <Button size="sm" variant="outline" onClick={() => window.location.href = "/admin/auditoria-feedbpf"} className="gap-2 border-indigo-500/30 hover:bg-indigo-500/10">
+                  <ShieldCheck className="h-4 w-4" />
+                  Abrir Auditoria
+                </Button>
+              </CardContent>
+            </Card>
           </div>
         </TabsContent>
 
