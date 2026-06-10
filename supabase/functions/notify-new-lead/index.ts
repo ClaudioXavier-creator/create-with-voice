@@ -63,6 +63,21 @@ Deno.serve(async (req) => {
   const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
   const admin = createClient(supabaseUrl, serviceKey)
 
+  // Anti-abuse: dedupe duplicate submissions from same email/phone in last 5 min
+  const fiveMinAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString()
+  const { data: recent } = await admin
+    .from('leads')
+    .select('id')
+    .or(`email.eq.${email},telefone.eq.${telefone}`)
+    .gte('created_at', fiveMinAgo)
+    .limit(1)
+  if (recent && recent.length > 0) {
+    return new Response(
+      JSON.stringify({ success: true, deduped: true, lead_id: recent[0].id }),
+      { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
+    )
+  }
+
   // 1) Persist lead
   const { data: lead, error: insertError } = await admin
     .from('leads')
