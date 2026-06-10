@@ -164,6 +164,10 @@ export default function SuperAdmin() {
               <AlertTriangle className="h-4 w-4" />
               <span>Erros</span>
             </TabsTrigger>
+            <TabsTrigger value="historico" className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground py-2 border flex-1">
+              <HistoryIcon className="h-4 w-4" />
+              <span>Histórico</span>
+            </TabsTrigger>
           </TabsList>
 
         </div>
