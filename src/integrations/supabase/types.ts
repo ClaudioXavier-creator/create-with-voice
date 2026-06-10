@@ -559,7 +559,7 @@ export type Database = {
           observacoes: string | null
           orgao_fiscalizador: string | null
           revogado_em: string | null
-          token: string
+          token_hash: string
           total_acessos: number
           ultimo_acesso_em: string | null
           updated_at: string
@@ -575,7 +575,7 @@ export type Database = {
           observacoes?: string | null
           orgao_fiscalizador?: string | null
           revogado_em?: string | null
-          token?: string
+          token_hash: string
           total_acessos?: number
           ultimo_acesso_em?: string | null
           updated_at?: string
@@ -591,7 +591,7 @@ export type Database = {
           observacoes?: string | null
           orgao_fiscalizador?: string | null
           revogado_em?: string | null
-          token?: string
+          token_hash?: string
           total_acessos?: number
           ultimo_acesso_em?: string | null
           updated_at?: string
@@ -1128,7 +1128,7 @@ export type Database = {
           id: string
           nome: string | null
           papel: Database["public"]["Enums"]["papel_empresa"]
-          token: string
+          token_hash: string
         }
         Insert: {
           aceito_em?: string | null
@@ -1141,7 +1141,7 @@ export type Database = {
           id?: string
           nome?: string | null
           papel?: Database["public"]["Enums"]["papel_empresa"]
-          token?: string
+          token_hash: string
         }
         Update: {
           aceito_em?: string | null
@@ -1154,7 +1154,7 @@ export type Database = {
           id?: string
           nome?: string | null
           papel?: Database["public"]["Enums"]["papel_empresa"]
-          token?: string
+          token_hash?: string
         }
         Relationships: [
           {
@@ -5083,6 +5083,26 @@ export type Database = {
         Returns: Json
       }
       can_access_crm: { Args: { _user_id: string }; Returns: boolean }
+      criar_auditor_token: {
+        Args: {
+          _duracao_horas: number
+          _empresa_id: string
+          _nome_auditor: string
+          _observacoes?: string
+          _orgao_fiscalizador: string
+        }
+        Returns: Json
+      }
+      criar_convite_empresa: {
+        Args: {
+          _duracao_dias?: number
+          _email: string
+          _empresa_id: string
+          _nome: string
+          _papel: Database["public"]["Enums"]["papel_empresa"]
+        }
+        Returns: Json
+      }
       criar_nova_versao_pop: {
         Args: {
           _documento_pai_id: string
@@ -5209,6 +5229,15 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      validar_auditor_token: {
+        Args: { _token: string }
+        Returns: {
+          ativo: boolean
+          empresa_id: string
+          expira_em: string
+          id: string
+        }[]
       }
       vincular_empresa_licenca_consultor: {
         Args: { _empresa_id: string; _licenca_id: string }
