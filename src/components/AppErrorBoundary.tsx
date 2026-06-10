@@ -39,8 +39,22 @@ export default class AppErrorBoundary extends React.Component<
   handleReload = () => {
     try {
       sessionStorage.clear();
+      // Em caso de erro crítico, forçamos o cache buster a rodar
+      localStorage.setItem("__boot_critical_error__", "true");
     } catch {}
     window.location.reload();
+  };
+
+  handleForceUpdate = () => {
+    try {
+      sessionStorage.clear();
+      // Remove a versão atual para forçar o CacheBuster no main.tsx a limpar TUDO
+      localStorage.removeItem("__app_version__");
+      localStorage.setItem("__boot_critical_error__", "true");
+    } catch {}
+    // Recarrega com cache bypass
+    const base = window.location.href.split("#")[0].split("?")[0];
+    window.location.replace(base + "?v=" + Date.now());
   };
 
   handleHome = () => {
@@ -132,37 +146,70 @@ export default class AppErrorBoundary extends React.Component<
             </pre>
           )}
 
-          <div style={{ display: "flex", gap: 8, justifyContent: "center", flexWrap: "wrap" }}>
-            <button
-              onClick={this.handleReload}
-              style={{
-                background: "hsl(158, 75%, 24%)",
-                color: "white",
-                border: "none",
-                padding: "10px 20px",
-                borderRadius: 10,
-                fontSize: 14,
-                fontWeight: 600,
-                cursor: "pointer",
+          <div style={{ display: "flex", flexDirection: "column", gap: 12, alignItems: "center" }}>
+            <div style={{ display: "flex", gap: 8, justifyContent: "center", flexWrap: "wrap" }}>
+              <button
+                onClick={this.handleReload}
+                style={{
+                  background: "hsl(158, 75%, 24%)",
+                  color: "white",
+                  border: "none",
+                  padding: "10px 20px",
+                  borderRadius: 10,
+                  fontSize: 14,
+                  fontWeight: 600,
+                  cursor: "pointer",
+                }}
+              >
+                Recarregar página
+              </button>
+              <button
+                onClick={this.handleHome}
+                style={{
+                  background: "transparent",
+                  color: "hsl(155, 40%, 12%)",
+                  border: "1px solid hsl(150, 15%, 90%)",
+                  padding: "10px 20px",
+                  borderRadius: 10,
+                  fontSize: 14,
+                  fontWeight: 600,
+                  cursor: "pointer",
+                }}
+              >
+                Ir para o início
+              </button>
+            </div>
+
+            <div 
+              style={{ 
+                marginTop: 8,
+                paddingTop: 16,
+                borderTop: "1px solid hsl(150, 15%, 90%)",
+                width: "100%",
+                display: "flex",
+                flexDirection: "column",
+                gap: 8
               }}
             >
-              Recarregar página
-            </button>
-            <button
-              onClick={this.handleHome}
-              style={{
-                background: "transparent",
-                color: "hsl(155, 40%, 12%)",
-                border: "1px solid hsl(150, 15%, 90%)",
-                padding: "10px 20px",
-                borderRadius: 10,
-                fontSize: 14,
-                fontWeight: 600,
-                cursor: "pointer",
-              }}
-            >
-              Ir para o início
-            </button>
+              <span style={{ fontSize: 11, color: "hsl(155, 10%, 60%)" }}>
+                Build: {import.meta.env.VITE_BUILD_TIME ? new Date(import.meta.env.VITE_BUILD_TIME).toLocaleString('pt-BR') : 'dev'}
+              </span>
+              <button
+                onClick={this.handleForceUpdate}
+                style={{
+                  background: "transparent",
+                  color: "hsl(0, 84%, 60%)",
+                  border: "1px solid hsl(0, 84%, 90%)",
+                  padding: "6px 12px",
+                  borderRadius: 6,
+                  fontSize: 12,
+                  fontWeight: 500,
+                  cursor: "pointer",
+                }}
+              >
+                Limpar cache e forçar atualização
+              </button>
+            </div>
           </div>
         </div>
       </div>
