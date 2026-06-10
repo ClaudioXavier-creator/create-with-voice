@@ -51,8 +51,22 @@ export default class AppErrorBoundary extends React.Component<
       // Remove a versão atual para forçar o CacheBuster no main.tsx a limpar TUDO
       localStorage.removeItem("__app_version__");
       localStorage.setItem("__boot_critical_error__", "true");
+      
+      // Limpeza agressiva de caches via API antes do reload
+      if ("caches" in window) {
+        window.caches.keys().then((keys) => {
+          Promise.all(keys.map(key => window.caches.delete(key)));
+        });
+      }
+      
+      if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.getRegistrations().then((registrations) => {
+          for (const reg of registrations) reg.unregister();
+        });
+      }
     } catch {}
-    // Recarrega com cache bypass
+    
+    // Recarrega com cache bypass e timestamp para evitar cache do navegador/CDN
     const base = window.location.href.split("#")[0].split("?")[0];
     window.location.replace(base + "?v=" + Date.now());
   };

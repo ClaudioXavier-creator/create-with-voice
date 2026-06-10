@@ -32,7 +32,13 @@ function removeBootLoader() {
 window.addEventListener("error", (e) => {
   const msg = e?.message || "";
   const isChunk = /Loading chunk|Failed to fetch dynamically imported module|ChunkLoadError/i.test(msg);
-  // Import dinâmico para evitar bundle inicial pesado e quebrar se supabase falhar
+  
+  // Se for erro de chunk, marcamos para limpeza agressiva no reload
+  if (isChunk) {
+    localStorage.setItem("__boot_critical_error__", "true");
+    localStorage.removeItem("__app_version__");
+  }
+
   import("./lib/errorLogger").then(({ logAppError }) =>
     logAppError({
       type: isChunk ? "chunk_error" : "unhandled_error",
@@ -41,16 +47,26 @@ window.addEventListener("error", (e) => {
       extra: { filename: e?.filename, lineno: e?.lineno, colno: e?.colno },
     })
   ).catch(() => {});
+
   if (isChunk && !sessionStorage.getItem("__chunk_reload__")) {
-    console.warn("[main] Chunk load error — reloading", msg);
+    console.warn("[main] Chunk load error — reloading with cache bypass", msg);
     sessionStorage.setItem("__chunk_reload__", "1");
-    setTimeout(() => window.location.reload(), 500);
+    setTimeout(() => {
+      const base = window.location.href.split("#")[0].split("?")[0];
+      window.location.replace(base + "?v=" + Date.now());
+    }, 500);
   }
 });
 window.addEventListener("unhandledrejection", (e) => {
   const reason: any = e?.reason;
   const msg = (reason && (reason.message || String(reason))) || "";
   const isChunk = /Loading chunk|Failed to fetch dynamically imported module/i.test(msg);
+
+  if (isChunk) {
+    localStorage.setItem("__boot_critical_error__", "true");
+    localStorage.removeItem("__app_version__");
+  }
+
   import("./lib/errorLogger").then(({ logAppError }) =>
     logAppError({
       type: isChunk ? "chunk_error" : "promise_rejection",
@@ -58,10 +74,14 @@ window.addEventListener("unhandledrejection", (e) => {
       stack: reason?.stack,
     })
   ).catch(() => {});
+
   if (isChunk && !sessionStorage.getItem("__chunk_reload__")) {
-    console.warn("[main] Dynamic import failed — reloading", msg);
+    console.warn("[main] Dynamic import failed — reloading with cache bypass", msg);
     sessionStorage.setItem("__chunk_reload__", "1");
-    setTimeout(() => window.location.reload(), 500);
+    setTimeout(() => {
+      const base = window.location.href.split("#")[0].split("?")[0];
+      window.location.replace(base + "?v=" + Date.now());
+    }, 500);
   }
 });
 
@@ -121,12 +141,20 @@ function cleanupStaleServiceWorkers() {
   // 2. Clear ALL cache storage
   if ("caches" in window) {
     window.caches.keys().then((keys) => {
-      for (const key of keys) {
+      Promise.all(keys.map(key => {
         console.log("[CacheBuster] Deleting Cache:", key);
-        window.caches.delete(key);
-      }
+        return window.caches.delete(key);
+      })).then(() => {
+        console.log("[CacheBuster] All caches deleted.");
+      });
     });
   }
+
+  // 3. Clear some specific LocalStorage keys that might hold stale state
+  // But keep authentication and essential user settings
+  const keysToClear = ["sb-api-auth-token", "supabase.auth.token"]; 
+  // We don't clear these as they might log out the user, but we clear version-related ones
+  localStorage.removeItem("__pending_boot_errors__");
 
   localStorage.setItem("__app_version__", APP_VERSION);
 
