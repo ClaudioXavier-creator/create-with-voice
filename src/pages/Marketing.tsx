@@ -52,7 +52,20 @@ export default function Marketing() {
           </CardContent>
         </Card>
 
-        {/* Adicione outros cards aqui se houver mais ferramentas */}
+        <Card className="hover:border-primary/50 transition-colors cursor-pointer" onClick={() => navigate("/whatsapp-relatorio")}>
+          <CardHeader>
+            <div className="h-10 w-10 rounded-lg bg-green-500/10 flex items-center justify-center mb-2">
+              <MessageSquare className="h-6 w-6 text-green-600" />
+            </div>
+            <CardTitle>Relatório WhatsApp</CardTitle>
+            <CardDescription>Analise disparos, falhas e campanhas realizadas.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button variant="outline" className="w-full gap-2">
+              Ver Relatório <ArrowRight className="h-4 w-4" />
+            </Button>
+          </CardContent>
+        </Card>
       </div>
 
       <div className="space-y-6">
