@@ -10,8 +10,9 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import { Loader2, RefreshCw, Mail, MessageCircle, Phone, CalendarPlus, Send, TrendingUp, Trophy, XCircle } from "lucide-react";
+import { Loader2, RefreshCw, Mail, MessageCircle, Phone, CalendarPlus, Send, TrendingUp, Trophy, XCircle, Zap } from "lucide-react";
 import { toast } from "sonner";
+import { sendWhatsApp } from "@/lib/evolutionWhatsapp";
 import { canAccessCRM } from "@/config/adminAccess";
 import { getProductLabel } from "@/utils/productUtils";
 
