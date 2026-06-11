@@ -98,14 +98,17 @@ export default function WhatsAppRelatorio() {
   const handleExport = () => {
     const csv = [
       ["Data", "Número", "Status", "Mensagem", "Módulo", "Tipo"].join(","),
-      ...filteredMensagens.map(m => [
-        format(parseISO(m.created_at), "yyyy-MM-dd HH:mm"),
-        m.to_number,
-        m.status,
-        `"${m.body?.replace(/"/g, '""')}"`,
-        m.raw?.modulo || "N/A",
-        m.raw?.tipo || "N/A"
-      ].join(","))
+      ...filteredMensagens.map(m => {
+        const raw = m.raw as any;
+        return [
+          format(parseISO(m.created_at), "yyyy-MM-dd HH:mm"),
+          m.to_number,
+          m.status,
+          `"${m.body?.replace(/"/g, '""')}"`,
+          raw?.modulo || "N/A",
+          raw?.tipo || "N/A"
+        ].join(",");
+      })
     ].join("\n");
 
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
@@ -298,7 +301,7 @@ export default function WhatsAppRelatorio() {
                       {m.body}
                     </td>
                     <td className="p-3 uppercase">
-                      <Badge variant="outline">{m.raw?.modulo || "Manual"}</Badge>
+                      <Badge variant="outline">{(m.raw as any)?.modulo || "Manual"}</Badge>
                     </td>
                     <td className="p-3">
                       {(m.status === "enviada" || m.status === "sent") && (
