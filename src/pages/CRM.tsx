@@ -431,7 +431,7 @@ function LeadDrawer({
               <div className="flex gap-2 pt-2">
                 {lead.telefone && (
                   <Button size="sm" variant="outline" asChild>
-                    <a href={whatsappLink(lead.telefone)} target="_blank" rel="noreferrer"><MessageCircle className="h-4 w-4 mr-1" />WhatsApp</a>
+                    <a href={whatsappLink(lead.telefone)} target="_blank" rel="noreferrer"><MessageCircle className="h-4 w-4 mr-1" />WhatsApp Web</a>
                   </Button>
                 )}
                 {lead.telefone && (
@@ -440,6 +440,54 @@ function LeadDrawer({
                   </Button>
                 )}
               </div>
+              {lead.telefone && (
+                <div className="pt-3 border-t mt-3 space-y-2">
+                  <label className="text-xs font-medium flex items-center gap-1"><Zap className="h-3 w-3 text-emerald-600" /> Enviar via Evolution API (automático)</label>
+                  <Textarea
+                    rows={3}
+                    placeholder={`Olá ${lead.nome.split(" ")[0]}, tudo bem?...`}
+                    value={waMsg}
+                    onChange={(e) => setWaMsg(e.target.value)}
+                  />
+                  <Button
+                    size="sm"
+                    className="w-full"
+                    disabled={sendingWa || !waMsg.trim()}
+                    onClick={async () => {
+                      setSendingWa(true);
+                      try {
+                        await sendWhatsApp({
+                          to: lead.telefone!,
+                          message: waMsg.trim(),
+                          modulo: lead.produto_interesse?.includes("agrogestao") ? "agrogestao" : "agrorc",
+                          tipo: "crm_lead",
+                          metadata: { pipeline_id: lead.id, nome: lead.nome },
+                        });
+                        toast.success("WhatsApp enviado!");
+                        const { data: { user } } = await supabase.auth.getUser();
+                        if (user) {
+                          await supabase.from("crm_interacoes").insert({
+                            pipeline_id: lead.id,
+                            tipo: "whatsapp",
+                            descricao: `[Evolution] ${waMsg.trim().substring(0, 200)}`,
+                            autor_id: user.id,
+                            autor_nome: currentUserName,
+                          });
+                        }
+                        setWaMsg("");
+                        onChanged();
+                      } catch (e: any) {
+                        toast.error("Falha: " + (e?.message || "erro"));
+                      } finally {
+                        setSendingWa(false);
+                      }
+                    }}
+                  >
+                    {sendingWa ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Send className="h-4 w-4 mr-2" />}
+                    Enviar agora via API
+                  </Button>
+                </div>
+              )}
             </CardContent>
           </Card>
 
