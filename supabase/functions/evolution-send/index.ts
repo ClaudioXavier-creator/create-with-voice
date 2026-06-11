@@ -83,16 +83,12 @@ Deno.serve(async (req) => {
     try {
       const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
       await supabase.from('whatsapp_mensagens').insert({
-        telefone: number,
-        mensagem: message,
+        to_number: number,
+        body: message,
         status: ok ? 'enviada' : 'erro',
-        provedor: 'evolution',
-        modulo: modulo ?? null,
-        tipo: tipo ?? null,
+        direction: 'outbound',
         empresa_id: empresa_id ?? null,
-        user_id: user_id ?? null,
-        resposta_api: data,
-        metadata: metadata ?? null,
+        raw: { provider: 'evolution', modulo, tipo, user_id, metadata, response: data },
       });
     } catch (logErr) {
       console.error('whatsapp log error', logErr);
