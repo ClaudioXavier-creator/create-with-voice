@@ -305,6 +305,8 @@ function LeadDrawer({
   const [novaTarefa, setNovaTarefa] = useState({ titulo: "", vencimento: "" });
   const [email, setEmail] = useState({ assunto: "", corpo: "" });
   const [sendingEmail, setSendingEmail] = useState(false);
+  const [waMsg, setWaMsg] = useState("");
+  const [sendingWa, setSendingWa] = useState(false);
   const [valorEst, setValorEst] = useState("");
   const [motivoPerda, setMotivoPerda] = useState("");
 
