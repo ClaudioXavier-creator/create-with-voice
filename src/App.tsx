@@ -89,6 +89,7 @@ const WhatsAppConfig = lazy(() => import("./pages/WhatsAppConfig"));
 const WhatsAppTwilio = lazy(() => import("./pages/WhatsAppTwilio"));
 const Marketing = lazy(() => import("./pages/Marketing"));
 const GeradorHeadlines = lazy(() => import("./pages/GeradorHeadlines"));
+const WhatsAppRelatorio = lazy(() => import("./pages/WhatsAppRelatorio"));
 const AuditorPortal = lazy(() => import("./pages/AuditorPortal"));
 const AdminLicencas = lazy(() => import("./pages/AdminLicencas"));
 const DemoPage = lazy(() => import("./pages/DemoPage"));
@@ -241,6 +242,7 @@ const InternalRoutes = () => (
     <Route path="/configurar-pin" element={<ConfigurarPin />} />
     <Route path="/whatsapp" element={<WhatsAppConfig />} />
     <Route path="/whatsapp-twilio" element={<WhatsAppTwilio />} />
+    <Route path="/whatsapp-relatorio" element={<WhatsAppRelatorio />} />
     <Route path="/marketing" element={<Marketing />} />
     <Route path="/gerador-headlines" element={<GeradorHeadlines />} />
     <Route path="/status-lotes" element={<StatusLotes />} />
