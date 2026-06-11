@@ -5,10 +5,16 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
-const RECIPIENTS = [
-  '5561996757585', // Seu telefone
-  // Adicione mais números aqui no futuro
-]
+const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!
+const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+
+function getRecipients(): string[] {
+  const fromEnv = Deno.env.get('ALERT_WHATSAPP_NUMBER')
+  if (fromEnv) {
+    return fromEnv.split(',').map((n) => n.trim()).filter(Boolean)
+  }
+  return ['5561996757585']
+}
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders })
@@ -16,63 +22,37 @@ Deno.serve(async (req) => {
   try {
     const { type, message, route, version, appVersion, userAgent, stack } = await req.json()
 
-    const accountSid = Deno.env.get('TWILIO_ACCOUNT_SID')
-    const authToken = Deno.env.get('TWILIO_AUTH_TOKEN')
-    const fromNumber = Deno.env.get('TWILIO_PHONE_NUMBER')
+    const displayVersion = appVersion || version || 'unknown'
+    const stackSnippet = stack ? `\n\n*Stack:*\n${String(stack).split('\n').slice(0, 3).join('\n')}` : ''
 
-    if (!accountSid || !authToken || !fromNumber) {
-      console.error('Twilio config missing')
-      return new Response(JSON.stringify({ error: 'Config missing' }), { status: 500 })
-    }
+    const msg =
+      `🚨 *ALERTA DE BUG CRÍTICO* (Audits_BPF)\n\n` +
+      `*Tipo:* ${type}\n` +
+      `*Mensagem:* ${message || 'N/A'}\n` +
+      `*Rota:* ${route || '/'}\n` +
+      `*Versão:* ${displayVersion}\n` +
+      `*Navegador:* ${userAgent || 'N/A'}` +
+      stackSnippet +
+      `\n\n👉 Portal: https://www.bpfconsult.com.br/superadmin?tab=error-logs`
 
-    const auth = btoa(`${accountSid}:${authToken}`)
-    const twilioUrl = `https://api.twilio.com/2010-04-01/Accounts/${accountSid}/Messages.json`
+    const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY)
+    const results: any[] = []
 
-    const results = []
-    for (const to of RECIPIENTS) {
-      const body = new URLSearchParams()
-      body.append('To', `whatsapp:${to}`)
-      
-      let rawFrom = fromNumber.trim()
-      if (rawFrom.startsWith('whatsapp:')) rawFrom = rawFrom.substring(9)
-      rawFrom = rawFrom.replace(/^[^0-9+]+/, '')
-      body.append('From', `whatsapp:${rawFrom}`)
-      
-      const displayVersion = appVersion || version || 'unknown'
-      const stackSnippet = stack ? `\n\n*Stack Trace:* \n\`\`\`\n${stack.split('\n').slice(0, 3).join('\n')}\n\`\`\`` : ''
-      
-      const msg = `🚨 *ALERTA DE BUG CRÍTICO*\n\n` +
-                  `*Tipo:* ${type}\n` +
-                  `*Mensagem:* ${message || 'N/A'}\n` +
-                  `*Rota:* ${route || '/'}\n` +
-                  `*Versão:* ${displayVersion}\n` +
-                  `*Navegador:* ${userAgent || 'N/A'}` +
-                  stackSnippet +
-                  `\n\n👉 Visualize no Portal: https://www.bpfconsult.com.br/superadmin?tab=error-logs`
-
-      body.append('Body', msg)
-
-      const res = await fetch(twilioUrl, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Basic ${auth}`,
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: body.toString(),
+    for (const to of getRecipients()) {
+      const { data, error } = await supabase.functions.invoke('evolution-send', {
+        body: { to, message: msg, modulo: 'audits_bpf', tipo: 'alerta_erro' },
       })
-      
-      const data = await res.json()
-      results.push({ to, ok: res.ok, sid: data.sid })
+      results.push({ to, ok: !error, data, error: error?.message })
     }
 
     return new Response(JSON.stringify({ success: true, results }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     })
   } catch (err: any) {
-    console.error('Error sending WhatsApp notification:', err)
-    return new Response(JSON.stringify({ error: err.message }), { 
+    console.error('notify-error-whatsapp error:', err)
+    return new Response(JSON.stringify({ error: err.message }), {
       status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     })
   }
 })
