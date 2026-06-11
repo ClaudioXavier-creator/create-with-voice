@@ -164,6 +164,46 @@ export default function DisparadorMarketing() {
     }
   };
 
+  const handleSendWhatsappBulk = async () => {
+    const selected = leads.filter(l => l.selected && l.telefone);
+    if (selected.length === 0) return toast.error("Selecione contatos com telefone");
+    if (!whatsappMsg.trim()) return toast.error("Escreva a mensagem do WhatsApp");
+    if (!confirm(`Disparar ${selected.length} mensagens via Evolution API agora? (Use com moderação para evitar bloqueios)`)) return;
+
+    setSending(true);
+    let ok = 0, fail = 0;
+    for (const l of selected) {
+      try {
+        const msg = whatsappMsg.replace(/\{\{nome\}\}/g, l.nome || "Cliente");
+        await sendWhatsApp({
+          to: l.telefone,
+          message: msg,
+          modulo: "portal",
+          tipo: "marketing",
+          metadata: { nome: l.nome, produto: l.produto, origem: l.origem },
+        });
+        ok++;
+        if (tab === "crm" && user) {
+          await supabase.from("crm_interacoes").insert([{
+            pipeline_id: l.id,
+            tipo: "whatsapp",
+            descricao: `[Evolution Bulk] ${msg.substring(0, 200)}`,
+            autor_id: user.id,
+            autor_nome: senderName,
+          }]);
+        }
+        // Pequeno delay anti-flood (1.5s entre envios)
+        await new Promise(r => setTimeout(r, 1500));
+      } catch (e: any) {
+        fail++;
+        console.error("Falha envio WhatsApp:", l.nome, e);
+      }
+    }
+    setSending(false);
+    toast.success(`Disparo concluído: ${ok} enviados, ${fail} falhas.`);
+  };
+
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
