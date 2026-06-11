@@ -383,6 +383,17 @@ export default function DisparadorMarketing() {
                     )}
                   </div>
                 </div>
+
+                <div className="pt-4 flex items-center justify-between border-t">
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <AlertCircle className="h-3 w-3" />
+                    Disparo automático via Evolution API (1,5s entre envios).
+                  </div>
+                  <Button onClick={handleSendWhatsappBulk} disabled={sending || selectedCount === 0} variant="default" className="gap-2 bg-emerald-600 hover:bg-emerald-700">
+                    {sending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+                    Disparar {selectedCount} via API
+                  </Button>
+                </div>
               </TabsContent>
             </CardContent>
           </Tabs>
