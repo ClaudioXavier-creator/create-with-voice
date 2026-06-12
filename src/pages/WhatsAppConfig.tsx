@@ -209,14 +209,14 @@ const WhatsAppConfig = () => {
       toast({
         variant: "destructive",
         title: "Número necessário",
-        description: "Digite um número para o teste.",
+        description: "Digite um número com DDD (ex: 5511999999999).",
       });
       return;
     }
 
     setSendingTest(true);
     try {
-      await evolutionService.sendMessage(
+      const response = await evolutionService.sendMessage(
         config.api_url,
         config.api_key,
         instanceName,
@@ -224,25 +224,32 @@ const WhatsAppConfig = () => {
         testMessage
       );
 
+      console.log("Mensagem enviada com sucesso:", response);
+
       // Log to whatsapp_mensagens table
-      await supabase.from("whatsapp_mensagens").insert({
-        empresa_id: empresaAtiva?.id,
-        to_number: testNumber,
-        body: testMessage,
-        status: "sent",
-        direction: "outbound",
-        raw: { method: "evolution_api", instance: instanceName }
-      });
+      try {
+        await supabase.from("whatsapp_mensagens").insert({
+          empresa_id: empresaAtiva?.id,
+          to_number: testNumber.replace(/\D/g, ""),
+          body: testMessage,
+          status: "sent",
+          direction: "outbound",
+          raw: { method: "evolution_api", instance: instanceName, response }
+        });
+      } catch (dbError) {
+        console.error("Erro ao salvar log no banco:", dbError);
+      }
 
       toast({
-        title: "Mensagem enviada",
-        description: "O teste foi realizado com sucesso.",
+        title: "Mensagem enviada!",
+        description: "Verifique o WhatsApp de destino.",
       });
     } catch (error: any) {
+      console.error("Erro no envio de teste:", error);
       toast({
         variant: "destructive",
         title: "Erro no envio",
-        description: error.message,
+        description: error.message || "Verifique se a instância está conectada e o número está correto.",
       });
     } finally {
       setSendingTest(false);

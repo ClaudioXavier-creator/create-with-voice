@@ -93,6 +93,18 @@ export const evolutionService = {
    * Send a text message
    */
   async sendMessage(apiUrl: string, apiKey: string, instanceName: string, number: string, text: string) {
+    // Clean number: remove all non-digits
+    const cleanNumber = number.replace(/\D/g, "");
+    
+    // Check if it's a Brazilian number and fix common formatting issues
+    let formattedNumber = cleanNumber;
+    if (cleanNumber.startsWith("55") && cleanNumber.length === 13) {
+      // Often Brazilian mobile numbers are sent with 9 digits but Evolution/WhatsApp API 
+      // sometimes expects the 8-digit format (without the extra 9) for older accounts.
+      // However, most modern APIs handle the 13-digit format fine. 
+      // We keep as is but ensure no '+' prefix.
+    }
+
     const response = await fetch(`${apiUrl.replace(/\/$/, "")}/message/sendText/${instanceName}`, {
       method: "POST",
       headers: {
@@ -100,7 +112,7 @@ export const evolutionService = {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        number,
+        number: formattedNumber,
         options: {
           delay: 1200,
           presence: "composing",
@@ -111,9 +123,11 @@ export const evolutionService = {
         }
       })
     });
+    
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.message || "Erro ao enviar mensagem via Evolution API");
+      console.error("Evolution API Error:", errorData);
+      throw new Error(errorData.message || `Erro ${response.status}: Falha ao enviar mensagem`);
     }
     return response.json();
   }
