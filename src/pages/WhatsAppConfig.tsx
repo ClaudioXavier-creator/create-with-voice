@@ -221,12 +221,12 @@ const WhatsAppConfig = () => {
                 <Label htmlFor="api_url">URL da API</Label>
                 <Input
                   id="api_url"
-                  placeholder="https://api.seuservidor.com"
+                  placeholder="https://evolutiondev.com.br"
                   value={config.api_url}
                   onChange={(e) => setConfig({ ...config, api_url: e.target.value })}
                 />
                 <p className="text-xs text-muted-foreground">
-                  Exemplo: http://185.158.133.1:8080
+                  Exemplo: https://evolutiondev.com.br
                 </p>
               </div>
 
@@ -288,7 +288,7 @@ const WhatsAppConfig = () => {
             </CardHeader>
             <CardContent className="space-y-4 text-sm text-muted-foreground">
               <p>
-                1. No seu terminal, acesse a VPS: <code>ssh root@185.158.133.1</code>
+                1. No seu terminal, acesse a VPS: <code>ssh root@2.25.201.90</code>
               </p>
               <p>
                 2. Certifique-se de que o Docker está instalado.
