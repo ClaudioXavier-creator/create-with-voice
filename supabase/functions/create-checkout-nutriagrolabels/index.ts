@@ -1,12 +1,12 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
+import { NUTRI_AGRO_LABELS_PRICES as PLAN_PRICES } from "../_shared/paddle-prices.ts";
+import { createPaddleCheckout } from "../_shared/paddle.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
-
-import { NUTRI_AGRO_LABELS_PRICES as PLAN_PRICES } from "../_shared/paddle-prices.ts";
 
 const TIPO_ALIASES: Record<string, string> = {
   individual: "empresa",
@@ -14,16 +14,8 @@ const TIPO_ALIASES: Record<string, string> = {
   grupo20: "consultor20",
 };
 
-const PADDLE_API_URL = Deno.env.get("PADDLE_SANDBOX_API_KEY") 
-  ? "https://sandbox-api.paddle.com" 
-  : "https://api.paddle.com";
-
-const PADDLE_API_KEY = Deno.env.get("PADDLE_SANDBOX_API_KEY") || Deno.env.get("PADDLE_LIVE_API_KEY");
-
 serve(async (req) => {
-  if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
-  }
+  if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
     const supabaseClient = createClient(
@@ -36,11 +28,8 @@ serve(async (req) => {
     if (authHeader) {
       const token = authHeader.replace("Bearer ", "");
       const { data } = await supabaseClient.auth.getUser(token);
-      if (data?.user?.email) {
-        user = { id: data.user.id, email: data.user.email };
-      }
+      if (data?.user?.email) user = { id: data.user.id, email: data.user.email };
     }
-
     if (!user) throw new Error("Usuário não autenticado");
 
     const body = await req.json().catch(() => ({}));
@@ -49,40 +38,26 @@ serve(async (req) => {
     const planoKey = (body.plano || "mensal").toLowerCase();
 
     const tipoPrices = PLAN_PRICES[tipoKey];
-    if (!tipoPrices) throw new Error(`Tipo inválido: ${tipoKey}. Use: empresa, gestor10 ou consultor20`);
-    
-    const priceConfig = tipoPrices[planoKey];
-    if (!priceConfig) throw new Error(`Plano inválido: ${planoKey}. Use: mensal, semestral ou anual`);
+    if (!tipoPrices) throw new Error(`Tipo inválido: ${tipoKey}`);
+    const priceConfig = tipoPrices[planoKey as keyof typeof tipoPrices];
+    if (!priceConfig) throw new Error(`Plano inválido: ${planoKey}`);
 
     const origin = req.headers.get("origin") || "https://bpfconsult.com.br";
 
-    // Criar transação no Paddle
-    const response = await fetch(`${PADDLE_API_URL}/transactions`, {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${PADDLE_API_KEY}`,
-        "Content-Type": "application/json",
+    const url = await createPaddleCheckout({
+      priceId: priceConfig.id,
+      customerEmail: user.email,
+      customData: {
+        produto: "nutri_agro_labels",
+        tipo: tipoKey,
+        plano: planoKey,
+        user_id: user.id,
       },
-      body: JSON.stringify({
-        items: [{ price_id: priceConfig.id, quantity: 1 }],
-        customer_email: user.email,
-        custom_data: {
-          produto: "nutri_agro_labels",
-          tipo: tipoKey,
-          plano: planoKey,
-          user_id: user.id,
-        },
-        checkout: {
-          confirm_url: `${origin}/rotulos?checkout=success&tipo=${tipoKey}&plano=${planoKey}`,
-          cancel_url: `${origin}/rotulos?checkout=canceled&tipo=${tipoKey}&plano=${planoKey}`,
-        }
-      }),
+      successUrl: `${origin}/rotulos?checkout=success&tipo=${tipoKey}&plano=${planoKey}`,
+      cancelUrl: `${origin}/rotulos?checkout=canceled&tipo=${tipoKey}&plano=${planoKey}`,
     });
 
-    const data = await response.json();
-    if (data.error) throw new Error(data.error.detail || "Erro ao criar transação no Paddle");
-
-    return new Response(JSON.stringify({ url: data.data.checkout.url }), {
+    return new Response(JSON.stringify({ url }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 200,
     });
