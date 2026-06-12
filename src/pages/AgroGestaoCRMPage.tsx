@@ -59,18 +59,18 @@ export default function AgroGestaoCRMPage() {
                 A plataforma definitiva para gestão de equipes comerciais, carteira de clientes e oportunidades no setor de nutrição e insumos animais.
               </p>
               <div className="flex flex-col sm:flex-row gap-3">
-                <Link to={signupLink}>
-                  <Button size="lg" className="gap-2 shadow-lg shadow-primary/20">
+                <Button size="lg" className="gap-2 shadow-lg shadow-primary/20" asChild>
+                  <Link to={signupLink}>
                     <Sparkles className="h-4 w-4" />
                     Testar grátis por 7 dias
-                  </Button>
-                </Link>
-                <Link to={loginLink}>
-                  <Button size="lg" variant="outline" className="gap-2">
+                  </Link>
+                </Button>
+                <Button size="lg" variant="outline" className="gap-2" asChild>
+                  <Link to={loginLink}>
                     <LogIn className="h-4 w-4" />
                     Acessar o CRM
-                  </Button>
-                </Link>
+                  </Link>
+                </Button>
               </div>
             </div>
           </div>
