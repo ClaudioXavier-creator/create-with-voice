@@ -29,6 +29,7 @@ const WhatsAppConfig = () => {
   const [testNumber, setTestNumber] = useState("");
   const [testMessage, setTestMessage] = useState("Olá! Teste de integração Evolution API.");
   const [sendingTest, setSendingTest] = useState(false);
+  const [batchStatus, setBatchStatus] = useState<{current: number, total: number} | null>(null);
 
 
   useEffect(() => {
@@ -208,51 +209,75 @@ const WhatsAppConfig = () => {
     if (!testNumber) {
       toast({
         variant: "destructive",
-        title: "Número necessário",
-        description: "Digite um número com DDD (ex: 5511999999999).",
+        title: "Número(s) necessário(s)",
+        description: "Digite um ou mais números separados por vírgula (ex: 5511999999999, 5511888888888).",
       });
       return;
     }
 
+    const numbers = testNumber.split(",").map(n => n.trim()).filter(n => n.length > 0);
     setSendingTest(true);
-    try {
-      const response = await evolutionService.sendMessage(
-        config.api_url,
-        config.api_key,
-        instanceName,
-        testNumber,
-        testMessage
-      );
+    setBatchStatus({ current: 0, total: numbers.length });
+    
+    let successCount = 0;
+    let failCount = 0;
 
-      console.log("Mensagem enviada com sucesso:", response);
-
-      // Log to whatsapp_mensagens table
+    for (let i = 0; i < numbers.length; i++) {
+      const num = numbers[i];
+      setBatchStatus({ current: i + 1, total: numbers.length });
+      
       try {
-        await supabase.from("whatsapp_mensagens").insert({
-          empresa_id: empresaAtiva?.id,
-          to_number: testNumber.replace(/\D/g, ""),
-          body: testMessage,
-          status: "sent",
-          direction: "outbound",
-          raw: { method: "evolution_api", instance: instanceName, response }
-        });
-      } catch (dbError) {
-        console.error("Erro ao salvar log no banco:", dbError);
-      }
+        const response = await evolutionService.sendMessage(
+          config.api_url,
+          config.api_key,
+          instanceName,
+          num,
+          testMessage
+        );
 
+        successCount++;
+
+        try {
+          await supabase.from("whatsapp_mensagens").insert({
+            empresa_id: empresaAtiva?.id,
+            to_number: num.replace(/\D/g, ""),
+            body: testMessage,
+            status: "sent",
+            direction: "outbound",
+            raw: { method: "evolution_api", instance: instanceName, response }
+          });
+        } catch (e) {
+          console.error("Erro ao salvar no banco:", e);
+        }
+
+        if (numbers.length > 1 && i < numbers.length - 1) {
+          await new Promise(resolve => setTimeout(resolve, 1000));
+        }
+      } catch (error: any) {
+        console.error(`Erro ao enviar para ${num}:`, error);
+        failCount++;
+      }
+    }
+
+    setSendingTest(false);
+    setBatchStatus(null);
+
+    if (numbers.length > 1) {
+      toast({
+        title: "Envio em lote finalizado",
+        description: `${successCount} sucessos, ${failCount} falhas.`,
+      });
+    } else if (successCount > 0) {
       toast({
         title: "Mensagem enviada!",
         description: "Verifique o WhatsApp de destino.",
       });
-    } catch (error: any) {
-      console.error("Erro no envio de teste:", error);
+    } else {
       toast({
         variant: "destructive",
         title: "Erro no envio",
-        description: error.message || "Verifique se a instância está conectada e o número está correto.",
+        description: "Não foi possível enviar a mensagem. Verifique a conexão.",
       });
-    } finally {
-      setSendingTest(false);
     }
   };
 
@@ -415,22 +440,33 @@ const WhatsAppConfig = () => {
 
                       {instance.status === 'open' && (
                         <div className="pt-4 border-t space-y-3">
-                          <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Teste de Disparo</p>
-                          <div className="flex gap-2">
-                            <Input 
-                              placeholder="5511999999999" 
-                              size={1}
-                              className="flex-1"
-                              value={testNumber}
-                              onChange={(e) => setTestNumber(e.target.value)}
-                            />
-                            <Button 
-                              size="sm" 
-                              onClick={() => handleSendTest(instance.instanceName)}
-                              disabled={sendingTest}
-                            >
-                              <Send className="w-4 h-4 mr-2" /> {sendingTest ? "Enviando..." : "Testar"}
-                            </Button>
+                          <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Teste de Disparo (Múltiplos: separe por vírgula)</p>
+                          <div className="flex flex-col gap-2">
+                            <div className="flex gap-2">
+                              <Input 
+                                placeholder="5511999999999, 5511888888888" 
+                                className="flex-1"
+                                value={testNumber}
+                                onChange={(e) => setTestNumber(e.target.value)}
+                                disabled={sendingTest}
+                              />
+                              <Button 
+                                size="sm" 
+                                onClick={() => handleSendTest(instance.instanceName)}
+                                disabled={sendingTest}
+                              >
+                                <Send className="w-4 h-4 mr-2" /> 
+                                {sendingTest ? (batchStatus ? `Enviando ${batchStatus.current}/${batchStatus.total}` : "Enviando...") : "Testar"}
+                              </Button>
+                            </div>
+                            {sendingTest && batchStatus && (
+                              <div className="w-full bg-secondary h-1.5 rounded-full overflow-hidden">
+                                <div 
+                                  className="bg-green-500 h-full transition-all duration-300" 
+                                  style={{ width: `${(batchStatus.current / batchStatus.total) * 100}%` }}
+                                />
+                              </div>
+                            )}
                           </div>
                         </div>
                       )}
