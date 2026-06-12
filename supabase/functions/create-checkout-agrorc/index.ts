@@ -27,6 +27,7 @@ const TIPO_ALIASES: Record<string, string> = {
 
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
+  console.log("[create-checkout-agrorc] invoked", req.method, req.url);
 
   try {
     const supabaseClient = createClient(
