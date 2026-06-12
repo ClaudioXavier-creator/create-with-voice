@@ -23,7 +23,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { getProductLabel } from "@/utils/productUtils";
 import { useAuth } from "@/hooks/useAuth";
-import { sendWhatsApp } from "@/lib/evolutionWhatsapp";
+import { sendWhatsApp, validatePhoneList, normalizePhoneBR } from "@/lib/evolutionWhatsapp";
 
 interface Recipient {
   id: string;
@@ -168,15 +168,33 @@ export default function DisparadorMarketing() {
     const selected = leads.filter(l => l.selected && l.telefone);
     if (selected.length === 0) return toast.error("Selecione contatos com telefone");
     if (!whatsappMsg.trim()) return toast.error("Escreva a mensagem do WhatsApp");
-    if (!confirm(`Disparar ${selected.length} mensagens via Evolution API agora? (Use com moderação para evitar bloqueios)`)) return;
+
+    // Validação + normalização BR + dedup
+    const { valid, invalid, duplicates } = validatePhoneList(selected);
+
+    if (valid.length === 0) {
+      return toast.error(`Nenhum número válido. ${invalid.length} inválidos, ${duplicates.length} duplicados.`);
+    }
+
+    const resumo =
+      `Vai disparar para ${valid.length} contatos válidos.\n` +
+      (invalid.length ? `${invalid.length} ignorados por número inválido.\n` : "") +
+      (duplicates.length ? `${duplicates.length} duplicados ignorados.\n` : "") +
+      `\nDelay anti-flood: 3s a 6s aleatório entre envios.\nContinuar?`;
+    if (!confirm(resumo)) return;
+
+    if (invalid.length) {
+      console.warn("Números inválidos ignorados:", invalid.map(i => `${i.source.nome}: ${i.original}`));
+    }
 
     setSending(true);
     let ok = 0, fail = 0;
-    for (const l of selected) {
+    for (const v of valid) {
+      const l = v.source;
       try {
         const msg = whatsappMsg.replace(/\{\{nome\}\}/g, l.nome || "Cliente");
         await sendWhatsApp({
-          to: l.telefone,
+          to: v.normalized,
           message: msg,
           modulo: "portal",
           tipo: "marketing",
@@ -192,15 +210,16 @@ export default function DisparadorMarketing() {
             autor_nome: senderName,
           }]);
         }
-        // Pequeno delay anti-flood (1.5s entre envios)
-        await new Promise(r => setTimeout(r, 1500));
+        // Delay aleatório 3-6s entre envios (anti-bloqueio)
+        const delay = 3000 + Math.floor(Math.random() * 3000);
+        await new Promise(r => setTimeout(r, delay));
       } catch (e: any) {
         fail++;
         console.error("Falha envio WhatsApp:", l.nome, e);
       }
     }
     setSending(false);
-    toast.success(`Disparo concluído: ${ok} enviados, ${fail} falhas.`);
+    toast.success(`Disparo concluído: ${ok} enviados, ${fail} falhas, ${invalid.length} inválidos ignorados.`);
   };
 
 
