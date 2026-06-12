@@ -48,18 +48,18 @@ export default function AuditsBPFPage() {
                 Transforme suas auditorias internas em um processo 100% digital e conforme com o novo <strong className="text-foreground">Decreto 12.031/2024</strong> do MAPA.
               </p>
               <div className="flex flex-col sm:flex-row gap-3">
-                <Link to="/auditsbpf/planos">
-                  <Button size="lg" className="gap-2 shadow-lg shadow-primary/20">
+                <Button size="lg" className="gap-2 shadow-lg shadow-primary/20" asChild>
+                  <Link to="/auditsbpf/planos">
                     <Sparkles className="h-4 w-4" />
                     Ver Planos e Preços
-                  </Button>
-                </Link>
-                <Link to={loginLink}>
-                  <Button size="lg" variant="outline" className="gap-2">
+                  </Link>
+                </Button>
+                <Button size="lg" variant="outline" className="gap-2" asChild>
+                  <Link to={loginLink}>
                     <LogIn className="h-4 w-4" />
                     Acessar Auditoria
-                  </Button>
-                </Link>
+                  </Link>
+                </Button>
               </div>
               <p className="text-xs text-muted-foreground mt-2">Sem cartão de crédito • Trial de 7 dias</p>
             </div>
@@ -97,12 +97,12 @@ export default function AuditsBPFPage() {
         <section className="mt-12 text-center">
           <h3 className="text-xl font-bold font-display text-foreground mb-3">Experimente grátis por 7 dias!</h3>
           <p className="text-muted-foreground mb-6">Crie sua conta e tenha acesso completo ao Audits_BPF durante o período trial.</p>
-          <Link to={signupLink}>
-            <Button size="lg" className="gap-2 shadow-lg shadow-primary/25">
+          <Button size="lg" className="gap-2 shadow-lg shadow-primary/25" asChild>
+            <Link to={signupLink}>
               <Sparkles className="h-4 w-4" />
               Começar Trial Grátis
-            </Button>
-          </Link>
+            </Link>
+          </Button>
         </section>
       </main>
 
