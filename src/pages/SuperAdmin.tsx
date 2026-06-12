@@ -15,12 +15,13 @@ import AdminLeads from "./AdminLeads";
 import GeradorHeadlines from "./GeradorHeadlines";
 import DisparadorMarketing from "@/components/marketing/DisparadorMarketing";
 import WhatsAppConfig from "./WhatsAppConfig";
+import WhatsAppRelatorio from "./WhatsAppRelatorio";
 import { useLocation } from "react-router-dom";
 
 export default function SuperAdmin() {
   const { user, roles, loading: authLoading } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
-  const validTabs = ["dashboard", "leads", "crm", "licencas", "assinaturas", "marketing", "plano-vendas", "disparo", "whatsapp", "modulos", "error-logs", "historico"];
+  const validTabs = ["dashboard", "leads", "crm", "licencas", "assinaturas", "marketing", "plano-vendas", "disparo", "whatsapp", "whatsapp-relatorio", "modulos", "error-logs", "historico"];
 
   const initialTab = searchParams.get("tab");
   const [activeTab, setActiveTab] = useState(
@@ -135,6 +136,10 @@ export default function SuperAdmin() {
             <TabsTrigger value="whatsapp" className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground py-2 border flex-1">
               <MessageSquare className="h-4 w-4" />
               <span>WhatsApp</span>
+            </TabsTrigger>
+            <TabsTrigger value="whatsapp-relatorio" className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground py-2 border flex-1">
+              <FileText className="h-4 w-4" />
+              <span>Relat. WA</span>
             </TabsTrigger>
             <TabsTrigger value="disparo" className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground py-2 border flex-1">
               <SendHorizontal className="h-4 w-4" />
@@ -391,6 +396,9 @@ export default function SuperAdmin() {
         </TabsContent>
         <TabsContent value="whatsapp">
           <WhatsAppConfig />
+        </TabsContent>
+        <TabsContent value="whatsapp-relatorio">
+          <WhatsAppRelatorio />
         </TabsContent>
 
         <TabsContent value="error-logs">
