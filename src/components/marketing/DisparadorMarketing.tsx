@@ -58,6 +58,7 @@ export default function DisparadorMarketing() {
   const [emailBody, setEmailBody] = useState("");
   const [whatsappMsg, setWhatsappMsg] = useState("");
   const [senderName, setSenderName] = useState("Equipe BPF Consult");
+  const [showGuidelines, setShowGuidelines] = useState(false);
 
   useEffect(() => {
     void loadData();
