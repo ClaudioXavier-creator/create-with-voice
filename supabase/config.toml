@@ -42,5 +42,25 @@ verify_jwt = false
 [functions.whatsapp-webhook]
 verify_jwt = false
 
+[functions.create-checkout]
+verify_jwt = false
+
+[functions.create-checkout-agrorc]
+verify_jwt = false
+
+[functions.create-checkout-agrogestao]
+verify_jwt = false
+
+[functions.create-checkout-audits]
+verify_jwt = false
+
+[functions.create-checkout-nutriagrolabels]
+verify_jwt = false
+
+[functions.paddle-gateway-test]
+verify_jwt = false
+
+
+
 
 
