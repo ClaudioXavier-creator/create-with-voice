@@ -11,6 +11,8 @@ import {
   LayoutDashboard,
   MessageSquare,
   Tablet,
+  Smartphone,
+
   Layers,
   Tag,
   BarChart3,
