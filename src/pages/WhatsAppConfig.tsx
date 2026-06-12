@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
-import { MessageSquare, Save, RefreshCw, CheckCircle2, XCircle, ExternalLink, QrCode, LogOut, Trash2, Plus, Smartphone } from "lucide-react";
+import { MessageSquare, Save, RefreshCw, CheckCircle2, XCircle, ExternalLink, QrCode, LogOut, Trash2, Plus, Smartphone, Send } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useEmpresa } from "@/hooks/useEmpresa";
 import { useAuth } from "@/hooks/useAuth";
@@ -26,6 +26,10 @@ const WhatsAppConfig = () => {
   const [instances, setInstances] = useState<EvolutionInstance[]>([]);
   const [qrCode, setQrCode] = useState<string | null>(null);
   const [status, setStatus] = useState<"connected" | "disconnected" | "checking">("disconnected");
+  const [testNumber, setTestNumber] = useState("");
+  const [testMessage, setTestMessage] = useState("Olá! Teste de integração Evolution API.");
+  const [sendingTest, setSendingTest] = useState(false);
+
 
   useEffect(() => {
     if (empresaAtiva?.id) {
@@ -200,6 +204,52 @@ const WhatsAppConfig = () => {
     }
   };
 
+  const handleSendTest = async (instanceName: string) => {
+    if (!testNumber) {
+      toast({
+        variant: "destructive",
+        title: "Número necessário",
+        description: "Digite um número para o teste.",
+      });
+      return;
+    }
+
+    setSendingTest(true);
+    try {
+      await evolutionService.sendMessage(
+        config.api_url,
+        config.api_key,
+        instanceName,
+        testNumber,
+        testMessage
+      );
+
+      // Log to whatsapp_mensagens table
+      await supabase.from("whatsapp_mensagens").insert({
+        empresa_id: empresaAtiva?.id,
+        to_number: testNumber,
+        body: testMessage,
+        status: "sent",
+        direction: "outbound",
+        raw: { method: "evolution_api", instance: instanceName }
+      });
+
+      toast({
+        title: "Mensagem enviada",
+        description: "O teste foi realizado com sucesso.",
+      });
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Erro no envio",
+        description: error.message,
+      });
+    } finally {
+      setSendingTest(false);
+    }
+  };
+
+
   return (
     <div className="container mx-auto py-8">
       <div className="flex items-center gap-2 mb-6">
@@ -334,25 +384,49 @@ const WhatsAppConfig = () => {
                   </div>
                 ) : (
                   instances.map((instance) => (
-                    <div key={instance.instanceName} className="flex items-center justify-between p-4 border rounded-lg bg-card">
-                      <div>
-                        <p className="font-medium">{instance.instanceName}</p>
-                        <p className="text-xs text-muted-foreground capitalize">Status: {instance.status}</p>
-                      </div>
-                      <div className="flex gap-2">
-                        {instance.status !== 'open' ? (
-                          <Button size="icon" variant="outline" title="Ver QR Code" onClick={() => handleShowQrCode(instance.instanceName)}>
-                            <QrCode className="w-4 h-4" />
+                    <div key={instance.instanceName} className="space-y-4 p-4 border rounded-lg bg-card">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="font-medium">{instance.instanceName}</p>
+                          <p className="text-xs text-muted-foreground capitalize">Status: {instance.status}</p>
+                        </div>
+                        <div className="flex gap-2">
+                          {instance.status !== 'open' ? (
+                            <Button size="icon" variant="outline" title="Ver QR Code" onClick={() => handleShowQrCode(instance.instanceName)}>
+                              <QrCode className="w-4 h-4" />
+                            </Button>
+                          ) : (
+                            <Button size="icon" variant="outline" className="text-orange-600 border-orange-200" title="Desconectar" onClick={() => handleLogout(instance.instanceName)}>
+                              <LogOut className="w-4 h-4" />
+                            </Button>
+                          )}
+                          <Button size="icon" variant="outline" className="text-red-600 border-red-200" title="Excluir" onClick={() => handleDeleteInstance(instance.instanceName)}>
+                            <Trash2 className="w-4 h-4" />
                           </Button>
-                        ) : (
-                          <Button size="icon" variant="outline" className="text-orange-600 border-orange-200" title="Desconectar" onClick={() => handleLogout(instance.instanceName)}>
-                            <LogOut className="w-4 h-4" />
-                          </Button>
-                        )}
-                        <Button size="icon" variant="outline" className="text-red-600 border-red-200" title="Excluir" onClick={() => handleDeleteInstance(instance.instanceName)}>
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
+                        </div>
                       </div>
+
+                      {instance.status === 'open' && (
+                        <div className="pt-4 border-t space-y-3">
+                          <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Teste de Disparo</p>
+                          <div className="flex gap-2">
+                            <Input 
+                              placeholder="5511999999999" 
+                              size={1}
+                              className="flex-1"
+                              value={testNumber}
+                              onChange={(e) => setTestNumber(e.target.value)}
+                            />
+                            <Button 
+                              size="sm" 
+                              onClick={() => handleSendTest(instance.instanceName)}
+                              disabled={sendingTest}
+                            >
+                              <Send className="w-4 h-4 mr-2" /> {sendingTest ? "Enviando..." : "Testar"}
+                            </Button>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   ))
                 )}

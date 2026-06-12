@@ -87,5 +87,34 @@ export const evolutionService = {
     });
     if (!response.ok) throw new Error("Falha ao deletar instância");
     return response.json();
+  },
+
+  /**
+   * Send a text message
+   */
+  async sendMessage(apiUrl: string, apiKey: string, instanceName: string, number: string, text: string) {
+    const response = await fetch(`${apiUrl.replace(/\/$/, "")}/message/sendText/${instanceName}`, {
+      method: "POST",
+      headers: {
+        "apikey": apiKey,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        number,
+        options: {
+          delay: 1200,
+          presence: "composing",
+          linkPreview: false
+        },
+        textMessage: {
+          text
+        }
+      })
+    });
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.message || "Erro ao enviar mensagem via Evolution API");
+    }
+    return response.json();
   }
 };
