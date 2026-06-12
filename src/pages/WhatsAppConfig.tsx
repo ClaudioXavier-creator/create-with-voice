@@ -288,7 +288,7 @@ const WhatsAppConfig = () => {
             </CardHeader>
             <CardContent className="space-y-4 text-sm text-muted-foreground">
               <p>
-                1. No seu terminal, acesse a VPS: <code>ssh root@2.25.201.90</code>
+                1. No seu terminal, acesse a VPS: <code>ssh root@2.25.201.90</code> ou use o domínio <code>ssh root@evolutiondev.com.br</code>
               </p>
               <p>
                 2. Certifique-se de que o Docker está instalado.
