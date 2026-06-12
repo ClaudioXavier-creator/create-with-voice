@@ -17,7 +17,13 @@ import {
   CheckCircle2, 
   AlertCircle,
   ExternalLink,
-  ChevronRight
+  ChevronRight,
+  Info,
+  ChevronDown,
+  ChevronUp,
+  Clock,
+  ShieldAlert,
+  Ban
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -52,6 +58,7 @@ export default function DisparadorMarketing() {
   const [emailBody, setEmailBody] = useState("");
   const [whatsappMsg, setWhatsappMsg] = useState("");
   const [senderName, setSenderName] = useState("Equipe BPF Consult");
+  const [showGuidelines, setShowGuidelines] = useState(false);
 
   useEffect(() => {
     void loadData();
@@ -357,8 +364,97 @@ export default function DisparadorMarketing() {
                   <AlertCircle className="h-5 w-5 shrink-0" />
                   <div>
                     <strong>Atenção:</strong> O disparo em massa no WhatsApp pode bloquear sua conta se feito de forma totalmente automática. 
-                    Por segurança, você deve clicar em "Enviar" para cada contato selecionado abaixo.
+                    Por segurança, o sistema aplica delays aleatórios e valida os números antes do envio.
                   </div>
+                </div>
+
+                {/* Orientações de Envio */}
+                <div className="border rounded-lg bg-card">
+                  <button 
+                    onClick={() => setShowGuidelines(!showGuidelines)}
+                    className="w-full flex items-center justify-between p-4 text-left hover:bg-muted/50 transition-colors"
+                  >
+                    <div className="flex items-center gap-2 text-sm font-medium">
+                      <Info className="h-4 w-4 text-blue-600" />
+                      Boas Práticas de Envio — Leia antes de disparar
+                    </div>
+                    {showGuidelines ? <ChevronUp className="h-4 w-4 text-muted-foreground" /> : <ChevronDown className="h-4 w-4 text-muted-foreground" />}
+                  </button>
+                  
+                  {showGuidelines && (
+                    <div className="px-4 pb-4 space-y-4 text-sm text-muted-foreground">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-3">
+                          <div className="flex gap-2">
+                            <Clock className="h-4 w-4 text-orange-500 shrink-0 mt-0.5" />
+                            <div>
+                              <p className="font-medium text-foreground">Velocidade entre envios</p>
+                              <p>3–6 segundos para volumes menores que 100 contatos. 10–30 segundos para volumes maiores que 100.</p>
+                            </div>
+                          </div>
+                          <div className="flex gap-2">
+                            <ShieldAlert className="h-4 w-4 text-orange-500 shrink-0 mt-0.5" />
+                            <div>
+                              <p className="font-medium text-foreground">Aquecimento (warm-up)</p>
+                              <p>Comece com 20–30 mensagens por dia. Aumente gradualmente ao longo de 1–2 semanas.</p>
+                            </div>
+                          </div>
+                          <div className="flex gap-2">
+                            <MessageCircle className="h-4 w-4 text-orange-500 shrink-0 mt-0.5" />
+                            <div>
+                              <p className="font-medium text-foreground">Variação de mensagem</p>
+                              <p>Crie 2–3 variações do mesmo conteúdo e rotacione entre elas. Evite textos idênticos em sequência.</p>
+                            </div>
+                          </div>
+                          <div className="flex gap-2">
+                            <CheckCircle2 className="h-4 w-4 text-orange-500 shrink-0 mt-0.5" />
+                            <div>
+                              <p className="font-medium text-foreground">Opt-in obrigatório</p>
+                              <p>Dispare apenas para leads que vieram do site, CRM ou deram consentimento expresso.</p>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="space-y-3">
+                          <div className="flex gap-2">
+                            <Ban className="h-4 w-4 text-red-500 shrink-0 mt-0.5" />
+                            <div>
+                              <p className="font-medium text-foreground">Opt-out (SAIR)</p>
+                              <p>Inclua sempre a opção de saída (ex: "Digite SAIR para cancelar") e respeite imediatamente.</p>
+                            </div>
+                          </div>
+                          <div className="flex gap-2">
+                            <Clock className="h-4 w-4 text-blue-500 shrink-0 mt-0.5" />
+                            <div>
+                              <p className="font-medium text-foreground">Horário comercial</p>
+                              <p>Envie entre 9h e 18h. Evite fins de semana e feriados, a menos que o contato tenha solicitado.</p>
+                            </div>
+                          </div>
+                          <div className="flex gap-2">
+                            <Users className="h-4 w-4 text-blue-500 shrink-0 mt-0.5" />
+                            <div>
+                              <p className="font-medium text-foreground">Limite diário por instância</p>
+                              <p>Máximo recomendado: 300–500 mensagens por instância/chip por dia.</p>
+                            </div>
+                          </div>
+                          <div className="flex gap-2">
+                            <ShieldAlert className="h-4 w-4 text-red-500 shrink-0 mt-0.5" />
+                            <div>
+                              <p className="font-medium text-foreground">Múltiplas instâncias</p>
+                              <p>Para volumes maiores, use 2 ou mais instâncias/chips e distribua os envios.</p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="p-3 bg-red-50 border border-red-100 rounded-md text-red-800 text-xs flex gap-2">
+                        <ShieldAlert className="h-4 w-4 shrink-0" />
+                        <div>
+                          <strong>Monitoramento:</strong> Pare imediatamente os envios se notar queda na entregabilidade (mensagens não chegando). Campanhas acima de 1.000 contatos por dia devem usar a <strong>WhatsApp Business Cloud API (Meta)</strong> com templates aprovados, e não a Evolution API.
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 <div className="flex flex-wrap gap-2 py-2">
