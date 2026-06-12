@@ -97,12 +97,12 @@ export default function AuditsBPFPage() {
         <section className="mt-12 text-center">
           <h3 className="text-xl font-bold font-display text-foreground mb-3">Experimente grátis por 7 dias!</h3>
           <p className="text-muted-foreground mb-6">Crie sua conta e tenha acesso completo ao Audits_BPF durante o período trial.</p>
-          <Link to={signupLink}>
-            <Button size="lg" className="gap-2 shadow-lg shadow-primary/25">
+          <Button size="lg" className="gap-2 shadow-lg shadow-primary/25" asChild>
+            <Link to={signupLink}>
               <Sparkles className="h-4 w-4" />
               Começar Trial Grátis
-            </Button>
-          </Link>
+            </Link>
+          </Button>
         </section>
       </main>
 
