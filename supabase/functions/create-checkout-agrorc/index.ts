@@ -27,26 +27,6 @@ const TIPO_ALIASES: Record<string, string> = {
 
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
-  console.log("[create-checkout-agrorc] invoked", req.method, req.url);
-
-  // TEMP probe: validar gateway Paddle sem precisar de auth de usuário
-  const url = new URL(req.url);
-  if (url.searchParams.get("probe") === "1") {
-    try {
-      const { paddleGatewayFetch, getPaddleEnv } = await import("../_shared/paddle.ts");
-      const env = getPaddleEnv();
-      const res = await paddleGatewayFetch(env, "/products?per_page=1");
-      const body = await res.text();
-      return new Response(JSON.stringify({ env, status: res.status, body: body.slice(0, 600) }), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    } catch (e) {
-      return new Response(JSON.stringify({ probeError: (e as Error).message }), {
-        status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-  }
 
   try {
     const supabaseClient = createClient(
