@@ -23,7 +23,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { getProductLabel } from "@/utils/productUtils";
 import { useAuth } from "@/hooks/useAuth";
-import { sendWhatsApp } from "@/lib/evolutionWhatsapp";
+import { sendWhatsApp, validatePhoneList, normalizePhoneBR } from "@/lib/evolutionWhatsapp";
 
 interface Recipient {
   id: string;
