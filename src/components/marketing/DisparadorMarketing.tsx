@@ -17,7 +17,13 @@ import {
   CheckCircle2, 
   AlertCircle,
   ExternalLink,
-  ChevronRight
+  ChevronRight,
+  Info,
+  ChevronDown,
+  ChevronUp,
+  Clock,
+  ShieldAlert,
+  Ban
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
