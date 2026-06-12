@@ -73,18 +73,18 @@ export default function NutriCRMPage() {
                 CRM especializado para profissionais de nutrição animal. Gerencie clientes, visitas e acompanhamentos em um só lugar.
               </p>
               <div className="flex flex-col sm:flex-row gap-3">
-                <Link to={signupLink}>
-                  <Button size="lg" className="gap-2 shadow-lg shadow-primary/20">
+                <Button size="lg" className="gap-2 shadow-lg shadow-primary/20" asChild>
+                  <Link to={signupLink}>
                     <Sparkles className="h-4 w-4" />
                     Testar grátis por 7 dias
-                  </Button>
-                </Link>
-                <Link to={loginLink}>
-                  <Button size="lg" variant="outline" className="gap-2">
+                  </Link>
+                </Button>
+                <Button size="lg" variant="outline" className="gap-2" asChild>
+                  <Link to={loginLink}>
                     <Lock className="h-4 w-4" />
                     Já é cadastrado? Acesse o Sistema
-                  </Button>
-                </Link>
+                  </Link>
+                </Button>
               </div>
               <p className="text-xs text-muted-foreground mt-2">Sem cartão de crédito • Acesso completo</p>
             </div>
