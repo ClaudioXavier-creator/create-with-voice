@@ -91,6 +91,9 @@ export default function Auth() {
   const preferredRedirect = useMemo(() => {
     if (redirectTo && redirectTo !== "/" && redirectTo !== "/auth") return redirectTo;
     if (product === "admin") return "/admin";
+    // Sem produto definido (ex.: botão "Acessar Sistemas" da Vitrine),
+    // devolve o usuário à Vitrine para que ele escolha qual programa acessar.
+    if (product === "default") return "/";
     return "/dashboard";
   }, [redirectTo, product]);
 
