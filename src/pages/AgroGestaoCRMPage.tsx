@@ -23,19 +23,15 @@ const diferenciais = [
   { icon: Lock, title: "Segurança de Dados", desc: "Isolamento total por empresa e criptografia de ponta a ponta para proteger sua carteira." },
 ];
 
-export default function AgroGestaoCRMPage() {
-  const navigate = useNavigate();
-  const { session } = useAuth();
-  const signupLink = "/auth?product=agrogestao&mode=signup&redirect=%2Fagrogestao%2Fdashboard";
-  const loginLink = "/auth?product=agrogestao&mode=login&redirect=%2Fagrogestao%2Fdashboard";
+// O AgroGestão CRM é uma aplicação externa, com login e licenciamento próprios.
+// Por isso os botões enviam o usuário diretamente para o app externo — passar
+// pelo /auth interno só atrapalhava (login não é compartilhado) e fazia o app
+// externo abrir a tela de pagamento/login, que ao cancelar voltava para a raiz.
+const APP_EXTERNO = "https://regional-fixer-charm.lovable.app";
 
-  const handleCheckout = async (nivel: string, periodo: string) => {
-    if (!session) {
-      navigate(signupLink);
-      return;
-    }
-    navigate(`/agrogestao/dashboard?nivel=${encodeURIComponent(nivel)}&periodo=${encodeURIComponent(periodo)}`);
-  };
+export default function AgroGestaoCRMPage() {
+  const signupLink = `${APP_EXTERNO}/?trial=1`;
+  const loginLink = APP_EXTERNO;
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
