@@ -56,16 +56,16 @@ export default function AgroGestaoCRMPage() {
               </p>
               <div className="flex flex-col sm:flex-row gap-3">
                 <Button size="lg" className="gap-2 shadow-lg shadow-primary/20" asChild>
-                  <Link to={signupLink}>
+                  <a href={signupLink} target="_blank" rel="noopener noreferrer">
                     <Sparkles className="h-4 w-4" />
                     Testar grátis por 7 dias
-                  </Link>
+                  </a>
                 </Button>
                 <Button size="lg" variant="outline" className="gap-2" asChild>
-                  <Link to={loginLink}>
+                  <a href={loginLink} target="_blank" rel="noopener noreferrer">
                     <LogIn className="h-4 w-4" />
                     Acessar o CRM
-                  </Link>
+                  </a>
                 </Button>
               </div>
             </div>
