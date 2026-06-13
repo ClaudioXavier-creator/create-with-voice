@@ -118,8 +118,8 @@ export default function AgroGestaoCRMPage() {
                      <span className="text-muted-foreground">{p.sub}</span>
                    </div>
                    <p className="text-xs text-muted-foreground">{p.desc}</p>
-                   <Button onClick={() => handleCheckout(p.nivel, "mensal")} variant={p.destaque ? "default" : "outline"} className="w-full gap-2">
-                     Começar agora
+                   <Button asChild variant={p.destaque ? "default" : "outline"} className="w-full gap-2">
+                     <a href={APP_EXTERNO} target="_blank" rel="noopener noreferrer">Começar agora</a>
                    </Button>
                  </CardContent>
                </Card>
