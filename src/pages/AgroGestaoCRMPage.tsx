@@ -23,19 +23,15 @@ const diferenciais = [
   { icon: Lock, title: "Segurança de Dados", desc: "Isolamento total por empresa e criptografia de ponta a ponta para proteger sua carteira." },
 ];
 
-export default function AgroGestaoCRMPage() {
-  const navigate = useNavigate();
-  const { session } = useAuth();
-  const signupLink = "/auth?product=agrogestao&mode=signup&redirect=%2Fagrogestao%2Fdashboard";
-  const loginLink = "/auth?product=agrogestao&mode=login&redirect=%2Fagrogestao%2Fdashboard";
+// O AgroGestão CRM é uma aplicação externa, com login e licenciamento próprios.
+// Por isso os botões enviam o usuário diretamente para o app externo — passar
+// pelo /auth interno só atrapalhava (login não é compartilhado) e fazia o app
+// externo abrir a tela de pagamento/login, que ao cancelar voltava para a raiz.
+const APP_EXTERNO = "https://regional-fixer-charm.lovable.app";
 
-  const handleCheckout = async (nivel: string, periodo: string) => {
-    if (!session) {
-      navigate(signupLink);
-      return;
-    }
-    navigate(`/agrogestao/dashboard?nivel=${encodeURIComponent(nivel)}&periodo=${encodeURIComponent(periodo)}`);
-  };
+export default function AgroGestaoCRMPage() {
+  const signupLink = `${APP_EXTERNO}/?trial=1`;
+  const loginLink = APP_EXTERNO;
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -60,16 +56,16 @@ export default function AgroGestaoCRMPage() {
               </p>
               <div className="flex flex-col sm:flex-row gap-3">
                 <Button size="lg" className="gap-2 shadow-lg shadow-primary/20" asChild>
-                  <Link to={signupLink}>
+                  <a href={signupLink} target="_blank" rel="noopener noreferrer">
                     <Sparkles className="h-4 w-4" />
                     Testar grátis por 7 dias
-                  </Link>
+                  </a>
                 </Button>
                 <Button size="lg" variant="outline" className="gap-2" asChild>
-                  <Link to={loginLink}>
+                  <a href={loginLink} target="_blank" rel="noopener noreferrer">
                     <LogIn className="h-4 w-4" />
                     Acessar o CRM
-                  </Link>
+                  </a>
                 </Button>
               </div>
             </div>
@@ -122,8 +118,8 @@ export default function AgroGestaoCRMPage() {
                      <span className="text-muted-foreground">{p.sub}</span>
                    </div>
                    <p className="text-xs text-muted-foreground">{p.desc}</p>
-                   <Button onClick={() => handleCheckout(p.nivel, "mensal")} variant={p.destaque ? "default" : "outline"} className="w-full gap-2">
-                     Começar agora
+                   <Button asChild variant={p.destaque ? "default" : "outline"} className="w-full gap-2">
+                     <a href={APP_EXTERNO} target="_blank" rel="noopener noreferrer">Começar agora</a>
                    </Button>
                  </CardContent>
                </Card>
