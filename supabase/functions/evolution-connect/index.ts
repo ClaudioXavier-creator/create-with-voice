@@ -138,6 +138,17 @@ Deno.serve(async (req) => {
     if (!instanceName) return json({ error: 'Nome da instância obrigatório' }, 400);
 
     const baseUrl = config.api_url.replace(/\/+$/, '');
+
+    if (body.action === 'status') {
+      const list = await callEvolution(`${baseUrl}/instance/fetchInstances`, config.api_key);
+      if (!list.ok) {
+        return json({ error: 'Falha ao consultar Evolution', details: list.data }, list.status);
+      }
+      return json({ success: true, instances: list.data });
+    }
+
+
+    const baseUrl = config.api_url.replace(/\/+$/, '');
     const encodedInstance = encodeURIComponent(instanceName);
     const number = body.phone_number?.replace(/\D/g, '');
 
