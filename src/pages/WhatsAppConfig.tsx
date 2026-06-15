@@ -167,10 +167,19 @@ const WhatsAppConfig = () => {
     }
   };
 
+  const fetchQrCodeWithRetry = async (instanceName: string) => {
+    for (let attempt = 1; attempt <= 6; attempt++) {
+      const data = await evolutionService.getQrCode(config.api_url, config.api_key, instanceName);
+      if (data.base64 || data.code || data.pairingCode) return data;
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+    }
+    return { base64: undefined, code: undefined, pairingCode: undefined };
+  };
+
   const handleShowQrCode = async (instanceName: string) => {
     setLoading(true);
     try {
-      const data = await evolutionService.getQrCode(config.api_url, config.api_key, instanceName);
+      const data = await fetchQrCodeWithRetry(instanceName);
       setQrCode(data.base64 ?? null);
       setQrCodeText(data.code ?? null);
       setPairingCode(data.pairingCode ?? null);
