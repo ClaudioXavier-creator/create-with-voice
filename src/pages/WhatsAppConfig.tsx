@@ -169,18 +169,18 @@ const WhatsAppConfig = () => {
     }
   };
 
-  const fetchQrCodeOnce = async (instanceName: string) => {
-    return evolutionService.getQrCode(config.api_url, config.api_key, instanceName);
+  const fetchQrCodeOnce = async (instance: EvolutionInstance) => {
+    return evolutionService.getQrCode(config.api_url, instance.apikey || config.api_key, instance.instanceName);
   };
 
-  const handleShowQrCode = async (instanceName: string) => {
+  const handleShowQrCode = async (instance: EvolutionInstance) => {
     setLoading(true);
     setQrCodeIssue(null);
     setQrCode(null);
     setQrCodeText(null);
     setPairingCode(null);
     try {
-      const data = await fetchQrCodeOnce(instanceName);
+      const data = await fetchQrCodeOnce(instance);
       setQrCode(data.base64 ?? null);
       setQrCodeText(data.code ?? null);
       setPairingCode(data.pairingCode ?? null);
@@ -469,7 +469,7 @@ const WhatsAppConfig = () => {
                         </div>
                         <div className="flex gap-2">
                           {instance.status !== 'open' ? (
-                            <Button size="icon" variant="outline" title="Ver QR Code" disabled={loading} onClick={() => handleShowQrCode(instance.instanceName)}>
+                            <Button size="icon" variant="outline" title="Ver QR Code" disabled={loading} onClick={() => handleShowQrCode(instance)}>
                               <QrCode className="w-4 h-4" />
                             </Button>
                           ) : (
