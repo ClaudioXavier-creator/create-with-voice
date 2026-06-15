@@ -22,14 +22,22 @@ export interface EvolutionQrCode {
   raw?: unknown;
 }
 
+const normalizeConnectionStatus = (value?: string): EvolutionInstance["status"] => {
+  const status = value?.toLowerCase().trim();
+  if (["open", "connected", "conectado"].includes(status || "")) return "open";
+  if (["connecting", "qrcode", "qr", "pairing", "loading", "conectando"].includes(status || "")) return "connecting";
+  return "close";
+};
+
 const normalizeInstance = (item: any): EvolutionInstance => {
   const source = item?.instance ?? item;
+  const rawStatus = source?.status ?? source?.connectionStatus ?? source?.state ?? item?.status ?? item?.connectionStatus ?? item?.state;
   return {
     instanceName: source?.instanceName ?? source?.name ?? item?.instanceName ?? "Instância sem nome",
     owner: source?.owner ?? item?.owner,
     profileName: source?.profileName ?? item?.profileName,
     profilePictureUrl: source?.profilePictureUrl ?? item?.profilePictureUrl,
-    status: (source?.status ?? source?.connectionStatus ?? item?.status ?? item?.connectionStatus ?? "close") as EvolutionInstance["status"],
+    status: normalizeConnectionStatus(rawStatus),
     serverUrl: source?.serverUrl ?? item?.serverUrl,
     apikey: source?.apikey ?? item?.apikey,
   };
