@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
-import { MessageSquare, Save, RefreshCw, CheckCircle2, XCircle, ExternalLink, QrCode, LogOut, Trash2, Plus, Smartphone, Send } from "lucide-react";
+import { MessageSquare, Save, RefreshCw, CheckCircle2, XCircle, ExternalLink, QrCode, LogOut, Trash2, Plus, Smartphone, Send, Copy } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useEmpresa } from "@/hooks/useEmpresa";
 import { useAuth } from "@/hooks/useAuth";
@@ -29,6 +29,7 @@ const WhatsAppConfig = () => {
   const [qrCodeText, setQrCodeText] = useState<string | null>(null);
   const [pairingCode, setPairingCode] = useState<string | null>(null);
   const [qrCodeIssue, setQrCodeIssue] = useState<string | null>(null);
+  const [lastQrAttemptLog, setLastQrAttemptLog] = useState<string | null>(null);
   const [status, setStatus] = useState<"connected" | "disconnected" | "checking">("disconnected");
   const [testNumber, setTestNumber] = useState("");
   const [testMessage, setTestMessage] = useState("Olá! Teste de integração Evolution API.");
@@ -45,6 +46,28 @@ const WhatsAppConfig = () => {
       : mainInstanceStatus === "disconnecting"
         ? "WhatsApp desconectando"
         : "WhatsApp desconectado";
+
+  const formatQrAttemptLog = (title: string, payload: unknown) => {
+    const redact = (value: any): any => {
+      if (Array.isArray(value)) return value.map(redact);
+      if (!value || typeof value !== "object") return value;
+      return Object.fromEntries(Object.entries(value).map(([key, item]) => {
+        const safeKey = key.toLowerCase();
+        if (safeKey.includes("key") || safeKey.includes("token") || safeKey.includes("authorization")) {
+          return [key, "***"];
+        }
+        return [key, redact(item)];
+      }));
+    };
+
+    return JSON.stringify({
+      title,
+      when: new Date().toISOString(),
+      instance: config.instance_name,
+      phone: pairingPhone ? pairingPhone.replace(/\D/g, "") : null,
+      payload: redact(payload),
+    }, null, 2);
+  };
 
 
   useEffect(() => {
