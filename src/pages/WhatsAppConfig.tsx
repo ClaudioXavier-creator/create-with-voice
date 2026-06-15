@@ -492,7 +492,7 @@ const WhatsAppConfig = () => {
                   Gerencie suas conexões do WhatsApp.
                 </CardDescription>
               </div>
-              <Button size="sm" onClick={handleCreateInstance} disabled={loading || !status.includes("connected")}>
+              <Button size="sm" onClick={handleCreateInstance} disabled={loading || !config.api_url || !config.api_key || !config.instance_name}>
                 <Plus className="w-4 h-4 mr-2" /> Criar Nova
               </Button>
             </CardHeader>
