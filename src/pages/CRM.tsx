@@ -15,6 +15,7 @@ import { toast } from "sonner";
 import { sendWhatsApp } from "@/lib/evolutionWhatsapp";
 import { canAccessCRM } from "@/config/adminAccess";
 import { getProductLabel } from "@/utils/productUtils";
+import { useEmpresa } from "@/hooks/useEmpresa";
 
 type Etapa = "novo" | "contato" | "qualificado" | "proposta" | "ganho" | "perdido";
 type Origem = "produto" | "site";
@@ -79,6 +80,7 @@ function fmtDateShort(iso: string) {
 
 export default function CRM({ isTab = false }: { isTab?: boolean }) {
   const { user, roles, loading: authLoading } = useAuth();
+  const { empresaAtiva } = useEmpresa();
   const hasAccess = canAccessCRM(roles, user?.email) || roles?.includes("comercial");
 
   const [tab, setTab] = useState<Origem>("produto");
@@ -459,6 +461,7 @@ function LeadDrawer({
                         await sendWhatsApp({
                           to: lead.telefone!,
                           message: waMsg.trim(),
+                          empresa_id: empresaAtiva?.id ?? null,
                           modulo: lead.produto_interesse?.includes("agrogestao") ? "agrogestao" : "agrorc",
                           tipo: "crm_lead",
                           metadata: { pipeline_id: lead.id, nome: lead.nome },
