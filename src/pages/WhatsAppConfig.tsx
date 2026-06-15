@@ -254,7 +254,13 @@ const WhatsAppConfig = () => {
       setQrCode(data.base64 ?? null);
       setQrCodeText(data.code ?? null);
       setPairingCode(data.pairingCode ?? null);
-      if (data.base64) {
+      if ((data as any).alreadyConnected || data.state === "open") {
+        toast({
+          title: "Já conectado",
+          description: "Esta instância já está pareada com o WhatsApp do seu celular. Não é necessário escanear QR.",
+        });
+        checkConnection(config.api_url, config.api_key);
+      } else if (data.base64) {
         setQrCode(data.base64);
       } else if (!data.code && !data.pairingCode) {
         const issue = data.count === 0

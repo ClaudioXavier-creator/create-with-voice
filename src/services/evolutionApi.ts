@@ -232,7 +232,7 @@ export const evolutionService = {
     if (error) throw error;
     if (data?.error) throw new EvolutionApiError(data.error, data.details ?? data, data.status);
     const normalized = normalizeQrCode(data?.qrcode ?? data);
-    return { ...normalized, raw: data };
+    return { ...normalized, alreadyConnected: Boolean(data?.alreadyConnected), raw: data };
   },
 
   /**
