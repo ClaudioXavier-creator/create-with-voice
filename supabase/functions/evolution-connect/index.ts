@@ -154,7 +154,6 @@ Deno.serve(async (req) => {
       if (result.ok && hasQrPayload(result.data)) {
         return json({ success: true, qrcode: result.data, create: createData });
       }
-      if (result.ok && !number) break;
     }
 
     return json({
@@ -162,7 +161,7 @@ Deno.serve(async (req) => {
         ? 'A Evolution respondeu sem QR Code/código de pareamento. Confira se o número está correto e tente novamente.'
         : 'A Evolution respondeu sem QR Code. Tente informar o número para gerar código de pareamento ou recrie a instância.',
       details: results,
-    }, 422);
+    });
   } catch (error) {
     console.error('evolution-connect error', error);
     return json({ error: (error as Error).message }, 500);
