@@ -79,10 +79,25 @@ const WhatsAppConfig = () => {
   };
 
   const handleSave = async () => {
-    if (!empresaAtiva?.id) return;
+    if (!empresaAtiva?.id) {
+      toast({
+        variant: "destructive",
+        title: "Nenhuma empresa ativa",
+        description: "Selecione uma empresa no topo da tela antes de salvar.",
+      });
+      return;
+    }
+    if (!config.api_url || !config.api_key) {
+      toast({
+        variant: "destructive",
+        title: "Campos obrigatórios",
+        description: "Preencha URL da API e Chave Mestra.",
+      });
+      return;
+    }
     setSaving(true);
     try {
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from("whatsapp_config")
         .upsert({
           empresa_id: empresaAtiva.id,
@@ -90,21 +105,26 @@ const WhatsAppConfig = () => {
           api_key: config.api_key,
           instance_name: config.instance_name,
           updated_at: new Date().toISOString(),
-        }, { onConflict: 'empresa_id' });
+        }, { onConflict: 'empresa_id' })
+        .select()
+        .single();
 
       if (error) throw error;
+      if (!data) throw new Error("Não retornou linha — você precisa ter papel 'admin' nesta empresa.");
 
       toast({
         title: "Configuração salva",
-        description: "As credenciais do WhatsApp foram atualizadas com sucesso.",
+        description: "Credenciais atualizadas com sucesso.",
       });
-      
+
+      await fetchConfig();
       checkConnection(config.api_url, config.api_key);
     } catch (error: any) {
+      console.error("Erro ao salvar whatsapp_config:", error);
       toast({
         variant: "destructive",
         title: "Erro ao salvar",
-        description: error.message,
+        description: error.message || "Falha desconhecida — abra o Console (F12) para detalhes.",
       });
     } finally {
       setSaving(false);
