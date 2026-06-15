@@ -46,12 +46,48 @@ const normalizeBase64Image = (value?: string) => {
   return `data:image/png;base64,${value}`;
 };
 
+const collectObjects = (value: any): any[] => {
+  if (!value || typeof value !== "object") return [];
+  const nested = Object.values(value).flatMap((item) => collectObjects(item));
+  return [value, ...nested];
+};
+
+const firstString = (objects: any[], keys: string[]) => {
+  for (const object of objects) {
+    for (const key of keys) {
+      const value = object?.[key];
+      if (typeof value === "string" && value.trim()) return value.trim();
+    }
+  }
+  return undefined;
+};
+
+const looksLikeImage = (value: string) => (
+  value.startsWith("data:image") ||
+  value.startsWith("http") ||
+  value.startsWith("iVBOR") ||
+  value.startsWith("/9j/") ||
+  (value.length > 500 && /^[A-Za-z0-9+/=\r\n]+$/.test(value))
+);
+
 const normalizeQrCode = (data: any): EvolutionQrCode => {
-  const source = data?.qrcode ?? data?.qrCode ?? data?.qr ?? data?.instance?.qrcode ?? data;
+  if (typeof data === "string") {
+    const value = data.trim();
+    return looksLikeImage(value) ? { base64: normalizeBase64Image(value) } : { code: value };
+  }
+
+  const source = data?.qrcode ?? data?.qrCode ?? data?.qr ?? data?.data?.qrcode ?? data?.data?.qrCode ?? data?.instance?.qrcode ?? data;
+  if (typeof source === "string") {
+    const value = source.trim();
+    return looksLikeImage(value) ? { base64: normalizeBase64Image(value) } : { code: value };
+  }
+
+  const objects = collectObjects(source);
+  const base64 = firstString(objects, ["base64", "base64Image", "qrCodeBase64", "qrBase64", "qrcodeBase64", "base64Qr", "base64QRCode"]);
   return {
-    base64: normalizeBase64Image(source?.base64 ?? source?.base64Image ?? data?.base64),
-    code: source?.code ?? source?.qrCode ?? source?.qrcode ?? data?.code,
-    pairingCode: source?.pairingCode ?? data?.pairingCode,
+    base64: normalizeBase64Image(base64),
+    code: firstString(objects, ["code", "qrCode", "qrcode", "qr", "qrCodeString", "qr_code"]),
+    pairingCode: firstString(objects, ["pairingCode", "pairing_code"]),
   };
 };
 
