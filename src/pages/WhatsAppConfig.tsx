@@ -28,6 +28,7 @@ const WhatsAppConfig = () => {
   const [qrCode, setQrCode] = useState<string | null>(null);
   const [qrCodeText, setQrCodeText] = useState<string | null>(null);
   const [pairingCode, setPairingCode] = useState<string | null>(null);
+  const [qrCodeIssue, setQrCodeIssue] = useState<string | null>(null);
   const [status, setStatus] = useState<"connected" | "disconnected" | "checking">("disconnected");
   const [testNumber, setTestNumber] = useState("");
   const [testMessage, setTestMessage] = useState("Olá! Teste de integração Evolution API.");
@@ -145,6 +146,7 @@ const WhatsAppConfig = () => {
     }
 
     setLoading(true);
+    setQrCodeIssue(null);
     try {
       const result = await evolutionService.createInstance(config.api_url, config.api_key, config.instance_name);
       const createdQr = result?.normalizedQrCode;
@@ -168,16 +170,19 @@ const WhatsAppConfig = () => {
   };
 
   const fetchQrCodeWithRetry = async (instanceName: string) => {
+    let lastData = null;
     for (let attempt = 1; attempt <= 6; attempt++) {
       const data = await evolutionService.getQrCode(config.api_url, config.api_key, instanceName);
+      lastData = data;
       if (data.base64 || data.code || data.pairingCode) return data;
       await new Promise((resolve) => setTimeout(resolve, 2000));
     }
-    return { base64: undefined, code: undefined, pairingCode: undefined };
+    return lastData ?? { base64: undefined, code: undefined, pairingCode: undefined };
   };
 
   const handleShowQrCode = async (instanceName: string) => {
     setLoading(true);
+    setQrCodeIssue(null);
     try {
       const data = await fetchQrCodeWithRetry(instanceName);
       setQrCode(data.base64 ?? null);
@@ -186,9 +191,14 @@ const WhatsAppConfig = () => {
       if (data.base64) {
         setQrCode(data.base64);
       } else if (!data.code && !data.pairingCode) {
+        const issue = data.count === 0
+          ? "A API respondeu count: 0, sem QR Code. Isso normalmente indica falta de configuração QRCODE_LIMIT/SERVER_URL na Evolution ou versão da Evolution com bug de QR Code."
+          : `Resposta recebida, mas sem QR Code${data.state ? ` (status: ${data.state})` : ""}.`;
+        setQrCodeIssue(issue);
         toast({
-          title: "Aguardando QR Code",
-          description: "Tente novamente em alguns segundos.",
+          variant: "destructive",
+          title: "QR Code não foi gerado pela API",
+          description: issue,
         });
       }
     } catch (error: any) {
@@ -528,6 +538,13 @@ const WhatsAppConfig = () => {
                   <Button variant="link" size="sm" onClick={() => { setQrCode(null); setQrCodeText(null); setPairingCode(null); }} className="mt-4 text-black">
                     Fechar QR Code
                   </Button>
+                </div>
+              )}
+
+              {qrCodeIssue && (
+                <div className="mt-6 rounded-lg border border-destructive/30 bg-destructive/10 p-4 text-sm text-destructive">
+                  <p className="font-medium">QR Code não disponível</p>
+                  <p className="mt-1">{qrCodeIssue}</p>
                 </div>
               )}
             </CardContent>
