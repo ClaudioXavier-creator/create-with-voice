@@ -630,6 +630,53 @@ const WhatsAppConfig = () => {
                     </div>
                   ))
                 )}
+
+                {activeInstanceName && (
+                  <div className="rounded-lg border border-green-200 bg-green-50 p-4 space-y-3">
+                    <div className="flex items-center justify-between gap-3">
+                      <div>
+                        <p className="text-sm font-semibold text-green-900">Teste de envio WhatsApp</p>
+                        <p className="text-xs text-green-800">Instância usada: {activeInstanceName}</p>
+                      </div>
+                      <Send className="h-5 w-5 text-green-700" />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label htmlFor="test_number">Número de destino</Label>
+                      <Input
+                        id="test_number"
+                        placeholder="5561999999999"
+                        value={testNumber}
+                        onChange={(e) => setTestNumber(e.target.value)}
+                        disabled={sendingTest}
+                      />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label htmlFor="test_message">Mensagem</Label>
+                      <Input
+                        id="test_message"
+                        value={testMessage}
+                        onChange={(e) => setTestMessage(e.target.value)}
+                        disabled={sendingTest}
+                      />
+                    </div>
+                    <Button
+                      className="w-full"
+                      onClick={() => handleSendTest(activeInstanceName)}
+                      disabled={sendingTest || !testNumber || !testMessage}
+                    >
+                      <Send className="w-4 h-4 mr-2" />
+                      {sendingTest ? (batchStatus ? `Enviando ${batchStatus.current}/${batchStatus.total}` : "Enviando...") : "Enviar teste agora"}
+                    </Button>
+                    {sendingTest && batchStatus && (
+                      <div className="w-full bg-green-100 h-1.5 rounded-full overflow-hidden">
+                        <div
+                          className="bg-green-600 h-full transition-all duration-300"
+                          style={{ width: `${(batchStatus.current / batchStatus.total) * 100}%` }}
+                        />
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
 
               <div className="mt-6 space-y-2 rounded-lg border p-4">
