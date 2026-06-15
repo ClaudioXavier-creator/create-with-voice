@@ -595,50 +595,18 @@ const WhatsAppConfig = () => {
                         </div>
                       </div>
 
-                      {instance.status === 'open' && (
-                        <div className="pt-4 border-t space-y-3">
-                          <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Teste de Disparo (Múltiplos: separe por vírgula)</p>
-                          <div className="flex flex-col gap-2">
-                            <div className="flex gap-2">
-                              <Input 
-                                placeholder="5511999999999, 5511888888888" 
-                                className="flex-1"
-                                value={testNumber}
-                                onChange={(e) => setTestNumber(e.target.value)}
-                                disabled={sendingTest}
-                              />
-                              <Button 
-                                size="sm" 
-                                onClick={() => handleSendTest(instance.instanceName)}
-                                disabled={sendingTest}
-                              >
-                                <Send className="w-4 h-4 mr-2" /> 
-                                {sendingTest ? (batchStatus ? `Enviando ${batchStatus.current}/${batchStatus.total}` : "Enviando...") : "Testar"}
-                              </Button>
-                            </div>
-                            {sendingTest && batchStatus && (
-                              <div className="w-full bg-secondary h-1.5 rounded-full overflow-hidden">
-                                <div 
-                                  className="bg-green-500 h-full transition-all duration-300" 
-                                  style={{ width: `${(batchStatus.current / batchStatus.total) * 100}%` }}
-                                />
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      )}
                     </div>
                   ))
                 )}
 
                 {activeInstanceName && (
-                  <div className="rounded-lg border border-green-200 bg-green-50 p-4 space-y-3">
+                  <div className="rounded-lg border border-primary/30 bg-primary/5 p-4 space-y-3">
                     <div className="flex items-center justify-between gap-3">
                       <div>
-                        <p className="text-sm font-semibold text-green-900">Teste de envio WhatsApp</p>
-                        <p className="text-xs text-green-800">Instância usada: {activeInstanceName}</p>
+                        <p className="text-sm font-semibold text-foreground">Teste de envio WhatsApp</p>
+                        <p className="text-xs text-muted-foreground">Instância usada: {activeInstanceName}</p>
                       </div>
-                      <Send className="h-5 w-5 text-green-700" />
+                      <Send className="h-5 w-5 text-primary" />
                     </div>
                     <div className="grid gap-2">
                       <Label htmlFor="test_number">Número de destino</Label>
@@ -668,9 +636,9 @@ const WhatsAppConfig = () => {
                       {sendingTest ? (batchStatus ? `Enviando ${batchStatus.current}/${batchStatus.total}` : "Enviando...") : "Enviar teste agora"}
                     </Button>
                     {sendingTest && batchStatus && (
-                      <div className="w-full bg-green-100 h-1.5 rounded-full overflow-hidden">
+                      <div className="w-full bg-secondary h-1.5 rounded-full overflow-hidden">
                         <div
-                          className="bg-green-600 h-full transition-all duration-300"
+                          className="bg-primary h-full transition-all duration-300"
                           style={{ width: `${(batchStatus.current / batchStatus.total) * 100}%` }}
                         />
                       </div>
