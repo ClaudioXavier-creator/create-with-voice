@@ -31,6 +31,18 @@ export interface EvolutionConnectParams {
   action?: "connect" | "create";
 }
 
+export class EvolutionApiError extends Error {
+  details?: unknown;
+  status?: number;
+
+  constructor(message: string, details?: unknown, status?: number) {
+    super(message);
+    this.name = "EvolutionApiError";
+    this.details = details;
+    this.status = status;
+  }
+}
+
 const normalizeConnectionStatus = (value?: string): EvolutionInstance["status"] => {
   const status = value?.toLowerCase().trim();
   if (["open", "connected", "conectado"].includes(status || "")) return "open";
@@ -202,8 +214,9 @@ export const evolutionService = {
       },
     });
     if (error) throw error;
-    if (data?.error) throw new Error(data.error);
-    return normalizeQrCode(data?.qrcode ?? data);
+    if (data?.error) throw new EvolutionApiError(data.error, data.details ?? data, data.status);
+    const normalized = normalizeQrCode(data?.qrcode ?? data);
+    return { ...normalized, raw: data };
   },
 
   /**
@@ -216,7 +229,8 @@ export const evolutionService = {
       }
     });
     if (!response.ok) throw new Error(await readEvolutionError(response, "Falha ao buscar QR Code"));
-    return normalizeQrCode(await response.json());
+    const data = await response.json();
+    return { ...normalizeQrCode(data), raw: data };
   },
 
   /**
