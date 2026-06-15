@@ -42,7 +42,9 @@ const WhatsAppConfig = () => {
     ? "WhatsApp conectado"
     : mainInstanceStatus === "connecting"
       ? "WhatsApp aguardando leitura"
-      : "WhatsApp desconectado";
+      : mainInstanceStatus === "disconnecting"
+        ? "WhatsApp desconectando"
+        : "WhatsApp desconectado";
 
 
   useEffect(() => {
@@ -179,10 +181,18 @@ const WhatsAppConfig = () => {
   };
 
   const fetchQrCodeOnce = async (instance: EvolutionInstance) => {
-    return evolutionService.getQrCode(config.api_url, instance.apikey || config.api_key, instance.instanceName, pairingPhone);
+    return evolutionService.getQrCode(config.api_url, config.api_key, instance.instanceName, pairingPhone);
   };
 
   const handleShowQrCode = async (instance: EvolutionInstance) => {
+    if (instance.status === "disconnecting") {
+      toast({
+        variant: "destructive",
+        title: "Instância ainda desconectando",
+        description: "Aguarde alguns segundos e clique em Testar antes de tentar gerar o QR Code novamente.",
+      });
+      return;
+    }
     setLoading(true);
     setQrCodeIssue(null);
     setQrCode(null);
@@ -407,7 +417,7 @@ const WhatsAppConfig = () => {
                   )}
                 </div>
                 {status === "connected" && mainInstance && (
-                  <div className={`text-sm ${mainInstanceStatus === "open" ? "text-green-600" : mainInstanceStatus === "connecting" ? "text-yellow-600" : "text-red-600"}`}>
+                  <div className={`text-sm ${mainInstanceStatus === "open" ? "text-green-600" : mainInstanceStatus === "connecting" || mainInstanceStatus === "disconnecting" ? "text-yellow-600" : "text-red-600"}`}>
                     Instância: {instanceStatusLabel}
                   </div>
                 )}
@@ -479,13 +489,13 @@ const WhatsAppConfig = () => {
                       <div className="flex items-center justify-between">
                         <div>
                           <p className="font-medium">{instance.instanceName}</p>
-                          <p className={`text-xs ${instance.status === "open" ? "text-green-600" : instance.status === "connecting" ? "text-yellow-600" : "text-red-600"}`}>
-                            {instance.status === "open" ? "WhatsApp conectado" : instance.status === "connecting" ? "Aguardando leitura do QR" : "WhatsApp desconectado"}
+                          <p className={`text-xs ${instance.status === "open" ? "text-green-600" : instance.status === "connecting" || instance.status === "disconnecting" ? "text-yellow-600" : "text-red-600"}`}>
+                            {instance.status === "open" ? "WhatsApp conectado" : instance.status === "connecting" ? "Aguardando leitura do QR" : instance.status === "disconnecting" ? "Desconectando — aguarde e atualize" : "WhatsApp desconectado"}
                           </p>
                         </div>
                         <div className="flex gap-2">
                           {instance.status !== 'open' ? (
-                            <Button size="icon" variant="outline" title="Ver QR Code" disabled={loading} onClick={() => handleShowQrCode(instance)}>
+                            <Button size="icon" variant="outline" title="Ver QR Code" disabled={loading || instance.status === "disconnecting"} onClick={() => handleShowQrCode(instance)}>
                               <QrCode className="w-4 h-4" />
                             </Button>
                           ) : (

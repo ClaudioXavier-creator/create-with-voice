@@ -8,7 +8,7 @@ export interface EvolutionInstance {
   owner?: string;
   profileName?: string;
   profilePictureUrl?: string;
-  status: 'open' | 'connecting' | 'close';
+  status: 'open' | 'connecting' | 'disconnecting' | 'close';
   serverUrl?: string;
   apikey?: string;
 }
@@ -26,6 +26,7 @@ const normalizeConnectionStatus = (value?: string): EvolutionInstance["status"] 
   const status = value?.toLowerCase().trim();
   if (["open", "connected", "conectado"].includes(status || "")) return "open";
   if (["connecting", "qrcode", "qr", "pairing", "loading", "conectando"].includes(status || "")) return "connecting";
+  if (["disconnecting", "desconectando"].includes(status || "")) return "disconnecting";
   return "close";
 };
 
@@ -189,20 +190,7 @@ export const evolutionService = {
       }
     });
     if (!response.ok) throw new Error(await readEvolutionError(response, "Falha ao buscar QR Code"));
-    const qr = normalizeQrCode(await response.json());
-    if (hasQrPayload(qr)) return qr;
-
-    const postResponse = await fetch(connectUrl(apiUrl, instanceName, phoneNumber), {
-      method: "POST",
-      headers: {
-        "apikey": apiKey,
-        "Content-Type": "application/json"
-      },
-      body: phoneNumber ? JSON.stringify({ number: phoneNumber.replace(/\D/g, "") }) : undefined,
-    });
-    if (!postResponse.ok) return qr;
-    const postQr = normalizeQrCode(await postResponse.json());
-    return hasQrPayload(postQr) ? postQr : qr;
+    return normalizeQrCode(await response.json());
   },
 
   /**
