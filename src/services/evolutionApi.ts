@@ -65,6 +65,17 @@ const firstString = (objects: any[], keys: string[]) => {
   return undefined;
 };
 
+const firstNumber = (objects: any[], keys: string[]) => {
+  for (const object of objects) {
+    for (const key of keys) {
+      const value = object?.[key];
+      if (typeof value === "number") return value;
+      if (typeof value === "string" && value.trim() && !Number.isNaN(Number(value))) return Number(value);
+    }
+  }
+  return undefined;
+};
+
 const looksLikeImage = (value: string) => (
   value.startsWith("data:image") ||
   value.startsWith("http") ||
@@ -104,10 +115,18 @@ const normalizeQrCode = (data: any): EvolutionQrCode => {
     base64: normalizeBase64Image(base64),
     code: directCandidates.find((value) => !looksLikeImage(value)) ?? firstString(objects, ["code", "qrCode", "qrcode", "qr", "qrCodeString", "qr_code"]),
     pairingCode: firstString(objects, ["pairingCode", "pairing_code"]),
-    count: typeof data?.count === "number" ? data.count : undefined,
+    count: typeof data?.count === "number" ? data.count : firstNumber(objects, ["count"]),
     state: firstString(objects, ["state", "status", "connectionStatus"]),
     raw: data,
   };
+};
+
+const hasQrPayload = (qr: EvolutionQrCode) => Boolean(qr.base64 || qr.code || qr.pairingCode);
+
+const connectUrl = (apiUrl: string, instanceName: string, phoneNumber?: string) => {
+  const base = `${apiUrl.replace(/\/$/, "")}/instance/connect/${encodeURIComponent(instanceName)}`;
+  const number = phoneNumber?.replace(/\D/g, "");
+  return number ? `${base}?number=${encodeURIComponent(number)}` : base;
 };
 
 export const evolutionService = {
@@ -155,14 +174,27 @@ export const evolutionService = {
   /**
    * Get QR Code for an instance
    */
-  async getQrCode(apiUrl: string, apiKey: string, instanceName: string) {
-    const response = await fetch(`${apiUrl.replace(/\/$/, "")}/instance/connect/${instanceName}`, {
+  async getQrCode(apiUrl: string, apiKey: string, instanceName: string, phoneNumber?: string) {
+    const response = await fetch(connectUrl(apiUrl, instanceName, phoneNumber), {
       headers: {
         "apikey": apiKey
       }
     });
     if (!response.ok) throw new Error(await readEvolutionError(response, "Falha ao buscar QR Code"));
-    return normalizeQrCode(await response.json());
+    const qr = normalizeQrCode(await response.json());
+    if (hasQrPayload(qr)) return qr;
+
+    const postResponse = await fetch(connectUrl(apiUrl, instanceName, phoneNumber), {
+      method: "POST",
+      headers: {
+        "apikey": apiKey,
+        "Content-Type": "application/json"
+      },
+      body: phoneNumber ? JSON.stringify({ number: phoneNumber.replace(/\D/g, "") }) : undefined,
+    });
+    if (!postResponse.ok) return qr;
+    const postQr = normalizeQrCode(await postResponse.json());
+    return hasQrPayload(postQr) ? postQr : qr;
   },
 
   /**
