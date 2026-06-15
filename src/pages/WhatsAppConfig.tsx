@@ -32,6 +32,7 @@ const WhatsAppConfig = () => {
   const [status, setStatus] = useState<"connected" | "disconnected" | "checking">("disconnected");
   const [testNumber, setTestNumber] = useState("");
   const [testMessage, setTestMessage] = useState("Olá! Teste de integração Evolution API.");
+  const [pairingPhone, setPairingPhone] = useState("");
   const [sendingTest, setSendingTest] = useState(false);
   const [batchStatus, setBatchStatus] = useState<{current: number, total: number} | null>(null);
 
@@ -170,7 +171,7 @@ const WhatsAppConfig = () => {
   };
 
   const fetchQrCodeOnce = async (instance: EvolutionInstance) => {
-    return evolutionService.getQrCode(config.api_url, instance.apikey || config.api_key, instance.instanceName);
+    return evolutionService.getQrCode(config.api_url, instance.apikey || config.api_key, instance.instanceName, pairingPhone);
   };
 
   const handleShowQrCode = async (instance: EvolutionInstance) => {
@@ -188,7 +189,7 @@ const WhatsAppConfig = () => {
         setQrCode(data.base64);
       } else if (!data.code && !data.pairingCode) {
         const issue = data.count === 0
-          ? "A API respondeu count: 0, sem QR Code. Isso normalmente indica falta de configuração QRCODE_LIMIT/SERVER_URL na Evolution ou versão da Evolution com bug de QR Code."
+          ? "A API respondeu count: 0, sem QR Code. Informe o número acima para gerar código de pareamento ou ajuste QRCODE_LIMIT/SERVER_URL na Evolution."
           : `Resposta recebida, mas sem QR Code${data.state ? ` (status: ${data.state})` : ""}.`;
         setQrCodeIssue(issue);
         toast({
