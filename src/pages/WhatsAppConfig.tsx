@@ -398,6 +398,15 @@ const WhatsAppConfig = () => {
     }
   };
 
+  const handleCopyLastQrLog = async () => {
+    if (!lastQrAttemptLog) return;
+    await navigator.clipboard.writeText(lastQrAttemptLog);
+    toast({
+      title: "Log copiado",
+      description: "Cole este texto aqui no chat para eu diagnosticar o retorno da Evolution.",
+    });
+  };
+
 
   return (
     <div className="container mx-auto py-8">
@@ -643,6 +652,23 @@ const WhatsAppConfig = () => {
                 <div className="mt-6 rounded-lg border border-destructive/30 bg-destructive/10 p-4 text-sm text-destructive">
                   <p className="font-medium">QR Code não disponível</p>
                   <p className="mt-1">{qrCodeIssue}</p>
+                </div>
+              )}
+
+              {lastQrAttemptLog && (
+                <div className="mt-6 space-y-3 rounded-lg border p-4">
+                  <div className="flex items-center justify-between gap-3">
+                    <div>
+                      <p className="text-sm font-medium">Log da última tentativa</p>
+                      <p className="text-xs text-muted-foreground">Use isto para descobrir por que a Evolution não mandou a imagem.</p>
+                    </div>
+                    <Button type="button" variant="outline" size="sm" onClick={handleCopyLastQrLog}>
+                      <Copy className="mr-2 h-4 w-4" /> Copiar
+                    </Button>
+                  </div>
+                  <pre className="max-h-64 overflow-auto rounded-md bg-muted p-3 text-xs text-muted-foreground whitespace-pre-wrap break-words">
+                    {lastQrAttemptLog}
+                  </pre>
                 </div>
               )}
             </CardContent>
