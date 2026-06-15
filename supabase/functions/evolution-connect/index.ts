@@ -94,6 +94,23 @@ function hasQrPayload(data: any) {
   });
 }
 
+function collectStates(data: any, acc: string[] = []): string[] {
+  if (!data || typeof data !== 'object') return acc;
+  for (const [key, value] of Object.entries(data)) {
+    if (typeof value === 'string' && ['state', 'status', 'connectionstatus', 'instancestatus'].includes(key.toLowerCase())) {
+      acc.push(value.toLowerCase().trim());
+    } else if (value && typeof value === 'object') {
+      collectStates(value, acc);
+    }
+  }
+  return acc;
+}
+
+function isAlreadyConnected(data: any) {
+  const states = collectStates(data);
+  return states.some((s) => ['open', 'connected', 'conectado'].includes(s));
+}
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
   if (req.method !== 'POST') return json({ error: 'Método não permitido' }, 405);
