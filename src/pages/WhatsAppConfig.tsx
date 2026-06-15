@@ -521,6 +521,19 @@ const WhatsAppConfig = () => {
                 )}
               </div>
 
+              <div className="mt-6 space-y-2 rounded-lg border p-4">
+                <Label htmlFor="pairing_phone">Conectar por código de pareamento</Label>
+                <Input
+                  id="pairing_phone"
+                  placeholder="5561996757585"
+                  value={pairingPhone}
+                  onChange={(event) => setPairingPhone(event.target.value)}
+                />
+                <p className="text-xs text-muted-foreground">
+                  Opcional: preencha antes de clicar no ícone de QR Code para receber um código numérico no lugar do QR.
+                </p>
+              </div>
+
               {(qrCode || qrCodeText || pairingCode) && (
                 <div className="mt-6 flex flex-col items-center p-6 border rounded-lg bg-white">
                   {(qrCode || qrCodeText) && (
