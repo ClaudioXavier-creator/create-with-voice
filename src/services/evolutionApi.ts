@@ -114,10 +114,23 @@ const looksLikeImage = (value: string) => (
   (value.length > 500 && /^[A-Za-z0-9+/=\r\n]+$/.test(value))
 );
 
+const isInstructionalQrMessage = (value?: string) => {
+  const normalized = value?.toLowerCase().trim() ?? "";
+  return Boolean(normalized) && (
+    normalized.includes("scan qr code") ||
+    normalized.includes("whatsapp web") ||
+    normalized.includes("escaneie") ||
+    normalized.includes("leia o qr")
+  );
+};
+
+const isUsableQrString = (value?: string) => Boolean(value?.trim()) && !isInstructionalQrMessage(value);
+
 const normalizeQrCode = (data: any): EvolutionQrCode => {
   if (typeof data === "string") {
     const value = data.trim();
-    return looksLikeImage(value) ? { base64: normalizeBase64Image(value) } : { code: value };
+    if (looksLikeImage(value)) return { base64: normalizeBase64Image(value) };
+    return isUsableQrString(value) ? { code: value } : { raw: data };
   }
 
   const directCandidates = [
@@ -141,10 +154,13 @@ const normalizeQrCode = (data: any): EvolutionQrCode => {
 
   const objects = collectObjects(data);
   const base64 = firstString(objects, ["base64", "base64Image", "qrCodeBase64", "qrBase64", "qrcodeBase64", "base64Qr", "base64QRCode", "qrCodeImage", "qrcodeImage", "image", "src"]);
+  const code = directCandidates.find((value) => !looksLikeImage(value) && isUsableQrString(value))
+    ?? firstString(objects, ["code", "qrCode", "qrcode", "qr", "qrCodeString", "qr_code"]);
+  const pairingCode = firstString(objects, ["pairingCode", "pairing_code"]);
   return {
     base64: normalizeBase64Image(base64),
-    code: directCandidates.find((value) => !looksLikeImage(value)) ?? firstString(objects, ["code", "qrCode", "qrcode", "qr", "qrCodeString", "qr_code"]),
-    pairingCode: firstString(objects, ["pairingCode", "pairing_code"]),
+    code: isUsableQrString(code) ? code : undefined,
+    pairingCode: isUsableQrString(pairingCode) ? pairingCode : undefined,
     count: typeof data?.count === "number" ? data.count : firstNumber(objects, ["count"]),
     state: firstString(objects, ["state", "status", "connectionStatus"]),
     raw: data,

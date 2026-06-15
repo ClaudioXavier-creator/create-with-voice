@@ -84,7 +84,14 @@ function hasQrPayload(data: any) {
     data?.data?.base64,
     data?.data?.qrcode,
   ];
-  return values.some((value) => typeof value === 'string' && value.trim());
+  return values.some((value) => {
+    if (typeof value !== 'string' || !value.trim()) return false;
+    const normalized = value.toLowerCase().trim();
+    return !normalized.includes('scan qr code')
+      && !normalized.includes('whatsapp web')
+      && !normalized.includes('escaneie')
+      && !normalized.includes('leia o qr');
+  });
 }
 
 Deno.serve(async (req) => {
