@@ -526,17 +526,27 @@ const WhatsAppConfig = () => {
 
               {(qrCode || qrCodeText || pairingCode) && (
                 <div className="mt-6 flex flex-col items-center p-6 border rounded-lg bg-white">
-                  <p className="text-sm font-medium mb-4 text-black">Escaneie o QR Code no seu WhatsApp</p>
-                  {qrCode ? (
-                    <img src={qrCode} alt="WhatsApp QR Code" className="w-64 h-64" />
-                  ) : qrCodeText ? (
-                    <QRCodeSVG value={qrCodeText} size={256} />
-                  ) : null}
+                  {(qrCode || qrCodeText) && (
+                    <>
+                      <p className="text-sm font-medium mb-4 text-black">Escaneie o QR Code no seu WhatsApp</p>
+                      {qrCode ? (
+                        <img src={qrCode} alt="WhatsApp QR Code" className="w-64 h-64" />
+                      ) : (
+                        <QRCodeSVG value={qrCodeText!} size={256} />
+                      )}
+                    </>
+                  )}
                   {pairingCode && (
-                    <p className="mt-4 rounded border px-3 py-2 font-mono text-sm text-black">Código: {pairingCode}</p>
+                    <div className="mt-4 flex flex-col items-center gap-2 text-black">
+                      <p className="text-sm font-medium">Ou conecte pelo código de pareamento:</p>
+                      <p className="rounded border px-4 py-2 font-mono text-xl tracking-widest">{pairingCode}</p>
+                      <p className="max-w-xs text-center text-xs text-muted-foreground">
+                        No WhatsApp: Aparelhos conectados → Conectar com número de telefone → digite este código.
+                      </p>
+                    </div>
                   )}
                   <Button variant="link" size="sm" onClick={() => { setQrCode(null); setQrCodeText(null); setPairingCode(null); }} className="mt-4 text-black">
-                    Fechar QR Code
+                    Fechar
                   </Button>
                 </div>
               )}
