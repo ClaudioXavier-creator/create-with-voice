@@ -13,6 +13,27 @@ export interface EvolutionInstance {
   apikey?: string;
 }
 
+const normalizeInstance = (item: any): EvolutionInstance => {
+  const source = item?.instance ?? item;
+  return {
+    instanceName: source?.instanceName ?? source?.name ?? item?.instanceName ?? "Instância sem nome",
+    owner: source?.owner ?? item?.owner,
+    profileName: source?.profileName ?? item?.profileName,
+    profilePictureUrl: source?.profilePictureUrl ?? item?.profilePictureUrl,
+    status: (source?.status ?? source?.connectionStatus ?? item?.status ?? item?.connectionStatus ?? "close") as EvolutionInstance["status"],
+    serverUrl: source?.serverUrl ?? item?.serverUrl,
+    apikey: source?.apikey ?? item?.apikey,
+  };
+};
+
+const readEvolutionError = async (response: Response, fallback: string) => {
+  const errorData = await response.json().catch(() => null);
+  const message = Array.isArray(errorData?.message)
+    ? errorData.message.join(" ")
+    : errorData?.message || errorData?.error || fallback;
+  return `${message} (${response.status})`;
+};
+
 export const evolutionService = {
   /**
    * Fetch all instances
@@ -23,8 +44,9 @@ export const evolutionService = {
         "apikey": apiKey
       }
     });
-    if (!response.ok) throw new Error("Falha ao buscar instâncias");
-    return response.json();
+    if (!response.ok) throw new Error(await readEvolutionError(response, "Falha ao buscar instâncias"));
+    const data = await response.json();
+    return Array.isArray(data) ? data.map(normalizeInstance) : [];
   },
 
   /**
@@ -41,10 +63,11 @@ export const evolutionService = {
         instanceName,
         token: "", // Optional custom token
         qrcode: true,
-        number: "" // Optional
+        number: "", // Optional
+        integration: "WHATSAPP-BAILEYS"
       })
     });
-    if (!response.ok) throw new Error("Falha ao criar instância");
+    if (!response.ok) throw new Error(await readEvolutionError(response, "Falha ao criar instância"));
     return response.json();
   },
 
