@@ -106,7 +106,17 @@ const WhatsAppConfig = () => {
     if (!url || !key) return;
     setStatus("checking");
     try {
-      const data = await evolutionService.fetchInstances(url, key);
+      let data: EvolutionInstance[] = [];
+      if (empresaAtiva?.id) {
+        try {
+          data = await evolutionService.fetchInstancesViaBackend(empresaAtiva.id, config.instance_name);
+        } catch (backendErr) {
+          console.warn("Backend fetchInstances falhou, tentando direto:", backendErr);
+          data = await evolutionService.fetchInstances(url, key);
+        }
+      } else {
+        data = await evolutionService.fetchInstances(url, key);
+      }
       setInstances(data);
       setStatus("connected");
     } catch (error) {
