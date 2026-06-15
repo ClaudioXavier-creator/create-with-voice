@@ -13,6 +13,12 @@ export interface EvolutionInstance {
   apikey?: string;
 }
 
+export interface EvolutionQrCode {
+  base64?: string;
+  code?: string;
+  pairingCode?: string;
+}
+
 const normalizeInstance = (item: any): EvolutionInstance => {
   const source = item?.instance ?? item;
   return {
@@ -32,6 +38,21 @@ const readEvolutionError = async (response: Response, fallback: string) => {
     ? errorData.message.join(" ")
     : errorData?.message || errorData?.error || fallback;
   return `${message} (${response.status})`;
+};
+
+const normalizeBase64Image = (value?: string) => {
+  if (!value) return undefined;
+  if (value.startsWith("data:image") || value.startsWith("http")) return value;
+  return `data:image/png;base64,${value}`;
+};
+
+const normalizeQrCode = (data: any): EvolutionQrCode => {
+  const source = data?.qrcode ?? data?.qrCode ?? data?.qr ?? data?.instance?.qrcode ?? data;
+  return {
+    base64: normalizeBase64Image(source?.base64 ?? source?.base64Image ?? data?.base64),
+    code: source?.code ?? source?.qrCode ?? source?.qrcode ?? data?.code,
+    pairingCode: source?.pairingCode ?? data?.pairingCode,
+  };
 };
 
 export const evolutionService = {
@@ -72,7 +93,8 @@ export const evolutionService = {
       }
       throw new Error(await readEvolutionError(response, "Falha ao criar instância"));
     }
-    return response.json();
+    const data = await response.json();
+    return { ...data, normalizedQrCode: normalizeQrCode(data) };
   },
 
   /**
@@ -84,8 +106,8 @@ export const evolutionService = {
         "apikey": apiKey
       }
     });
-    if (!response.ok) throw new Error("Falha ao buscar QR Code");
-    return response.json();
+    if (!response.ok) throw new Error(await readEvolutionError(response, "Falha ao buscar QR Code"));
+    return normalizeQrCode(await response.json());
   },
 
   /**

@@ -10,6 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useEmpresa } from "@/hooks/useEmpresa";
 import { useAuth } from "@/hooks/useAuth";
 import { evolutionService, EvolutionInstance } from "@/services/evolutionApi";
+import { QRCodeSVG } from "qrcode.react";
 
 const WhatsAppConfig = () => {
   const { empresaAtiva } = useEmpresa();
@@ -25,6 +26,8 @@ const WhatsAppConfig = () => {
   });
   const [instances, setInstances] = useState<EvolutionInstance[]>([]);
   const [qrCode, setQrCode] = useState<string | null>(null);
+  const [qrCodeText, setQrCodeText] = useState<string | null>(null);
+  const [pairingCode, setPairingCode] = useState<string | null>(null);
   const [status, setStatus] = useState<"connected" | "disconnected" | "checking">("disconnected");
   const [testNumber, setTestNumber] = useState("");
   const [testMessage, setTestMessage] = useState("Olá! Teste de integração Evolution API.");
@@ -143,10 +146,14 @@ const WhatsAppConfig = () => {
 
     setLoading(true);
     try {
-      await evolutionService.createInstance(config.api_url, config.api_key, config.instance_name);
+      const result = await evolutionService.createInstance(config.api_url, config.api_key, config.instance_name);
+      const createdQr = result?.normalizedQrCode;
+      setQrCode(createdQr?.base64 ?? null);
+      setQrCodeText(createdQr?.code ?? null);
+      setPairingCode(createdQr?.pairingCode ?? null);
       toast({
         title: "Instância criada",
-        description: "Agora você pode conectar seu WhatsApp.",
+        description: createdQr?.base64 || createdQr?.code ? "QR Code gerado. Escaneie para conectar." : "Agora clique no ícone de QR Code para conectar seu WhatsApp.",
       });
       checkConnection(config.api_url, config.api_key);
     } catch (error: any) {
@@ -164,9 +171,12 @@ const WhatsAppConfig = () => {
     setLoading(true);
     try {
       const data = await evolutionService.getQrCode(config.api_url, config.api_key, instanceName);
+      setQrCode(data.base64 ?? null);
+      setQrCodeText(data.code ?? null);
+      setPairingCode(data.pairingCode ?? null);
       if (data.base64) {
         setQrCode(data.base64);
-      } else {
+      } else if (!data.code && !data.pairingCode) {
         toast({
           title: "Aguardando QR Code",
           description: "Tente novamente em alguns segundos.",
@@ -495,11 +505,18 @@ const WhatsAppConfig = () => {
                 )}
               </div>
 
-              {qrCode && (
+              {(qrCode || qrCodeText || pairingCode) && (
                 <div className="mt-6 flex flex-col items-center p-6 border rounded-lg bg-white">
                   <p className="text-sm font-medium mb-4 text-black">Escaneie o QR Code no seu WhatsApp</p>
-                  <img src={qrCode} alt="WhatsApp QR Code" className="w-64 h-64" />
-                  <Button variant="link" size="sm" onClick={() => setQrCode(null)} className="mt-4 text-black">
+                  {qrCode ? (
+                    <img src={qrCode} alt="WhatsApp QR Code" className="w-64 h-64" />
+                  ) : qrCodeText ? (
+                    <QRCodeSVG value={qrCodeText} size={256} />
+                  ) : null}
+                  {pairingCode && (
+                    <p className="mt-4 rounded border px-3 py-2 font-mono text-sm text-black">Código: {pairingCode}</p>
+                  )}
+                  <Button variant="link" size="sm" onClick={() => { setQrCode(null); setQrCodeText(null); setPairingCode(null); }} className="mt-4 text-black">
                     Fechar QR Code
                   </Button>
                 </div>
