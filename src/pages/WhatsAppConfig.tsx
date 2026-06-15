@@ -36,6 +36,14 @@ const WhatsAppConfig = () => {
   const [sendingTest, setSendingTest] = useState(false);
   const [batchStatus, setBatchStatus] = useState<{current: number, total: number} | null>(null);
 
+  const mainInstance = instances.find((instance) => instance.instanceName === config.instance_name) ?? instances[0];
+  const mainInstanceStatus = mainInstance?.status ?? "close";
+  const instanceStatusLabel = mainInstanceStatus === "open"
+    ? "WhatsApp conectado"
+    : mainInstanceStatus === "connecting"
+      ? "WhatsApp aguardando leitura"
+      : "WhatsApp desconectado";
+
 
   useEffect(() => {
     if (empresaAtiva?.id) {
@@ -381,7 +389,7 @@ const WhatsAppConfig = () => {
 
               <div className="flex items-center justify-between pt-4">
                 <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium">Status:</span>
+                  <span className="text-sm font-medium">Servidor:</span>
                   {status === "checking" && (
                     <span className="flex items-center gap-1 text-sm text-yellow-600">
                       <RefreshCw className="w-4 h-4 animate-spin" /> Verificando...
@@ -389,15 +397,20 @@ const WhatsAppConfig = () => {
                   )}
                   {status === "connected" && (
                     <span className="flex items-center gap-1 text-sm text-green-600">
-                      <CheckCircle2 className="w-4 h-4" /> API Online
+                      <CheckCircle2 className="w-4 h-4" /> Evolution online
                     </span>
                   )}
                   {status === "disconnected" && (
                     <span className="flex items-center gap-1 text-sm text-red-600">
-                      <XCircle className="w-4 h-4" /> API Offline
+                      <XCircle className="w-4 h-4" /> Evolution offline
                     </span>
                   )}
                 </div>
+                {status === "connected" && mainInstance && (
+                  <div className={`text-sm ${mainInstanceStatus === "open" ? "text-green-600" : mainInstanceStatus === "connecting" ? "text-yellow-600" : "text-red-600"}`}>
+                    Instância: {instanceStatusLabel}
+                  </div>
+                )}
                 <div className="flex gap-2">
                   <Button variant="outline" size="sm" onClick={() => checkConnection(config.api_url, config.api_key)}>
                     <RefreshCw className="w-4 h-4 mr-2" /> Testar
@@ -466,7 +479,9 @@ const WhatsAppConfig = () => {
                       <div className="flex items-center justify-between">
                         <div>
                           <p className="font-medium">{instance.instanceName}</p>
-                          <p className="text-xs text-muted-foreground capitalize">Status: {instance.status}</p>
+                          <p className={`text-xs ${instance.status === "open" ? "text-green-600" : instance.status === "connecting" ? "text-yellow-600" : "text-red-600"}`}>
+                            {instance.status === "open" ? "WhatsApp conectado" : instance.status === "connecting" ? "Aguardando leitura do QR" : "WhatsApp desconectado"}
+                          </p>
                         </div>
                         <div className="flex gap-2">
                           {instance.status !== 'open' ? (
