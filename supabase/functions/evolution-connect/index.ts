@@ -141,6 +141,18 @@ Deno.serve(async (req) => {
     const encodedInstance = encodeURIComponent(instanceName);
     const number = body.phone_number?.replace(/\D/g, '');
 
+    // Se a instância já está conectada (celular pareado), não há QR a gerar.
+    const stateCheck = await callEvolution(`${baseUrl}/instance/connectionState/${encodedInstance}`, config.api_key);
+    if (stateCheck.ok && isAlreadyConnected(stateCheck.data)) {
+      return json({
+        success: true,
+        alreadyConnected: true,
+        state: 'open',
+        qrcode: stateCheck.data,
+        message: 'Instância já está conectada ao WhatsApp.',
+      });
+    }
+
     let createData: unknown = null;
     if (body.action === 'create') {
       const created = await callEvolution(`${baseUrl}/instance/create`, config.api_key, {
@@ -156,6 +168,9 @@ Deno.serve(async (req) => {
         return json({ error: 'Falha ao criar instância na Evolution', details: created.data }, created.status);
       }
       if (hasQrPayload(created.data)) return json({ success: true, qrcode: created.data, created: true });
+      if (isAlreadyConnected(created.data)) {
+        return json({ success: true, alreadyConnected: true, state: 'open', qrcode: created.data });
+      }
     }
 
     const query = number ? `?number=${encodeURIComponent(number)}` : '';
@@ -178,12 +193,15 @@ Deno.serve(async (req) => {
       if (result.ok && hasQrPayload(result.data)) {
         return json({ success: true, qrcode: result.data, create: createData });
       }
+      if (result.ok && isAlreadyConnected(result.data)) {
+        return json({ success: true, alreadyConnected: true, state: 'open', qrcode: result.data });
+      }
     }
 
     return json({
       error: number
-        ? 'A Evolution respondeu sem QR Code/código de pareamento. Confira se o número está correto e tente novamente.'
-        : 'A Evolution respondeu sem QR Code. Tente informar o número para gerar código de pareamento ou recrie a instância.',
+        ? 'A Evolution respondeu sem QR Code/código de pareamento. Confira se o número está correto e tente novamente. Se o celular já está pareado, desconecte em Aparelhos Conectados no WhatsApp e tente de novo.'
+        : 'A Evolution respondeu sem QR Code. Se o celular já está pareado nesta instância, desconecte em Aparelhos Conectados no WhatsApp e tente de novo, ou recrie a instância.',
       details: results,
     });
   } catch (error) {
