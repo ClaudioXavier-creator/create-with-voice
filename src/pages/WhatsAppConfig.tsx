@@ -39,6 +39,7 @@ const WhatsAppConfig = () => {
 
   const mainInstance = instances.find((instance) => instance.instanceName === config.instance_name) ?? instances[0];
   const mainInstanceStatus = mainInstance?.status ?? "close";
+  const activeInstanceName = mainInstance?.instanceName || config.instance_name;
   const instanceStatusLabel = mainInstanceStatus === "open"
     ? "WhatsApp conectado"
     : mainInstanceStatus === "connecting"
@@ -360,13 +361,20 @@ const WhatsAppConfig = () => {
       setBatchStatus({ current: i + 1, total: numbers.length });
       
       try {
-        const response = await evolutionService.sendMessage(
-          config.api_url,
-          config.api_key,
-          instanceName,
-          num,
-          testMessage
-        );
+        const response = empresaAtiva?.id
+          ? await evolutionService.sendMessageViaBackend({
+              empresaId: empresaAtiva.id,
+              instanceName,
+              number: num,
+              text: testMessage,
+            })
+          : await evolutionService.sendMessage(
+              config.api_url,
+              config.api_key,
+              instanceName,
+              num,
+              testMessage
+            );
 
         successCount++;
 
