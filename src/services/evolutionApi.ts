@@ -17,6 +17,9 @@ export interface EvolutionQrCode {
   base64?: string;
   code?: string;
   pairingCode?: string;
+  count?: number;
+  state?: string;
+  raw?: unknown;
 }
 
 const normalizeInstance = (item: any): EvolutionInstance => {
@@ -92,7 +95,7 @@ const normalizeQrCode = (data: any): EvolutionQrCode => {
 
   for (const candidate of directCandidates) {
     const value = candidate.trim();
-    if (looksLikeImage(value)) return { base64: normalizeBase64Image(value) };
+    if (looksLikeImage(value)) return { base64: normalizeBase64Image(value), raw: data };
   }
 
   const objects = collectObjects(data);
@@ -101,6 +104,9 @@ const normalizeQrCode = (data: any): EvolutionQrCode => {
     base64: normalizeBase64Image(base64),
     code: directCandidates.find((value) => !looksLikeImage(value)) ?? firstString(objects, ["code", "qrCode", "qrcode", "qr", "qrCodeString", "qr_code"]),
     pairingCode: firstString(objects, ["pairingCode", "pairing_code"]),
+    count: typeof data?.count === "number" ? data.count : undefined,
+    state: firstString(objects, ["state", "status", "connectionStatus"]),
+    raw: data,
   };
 };
 
