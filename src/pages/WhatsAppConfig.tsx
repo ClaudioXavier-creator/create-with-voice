@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
-import { MessageSquare, Save, RefreshCw, CheckCircle2, XCircle, ExternalLink, QrCode, LogOut, Trash2, Plus, Smartphone, Send } from "lucide-react";
+import { MessageSquare, Save, RefreshCw, CheckCircle2, XCircle, ExternalLink, QrCode, LogOut, Trash2, Plus, Smartphone, Send, Copy } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useEmpresa } from "@/hooks/useEmpresa";
 import { useAuth } from "@/hooks/useAuth";
@@ -29,6 +29,7 @@ const WhatsAppConfig = () => {
   const [qrCodeText, setQrCodeText] = useState<string | null>(null);
   const [pairingCode, setPairingCode] = useState<string | null>(null);
   const [qrCodeIssue, setQrCodeIssue] = useState<string | null>(null);
+  const [lastQrAttemptLog, setLastQrAttemptLog] = useState<string | null>(null);
   const [status, setStatus] = useState<"connected" | "disconnected" | "checking">("disconnected");
   const [testNumber, setTestNumber] = useState("");
   const [testMessage, setTestMessage] = useState("Olá! Teste de integração Evolution API.");
@@ -45,6 +46,28 @@ const WhatsAppConfig = () => {
       : mainInstanceStatus === "disconnecting"
         ? "WhatsApp desconectando"
         : "WhatsApp desconectado";
+
+  const formatQrAttemptLog = (title: string, payload: unknown) => {
+    const redact = (value: unknown): unknown => {
+      if (Array.isArray(value)) return value.map(redact);
+      if (!value || typeof value !== "object") return value;
+      return Object.fromEntries(Object.entries(value as Record<string, unknown>).map(([key, item]) => {
+        const safeKey = key.toLowerCase();
+        if (safeKey.includes("key") || safeKey.includes("token") || safeKey.includes("authorization")) {
+          return [key, "***"];
+        }
+        return [key, redact(item)];
+      }));
+    };
+
+    return JSON.stringify({
+      title,
+      when: new Date().toISOString(),
+      instance: config.instance_name,
+      phone: pairingPhone ? pairingPhone.replace(/\D/g, "") : null,
+      payload: redact(payload),
+    }, null, 2);
+  };
 
 
   useEffect(() => {
@@ -166,6 +189,7 @@ const WhatsAppConfig = () => {
 
     setLoading(true);
     setQrCodeIssue(null);
+    setLastQrAttemptLog(null);
     try {
       const createdQr = await evolutionService.connectViaBackend({
         empresaId: empresaAtiva.id,
@@ -173,15 +197,21 @@ const WhatsAppConfig = () => {
         phoneNumber: pairingPhone,
         action: "create",
       });
+      setLastQrAttemptLog(formatQrAttemptLog("Criar/conectar instância", createdQr.raw ?? createdQr));
       setQrCode(createdQr?.base64 ?? null);
       setQrCodeText(createdQr?.code ?? null);
       setPairingCode(createdQr?.pairingCode ?? null);
+      if (!createdQr?.base64 && !createdQr?.code && !createdQr?.pairingCode) {
+        setQrCodeIssue("A Evolution respondeu, mas não enviou imagem de QR Code nem código de pareamento. Copie o log abaixo para eu ver exatamente o retorno.");
+      }
       toast({
         title: "Instância criada",
         description: createdQr?.base64 || createdQr?.code ? "QR Code gerado. Escaneie para conectar." : "Agora clique no ícone de QR Code para conectar seu WhatsApp.",
       });
       checkConnection(config.api_url, config.api_key);
     } catch (error: any) {
+      setQrCodeIssue(error.message || "Falha ao criar instância");
+      setLastQrAttemptLog(formatQrAttemptLog("Erro ao criar/conectar instância", error.details ?? { message: error.message }));
       toast({
         variant: "destructive",
         title: "Erro ao criar instância",
@@ -217,8 +247,10 @@ const WhatsAppConfig = () => {
     setQrCode(null);
     setQrCodeText(null);
     setPairingCode(null);
+    setLastQrAttemptLog(null);
     try {
       const data = await fetchQrCodeOnce(instance);
+      setLastQrAttemptLog(formatQrAttemptLog("Buscar QR Code", data.raw ?? data));
       setQrCode(data.base64 ?? null);
       setQrCodeText(data.code ?? null);
       setPairingCode(data.pairingCode ?? null);
@@ -236,6 +268,8 @@ const WhatsAppConfig = () => {
         });
       }
     } catch (error: any) {
+      setQrCodeIssue(error.message || "Falha ao buscar QR Code");
+      setLastQrAttemptLog(formatQrAttemptLog("Erro ao buscar QR Code", error.details ?? { message: error.message }));
       toast({
         variant: "destructive",
         title: "Erro ao buscar QR Code",
@@ -362,6 +396,15 @@ const WhatsAppConfig = () => {
         description: "Não foi possível enviar a mensagem. Verifique a conexão.",
       });
     }
+  };
+
+  const handleCopyLastQrLog = async () => {
+    if (!lastQrAttemptLog) return;
+    await navigator.clipboard.writeText(lastQrAttemptLog);
+    toast({
+      title: "Log copiado",
+      description: "Cole este texto aqui no chat para eu diagnosticar o retorno da Evolution.",
+    });
   };
 
 
@@ -609,6 +652,23 @@ const WhatsAppConfig = () => {
                 <div className="mt-6 rounded-lg border border-destructive/30 bg-destructive/10 p-4 text-sm text-destructive">
                   <p className="font-medium">QR Code não disponível</p>
                   <p className="mt-1">{qrCodeIssue}</p>
+                </div>
+              )}
+
+              {lastQrAttemptLog && (
+                <div className="mt-6 space-y-3 rounded-lg border p-4">
+                  <div className="flex items-center justify-between gap-3">
+                    <div>
+                      <p className="text-sm font-medium">Log da última tentativa</p>
+                      <p className="text-xs text-muted-foreground">Use isto para descobrir por que a Evolution não mandou a imagem.</p>
+                    </div>
+                    <Button type="button" variant="outline" size="sm" onClick={handleCopyLastQrLog}>
+                      <Copy className="mr-2 h-4 w-4" /> Copiar
+                    </Button>
+                  </div>
+                  <pre className="max-h-64 overflow-auto rounded-md bg-muted p-3 text-xs text-muted-foreground whitespace-pre-wrap break-words">
+                    {lastQrAttemptLog}
+                  </pre>
                 </div>
               )}
             </CardContent>
