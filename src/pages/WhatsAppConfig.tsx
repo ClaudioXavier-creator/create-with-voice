@@ -32,6 +32,7 @@ const WhatsAppConfig = () => {
   const [status, setStatus] = useState<"connected" | "disconnected" | "checking">("disconnected");
   const [testNumber, setTestNumber] = useState("");
   const [testMessage, setTestMessage] = useState("Olá! Teste de integração Evolution API.");
+  const [pairingPhone, setPairingPhone] = useState("");
   const [sendingTest, setSendingTest] = useState(false);
   const [batchStatus, setBatchStatus] = useState<{current: number, total: number} | null>(null);
 
@@ -169,18 +170,18 @@ const WhatsAppConfig = () => {
     }
   };
 
-  const fetchQrCodeOnce = async (instanceName: string) => {
-    return evolutionService.getQrCode(config.api_url, config.api_key, instanceName);
+  const fetchQrCodeOnce = async (instance: EvolutionInstance) => {
+    return evolutionService.getQrCode(config.api_url, instance.apikey || config.api_key, instance.instanceName, pairingPhone);
   };
 
-  const handleShowQrCode = async (instanceName: string) => {
+  const handleShowQrCode = async (instance: EvolutionInstance) => {
     setLoading(true);
     setQrCodeIssue(null);
     setQrCode(null);
     setQrCodeText(null);
     setPairingCode(null);
     try {
-      const data = await fetchQrCodeOnce(instanceName);
+      const data = await fetchQrCodeOnce(instance);
       setQrCode(data.base64 ?? null);
       setQrCodeText(data.code ?? null);
       setPairingCode(data.pairingCode ?? null);
@@ -188,7 +189,7 @@ const WhatsAppConfig = () => {
         setQrCode(data.base64);
       } else if (!data.code && !data.pairingCode) {
         const issue = data.count === 0
-          ? "A API respondeu count: 0, sem QR Code. Isso normalmente indica falta de configuração QRCODE_LIMIT/SERVER_URL na Evolution ou versão da Evolution com bug de QR Code."
+          ? "A API respondeu count: 0, sem QR Code. Informe o número acima para gerar código de pareamento ou ajuste QRCODE_LIMIT/SERVER_URL na Evolution."
           : `Resposta recebida, mas sem QR Code${data.state ? ` (status: ${data.state})` : ""}.`;
         setQrCodeIssue(issue);
         toast({
@@ -469,7 +470,7 @@ const WhatsAppConfig = () => {
                         </div>
                         <div className="flex gap-2">
                           {instance.status !== 'open' ? (
-                            <Button size="icon" variant="outline" title="Ver QR Code" disabled={loading} onClick={() => handleShowQrCode(instance.instanceName)}>
+                            <Button size="icon" variant="outline" title="Ver QR Code" disabled={loading} onClick={() => handleShowQrCode(instance)}>
                               <QrCode className="w-4 h-4" />
                             </Button>
                           ) : (
@@ -518,6 +519,19 @@ const WhatsAppConfig = () => {
                     </div>
                   ))
                 )}
+              </div>
+
+              <div className="mt-6 space-y-2 rounded-lg border p-4">
+                <Label htmlFor="pairing_phone">Conectar por código de pareamento</Label>
+                <Input
+                  id="pairing_phone"
+                  placeholder="5561996757585"
+                  value={pairingPhone}
+                  onChange={(event) => setPairingPhone(event.target.value)}
+                />
+                <p className="text-xs text-muted-foreground">
+                  Opcional: preencha antes de clicar no ícone de QR Code para receber um código numérico no lugar do QR.
+                </p>
               </div>
 
               {(qrCode || qrCodeText || pairingCode) && (
