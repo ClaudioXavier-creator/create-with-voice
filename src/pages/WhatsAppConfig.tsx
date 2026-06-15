@@ -48,10 +48,10 @@ const WhatsAppConfig = () => {
         : "WhatsApp desconectado";
 
   const formatQrAttemptLog = (title: string, payload: unknown) => {
-    const redact = (value: any): any => {
+    const redact = (value: unknown): unknown => {
       if (Array.isArray(value)) return value.map(redact);
       if (!value || typeof value !== "object") return value;
-      return Object.fromEntries(Object.entries(value).map(([key, item]) => {
+      return Object.fromEntries(Object.entries(value as Record<string, unknown>).map(([key, item]) => {
         const safeKey = key.toLowerCase();
         if (safeKey.includes("key") || safeKey.includes("token") || safeKey.includes("authorization")) {
           return [key, "***"];
