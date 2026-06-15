@@ -13,7 +13,9 @@ type ConnectPayload = {
   empresa_id?: string;
   instance_name?: string;
   phone_number?: string;
-  action?: 'connect' | 'create' | 'status';
+  to_number?: string;
+  message?: string;
+  action?: 'connect' | 'create' | 'status' | 'send';
 };
 
 type EvolutionConfig = {
@@ -145,6 +147,29 @@ Deno.serve(async (req) => {
         return json({ error: 'Falha ao consultar Evolution', details: list.data }, list.status);
       }
       return json({ success: true, instances: list.data });
+    }
+
+    if (body.action === 'send') {
+      const toNumber = body.to_number?.replace(/\D/g, '');
+      const message = body.message?.trim();
+      if (!toNumber) return json({ error: 'Número de destino obrigatório' }, 400);
+      if (!message) return json({ error: 'Mensagem obrigatória' }, 400);
+
+      const sent = await callEvolution(`${baseUrl}/message/sendText/${encodeURIComponent(instanceName)}`, config.api_key, {
+        method: 'POST',
+        body: JSON.stringify({
+          number: toNumber,
+          options: {
+            delay: 1200,
+            presence: 'composing',
+            linkPreview: false,
+          },
+          textMessage: { text: message },
+        }),
+      });
+
+      if (!sent.ok) return json({ error: 'Falha ao enviar mensagem pela Evolution', details: sent.data }, sent.status);
+      return json({ success: true, response: sent.data });
     }
 
 
