@@ -189,6 +189,7 @@ const WhatsAppConfig = () => {
 
     setLoading(true);
     setQrCodeIssue(null);
+    setLastQrAttemptLog(null);
     try {
       const createdQr = await evolutionService.connectViaBackend({
         empresaId: empresaAtiva.id,
@@ -196,15 +197,21 @@ const WhatsAppConfig = () => {
         phoneNumber: pairingPhone,
         action: "create",
       });
+      setLastQrAttemptLog(formatQrAttemptLog("Criar/conectar instância", createdQr.raw ?? createdQr));
       setQrCode(createdQr?.base64 ?? null);
       setQrCodeText(createdQr?.code ?? null);
       setPairingCode(createdQr?.pairingCode ?? null);
+      if (!createdQr?.base64 && !createdQr?.code && !createdQr?.pairingCode) {
+        setQrCodeIssue("A Evolution respondeu, mas não enviou imagem de QR Code nem código de pareamento. Copie o log abaixo para eu ver exatamente o retorno.");
+      }
       toast({
         title: "Instância criada",
         description: createdQr?.base64 || createdQr?.code ? "QR Code gerado. Escaneie para conectar." : "Agora clique no ícone de QR Code para conectar seu WhatsApp.",
       });
       checkConnection(config.api_url, config.api_key);
     } catch (error: any) {
+      setQrCodeIssue(error.message || "Falha ao criar instância");
+      setLastQrAttemptLog(formatQrAttemptLog("Erro ao criar/conectar instância", error.details ?? { message: error.message }));
       toast({
         variant: "destructive",
         title: "Erro ao criar instância",
@@ -240,8 +247,10 @@ const WhatsAppConfig = () => {
     setQrCode(null);
     setQrCodeText(null);
     setPairingCode(null);
+    setLastQrAttemptLog(null);
     try {
       const data = await fetchQrCodeOnce(instance);
+      setLastQrAttemptLog(formatQrAttemptLog("Buscar QR Code", data.raw ?? data));
       setQrCode(data.base64 ?? null);
       setQrCodeText(data.code ?? null);
       setPairingCode(data.pairingCode ?? null);
@@ -259,6 +268,8 @@ const WhatsAppConfig = () => {
         });
       }
     } catch (error: any) {
+      setQrCodeIssue(error.message || "Falha ao buscar QR Code");
+      setLastQrAttemptLog(formatQrAttemptLog("Erro ao buscar QR Code", error.details ?? { message: error.message }));
       toast({
         variant: "destructive",
         title: "Erro ao buscar QR Code",
