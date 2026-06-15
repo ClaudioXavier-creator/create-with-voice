@@ -14,6 +14,12 @@ const EVOLUTION_INSTANCE_NAME = Deno.env.get('EVOLUTION_INSTANCE_NAME');
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 
+interface EvolutionConfig {
+  api_url: string;
+  api_key: string;
+  instance_name: string;
+}
+
 interface SendPayload {
   to: string;                  // ex: 5561996757585 ou 61996757585
   message: string;
@@ -32,19 +38,44 @@ function normalizeNumber(raw: string): string {
   return n;
 }
 
+async function resolveEvolutionConfig(empresaId?: string | null): Promise<EvolutionConfig | null> {
+  if (empresaId) {
+    const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+    const { data, error } = await supabase
+      .from('whatsapp_config')
+      .select('api_url, api_key, instance_name')
+      .eq('empresa_id', empresaId)
+      .maybeSingle();
+
+    if (error) throw new Error(`Falha ao carregar configuração WhatsApp: ${error.message}`);
+    if (data?.api_url && data?.api_key && data?.instance_name) return data as EvolutionConfig;
+  }
+
+  if (EVOLUTION_API_URL && EVOLUTION_API_KEY && EVOLUTION_INSTANCE_NAME) {
+    return {
+      api_url: EVOLUTION_API_URL,
+      api_key: EVOLUTION_API_KEY,
+      instance_name: EVOLUTION_INSTANCE_NAME,
+    };
+  }
+
+  return null;
+}
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
 
   try {
-    if (!EVOLUTION_API_URL || !EVOLUTION_API_KEY || !EVOLUTION_INSTANCE_NAME) {
+    const body = (await req.json().catch(() => ({}))) as SendPayload;
+    const { to, message, modulo, tipo, empresa_id, user_id, metadata } = body;
+
+    const evolutionConfig = await resolveEvolutionConfig(empresa_id);
+    if (!evolutionConfig) {
       return new Response(
-        JSON.stringify({ error: 'Evolution API não configurada (URL/KEY/INSTANCE ausentes)' }),
+        JSON.stringify({ error: 'Evolution API não configurada para esta empresa (URL/KEY/INSTANCE ausentes)' }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
-
-    const body = (await req.json().catch(() => ({}))) as SendPayload;
-    const { to, message, modulo, tipo, empresa_id, user_id, metadata } = body;
 
     if (!to || !message) {
       return new Response(
@@ -61,20 +92,34 @@ Deno.serve(async (req) => {
       );
     }
 
-    const baseUrl = EVOLUTION_API_URL.replace(/\/+$/, '');
-    const url = `${baseUrl}/message/sendText/${EVOLUTION_INSTANCE_NAME}`;
+    const baseUrl = evolutionConfig.api_url.replace(/\/+$/, '');
+    const url = `${baseUrl}/message/sendText/${encodeURIComponent(evolutionConfig.instance_name)}`;
 
-    const res = await fetch(url, {
+    let res = await fetch(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        apikey: EVOLUTION_API_KEY,
+        apikey: evolutionConfig.api_key,
       },
       body: JSON.stringify({
         number,
         text: message,
       }),
     });
+
+    if (!res.ok && (res.status === 400 || res.status === 422)) {
+      res = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          apikey: evolutionConfig.api_key,
+        },
+        body: JSON.stringify({
+          number,
+          textMessage: { text: message },
+        }),
+      });
+    }
 
     const data = await res.json().catch(() => ({}));
     const ok = res.ok;
