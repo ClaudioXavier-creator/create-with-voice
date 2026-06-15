@@ -61,13 +61,17 @@ export const evolutionService = {
       },
       body: JSON.stringify({
         instanceName,
-        token: "", // Optional custom token
         qrcode: true,
-        number: "", // Optional
         integration: "WHATSAPP-BAILEYS"
       })
     });
-    if (!response.ok) throw new Error(await readEvolutionError(response, "Falha ao criar instância"));
+    if (!response.ok) {
+      // 403/409 = já existe → tratar como sucesso silencioso
+      if (response.status === 403 || response.status === 409) {
+        return { alreadyExists: true, instanceName };
+      }
+      throw new Error(await readEvolutionError(response, "Falha ao criar instância"));
+    }
     return response.json();
   },
 
