@@ -13,7 +13,7 @@ type ConnectPayload = {
   empresa_id?: string;
   instance_name?: string;
   phone_number?: string;
-  action?: 'connect' | 'create';
+  action?: 'connect' | 'create' | 'status';
 };
 
 type EvolutionConfig = {
