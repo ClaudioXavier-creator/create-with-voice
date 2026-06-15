@@ -80,7 +80,6 @@ function fmtDateShort(iso: string) {
 
 export default function CRM({ isTab = false }: { isTab?: boolean }) {
   const { user, roles, loading: authLoading } = useAuth();
-  const { empresaAtiva } = useEmpresa();
   const hasAccess = canAccessCRM(roles, user?.email) || roles?.includes("comercial");
 
   const [tab, setTab] = useState<Origem>("produto");
@@ -301,6 +300,7 @@ function LeadDrawer({
   onChanged: () => void;
   currentUserName: string;
 }) {
+  const { empresaAtiva } = useEmpresa();
   const [interacoes, setInteracoes] = useState<Interacao[]>([]);
   const [tarefas, setTarefas] = useState<Tarefa[]>([]);
   const [novaInt, setNovaInt] = useState({ tipo: "nota" as Interacao["tipo"], descricao: "" });
