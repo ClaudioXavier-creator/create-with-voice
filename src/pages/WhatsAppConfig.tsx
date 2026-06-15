@@ -169,22 +169,18 @@ const WhatsAppConfig = () => {
     }
   };
 
-  const fetchQrCodeWithRetry = async (instanceName: string) => {
-    let lastData = null;
-    for (let attempt = 1; attempt <= 6; attempt++) {
-      const data = await evolutionService.getQrCode(config.api_url, config.api_key, instanceName);
-      lastData = data;
-      if (data.base64 || data.code || data.pairingCode) return data;
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-    }
-    return lastData ?? { base64: undefined, code: undefined, pairingCode: undefined };
+  const fetchQrCodeOnce = async (instanceName: string) => {
+    return evolutionService.getQrCode(config.api_url, config.api_key, instanceName);
   };
 
   const handleShowQrCode = async (instanceName: string) => {
     setLoading(true);
     setQrCodeIssue(null);
+    setQrCode(null);
+    setQrCodeText(null);
+    setPairingCode(null);
     try {
-      const data = await fetchQrCodeWithRetry(instanceName);
+      const data = await fetchQrCodeOnce(instanceName);
       setQrCode(data.base64 ?? null);
       setQrCodeText(data.code ?? null);
       setPairingCode(data.pairingCode ?? null);
@@ -473,15 +469,15 @@ const WhatsAppConfig = () => {
                         </div>
                         <div className="flex gap-2">
                           {instance.status !== 'open' ? (
-                            <Button size="icon" variant="outline" title="Ver QR Code" onClick={() => handleShowQrCode(instance.instanceName)}>
+                            <Button size="icon" variant="outline" title="Ver QR Code" disabled={loading} onClick={() => handleShowQrCode(instance.instanceName)}>
                               <QrCode className="w-4 h-4" />
                             </Button>
                           ) : (
-                            <Button size="icon" variant="outline" className="text-orange-600 border-orange-200" title="Desconectar" onClick={() => handleLogout(instance.instanceName)}>
+                            <Button size="icon" variant="outline" className="text-orange-600 border-orange-200" title="Desconectar" disabled={loading} onClick={() => handleLogout(instance.instanceName)}>
                               <LogOut className="w-4 h-4" />
                             </Button>
                           )}
-                          <Button size="icon" variant="outline" className="text-red-600 border-red-200" title="Excluir" onClick={() => handleDeleteInstance(instance.instanceName)}>
+                          <Button size="icon" variant="outline" className="text-red-600 border-red-200" title="Excluir" disabled={loading} onClick={() => handleDeleteInstance(instance.instanceName)}>
                             <Trash2 className="w-4 h-4" />
                           </Button>
                         </div>
