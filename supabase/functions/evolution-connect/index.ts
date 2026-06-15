@@ -148,7 +148,7 @@ Deno.serve(async (req) => {
     }
 
 
-    const baseUrl = config.api_url.replace(/\/+$/, '');
+
     const encodedInstance = encodeURIComponent(instanceName);
     const number = body.phone_number?.replace(/\D/g, '');
 
