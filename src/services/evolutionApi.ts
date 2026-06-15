@@ -76,17 +76,30 @@ const normalizeQrCode = (data: any): EvolutionQrCode => {
     return looksLikeImage(value) ? { base64: normalizeBase64Image(value) } : { code: value };
   }
 
-  const source = data?.qrcode ?? data?.qrCode ?? data?.qr ?? data?.data?.qrcode ?? data?.data?.qrCode ?? data?.instance?.qrcode ?? data;
-  if (typeof source === "string") {
-    const value = source.trim();
-    return looksLikeImage(value) ? { base64: normalizeBase64Image(value) } : { code: value };
+  const directCandidates = [
+    data?.base64,
+    data?.base64Image,
+    data?.qrCodeBase64,
+    data?.qrcode,
+    data?.qrCode,
+    data?.qr,
+    data?.code,
+    data?.data?.base64,
+    data?.data?.qrcode,
+    data?.data?.qrCode,
+    data?.instance?.qrcode,
+  ].filter((value): value is string => typeof value === "string" && value.trim().length > 0);
+
+  for (const candidate of directCandidates) {
+    const value = candidate.trim();
+    if (looksLikeImage(value)) return { base64: normalizeBase64Image(value) };
   }
 
-  const objects = collectObjects(source);
-  const base64 = firstString(objects, ["base64", "base64Image", "qrCodeBase64", "qrBase64", "qrcodeBase64", "base64Qr", "base64QRCode"]);
+  const objects = collectObjects(data);
+  const base64 = firstString(objects, ["base64", "base64Image", "qrCodeBase64", "qrBase64", "qrcodeBase64", "base64Qr", "base64QRCode", "qrCodeImage", "qrcodeImage", "image", "src"]);
   return {
     base64: normalizeBase64Image(base64),
-    code: firstString(objects, ["code", "qrCode", "qrcode", "qr", "qrCodeString", "qr_code"]),
+    code: directCandidates.find((value) => !looksLikeImage(value)) ?? firstString(objects, ["code", "qrCode", "qrcode", "qr", "qrCodeString", "qr_code"]),
     pairingCode: firstString(objects, ["pairingCode", "pairing_code"]),
   };
 };
