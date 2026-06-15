@@ -31,6 +31,13 @@ export interface EvolutionConnectParams {
   action?: "connect" | "create";
 }
 
+export interface EvolutionSendViaBackendParams {
+  empresaId: string;
+  instanceName: string;
+  number: string;
+  text: string;
+}
+
 export class EvolutionApiError extends Error {
   details?: unknown;
   status?: number;
@@ -246,6 +253,24 @@ export const evolutionService = {
     if (data?.error) throw new EvolutionApiError(data.error, data.details ?? data, data.status);
     const normalized = normalizeQrCode(data?.qrcode ?? data);
     return { ...normalized, alreadyConnected: Boolean(data?.alreadyConnected), raw: data };
+  },
+
+  /**
+   * Send a text message through the backend (bypasses browser CORS and hides the API key).
+   */
+  async sendMessageViaBackend({ empresaId, instanceName, number, text }: EvolutionSendViaBackendParams) {
+    const { data, error } = await supabase.functions.invoke("evolution-connect", {
+      body: {
+        empresa_id: empresaId,
+        instance_name: instanceName,
+        action: "send",
+        to_number: number,
+        message: text,
+      },
+    });
+    if (error) throw error;
+    if (data?.error) throw new EvolutionApiError(data.error, data.details ?? data, data.status);
+    return data?.response ?? data;
   },
 
   /**
