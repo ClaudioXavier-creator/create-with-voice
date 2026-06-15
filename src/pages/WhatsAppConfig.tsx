@@ -147,6 +147,14 @@ const WhatsAppConfig = () => {
   };
 
   const handleCreateInstance = async () => {
+    if (!empresaAtiva?.id) {
+      toast({
+        variant: "destructive",
+        title: "Nenhuma empresa ativa",
+        description: "Selecione uma empresa antes de criar a instância.",
+      });
+      return;
+    }
     if (!config.instance_name) {
       toast({
         variant: "destructive",
@@ -159,8 +167,12 @@ const WhatsAppConfig = () => {
     setLoading(true);
     setQrCodeIssue(null);
     try {
-      const result = await evolutionService.createInstance(config.api_url, config.api_key, config.instance_name);
-      const createdQr = result?.normalizedQrCode;
+      const createdQr = await evolutionService.connectViaBackend({
+        empresaId: empresaAtiva.id,
+        instanceName: config.instance_name,
+        phoneNumber: pairingPhone,
+        action: "create",
+      });
       setQrCode(createdQr?.base64 ?? null);
       setQrCodeText(createdQr?.code ?? null);
       setPairingCode(createdQr?.pairingCode ?? null);
@@ -181,6 +193,13 @@ const WhatsAppConfig = () => {
   };
 
   const fetchQrCodeOnce = async (instance: EvolutionInstance) => {
+    if (empresaAtiva?.id) {
+      return evolutionService.connectViaBackend({
+        empresaId: empresaAtiva.id,
+        instanceName: instance.instanceName,
+        phoneNumber: pairingPhone,
+      });
+    }
     return evolutionService.getQrCode(config.api_url, config.api_key, instance.instanceName, pairingPhone);
   };
 
