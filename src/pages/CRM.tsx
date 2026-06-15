@@ -15,6 +15,7 @@ import { toast } from "sonner";
 import { sendWhatsApp } from "@/lib/evolutionWhatsapp";
 import { canAccessCRM } from "@/config/adminAccess";
 import { getProductLabel } from "@/utils/productUtils";
+import { useEmpresa } from "@/hooks/useEmpresa";
 
 type Etapa = "novo" | "contato" | "qualificado" | "proposta" | "ganho" | "perdido";
 type Origem = "produto" | "site";
@@ -299,6 +300,7 @@ function LeadDrawer({
   onChanged: () => void;
   currentUserName: string;
 }) {
+  const { empresaAtiva } = useEmpresa();
   const [interacoes, setInteracoes] = useState<Interacao[]>([]);
   const [tarefas, setTarefas] = useState<Tarefa[]>([]);
   const [novaInt, setNovaInt] = useState({ tipo: "nota" as Interacao["tipo"], descricao: "" });
@@ -459,6 +461,7 @@ function LeadDrawer({
                         await sendWhatsApp({
                           to: lead.telefone!,
                           message: waMsg.trim(),
+                          empresa_id: empresaAtiva?.id ?? null,
                           modulo: lead.produto_interesse?.includes("agrogestao") ? "agrogestao" : "agrorc",
                           tipo: "crm_lead",
                           metadata: { pipeline_id: lead.id, nome: lead.nome },

@@ -29,6 +29,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { getProductLabel } from "@/utils/productUtils";
 import { useAuth } from "@/hooks/useAuth";
+import { useEmpresa } from "@/hooks/useEmpresa";
 import { sendWhatsApp, validatePhoneList, normalizePhoneBR } from "@/lib/evolutionWhatsapp";
 
 interface Recipient {
@@ -44,6 +45,7 @@ interface Recipient {
 
 export default function DisparadorMarketing() {
   const { user } = useAuth();
+  const { empresaAtiva } = useEmpresa();
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
   const [leads, setLeads] = useState<Recipient[]>([]);
@@ -203,6 +205,7 @@ export default function DisparadorMarketing() {
         await sendWhatsApp({
           to: v.normalized,
           message: msg,
+          empresa_id: empresaAtiva?.id ?? null,
           modulo: "portal",
           tipo: "marketing",
           metadata: { nome: l.nome, produto: l.produto, origem: l.origem },
