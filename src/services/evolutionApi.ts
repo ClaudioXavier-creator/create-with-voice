@@ -3,6 +3,8 @@
  * Documentation: https://doc.evolution-api.com/
  */
 
+import { supabase } from "@/integrations/supabase/client";
+
 export interface EvolutionInstance {
   instanceName: string;
   owner?: string;
@@ -20,6 +22,13 @@ export interface EvolutionQrCode {
   count?: number;
   state?: string;
   raw?: unknown;
+}
+
+export interface EvolutionConnectParams {
+  empresaId: string;
+  instanceName: string;
+  phoneNumber?: string;
+  action?: "connect" | "create";
 }
 
 const normalizeConnectionStatus = (value?: string): EvolutionInstance["status"] => {
@@ -178,6 +187,23 @@ export const evolutionService = {
     }
     const data = await response.json();
     return { ...data, normalizedQrCode: normalizeQrCode(data) };
+  },
+
+  /**
+   * Create/connect through the backend so CORS and API-key exposure don't block QR generation.
+   */
+  async connectViaBackend({ empresaId, instanceName, phoneNumber, action = "connect" }: EvolutionConnectParams) {
+    const { data, error } = await supabase.functions.invoke("evolution-connect", {
+      body: {
+        empresa_id: empresaId,
+        instance_name: instanceName,
+        phone_number: phoneNumber,
+        action,
+      },
+    });
+    if (error) throw error;
+    if (data?.error) throw new Error(data.error);
+    return normalizeQrCode(data?.qrcode ?? data);
   },
 
   /**
