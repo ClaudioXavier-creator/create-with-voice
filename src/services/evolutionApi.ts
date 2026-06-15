@@ -177,7 +177,7 @@ const connectUrl = (apiUrl: string, instanceName: string, phoneNumber?: string) 
 
 export const evolutionService = {
   /**
-   * Fetch all instances
+   * Fetch all instances directly from Evolution (may fail with CORS).
    */
   async fetchInstances(apiUrl: string, apiKey: string): Promise<EvolutionInstance[]> {
     const response = await fetch(`${apiUrl.replace(/\/$/, "")}/instance/fetchInstances`, {
@@ -188,6 +188,19 @@ export const evolutionService = {
     if (!response.ok) throw new Error(await readEvolutionError(response, "Falha ao buscar instâncias"));
     const data = await response.json();
     return Array.isArray(data) ? data.map(normalizeInstance) : [];
+  },
+
+  /**
+   * Fetch instances through the backend (bypasses CORS).
+   */
+  async fetchInstancesViaBackend(empresaId: string, instanceName: string): Promise<EvolutionInstance[]> {
+    const { data, error } = await supabase.functions.invoke("evolution-connect", {
+      body: { empresa_id: empresaId, instance_name: instanceName, action: "status" },
+    });
+    if (error) throw error;
+    if (data?.error) throw new EvolutionApiError(data.error, data.details ?? data);
+    const list = data?.instances;
+    return Array.isArray(list) ? list.map(normalizeInstance) : [];
   },
 
   /**
