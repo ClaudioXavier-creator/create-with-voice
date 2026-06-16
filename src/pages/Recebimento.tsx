@@ -77,6 +77,7 @@ export default function Recebimento() {
   const [nfUrl, setNfUrl] = useState("");
   const [laudoUrl, setLaudoUrl] = useState("");
   const [observacoes, setObservacoes] = useState("");
+  const [armazenamentoInadequado, setArmazenamentoInadequado] = useState(false);
 
   const [liberarDialogOpen, setLiberarDialogOpen] = useState(false);
   const [selectedLoteId, setSelectedLoteId] = useState<string | null>(null);
