@@ -116,6 +116,24 @@ export default function SimuladorTFAutocontroles() {
         </Alert>
       )}
 
+      {/* Plano de Ação Anterior (item I1 - cumprimento da TF anterior) */}
+      <Card className="mb-4 border-primary/40">
+        <CardHeader><CardTitle className="text-sm">📎 Plano de Ação da Fiscalização Anterior (item I1)</CardTitle></CardHeader>
+        <CardContent>
+          <p className="text-xs text-muted-foreground mb-2">
+            Anexe o PDF do TF-Autocontroles anterior e/ou o plano de ação enviado ao MAPA. Será vinculado à sessão atual para evidenciar cumprimento.
+          </p>
+          <FileUpload
+            bucket="documentos-bpf"
+            folder="tf-autocontroles"
+            empresaId={empresaAtiva?.id ?? null}
+            label="Anexar TF/Plano de Ação anterior"
+            currentUrl={planoAcaoAnteriorUrl || null}
+            onUploadComplete={(url) => setPlanoAcaoAnteriorUrl(url)}
+          />
+        </CardContent>
+      </Card>
+
       {/* Acordeão de módulos */}
       <Accordion type="multiple" className="space-y-2">
         {TF_AUTOCONTROLES.map((mod) => (
