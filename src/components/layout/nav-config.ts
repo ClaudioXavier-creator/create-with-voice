@@ -67,6 +67,8 @@ export function isGroup(entry: NavEntry): entry is NavGroup {
 }
 
 export const NAV_ENTRIES: NavEntry[] = [
+  // Feed_BPF é área operacional do cliente. Não incluir aqui Portal de Gestão,
+  // CRM, leads, licenças, campanhas, marketing ou integrações comerciais.
   // --- NAVEGAÇÃO PRINCIPAL (FLAT) ---
   { path: "/dashboard", label: "Dashboard Principal", icon: LayoutDashboard },
   { path: "/cadastro", label: "Dados da Empresa", icon: Building2 },
