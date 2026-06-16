@@ -252,6 +252,10 @@ export default function Cadastro() {
           ))}
         </div>
       )}
+
+      <div className="mt-6">
+        <DadosRegulatoriosEmpresaSection />
+      </div>
     </>
   );
 }
