@@ -182,6 +182,8 @@ export default function ProdutoForm({ produtoId, onSaved }: Props) {
       setModoPreparo(data.modo_preparo || "");
       setEmbalagem(data.embalagem || "");
       setObservacoes(data.observacoes || "");
+      setEspecieDestino((data as any).especie_destino || "");
+      setLinhaCompartilhada(!!(data as any).linha_compartilhada);
 
       // Parse niveis_garantia JSON - extract eventuais_substitutos if stored there
       const saved = (data.niveis_garantia as Record<string, any>) || {};
