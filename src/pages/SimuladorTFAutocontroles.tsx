@@ -48,6 +48,7 @@ export default function SimuladorTFAutocontroles() {
           score_pct: resumo.scorePct,
           total_nc: resumo.ncs,
           total_nc_obrigatorios: resumo.ncObrigatorios,
+          plano_acao_anterior_url: planoAcaoAnteriorUrl || null,
         })
         .select()
         .single();
