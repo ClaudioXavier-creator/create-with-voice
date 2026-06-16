@@ -62,7 +62,7 @@ async function loadConfig(admin: ReturnType<typeof createClient>, empresaId: str
   return data as EvolutionConfig;
 }
 
-async function callEvolution(url: string, apiKey: string, init?: RequestInit) {
+async function callEvolutionRaw(url: string, apiKey: string, init?: RequestInit) {
   const response = await fetch(url, {
     ...init,
     headers: {
@@ -73,6 +73,22 @@ async function callEvolution(url: string, apiKey: string, init?: RequestInit) {
   });
   const data = await readJson(response);
   return { ok: response.ok, status: response.status, data };
+}
+
+async function callEvolution(url: string, apiKey: string, init?: RequestInit) {
+  let result = await callEvolutionRaw(url, apiKey, init);
+  // Fallback: se a key do banco for rejeitada (401/403), tenta a key global do projeto
+  if (!result.ok && (result.status === 401 || result.status === 403)) {
+    const fallbackKey = Deno.env.get('EVOLUTION_API_KEY');
+    if (fallbackKey && fallbackKey !== apiKey) {
+      console.warn('Evolution rejeitou api_key do banco; tentando EVOLUTION_API_KEY do secret.');
+      const retry = await callEvolutionRaw(url, fallbackKey, init);
+      if (retry.ok) return retry;
+      // Se o fallback funcionou parcialmente (status diferente), prefere o que não é 401
+      if (retry.status !== 401 && retry.status !== 403) return retry;
+    }
+  }
+  return result;
 }
 
 function hasQrPayload(data: any) {
