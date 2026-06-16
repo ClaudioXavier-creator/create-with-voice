@@ -127,6 +127,8 @@ export default function ProdutoForm({ produtoId, onSaved }: Props) {
   const [modoPreparo, setModoPreparo] = useState(draft?.modoPreparo || "");
   const [embalagem, setEmbalagem] = useState(draft?.embalagem || "");
   const [observacoes, setObservacoes] = useState(draft?.observacoes || "");
+  const [especieDestino, setEspecieDestino] = useState(draft?.especieDestino || "");
+  const [linhaCompartilhada, setLinhaCompartilhada] = useState<boolean>(draft?.linhaCompartilhada || false);
 
   const [activeNutrients, setActiveNutrients] = useState<Set<string>>(() => draft?.activeNutrients ? new Set(draft.activeNutrients) : new Set());
   const [nutrientValues, setNutrientValues] = useState<Record<string, NutrientValue>>(draft?.nutrientValues || {});
