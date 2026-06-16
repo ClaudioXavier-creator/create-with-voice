@@ -213,6 +213,8 @@ export default function ControleSubstancias() {
           </Table>
         </Card>
       )}
+
+      <div className="mt-6"><ReceituariosMedSection /></div>
     </div>
   );
 }
