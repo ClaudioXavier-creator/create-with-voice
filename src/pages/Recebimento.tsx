@@ -366,6 +366,13 @@ export default function Recebimento() {
                 <Label htmlFor="aprovado">Aprovado no Recebimento</Label>
               </div>
 
+              <div className="flex items-center space-x-2 border-l-4 border-orange-500 pl-3 bg-orange-50 dark:bg-orange-950/20 p-2 rounded">
+                <Switch id="armaz-inad" checked={armazenamentoInadequado} onCheckedChange={setArmazenamentoInadequado} />
+                <Label htmlFor="armaz-inad" className="text-sm">
+                  ⚠️ MP armazenada em <strong>local inadequado</strong> pelo fornecedor/transporte (gera alerta MAPA)
+                </Label>
+              </div>
+
               <div className="space-y-2">
                 <Label>Observações</Label>
                 <Textarea value={observacoes} onChange={e => setObservacoes(e.target.value)} />
