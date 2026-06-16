@@ -283,6 +283,8 @@ export default function ProdutoForm({ produtoId, onSaved }: Props) {
       precaucoes, indicacoes, composicao,
       diferenciais, modo_preparo: modoPreparo,
       embalagem, observacoes,
+      especie_destino: especieDestino || null,
+      linha_compartilhada: linhaCompartilhada,
       niveis_garantia: niveis as any,
     };
 
