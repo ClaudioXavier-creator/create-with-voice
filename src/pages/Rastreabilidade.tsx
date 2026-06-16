@@ -2383,6 +2383,7 @@ export default function Rastreabilidade() {
           </div>
         </div>
       </div>
+      <div className="mt-6"><AmostrasRetencaoSection /></div>
     </>
   );
 }
