@@ -396,6 +396,35 @@ export default function ProdutoForm({ produtoId, onSaved }: Props) {
             <div><Label>Forma Física</Label><Input value={formaFisica} onChange={(e) => setFormaFisica(e.target.value)} placeholder="Ex: Farelado, Peletizado, Extrusado" /></div>
             <div><Label>Validade (meses)</Label><Input type="number" value={validadeMeses} onChange={(e) => setValidadeMeses(e.target.value)} /></div>
             <div><Label>Embalagem</Label><Input value={embalagem} onChange={(e) => setEmbalagem(e.target.value)} placeholder="Ex: Saco de ráfia 40kg" /></div>
+            <div className="md:col-span-2 lg:col-span-3 border-t pt-3 mt-2">
+              <Label className="text-sm font-semibold text-orange-700">⚠️ Risco Regulatório (MAPA/EEB - IN 34/2008)</Label>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-2">
+                <div>
+                  <Label className="text-xs">Espécie de Destino</Label>
+                  <Select value={especieDestino} onValueChange={setEspecieDestino}>
+                    <SelectTrigger><SelectValue placeholder="Selecione..." /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="monogastrico">Monogástrico (aves, suínos, peixes)</SelectItem>
+                      <SelectItem value="ruminante">Ruminante (bovinos, ovinos, caprinos)</SelectItem>
+                      <SelectItem value="equinos">Equinos</SelectItem>
+                      <SelectItem value="pet">Pet (cães e gatos)</SelectItem>
+                      <SelectItem value="ambos">Ambos (Mono + Rumi) ⚠️</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="flex items-center gap-2 pt-5">
+                  <Checkbox id="linha-comp" checked={linhaCompartilhada} onCheckedChange={(c) => setLinhaCompartilhada(!!c)} />
+                  <label htmlFor="linha-comp" className="text-sm cursor-pointer">
+                    Produzido em <strong>linha compartilhada</strong> com outras espécies
+                  </label>
+                </div>
+              </div>
+              {linhaCompartilhada && especieDestino === "ruminante" && (
+                <p className="text-xs text-destructive mt-2 bg-destructive/10 p-2 rounded">
+                  ⚠️ Linha compartilhada para ruminantes exige validação de carry-over (PCP/Flushing) - IN 34/2008.
+                </p>
+              )}
+            </div>
           </div>
         </CardContent>
       </Card>
