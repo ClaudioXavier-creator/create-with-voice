@@ -11,7 +11,6 @@ import {
   LayoutDashboard,
   MessageSquare,
   Tablet,
-  Smartphone,
 
   Layers,
   Tag,
@@ -31,7 +30,6 @@ import {
   Truck,
   ShieldAlert,
   ShieldCheck,
-  Megaphone,
 } from "lucide-react";
 
 import { SUPER_ADMIN_EMAILS } from "@/config/adminAccess";
@@ -152,18 +150,6 @@ export const NAV_ENTRIES: NavEntry[] = [
   { path: "/checklist-pre-auditoria", label: "Checklist Pré-Auditoria", icon: ClipboardList },
   { path: "/qualidade-total", label: "Qualidade Total (SAC)", icon: MessageSquare },
   { path: "/indicadores", label: "Indicadores de Qualidade", icon: BarChart3 },
-
-  // --- MARKETING & GROWTH ---
-  {
-    label: "Marketing & Growth",
-    icon: Megaphone,
-    items: [
-      { path: "/marketing", label: "Marketing Central", icon: Megaphone, keywords: ["headlines", "campanhas", "anúncios"] },
-      { path: "/whatsapp", label: "Configurar WhatsApp (Evolution)", icon: MessageSquare, keywords: ["api", "instância", "conexão", "evolution"] },
-      { path: "/whatsapp-relatorio", label: "Relatório de Disparos", icon: BarChart3, keywords: ["analytics", "envios", "mensagens"] },
-      { path: "/whatsapp-twilio", label: "WhatsApp Cloud (Meta)", icon: Smartphone, keywords: ["oficial", "twilio", "sandbox"] },
-    ],
-  },
 
   // --- OUTROS ---
   { path: "/modo-tablet", label: "Factory / Modo Tablet", icon: Tablet },
