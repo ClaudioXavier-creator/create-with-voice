@@ -225,6 +225,7 @@ const InternalRoutes = () => (
     <Route path="/autocontrole" element={<Autocontrole />} />
     <Route path="/modelos" element={<Modelos />} />
     <Route path="/checklist-pre-auditoria" element={<ChecklistPreAuditoria />} />
+    <Route path="/simulador-tf-autocontroles" element={<SimuladorTFAutocontroles />} />
     <Route path="/simulacao-recall" element={<SimulacaoRecall />} />
     <Route path="/simulacao-carimbo" element={<SimulacaoCarimbo />} />
     <Route path="/orientacoes" element={<Orientacoes />} />
