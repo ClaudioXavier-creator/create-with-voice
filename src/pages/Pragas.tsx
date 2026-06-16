@@ -13,6 +13,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
+import { MapaIscasSection, ProdutosQuimicosSection } from "@/components/mapa-evolucao/MapaEvolucaoSections";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -393,6 +394,12 @@ export default function Pragas() {
           </Card>
         </TabsContent>
       </Tabs>
+
+      {/* Evolução MAPA: Mapa de Iscas + Cadastro de Produtos Químicos */}
+      <div className="mt-6 space-y-4">
+        <MapaIscasSection />
+        <ProdutosQuimicosSection />
+      </div>
     </div>
   );
 }

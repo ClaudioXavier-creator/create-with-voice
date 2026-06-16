@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { TemposMisturaSection } from "@/components/mapa-evolucao/MapaEvolucaoSections";
 import { ClipboardList, Plus, Loader2, ChevronDown, ChevronUp, Clock, CheckCircle2, AlertTriangle, Factory, FlaskConical, ArrowRightLeft, ShieldAlert, TestTube, Shield, Droplets, FileText, Printer } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -1496,6 +1497,7 @@ export default function PCP() {
           </div>
         </DialogContent>
       </Dialog>
+      <div className="mt-6"><TemposMisturaSection /></div>
     </>
   );
 }

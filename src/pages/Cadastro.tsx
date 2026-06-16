@@ -1,4 +1,5 @@
 import { Building2, Plus, Pencil, Trash2, AlertTriangle } from "lucide-react";
+import { DadosRegulatoriosEmpresaSection } from "@/components/mapa-evolucao/MapaEvolucaoSections";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
