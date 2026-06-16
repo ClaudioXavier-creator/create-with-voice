@@ -150,6 +150,7 @@ export const NAV_ENTRIES: NavEntry[] = [
   { path: "/sala-auditor", label: "🔍 Sala do Auditor", icon: ClipboardCheck },
   { path: "/audit-log", label: "Log de Atividades", icon: History },
   { path: "/checklist-pre-auditoria", label: "Checklist Pré-Auditoria", icon: ClipboardList },
+  { path: "/simulador-tf-autocontroles", label: "Simulador TF-Autocontroles (MAPA)", icon: ShieldCheck },
   { path: "/qualidade-total", label: "Qualidade Total (SAC)", icon: MessageSquare },
   { path: "/indicadores", label: "Indicadores de Qualidade", icon: BarChart3 },
 

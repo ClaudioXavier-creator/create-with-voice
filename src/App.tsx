@@ -75,6 +75,7 @@ const AgroRCCRMPage = lazy(() => import("./pages/AgroRCCRMPage"));
 const RotulosBPFPage = lazy(() => import("./pages/RotulosBPFPage"));
 const SuperAdmin = lazy(() => import("./pages/SuperAdmin"));
 const ChecklistPreAuditoria = lazy(() => import("./pages/ChecklistPreAuditoria"));
+const SimuladorTFAutocontroles = lazy(() => import("./pages/SimuladorTFAutocontroles"));
 const SimulacaoRecall = lazy(() => import("./pages/SimulacaoRecall"));
 const SimulacaoCarimbo = lazy(() => import("./pages/SimulacaoCarimbo"));
 const Orientacoes = lazy(() => import("./pages/Orientacoes"));
@@ -224,6 +225,7 @@ const InternalRoutes = () => (
     <Route path="/autocontrole" element={<Autocontrole />} />
     <Route path="/modelos" element={<Modelos />} />
     <Route path="/checklist-pre-auditoria" element={<ChecklistPreAuditoria />} />
+    <Route path="/simulador-tf-autocontroles" element={<SimuladorTFAutocontroles />} />
     <Route path="/simulacao-recall" element={<SimulacaoRecall />} />
     <Route path="/simulacao-carimbo" element={<SimulacaoCarimbo />} />
     <Route path="/orientacoes" element={<Orientacoes />} />
