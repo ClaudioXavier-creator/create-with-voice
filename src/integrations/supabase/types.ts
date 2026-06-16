@@ -4891,6 +4891,62 @@ export type Database = {
           },
         ]
       }
+      tf_autocontroles_sessoes: {
+        Row: {
+          created_at: string
+          data: string
+          empresa_id: string | null
+          id: string
+          observacoes: string | null
+          responsavel: string | null
+          respostas: Json
+          score_pct: number | null
+          status: string
+          total_nc: number | null
+          total_nc_obrigatorios: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          data?: string
+          empresa_id?: string | null
+          id?: string
+          observacoes?: string | null
+          responsavel?: string | null
+          respostas?: Json
+          score_pct?: number | null
+          status?: string
+          total_nc?: number | null
+          total_nc_obrigatorios?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          data?: string
+          empresa_id?: string | null
+          id?: string
+          observacoes?: string | null
+          responsavel?: string | null
+          respostas?: Json
+          score_pct?: number | null
+          status?: string
+          total_nc?: number | null
+          total_nc_obrigatorios?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tf_autocontroles_sessoes_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       treinamentos: {
         Row: {
           created_at: string
