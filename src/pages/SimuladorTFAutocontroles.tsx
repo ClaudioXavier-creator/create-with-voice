@@ -18,11 +18,14 @@ import {
   calcularResumoTF,
 } from "@/config/tfAutocontroles";
 
+import FileUpload from "@/components/FileUpload";
+
 export default function SimuladorTFAutocontroles() {
   const { user } = useAuth();
   const { empresaAtiva } = useEmpresa();
   const [respostas, setRespostas] = useState<Record<string, TFRespostaDetalhe>>({});
   const [saving, setSaving] = useState(false);
+  const [planoAcaoAnteriorUrl, setPlanoAcaoAnteriorUrl] = useState<string>("");
 
   const resumo = useMemo(() => calcularResumoTF(respostas), [respostas]);
 
