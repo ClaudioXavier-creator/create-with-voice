@@ -393,6 +393,12 @@ export default function Pragas() {
           </Card>
         </TabsContent>
       </Tabs>
+
+      {/* Evolução MAPA: Mapa de Iscas + Cadastro de Produtos Químicos */}
+      <div className="mt-6 space-y-4">
+        <MapaIscasSection />
+        <ProdutosQuimicosSection />
+      </div>
     </div>
   );
 }
