@@ -1497,6 +1497,7 @@ export default function PCP() {
           </div>
         </DialogContent>
       </Dialog>
+      <div className="mt-6"><TemposMisturaSection /></div>
     </>
   );
 }
