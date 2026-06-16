@@ -77,6 +77,7 @@ export default function Recebimento() {
   const [nfUrl, setNfUrl] = useState("");
   const [laudoUrl, setLaudoUrl] = useState("");
   const [observacoes, setObservacoes] = useState("");
+  const [armazenamentoInadequado, setArmazenamentoInadequado] = useState(false);
 
   const [liberarDialogOpen, setLiberarDialogOpen] = useState(false);
   const [selectedLoteId, setSelectedLoteId] = useState<string | null>(null);
@@ -146,8 +147,9 @@ export default function Recebimento() {
       nota_fiscal_url: nfUrl || null,
       laudo_url: laudoUrl || null,
       observacoes: observacoes || null,
+      armazenamento_inadequado: armazenamentoInadequado,
       status: 'bloqueado'
-    }).select().single();
+    } as any).select().single();
 
     if (!error && !aprovado) {
       await supabase.from("nao_conformidades").insert({
@@ -362,6 +364,13 @@ export default function Recebimento() {
               <div className="flex items-center space-x-2">
                 <Switch id="aprovado" checked={aprovado} onCheckedChange={setAprovado} />
                 <Label htmlFor="aprovado">Aprovado no Recebimento</Label>
+              </div>
+
+              <div className="flex items-center space-x-2 border-l-4 border-orange-500 pl-3 bg-orange-50 dark:bg-orange-950/20 p-2 rounded">
+                <Switch id="armaz-inad" checked={armazenamentoInadequado} onCheckedChange={setArmazenamentoInadequado} />
+                <Label htmlFor="armaz-inad" className="text-sm">
+                  ⚠️ MP armazenada em <strong>local inadequado</strong> pelo fornecedor/transporte (gera alerta MAPA)
+                </Label>
               </div>
 
               <div className="space-y-2">

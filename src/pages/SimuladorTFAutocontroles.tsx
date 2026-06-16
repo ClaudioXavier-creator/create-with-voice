@@ -18,11 +18,14 @@ import {
   calcularResumoTF,
 } from "@/config/tfAutocontroles";
 
+import FileUpload from "@/components/FileUpload";
+
 export default function SimuladorTFAutocontroles() {
   const { user } = useAuth();
   const { empresaAtiva } = useEmpresa();
   const [respostas, setRespostas] = useState<Record<string, TFRespostaDetalhe>>({});
   const [saving, setSaving] = useState(false);
+  const [planoAcaoAnteriorUrl, setPlanoAcaoAnteriorUrl] = useState<string>("");
 
   const resumo = useMemo(() => calcularResumoTF(respostas), [respostas]);
 
@@ -45,6 +48,7 @@ export default function SimuladorTFAutocontroles() {
           score_pct: resumo.scorePct,
           total_nc: resumo.ncs,
           total_nc_obrigatorios: resumo.ncObrigatorios,
+          plano_acao_anterior_url: planoAcaoAnteriorUrl || null,
         })
         .select()
         .single();
@@ -111,6 +115,24 @@ export default function SimuladorTFAutocontroles() {
           </AlertDescription>
         </Alert>
       )}
+
+      {/* Plano de Ação Anterior (item I1 - cumprimento da TF anterior) */}
+      <Card className="mb-4 border-primary/40">
+        <CardHeader><CardTitle className="text-sm">📎 Plano de Ação da Fiscalização Anterior (item I1)</CardTitle></CardHeader>
+        <CardContent>
+          <p className="text-xs text-muted-foreground mb-2">
+            Anexe o PDF do TF-Autocontroles anterior e/ou o plano de ação enviado ao MAPA. Será vinculado à sessão atual para evidenciar cumprimento.
+          </p>
+          <FileUpload
+            bucket="documentos-bpf"
+            folder="tf-autocontroles"
+            empresaId={empresaAtiva?.id ?? null}
+            label="Anexar TF/Plano de Ação anterior"
+            currentUrl={planoAcaoAnteriorUrl || null}
+            onUploadComplete={(url) => setPlanoAcaoAnteriorUrl(url)}
+          />
+        </CardContent>
+      </Card>
 
       {/* Acordeão de módulos */}
       <Accordion type="multiple" className="space-y-2">
