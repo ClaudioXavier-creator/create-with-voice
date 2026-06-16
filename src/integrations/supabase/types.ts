@@ -249,6 +249,68 @@ export type Database = {
         }
         Relationships: []
       }
+      amostras_retencao: {
+        Row: {
+          created_at: string
+          data_coleta: string
+          data_descarte: string | null
+          empresa_id: string | null
+          id: string
+          local_armazenamento: string | null
+          lote: string
+          observacoes: string | null
+          prazo_descarte: string | null
+          produto: string
+          quantidade_g: number | null
+          responsavel_coleta: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          data_coleta?: string
+          data_descarte?: string | null
+          empresa_id?: string | null
+          id?: string
+          local_armazenamento?: string | null
+          lote: string
+          observacoes?: string | null
+          prazo_descarte?: string | null
+          produto: string
+          quantidade_g?: number | null
+          responsavel_coleta?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          data_coleta?: string
+          data_descarte?: string | null
+          empresa_id?: string | null
+          id?: string
+          local_armazenamento?: string | null
+          lote?: string
+          observacoes?: string | null
+          prazo_descarte?: string | null
+          produto?: string
+          quantidade_g?: number | null
+          responsavel_coleta?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "amostras_retencao_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       analises_laboratorio: {
         Row: {
           conforme: boolean | null
@@ -1849,6 +1911,8 @@ export type Database = {
       }
       empresas: {
         Row: {
+          atividades_sipeagro: string[] | null
+          autorizacao_medicamentos: string | null
           capacidade: string | null
           cnpj: string | null
           created_at: string
@@ -1856,12 +1920,17 @@ export type Database = {
           endereco: string | null
           id: string
           nome: string
+          numero_sipeagro: string | null
           responsavel_tecnico: string | null
           tipo_producao: string[] | null
           updated_at: string
           user_id: string
+          validade_autorizacao_medicamentos: string | null
+          validade_registro_sipeagro: string | null
         }
         Insert: {
+          atividades_sipeagro?: string[] | null
+          autorizacao_medicamentos?: string | null
           capacidade?: string | null
           cnpj?: string | null
           created_at?: string
@@ -1869,12 +1938,17 @@ export type Database = {
           endereco?: string | null
           id?: string
           nome: string
+          numero_sipeagro?: string | null
           responsavel_tecnico?: string | null
           tipo_producao?: string[] | null
           updated_at?: string
           user_id: string
+          validade_autorizacao_medicamentos?: string | null
+          validade_registro_sipeagro?: string | null
         }
         Update: {
+          atividades_sipeagro?: string[] | null
+          autorizacao_medicamentos?: string | null
           capacidade?: string | null
           cnpj?: string | null
           created_at?: string
@@ -1882,10 +1956,13 @@ export type Database = {
           endereco?: string | null
           id?: string
           nome?: string
+          numero_sipeagro?: string | null
           responsavel_tecnico?: string | null
           tipo_producao?: string[] | null
           updated_at?: string
           user_id?: string
+          validade_autorizacao_medicamentos?: string | null
+          validade_registro_sipeagro?: string | null
         }
         Relationships: []
       }
@@ -2641,6 +2718,69 @@ export type Database = {
           },
         ]
       }
+      inspecoes_iscas: {
+        Row: {
+          acao_tomada: string | null
+          created_at: string
+          data_inspecao: string
+          empresa_id: string | null
+          foto_url: string | null
+          id: string
+          observacoes: string | null
+          ponto_id: string
+          presenca_pragas: boolean | null
+          responsavel: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          acao_tomada?: string | null
+          created_at?: string
+          data_inspecao?: string
+          empresa_id?: string | null
+          foto_url?: string | null
+          id?: string
+          observacoes?: string | null
+          ponto_id: string
+          presenca_pragas?: boolean | null
+          responsavel?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          acao_tomada?: string | null
+          created_at?: string
+          data_inspecao?: string
+          empresa_id?: string | null
+          foto_url?: string | null
+          id?: string
+          observacoes?: string | null
+          ponto_id?: string
+          presenca_pragas?: boolean | null
+          responsavel?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "inspecoes_iscas_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "inspecoes_iscas_ponto_id_fkey"
+            columns: ["ponto_id"]
+            isOneToOne: false
+            referencedRelation: "mapa_iscas_armadilhas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       leads: {
         Row: {
           created_at: string
@@ -3181,6 +3321,65 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      mapa_iscas_armadilhas: {
+        Row: {
+          ativo: boolean
+          codigo: string
+          coordenadas: string | null
+          created_at: string
+          empresa_id: string | null
+          id: string
+          localizacao: string
+          observacoes: string | null
+          periodicidade_dias: number | null
+          produto_quimico_id: string | null
+          setor: string | null
+          tipo: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          ativo?: boolean
+          codigo: string
+          coordenadas?: string | null
+          created_at?: string
+          empresa_id?: string | null
+          id?: string
+          localizacao: string
+          observacoes?: string | null
+          periodicidade_dias?: number | null
+          produto_quimico_id?: string | null
+          setor?: string | null
+          tipo: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          ativo?: boolean
+          codigo?: string
+          coordenadas?: string | null
+          created_at?: string
+          empresa_id?: string | null
+          id?: string
+          localizacao?: string
+          observacoes?: string | null
+          periodicidade_dias?: number | null
+          produto_quimico_id?: string | null
+          setor?: string | null
+          tipo?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mapa_iscas_armadilhas_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       matriz_risco: {
         Row: {
@@ -4024,10 +4223,12 @@ export type Database = {
           embalagem: string | null
           empresa_id: string | null
           especie_alvo: string | null
+          especie_destino: string | null
           forma_fisica: string | null
           foto_url: string | null
           id: string
           indicacoes: string | null
+          linha_compartilhada: boolean | null
           marca: string | null
           modo_preparo: string | null
           modo_uso: string | null
@@ -4053,10 +4254,12 @@ export type Database = {
           embalagem?: string | null
           empresa_id?: string | null
           especie_alvo?: string | null
+          especie_destino?: string | null
           forma_fisica?: string | null
           foto_url?: string | null
           id?: string
           indicacoes?: string | null
+          linha_compartilhada?: boolean | null
           marca?: string | null
           modo_preparo?: string | null
           modo_uso?: string | null
@@ -4082,10 +4285,12 @@ export type Database = {
           embalagem?: string | null
           empresa_id?: string | null
           especie_alvo?: string | null
+          especie_destino?: string | null
           forma_fisica?: string | null
           foto_url?: string | null
           id?: string
           indicacoes?: string | null
+          linha_compartilhada?: boolean | null
           marca?: string | null
           modo_preparo?: string | null
           modo_uso?: string | null
@@ -4104,6 +4309,71 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "produtos_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      produtos_quimicos_cadastro: {
+        Row: {
+          ativo: boolean
+          categoria: string | null
+          created_at: string
+          empresa_id: string | null
+          fabricante: string | null
+          fispq_url: string | null
+          id: string
+          local_armazenamento: string | null
+          nome_comercial: string
+          observacoes: string | null
+          principio_ativo: string | null
+          registro_anvisa: string | null
+          registro_mapa: string | null
+          updated_at: string
+          user_id: string
+          validade_registro: string | null
+        }
+        Insert: {
+          ativo?: boolean
+          categoria?: string | null
+          created_at?: string
+          empresa_id?: string | null
+          fabricante?: string | null
+          fispq_url?: string | null
+          id?: string
+          local_armazenamento?: string | null
+          nome_comercial: string
+          observacoes?: string | null
+          principio_ativo?: string | null
+          registro_anvisa?: string | null
+          registro_mapa?: string | null
+          updated_at?: string
+          user_id: string
+          validade_registro?: string | null
+        }
+        Update: {
+          ativo?: boolean
+          categoria?: string | null
+          created_at?: string
+          empresa_id?: string | null
+          fabricante?: string | null
+          fispq_url?: string | null
+          id?: string
+          local_armazenamento?: string | null
+          nome_comercial?: string
+          observacoes?: string | null
+          principio_ativo?: string | null
+          registro_anvisa?: string | null
+          registro_mapa?: string | null
+          updated_at?: string
+          user_id?: string
+          validade_registro?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "produtos_quimicos_cadastro_empresa_id_fkey"
             columns: ["empresa_id"]
             isOneToOne: false
             referencedRelation: "empresas"
@@ -4233,6 +4503,7 @@ export type Database = {
       recebimento_mp: {
         Row: {
           aprovado: boolean | null
+          armazenamento_inadequado: boolean | null
           certificado_analise_numero: string | null
           certificado_analise_url: string | null
           certificado_analise_valido: boolean | null
@@ -4254,6 +4525,7 @@ export type Database = {
           materia_prima: string
           nota_fiscal_url: string | null
           numero_nota_fiscal: string | null
+          observacao_armazenamento: string | null
           observacoes: string | null
           odor: string | null
           quantidade: string | null
@@ -4272,6 +4544,7 @@ export type Database = {
         }
         Insert: {
           aprovado?: boolean | null
+          armazenamento_inadequado?: boolean | null
           certificado_analise_numero?: string | null
           certificado_analise_url?: string | null
           certificado_analise_valido?: boolean | null
@@ -4293,6 +4566,7 @@ export type Database = {
           materia_prima: string
           nota_fiscal_url?: string | null
           numero_nota_fiscal?: string | null
+          observacao_armazenamento?: string | null
           observacoes?: string | null
           odor?: string | null
           quantidade?: string | null
@@ -4311,6 +4585,7 @@ export type Database = {
         }
         Update: {
           aprovado?: boolean | null
+          armazenamento_inadequado?: boolean | null
           certificado_analise_numero?: string | null
           certificado_analise_url?: string | null
           certificado_analise_valido?: boolean | null
@@ -4332,6 +4607,7 @@ export type Database = {
           materia_prima?: string
           nota_fiscal_url?: string | null
           numero_nota_fiscal?: string | null
+          observacao_armazenamento?: string | null
           observacoes?: string | null
           odor?: string | null
           quantidade?: string | null
@@ -4351,6 +4627,77 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "recebimento_mp_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      receituarios_medicamentos: {
+        Row: {
+          arquivo_url: string | null
+          created_at: string
+          crmv: string
+          data_emissao: string
+          dosagem: string | null
+          empresa_id: string | null
+          especie_destino: string | null
+          id: string
+          lote_op: string | null
+          medico_veterinario: string
+          numero_receita: string | null
+          observacoes: string | null
+          principio_ativo: string | null
+          produto: string
+          uf_crmv: string | null
+          updated_at: string
+          user_id: string
+          validade_receita: string | null
+        }
+        Insert: {
+          arquivo_url?: string | null
+          created_at?: string
+          crmv: string
+          data_emissao?: string
+          dosagem?: string | null
+          empresa_id?: string | null
+          especie_destino?: string | null
+          id?: string
+          lote_op?: string | null
+          medico_veterinario: string
+          numero_receita?: string | null
+          observacoes?: string | null
+          principio_ativo?: string | null
+          produto: string
+          uf_crmv?: string | null
+          updated_at?: string
+          user_id: string
+          validade_receita?: string | null
+        }
+        Update: {
+          arquivo_url?: string | null
+          created_at?: string
+          crmv?: string
+          data_emissao?: string
+          dosagem?: string | null
+          empresa_id?: string | null
+          especie_destino?: string | null
+          id?: string
+          lote_op?: string | null
+          medico_veterinario?: string
+          numero_receita?: string | null
+          observacoes?: string | null
+          principio_ativo?: string | null
+          produto?: string
+          uf_crmv?: string | null
+          updated_at?: string
+          user_id?: string
+          validade_receita?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "receituarios_medicamentos_empresa_id_fkey"
             columns: ["empresa_id"]
             isOneToOne: false
             referencedRelation: "empresas"
@@ -4826,6 +5173,71 @@ export type Database = {
         }
         Relationships: []
       }
+      tempos_mistura_validados: {
+        Row: {
+          ativo: boolean
+          created_at: string
+          cv_homogeneidade: number | null
+          data_validacao: string
+          empresa_id: string | null
+          formula_id: string | null
+          id: string
+          laudo_url: string | null
+          metodo: string | null
+          nome_formula: string
+          observacoes: string | null
+          proxima_validacao: string | null
+          responsavel: string | null
+          tempo_mistura_seg: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          ativo?: boolean
+          created_at?: string
+          cv_homogeneidade?: number | null
+          data_validacao?: string
+          empresa_id?: string | null
+          formula_id?: string | null
+          id?: string
+          laudo_url?: string | null
+          metodo?: string | null
+          nome_formula: string
+          observacoes?: string | null
+          proxima_validacao?: string | null
+          responsavel?: string | null
+          tempo_mistura_seg: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          ativo?: boolean
+          created_at?: string
+          cv_homogeneidade?: number | null
+          data_validacao?: string
+          empresa_id?: string | null
+          formula_id?: string | null
+          id?: string
+          laudo_url?: string | null
+          metodo?: string | null
+          nome_formula?: string
+          observacoes?: string | null
+          proxima_validacao?: string | null
+          responsavel?: string | null
+          tempo_mistura_seg?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tempos_mistura_validados_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       testes_rastreabilidade: {
         Row: {
           created_at: string
@@ -4894,10 +5306,12 @@ export type Database = {
       tf_autocontroles_sessoes: {
         Row: {
           created_at: string
+          cumprimento_plano_anterior: Json | null
           data: string
           empresa_id: string | null
           id: string
           observacoes: string | null
+          plano_acao_anterior_url: string | null
           responsavel: string | null
           respostas: Json
           score_pct: number | null
@@ -4909,10 +5323,12 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          cumprimento_plano_anterior?: Json | null
           data?: string
           empresa_id?: string | null
           id?: string
           observacoes?: string | null
+          plano_acao_anterior_url?: string | null
           responsavel?: string | null
           respostas?: Json
           score_pct?: number | null
@@ -4924,10 +5340,12 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          cumprimento_plano_anterior?: Json | null
           data?: string
           empresa_id?: string | null
           id?: string
           observacoes?: string | null
+          plano_acao_anterior_url?: string | null
           responsavel?: string | null
           respostas?: Json
           score_pct?: number | null
@@ -5018,12 +5436,14 @@ export type Database = {
           created_at: string
           data_validacao: string | null
           empresa_id: string | null
+          formula_id: string | null
           hora_validacao: string | null
           id: string
           limite_aceitavel: string | null
           linha_producao: string
           metodo_analise: string | null
           observacoes: string | null
+          ordem_producao_id: string | null
           produto_anterior: string
           produto_seguinte: string
           residuo_detectado: string | null
@@ -5037,12 +5457,14 @@ export type Database = {
           created_at?: string
           data_validacao?: string | null
           empresa_id?: string | null
+          formula_id?: string | null
           hora_validacao?: string | null
           id?: string
           limite_aceitavel?: string | null
           linha_producao: string
           metodo_analise?: string | null
           observacoes?: string | null
+          ordem_producao_id?: string | null
           produto_anterior: string
           produto_seguinte: string
           residuo_detectado?: string | null
@@ -5056,12 +5478,14 @@ export type Database = {
           created_at?: string
           data_validacao?: string | null
           empresa_id?: string | null
+          formula_id?: string | null
           hora_validacao?: string | null
           id?: string
           limite_aceitavel?: string | null
           linha_producao?: string
           metodo_analise?: string | null
           observacoes?: string | null
+          ordem_producao_id?: string | null
           produto_anterior?: string
           produto_seguinte?: string
           residuo_detectado?: string | null
