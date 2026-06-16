@@ -319,7 +319,7 @@ export function MapaIscasSection() {
       </CardHeader>
       <CardContent>
         <Table>
-          <TableHeader><TableRow><TableHead>Código</TableHead><TableHead>Tipo</TableHead><TableHead>Localização</TableHead><TableHead>Setor</TableHead><TableHead>Periodicidade</TableHead><TableHead></TableHead></TableRow></TableHeader>
+          <TableHeader><TableRow><TableHead>Código</TableHead><TableHead>Tipo</TableHead><TableHead>Localização</TableHead><TableHead>Setor</TableHead><TableHead>Periodicidade</TableHead><TableHead>Inspeções</TableHead><TableHead></TableHead></TableRow></TableHeader>
           <TableBody>
             {rows.map((r) => (
               <TableRow key={r.id}>
@@ -328,14 +328,84 @@ export function MapaIscasSection() {
                 <TableCell className="text-xs">{r.localizacao}</TableCell>
                 <TableCell className="text-xs">{r.setor}</TableCell>
                 <TableCell className="text-xs">{r.periodicidade_dias} dias</TableCell>
+                <TableCell><InspecoesIscaInline pontoId={r.id} /></TableCell>
                 <TableCell><Button size="icon" variant="ghost" onClick={() => remove(r.id)}><Trash2 className="w-3 h-3" /></Button></TableCell>
               </TableRow>
             ))}
-            {rows.length === 0 && <TableRow><TableCell colSpan={6} className="text-center text-muted-foreground text-sm">Nenhum ponto cadastrado</TableCell></TableRow>}
+            {rows.length === 0 && <TableRow><TableCell colSpan={7} className="text-center text-muted-foreground text-sm">Nenhum ponto cadastrado</TableCell></TableRow>}
           </TableBody>
         </Table>
       </CardContent>
     </Card>
+  );
+}
+
+// Sub-componente: registro rápido de inspeção numa isca/armadilha
+function InspecoesIscaInline({ pontoId }: { pontoId: string }) {
+  const { user } = useAuth();
+  const { empresaAtiva } = useEmpresa();
+  const [open, setOpen] = useState(false);
+  const [count, setCount] = useState<number>(0);
+  const [ultima, setUltima] = useState<string | null>(null);
+
+  const load = async () => {
+    const { data } = await (supabase.from("inspecoes_iscas" as any) as any)
+      .select("data_inspecao", { count: "exact" })
+      .eq("ponto_id", pontoId)
+      .order("data_inspecao", { ascending: false })
+      .limit(1);
+    if (data && data.length > 0) setUltima(data[0].data_inspecao);
+    const { count: c } = await (supabase.from("inspecoes_iscas" as any) as any)
+      .select("id", { count: "exact", head: true })
+      .eq("ponto_id", pontoId);
+    setCount(c ?? 0);
+  };
+  useEffect(() => { load(); /* eslint-disable-next-line */ }, [pontoId]);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const fd = new FormData(e.currentTarget);
+    const { error } = await (supabase.from("inspecoes_iscas" as any) as any).insert({
+      user_id: user?.id,
+      empresa_id: empresaAtiva?.id ?? null,
+      ponto_id: pontoId,
+      data_inspecao: fd.get("data_inspecao"),
+      situacao: fd.get("situacao"),
+      acao_corretiva: fd.get("acao_corretiva"),
+      observacoes: fd.get("observacoes"),
+    });
+    if (error) { toast.error("Erro: " + error.message); return; }
+    toast.success("Inspeção registrada");
+    setOpen(false);
+    load();
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button size="sm" variant="outline" className="h-7 text-xs">
+          {count} {ultima ? `(últ. ${new Date(ultima).toLocaleDateString("pt-BR")})` : ""}
+          <Plus className="w-3 h-3 ml-1" />
+        </Button>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader><DialogTitle>Nova Inspeção</DialogTitle></DialogHeader>
+        <form onSubmit={handleSubmit} className="space-y-3">
+          <div><Label>Data</Label><Input type="date" name="data_inspecao" defaultValue={new Date().toISOString().slice(0, 10)} required /></div>
+          <div><Label>Situação</Label>
+            <select name="situacao" className="w-full border rounded p-2 text-sm" defaultValue="integra">
+              <option value="integra">Íntegra / Sem captura</option>
+              <option value="captura">Com captura</option>
+              <option value="violada">Violada / Avariada</option>
+              <option value="reposicao">Necessitou reposição</option>
+            </select>
+          </div>
+          <div><Label>Ação Corretiva</Label><Input name="acao_corretiva" placeholder="Repor isca, substituir armadilha..." /></div>
+          <div><Label>Observações</Label><Textarea name="observacoes" rows={2} /></div>
+          <Button type="submit" className="w-full">Salvar Inspeção</Button>
+        </form>
+      </DialogContent>
+    </Dialog>
   );
 }
 
