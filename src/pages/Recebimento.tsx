@@ -147,8 +147,9 @@ export default function Recebimento() {
       nota_fiscal_url: nfUrl || null,
       laudo_url: laudoUrl || null,
       observacoes: observacoes || null,
+      armazenamento_inadequado: armazenamentoInadequado,
       status: 'bloqueado'
-    }).select().single();
+    } as any).select().single();
 
     if (!error && !aprovado) {
       await supabase.from("nao_conformidades").insert({
