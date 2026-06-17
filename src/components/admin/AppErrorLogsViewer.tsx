@@ -13,7 +13,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Loader2, AlertTriangle, RefreshCw, Trash2, CheckCircle2, Search, Clock, Shield } from "lucide-react";
+import { Loader2, AlertTriangle, RefreshCw, Trash2, CheckCircle2, Search, Clock, Shield, Send } from "lucide-react";
 import { toast } from "sonner";
 import { formatDistanceToNow, format } from "date-fns";
 import { ptBR } from "date-fns/locale";
