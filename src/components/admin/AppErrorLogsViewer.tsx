@@ -156,6 +156,38 @@ export default function AppErrorLogsViewer() {
             <Button variant="outline" size="icon" onClick={load} disabled={loading} className="shrink-0 h-9 w-9">
               <RefreshCw className={loading ? "h-4 w-4 animate-spin" : "h-4 w-4"} />
             </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              className="shrink-0 h-9 gap-2"
+              onClick={async () => {
+                const t = toast.loading("Enviando alerta de teste via WhatsApp...");
+                try {
+                  const { data, error } = await supabase.functions.invoke("notify-error-whatsapp", {
+                    body: {
+                      type: "boundary",
+                      message: "🧪 TESTE MANUAL — alerta disparado do Portal de Gestão",
+                      route: "/superadmin?tab=error-logs",
+                      appVersion: "manual-test",
+                      userAgent: navigator.userAgent,
+                      stack: "Teste end-to-end Evolution API",
+                    },
+                  });
+                  if (error) throw error;
+                  const ok = (data?.results ?? []).every((r: any) => r.ok);
+                  toast.dismiss(t);
+                  if (ok) toast.success("✅ Alerta enviado! Verifique o WhatsApp configurado em ALERT_WHATSAPP_NUMBER.");
+                  else toast.error(`Falha parcial: ${JSON.stringify(data?.results)}`);
+                } catch (e: any) {
+                  toast.dismiss(t);
+                  toast.error(`Erro: ${e.message ?? e}`);
+                }
+              }}
+              title="Disparar alerta de teste via WhatsApp (Evolution API)"
+            >
+              <Send className="h-4 w-4" />
+              Testar WhatsApp
+            </Button>
             <Button variant="outline" size="icon" onClick={clearOld} title="Limpar logs >30d" className="shrink-0 h-9 w-9 text-destructive hover:bg-destructive/10">
               <Trash2 className="h-4 w-4" />
             </Button>
