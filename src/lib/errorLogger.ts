@@ -97,15 +97,9 @@ export async function logAppError(payload: LogPayload): Promise<void> {
       extra: payload.extra ?? null,
     });
     
-    // 4. WhatsApp Notification for critical errors
-    if (["boundary", "chunk_error", "boot_failsafe"].includes(payload.type)) {
-      supabase.functions.invoke("notify-error-whatsapp", {
-        body: enriched
-      }).catch(err => {
-        // eslint-disable-next-line no-console
-        console.warn("[errorLogger] WhatsApp notification failed:", err);
-      });
-    }
+    // NOTE: Alertas via WhatsApp ficam restritos ao Portal de Gestão (SuperAdmin).
+    // Nos programas do cliente, apenas registramos o erro em DB/Sentry para que
+    // o usuário tenha ciência e tome providências — sem disparar WhatsApp daqui.
   } catch (err) {
     // eslint-disable-next-line no-console
     console.warn("[errorLogger] Failed to persist error log:", err);
