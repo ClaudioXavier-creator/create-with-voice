@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { ArrowLeft, ArrowRight, ChevronLeft, ChevronRight, Sparkles, Lock } from "lucide-react";
+import { ArrowLeft, ArrowRight, ChevronLeft, ChevronRight, Sparkles, Lock, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -315,6 +315,20 @@ export default function DemoPage() {
           </CardContent>
         </Card>
       </section>
+
+      {/* WhatsApp flutuante — conversão alternativa durante o tour */}
+      <a
+        href={`https://wa.me/5561996757585?text=${encodeURIComponent(
+          `Olá! Estou vendo a demo do ${config.brand} e gostaria de tirar uma dúvida.`,
+        )}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Falar pelo WhatsApp"
+        className="fixed bottom-6 right-6 z-50 flex items-center gap-2 rounded-full bg-green-600 px-5 py-3 text-white shadow-2xl transition-transform hover:scale-105 active:scale-95"
+      >
+        <MessageCircle className="h-5 w-5" />
+        <span className="hidden sm:inline font-semibold">Tirar dúvida no WhatsApp</span>
+      </a>
     </div>
   );
 }
