@@ -41,9 +41,9 @@ export default function LandingPageBPF() {
           <img src={logoBpfConsult} alt="BPF_Consult Logo" className="h-8 w-auto object-contain" />
           <div className="font-bold text-2xl text-[#173404]">BPF<span className="text-[#97C459]">_Consult</span></div>
         </div>
-        <div className="flex items-center gap-4">
-          
+        <div className="flex items-center gap-2 sm:gap-4">
           <Button variant="ghost" onClick={() => navigate("/auth")} className="hidden sm:flex text-slate-600 font-medium">Entrar</Button>
+          <Button variant="outline" onClick={() => navigate("/demo/feedbpf")} className="hidden sm:flex border-[#97C459] text-[#173404] rounded-full px-5">Ver demo ao vivo</Button>
           <Button onClick={scrollToContact} className="bg-[#173404] text-white rounded-full px-6">Agendar Demo</Button>
         </div>
       </nav>
@@ -66,12 +66,12 @@ export default function LandingPageBPF() {
           <p className="text-lg sm:text-xl text-green-100/80 mb-10 max-w-2xl mx-auto">Plataforma e consultoria especializada em BPF, auditorias digitais, rastreabilidade e CRM para fábricas de rações e suplementos animais - com total aderência à IN 17/2023 do MAPA.</p>
           <div className="flex flex-col items-center gap-6">
             <div className="flex flex-col sm:flex-row gap-4 w-full justify-center">
-              <Button onClick={scrollToContact} size="lg" className="bg-[#97C459] hover:bg-[#86b14d] text-[#173404] font-bold text-lg px-8 py-7 rounded-xl shadow-xl transition-all hover:scale-105 active:scale-95">
-                🟢 Agendar demonstração gratuita
+              <Button onClick={() => navigate("/demo/feedbpf")} size="lg" className="bg-[#97C459] hover:bg-[#86b14d] text-[#173404] font-bold text-lg px-8 py-7 rounded-xl shadow-xl transition-all hover:scale-105 active:scale-95">
+                ▶️ Ver demo ao vivo (2 min)
               </Button>
-              <Button variant="outline" onClick={scrollToModules} className="border-white/20 text-white hover:bg-white/10 h-[60px] rounded-xl px-8">Conhecer a plataforma →</Button>
+              <Button variant="outline" onClick={scrollToContact} className="border-white/20 text-white hover:bg-white/10 h-[60px] rounded-xl px-8">Agendar demonstração com especialista →</Button>
             </div>
-            <p className="text-sm text-green-100/60 font-medium">Sem burocracia. Sem compromisso. Em 30 minutos você vê como funciona na prática.</p>
+            <p className="text-sm text-green-100/60 font-medium">Tour guiado em 10 telas com dados reais. Sem cadastro. Sem compromisso.</p>
           </div>
         </div>
       </section>
@@ -448,10 +448,25 @@ export default function LandingPageBPF() {
               <div className="space-y-6">
                 <p className="text-slate-600">Agende uma demonstração gratuita de 30 minutos. Vamos analisar o cenário da sua fábrica e mostrar exatamente como a BPF_Consult pode ajudar.</p>
                 <div className="flex flex-col gap-4">
-                  <Button size="lg" className="bg-[#97C459] hover:bg-[#86b14d] text-[#173404] font-bold h-14 rounded-xl">
-                    🟢 Agendar minha demonstração gratuita
+                  <Button
+                    size="lg"
+                    onClick={() => navigate("/demo/feedbpf")}
+                    className="bg-[#97C459] hover:bg-[#86b14d] text-[#173404] font-bold h-14 rounded-xl"
+                  >
+                    ▶️ Ver demo ao vivo agora
                   </Button>
-                  <Button size="lg" variant="outline" className="h-14 rounded-xl border-slate-200">
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    onClick={() =>
+                      window.open(
+                        "https://wa.me/5561996757585?text=" +
+                          encodeURIComponent("Olá! Vim do site BPF_Consult e gostaria de uma demonstração."),
+                        "_blank",
+                      )
+                    }
+                    className="h-14 rounded-xl border-slate-200"
+                  >
                     <MessageCircle className="h-5 w-5 mr-2 text-green-600" /> Falar pelo WhatsApp
                   </Button>
                 </div>
