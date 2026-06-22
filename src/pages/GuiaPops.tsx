@@ -188,6 +188,8 @@ export default function GuiaPops() {
     if (popParam) setSelectedPop(popParam);
   }, [popParam]);
 
+  useEffect(() => { markPopVisited(); }, []);
+
   const handleSelectPop = (codigo: string) => {
     setSelectedPop(codigo);
     setSearchParams({ pop: codigo });
