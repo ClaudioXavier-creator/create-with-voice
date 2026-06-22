@@ -12,6 +12,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useEmpresa } from "@/hooks/useEmpresa";
 import { useOnboarding, OnboardingOverlay } from "@/components/OnboardingTour";
+import { OnboardingChecklist } from "@/components/OnboardingChecklist";
 
 // Components extracted for memoization if needed
 import { DashboardStats } from "@/components/dashboard/DashboardStats";
