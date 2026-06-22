@@ -11,6 +11,7 @@ import { POP_TEXTOS } from "@/config/popTextos";
 import { POPS_CONFIG } from "@/config/popsConfig";
 import { INSTRUCOES_TRABALHO } from "@/config/instrucoesTrabalho";
 import { useSearchParams } from "react-router-dom";
+import { markPopVisited } from "@/components/OnboardingChecklist";
 
 const POP_ICONS: Record<string, React.ElementType> = {
   "POP-01": Users, "POP-02": Droplets, "POP-03": ClipboardCheck, "POP-04": Beaker,
