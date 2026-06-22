@@ -193,6 +193,10 @@ export default function Index() {
         </div>
       </div>
 
+      <OnboardingChecklist onStartTour={iniciarTour} />
+
+
+
       <DashboardStats 
         conformidadeBPF={data.conformidadeBPF}
         ncAbertas={data.ncAbertas}
