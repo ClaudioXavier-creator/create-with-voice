@@ -43,7 +43,6 @@ const progressFromOverdue = (overdue: number, total: number) => {
 
 export default function Index() {
   const { user } = useAuth();
-  const { empresaAtiva } = useEmpresa();
   const { empresas, empresaAtiva } = useEmpresa();
   const { showOnboarding, iniciarTour, fecharTour } = useOnboarding({ autoStartEnabled: (empresas?.length ?? 0) > 0 });
   const [periodoFiltro, setPeriodoFiltro] = useState("todos");
