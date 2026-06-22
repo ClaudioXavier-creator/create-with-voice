@@ -56,17 +56,19 @@ const STEPS: Step[] = [
 
 const STORAGE_KEY = "feedbpf_onboarding_done";
 
-export function useOnboarding() {
+export function useOnboarding(options?: { autoStartEnabled?: boolean }) {
+  const autoStartEnabled = options?.autoStartEnabled ?? true;
   const [showOnboarding, setShowOnboarding] = useState(false);
 
   useEffect(() => {
+    if (!autoStartEnabled) return;
     const done = localStorage.getItem(STORAGE_KEY);
     if (!done) {
       // Delay to let the dashboard load first
       const timer = setTimeout(() => setShowOnboarding(true), 1500);
       return () => clearTimeout(timer);
     }
-  }, []);
+  }, [autoStartEnabled]);
 
   const iniciarTour = () => {
     localStorage.removeItem(STORAGE_KEY);

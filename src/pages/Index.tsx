@@ -12,6 +12,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useEmpresa } from "@/hooks/useEmpresa";
 import { useOnboarding, OnboardingOverlay } from "@/components/OnboardingTour";
+import { OnboardingChecklist } from "@/components/OnboardingChecklist";
 
 // Components extracted for memoization if needed
 import { DashboardStats } from "@/components/dashboard/DashboardStats";
@@ -43,8 +44,8 @@ const progressFromOverdue = (overdue: number, total: number) => {
 
 export default function Index() {
   const { user } = useAuth();
-  const { empresaAtiva } = useEmpresa();
-  const { showOnboarding, iniciarTour, fecharTour } = useOnboarding();
+  const { empresas, empresaAtiva } = useEmpresa();
+  const { showOnboarding, iniciarTour, fecharTour } = useOnboarding({ autoStartEnabled: (empresas?.length ?? 0) > 0 });
   const [periodoFiltro, setPeriodoFiltro] = useState("todos");
 
   const { data, isLoading } = useQuery({
@@ -191,6 +192,10 @@ export default function Index() {
           </Select>
         </div>
       </div>
+
+      <OnboardingChecklist onStartTour={iniciarTour} />
+
+
 
       <DashboardStats 
         conformidadeBPF={data.conformidadeBPF}
