@@ -32,6 +32,9 @@ export default function PlanilhasPop() {
     [initialPopCode],
   );
 
+  useEffect(() => { markPopVisited(); }, []);
+
+
   useEffect(() => {
     if (preselectedPop) setSelectedPop(preselectedPop);
   }, [preselectedPop]);
