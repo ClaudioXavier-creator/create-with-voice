@@ -16,6 +16,7 @@ import { useEmpresa } from "@/hooks/useEmpresa";
 import { POPS_CONFIG, type PopConfig, type PopPeriodicidade } from "@/config/popsConfig";
 import PopPlanilhaForm from "@/components/pop/PopPlanilhaForm";
 import { TEMPLATE_GENERATORS, exportPopDataToExcel } from "@/utils/excelTemplates";
+import { markPopVisited } from "@/components/OnboardingChecklist";
 
 const MESES = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
 
