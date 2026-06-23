@@ -16,10 +16,36 @@ import { Separator } from "@/components/ui/separator";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { toast } from "sonner";
 import logoBpfConsult from "@/assets/logo-bpf-consult.png";
+import { Seo } from "@/components/Seo";
 
+const ORG_JSON_LD = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "BPF_Consult",
+  url: "https://www.bpfconsult.com.br",
+  logo: "https://www.bpfconsult.com.br/favicon.png",
+  description:
+    "Plataforma integrada de BPF, Auditoria Digital e CRM para o agronegócio: Feed_BPF, Audits_BPF, Agro RC, Nutri_Agro Labels, NutriCRM e AgroGestão CRM.",
+  sameAs: ["https://www.bpfconsult.com.br"],
+  contactPoint: {
+    "@type": "ContactPoint",
+    contactType: "customer support",
+    email: "contato@bpfconsult.com.br",
+    areaServed: "BR",
+    availableLanguage: ["Portuguese"],
+  },
+};
 
-
-
+const SOFTWARE_JSON_LD = {
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  name: "Feed_BPF",
+  applicationCategory: "BusinessApplication",
+  operatingSystem: "Web",
+  offers: { "@type": "Offer", price: "0", priceCurrency: "BRL" },
+  description:
+    "Sistema completo de Boas Práticas de Fabricação (BPF) para fábricas de ração — IN 04/2007 e Decreto 12.031/2024.",
+};
 
 export default function LandingPageBPF() {
   const navigate = useNavigate();
