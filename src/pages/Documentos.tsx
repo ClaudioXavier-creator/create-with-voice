@@ -20,6 +20,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useEmpresa } from "@/hooks/useEmpresa";
 import { toast } from "sonner";
 import { POPS_CONFIG } from "@/config/popsConfig";
+import { markPopVisited } from "@/components/OnboardingChecklist";
 
 const POPS_OBRIGATORIOS = POPS_CONFIG.map((p) => {
   const moduloMap: Record<string, { modulo: string; moduloLabel: string }> = {
@@ -100,6 +101,9 @@ export default function Documentos() {
   const [calibracoes, setCalibracoes] = useState<CalibracaoRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+
+  useEffect(() => { markPopVisited(); }, []);
+
 
   // POP form
   const [popOpen, setPopOpen] = useState(false);
