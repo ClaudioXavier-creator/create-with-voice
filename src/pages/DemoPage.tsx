@@ -210,8 +210,8 @@ export default function DemoPage() {
   return (
     <div className="min-h-screen bg-background">
       <Seo
-        title={`Demo ${config.title} — BPF_Consult`}
-        description={`Conheça ${config.title} em uma navegação guiada com telas reais do produto. Teste gratuito de 7 dias, sem cartão.`}
+        title={`Demo ${config.brand} — BPF_Consult`}
+        description={`Conheça ${config.brand}: ${config.tagline}. Navegação guiada com telas reais. Teste gratuito de 7 dias, sem cartão.`}
         canonical={`https://www.bpfconsult.com.br/demo/${produto ?? key}`}
       />
       {/* Header */}
