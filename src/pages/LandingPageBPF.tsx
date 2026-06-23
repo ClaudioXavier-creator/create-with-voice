@@ -61,6 +61,12 @@ export default function LandingPageBPF() {
 
   return (
     <div className="min-h-screen bg-white font-sans text-slate-900">
+      <Seo
+        title="BPF_Consult — BPF, Auditoria e CRM para Nutrição Animal"
+        description="Plataforma integrada para fábricas de ração: BPF (IN 04/2007), auditoria digital, rastreabilidade, recall e CRM. Conformidade MAPA simplificada."
+        canonical="https://www.bpfconsult.com.br/"
+        jsonLd={[ORG_JSON_LD, SOFTWARE_JSON_LD]}
+      />
       {/* Navbar Minimalist */}
       <nav className="fixed top-0 w-full bg-white/80 backdrop-blur-md z-50 border-b border-gray-100 py-4 px-6 flex justify-between items-center">
         <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate("/")}>
