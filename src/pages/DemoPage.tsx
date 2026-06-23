@@ -4,6 +4,7 @@ import { ArrowLeft, ArrowRight, ChevronLeft, ChevronRight, Sparkles, Lock, Messa
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Seo } from "@/components/Seo";
 
 import logoFeedBpf from "@/assets/logo-feed-bpf.png";
 import logoAuditsBpf from "@/assets/logo-audits-bpf.png";
@@ -208,6 +209,11 @@ export default function DemoPage() {
 
   return (
     <div className="min-h-screen bg-background">
+      <Seo
+        title={`Demo ${config.brand} — BPF_Consult`}
+        description={`Conheça ${config.brand}: ${config.tagline}. Navegação guiada com telas reais. Teste gratuito de 7 dias, sem cartão.`}
+        canonical={`https://www.bpfconsult.com.br/demo/${produto ?? key}`}
+      />
       {/* Header */}
       <header className="border-b bg-card">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between gap-4">

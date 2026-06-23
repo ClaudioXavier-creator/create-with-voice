@@ -12,3 +12,9 @@ Allow: /
 
 User-agent: *
 Allow: /
+Disallow: /auth
+Disallow: /admin
+Disallow: /super-admin
+Disallow: /auditor-portal
+
+Sitemap: https://www.bpfconsult.com.br/sitemap.xml
