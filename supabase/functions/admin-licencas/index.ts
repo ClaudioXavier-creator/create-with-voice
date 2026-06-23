@@ -292,24 +292,26 @@ Deno.serve(async (req) => {
       const { empresa_id, licenca_id, force } = params;
       if (!empresa_id && !licenca_id) throw new Error("empresa_id ou licenca_id é obrigatório");
 
-      // Buscar licença para verificar assinatura Stripe ativa paga
+      // Buscar licença para verificar assinatura Paddle ativa paga
       const { data: licencaAtual } = licenca_id
         ? await adminClient.from("licencas").select("*").eq("id", licenca_id).maybeSingle()
         : await adminClient.from("licencas").select("*").eq("empresa_id", empresa_id).maybeSingle();
 
-      // Bloquear revogação se houver assinatura Stripe ativa e paga (não liberada manualmente)
-      const temStripeAtivo =
+      // Bloquear revogação se houver assinatura Paddle ativa e paga (não liberada manualmente).
+      // Obs.: as colunas stripe_subscription_id/stripe_customer_id são reutilizadas
+      // pelo webhook do Paddle (legado de schema).
+      const temAssinaturaAtiva =
         (licencaAtual?.stripe_subscription_id || licencaAtual?.stripe_customer_id) &&
         licencaAtual?.status === "ativa" &&
         !licencaAtual?.liberado_admin &&
         new Date(licencaAtual.data_expiracao) > new Date();
 
-      if (temStripeAtivo && !force) {
+      if (temAssinaturaAtiva && !force) {
         return new Response(
           JSON.stringify({
             error:
-              "Esta licença possui uma assinatura ativa (Stripe/Paddle). Não é possível revogar enquanto o pagamento estiver vigente. Cancele a assinatura no provedor primeiro ou use 'Forçar Revogação'.",
-            stripe_protected: true,
+              "Esta licença possui uma assinatura ativa no Paddle. Cancele a assinatura no provedor primeiro ou use 'Forçar Revogação'.",
+            assinatura_protegida: true,
           }),
           { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
