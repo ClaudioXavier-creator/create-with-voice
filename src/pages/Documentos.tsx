@@ -102,6 +102,9 @@ export default function Documentos() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
+  useEffect(() => { markPopVisited(); }, []);
+
+
   // POP form
   const [popOpen, setPopOpen] = useState(false);
   const [popCodigo, setPopCodigo] = useState("");
