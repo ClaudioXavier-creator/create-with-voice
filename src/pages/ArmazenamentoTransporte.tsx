@@ -441,10 +441,10 @@ export default function ArmazenamentoTransporte() {
               <div className="flex items-start gap-3">
                 <Thermometer className="w-6 h-6 text-primary mt-0.5" />
                 <div>
-                  <h4 className="font-semibold text-sm">Controle de Temperatura e Umidade — Depósitos</h4>
+                  <h4 className="font-semibold text-sm">POP-01 — Controle de Temperatura e Umidade dos Depósitos</h4>
                   <p className="text-xs text-muted-foreground mt-1">
                     Registro diário ou por turno de temperatura e umidade relativa nos depósitos de
-                    matéria-prima e produto acabado, conforme IN 15/2009.
+                    matéria-prima e produto acabado (condições de armazenamento — IN 04/2007).
                   </p>
                   <div className="flex gap-2 mt-2">
                     <Badge variant="outline" className="text-[10px]">Temp ideal: 15–25°C</Badge>
