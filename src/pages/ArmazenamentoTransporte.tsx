@@ -240,7 +240,7 @@ export default function ArmazenamentoTransporte() {
     if (umidNum > 70) alertas.push("⚠️ Umidade acima de 70% — risco de formação de fungos/micotoxinas");
 
     const obs = [
-      `[MONITORAMENTO TEMP/UMIDADE — POP-09]`,
+      `[MONITORAMENTO TEMP/UMIDADE — POP-01 / Condições de Armazenamento]`,
       `Local: ${logLocal} | Hora: ${logHora || "—"}`,
       `Temperatura: ${logTemp || "—"}°C | Umidade: ${logUmid || "—"}%`,
       ...alertas,
@@ -249,8 +249,8 @@ export default function ArmazenamentoTransporte() {
 
     const { error } = await supabase.from("execucao_pops").insert({
       user_id: user.id, empresa_id: empresaAtiva?.id || null,
-      codigo_pop: "POP-TEMP-UMID",
-      nome_pop: "Monitoramento de Temperatura e Umidade",
+      codigo_pop: "POP-01-TEMP-UMID",
+      nome_pop: "Monitoramento de Temperatura e Umidade (Armazenamento)",
       executor: logResp,
       setor: logLocal,
       status: alertas.length === 0 ? "concluido" : "nao_conforme",
