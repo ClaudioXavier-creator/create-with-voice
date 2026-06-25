@@ -78,7 +78,7 @@ export default function ControleResiduos() {
       if (isProdutoDescartado && form.produto_nome) {
         const motivo = MOTIVOS_DESCARTE.find(m => m.value === form.motivo_descarte)?.label || form.motivo_descarte || "Não informado";
         const obs = [
-          `[REGISTRO DE DESCARTE — POP-04 / IN 15/2009]`,
+          `[REGISTRO DE DESCARTE — POP-08 / IN 15/2009]`,
           `Tipo: ${form.tipo_residuo}`,
           `Produto: ${form.produto_nome} | Lote: ${form.lote_produto || "—"}`,
           `Motivo: ${motivo}`,
@@ -91,7 +91,7 @@ export default function ControleResiduos() {
 
         await supabase.from("execucao_pops").insert({
           user_id: user!.id,
-          codigo_pop: "POP-04-DESCARTE",
+          codigo_pop: "POP-08-DESCARTE",
           nome_pop: "Registro de Descarte de Produto",
           executor: form.responsavel || "—",
           setor: form.origem || "Produção",
@@ -301,7 +301,7 @@ export default function ControleResiduos() {
                   <p className="text-xs text-muted-foreground mt-1">
                     Registro obrigatório de produtos vencidos, avariados, rejeitados ou reprovados em análise.
                     Cada descarte deve conter: identificação do produto, lote, motivo, destino e responsável.
-                    O registro é automaticamente vinculado à execução do POP-04 (Descarte).
+                    O registro é automaticamente vinculado à execução do POP-08 (Descarte).
                   </p>
                   <div className="flex flex-wrap gap-2 mt-2">
                     <Badge variant="outline" className="text-[10px]">IN 04/2007 POP-08</Badge>
