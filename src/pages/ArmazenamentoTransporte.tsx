@@ -197,7 +197,7 @@ export default function ArmazenamentoTransporte() {
     const pct = Math.round((conformes / totalItens) * 100);
 
     const obs = [
-      `[INSPEÇÃO DE DEPÓSITO — POP-09 / IN 15/2009]`,
+      `[INSPEÇÃO DE DEPÓSITO — POP-01 / Armazenamento de MP e PA — IN 04/2007]`,
       `Local: ${depLocal || "—"} | Temp: ${depTemp || "—"}°C | Umid: ${depUmid || "—"}%`,
       `Conformidade: ${conformes}/${totalItens} itens (${pct}%)`,
       ...CHECKLIST_DEPOSITO.flatMap(area =>
@@ -208,8 +208,8 @@ export default function ArmazenamentoTransporte() {
 
     const { error } = await supabase.from("execucao_pops").insert({
       user_id: user.id, empresa_id: empresaAtiva?.id || null,
-      codigo_pop: "POP-DEPOSITO",
-      nome_pop: "Inspeção de Depósito/Armazém",
+      codigo_pop: "POP-01-DEPOSITO",
+      nome_pop: "Inspeção de Depósito / Armazém (Armazenamento de MP)",
       executor: depResp,
       setor: depLocal || "Depósito",
       status: pct >= 80 ? "concluido" : "nao_conforme",
