@@ -156,7 +156,7 @@ export default function ArmazenamentoTransporte() {
     const pct = Math.round((conformes / totalItens) * 100);
 
     const obs = [
-      `[INSPEÇÃO DE VEÍCULO — POP-09 / IN 15/2009]`,
+      `[INSPEÇÃO DE VEÍCULO — POP-02 / PL POP 2.4 — IN 15/2009]`,
       `Placa: ${veicPlaca || "—"} | Transportadora: ${veicTransportadora || "—"}`,
       `Tipo de carga: ${veicTipoCarga === "granel" ? "Granel" : "Ensacado/Paletizado"}`,
       `Conformidade: ${conformes}/${totalItens} itens (${pct}%)`,
@@ -168,8 +168,8 @@ export default function ArmazenamentoTransporte() {
 
     const { error } = await supabase.from("execucao_pops").insert({
       user_id: user.id, empresa_id: empresaAtiva?.id || null,
-      codigo_pop: "POP-09-VEICULO",
-      nome_pop: "Inspeção de Veículo de Transporte",
+      codigo_pop: "POP-02-VEICULO",
+      nome_pop: "PL POP 2.4 — Inspeção/Higiene de Veículo de Transporte",
       executor: veicResp,
       setor: `Placa: ${veicPlaca || "N/I"}`,
       status: pct >= 80 ? "concluido" : "nao_conforme",
