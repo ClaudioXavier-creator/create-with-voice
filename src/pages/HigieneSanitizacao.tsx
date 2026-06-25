@@ -91,7 +91,7 @@ const CHECKLIST_LIBERACAO_LINHA: { area: string; itens: string[] }[] = [
   ]},
 ];
 
-// ── CHECKLIST SILOS & TRANSPORTADORES (POP-03 / IN 15/2009 — Arraste de Medicamentos) ──
+// ── CHECKLIST SILOS & TRANSPORTADORES (POP-02 / IN 15/2009 — Higienização para evitar Arraste de Medicamentos) ──
 const CHECKLIST_SILOS_TRANSPORT: { area: string; itens: string[] }[] = [
   { area: "Silos de Matéria-Prima", itens: [
     "Silo vazio antes da troca de ingrediente",
@@ -467,7 +467,7 @@ export default function HigieneSanitizacao() {
     queryKey: ["historico_silos"],
     queryFn: async () => {
       const { data, error } = await supabase.from("execucao_pops").select("*")
-        .eq("codigo_pop", "POP-03-SILOS").order("data_execucao", { ascending: false }).limit(50);
+        .in("codigo_pop", ["POP-02-SILOS", "POP-03-SILOS"]).order("data_execucao", { ascending: false }).limit(50);
       if (error) throw error;
       return data;
     },
@@ -1160,7 +1160,7 @@ export default function HigieneSanitizacao() {
               <div className="flex items-start gap-3">
                 <Container className="w-6 h-6 text-amber-600 mt-0.5" />
                 <div>
-                  <h4 className="font-display font-semibold text-sm">Limpeza de Silos & Transportadores — POP-03 (IN 15/2009)</h4>
+                  <h4 className="font-display font-semibold text-sm">Limpeza de Silos & Transportadores — POP-02 (IN 15/2009)</h4>
                   <p className="text-xs text-muted-foreground mt-1">
                     Cronograma e checklist dedicado à higienização de silos e linhagens de transporte para prevenir o arraste
                     de medicamentos e aditivos entre lotes. Obrigatório conforme IN 15/2009, Art. 38 do Decreto 12.031/2024.
@@ -1242,7 +1242,7 @@ export default function HigieneSanitizacao() {
                     setSavingSilos(true);
                     const ncs = CHECKLIST_SILOS_TRANSPORT.flatMap(g => g.itens.filter(item => !silosChecklist[`${g.area}__${item}`]).map(item => `${g.area}: ${item}`));
                     const obs = [
-                      `[LIMPEZA SILOS & TRANSPORTADORES — POP-03 / IN 15/2009]`,
+                      `[LIMPEZA SILOS & TRANSPORTADORES — POP-02 / IN 15/2009]`,
                       `Data: ${silosData} | Equipamento: ${silosEquipamento}`,
                       `Produto anterior: ${silosProdAnterior || "—"}`,
                       `Itens conformes: ${marcados}/${totalItens}`,
@@ -1251,7 +1251,7 @@ export default function HigieneSanitizacao() {
                     ].filter(Boolean).join("\n");
                     const { data: record, error } = await supabase.from("execucao_pops").insert({
                       user_id: user.id, empresa_id: empresaAtiva?.id || null,
-                      codigo_pop: "POP-03-SILOS",
+                      codigo_pop: "POP-02-SILOS",
                       nome_pop: "Limpeza de Silos & Transportadores",
                       executor: silosResp,
                       setor: silosEquipamento,
@@ -1381,7 +1381,7 @@ export default function HigieneSanitizacao() {
                     <CardContent className="pt-4">
                       <div className="flex items-center gap-2 mb-2">
                         <Droplets className="w-4 h-4 text-yellow-600" />
-                        <h4 className="text-sm font-semibold text-yellow-700 dark:text-yellow-400">POP-03: Silos/Equipamentos sem Cronograma de Higienização</h4>
+                        <h4 className="text-sm font-semibold text-yellow-700 dark:text-yellow-400">POP-02: Silos/Equipamentos sem Cronograma de Higienização</h4>
                       </div>
                       <p className="text-xs text-muted-foreground mb-2">IN 04/2007 Art. 2º exige cronograma de higienização para todos os silos e equipamentos de produção.</p>
                       <div className="flex flex-wrap gap-2">
@@ -1717,11 +1717,12 @@ export default function HigieneSanitizacao() {
               <h4 className="font-semibold text-sm">Status de Conformidade — Retenção Documental</h4>
               {[
                 { modulo: "Execução de POPs (POP-01 a POP-10)", status: true, detalhe: "Todos os registros de execução de POPs são armazenados permanentemente no banco de dados com timestamp e user_id." },
-                { modulo: "Registros de Limpeza e Higienização (POP-02/03)", status: true, detalhe: "Cronogramas, checklists pré-operacionais, liberação de linha e monitoramento de superfícies retidos integralmente." },
+                { modulo: "Registros de Limpeza e Higienização (POP-02)", status: true, detalhe: "Cronogramas, checklists pré-operacionais, liberação de linha e monitoramento de superfícies retidos integralmente." },
+                { modulo: "Saúde e Higiene Pessoal (POP-03)", status: true, detalhe: "ASOs, registros de afastamento por sintomas e controle de visitantes mantidos." },
                 { modulo: "Controle de Água e Laudos (POP-04)", status: true, detalhe: "Registros de potabilidade, laudos laboratoriais e certificados de limpeza de reservatório arquivados." },
-                { modulo: "Controle de Resíduos e Efluentes (POP-05)", status: true, detalhe: "Manifestos de transporte, licenças ambientais e registros de descarte mantidos com rastreabilidade completa." },
+                { modulo: "Controle de Resíduos e Efluentes (POP-08)", status: true, detalhe: "Manifestos de transporte, licenças ambientais e registros de descarte mantidos com rastreabilidade completa." },
                 { modulo: "Calibrações e Manutenções (POP-06)", status: true, detalhe: "Certificados de calibração, verificações intermediárias e planos preventivos arquivados." },
-                { modulo: "Rastreabilidade e Recall (POP-08)", status: true, detalhe: "Correlação MP↔PA, testes de recall simulado e certificados de análise retidos por tempo indeterminado." },
+                { modulo: "Rastreabilidade e Recall (POP-09)", status: true, detalhe: "Correlação MP↔PA, testes de recall simulado e certificados de análise retidos por tempo indeterminado." },
                 { modulo: "Não Conformidades e Ações Corretivas", status: true, detalhe: "NCs, causas-raiz, planos de ação e verificações de eficácia mantidos para auditoria." },
                 { modulo: "Treinamentos e ASOs", status: true, detalhe: "Registros de capacitação, ASOs e monitoramento de sintomas armazenados permanentemente." },
               ].map(item => (

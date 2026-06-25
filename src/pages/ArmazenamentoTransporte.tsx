@@ -17,7 +17,7 @@ import { Switch } from "@/components/ui/switch";
 import { Truck, Thermometer, Warehouse, ClipboardList, CheckCircle2, AlertTriangle, Plus, Download } from "lucide-react";
 import PageHeader from "@/components/PageHeader";
 
-// ── CHECKLIST INSPEÇÃO DE VEÍCULO (POP-05 / IN 15/2009) ──
+// ── CHECKLIST INSPEÇÃO DE VEÍCULO (POP-09 / IN 15/2009 — Armazenamento e Transporte) ──
 const CHECKLIST_VEICULO: { area: string; itens: string[] }[] = [
   { area: "Condições Gerais do Veículo", itens: [
     "Carroceria limpa e livre de resíduos de cargas anteriores",
@@ -151,7 +151,7 @@ export default function ArmazenamentoTransporte() {
     const pct = Math.round((conformes / totalItens) * 100);
 
     const obs = [
-      `[INSPEÇÃO DE VEÍCULO — POP-05 / IN 15/2009]`,
+      `[INSPEÇÃO DE VEÍCULO — POP-09 / IN 15/2009]`,
       `Placa: ${veicPlaca || "—"} | Transportadora: ${veicTransportadora || "—"}`,
       `Tipo de carga: ${veicTipoCarga === "granel" ? "Granel" : "Ensacado/Paletizado"}`,
       `Conformidade: ${conformes}/${totalItens} itens (${pct}%)`,
@@ -163,7 +163,7 @@ export default function ArmazenamentoTransporte() {
 
     const { error } = await supabase.from("execucao_pops").insert({
       user_id: user.id, empresa_id: empresaAtiva?.id || null,
-      codigo_pop: "POP-VEICULO",
+      codigo_pop: "POP-09-VEICULO",
       nome_pop: "Inspeção de Veículo de Transporte",
       executor: veicResp,
       setor: `Placa: ${veicPlaca || "N/I"}`,
@@ -192,7 +192,7 @@ export default function ArmazenamentoTransporte() {
     const pct = Math.round((conformes / totalItens) * 100);
 
     const obs = [
-      `[INSPEÇÃO DE DEPÓSITO — POP-05 / IN 15/2009]`,
+      `[INSPEÇÃO DE DEPÓSITO — POP-09 / IN 15/2009]`,
       `Local: ${depLocal || "—"} | Temp: ${depTemp || "—"}°C | Umid: ${depUmid || "—"}%`,
       `Conformidade: ${conformes}/${totalItens} itens (${pct}%)`,
       ...CHECKLIST_DEPOSITO.flatMap(area =>
@@ -235,7 +235,7 @@ export default function ArmazenamentoTransporte() {
     if (umidNum > 70) alertas.push("⚠️ Umidade acima de 70% — risco de formação de fungos/micotoxinas");
 
     const obs = [
-      `[MONITORAMENTO TEMP/UMIDADE — POP-05]`,
+      `[MONITORAMENTO TEMP/UMIDADE — POP-09]`,
       `Local: ${logLocal} | Hora: ${logHora || "—"}`,
       `Temperatura: ${logTemp || "—"}°C | Umidade: ${logUmid || "—"}%`,
       ...alertas,
@@ -333,7 +333,7 @@ export default function ArmazenamentoTransporte() {
     <div>
       <PageHeader
         icon={Warehouse}
-        title="Armazenamento & Transporte (POP-05)"
+        title="Armazenamento & Transporte (POP-09)"
         description="Inspeção de veículos, controle de temperatura/umidade e checklist de depósitos — IN 15/2009"
         orientacaoModuloId="armazenamento-transporte"
       />

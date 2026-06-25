@@ -84,7 +84,7 @@ export const NAV_ENTRIES: NavEntry[] = [
   },
   {
     label: "POP 02 - Limpeza de Instalações, Equipamentos e Utensílios",
-    icon: Droplets,
+    icon: Sparkles,
     items: [
       { path: "/higiene", label: "Higiene / Sanitização", icon: Droplets, keywords: ["limpeza", "faxina", "sanitização"] },
       { path: "/validacao-limpeza", label: "Validação de Limpeza de Linha", icon: CheckCircle2, keywords: ["suabe", "microbiologia", "atp"] },
