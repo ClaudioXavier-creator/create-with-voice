@@ -17,7 +17,7 @@ import { Switch } from "@/components/ui/switch";
 import { Truck, Thermometer, Warehouse, ClipboardList, CheckCircle2, AlertTriangle, Plus, Download } from "lucide-react";
 import PageHeader from "@/components/PageHeader";
 
-// ── CHECKLIST INSPEÇÃO DE VEÍCULO (POP-09 / IN 15/2009 — Armazenamento e Transporte) ──
+// ── CHECKLIST INSPEÇÃO DE VEÍCULO (POP-02 / PL POP 2.4 — Higiene/Limpeza de Veículos — IN 15/2009) ──
 const CHECKLIST_VEICULO: { area: string; itens: string[] }[] = [
   { area: "Condições Gerais do Veículo", itens: [
     "Carroceria limpa e livre de resíduos de cargas anteriores",
