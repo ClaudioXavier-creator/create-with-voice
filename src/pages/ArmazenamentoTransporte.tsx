@@ -17,7 +17,7 @@ import { Switch } from "@/components/ui/switch";
 import { Truck, Thermometer, Warehouse, ClipboardList, CheckCircle2, AlertTriangle, Plus, Download } from "lucide-react";
 import PageHeader from "@/components/PageHeader";
 
-// ── CHECKLIST INSPEÇÃO DE VEÍCULO (POP-09 / IN 15/2009 — Armazenamento e Transporte) ──
+// ── CHECKLIST INSPEÇÃO DE VEÍCULO (POP-02 / PL POP 2.4 — Higiene/Limpeza de Veículos — IN 15/2009) ──
 const CHECKLIST_VEICULO: { area: string; itens: string[] }[] = [
   { area: "Condições Gerais do Veículo", itens: [
     "Carroceria limpa e livre de resíduos de cargas anteriores",
@@ -131,7 +131,12 @@ export default function ArmazenamentoTransporte() {
       const { data, error } = await supabase
         .from("execucao_pops")
         .select("*")
-        .in("codigo_pop", ["POP-VEICULO", "POP-DEPOSITO", "POP-TEMP-UMID"])
+        // Inclui códigos antigos (POP-09-*, POP-DEPOSITO, POP-TEMP-UMID) e novos (POP-01-*, POP-02-*) para preservar histórico
+        .in("codigo_pop", [
+          "POP-02-VEICULO", "POP-09-VEICULO", "POP-VEICULO",
+          "POP-01-DEPOSITO", "POP-DEPOSITO",
+          "POP-01-TEMP-UMID", "POP-TEMP-UMID",
+        ])
         .order("data_execucao", { ascending: false })
         .limit(200);
       if (error) throw error;
@@ -139,9 +144,9 @@ export default function ArmazenamentoTransporte() {
     },
   });
 
-  const veicRegistros = registros.filter((r: any) => r.codigo_pop === "POP-VEICULO");
-  const depRegistros = registros.filter((r: any) => r.codigo_pop === "POP-DEPOSITO");
-  const tempRegistros = registros.filter((r: any) => r.codigo_pop === "POP-TEMP-UMID");
+  const veicRegistros = registros.filter((r: any) => r.codigo_pop?.includes("VEICULO"));
+  const depRegistros = registros.filter((r: any) => r.codigo_pop?.includes("DEPOSITO"));
+  const tempRegistros = registros.filter((r: any) => r.codigo_pop?.includes("TEMP-UMID"));
 
   const saveVeiculoInspecao = async () => {
     if (!user || !veicResp) return;
@@ -151,7 +156,7 @@ export default function ArmazenamentoTransporte() {
     const pct = Math.round((conformes / totalItens) * 100);
 
     const obs = [
-      `[INSPEÇÃO DE VEÍCULO — POP-09 / IN 15/2009]`,
+      `[INSPEÇÃO DE VEÍCULO — POP-02 / PL POP 2.4 — IN 15/2009]`,
       `Placa: ${veicPlaca || "—"} | Transportadora: ${veicTransportadora || "—"}`,
       `Tipo de carga: ${veicTipoCarga === "granel" ? "Granel" : "Ensacado/Paletizado"}`,
       `Conformidade: ${conformes}/${totalItens} itens (${pct}%)`,
@@ -163,8 +168,8 @@ export default function ArmazenamentoTransporte() {
 
     const { error } = await supabase.from("execucao_pops").insert({
       user_id: user.id, empresa_id: empresaAtiva?.id || null,
-      codigo_pop: "POP-09-VEICULO",
-      nome_pop: "Inspeção de Veículo de Transporte",
+      codigo_pop: "POP-02-VEICULO",
+      nome_pop: "PL POP 2.4 — Inspeção/Higiene de Veículo de Transporte",
       executor: veicResp,
       setor: `Placa: ${veicPlaca || "N/I"}`,
       status: pct >= 80 ? "concluido" : "nao_conforme",
@@ -192,7 +197,7 @@ export default function ArmazenamentoTransporte() {
     const pct = Math.round((conformes / totalItens) * 100);
 
     const obs = [
-      `[INSPEÇÃO DE DEPÓSITO — POP-09 / IN 15/2009]`,
+      `[INSPEÇÃO DE DEPÓSITO — POP-01 / Armazenamento de MP e PA — IN 04/2007]`,
       `Local: ${depLocal || "—"} | Temp: ${depTemp || "—"}°C | Umid: ${depUmid || "—"}%`,
       `Conformidade: ${conformes}/${totalItens} itens (${pct}%)`,
       ...CHECKLIST_DEPOSITO.flatMap(area =>
@@ -203,8 +208,8 @@ export default function ArmazenamentoTransporte() {
 
     const { error } = await supabase.from("execucao_pops").insert({
       user_id: user.id, empresa_id: empresaAtiva?.id || null,
-      codigo_pop: "POP-DEPOSITO",
-      nome_pop: "Inspeção de Depósito/Armazém",
+      codigo_pop: "POP-01-DEPOSITO",
+      nome_pop: "Inspeção de Depósito / Armazém (Armazenamento de MP)",
       executor: depResp,
       setor: depLocal || "Depósito",
       status: pct >= 80 ? "concluido" : "nao_conforme",
@@ -235,7 +240,7 @@ export default function ArmazenamentoTransporte() {
     if (umidNum > 70) alertas.push("⚠️ Umidade acima de 70% — risco de formação de fungos/micotoxinas");
 
     const obs = [
-      `[MONITORAMENTO TEMP/UMIDADE — POP-09]`,
+      `[MONITORAMENTO TEMP/UMIDADE — POP-01 / Condições de Armazenamento]`,
       `Local: ${logLocal} | Hora: ${logHora || "—"}`,
       `Temperatura: ${logTemp || "—"}°C | Umidade: ${logUmid || "—"}%`,
       ...alertas,
@@ -244,8 +249,8 @@ export default function ArmazenamentoTransporte() {
 
     const { error } = await supabase.from("execucao_pops").insert({
       user_id: user.id, empresa_id: empresaAtiva?.id || null,
-      codigo_pop: "POP-TEMP-UMID",
-      nome_pop: "Monitoramento de Temperatura e Umidade",
+      codigo_pop: "POP-01-TEMP-UMID",
+      nome_pop: "Monitoramento de Temperatura e Umidade (Armazenamento)",
       executor: logResp,
       setor: logLocal,
       status: alertas.length === 0 ? "concluido" : "nao_conforme",
@@ -333,8 +338,8 @@ export default function ArmazenamentoTransporte() {
     <div>
       <PageHeader
         icon={Warehouse}
-        title="Armazenamento & Transporte (POP-09)"
-        description="Inspeção de veículos, controle de temperatura/umidade e checklist de depósitos — IN 15/2009"
+        title="Armazenamento & Transporte"
+        description="Armazenamento (POP-01 — Recebimento/Estocagem de MP) e Transporte (POP-02 / PL POP 2.4 — Higiene e Limpeza de Veículos)"
         orientacaoModuloId="armazenamento-transporte"
       />
 
@@ -353,7 +358,7 @@ export default function ArmazenamentoTransporte() {
               <div className="flex items-start gap-3">
                 <Truck className="w-6 h-6 text-primary mt-0.5" />
                 <div>
-                  <h4 className="font-semibold text-sm">Checklist de Inspeção de Veículos de Terceiros — IN 15/2009</h4>
+                  <h4 className="font-semibold text-sm">POP-02 / PL POP 2.4 — Inspeção e Higiene de Veículos de Transporte (IN 15/2009)</h4>
                   <p className="text-xs text-muted-foreground mt-1">
                     Todo veículo de transporte de matéria-prima ou produto acabado deve ser inspecionado
                     quanto a limpeza, integridade e ausência de contaminantes antes da carga/descarga.
@@ -400,7 +405,7 @@ export default function ArmazenamentoTransporte() {
               <div className="flex items-start gap-3">
                 <Warehouse className="w-6 h-6 text-primary mt-0.5" />
                 <div>
-                  <h4 className="font-semibold text-sm">Checklist de Inspeção de Depósito / Armazém — IN 15/2009</h4>
+                  <h4 className="font-semibold text-sm">POP-01 — Inspeção de Depósito / Armazém de MP e PA</h4>
                   <p className="text-xs text-muted-foreground mt-1">
                     Verificação periódica das condições de armazenamento, incluindo temperatura, umidade,
                     organização, identificação de lotes e prevenção contra pragas e contaminação.
@@ -436,10 +441,10 @@ export default function ArmazenamentoTransporte() {
               <div className="flex items-start gap-3">
                 <Thermometer className="w-6 h-6 text-primary mt-0.5" />
                 <div>
-                  <h4 className="font-semibold text-sm">Controle de Temperatura e Umidade — Depósitos</h4>
+                  <h4 className="font-semibold text-sm">POP-01 — Controle de Temperatura e Umidade dos Depósitos</h4>
                   <p className="text-xs text-muted-foreground mt-1">
                     Registro diário ou por turno de temperatura e umidade relativa nos depósitos de
-                    matéria-prima e produto acabado, conforme IN 15/2009.
+                    matéria-prima e produto acabado (condições de armazenamento — IN 04/2007).
                   </p>
                   <div className="flex gap-2 mt-2">
                     <Badge variant="outline" className="text-[10px]">Temp ideal: 15–25°C</Badge>
