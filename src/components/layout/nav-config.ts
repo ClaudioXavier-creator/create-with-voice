@@ -30,6 +30,7 @@ import {
   Truck,
   ShieldAlert,
   ShieldCheck,
+  Sparkles,
 } from "lucide-react";
 
 import { SUPER_ADMIN_EMAILS } from "@/config/adminAccess";
