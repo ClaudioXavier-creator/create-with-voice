@@ -358,7 +358,7 @@ export default function ArmazenamentoTransporte() {
               <div className="flex items-start gap-3">
                 <Truck className="w-6 h-6 text-primary mt-0.5" />
                 <div>
-                  <h4 className="font-semibold text-sm">Checklist de Inspeção de Veículos de Terceiros — IN 15/2009</h4>
+                  <h4 className="font-semibold text-sm">POP-02 / PL POP 2.4 — Inspeção e Higiene de Veículos de Transporte (IN 15/2009)</h4>
                   <p className="text-xs text-muted-foreground mt-1">
                     Todo veículo de transporte de matéria-prima ou produto acabado deve ser inspecionado
                     quanto a limpeza, integridade e ausência de contaminantes antes da carga/descarga.
