@@ -131,7 +131,12 @@ export default function ArmazenamentoTransporte() {
       const { data, error } = await supabase
         .from("execucao_pops")
         .select("*")
-        .in("codigo_pop", ["POP-VEICULO", "POP-DEPOSITO", "POP-TEMP-UMID"])
+        // Inclui códigos antigos (POP-09-*, POP-DEPOSITO, POP-TEMP-UMID) e novos (POP-01-*, POP-02-*) para preservar histórico
+        .in("codigo_pop", [
+          "POP-02-VEICULO", "POP-09-VEICULO", "POP-VEICULO",
+          "POP-01-DEPOSITO", "POP-DEPOSITO",
+          "POP-01-TEMP-UMID", "POP-TEMP-UMID",
+        ])
         .order("data_execucao", { ascending: false })
         .limit(200);
       if (error) throw error;
@@ -139,9 +144,9 @@ export default function ArmazenamentoTransporte() {
     },
   });
 
-  const veicRegistros = registros.filter((r: any) => r.codigo_pop === "POP-VEICULO");
-  const depRegistros = registros.filter((r: any) => r.codigo_pop === "POP-DEPOSITO");
-  const tempRegistros = registros.filter((r: any) => r.codigo_pop === "POP-TEMP-UMID");
+  const veicRegistros = registros.filter((r: any) => r.codigo_pop?.includes("VEICULO"));
+  const depRegistros = registros.filter((r: any) => r.codigo_pop?.includes("DEPOSITO"));
+  const tempRegistros = registros.filter((r: any) => r.codigo_pop?.includes("TEMP-UMID"));
 
   const saveVeiculoInspecao = async () => {
     if (!user || !veicResp) return;
