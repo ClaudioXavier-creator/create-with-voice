@@ -338,8 +338,8 @@ export default function ArmazenamentoTransporte() {
     <div>
       <PageHeader
         icon={Warehouse}
-        title="Armazenamento & Transporte (POP-09)"
-        description="Inspeção de veículos, controle de temperatura/umidade e checklist de depósitos — IN 15/2009"
+        title="Armazenamento & Transporte"
+        description="Armazenamento (POP-01 — Recebimento/Estocagem de MP) e Transporte (POP-02 / PL POP 2.4 — Higiene e Limpeza de Veículos)"
         orientacaoModuloId="armazenamento-transporte"
       />
 
