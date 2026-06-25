@@ -149,7 +149,7 @@ export default function ControleResiduos() {
           <div className="flex items-start gap-3">
             <ShieldAlert className="w-6 h-6 text-primary mt-0.5" />
             <div>
-              <h4 className="font-display font-semibold text-sm">POP 08 — Prevenção de Contaminação Cruzada e Manejo de Resíduos (IN 04/2007)</h4>
+              <h4 className="font-display font-semibold text-sm">POP 08 — Controle de Resíduos e Efluentes (IN 04/2007)</h4>
               <p className="text-xs text-muted-foreground mt-1">
                 Abrange: separação e identificação de resíduos por classe (ABNT), rastreamento de produtos descartados,
                 controle de efluentes (pH, DBO, DQO), manifestos de transporte e licenças ambientais.
