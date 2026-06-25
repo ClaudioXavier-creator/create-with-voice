@@ -500,7 +500,7 @@ export const INSTRUCOES_TRABALHO: InstrucaoTrabalho[] = [
   },
 
   // ═══════════════════════════════════════════
-  // POP-09 — Rastreabilidade, Transporte e Recall
+  // POP-09 — Rastreabilidade, Armazenamento, Transporte e Recall
   // ═══════════════════════════════════════════
   {
     id: "IT-09-01",

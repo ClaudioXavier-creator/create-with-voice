@@ -57,7 +57,6 @@ export const POPS_CONFIG: PopConfig[] = [
     modulos_vinculados: [
       { rota: "/fornecedores", label: "Fornecedores", descricao: "Cadastro e qualificação (PL POP 1.1)" },
       { rota: "/recebimento", label: "Recebimento MP", descricao: "Lançamento único de recebimento de MP, lotes, laudos e umidade (PL POP 1.2 / 1.3 / 1.5)" },
-      { rota: "/pragas", label: "Controle de Pragas", descricao: "Registros de expurgo (PL POP 1.8)" },
     ],
     periodicidades: [
       {

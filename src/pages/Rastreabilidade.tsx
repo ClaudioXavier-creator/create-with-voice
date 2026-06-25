@@ -1407,7 +1407,7 @@ export default function Rastreabilidade() {
             <CardTitle className="font-display text-sm flex items-center gap-2">
               <Timer className="w-5 h-5 text-accent" /> Recall Simulado — Teste de Tempo de Resposta
             </CardTitle>
-            <p className="text-xs text-muted-foreground mt-1">Simule um recall para validar o tempo de resposta da equipe (POP-008)</p>
+            <p className="text-xs text-muted-foreground mt-1">Simule um recall para validar o tempo de resposta da equipe (POP-09)</p>
           </div>
           <Dialog open={simOpen} onOpenChange={setSimOpen}>
             <DialogTrigger asChild>
@@ -1960,7 +1960,7 @@ export default function Rastreabilidade() {
 
                   {/* Contraprova */}
                   <div className="p-3 rounded-lg border border-green-400 bg-green-50 dark:bg-green-900/20">
-                    <p className="text-xs font-semibold text-green-700 dark:text-green-400 mb-2">🧪 Retenção de Amostra de Contraprova — POP-08</p>
+                    <p className="text-xs font-semibold text-green-700 dark:text-green-400 mb-2">🧪 Retenção de Amostra de Contraprova — POP-01 (Recebimento de MP)</p>
                     <div className="flex items-center gap-2 mb-2">
                       <input type="checkbox" checked={contraprovaColetada} onChange={e => setContraprovaColetada(e.target.checked)} className="h-4 w-4" />
                       <Label className="text-xs">Amostra de contraprova coletada e retida</Label>
@@ -2075,7 +2075,7 @@ export default function Rastreabilidade() {
       {/* Recall Dialog — com encerramento e destino de reprovados */}
       <Dialog open={recallOpen} onOpenChange={setRecallOpen}>
         <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
-          <DialogHeader><DialogTitle className="text-destructive flex items-center gap-2"><AlertTriangle className="w-5 h-5" /> Registrar / Encerrar Recall — POP-08</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle className="text-destructive flex items-center gap-2"><AlertTriangle className="w-5 h-5" /> Registrar / Encerrar Recall — POP-09</DialogTitle></DialogHeader>
           <div className="space-y-4">
             {selectedId && (() => {
               const rec = registros.find(r => r.id === selectedId);
@@ -2111,7 +2111,7 @@ export default function Rastreabilidade() {
             {recallStatus === "concluido" && (
               <div className="p-3 rounded-lg border-2 border-green-600/30 bg-green-50 dark:bg-green-900/10 space-y-3">
                 <p className="text-xs font-semibold text-green-800 flex items-center gap-1">
-                  ✅ Encerramento do Recall — Registro obrigatório do destino (POP-08 / Decreto 12.031/2024)
+                  ✅ Encerramento do Recall — Registro obrigatório do destino (POP-09 / Decreto 12.031/2024)
                 </p>
                 <div>
                   <Label className="text-xs">Destino do produto reprovado/devolvido *</Label>
