@@ -195,9 +195,28 @@ export const POPS_CONFIG: PopConfig[] = [
       { rota: "/saude-pessoal", label: "Saúde Pessoal", descricao: "Lançamento único de ASO, exames, EPIs e treinamentos de higiene" },
       { rota: "/visitantes", label: "Controle de Visitantes", descricao: "Orientação de biosseguridade e EPI de visitantes" },
     ],
-    periodicidades: [],
+    periodicidades: [
+      {
+        key: "inspecao_higiene_mensal",
+        label: "PL POP 3.1 — Inspeção Mensal de Higiene e Saúde do Pessoal",
+        periodos: meses(),
+        areas: [
+          { area: "Uniformes limpos e completos" },
+          { area: "Uso correto de EPIs (touca, bota, máscara)" },
+          { area: "Unhas curtas e sem esmalte" },
+          { area: "Cabelos contidos / barba aparada" },
+          { area: "Ausência de adornos (relógios, anéis, brincos)" },
+          { area: "Lavagem de mãos antes do trabalho" },
+          { area: "ASO em dia (validade)" },
+          { area: "Ausência de ferimentos expostos" },
+          { area: "Comportamento adequado nas áreas (sem comer/fumar)" },
+          { area: "Treinamento de higiene em dia" },
+        ],
+      },
+    ],
     anexos: [
-      "ANEXO 1: Registro de Higiene e Saúde do Pessoal – PL POP 3.1 (módulo /saude-pessoal)",
+      "ANEXO 1: Registro de Higiene e Saúde do Pessoal – PL POP 3.1",
+      "ANEXO 2: ASO, exames e EPIs (módulo /saude-pessoal)",
     ],
   },
   {
