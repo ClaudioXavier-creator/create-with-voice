@@ -226,10 +226,39 @@ export const POPS_CONFIG: PopConfig[] = [
     modulos_vinculados: [
       { rota: "/potabilidade-agua", label: "Potabilidade da Água", descricao: "Lançamento único de cloro, pH, turbidez, laudos e higienização de reservatórios" },
     ],
-    periodicidades: [],
+    periodicidades: [
+      {
+        key: "cloro_diario",
+        label: "PL POP 4.1 — Cloro Residual Livre / pH (Diário)",
+        periodos: diasDoMes(),
+        areas: [
+          { area: "Ponto 1 — Reservatório (mg/L)" },
+          { area: "Ponto 2 — Torneira Produção (mg/L)" },
+          { area: "Ponto 3 — Torneira Vestiário (mg/L)" },
+          { area: "pH" },
+          { area: "Turbidez (UT)" },
+          { area: "Responsável" },
+        ],
+      },
+      {
+        key: "higienizacao_reservatorio",
+        label: "PL POP 4.2 — Higienização de Reservatório (Semestral)",
+        periodos: ["1º Semestre", "2º Semestre"],
+        areas: [
+          { area: "Data da limpeza" },
+          { area: "Esvaziamento total" },
+          { area: "Remoção de sedimentos" },
+          { area: "Desinfecção com hipoclorito" },
+          { area: "Enxágue final" },
+          { area: "Empresa executora" },
+          { area: "Responsável técnico" },
+        ],
+      },
+    ],
     anexos: [
-      "ANEXO 1: Planilha de Controle de Cloro Residual (módulo /potabilidade-agua)",
-      "ANEXO 2: Planilha de Higienização do Reservatório (módulo /potabilidade-agua)",
+      "ANEXO 1: Controle de Cloro Residual e pH – PL POP 4.1",
+      "ANEXO 2: Higienização do Reservatório – PL POP 4.2",
+      "ANEXO 3: Laudo de Potabilidade (módulo /potabilidade-agua)",
     ],
   },
   {
