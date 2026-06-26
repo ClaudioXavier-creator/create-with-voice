@@ -338,7 +338,27 @@ export const POPS_CONFIG: PopConfig[] = [
     modulos_vinculados: [
       { rota: "/pragas", label: "Controle de Pragas", descricao: "Lançamento único de monitoramento, aplicações, mapa de iscas e laudos" },
     ],
-    periodicidades: [],
+    periodicidades: [
+      {
+        key: "inspecao_iscas_mensal",
+        label: "PL POP 7.4 — Inspeção Mensal de Iscas e Armadilhas (por Ponto)",
+        periodos: meses(),
+        areas: [
+          { area: "Ponto 01 — Status (Íntegra/Consumida/Avariada)" },
+          { area: "Ponto 02 — Status" },
+          { area: "Ponto 03 — Status" },
+          { area: "Ponto 04 — Status" },
+          { area: "Ponto 05 — Status" },
+          { area: "Ponto 06 — Status" },
+          { area: "Ponto 07 — Status" },
+          { area: "Ponto 08 — Status" },
+          { area: "Ponto 09 — Status" },
+          { area: "Ponto 10 — Status" },
+          { area: "Substituições realizadas" },
+          { area: "Responsável" },
+        ],
+      },
+    ],
     anexos: [
       "ANEXO 1: Planilha de Monitoramento Semanal de Pragas – PL POP 7.1 (módulo /pragas)",
       "ANEXO 2: Registro de Aplicações Mensais – PL POP 7.2 (módulo /pragas)",
