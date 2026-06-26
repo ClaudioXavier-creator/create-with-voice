@@ -373,7 +373,25 @@ export const POPS_CONFIG: PopConfig[] = [
     modulos_vinculados: [
       { rota: "/residuos", label: "Resíduos / Efluentes", descricao: "Lançamento único de coleta, classificação, manifesto e destino" },
     ],
-    periodicidades: [],
+    periodicidades: [
+      {
+        key: "geracao_residuos_mensal",
+        label: "PL POP 8.2 — Geração Mensal de Resíduos (kg) por Classe",
+        periodos: meses(),
+        areas: [
+          { area: "Classe I — Perigosos (kg)" },
+          { area: "Classe IIA — Não Inertes (kg)" },
+          { area: "Classe IIB — Inertes (kg)" },
+          { area: "Recicláveis — Papel/Papelão (kg)" },
+          { area: "Recicláveis — Plástico (kg)" },
+          { area: "Recicláveis — Metal (kg)" },
+          { area: "Orgânicos (kg)" },
+          { area: "Efluentes Líquidos (m³)" },
+          { area: "Destino / Transportador" },
+          { area: "Manifesto / MTR Nº" },
+        ],
+      },
+    ],
     anexos: [
       "ANEXO 1: Controle de Resíduos – PL POP 8.1 (módulo /residuos)",
     ],
