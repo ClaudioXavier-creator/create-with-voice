@@ -229,8 +229,21 @@ export const POPS_CONFIG: PopConfig[] = [
     periodicidades: [
       {
         key: "cloro_diario",
-        label: "PL POP 4.1 — Cloro Residual Livre / pH (Diário)",
+        label: "PL POP 4.1a — Cloro Residual Livre / pH (Diário — poço/captação própria)",
         periodos: diasDoMes(),
+        areas: [
+          { area: "Ponto 1 — Reservatório (mg/L)" },
+          { area: "Ponto 2 — Torneira Produção (mg/L)" },
+          { area: "Ponto 3 — Torneira Vestiário (mg/L)" },
+          { area: "pH" },
+          { area: "Turbidez (UT)" },
+          { area: "Responsável" },
+        ],
+      },
+      {
+        key: "cloro_semanal",
+        label: "PL POP 4.1b — Cloro Residual Livre / pH (Semanal — água da concessionária)",
+        periodos: semanas(),
         areas: [
           { area: "Ponto 1 — Reservatório (mg/L)" },
           { area: "Ponto 2 — Torneira Produção (mg/L)" },
