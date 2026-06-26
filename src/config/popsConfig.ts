@@ -195,9 +195,28 @@ export const POPS_CONFIG: PopConfig[] = [
       { rota: "/saude-pessoal", label: "Saúde Pessoal", descricao: "Lançamento único de ASO, exames, EPIs e treinamentos de higiene" },
       { rota: "/visitantes", label: "Controle de Visitantes", descricao: "Orientação de biosseguridade e EPI de visitantes" },
     ],
-    periodicidades: [],
+    periodicidades: [
+      {
+        key: "inspecao_higiene_mensal",
+        label: "PL POP 3.1 — Inspeção Mensal de Higiene e Saúde do Pessoal",
+        periodos: meses(),
+        areas: [
+          { area: "Uniformes limpos e completos" },
+          { area: "Uso correto de EPIs (touca, bota, máscara)" },
+          { area: "Unhas curtas e sem esmalte" },
+          { area: "Cabelos contidos / barba aparada" },
+          { area: "Ausência de adornos (relógios, anéis, brincos)" },
+          { area: "Lavagem de mãos antes do trabalho" },
+          { area: "ASO em dia (validade)" },
+          { area: "Ausência de ferimentos expostos" },
+          { area: "Comportamento adequado nas áreas (sem comer/fumar)" },
+          { area: "Treinamento de higiene em dia" },
+        ],
+      },
+    ],
     anexos: [
-      "ANEXO 1: Registro de Higiene e Saúde do Pessoal – PL POP 3.1 (módulo /saude-pessoal)",
+      "ANEXO 1: Registro de Higiene e Saúde do Pessoal – PL POP 3.1",
+      "ANEXO 2: ASO, exames e EPIs (módulo /saude-pessoal)",
     ],
   },
   {
@@ -207,10 +226,39 @@ export const POPS_CONFIG: PopConfig[] = [
     modulos_vinculados: [
       { rota: "/potabilidade-agua", label: "Potabilidade da Água", descricao: "Lançamento único de cloro, pH, turbidez, laudos e higienização de reservatórios" },
     ],
-    periodicidades: [],
+    periodicidades: [
+      {
+        key: "cloro_diario",
+        label: "PL POP 4.1 — Cloro Residual Livre / pH (Diário)",
+        periodos: diasDoMes(),
+        areas: [
+          { area: "Ponto 1 — Reservatório (mg/L)" },
+          { area: "Ponto 2 — Torneira Produção (mg/L)" },
+          { area: "Ponto 3 — Torneira Vestiário (mg/L)" },
+          { area: "pH" },
+          { area: "Turbidez (UT)" },
+          { area: "Responsável" },
+        ],
+      },
+      {
+        key: "higienizacao_reservatorio",
+        label: "PL POP 4.2 — Higienização de Reservatório (Semestral)",
+        periodos: ["1º Semestre", "2º Semestre"],
+        areas: [
+          { area: "Data da limpeza" },
+          { area: "Esvaziamento total" },
+          { area: "Remoção de sedimentos" },
+          { area: "Desinfecção com hipoclorito" },
+          { area: "Enxágue final" },
+          { area: "Empresa executora" },
+          { area: "Responsável técnico" },
+        ],
+      },
+    ],
     anexos: [
-      "ANEXO 1: Planilha de Controle de Cloro Residual (módulo /potabilidade-agua)",
-      "ANEXO 2: Planilha de Higienização do Reservatório (módulo /potabilidade-agua)",
+      "ANEXO 1: Controle de Cloro Residual e pH – PL POP 4.1",
+      "ANEXO 2: Higienização do Reservatório – PL POP 4.2",
+      "ANEXO 3: Laudo de Potabilidade (módulo /potabilidade-agua)",
     ],
   },
   {
@@ -290,7 +338,27 @@ export const POPS_CONFIG: PopConfig[] = [
     modulos_vinculados: [
       { rota: "/pragas", label: "Controle de Pragas", descricao: "Lançamento único de monitoramento, aplicações, mapa de iscas e laudos" },
     ],
-    periodicidades: [],
+    periodicidades: [
+      {
+        key: "inspecao_iscas_mensal",
+        label: "PL POP 7.4 — Inspeção Mensal de Iscas e Armadilhas (por Ponto)",
+        periodos: meses(),
+        areas: [
+          { area: "Ponto 01 — Status (Íntegra/Consumida/Avariada)" },
+          { area: "Ponto 02 — Status" },
+          { area: "Ponto 03 — Status" },
+          { area: "Ponto 04 — Status" },
+          { area: "Ponto 05 — Status" },
+          { area: "Ponto 06 — Status" },
+          { area: "Ponto 07 — Status" },
+          { area: "Ponto 08 — Status" },
+          { area: "Ponto 09 — Status" },
+          { area: "Ponto 10 — Status" },
+          { area: "Substituições realizadas" },
+          { area: "Responsável" },
+        ],
+      },
+    ],
     anexos: [
       "ANEXO 1: Planilha de Monitoramento Semanal de Pragas – PL POP 7.1 (módulo /pragas)",
       "ANEXO 2: Registro de Aplicações Mensais – PL POP 7.2 (módulo /pragas)",
@@ -305,7 +373,25 @@ export const POPS_CONFIG: PopConfig[] = [
     modulos_vinculados: [
       { rota: "/residuos", label: "Resíduos / Efluentes", descricao: "Lançamento único de coleta, classificação, manifesto e destino" },
     ],
-    periodicidades: [],
+    periodicidades: [
+      {
+        key: "geracao_residuos_mensal",
+        label: "PL POP 8.2 — Geração Mensal de Resíduos (kg) por Classe",
+        periodos: meses(),
+        areas: [
+          { area: "Classe I — Perigosos (kg)" },
+          { area: "Classe IIA — Não Inertes (kg)" },
+          { area: "Classe IIB — Inertes (kg)" },
+          { area: "Recicláveis — Papel/Papelão (kg)" },
+          { area: "Recicláveis — Plástico (kg)" },
+          { area: "Recicláveis — Metal (kg)" },
+          { area: "Orgânicos (kg)" },
+          { area: "Efluentes Líquidos (m³)" },
+          { area: "Destino / Transportador" },
+          { area: "Manifesto / MTR Nº" },
+        ],
+      },
+    ],
     anexos: [
       "ANEXO 1: Controle de Resíduos – PL POP 8.1 (módulo /residuos)",
     ],
