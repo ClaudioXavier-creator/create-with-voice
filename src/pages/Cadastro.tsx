@@ -203,6 +203,25 @@ export default function Cadastro() {
                   ))}
                 </div>
               </div>
+              <div className="md:col-span-2 space-y-2">
+                <Label>Origem da Água (POP-04)</Label>
+                <div className="flex flex-wrap gap-2">
+                  {[
+                    { v: "concessionaria", l: "Concessionária (tratada) — cloro semanal" },
+                    { v: "poco", l: "Poço/Captação própria — cloro diário" },
+                  ].map(opt => (
+                    <Badge
+                      key={opt.v}
+                      variant={form.origem_agua === opt.v ? "default" : "outline"}
+                      className="cursor-pointer select-none"
+                      onClick={() => setForm(p => ({ ...p, origem_agua: p.origem_agua === opt.v ? "" : opt.v as any }))}
+                    >
+                      {opt.l}
+                    </Badge>
+                  ))}
+                </div>
+                <p className="text-xs text-muted-foreground">Define a periodicidade pré-selecionada de cloro/pH no POP-04.</p>
+              </div>
               <div className="md:col-span-2">
                 <Button className="w-full" onClick={salvar} disabled={saving}>
                   {saving ? "Salvando..." : editId ? "Atualizar" : "Cadastrar Empresa"}
