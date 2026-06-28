@@ -124,7 +124,7 @@ export default function PlanilhasPop() {
 
     setLoading(false);
     setShowForm(true);
-  }, [user, selectedPop, selectedPeriodicidade, mes, ano]);
+  }, [user, selectedPop, selectedPeriodicidade, mes, ano, empresaAtiva?.origem_agua]);
 
   const exportToExcel = async () => {
     if (!planilhaId || !selectedPeriodicidade || !selectedPop) return;
