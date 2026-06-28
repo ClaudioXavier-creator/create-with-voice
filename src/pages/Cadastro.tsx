@@ -26,9 +26,10 @@ interface EmpresaForm {
   crmv: string;
   capacidade: string;
   tipo_producao: string[];
+  origem_agua: "" | "poco" | "concessionaria";
 }
 
-const emptyForm: EmpresaForm = { nome: "", cnpj: "", endereco: "", responsavel_tecnico: "", crmv: "", capacidade: "", tipo_producao: [] };
+const emptyForm: EmpresaForm = { nome: "", cnpj: "", endereco: "", responsavel_tecnico: "", crmv: "", capacidade: "", tipo_producao: [], origem_agua: "" };
 
 export default function Cadastro() {
   const { user, userType } = useAuth();
@@ -70,6 +71,7 @@ export default function Cadastro() {
       crmv: e.crmv || "",
       capacidade: e.capacidade || "",
       tipo_producao: e.tipo_producao || [],
+      origem_agua: e.origem_agua || "",
     });
     setEditId(e.id);
     setOpen(true);
@@ -90,6 +92,7 @@ export default function Cadastro() {
           crmv: form.crmv.trim(),
           capacidade: form.capacidade.trim(), 
           tipo_producao: form.tipo_producao,
+          origem_agua: form.origem_agua || null,
         }).eq("id", editId);
         
         if (error) throw error;
@@ -104,6 +107,7 @@ export default function Cadastro() {
           crmv: form.crmv.trim(),
           capacidade: form.capacidade.trim(), 
           tipo_producao: form.tipo_producao,
+          origem_agua: form.origem_agua || null,
         }).select().single();
         
         if (error) {
@@ -198,6 +202,25 @@ export default function Cadastro() {
                     </Badge>
                   ))}
                 </div>
+              </div>
+              <div className="md:col-span-2 space-y-2">
+                <Label>Origem da Água (POP-04)</Label>
+                <div className="flex flex-wrap gap-2">
+                  {[
+                    { v: "concessionaria", l: "Concessionária (tratada) — cloro semanal" },
+                    { v: "poco", l: "Poço/Captação própria — cloro diário" },
+                  ].map(opt => (
+                    <Badge
+                      key={opt.v}
+                      variant={form.origem_agua === opt.v ? "default" : "outline"}
+                      className="cursor-pointer select-none"
+                      onClick={() => setForm(p => ({ ...p, origem_agua: p.origem_agua === opt.v ? "" : opt.v as any }))}
+                    >
+                      {opt.l}
+                    </Badge>
+                  ))}
+                </div>
+                <p className="text-xs text-muted-foreground">Define a periodicidade pré-selecionada de cloro/pH no POP-04.</p>
               </div>
               <div className="md:col-span-2">
                 <Button className="w-full" onClick={salvar} disabled={saving}>

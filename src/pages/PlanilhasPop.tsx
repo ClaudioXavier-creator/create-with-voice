@@ -48,11 +48,18 @@ export default function PlanilhasPop() {
 
   useEffect(() => {
     if (selectedPop.periodicidades.length > 0) {
-      setSelectedPeriodicidade(selectedPop.periodicidades[0]);
+      // POP-04: pré-seleciona conforme origem_agua da empresa ativa
+      if (selectedPop.codigo === "POP-04" && empresaAtiva?.origem_agua) {
+        const targetKey = empresaAtiva.origem_agua === "concessionaria" ? "cloro_semanal" : "cloro_diario";
+        const match = selectedPop.periodicidades.find((p) => p.key === targetKey);
+        setSelectedPeriodicidade(match ?? selectedPop.periodicidades[0]);
+      } else {
+        setSelectedPeriodicidade(selectedPop.periodicidades[0]);
+      }
     } else {
       setSelectedPeriodicidade(null);
     }
-  }, [selectedPop]);
+  }, [selectedPop, empresaAtiva?.origem_agua]);
 
   const loadOrCreatePlanilha = useCallback(async (per?: PopPeriodicidade) => {
     const target = per || selectedPeriodicidade;

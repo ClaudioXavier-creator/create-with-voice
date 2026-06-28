@@ -1921,6 +1921,7 @@ export type Database = {
           id: string
           nome: string
           numero_sipeagro: string | null
+          origem_agua: string | null
           responsavel_tecnico: string | null
           tipo_producao: string[] | null
           updated_at: string
@@ -1939,6 +1940,7 @@ export type Database = {
           id?: string
           nome: string
           numero_sipeagro?: string | null
+          origem_agua?: string | null
           responsavel_tecnico?: string | null
           tipo_producao?: string[] | null
           updated_at?: string
@@ -1957,6 +1959,7 @@ export type Database = {
           id?: string
           nome?: string
           numero_sipeagro?: string | null
+          origem_agua?: string | null
           responsavel_tecnico?: string | null
           tipo_producao?: string[] | null
           updated_at?: string

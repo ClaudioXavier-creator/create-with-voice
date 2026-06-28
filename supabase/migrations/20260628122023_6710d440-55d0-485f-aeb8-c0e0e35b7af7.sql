@@ -1,0 +1,1 @@
+ALTER TABLE public.empresas ADD COLUMN IF NOT EXISTS origem_agua TEXT CHECK (origem_agua IN ('poco','concessionaria'));
