@@ -26,9 +26,10 @@ interface EmpresaForm {
   crmv: string;
   capacidade: string;
   tipo_producao: string[];
+  origem_agua: "" | "poco" | "concessionaria";
 }
 
-const emptyForm: EmpresaForm = { nome: "", cnpj: "", endereco: "", responsavel_tecnico: "", crmv: "", capacidade: "", tipo_producao: [] };
+const emptyForm: EmpresaForm = { nome: "", cnpj: "", endereco: "", responsavel_tecnico: "", crmv: "", capacidade: "", tipo_producao: [], origem_agua: "" };
 
 export default function Cadastro() {
   const { user, userType } = useAuth();
