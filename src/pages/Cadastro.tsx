@@ -92,6 +92,7 @@ export default function Cadastro() {
           crmv: form.crmv.trim(),
           capacidade: form.capacidade.trim(), 
           tipo_producao: form.tipo_producao,
+          origem_agua: form.origem_agua || null,
         }).eq("id", editId);
         
         if (error) throw error;
