@@ -71,6 +71,7 @@ export default function Cadastro() {
       crmv: e.crmv || "",
       capacidade: e.capacidade || "",
       tipo_producao: e.tipo_producao || [],
+      origem_agua: e.origem_agua || "",
     });
     setEditId(e.id);
     setOpen(true);
