@@ -12,6 +12,7 @@ export interface Empresa {
   crmv: string | null;
   tipo_producao: string[] | null;
   capacidade: string | null;
+  origem_agua?: "poco" | "concessionaria" | null;
 }
 
 interface EmpresaContextType {
