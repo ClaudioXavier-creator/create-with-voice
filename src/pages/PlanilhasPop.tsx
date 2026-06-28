@@ -63,8 +63,30 @@ export default function PlanilhasPop() {
 
   const loadOrCreatePlanilha = useCallback(async (per?: PopPeriodicidade) => {
     const target = per || selectedPeriodicidade;
-    if (!user || !target) return;
+    if (!user) return;
+    if (!target) {
+      toast.error("Selecione uma periodicidade antes de abrir a planilha.");
+      return;
+    }
+    if (selectedPop.codigo === "POP-04") {
+      const validKeys = ["cloro_diario", "cloro_semanal"];
+      if (!validKeys.includes(target.key)) {
+        toast.error("POP-04 exige Cloro Diário (poço) ou Cloro Semanal (concessionária).");
+        return;
+      }
+      if (!empresaAtiva?.origem_agua) {
+        toast.warning("Defina a origem da água no Cadastro da empresa para automatizar a periodicidade.");
+      } else {
+        const esperado = empresaAtiva.origem_agua === "concessionaria" ? "cloro_semanal" : "cloro_diario";
+        if (target.key !== esperado) {
+          toast.warning(
+            `Empresa configurada como "${empresaAtiva.origem_agua}". Recomendado: ${esperado === "cloro_semanal" ? "Semanal" : "Diário"}.`
+          );
+        }
+      }
+    }
     setLoading(true);
+
 
     const { data: existing } = await supabase
       .from("pop_planilhas")
@@ -102,7 +124,7 @@ export default function PlanilhasPop() {
 
     setLoading(false);
     setShowForm(true);
-  }, [user, selectedPop, selectedPeriodicidade, mes, ano]);
+  }, [user, selectedPop, selectedPeriodicidade, mes, ano, empresaAtiva?.origem_agua]);
 
   const exportToExcel = async () => {
     if (!planilhaId || !selectedPeriodicidade || !selectedPop) return;
