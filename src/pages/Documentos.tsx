@@ -268,12 +268,12 @@ export default function Documentos() {
   };
 
   const handleAddArquivo = async () => {
-    if (!arqTitulo || !arqFile || !user) return;
+    if (!arqTitulo || !arqFile || !arqPopCodigo || !user) return;
     setSaving(true);
     let arquivo_url = "";
     let arquivo_nome = arqFile.name;
     // Upload para storage se disponível
-    const path = `bpf/${empresaAtiva?.id || user.id}/${arqCategoria}/${Date.now()}_${arqFile.name.replace(/[^a-zA-Z0-9._-]/g, "_")}`;
+    const path = `bpf/${empresaAtiva?.id || user.id}/${arqPopCodigo}/${arqCategoria}/${Date.now()}_${arqFile.name.replace(/[^a-zA-Z0-9._-]/g, "_")}`;
     const { error: upErr } = await supabase.storage.from("feed-bpf").upload(path, arqFile);
     if (!upErr) {
       const { data: urlData } = supabase.storage.from("feed-bpf").getPublicUrl(path);
@@ -282,11 +282,12 @@ export default function Documentos() {
     const { error } = await supabase.from("arquivos_bpf").insert({
       user_id: user.id, titulo: arqTitulo, categoria: arqCategoria, descricao: arqDescricao,
       arquivo_nome, arquivo_url, empresa_id: empresaAtiva?.id || null,
-    });
+      pop_codigo: arqPopCodigo,
+    } as any);
     if (error) toast.error("Erro ao salvar arquivo");
     else {
       toast.success("Arquivo BPF salvo!");
-      setArqOpen(false); setArqTitulo(""); setArqCategoria("pop"); setArqDescricao(""); setArqFile(null);
+      setArqOpen(false); setArqTitulo(""); setArqCategoria("pop"); setArqPopCodigo(""); setArqDescricao(""); setArqFile(null);
       fetchData();
     }
     setSaving(false);
@@ -298,7 +299,16 @@ export default function Documentos() {
     else { toast.success("Arquivo excluído"); fetchData(); }
   };
 
-  const filteredArquivos = arqFilterCat === "todos" ? arquivos : arquivos.filter(a => a.categoria === arqFilterCat);
+  const filteredArquivos = arquivos.filter(a => {
+    if (arqFilterCat !== "todos" && a.categoria !== arqFilterCat) return false;
+    if (arqFilterPop !== "todos" && (a.pop_codigo || "") !== arqFilterPop) return false;
+    if (arqSearch.trim()) {
+      const q = arqSearch.trim().toLowerCase();
+      const hay = `${a.titulo || ""} ${a.descricao || ""} ${a.arquivo_nome || ""} ${a.pop_codigo || ""}`.toLowerCase();
+      if (!hay.includes(q)) return false;
+    }
+    return true;
+  });
 
   const tipoLabel = (tipo: string) => TIPOS_EQUIPAMENTO.find(t => t.value === tipo)?.label || tipo;
 
