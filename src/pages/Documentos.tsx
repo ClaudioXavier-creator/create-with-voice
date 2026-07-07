@@ -137,9 +137,13 @@ export default function Documentos() {
   const [arqOpen, setArqOpen] = useState(false);
   const [arqTitulo, setArqTitulo] = useState("");
   const [arqCategoria, setArqCategoria] = useState("pop");
+  const [arqPopCodigo, setArqPopCodigo] = useState("");
   const [arqDescricao, setArqDescricao] = useState("");
   const [arqFile, setArqFile] = useState<File | null>(null);
   const [arqFilterCat, setArqFilterCat] = useState("todos");
+  const [arqFilterPop, setArqFilterPop] = useState("todos");
+  const [arqSearch, setArqSearch] = useState("");
+
 
 
   const [calOpen, setCalOpen] = useState(false);
