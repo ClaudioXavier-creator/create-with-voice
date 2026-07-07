@@ -69,6 +69,7 @@ interface DocRow {
 interface ArquivoBpf {
   id: string; titulo: string; categoria: string; descricao: string | null;
   arquivo_nome: string | null; arquivo_url: string | null; created_at: string;
+  pop_codigo?: string | null;
 }
 
 
