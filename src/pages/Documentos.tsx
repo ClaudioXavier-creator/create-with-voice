@@ -739,12 +739,17 @@ export default function Documentos() {
                 <div className="overflow-x-auto">
                   <Table>
                   <TableHeader><TableRow>
-                    <TableHead>Título</TableHead><TableHead>Categoria</TableHead><TableHead>Arquivo</TableHead>
+                    <TableHead>POP</TableHead><TableHead>Título</TableHead><TableHead>Categoria</TableHead><TableHead>Arquivo</TableHead>
                     <TableHead>Descrição</TableHead><TableHead>Data</TableHead><TableHead className="w-16"></TableHead>
                   </TableRow></TableHeader>
                   <TableBody>
                     {filteredArquivos.map(a => (
                       <TableRow key={a.id}>
+                        <TableCell>
+                          {a.pop_codigo
+                            ? <Badge className="text-xs font-mono">{a.pop_codigo}</Badge>
+                            : <Badge variant="outline" className="text-xs text-muted-foreground">sem POP</Badge>}
+                        </TableCell>
                         <TableCell className="font-medium text-sm">{a.titulo}</TableCell>
                         <TableCell>
                           <Badge variant="outline" className="text-xs">
