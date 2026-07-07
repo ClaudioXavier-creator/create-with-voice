@@ -674,11 +674,24 @@ export default function Documentos() {
                 <CardTitle className="font-display">Arquivo BPF — POPs, ITs e Documentos</CardTitle>
                 <p className="text-xs text-muted-foreground mt-1">Upload e organização de documentos físicos escaneados, ITs associadas aos POPs e demais arquivos</p>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
+                <Input
+                  value={arqSearch}
+                  onChange={e => setArqSearch(e.target.value)}
+                  placeholder="Buscar título, descrição ou POP…"
+                  className="w-56 h-8 text-xs"
+                />
+                <Select value={arqFilterPop} onValueChange={setArqFilterPop}>
+                  <SelectTrigger className="w-40 h-8 text-xs"><SelectValue placeholder="POP" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="todos">Todos os POPs</SelectItem>
+                    {POPS_OBRIGATORIOS.map(p => <SelectItem key={p.codigo} value={p.codigo}>{p.codigo}</SelectItem>)}
+                  </SelectContent>
+                </Select>
                 <Select value={arqFilterCat} onValueChange={setArqFilterCat}>
                   <SelectTrigger className="w-44 h-8 text-xs"><SelectValue /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="todos">Todos</SelectItem>
+                    <SelectItem value="todos">Todas categorias</SelectItem>
                     {CATEGORIAS_ARQ.map(c => <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>)}
                   </SelectContent>
                 </Select>
@@ -687,19 +700,31 @@ export default function Documentos() {
                   <DialogContent className="w-[95vw] sm:max-w-lg max-h-[90vh] overflow-y-auto">
                     <DialogHeader><DialogTitle>Enviar Arquivo BPF</DialogTitle></DialogHeader>
                     <div className="space-y-4">
-                      <div><Label>Título *</Label><Input value={arqTitulo} onChange={e => setArqTitulo(e.target.value)} placeholder="Ex: POP-001 — IT Limpeza de Silos" /></div>
+                      <div><Label>Título *</Label><Input value={arqTitulo} onChange={e => setArqTitulo(e.target.value)} placeholder="Ex: Planilha de higienização — Silo 2 (jan/2026)" /></div>
+                      <div>
+                        <Label>POP vinculado *</Label>
+                        <Select value={arqPopCodigo} onValueChange={setArqPopCodigo}>
+                          <SelectTrigger><SelectValue placeholder="Selecione o POP a que este arquivo pertence" /></SelectTrigger>
+                          <SelectContent>
+                            {POPS_OBRIGATORIOS.map(p => (
+                              <SelectItem key={p.codigo} value={p.codigo}>{p.codigo} — {p.nome.slice(0, 50)}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <p className="text-[10px] text-muted-foreground mt-1">Obrigatório para o arquivo ficar pesquisável por POP.</p>
+                      </div>
                       <div><Label>Categoria</Label>
                         <Select value={arqCategoria} onValueChange={setArqCategoria}>
                           <SelectTrigger><SelectValue /></SelectTrigger>
                           <SelectContent>{CATEGORIAS_ARQ.map(c => <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>)}</SelectContent>
                         </Select>
                       </div>
-                      <div><Label>Descrição</Label><Textarea value={arqDescricao} onChange={e => setArqDescricao(e.target.value)} placeholder="Detalhes sobre o documento..." /></div>
+                      <div><Label>Descrição</Label><Textarea value={arqDescricao} onChange={e => setArqDescricao(e.target.value)} placeholder="Detalhes: nº do lote, data de execução, operador, etc." /></div>
                       <div>
                         <Label>Arquivo (PDF, imagem, DOC)</Label>
                         <Input type="file" accept=".pdf,.png,.jpg,.jpeg,.doc,.docx,.xls,.xlsx" onChange={e => setArqFile(e.target.files?.[0] || null)} />
                       </div>
-                      <Button onClick={handleAddArquivo} className="w-full" disabled={saving || !arqTitulo || !arqFile}>
+                      <Button onClick={handleAddArquivo} className="w-full" disabled={saving || !arqTitulo || !arqFile || !arqPopCodigo}>
                         {saving && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}Enviar
                       </Button>
                     </div>
