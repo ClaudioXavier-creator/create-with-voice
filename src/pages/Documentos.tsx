@@ -69,6 +69,7 @@ interface DocRow {
 interface ArquivoBpf {
   id: string; titulo: string; categoria: string; descricao: string | null;
   arquivo_nome: string | null; arquivo_url: string | null; created_at: string;
+  pop_codigo?: string | null;
 }
 
 
@@ -136,9 +137,13 @@ export default function Documentos() {
   const [arqOpen, setArqOpen] = useState(false);
   const [arqTitulo, setArqTitulo] = useState("");
   const [arqCategoria, setArqCategoria] = useState("pop");
+  const [arqPopCodigo, setArqPopCodigo] = useState("");
   const [arqDescricao, setArqDescricao] = useState("");
   const [arqFile, setArqFile] = useState<File | null>(null);
   const [arqFilterCat, setArqFilterCat] = useState("todos");
+  const [arqFilterPop, setArqFilterPop] = useState("todos");
+  const [arqSearch, setArqSearch] = useState("");
+
 
 
   const [calOpen, setCalOpen] = useState(false);
@@ -263,12 +268,12 @@ export default function Documentos() {
   };
 
   const handleAddArquivo = async () => {
-    if (!arqTitulo || !arqFile || !user) return;
+    if (!arqTitulo || !arqFile || !arqPopCodigo || !user) return;
     setSaving(true);
     let arquivo_url = "";
     let arquivo_nome = arqFile.name;
     // Upload para storage se disponível
-    const path = `bpf/${empresaAtiva?.id || user.id}/${arqCategoria}/${Date.now()}_${arqFile.name.replace(/[^a-zA-Z0-9._-]/g, "_")}`;
+    const path = `bpf/${empresaAtiva?.id || user.id}/${arqPopCodigo}/${arqCategoria}/${Date.now()}_${arqFile.name.replace(/[^a-zA-Z0-9._-]/g, "_")}`;
     const { error: upErr } = await supabase.storage.from("feed-bpf").upload(path, arqFile);
     if (!upErr) {
       const { data: urlData } = supabase.storage.from("feed-bpf").getPublicUrl(path);
@@ -277,11 +282,12 @@ export default function Documentos() {
     const { error } = await supabase.from("arquivos_bpf").insert({
       user_id: user.id, titulo: arqTitulo, categoria: arqCategoria, descricao: arqDescricao,
       arquivo_nome, arquivo_url, empresa_id: empresaAtiva?.id || null,
-    });
+      pop_codigo: arqPopCodigo,
+    } as any);
     if (error) toast.error("Erro ao salvar arquivo");
     else {
       toast.success("Arquivo BPF salvo!");
-      setArqOpen(false); setArqTitulo(""); setArqCategoria("pop"); setArqDescricao(""); setArqFile(null);
+      setArqOpen(false); setArqTitulo(""); setArqCategoria("pop"); setArqPopCodigo(""); setArqDescricao(""); setArqFile(null);
       fetchData();
     }
     setSaving(false);
@@ -293,7 +299,16 @@ export default function Documentos() {
     else { toast.success("Arquivo excluído"); fetchData(); }
   };
 
-  const filteredArquivos = arqFilterCat === "todos" ? arquivos : arquivos.filter(a => a.categoria === arqFilterCat);
+  const filteredArquivos = arquivos.filter(a => {
+    if (arqFilterCat !== "todos" && a.categoria !== arqFilterCat) return false;
+    if (arqFilterPop !== "todos" && (a.pop_codigo || "") !== arqFilterPop) return false;
+    if (arqSearch.trim()) {
+      const q = arqSearch.trim().toLowerCase();
+      const hay = `${a.titulo || ""} ${a.descricao || ""} ${a.arquivo_nome || ""} ${a.pop_codigo || ""}`.toLowerCase();
+      if (!hay.includes(q)) return false;
+    }
+    return true;
+  });
 
   const tipoLabel = (tipo: string) => TIPOS_EQUIPAMENTO.find(t => t.value === tipo)?.label || tipo;
 
@@ -659,11 +674,24 @@ export default function Documentos() {
                 <CardTitle className="font-display">Arquivo BPF — POPs, ITs e Documentos</CardTitle>
                 <p className="text-xs text-muted-foreground mt-1">Upload e organização de documentos físicos escaneados, ITs associadas aos POPs e demais arquivos</p>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
+                <Input
+                  value={arqSearch}
+                  onChange={e => setArqSearch(e.target.value)}
+                  placeholder="Buscar título, descrição ou POP…"
+                  className="w-56 h-8 text-xs"
+                />
+                <Select value={arqFilterPop} onValueChange={setArqFilterPop}>
+                  <SelectTrigger className="w-40 h-8 text-xs"><SelectValue placeholder="POP" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="todos">Todos os POPs</SelectItem>
+                    {POPS_OBRIGATORIOS.map(p => <SelectItem key={p.codigo} value={p.codigo}>{p.codigo}</SelectItem>)}
+                  </SelectContent>
+                </Select>
                 <Select value={arqFilterCat} onValueChange={setArqFilterCat}>
                   <SelectTrigger className="w-44 h-8 text-xs"><SelectValue /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="todos">Todos</SelectItem>
+                    <SelectItem value="todos">Todas categorias</SelectItem>
                     {CATEGORIAS_ARQ.map(c => <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>)}
                   </SelectContent>
                 </Select>
@@ -672,19 +700,31 @@ export default function Documentos() {
                   <DialogContent className="w-[95vw] sm:max-w-lg max-h-[90vh] overflow-y-auto">
                     <DialogHeader><DialogTitle>Enviar Arquivo BPF</DialogTitle></DialogHeader>
                     <div className="space-y-4">
-                      <div><Label>Título *</Label><Input value={arqTitulo} onChange={e => setArqTitulo(e.target.value)} placeholder="Ex: POP-001 — IT Limpeza de Silos" /></div>
+                      <div><Label>Título *</Label><Input value={arqTitulo} onChange={e => setArqTitulo(e.target.value)} placeholder="Ex: Planilha de higienização — Silo 2 (jan/2026)" /></div>
+                      <div>
+                        <Label>POP vinculado *</Label>
+                        <Select value={arqPopCodigo} onValueChange={setArqPopCodigo}>
+                          <SelectTrigger><SelectValue placeholder="Selecione o POP a que este arquivo pertence" /></SelectTrigger>
+                          <SelectContent>
+                            {POPS_OBRIGATORIOS.map(p => (
+                              <SelectItem key={p.codigo} value={p.codigo}>{p.codigo} — {p.nome.slice(0, 50)}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <p className="text-[10px] text-muted-foreground mt-1">Obrigatório para o arquivo ficar pesquisável por POP.</p>
+                      </div>
                       <div><Label>Categoria</Label>
                         <Select value={arqCategoria} onValueChange={setArqCategoria}>
                           <SelectTrigger><SelectValue /></SelectTrigger>
                           <SelectContent>{CATEGORIAS_ARQ.map(c => <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>)}</SelectContent>
                         </Select>
                       </div>
-                      <div><Label>Descrição</Label><Textarea value={arqDescricao} onChange={e => setArqDescricao(e.target.value)} placeholder="Detalhes sobre o documento..." /></div>
+                      <div><Label>Descrição</Label><Textarea value={arqDescricao} onChange={e => setArqDescricao(e.target.value)} placeholder="Detalhes: nº do lote, data de execução, operador, etc." /></div>
                       <div>
                         <Label>Arquivo (PDF, imagem, DOC)</Label>
                         <Input type="file" accept=".pdf,.png,.jpg,.jpeg,.doc,.docx,.xls,.xlsx" onChange={e => setArqFile(e.target.files?.[0] || null)} />
                       </div>
-                      <Button onClick={handleAddArquivo} className="w-full" disabled={saving || !arqTitulo || !arqFile}>
+                      <Button onClick={handleAddArquivo} className="w-full" disabled={saving || !arqTitulo || !arqFile || !arqPopCodigo}>
                         {saving && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}Enviar
                       </Button>
                     </div>
@@ -699,12 +739,17 @@ export default function Documentos() {
                 <div className="overflow-x-auto">
                   <Table>
                   <TableHeader><TableRow>
-                    <TableHead>Título</TableHead><TableHead>Categoria</TableHead><TableHead>Arquivo</TableHead>
+                    <TableHead>POP</TableHead><TableHead>Título</TableHead><TableHead>Categoria</TableHead><TableHead>Arquivo</TableHead>
                     <TableHead>Descrição</TableHead><TableHead>Data</TableHead><TableHead className="w-16"></TableHead>
                   </TableRow></TableHeader>
                   <TableBody>
                     {filteredArquivos.map(a => (
                       <TableRow key={a.id}>
+                        <TableCell>
+                          {a.pop_codigo
+                            ? <Badge className="text-xs font-mono">{a.pop_codigo}</Badge>
+                            : <Badge variant="outline" className="text-xs text-muted-foreground">sem POP</Badge>}
+                        </TableCell>
                         <TableCell className="font-medium text-sm">{a.titulo}</TableCell>
                         <TableCell>
                           <Badge variant="outline" className="text-xs">

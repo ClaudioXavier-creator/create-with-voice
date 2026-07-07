@@ -467,6 +467,7 @@ export type Database = {
           documento_ref_id: string | null
           empresa_id: string | null
           id: string
+          pop_codigo: string | null
           titulo: string
           updated_at: string
           user_id: string
@@ -480,6 +481,7 @@ export type Database = {
           documento_ref_id?: string | null
           empresa_id?: string | null
           id?: string
+          pop_codigo?: string | null
           titulo: string
           updated_at?: string
           user_id: string
@@ -493,6 +495,7 @@ export type Database = {
           documento_ref_id?: string | null
           empresa_id?: string | null
           id?: string
+          pop_codigo?: string | null
           titulo?: string
           updated_at?: string
           user_id?: string
