@@ -22,6 +22,15 @@ import { useEmpresa } from "@/hooks/useEmpresa";
 import { toast } from "sonner";
 import { POPS_CONFIG } from "@/config/popsConfig";
 import { markPopVisited } from "@/components/OnboardingChecklist";
+import {
+  TIPOS_DOC,
+  type TipoDoc,
+  nomeDisplay,
+  nomeArquivoFinal,
+  storagePath,
+  formatNumero,
+  nomePadronizado,
+} from "@/utils/nomenclaturaDoc";
 
 const POPS_OBRIGATORIOS = POPS_CONFIG.map((p) => {
   const moduloMap: Record<string, { modulo: string; moduloLabel: string }> = {
