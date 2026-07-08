@@ -88,12 +88,13 @@ export function storagePath(
   tipo: TipoDoc | string,
   numero: number | string,
   data: string | Date,
-  originalFileName: string
+  originalFileName: string,
+  prefixo?: string | null
 ): string {
   const ext = originalFileName.includes(".")
     ? originalFileName.split(".").pop()!.toLowerCase().replace(/[^a-z0-9]/g, "")
     : "bin";
-  const base = nomePadronizado(popCodigo, tipo, numero, data);
+  const base = nomePadronizado(popCodigo, tipo, numero, data, prefixo);
   return `bpf/${scopeId}/POP-${popShort(popCodigo)}/${tipo}/${base}.${ext}`;
 }
 
@@ -103,10 +104,11 @@ export function nomeArquivoFinal(
   tipo: TipoDoc | string,
   numero: number | string,
   data: string | Date,
-  originalFileName: string
+  originalFileName: string,
+  prefixo?: string | null
 ): string {
   const ext = originalFileName.includes(".")
     ? originalFileName.split(".").pop()!.toLowerCase().replace(/[^a-z0-9]/g, "")
     : "bin";
-  return `${nomePadronizado(popCodigo, tipo, numero, data)}.${ext}`;
+  return `${nomePadronizado(popCodigo, tipo, numero, data, prefixo)}.${ext}`;
 }
