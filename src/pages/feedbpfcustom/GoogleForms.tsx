@@ -22,7 +22,7 @@ interface Modelo {
 }
 
 export default function GoogleForms() {
-  const { empresaAtual } = useEmpresa();
+  const { empresaAtiva } = useEmpresa();
   const [modelos, setModelos] = useState<Modelo[]>([]);
   const [selecionado, setSelecionado] = useState<string>("");
   const [copiado, setCopiado] = useState<string>("");
