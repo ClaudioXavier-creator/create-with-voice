@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Paperclip, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -11,6 +11,14 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useEmpresa } from "@/hooks/useEmpresa";
 import { toast } from "sonner";
+import {
+  TIPOS_DOC,
+  type TipoDoc,
+  nomeDisplay,
+  nomeArquivoFinal,
+  storagePath,
+  formatNumero,
+} from "@/utils/nomenclaturaDoc";
 
 interface Props {
   popCodigo: string;         // ex: "POP-07"
@@ -20,17 +28,10 @@ interface Props {
   label?: string;
 }
 
-const CATEGORIAS = [
-  { value: "planilha", label: "Planilha preenchida (escaneada)" },
-  { value: "pop", label: "POP (documento oficial)" },
-  { value: "it", label: "Instrução de Trabalho (IT)" },
-  { value: "certificado", label: "Certificado / Laudo" },
-  { value: "outro", label: "Outro" },
-];
-
 /**
- * Botão reutilizável de anexação de documentos já vinculados ao POP do módulo.
- * Facilita o operador: não precisa escolher POP manualmente.
+ * Botão reutilizável de anexação de documentos vinculados ao POP do módulo.
+ * Padrão de nomenclatura: POP-01_PL-001_08-07-2026.pdf
+ * Pasta no storage: bpf/{empresa|user}/POP-01/PL/...
  */
 export function AnexarPlanilhaPop({
   popCodigo,
@@ -42,45 +43,88 @@ export function AnexarPlanilhaPop({
   const { user } = useAuth();
   const { empresaAtiva } = useEmpresa();
   const [open, setOpen] = useState(false);
-  const [titulo, setTitulo] = useState("");
-  const [categoria, setCategoria] = useState("planilha");
+  const [tipo, setTipo] = useState<TipoDoc>("PL");
+  const [numero, setNumero] = useState<string>("001");
+  const [dataRef, setDataRef] = useState<string>(new Date().toISOString().split("T")[0]);
   const [descricao, setDescricao] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [saving, setSaving] = useState(false);
 
-  const reset = () => {
-    setTitulo(""); setCategoria("planilha"); setDescricao(""); setFile(null);
+  // Sugere próximo número disponível ao abrir ou trocar tipo
+  const sugerirProximoNumero = async () => {
+    if (!user) return;
+    try {
+      let q = supabase
+        .from("arquivos_bpf")
+        .select("numero_doc")
+        .eq("pop_codigo", popCodigo)
+        .eq("tipo_doc", tipo)
+        .order("numero_doc", { ascending: false })
+        .limit(1);
+      if (empresaAtiva) q = q.eq("empresa_id", empresaAtiva.id);
+      else q = q.eq("user_id", user.id);
+      const { data } = await q;
+      const max = (data?.[0] as any)?.numero_doc ?? 0;
+      setNumero(formatNumero(max + 1));
+    } catch {
+      setNumero("001");
+    }
   };
 
+  useEffect(() => {
+    if (open) sugerirProximoNumero();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, tipo]);
+
+  const reset = () => {
+    setTipo("PL"); setNumero("001"); setDataRef(new Date().toISOString().split("T")[0]);
+    setDescricao(""); setFile(null);
+  };
+
+  const tipoLabel = TIPOS_DOC.find((t) => t.value === tipo)?.label || tipo;
+  const preview = nomeDisplay(popCodigo, tipo, numero, dataRef);
+  const arquivoFinal = file ? nomeArquivoFinal(popCodigo, tipo, numero, dataRef, file.name) : "";
+
   const handleUpload = async () => {
-    if (!user || !file || !titulo.trim()) {
-      toast.error("Preencha título e selecione um arquivo");
+    if (!user || !file || !numero.trim() || !dataRef) {
+      toast.error("Preencha tipo, número, data e selecione um arquivo");
       return;
     }
     setSaving(true);
     try {
-      const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
-      const path = `bpf/${empresaAtiva?.id || user.id}/${popCodigo}/${categoria}/${Date.now()}_${safeName}`;
-      const { error: upErr } = await supabase.storage.from("feed-bpf").upload(path, file);
+      const scopeId = empresaAtiva?.id || user.id;
+      const path = storagePath(scopeId, popCodigo, tipo, numero, dataRef, file.name);
+
+      const { error: upErr } = await supabase.storage
+        .from("documentos-bpf")
+        .upload(path, file, { upsert: false });
       if (upErr) {
         toast.error("Erro no upload: " + upErr.message);
         return;
       }
-      const { data: urlData } = supabase.storage.from("feed-bpf").getPublicUrl(path);
+      const { data: urlData } = supabase.storage.from("documentos-bpf").getPublicUrl(path);
+
+      const titulo = nomeDisplay(popCodigo, tipo, numero, dataRef);
+      const numeroInt = parseInt(numero, 10) || 0;
+
       const { error } = await supabase.from("arquivos_bpf").insert({
         user_id: user.id,
         empresa_id: empresaAtiva?.id || null,
-        titulo: titulo.trim(),
-        categoria,
+        titulo,
+        categoria: tipo.toLowerCase(),
         descricao: descricao || null,
-        arquivo_nome: file.name,
+        arquivo_nome: arquivoFinal,
         arquivo_url: urlData?.publicUrl || path,
         pop_codigo: popCodigo,
+        tipo_doc: tipo,
+        numero_doc: numeroInt,
+        data_ref: dataRef,
+        nome_padronizado: arquivoFinal.replace(/\.[^.]+$/, ""),
       } as any);
       if (error) {
         toast.error("Erro ao salvar registro");
       } else {
-        toast.success(`Documento anexado a ${popCodigo}`);
+        toast.success(`Anexado: ${titulo}`);
         setOpen(false);
         reset();
       }
@@ -103,29 +147,35 @@ export function AnexarPlanilhaPop({
             Anexar documento
             <Badge className="font-mono">{popCodigo}</Badge>
           </DialogTitle>
-          {popNome && (
-            <p className="text-xs text-muted-foreground">{popNome}</p>
-          )}
+          {popNome && <p className="text-xs text-muted-foreground">{popNome}</p>}
         </DialogHeader>
         <div className="space-y-4">
-          <div>
-            <Label>Título *</Label>
-            <Input
-              value={titulo}
-              onChange={(e) => setTitulo(e.target.value)}
-              placeholder={`Ex: ${popCodigo} — Registro ${new Date().toLocaleDateString("pt-BR")}`}
-            />
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <Label>Tipo *</Label>
+              <Select value={tipo} onValueChange={(v) => setTipo(v as TipoDoc)}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {TIPOS_DOC.map((c) => (
+                    <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label>Número *</Label>
+              <Input
+                value={numero}
+                onChange={(e) => setNumero(e.target.value.replace(/\D/g, "").slice(0, 4))}
+                onBlur={() => setNumero((n) => formatNumero(n))}
+                placeholder="001"
+                inputMode="numeric"
+              />
+            </div>
           </div>
           <div>
-            <Label>Tipo de documento</Label>
-            <Select value={categoria} onValueChange={setCategoria}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
-              <SelectContent>
-                {CATEGORIAS.map((c) => (
-                  <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <Label>Data de referência *</Label>
+            <Input type="date" value={dataRef} onChange={(e) => setDataRef(e.target.value)} />
           </div>
           <div>
             <Label>Descrição (opcional)</Label>
@@ -144,9 +194,21 @@ export function AnexarPlanilhaPop({
               onChange={(e) => setFile(e.target.files?.[0] || null)}
             />
           </div>
-          <div className="rounded-md bg-muted/50 p-3 text-xs text-muted-foreground">
-            Este documento será automaticamente vinculado ao <strong>{popCodigo}</strong> e ficará pesquisável em <strong>Documentos → Arquivo BPF</strong>.
+
+          <div className="rounded-md border bg-muted/40 p-3 text-xs space-y-1">
+            <div className="text-muted-foreground">Nome que aparecerá no acervo:</div>
+            <div className="font-mono font-medium text-foreground">{preview}</div>
+            {arquivoFinal && (
+              <>
+                <div className="text-muted-foreground pt-1">Arquivo salvo como:</div>
+                <div className="font-mono text-[11px] break-all text-foreground">{arquivoFinal}</div>
+              </>
+            )}
+            <div className="text-muted-foreground pt-1">
+              Vinculado a <strong>{popCodigo}</strong> · Tipo <strong>{tipoLabel}</strong>
+            </div>
           </div>
+
           <Button className="w-full" onClick={handleUpload} disabled={saving}>
             {saving && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
             Anexar ao {popCodigo}
