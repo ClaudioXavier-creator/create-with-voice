@@ -415,14 +415,29 @@ export default function GuiaCustomizacao() {
         </CardContent>
       </Card>
 
-      {/* Estilos de impressão */}
+      {/* Estilos de impressão — força pagina\u00e7\u00e3o correta desatando os containers de scroll do layout */}
       <style>{`
         @media print {
-          body { background: white !important; }
-          .print\\:hidden { display: none !important; }
-          .print\\:break-after-page { break-after: page; }
-          .print\\:break-inside-avoid { break-inside: avoid; }
-          header, aside, nav, footer[role] { display: none !important; }
+          @page { size: A4; margin: 12mm 10mm; }
+          html, body, #root { height: auto !important; min-height: 0 !important; overflow: visible !important; background: white !important; }
+          body * { visibility: hidden; }
+          #guia-print, #guia-print * { visibility: visible; }
+          #guia-print {
+            position: absolute !important;
+            left: 0; top: 0; right: 0;
+            width: 100% !important; max-width: none !important;
+            padding: 0 !important; margin: 0 !important;
+            background: white !important; color: black !important;
+          }
+          #guia-print .print\\:hidden, .print\\:hidden { display: none !important; }
+          #guia-print .print\\:break-after-page { break-after: page; page-break-after: always; }
+          #guia-print .print\\:break-inside-avoid { break-inside: avoid; page-break-inside: avoid; }
+          /* Neutraliza containers de scroll do FeedBpfCustomLayout */
+          [data-sidebar], header, aside, nav { display: none !important; }
+          main, .overflow-hidden, .overflow-y-auto, .overflow-x-hidden, .h-screen {
+            height: auto !important; max-height: none !important; overflow: visible !important;
+            display: block !important; position: static !important;
+          }
         }
       `}</style>
     </div>
