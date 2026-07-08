@@ -95,6 +95,7 @@ export default function Cadastro() {
           capacidade: form.capacidade.trim(), 
           tipo_producao: form.tipo_producao,
           origem_agua: form.origem_agua || null,
+          prefixo_doc: form.prefixo_doc.toUpperCase().replace(/[^A-Z0-9-]/g, "").slice(0, 8) || null,
         }).eq("id", editId);
         
         if (error) throw error;
