@@ -463,11 +463,15 @@ export type Database = {
           arquivo_url: string | null
           categoria: string
           created_at: string
+          data_ref: string | null
           descricao: string | null
           documento_ref_id: string | null
           empresa_id: string | null
           id: string
+          nome_padronizado: string | null
+          numero_doc: number | null
           pop_codigo: string | null
+          tipo_doc: string | null
           titulo: string
           updated_at: string
           user_id: string
@@ -477,11 +481,15 @@ export type Database = {
           arquivo_url?: string | null
           categoria: string
           created_at?: string
+          data_ref?: string | null
           descricao?: string | null
           documento_ref_id?: string | null
           empresa_id?: string | null
           id?: string
+          nome_padronizado?: string | null
+          numero_doc?: number | null
           pop_codigo?: string | null
+          tipo_doc?: string | null
           titulo: string
           updated_at?: string
           user_id: string
@@ -491,11 +499,15 @@ export type Database = {
           arquivo_url?: string | null
           categoria?: string
           created_at?: string
+          data_ref?: string | null
           descricao?: string | null
           documento_ref_id?: string | null
           empresa_id?: string | null
           id?: string
+          nome_padronizado?: string | null
+          numero_doc?: number | null
           pop_codigo?: string | null
+          tipo_doc?: string | null
           titulo?: string
           updated_at?: string
           user_id?: string
