@@ -10,6 +10,7 @@ import {
   Home,
   GraduationCap,
   Sparkles,
+  FileSpreadsheet,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -29,6 +30,7 @@ const items = [
   { title: "Como Usar", icon: GraduationCap, url: "/feedbpf-custom/tutorial" },
   { title: "Meu Acervo", icon: FolderOpen, url: "/feedbpf-custom/acervo" },
   { title: "Importação em Massa", icon: Upload, url: "/feedbpf-custom/importacao" },
+  { title: "Importar Planilhas", icon: FileSpreadsheet, url: "/feedbpf-custom/planilhas" },
   { title: "Meus Modelos", icon: Layers, url: "/feedbpf-custom/modelos" },
   { title: "Registros Digitais", icon: FileSignature, url: "/feedbpf-custom/registros" },
   { title: "Análise por IA", icon: Sparkles, url: "/feedbpf-custom/analise-ia" },
