@@ -226,6 +226,18 @@ export default function Cadastro() {
                 </div>
                 <p className="text-xs text-muted-foreground">Define a periodicidade pré-selecionada de cloro/pH no POP-04.</p>
               </div>
+              <div className="md:col-span-2 space-y-2">
+                <Label>Prefixo de Nomenclatura de Documentos (opcional)</Label>
+                <Input
+                  value={form.prefixo_doc}
+                  onChange={e => setForm(p => ({ ...p, prefixo_doc: e.target.value.toUpperCase().replace(/[^A-Z0-9-]/g, "").slice(0, 8) }))}
+                  placeholder="Ex: FBX, AGRO01, UNID-SP"
+                  maxLength={8}
+                />
+                <p className="text-xs text-muted-foreground">
+                  Se preenchido, será adicionado à frente do nome dos documentos anexados. Ex: <code className="text-foreground">FBX_POP-01_PL-001_08-07-2026</code>. Deixe em branco para usar o padrão <code className="text-foreground">POP-01_PL-001_...</code>. Cada empresa mantém sua própria sequência de números independentemente.
+                </p>
+              </div>
               <div className="md:col-span-2">
                 <Button className="w-full" onClick={salvar} disabled={saving}>
                   {saving ? "Salvando..." : editId ? "Atualizar" : "Cadastrar Empresa"}
