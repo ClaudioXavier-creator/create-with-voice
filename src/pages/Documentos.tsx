@@ -282,30 +282,99 @@ export default function Documentos() {
   };
 
   const handleAddArquivo = async () => {
-    if (!arqTitulo || !arqFile || !arqPopCodigo || !user) return;
+    if (!arqFile || !arqPopCodigo || !arqNumero || !arqDataRef || !user) return;
     setSaving(true);
+    const scopeId = empresaAtiva?.id || user.id;
+    const path = storagePath(scopeId, arqPopCodigo, arqTipo, arqNumero, arqDataRef, arqFile.name);
+    const arquivoFinal = nomeArquivoFinal(arqPopCodigo, arqTipo, arqNumero, arqDataRef, arqFile.name);
+    const titulo = nomeDisplay(arqPopCodigo, arqTipo, arqNumero, arqDataRef);
+
     let arquivo_url = "";
-    let arquivo_nome = arqFile.name;
-    // Upload para storage se disponível
-    const path = `bpf/${empresaAtiva?.id || user.id}/${arqPopCodigo}/${arqCategoria}/${Date.now()}_${arqFile.name.replace(/[^a-zA-Z0-9._-]/g, "_")}`;
-    const { error: upErr } = await supabase.storage.from("feed-bpf").upload(path, arqFile);
-    if (!upErr) {
-      const { data: urlData } = supabase.storage.from("feed-bpf").getPublicUrl(path);
-      arquivo_url = urlData?.publicUrl || path;
+    const { error: upErr } = await supabase.storage.from("documentos-bpf").upload(path, arqFile, { upsert: false });
+    if (upErr) {
+      toast.error("Erro no upload: " + upErr.message);
+      setSaving(false); return;
     }
+    const { data: urlData } = supabase.storage.from("documentos-bpf").getPublicUrl(path);
+    arquivo_url = urlData?.publicUrl || path;
+
     const { error } = await supabase.from("arquivos_bpf").insert({
-      user_id: user.id, titulo: arqTitulo, categoria: arqCategoria, descricao: arqDescricao,
-      arquivo_nome, arquivo_url, empresa_id: empresaAtiva?.id || null,
+      user_id: user.id, empresa_id: empresaAtiva?.id || null,
+      titulo,
+      categoria: arqTipo.toLowerCase(),
+      descricao: arqDescricao || null,
+      arquivo_nome: arquivoFinal,
+      arquivo_url,
       pop_codigo: arqPopCodigo,
+      tipo_doc: arqTipo,
+      numero_doc: parseInt(arqNumero, 10) || 0,
+      data_ref: arqDataRef,
+      nome_padronizado: arquivoFinal.replace(/\.[^.]+$/, ""),
     } as any);
     if (error) toast.error("Erro ao salvar arquivo");
     else {
-      toast.success("Arquivo BPF salvo!");
-      setArqOpen(false); setArqTitulo(""); setArqCategoria("pop"); setArqPopCodigo(""); setArqDescricao(""); setArqFile(null);
+      toast.success(`Arquivo salvo: ${titulo}`);
+      setArqOpen(false);
+      setArqPopCodigo(""); setArqTipo("PL"); setArqNumero("001");
+      setArqDataRef(new Date().toISOString().split("T")[0]);
+      setArqDescricao(""); setArqFile(null);
       fetchData();
     }
     setSaving(false);
   };
+
+  /**
+   * Retroativo: preenche tipo_doc/numero_doc/data_ref/nome_padronizado
+   * para arquivos legados que ainda não seguem o padrão. Não move arquivos
+   * no storage — apenas normaliza metadados e o título exibido.
+   */
+  const handlePadronizarNomes = async () => {
+    if (!user) return;
+    const pendentes = arquivos.filter((a) => !a.nome_padronizado && a.pop_codigo);
+    if (pendentes.length === 0) {
+      toast.info("Todos os arquivos já estão padronizados.");
+      return;
+    }
+    if (!window.confirm(`Padronizar ${pendentes.length} arquivo(s) legado(s)? Números serão gerados sequencialmente por POP+Tipo.`)) return;
+    setPadronizando(true);
+    try {
+      // Descobre próximos números por (pop, tipo) já usados
+      const contadores = new Map<string, number>();
+      for (const a of arquivos) {
+        if (a.pop_codigo && a.tipo_doc && a.numero_doc) {
+          const k = `${a.pop_codigo}|${a.tipo_doc}`;
+          contadores.set(k, Math.max(contadores.get(k) || 0, a.numero_doc));
+        }
+      }
+      let ok = 0;
+      for (const a of pendentes) {
+        const tipoInferido: TipoDoc =
+          a.categoria === "it" ? "IT" :
+          a.categoria === "manual" ? "MN" :
+          a.categoria === "planilha" ? "PL" :
+          a.categoria === "certificado" ? "RG" : "FR";
+        const k = `${a.pop_codigo}|${tipoInferido}`;
+        const proximo = (contadores.get(k) || 0) + 1;
+        contadores.set(k, proximo);
+        const dataRef = a.created_at?.split("T")[0] || new Date().toISOString().split("T")[0];
+        const base = nomePadronizado(a.pop_codigo!, tipoInferido, proximo, dataRef);
+        const titulo = nomeDisplay(a.pop_codigo!, tipoInferido, proximo, dataRef);
+        const { error } = await (supabase.from("arquivos_bpf") as any).update({
+          tipo_doc: tipoInferido,
+          numero_doc: proximo,
+          data_ref: dataRef,
+          nome_padronizado: base,
+          titulo,
+        }).eq("id", a.id);
+        if (!error) ok++;
+      }
+      toast.success(`${ok}/${pendentes.length} arquivos padronizados.`);
+      fetchData();
+    } finally {
+      setPadronizando(false);
+    }
+  };
+
 
   const handleDeleteArquivo = async (id: string) => {
     const { error } = await supabase.from("arquivos_bpf").delete().eq("id", id);
