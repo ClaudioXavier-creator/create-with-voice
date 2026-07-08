@@ -16,6 +16,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Switch } from "@/components/ui/switch";
 import { Plus, HeartPulse, CheckCircle2, AlertTriangle, Trash2, UserCheck, Clock } from "lucide-react";
 import PageHeader from "@/components/PageHeader";
+import { AnexarPlanilhaPop } from "@/components/documentos/AnexarPlanilhaPop";
 
 const TIPOS_EXAME = [
   { value: "admissional", label: "Admissional" },
@@ -112,6 +113,7 @@ export default function SaudePessoal() {
         description="Procedimentos de higiene pessoal, saúde dos colaboradores e uso de EPIs — IN 04/2007"
         orientacaoModuloId="saude-pessoal"
       />
+      <div className="flex justify-end mb-3"><AnexarPlanilhaPop popCodigo="POP-03" popNome="Saúde e Higiene Pessoal" /></div>
 
       {/* KPIs */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">

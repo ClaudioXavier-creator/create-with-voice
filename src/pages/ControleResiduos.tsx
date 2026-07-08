@@ -17,6 +17,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Plus, Trash2, Recycle, ShieldAlert, Droplets, PackageX, AlertTriangle } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import PageHeader from "@/components/PageHeader";
+import { AnexarPlanilhaPop } from "@/components/documentos/AnexarPlanilhaPop";
 
 const TIPOS_RESIDUO = ["Orgânico", "Pó/Varredura", "Embalagens plásticas", "Embalagens papel/papelão", "Efluente líquido", "Efluente industrial", "Água de lavagem", "Óleo lubrificante", "Resíduo químico", "Produto vencido", "Produto rejeitado/reprovado", "Sobra de produção", "Outro"];
 const TRATAMENTO_EFLUENTE = [
@@ -124,6 +125,7 @@ export default function ControleResiduos() {
     <div className="space-y-6">
       <PageHeader title="POP 08 - Controle de Resíduos e Efluentes" description="Procedimentos de coleta, segregação e destinação de resíduos sólidos e efluentes — IN 04/2007 e Decreto 12.031/2024"
         orientacaoModuloId="residuos" />
+      <div className="flex justify-end mb-3"><AnexarPlanilhaPop popCodigo="POP-08" popNome="Controle de Resíduos e Efluentes" /></div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <Card><CardContent className="pt-4 text-center">

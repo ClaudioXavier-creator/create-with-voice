@@ -18,6 +18,7 @@ import { Switch } from "@/components/ui/switch";
 import { Plus, Droplets, CheckCircle2, Clock, Trash2, Beaker, FileText, ClipboardList, Download, ShieldCheck, Layers, FlaskConical, Container, UserCheck, Droplet, HeartPulse, Archive, AlertTriangle, Printer } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import PageHeader from "@/components/PageHeader";
+import { AnexarPlanilhaPop } from "@/components/documentos/AnexarPlanilhaPop";
 import { printElement } from "@/utils/printUtils";
 
 
@@ -730,6 +731,7 @@ export default function HigieneSanitizacao() {
         description="Procedimentos de limpeza e higienização conforme IN 04/2007 e IN 15/2009"
         orientacaoModuloId="higiene" 
       />
+      <div className="flex justify-end mb-3"><AnexarPlanilhaPop popCodigo="POP-02" popNome="Higiene e Sanitização" /></div>
 
       <Tabs defaultValue="preop">
         <div className="w-full overflow-x-auto pb-1">

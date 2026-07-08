@@ -17,6 +17,7 @@ import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import PageHeader from "@/components/PageHeader";
+import { AnexarPlanilhaPop } from "@/components/documentos/AnexarPlanilhaPop";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useEmpresa } from "@/hooks/useEmpresa";
@@ -230,6 +231,7 @@ export default function Recebimento() {
   return (
     <>
       <PageHeader icon={Package} title="Recebimento de Matérias-Primas" description="Controle de qualidade e FIFO" />
+      <div className="flex justify-end mb-3"><AnexarPlanilhaPop popCodigo="POP-01" popNome="Recebimento de Matérias-Primas" /></div>
       <div className="flex justify-between items-center mb-4">
         <Input placeholder="Buscar..." value={busca} onChange={e => setBusca(e.target.value)} className="max-w-xs" />
         <Dialog open={open} onOpenChange={setOpen}>

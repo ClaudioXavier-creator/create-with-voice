@@ -17,6 +17,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Switch } from "@/components/ui/switch";
 import { Plus, Droplet, CheckCircle2, AlertTriangle, Trash2, FileText, Beaker, Container, Download, ShieldCheck } from "lucide-react";
 import PageHeader from "@/components/PageHeader";
+import { AnexarPlanilhaPop } from "@/components/documentos/AnexarPlanilhaPop";
 
 const PONTOS_COLETA = [
   "Ponto 1 — Entrada (Poço/SAAE)",
@@ -254,6 +255,7 @@ export default function PotabilidadeAgua() {
         description="Controle de potabilidade da água e higienização de reservatórios — IN 04/2007"
         orientacaoModuloId="potabilidade-agua"
       />
+      <div className="flex justify-end mb-3"><AnexarPlanilhaPop popCodigo="POP-04" popNome="Potabilidade da Água" /></div>
 
       {/* KPIs */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
