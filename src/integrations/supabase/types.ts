@@ -3511,6 +3511,59 @@ export type Database = {
         }
         Relationships: []
       }
+      modelos_empresa: {
+        Row: {
+          arquivo_referencia_nome: string | null
+          arquivo_referencia_path: string | null
+          ativo: boolean
+          campos: Json
+          created_at: string
+          descricao: string | null
+          empresa_id: string
+          id: string
+          nome: string
+          pop_codigo: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          arquivo_referencia_nome?: string | null
+          arquivo_referencia_path?: string | null
+          ativo?: boolean
+          campos?: Json
+          created_at?: string
+          descricao?: string | null
+          empresa_id: string
+          id?: string
+          nome: string
+          pop_codigo?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          arquivo_referencia_nome?: string | null
+          arquivo_referencia_path?: string | null
+          ativo?: boolean
+          campos?: Json
+          created_at?: string
+          descricao?: string | null
+          empresa_id?: string
+          id?: string
+          nome?: string
+          pop_codigo?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "modelos_empresa_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       monitoramento_pcc: {
         Row: {
           acao_corretiva: string | null
@@ -4847,6 +4900,78 @@ export type Database = {
             columns: ["empresa_id"]
             isOneToOne: false
             referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      registros_customizados: {
+        Row: {
+          aprovado_em: string | null
+          aprovado_por: string | null
+          created_at: string
+          dados: Json
+          data_execucao: string
+          empresa_id: string
+          hash_integridade: string | null
+          id: string
+          modelo_id: string
+          pdf_path: string | null
+          pop_codigo: string | null
+          responsavel: string | null
+          status: string
+          titulo: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          aprovado_em?: string | null
+          aprovado_por?: string | null
+          created_at?: string
+          dados?: Json
+          data_execucao?: string
+          empresa_id: string
+          hash_integridade?: string | null
+          id?: string
+          modelo_id: string
+          pdf_path?: string | null
+          pop_codigo?: string | null
+          responsavel?: string | null
+          status?: string
+          titulo: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          aprovado_em?: string | null
+          aprovado_por?: string | null
+          created_at?: string
+          dados?: Json
+          data_execucao?: string
+          empresa_id?: string
+          hash_integridade?: string | null
+          id?: string
+          modelo_id?: string
+          pdf_path?: string | null
+          pop_codigo?: string | null
+          responsavel?: string | null
+          status?: string
+          titulo?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "registros_customizados_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "registros_customizados_modelo_id_fkey"
+            columns: ["modelo_id"]
+            isOneToOne: false
+            referencedRelation: "modelos_empresa"
             referencedColumns: ["id"]
           },
         ]
