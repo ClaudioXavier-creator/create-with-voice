@@ -297,6 +297,7 @@ const AppRoutes = () => {
                   <Route path="modelos" element={<FeedCustomModelos />} />
                   <Route path="registros" element={<FeedCustomRegistros />} />
                   <Route path="registros/novo" element={<FeedCustomRegistros />} />
+                  <Route path="analise-ia" element={<FeedCustomAnaliseIA />} />
                   <Route path="config" element={<FeedCustomConfig />} />
                 </Routes>
               </FeedBpfCustomLayout>

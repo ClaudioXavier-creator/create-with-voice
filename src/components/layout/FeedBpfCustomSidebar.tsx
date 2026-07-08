@@ -9,6 +9,7 @@ import {
   Settings,
   Home,
   GraduationCap,
+  Sparkles,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -30,6 +31,7 @@ const items = [
   { title: "Importação em Massa", icon: Upload, url: "/feedbpf-custom/importacao" },
   { title: "Meus Modelos", icon: Layers, url: "/feedbpf-custom/modelos" },
   { title: "Registros Digitais", icon: FileSignature, url: "/feedbpf-custom/registros" },
+  { title: "Análise por IA", icon: Sparkles, url: "/feedbpf-custom/analise-ia" },
   { title: "Configurações", icon: Settings, url: "/feedbpf-custom/config" },
 ];
 
