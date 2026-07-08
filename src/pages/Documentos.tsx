@@ -778,12 +778,15 @@ export default function Documentos() {
                     {CATEGORIAS_ARQ.map(c => <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>)}
                   </SelectContent>
                 </Select>
+                <Button size="sm" variant="outline" onClick={handlePadronizarNomes} disabled={padronizando}>
+                  {padronizando && <Loader2 className="w-4 h-4 mr-1 animate-spin" />}
+                  Padronizar nomes
+                </Button>
                 <Dialog open={arqOpen} onOpenChange={setArqOpen}>
                   <DialogTrigger asChild><Button size="sm"><Upload className="w-4 h-4 mr-1" /> Enviar Arquivo</Button></DialogTrigger>
                   <DialogContent className="w-[95vw] sm:max-w-lg max-h-[90vh] overflow-y-auto">
                     <DialogHeader><DialogTitle>Enviar Arquivo BPF</DialogTitle></DialogHeader>
                     <div className="space-y-4">
-                      <div><Label>Título *</Label><Input value={arqTitulo} onChange={e => setArqTitulo(e.target.value)} placeholder="Ex: Planilha de higienização — Silo 2 (jan/2026)" /></div>
                       <div>
                         <Label>POP vinculado *</Label>
                         <Select value={arqPopCodigo} onValueChange={setArqPopCodigo}>
@@ -796,18 +799,51 @@ export default function Documentos() {
                         </Select>
                         <p className="text-[10px] text-muted-foreground mt-1">Obrigatório para o arquivo ficar pesquisável por POP.</p>
                       </div>
-                      <div><Label>Categoria</Label>
-                        <Select value={arqCategoria} onValueChange={setArqCategoria}>
-                          <SelectTrigger><SelectValue /></SelectTrigger>
-                          <SelectContent>{CATEGORIAS_ARQ.map(c => <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>)}</SelectContent>
-                        </Select>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <Label>Tipo *</Label>
+                          <Select value={arqTipo} onValueChange={(v) => setArqTipo(v as TipoDoc)}>
+                            <SelectTrigger><SelectValue /></SelectTrigger>
+                            <SelectContent>{TIPOS_DOC.map(t => <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>)}</SelectContent>
+                          </Select>
+                        </div>
+                        <div>
+                          <Label>Número *</Label>
+                          <Input
+                            value={arqNumero}
+                            onChange={(e) => setArqNumero(e.target.value.replace(/\D/g, "").slice(0, 4))}
+                            onBlur={() => setArqNumero((n) => formatNumero(n))}
+                            placeholder="001"
+                            inputMode="numeric"
+                          />
+                        </div>
                       </div>
-                      <div><Label>Descrição</Label><Textarea value={arqDescricao} onChange={e => setArqDescricao(e.target.value)} placeholder="Detalhes: nº do lote, data de execução, operador, etc." /></div>
                       <div>
-                        <Label>Arquivo (PDF, imagem, DOC)</Label>
+                        <Label>Data de referência *</Label>
+                        <Input type="date" value={arqDataRef} onChange={(e) => setArqDataRef(e.target.value)} />
+                      </div>
+                      <div><Label>Descrição</Label><Textarea value={arqDescricao} onChange={e => setArqDescricao(e.target.value)} placeholder="Detalhes: nº do lote, operador, etc." /></div>
+                      <div>
+                        <Label>Arquivo * (PDF, imagem, DOC)</Label>
                         <Input type="file" accept=".pdf,.png,.jpg,.jpeg,.doc,.docx,.xls,.xlsx" onChange={e => setArqFile(e.target.files?.[0] || null)} />
                       </div>
-                      <Button onClick={handleAddArquivo} className="w-full" disabled={saving || !arqTitulo || !arqFile || !arqPopCodigo}>
+                      {arqPopCodigo && (
+                        <div className="rounded-md border bg-muted/40 p-3 text-xs space-y-1">
+                          <div className="text-muted-foreground">Nome exibido:</div>
+                          <div className="font-mono font-medium text-foreground">
+                            {nomeDisplay(arqPopCodigo, arqTipo, arqNumero, arqDataRef)}
+                          </div>
+                          {arqFile && (
+                            <>
+                              <div className="text-muted-foreground pt-1">Arquivo salvo como:</div>
+                              <div className="font-mono text-[11px] break-all text-foreground">
+                                {nomeArquivoFinal(arqPopCodigo, arqTipo, arqNumero, arqDataRef, arqFile.name)}
+                              </div>
+                            </>
+                          )}
+                        </div>
+                      )}
+                      <Button onClick={handleAddArquivo} className="w-full" disabled={saving || !arqFile || !arqPopCodigo || !arqNumero || !arqDataRef}>
                         {saving && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}Enviar
                       </Button>
                     </div>
