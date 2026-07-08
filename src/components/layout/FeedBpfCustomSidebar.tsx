@@ -11,6 +11,7 @@ import {
   GraduationCap,
   Sparkles,
   FileSpreadsheet,
+  BookOpenCheck,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -28,6 +29,7 @@ import { useAuth } from "@/hooks/useAuth";
 
 const items = [
   { title: "Como Usar", icon: GraduationCap, url: "/feedbpf-custom/tutorial" },
+  { title: "Guia Detalhado", icon: BookOpenCheck, url: "/feedbpf-custom/guia" },
   { title: "Meu Acervo", icon: FolderOpen, url: "/feedbpf-custom/acervo" },
   { title: "Importação em Massa", icon: Upload, url: "/feedbpf-custom/importacao" },
   { title: "Importar Planilhas", icon: FileSpreadsheet, url: "/feedbpf-custom/planilhas" },

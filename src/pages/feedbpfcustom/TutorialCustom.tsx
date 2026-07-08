@@ -13,6 +13,7 @@ import {
   PlayCircle,
   ClipboardList,
   AlertCircle,
+  BookOpenCheck,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -148,6 +149,25 @@ export default function TutorialCustom() {
           </div>
         </CardContent>
       </Card>
+
+      {/* CTA para o Guia Detalhado */}
+      <Card className="border-2 border-teal-500/40 bg-gradient-to-br from-teal-500/10 to-emerald-500/5">
+        <CardContent className="p-5 sm:p-6 flex flex-col sm:flex-row items-start sm:items-center gap-4">
+          <div className="w-12 h-12 rounded-xl bg-teal-600 flex items-center justify-center shrink-0">
+            <BookOpenCheck className="w-6 h-6 text-white" />
+          </div>
+          <div className="flex-1 space-y-1">
+            <h3 className="font-bold text-base">Guia de Customização — passo a passo detalhado</h3>
+            <p className="text-sm text-muted-foreground">
+              Versão longa e explicativa: pré-requisitos, ação exata em cada tela, campos, resultados esperados, dicas e erros comuns. Imprimível como PDF.
+            </p>
+          </div>
+          <Button asChild className="bg-teal-600 hover:bg-teal-700 shrink-0">
+            <Link to="/feedbpf-custom/guia">Abrir Guia Detalhado <ArrowRight className="w-4 h-4 ml-1" /></Link>
+          </Button>
+        </CardContent>
+      </Card>
+
 
       {/* Passos */}
       <div className="space-y-4">
