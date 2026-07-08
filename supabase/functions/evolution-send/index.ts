@@ -141,8 +141,19 @@ Deno.serve(async (req) => {
 
     if (!ok) {
       console.error('Evolution API error', res.status, data);
+      const rawMsg = JSON.stringify(data).toLowerCase();
+      const sessionClosed =
+        rawMsg.includes('connection closed') ||
+        rawMsg.includes('connection is closed') ||
+        rawMsg.includes('not connected') ||
+        rawMsg.includes('session') && rawMsg.includes('closed');
+      const friendly = sessionClosed
+        ? 'A instância existe na Evolution, mas a sessão do WhatsApp está fechada (celular caiu, deslogou ou ficou offline). Abra "WhatsApp" no portal, clique em "Reconectar" e leia o QR Code novamente.'
+        : res.status === 401
+        ? 'Chave da Evolution rejeitada (401). Verifique api_key/instance_name em Configurar WhatsApp.'
+        : 'Falha ao enviar via Evolution';
       return new Response(
-        JSON.stringify({ error: 'Falha ao enviar via Evolution', details: data }),
+        JSON.stringify({ error: friendly, sessionClosed, status: res.status, details: data }),
         { status: res.status, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
