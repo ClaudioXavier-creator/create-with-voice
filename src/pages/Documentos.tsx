@@ -147,11 +147,13 @@ export default function Documentos() {
 
   // Arquivo BPF form
   const [arqOpen, setArqOpen] = useState(false);
-  const [arqTitulo, setArqTitulo] = useState("");
-  const [arqCategoria, setArqCategoria] = useState("pop");
   const [arqPopCodigo, setArqPopCodigo] = useState("");
+  const [arqTipo, setArqTipo] = useState<TipoDoc>("PL");
+  const [arqNumero, setArqNumero] = useState<string>("001");
+  const [arqDataRef, setArqDataRef] = useState<string>(new Date().toISOString().split("T")[0]);
   const [arqDescricao, setArqDescricao] = useState("");
   const [arqFile, setArqFile] = useState<File | null>(null);
+  const [padronizando, setPadronizando] = useState(false);
   const [arqFilterCat, setArqFilterCat] = useState("todos");
   const [arqFilterPop, setArqFilterPop] = useState("todos");
   const [arqSearch, setArqSearch] = useState("");
