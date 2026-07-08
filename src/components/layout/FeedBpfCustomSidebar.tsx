@@ -12,6 +12,8 @@ import {
   Sparkles,
   FileSpreadsheet,
   BookOpenCheck,
+  FileText,
+
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -34,6 +36,7 @@ const items = [
   { title: "Importação em Massa", icon: Upload, url: "/feedbpf-custom/importacao" },
   { title: "Importar Planilhas", icon: FileSpreadsheet, url: "/feedbpf-custom/planilhas" },
   { title: "Meus Modelos", icon: Layers, url: "/feedbpf-custom/modelos" },
+  { title: "Google Forms", icon: FileText, url: "/feedbpf-custom/google-forms" },
   { title: "Registros Digitais", icon: FileSignature, url: "/feedbpf-custom/registros" },
   { title: "Análise por IA", icon: Sparkles, url: "/feedbpf-custom/analise-ia" },
   { title: "Configurações", icon: Settings, url: "/feedbpf-custom/config" },
