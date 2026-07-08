@@ -80,6 +80,8 @@ interface ArquivoBpf {
   id: string; titulo: string; categoria: string; descricao: string | null;
   arquivo_nome: string | null; arquivo_url: string | null; created_at: string;
   pop_codigo?: string | null;
+  tipo_doc?: string | null; numero_doc?: number | null;
+  data_ref?: string | null; nome_padronizado?: string | null;
 }
 
 
