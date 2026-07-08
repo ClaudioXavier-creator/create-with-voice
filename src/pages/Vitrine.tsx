@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import { ArrowRight, Lock, ShieldCheck, Factory, Beaker, BarChart3, GraduationCap, ClipboardCheck, Sparkles, Building2, Users, LayoutDashboard, Tag, CheckCircle2, AlertCircle } from "lucide-react";
+import { ArrowRight, Lock, ShieldCheck, Factory, Beaker, BarChart3, GraduationCap, ClipboardCheck, Sparkles, Building2, Users, LayoutDashboard, Tag, CheckCircle2, AlertCircle, FolderOpen } from "lucide-react";
 import { PublicFooter } from "@/components/layout/PublicFooter";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -47,6 +47,21 @@ const produtos: ProdutoCard[] = [
     trialLink: "/auth?product=feedbpf&mode=signup&redirect=%2Ffeedbpf%2Fdashboard",
     demoLink: "/demo/feedbpf",
     preco: "A partir de R$ 397/mês",
+  },
+  {
+    nome: "Feed_BPF Custom",
+    icon: FolderOpen,
+    logo: logoFeedBpf,
+    desc: "Já tem sua documentação BPF pronta? Traga como está. O Feed_BPF Custom organiza, controla vencimentos e digitaliza no seu ritmo — sempre respeitando os SEUS modelos, não os nossos.",
+    destaques: ["Importa sua pasta inteira", "Organiza por POP (10 POPs)", "Modelos customizáveis por cliente", "Construtor de formulário visual", "Registros digitais com hash SHA-256", "Migração gradual do papel"],
+    link: "/feedbpf-custom",
+    appLink: "/feedbpf-custom/acervo",
+    gradient: "from-emerald-600 to-teal-600",
+    bgCard: "bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-950/30 dark:to-teal-950/30",
+    borderColor: "border-emerald-300 dark:border-emerald-800",
+    trial: "7 dias grátis",
+    trialLink: "/auth?product=feedbpfcustom&mode=signup&redirect=%2Ffeedbpf-custom%2Facervo",
+    preco: "A partir de R$ 297/mês",
   },
   {
     nome: "Audits_BPF",
