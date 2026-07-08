@@ -99,6 +99,15 @@ const RefundPolicy = lazy(() => import("./pages/RefundPolicy"));
 const AuditLog = lazy(() => import("./pages/AuditLog"));
 const AdminFeedBPFAuditoria = lazy(() => import("./pages/AdminFeedBPFAuditoria"));
 
+// Feed_BPF Custom
+const FeedBpfCustomLanding = lazy(() => import("./pages/FeedBpfCustomLanding"));
+const FeedBpfCustomLayout = lazy(() => import("./components/layout/FeedBpfCustomLayout"));
+const FeedCustomAcervo = lazy(() => import("./pages/feedbpfcustom/MeuAcervo"));
+const FeedCustomImport = lazy(() => import("./pages/feedbpfcustom/ImportacaoMassa"));
+const FeedCustomModelos = lazy(() => import("./pages/feedbpfcustom/MeusModelos"));
+const FeedCustomRegistros = lazy(() => import("./pages/feedbpfcustom/RegistrosDigitais"));
+const FeedCustomConfig = lazy(() => import("./pages/feedbpfcustom/ConfigCustom"));
+
 
 // Agro RC CRM - Páginas Internas
 const AgroRcLayout = lazy(() => import("./components/layout/AgroRcLayout"));
@@ -270,6 +279,27 @@ const AppRoutes = () => {
         <Route path="/agrogestao" element={<AgroGestaoCRMPage />} />
         <Route path="/agro-rc" element={<AgroRCCRMPage />} />
         <Route path="/rotulos" element={<RotulosBPFPage />} />
+
+        {/* Feed_BPF Custom */}
+        <Route path="/feedbpf-custom" element={<FeedBpfCustomLanding />} />
+        <Route
+          path="/feedbpf-custom/*"
+          element={
+            <ProtectedRoute>
+              <FeedBpfCustomLayout>
+                <Routes>
+                  <Route index element={<Navigate to="acervo" replace />} />
+                  <Route path="acervo" element={<FeedCustomAcervo />} />
+                  <Route path="importacao" element={<FeedCustomImport />} />
+                  <Route path="modelos" element={<FeedCustomModelos />} />
+                  <Route path="registros" element={<FeedCustomRegistros />} />
+                  <Route path="registros/novo" element={<FeedCustomRegistros />} />
+                  <Route path="config" element={<FeedCustomConfig />} />
+                </Routes>
+              </FeedBpfCustomLayout>
+            </ProtectedRoute>
+          }
+        />
 
         {/* Agro RC CRM - redireciona para projeto externo publicado */}
         <Route
