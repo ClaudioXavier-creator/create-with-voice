@@ -12,6 +12,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import PageHeader from "@/components/PageHeader";
+import { AnexarPlanilhaPop } from "@/components/documentos/AnexarPlanilhaPop";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useEmpresa } from "@/hooks/useEmpresa";
@@ -470,6 +471,7 @@ export default function PCP() {
     <>
       <PageHeader icon={ClipboardList} title="PCP — Ordens de Produção" description="Planejamento e controle de produção com fórmulas, batidas e rastreabilidade de lotes"
         orientacaoModuloId="pcp" />
+      <div className="flex justify-end mb-3"><AnexarPlanilhaPop popCodigo="POP-05" popNome="PCP / Produção" /></div>
       <div className="flex justify-center py-12"><Loader2 className="w-8 h-8 animate-spin text-muted-foreground" /></div>
     </>
   );

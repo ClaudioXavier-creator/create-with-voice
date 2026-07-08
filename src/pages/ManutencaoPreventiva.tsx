@@ -15,6 +15,7 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Plus, Wrench, Trash2, AlertTriangle, Scale, Cog, Calendar, ClipboardList } from "lucide-react";
 import PageHeader from "@/components/PageHeader";
+import { AnexarPlanilhaPop } from "@/components/documentos/AnexarPlanilhaPop";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const EQUIPAMENTOS_CRITICOS = [
@@ -247,6 +248,7 @@ export default function ManutencaoPreventiva() {
     <div className="space-y-6">
       <PageHeader title="POP 06 - Manutenção e Calibração de Equipamentos e Instrumentos" description="Plano de manutenção preventiva e calibração de instrumentos — IN 04/2007 e IN 15/2009"
         orientacaoModuloId="manutencao" />
+      <div className="flex justify-end mb-3"><AnexarPlanilhaPop popCodigo="POP-06" popNome="Manutenção e Calibração" /></div>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card><CardContent className="pt-6 text-center"><p className="text-3xl font-bold text-primary">{manutencoes.length}</p><p className="text-sm text-muted-foreground">Total Manutenções</p></CardContent></Card>

@@ -18,6 +18,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Checkbox } from "@/components/ui/checkbox";
 import PageHeader from "@/components/PageHeader";
+import { AnexarPlanilhaPop } from "@/components/documentos/AnexarPlanilhaPop";
 
 const TIPOS_PRAGA = ["Roedores", "Insetos voadores", "Insetos rasteiros", "Aves", "Morcegos", "Outros"];
 const ACOES = ["Reposição de iscas", "Desinsetização geral", "Vedação de aberturas", "Remoção de ninhos", "Inspeção rotineira", "Aplicação de gel", "Outra"];
@@ -170,6 +171,7 @@ export default function Pragas() {
     <div className="space-y-6">
       <PageHeader icon={Bug} title="POP 07 - Controle Integrado de Pragas" description="Monitoramento integrado de pragas e registros de expurgo — IN 04/2007"
         orientacaoModuloId="pragas" />
+      <div className="flex justify-end mb-3"><AnexarPlanilhaPop popCodigo="POP-07" popNome="Controle Integrado de Pragas" /></div>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card><CardContent className="pt-6 text-center"><p className="text-3xl font-bold text-primary">{registrosPragas.length}</p><p className="text-sm text-muted-foreground">Registros Pragas</p></CardContent></Card>

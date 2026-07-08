@@ -14,6 +14,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Progress } from "@/components/ui/progress";
 import PageHeader from "@/components/PageHeader";
+import { AnexarPlanilhaPop } from "@/components/documentos/AnexarPlanilhaPop";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useEmpresa } from "@/hooks/useEmpresa";
@@ -932,6 +933,7 @@ export default function Rastreabilidade() {
     <>
       <PageHeader icon={History} title="POP 09 - Programa de Rastreabilidade e Recolhimento (Recall)" description="Rastreabilidade de produtos, controle de RNC e programa de recolhimento — IN 04/2007" 
         orientacaoModuloId="rastreabilidade" />
+      <div className="flex justify-end mb-3"><AnexarPlanilhaPop popCodigo="POP-09" popNome="Rastreabilidade e Recall" /></div>
 
       {/* ══════════ MELHORIA 5: DASHBOARD DE COBERTURA ══════════ */}
       <Card className="mb-6 border-primary/20 bg-gradient-to-r from-primary/5 to-transparent">
