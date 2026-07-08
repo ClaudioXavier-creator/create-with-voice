@@ -248,7 +248,7 @@ export default function GuiaCustomizacao() {
   const handlePrint = () => window.print();
 
   return (
-    <div className="space-y-6 max-w-4xl print:max-w-none print:space-y-4">
+    <div id="guia-print" className="space-y-6 max-w-4xl print:max-w-none print:space-y-4">
       {/* Cabeçalho + ações (ocultas na impressão) */}
       <div className="flex items-center justify-between gap-3 print:hidden">
         <Button variant="ghost" size="sm" asChild>
