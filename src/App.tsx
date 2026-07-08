@@ -107,6 +107,7 @@ const FeedCustomImport = lazy(() => import("./pages/feedbpfcustom/ImportacaoMass
 const FeedCustomModelos = lazy(() => import("./pages/feedbpfcustom/MeusModelos"));
 const FeedCustomRegistros = lazy(() => import("./pages/feedbpfcustom/RegistrosDigitais"));
 const FeedCustomConfig = lazy(() => import("./pages/feedbpfcustom/ConfigCustom"));
+const FeedCustomTutorial = lazy(() => import("./pages/feedbpfcustom/TutorialCustom"));
 
 
 // Agro RC CRM - Páginas Internas
@@ -288,7 +289,8 @@ const AppRoutes = () => {
             <ProtectedRoute>
               <FeedBpfCustomLayout>
                 <Routes>
-                  <Route index element={<Navigate to="acervo" replace />} />
+                  <Route index element={<Navigate to="tutorial" replace />} />
+                  <Route path="tutorial" element={<FeedCustomTutorial />} />
                   <Route path="acervo" element={<FeedCustomAcervo />} />
                   <Route path="importacao" element={<FeedCustomImport />} />
                   <Route path="modelos" element={<FeedCustomModelos />} />

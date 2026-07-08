@@ -8,6 +8,7 @@ import {
   LogOut,
   Settings,
   Home,
+  GraduationCap,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -24,6 +25,7 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 
 const items = [
+  { title: "Como Usar", icon: GraduationCap, url: "/feedbpf-custom/tutorial" },
   { title: "Meu Acervo", icon: FolderOpen, url: "/feedbpf-custom/acervo" },
   { title: "Importação em Massa", icon: Upload, url: "/feedbpf-custom/importacao" },
   { title: "Meus Modelos", icon: Layers, url: "/feedbpf-custom/modelos" },
