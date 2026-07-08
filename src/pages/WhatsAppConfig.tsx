@@ -297,6 +297,68 @@ const WhatsAppConfig = () => {
     }
   };
 
+  const handleRenewQrCode = async (instanceName: string) => {
+    if (!empresaAtiva?.id) {
+      toast({
+        variant: "destructive",
+        title: "Nenhuma empresa ativa",
+        description: "Selecione uma empresa antes de renovar o QR Code.",
+      });
+      return;
+    }
+
+    const confirmed = confirm(
+      "Vou derrubar a sessão atual desta instância, recriá-la se necessário e gerar um QR Code novo. Continue somente se o envio estiver falhando mesmo aparecendo como conectado."
+    );
+    if (!confirmed) return;
+
+    setLoading(true);
+    setQrCodeIssue(null);
+    setQrCode(null);
+    setQrCodeText(null);
+    setPairingCode(null);
+    setLastQrAttemptLog(null);
+    try {
+      const data = await evolutionService.connectViaBackend({
+        empresaId: empresaAtiva.id,
+        instanceName,
+        phoneNumber: pairingPhone,
+        action: "renew_qr",
+      });
+      setLastQrAttemptLog(formatQrAttemptLog("Forçar novo QR Code", data.raw ?? data));
+      setQrCode(data.base64 ?? null);
+      setQrCodeText(data.code ?? null);
+      setPairingCode(data.pairingCode ?? null);
+
+      if (data.base64 || data.code || data.pairingCode) {
+        toast({
+          title: "Novo QR Code gerado",
+          description: "Leia este QR no WhatsApp em Aparelhos conectados.",
+        });
+      } else {
+        const issue = "A Evolution aceitou a renovação, mas ainda não retornou QR Code. Aguarde alguns segundos e tente novamente.";
+        setQrCodeIssue(issue);
+        toast({
+          variant: "destructive",
+          title: "QR Code ainda indisponível",
+          description: issue,
+        });
+      }
+
+      checkConnection(config.api_url, config.api_key);
+    } catch (error: any) {
+      setQrCodeIssue(error.message || "Falha ao renovar QR Code");
+      setLastQrAttemptLog(formatQrAttemptLog("Erro ao forçar novo QR Code", error.details ?? { message: error.message }));
+      toast({
+        variant: "destructive",
+        title: "Erro ao renovar QR Code",
+        description: error.message,
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleLogout = async (instanceName: string) => {
     if (!confirm("Tem certeza que deseja desconectar este WhatsApp?")) return;
     setLoading(true);
@@ -355,6 +417,7 @@ const WhatsAppConfig = () => {
     
     let successCount = 0;
     let failCount = 0;
+    let lastErrorMessage = "";
 
     for (let i = 0; i < numbers.length; i++) {
       const num = numbers[i];
@@ -397,6 +460,7 @@ const WhatsAppConfig = () => {
       } catch (error: any) {
         console.error(`Erro ao enviar para ${num}:`, error);
         failCount++;
+        lastErrorMessage = error?.message || "Falha desconhecida no envio.";
       }
     }
 
@@ -417,7 +481,7 @@ const WhatsAppConfig = () => {
       toast({
         variant: "destructive",
         title: "Erro no envio",
-        description: "Não foi possível enviar a mensagem. Verifique a conexão.",
+        description: lastErrorMessage || "Não foi possível enviar a mensagem. Se aparecer conectado, gere um novo QR Code.",
       });
     }
   };
@@ -580,6 +644,9 @@ const WhatsAppConfig = () => {
                           </p>
                         </div>
                         <div className="flex gap-2">
+                          <Button size="icon" variant="outline" title="Forçar novo QR Code" disabled={loading} onClick={() => handleRenewQrCode(instance.instanceName)}>
+                            <RefreshCw className="w-4 h-4" />
+                          </Button>
                           {instance.status !== 'open' ? (
                             <Button size="icon" variant="outline" title="Ver QR Code" disabled={loading || instance.status === "disconnecting"} onClick={() => handleShowQrCode(instance)}>
                               <QrCode className="w-4 h-4" />

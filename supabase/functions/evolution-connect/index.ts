@@ -15,7 +15,7 @@ type ConnectPayload = {
   phone_number?: string;
   to_number?: string;
   message?: string;
-  action?: 'connect' | 'create' | 'status' | 'send';
+  action?: 'connect' | 'create' | 'status' | 'send' | 'renew_qr';
 };
 
 type EvolutionConfig = {
@@ -89,6 +89,32 @@ async function callEvolution(url: string, apiKey: string, init?: RequestInit) {
     }
   }
   return result;
+}
+
+const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+function evolutionErrorText(data: unknown) {
+  if (typeof data === 'string') return data.toLowerCase();
+  try {
+    return JSON.stringify(data).toLowerCase();
+  } catch {
+    return '';
+  }
+}
+
+function isConnectionClosedError(data: unknown) {
+  const text = evolutionErrorText(data);
+  return text.includes('connection closed')
+    || text.includes('socket closed')
+    || text.includes('not connected')
+    || text.includes('session closed')
+    || text.includes('wa disconnected')
+    || text.includes('disconnected');
+}
+
+function isUnauthorizedError(status: number, data: unknown) {
+  const text = evolutionErrorText(data);
+  return status === 401 || status === 403 || text.includes('unauthorized') || text.includes('forbidden');
 }
 
 function hasQrPayload(data: any) {
@@ -184,7 +210,14 @@ Deno.serve(async (req) => {
         }),
       });
 
-      if (!sent.ok) return json({ error: 'Falha ao enviar mensagem pela Evolution', details: sent.data }, sent.status);
+      if (!sent.ok) {
+        const errorMessage = isConnectionClosedError(sent.data)
+          ? 'A Evolution está online, mas a sessão do WhatsApp está inconsistente/fechada. Gere um novo QR Code no portal e leia novamente em Aparelhos conectados.'
+          : isUnauthorizedError(sent.status, sent.data)
+          ? 'Chave da Evolution rejeitada. Verifique a Chave Mestra/API Key salva na configuração do WhatsApp.'
+          : 'Falha ao enviar mensagem pela Evolution';
+        return json({ error: errorMessage, details: sent.data }, sent.status);
+      }
       return json({ success: true, response: sent.data });
     }
 
@@ -193,9 +226,12 @@ Deno.serve(async (req) => {
     const encodedInstance = encodeURIComponent(instanceName);
     const number = body.phone_number?.replace(/\D/g, '');
 
-    // Se a instância já está conectada (celular pareado), não há QR a gerar.
+    const forceRenewQr = body.action === 'renew_qr';
+
+    // Se a instância já está conectada (celular pareado), não há QR a gerar,
+    // exceto quando o usuário pediu explicitamente para renovar uma sessão inconsistente.
     const stateCheck = await callEvolution(`${baseUrl}/instance/connectionState/${encodedInstance}`, config.api_key);
-    if (stateCheck.ok && isAlreadyConnected(stateCheck.data)) {
+    if (!forceRenewQr && stateCheck.ok && isAlreadyConnected(stateCheck.data)) {
       return json({
         success: true,
         alreadyConnected: true,
@@ -203,6 +239,15 @@ Deno.serve(async (req) => {
         qrcode: stateCheck.data,
         message: 'Instância já está conectada ao WhatsApp.',
       });
+    }
+
+    const renewResults: Array<{ step: string; status: number; data: unknown }> = [];
+    if (forceRenewQr) {
+      const loggedOut = await callEvolution(`${baseUrl}/instance/logout/${encodedInstance}`, config.api_key, {
+        method: 'DELETE',
+      });
+      renewResults.push({ step: 'logout', status: loggedOut.status, data: loggedOut.data });
+      await wait(1200);
     }
 
     let createData: unknown = null;
@@ -250,11 +295,50 @@ Deno.serve(async (req) => {
       }
     }
 
+    if (forceRenewQr) {
+      const deleted = await callEvolution(`${baseUrl}/instance/delete/${encodedInstance}`, config.api_key, {
+        method: 'DELETE',
+      });
+      renewResults.push({ step: 'delete', status: deleted.status, data: deleted.data });
+      await wait(1200);
+
+      const recreated = await callEvolution(`${baseUrl}/instance/create`, config.api_key, {
+        method: 'POST',
+        body: JSON.stringify({
+          instanceName,
+          qrcode: true,
+          integration: 'WHATSAPP-BAILEYS',
+        }),
+      });
+      renewResults.push({ step: 'recreate', status: recreated.status, data: recreated.data });
+
+      if (!recreated.ok && recreated.status !== 403 && recreated.status !== 409) {
+        return json({
+          error: 'Não foi possível recriar a instância para gerar um QR Code novo.',
+          details: renewResults,
+        }, recreated.status);
+      }
+
+      if (hasQrPayload(recreated.data)) {
+        return json({ success: true, qrcode: recreated.data, recreated: true, renew: renewResults });
+      }
+
+      for (const attempt of attempts) {
+        const result = await attempt();
+        renewResults.push({ step: 'connect_after_recreate', status: result.status, data: result.data });
+        if (result.ok && hasQrPayload(result.data)) {
+          return json({ success: true, qrcode: result.data, recreated: true, renew: renewResults });
+        }
+      }
+    }
+
     return json({
-      error: number
+      error: forceRenewQr
+        ? 'A instância foi forçada a renovar, mas a Evolution ainda não devolveu um QR Code. Aguarde alguns segundos e tente novamente; se persistir, confira os logs da Evolution/Traefik.'
+        : number
         ? 'A Evolution respondeu sem QR Code/código de pareamento. Confira se o número está correto e tente novamente. Se o celular já está pareado, desconecte em Aparelhos Conectados no WhatsApp e tente de novo.'
         : 'A Evolution respondeu sem QR Code. Se o celular já está pareado nesta instância, desconecte em Aparelhos Conectados no WhatsApp e tente de novo, ou recrie a instância.',
-      details: results,
+      details: forceRenewQr ? { attempts: results, renew: renewResults } : results,
     });
   } catch (error) {
     console.error('evolution-connect error', error);
