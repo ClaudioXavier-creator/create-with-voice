@@ -4,6 +4,7 @@ import { FileText, Plus, Loader2, Wrench, Gauge, AlertCircle, ExternalLink, Uplo
 import { registrarAuditLog, registrarVersaoDocumento } from "@/utils/auditLog";
 import { WorkflowBadge, type WorkflowStatus } from "@/components/documentos/WorkflowBadge";
 import { AprovarPopDialog } from "@/components/documentos/AprovarPopDialog";
+import { VincularPopButton } from "@/components/documentos/VincularPopButton";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
@@ -766,9 +767,12 @@ export default function Documentos() {
                         <TableCell className="text-xs text-muted-foreground max-w-[200px] truncate">{a.descricao || "—"}</TableCell>
                         <TableCell className="text-xs">{a.created_at?.split("T")[0]}</TableCell>
                         <TableCell>
-                          <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={() => handleDeleteArquivo(a.id)}>
-                            <Trash2 className="w-3.5 h-3.5" />
-                          </Button>
+                          <div className="flex items-center gap-1">
+                            <VincularPopButton arquivoId={a.id} currentPop={a.pop_codigo} onSaved={fetchData} />
+                            <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={() => handleDeleteArquivo(a.id)}>
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </Button>
+                          </div>
                         </TableCell>
                       </TableRow>
                     ))}
