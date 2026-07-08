@@ -1,0 +1,243 @@
+import { Link } from "react-router-dom";
+import {
+  GraduationCap,
+  Upload,
+  FolderOpen,
+  Layers,
+  FileSignature,
+  ArrowRight,
+  CheckCircle2,
+  Sparkles,
+  Lightbulb,
+  ShieldCheck,
+  PlayCircle,
+} from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import PageHeader from "@/components/PageHeader";
+
+interface Passo {
+  n: number;
+  titulo: string;
+  icon: React.ElementType;
+  resumo: string;
+  detalhes: string[];
+  cta: { texto: string; link: string };
+  dica?: string;
+}
+
+const PASSOS: Passo[] = [
+  {
+    n: 1,
+    titulo: "Importe sua documentação",
+    icon: Upload,
+    resumo: "Suba tudo que sua fábrica já tem — PDFs, planilhas, laudos, fotos.",
+    detalhes: [
+      "Vá em Importação em Massa e arraste a pasta inteira (ou selecione vários arquivos).",
+      "O sistema lê o nome de cada arquivo e sugere automaticamente o POP (ex: 'higiene_jan.pdf' → POP-02).",
+      "Você pode ajustar o POP, dar um título melhor a cada arquivo e clicar Enviar tudo.",
+      "Formatos aceitos: PDF, JPG, PNG, XLSX, DOC, DOCX.",
+    ],
+    cta: { texto: "Ir para Importação em Massa", link: "/feedbpf-custom/importacao" },
+    dica: "Nomeie seus arquivos com palavras-chave (higiene, praga, água, receb…) — a sugestão automática fica quase 100% certa.",
+  },
+  {
+    n: 2,
+    titulo: "Organize o acervo por POP",
+    icon: FolderOpen,
+    resumo: "Cada documento aparece no card do seu POP. Vencimentos e buscas ficam à mão.",
+    detalhes: [
+      "Meu Acervo mostra 10 cards (POP-01 ao POP-10) + 1 card para arquivos sem POP vinculado.",
+      "Clique num card para filtrar. Use a busca para localizar por título ou nome de arquivo.",
+      "Se um arquivo caiu no lugar errado, use o Select ao lado dele para trocar o POP na hora.",
+      "Baixe qualquer documento com um clique — ele abre em nova aba.",
+    ],
+    cta: { texto: "Ver Meu Acervo", link: "/feedbpf-custom/acervo" },
+    dica: "O card amarelo 'Sem POP vinculado' é seu backlog — deixe zerado para manter o acervo organizado.",
+  },
+  {
+    n: 3,
+    titulo: "Crie seus modelos digitais",
+    icon: Layers,
+    resumo: "Transforme suas planilhas de papel em formulários digitais com SEUS campos.",
+    detalhes: [
+      "Em Meus Modelos, clique em Novo modelo.",
+      "Dê um nome (ex: 'Planilha de Higiene Diária'), vincule ao POP e descreva quando é usado.",
+      "Adicione os campos que você já usa: texto curto, texto longo, número, data, sim/não, ou lista de opções.",
+      "Marque campos obrigatórios para evitar registros incompletos. Salve.",
+    ],
+    cta: { texto: "Criar meu primeiro modelo", link: "/feedbpf-custom/modelos" },
+    dica: "Comece com 2-3 modelos das rotinas MAIS repetidas (limpeza diária, monitoramento de pragas). O resto vem depois.",
+  },
+  {
+    n: 4,
+    titulo: "Gere registros digitais",
+    icon: FileSignature,
+    resumo: "Preencha na tela, salve com hash SHA-256 e substitua o papel aos poucos.",
+    detalhes: [
+      "Em Registros Digitais, escolha um dos seus modelos.",
+      "Preencha título, data, responsável e os campos do formulário.",
+      "Salvar rascunho = pode editar depois. Salvar como vigente = trava com hash SHA-256 (prova de integridade para MAPA).",
+      "Todos os registros ficam listados com selo verde, data e hash truncado — clique no hash para ver completo.",
+    ],
+    cta: { texto: "Ver Registros Digitais", link: "/feedbpf-custom/registros" },
+    dica: "Só marque 'vigente' quando tiver certeza — o hash é gerado a partir dos dados e não pode ser alterado sem quebrar a integridade.",
+  },
+];
+
+const FAQ = [
+  {
+    q: "Preciso trocar toda minha documentação de uma vez?",
+    a: "Não. A ideia é justamente migrar aos poucos. Comece só importando o que já existe (Passo 1 e 2). Digitalize (Passos 3 e 4) apenas os controles que fazem mais sentido — um por vez. Papel e digital podem conviver enquanto a equipe se acostuma.",
+  },
+  {
+    q: "Meus modelos vão ficar iguais aos do Feed_BPF padrão?",
+    a: "Não. O Custom foi feito para respeitar SEUS layouts. Você define quais campos existem, os nomes, a ordem e o que é obrigatório. A plataforma só cuida da parte técnica (armazenar, versionar, gerar hash, listar).",
+  },
+  {
+    q: "Perco tudo se eu excluir um modelo?",
+    a: "Não. Modelos que já têm registros vinculados são protegidos — o sistema bloqueia a exclusão. Você pode 'arquivar' o modelo (deixar inativo) para não usar mais em novos registros, mas os antigos ficam preservados.",
+  },
+  {
+    q: "Quem pode ver os meus documentos?",
+    a: "Somente membros ativos da sua empresa (e consultor vinculado, se houver). Cada empresa tem isolamento total — outras empresas na mesma plataforma não enxergam nada seu.",
+  },
+  {
+    q: "O hash SHA-256 vale para auditoria?",
+    a: "Sim. É uma impressão digital matemática do conteúdo — qualquer alteração muda o hash, o que serve como prova de integridade em auditorias MAPA (Decreto 12.031/2024).",
+  },
+  {
+    q: "Posso voltar para o Feed_BPF tradicional depois?",
+    a: "Sim. Os dois produtos coexistem. Você pode assinar os dois em paralelo, se quiser, e usar módulos operacionais fixos do Feed_BPF + gestor de documentos do Custom.",
+  },
+];
+
+export default function TutorialCustom() {
+  return (
+    <div className="space-y-8 max-w-4xl">
+      <PageHeader
+        icon={GraduationCap}
+        title="Como usar o Feed_BPF Custom"
+        description="Do primeiro upload à operação 100% digital — em 4 passos"
+      />
+
+      {/* Vídeo/gif placeholder + resumo */}
+      <Card className="border-2 border-emerald-500/30 bg-emerald-500/5">
+        <CardContent className="p-6 sm:p-8">
+          <div className="flex items-start gap-4">
+            <div className="w-12 h-12 rounded-xl bg-emerald-600 flex items-center justify-center shrink-0">
+              <PlayCircle className="w-6 h-6 text-white" />
+            </div>
+            <div className="space-y-2">
+              <h2 className="text-xl font-bold">Em 5 minutos você entende tudo</h2>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                O Feed_BPF Custom é um <strong>gestor da sua documentação</strong>. Ele não te obriga a usar planilhas nossas — ele organiza o que você já tem e, quando quiser, transforma suas planilhas de papel em formulários digitais respeitando SEUS modelos.
+              </p>
+              <div className="flex flex-wrap gap-2 pt-2">
+                <Badge className="bg-emerald-600 hover:bg-emerald-700"><Sparkles className="w-3 h-3 mr-1" /> Sem migração forçada</Badge>
+                <Badge variant="outline">Sem perda de dados</Badge>
+                <Badge variant="outline">Papel + digital coexistem</Badge>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Passos */}
+      <div className="space-y-4">
+        {PASSOS.map((p) => (
+          <Card key={p.n} className="hover:shadow-md transition">
+            <CardContent className="p-6">
+              <div className="flex flex-col sm:flex-row gap-4">
+                <div className="flex sm:flex-col items-center sm:items-start gap-3 sm:gap-1 shrink-0">
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-600 to-teal-500 text-white flex items-center justify-center font-bold text-lg shrink-0">
+                    {p.n}
+                  </div>
+                  <p.icon className="w-5 h-5 text-emerald-600 sm:mt-1" />
+                </div>
+
+                <div className="flex-1 space-y-3 min-w-0">
+                  <div>
+                    <h3 className="text-lg font-bold">{p.titulo}</h3>
+                    <p className="text-sm text-muted-foreground">{p.resumo}</p>
+                  </div>
+
+                  <ul className="space-y-1.5">
+                    {p.detalhes.map((d, i) => (
+                      <li key={i} className="flex items-start gap-2 text-sm">
+                        <CheckCircle2 className="w-4 h-4 text-emerald-600 mt-0.5 shrink-0" />
+                        <span className="text-foreground/85">{d}</span>
+                      </li>
+                    ))}
+                  </ul>
+
+                  {p.dica && (
+                    <div className="flex items-start gap-2 p-3 rounded-lg bg-amber-500/10 border border-amber-500/30">
+                      <Lightbulb className="w-4 h-4 text-amber-600 mt-0.5 shrink-0" />
+                      <p className="text-xs text-amber-900 dark:text-amber-100"><strong>Dica:</strong> {p.dica}</p>
+                    </div>
+                  )}
+
+                  <Button asChild size="sm" className="bg-emerald-600 hover:bg-emerald-700">
+                    <Link to={p.cta.link}>
+                      {p.cta.texto} <ArrowRight className="w-4 h-4 ml-1" />
+                    </Link>
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      {/* Ordem sugerida na primeira semana */}
+      <Card className="bg-gradient-to-br from-teal-500/5 to-emerald-500/5 border-teal-500/30">
+        <CardContent className="p-6 space-y-3">
+          <div className="flex items-center gap-2">
+            <ShieldCheck className="w-5 h-5 text-teal-600" />
+            <h3 className="font-bold">Sugestão de rotina — primeira semana</h3>
+          </div>
+          <ol className="space-y-2 text-sm">
+            <li><strong>Dia 1:</strong> importar a pasta inteira em Importação em Massa (10-30 min).</li>
+            <li><strong>Dia 2:</strong> em Meu Acervo, revisar POPs sugeridos e zerar o card "Sem POP vinculado".</li>
+            <li><strong>Dia 3:</strong> criar 2 modelos digitais dos controles mais usados (higiene, pragas).</li>
+            <li><strong>Dia 4 a 7:</strong> equipe operacional preenche registros digitais no lugar das planilhas antigas.</li>
+            <li><strong>Semana 2 em diante:</strong> ir adicionando modelos conforme a rotina exigir.</li>
+          </ol>
+        </CardContent>
+      </Card>
+
+      {/* FAQ */}
+      <div className="space-y-3">
+        <h2 className="text-xl font-bold flex items-center gap-2">
+          <Lightbulb className="w-5 h-5 text-emerald-600" /> Perguntas frequentes
+        </h2>
+        <Accordion type="single" collapsible className="border rounded-lg">
+          {FAQ.map((f, i) => (
+            <AccordionItem key={i} value={`faq-${i}`} className="px-4">
+              <AccordionTrigger className="text-left text-sm font-semibold hover:no-underline">
+                {f.q}
+              </AccordionTrigger>
+              <AccordionContent className="text-sm text-muted-foreground leading-relaxed pb-4">
+                {f.a}
+              </AccordionContent>
+            </AccordionItem>
+          ))}
+        </Accordion>
+      </div>
+
+      {/* CTA final */}
+      <Card className="bg-gradient-to-br from-emerald-600 to-teal-600 text-white border-none">
+        <CardContent className="p-6 sm:p-8 text-center space-y-3">
+          <h3 className="text-xl font-bold">Pronto para começar?</h3>
+          <p className="text-emerald-50 text-sm">O primeiro passo é o mais fácil: importe o que já existe.</p>
+          <Button asChild size="lg" variant="secondary" className="bg-white text-emerald-700 hover:bg-emerald-50">
+            <Link to="/feedbpf-custom/importacao">Ir para Importação em Massa <ArrowRight className="w-4 h-4 ml-2" /></Link>
+          </Button>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
