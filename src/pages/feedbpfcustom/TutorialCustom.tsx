@@ -213,6 +213,69 @@ export default function TutorialCustom() {
         </CardContent>
       </Card>
 
+      {/* Documentos Obrigatórios */}
+      <div className="space-y-3">
+        <div className="flex items-center justify-between flex-wrap gap-2">
+          <div>
+            <h2 className="text-xl font-bold flex items-center gap-2">
+              <ClipboardList className="w-5 h-5 text-emerald-600" /> Documentos obrigatórios por POP
+            </h2>
+            <p className="text-sm text-muted-foreground">Baseado na IN MAPA 04/2007 + Decreto 12.031/2024 — <strong>{contarObrigatoriosEssenciais()} documentos essenciais</strong> no total</p>
+          </div>
+          <Button asChild size="sm" className="bg-emerald-600 hover:bg-emerald-700">
+            <Link to="/feedbpf-custom/analise-ia">
+              <Sparkles className="w-4 h-4 mr-1" /> Analisar meu acervo por IA
+            </Link>
+          </Button>
+        </div>
+
+        <div className="flex gap-2 flex-wrap text-xs">
+          <Badge className="bg-red-500/15 text-red-700 border-red-300 border" variant="outline"><AlertCircle className="w-3 h-3 mr-1" /> Essencial — reprovação em auditoria</Badge>
+          <Badge className="bg-amber-500/15 text-amber-700 border-amber-300 border" variant="outline">Importante — pontos negativos</Badge>
+          <Badge variant="outline" className="text-xs">Recomendado — boas práticas</Badge>
+        </div>
+
+        <Accordion type="multiple" className="space-y-2">
+          {DOCS_OBRIGATORIOS_POP.map((pop) => {
+            const essenciais = pop.documentos.filter(d => d.criticidade === "essencial").length;
+            return (
+              <AccordionItem key={pop.codigo} value={pop.codigo} className="border rounded-lg px-4 bg-card">
+                <AccordionTrigger className="hover:no-underline">
+                  <div className="flex items-center gap-3 text-left flex-1">
+                    <Badge variant="outline" className="font-mono shrink-0">{pop.codigo}</Badge>
+                    <span className="font-medium flex-1 truncate">{pop.nome}</span>
+                    <Badge className="bg-emerald-500/15 text-emerald-700 border-emerald-200 shrink-0">{essenciais} essencial(is)</Badge>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent className="pb-4">
+                  <ul className="space-y-2">
+                    {pop.documentos.map((doc, i) => {
+                      const cor = doc.criticidade === "essencial" ? "text-red-600"
+                        : doc.criticidade === "importante" ? "text-amber-600"
+                        : "text-muted-foreground";
+                      const icon = doc.criticidade === "essencial" ? <AlertCircle className={`w-4 h-4 ${cor} shrink-0 mt-0.5`} />
+                        : doc.criticidade === "importante" ? <AlertCircle className={`w-4 h-4 ${cor} shrink-0 mt-0.5`} />
+                        : <CheckCircle2 className={`w-4 h-4 ${cor} shrink-0 mt-0.5`} />;
+                      return (
+                        <li key={i} className="flex items-start gap-2 text-sm">
+                          {icon}
+                          <div className="flex-1 min-w-0">
+                            <p className="font-medium">{doc.nome}</p>
+                            <p className="text-xs text-muted-foreground">{doc.descricao}</p>
+                          </div>
+                          <Badge variant="outline" className={`text-[10px] uppercase shrink-0 ${cor}`}>{doc.criticidade}</Badge>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </AccordionContent>
+              </AccordionItem>
+            );
+          })}
+        </Accordion>
+      </div>
+
+
       {/* FAQ */}
       <div className="space-y-3">
         <h2 className="text-xl font-bold flex items-center gap-2">
