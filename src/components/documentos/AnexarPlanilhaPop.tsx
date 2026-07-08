@@ -105,7 +105,7 @@ export function AnexarPlanilhaPop({
       }
       const { data: urlData } = supabase.storage.from("documentos-bpf").getPublicUrl(path);
 
-      const titulo = nomeDisplay(popCodigo, tipo, numero, dataRef);
+      const titulo = nomeDisplay(popCodigo, tipo, numero, dataRef, prefixo);
       const numeroInt = parseInt(numero, 10) || 0;
 
       const { error } = await supabase.from("arquivos_bpf").insert({
