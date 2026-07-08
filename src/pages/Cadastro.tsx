@@ -27,9 +27,10 @@ interface EmpresaForm {
   capacidade: string;
   tipo_producao: string[];
   origem_agua: "" | "poco" | "concessionaria";
+  prefixo_doc: string;
 }
 
-const emptyForm: EmpresaForm = { nome: "", cnpj: "", endereco: "", responsavel_tecnico: "", crmv: "", capacidade: "", tipo_producao: [], origem_agua: "" };
+const emptyForm: EmpresaForm = { nome: "", cnpj: "", endereco: "", responsavel_tecnico: "", crmv: "", capacidade: "", tipo_producao: [], origem_agua: "", prefixo_doc: "" };
 
 export default function Cadastro() {
   const { user, userType } = useAuth();
@@ -72,6 +73,7 @@ export default function Cadastro() {
       capacidade: e.capacidade || "",
       tipo_producao: e.tipo_producao || [],
       origem_agua: e.origem_agua || "",
+      prefixo_doc: e.prefixo_doc || "",
     });
     setEditId(e.id);
     setOpen(true);
@@ -93,6 +95,7 @@ export default function Cadastro() {
           capacidade: form.capacidade.trim(), 
           tipo_producao: form.tipo_producao,
           origem_agua: form.origem_agua || null,
+          prefixo_doc: form.prefixo_doc.toUpperCase().replace(/[^A-Z0-9-]/g, "").slice(0, 8) || null,
         }).eq("id", editId);
         
         if (error) throw error;
@@ -108,6 +111,7 @@ export default function Cadastro() {
           capacidade: form.capacidade.trim(), 
           tipo_producao: form.tipo_producao,
           origem_agua: form.origem_agua || null,
+          prefixo_doc: form.prefixo_doc.toUpperCase().replace(/[^A-Z0-9-]/g, "").slice(0, 8) || null,
         }).select().single();
         
         if (error) {
@@ -221,6 +225,18 @@ export default function Cadastro() {
                   ))}
                 </div>
                 <p className="text-xs text-muted-foreground">Define a periodicidade pré-selecionada de cloro/pH no POP-04.</p>
+              </div>
+              <div className="md:col-span-2 space-y-2">
+                <Label>Prefixo de Nomenclatura de Documentos (opcional)</Label>
+                <Input
+                  value={form.prefixo_doc}
+                  onChange={e => setForm(p => ({ ...p, prefixo_doc: e.target.value.toUpperCase().replace(/[^A-Z0-9-]/g, "").slice(0, 8) }))}
+                  placeholder="Ex: FBX, AGRO01, UNID-SP"
+                  maxLength={8}
+                />
+                <p className="text-xs text-muted-foreground">
+                  Se preenchido, será adicionado à frente do nome dos documentos anexados. Ex: <code className="text-foreground">FBX_POP-01_PL-001_08-07-2026</code>. Deixe em branco para usar o padrão <code className="text-foreground">POP-01_PL-001_...</code>. Cada empresa mantém sua própria sequência de números independentemente.
+                </p>
               </div>
               <div className="md:col-span-2">
                 <Button className="w-full" onClick={salvar} disabled={saving}>

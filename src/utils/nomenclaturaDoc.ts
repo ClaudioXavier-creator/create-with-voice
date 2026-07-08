@@ -41,30 +41,41 @@ export function formatDataDisplay(data: string | Date): string {
   return formatDataStorage(data).replace(/-/g, "/");
 }
 
+/** Normaliza prefixo customizado do cliente: "FBX" ou "" */
+export function normalizarPrefixo(prefixo?: string | null): string {
+  return (prefixo || "").toUpperCase().replace(/[^A-Z0-9-]/g, "").slice(0, 8);
+}
+
 /**
  * Nome padronizado seguro para storage / DB:
- *   POP-01_PL-001_08-07-2026
+ *   [PREFIXO_]POP-01_PL-001_08-07-2026
  */
 export function nomePadronizado(
   popCodigo: string,
   tipo: TipoDoc | string,
   numero: number | string,
-  data: string | Date
+  data: string | Date,
+  prefixo?: string | null
 ): string {
-  return `POP-${popShort(popCodigo)}_${tipo}-${formatNumero(numero)}_${formatDataStorage(data)}`;
+  const pref = normalizarPrefixo(prefixo);
+  const base = `POP-${popShort(popCodigo)}_${tipo}-${formatNumero(numero)}_${formatDataStorage(data)}`;
+  return pref ? `${pref}_${base}` : base;
 }
 
 /**
  * Nome bonito para exibição na UI:
- *   POP 01 · PL 001 · 08/07/2026
+ *   [PREFIXO ·] POP 01 · PL 001 · 08/07/2026
  */
 export function nomeDisplay(
   popCodigo: string,
   tipo: TipoDoc | string,
   numero: number | string,
-  data: string | Date
+  data: string | Date,
+  prefixo?: string | null
 ): string {
-  return `POP ${popShort(popCodigo)} · ${tipo} ${formatNumero(numero)} · ${formatDataDisplay(data)}`;
+  const pref = normalizarPrefixo(prefixo);
+  const base = `POP ${popShort(popCodigo)} · ${tipo} ${formatNumero(numero)} · ${formatDataDisplay(data)}`;
+  return pref ? `${pref} · ${base}` : base;
 }
 
 /**
@@ -77,12 +88,13 @@ export function storagePath(
   tipo: TipoDoc | string,
   numero: number | string,
   data: string | Date,
-  originalFileName: string
+  originalFileName: string,
+  prefixo?: string | null
 ): string {
   const ext = originalFileName.includes(".")
     ? originalFileName.split(".").pop()!.toLowerCase().replace(/[^a-z0-9]/g, "")
     : "bin";
-  const base = nomePadronizado(popCodigo, tipo, numero, data);
+  const base = nomePadronizado(popCodigo, tipo, numero, data, prefixo);
   return `bpf/${scopeId}/POP-${popShort(popCodigo)}/${tipo}/${base}.${ext}`;
 }
 
@@ -92,10 +104,11 @@ export function nomeArquivoFinal(
   tipo: TipoDoc | string,
   numero: number | string,
   data: string | Date,
-  originalFileName: string
+  originalFileName: string,
+  prefixo?: string | null
 ): string {
   const ext = originalFileName.includes(".")
     ? originalFileName.split(".").pop()!.toLowerCase().replace(/[^a-z0-9]/g, "")
     : "bin";
-  return `${nomePadronizado(popCodigo, tipo, numero, data)}.${ext}`;
+  return `${nomePadronizado(popCodigo, tipo, numero, data, prefixo)}.${ext}`;
 }

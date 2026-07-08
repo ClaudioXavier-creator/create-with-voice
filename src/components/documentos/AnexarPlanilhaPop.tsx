@@ -82,8 +82,9 @@ export function AnexarPlanilhaPop({
   };
 
   const tipoLabel = TIPOS_DOC.find((t) => t.value === tipo)?.label || tipo;
-  const preview = nomeDisplay(popCodigo, tipo, numero, dataRef);
-  const arquivoFinal = file ? nomeArquivoFinal(popCodigo, tipo, numero, dataRef, file.name) : "";
+  const prefixo = empresaAtiva?.prefixo_doc || "";
+  const preview = nomeDisplay(popCodigo, tipo, numero, dataRef, prefixo);
+  const arquivoFinal = file ? nomeArquivoFinal(popCodigo, tipo, numero, dataRef, file.name, prefixo) : "";
 
   const handleUpload = async () => {
     if (!user || !file || !numero.trim() || !dataRef) {
@@ -93,7 +94,7 @@ export function AnexarPlanilhaPop({
     setSaving(true);
     try {
       const scopeId = empresaAtiva?.id || user.id;
-      const path = storagePath(scopeId, popCodigo, tipo, numero, dataRef, file.name);
+      const path = storagePath(scopeId, popCodigo, tipo, numero, dataRef, file.name, prefixo);
 
       const { error: upErr } = await supabase.storage
         .from("documentos-bpf")
@@ -104,7 +105,7 @@ export function AnexarPlanilhaPop({
       }
       const { data: urlData } = supabase.storage.from("documentos-bpf").getPublicUrl(path);
 
-      const titulo = nomeDisplay(popCodigo, tipo, numero, dataRef);
+      const titulo = nomeDisplay(popCodigo, tipo, numero, dataRef, prefixo);
       const numeroInt = parseInt(numero, 10) || 0;
 
       const { error } = await supabase.from("arquivos_bpf").insert({
