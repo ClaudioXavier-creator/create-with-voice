@@ -242,12 +242,58 @@ Deno.serve(async (req) => {
     }
 
     const renewResults: Array<{ step: string; status: number; data: unknown }> = [];
+
     if (forceRenewQr) {
-      const loggedOut = await callEvolution(`${baseUrl}/instance/logout/${encodedInstance}`, config.api_key, {
+      // Importante: em algumas versões da Evolution/Baileys, o fluxo logout -> connect
+      // devolve QR Code, mas o WhatsApp nunca completa o pareamento. Para renovar de
+      // verdade, a instância precisa ser removida e criada novamente antes de conectar.
+      const deleted = await callEvolution(`${baseUrl}/instance/delete/${encodedInstance}`, config.api_key, {
         method: 'DELETE',
       });
-      renewResults.push({ step: 'logout', status: loggedOut.status, data: loggedOut.data });
-      await wait(1200);
+      renewResults.push({ step: 'delete_before_recreate', status: deleted.status, data: deleted.data });
+
+      if (!deleted.ok && deleted.status !== 404) {
+        const loggedOut = await callEvolution(`${baseUrl}/instance/logout/${encodedInstance}`, config.api_key, {
+          method: 'DELETE',
+        });
+        renewResults.push({ step: 'logout_fallback', status: loggedOut.status, data: loggedOut.data });
+        await wait(1500);
+
+        const deletedAfterLogout = await callEvolution(`${baseUrl}/instance/delete/${encodedInstance}`, config.api_key, {
+          method: 'DELETE',
+        });
+        renewResults.push({ step: 'delete_after_logout_fallback', status: deletedAfterLogout.status, data: deletedAfterLogout.data });
+
+        if (!deletedAfterLogout.ok && deletedAfterLogout.status !== 404) {
+          return json({
+            error: 'A Evolution não permitiu remover a instância antiga. Crie uma instância com outro nome, salve como principal e gere o QR Code nela.',
+            details: renewResults,
+          }, deletedAfterLogout.status);
+        }
+      }
+
+      await wait(2500);
+
+      const recreated = await callEvolution(`${baseUrl}/instance/create`, config.api_key, {
+        method: 'POST',
+        body: JSON.stringify({
+          instanceName,
+          qrcode: true,
+          integration: 'WHATSAPP-BAILEYS',
+        }),
+      });
+      renewResults.push({ step: 'recreate_clean_instance', status: recreated.status, data: recreated.data });
+
+      if (!recreated.ok && recreated.status !== 403 && recreated.status !== 409) {
+        return json({
+          error: 'A instância antiga foi removida, mas a Evolution não conseguiu recriar uma instância limpa.',
+          details: renewResults,
+        }, recreated.status);
+      }
+
+      if (hasQrPayload(recreated.data)) {
+        return json({ success: true, qrcode: recreated.data, recreated: true, renew: renewResults });
+      }
     }
 
     let createData: unknown = null;
