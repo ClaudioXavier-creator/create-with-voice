@@ -13,6 +13,7 @@ export interface Empresa {
   tipo_producao: string[] | null;
   capacidade: string | null;
   origem_agua?: "poco" | "concessionaria" | null;
+  prefixo_doc?: string | null;
 }
 
 interface EmpresaContextType {
