@@ -31,20 +31,20 @@ export default function GoogleForms() {
   const modelo = modelos.find((m) => m.id === selecionado);
 
   useEffect(() => {
-    if (!empresaAtual?.id) return;
+    if (!empresaAtiva?.id) return;
     (async () => {
       setLoading(true);
       const { data, error } = await supabase
         .from("modelos_empresa")
         .select("id, nome, pop_codigo, webhook_token, ativo")
-        .eq("empresa_id", empresaAtual.id)
+        .eq("empresa_id", empresaAtiva.id)
         .eq("ativo", true)
         .order("nome");
       if (error) toast.error("Erro ao carregar modelos");
       setModelos((data as Modelo[]) ?? []);
       setLoading(false);
     })();
-  }, [empresaAtual?.id]);
+  }, [empresaAtiva?.id]);
 
   const copiar = async (texto: string, chave: string) => {
     await navigator.clipboard.writeText(texto);
