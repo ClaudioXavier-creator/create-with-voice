@@ -24,7 +24,7 @@ import { cn } from "@/lib/utils";
 
 import { useAuth } from "@/hooks/useAuth";
 
-type ProductKey = "feedbpf" | "nutricrm" | "agrogestao" | "auditsbpf" | "agrorc" | "rotulos";
+type ProductKey = "feedbpf" | "nutricrm" | "agrogestao" | "auditsbpf" | "agrorc" | "rotulos" | "feedbpfcustom";
 type NivelKey = "entrada" | "intermediario" | "avancado";
 
 interface PlanInfo {
@@ -111,6 +111,7 @@ const PRODUCT_LABELS: Record<ProductKey, string> = {
   auditsbpf: "Audits_BPF",
   agrorc: "Agro RC CRM",
   rotulos: "Nutri_Agro Labels",
+  feedbpfcustom: "Feed_BPF Custom",
 };
 
 interface LicenseGateProps {
