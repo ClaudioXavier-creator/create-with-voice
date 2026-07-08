@@ -73,6 +73,7 @@ export default function Cadastro() {
       capacidade: e.capacidade || "",
       tipo_producao: e.tipo_producao || [],
       origem_agua: e.origem_agua || "",
+      prefixo_doc: e.prefixo_doc || "",
     });
     setEditId(e.id);
     setOpen(true);
