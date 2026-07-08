@@ -3525,6 +3525,7 @@ export type Database = {
           pop_codigo: string | null
           updated_at: string
           user_id: string
+          webhook_token: string | null
         }
         Insert: {
           arquivo_referencia_nome?: string | null
@@ -3539,6 +3540,7 @@ export type Database = {
           pop_codigo?: string | null
           updated_at?: string
           user_id: string
+          webhook_token?: string | null
         }
         Update: {
           arquivo_referencia_nome?: string | null
@@ -3553,6 +3555,7 @@ export type Database = {
           pop_codigo?: string | null
           updated_at?: string
           user_id?: string
+          webhook_token?: string | null
         }
         Relationships: [
           {
