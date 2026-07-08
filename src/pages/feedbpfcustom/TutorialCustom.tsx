@@ -11,12 +11,16 @@ import {
   Lightbulb,
   ShieldCheck,
   PlayCircle,
+  ClipboardList,
+  AlertCircle,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import PageHeader from "@/components/PageHeader";
+import { DOCS_OBRIGATORIOS_POP, contarObrigatoriosEssenciais } from "@/config/documentosObrigatoriosBPF";
+
 
 interface Passo {
   n: number;
