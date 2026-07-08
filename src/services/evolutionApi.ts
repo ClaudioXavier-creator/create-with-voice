@@ -28,7 +28,7 @@ export interface EvolutionConnectParams {
   empresaId: string;
   instanceName: string;
   phoneNumber?: string;
-  action?: "connect" | "create";
+  action?: "connect" | "create" | "renew_qr";
 }
 
 export interface EvolutionSendViaBackendParams {
