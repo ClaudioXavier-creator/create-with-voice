@@ -197,18 +197,18 @@ Deno.serve(async (req) => {
       if (!toNumber) return json({ error: 'Número de destino obrigatório' }, 400);
       if (!message) return json({ error: 'Mensagem obrigatória' }, 400);
 
-      const sent = await callEvolution(`${baseUrl}/message/sendText/${encodeURIComponent(instanceName)}`, config.api_key, {
+      const sendUrl = `${baseUrl}/message/sendText/${encodeURIComponent(instanceName)}`;
+      // Evolution v2 aceita { number, text }; v1 aceita { number, textMessage: { text } }.
+      let sent = await callEvolution(sendUrl, config.api_key, {
         method: 'POST',
-        body: JSON.stringify({
-          number: toNumber,
-          options: {
-            delay: 1200,
-            presence: 'composing',
-            linkPreview: false,
-          },
-          textMessage: { text: message },
-        }),
+        body: JSON.stringify({ number: toNumber, text: message }),
       });
+      if (!sent.ok && (sent.status === 400 || sent.status === 422)) {
+        sent = await callEvolution(sendUrl, config.api_key, {
+          method: 'POST',
+          body: JSON.stringify({ number: toNumber, textMessage: { text: message } }),
+        });
+      }
 
       if (!sent.ok) {
         const errorMessage = isConnectionClosedError(sent.data)
