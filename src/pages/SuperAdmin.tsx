@@ -223,6 +223,10 @@ export default function SuperAdmin() {
           <AdminLeads isTab />
         </TabsContent>
 
+        <TabsContent value="scoring">
+          <LeadScoringPanel />
+        </TabsContent>
+
 
         <TabsContent value="crm">
           <CRM isTab />
