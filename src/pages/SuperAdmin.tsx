@@ -16,12 +16,13 @@ import GeradorHeadlines from "./GeradorHeadlines";
 import DisparadorMarketing from "@/components/marketing/DisparadorMarketing";
 import WhatsAppConfig from "./WhatsAppConfig";
 import WhatsAppRelatorio from "./WhatsAppRelatorio";
+import CampanhasWhatsApp from "@/components/marketing/CampanhasWhatsApp";
 import { useLocation } from "react-router-dom";
 
 export default function SuperAdmin() {
   const { user, roles, loading: authLoading } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
-  const validTabs = ["dashboard", "leads", "crm", "licencas", "assinaturas", "marketing", "plano-vendas", "disparo", "whatsapp", "whatsapp-relatorio", "modulos", "error-logs", "historico"];
+  const validTabs = ["dashboard", "leads", "crm", "licencas", "assinaturas", "marketing", "plano-vendas", "disparo", "campanhas", "whatsapp", "whatsapp-relatorio", "modulos", "error-logs", "historico"];
 
   const initialTab = searchParams.get("tab");
   const [activeTab, setActiveTab] = useState(
