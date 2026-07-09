@@ -240,6 +240,11 @@ export default function SuperAdmin() {
           <AdminLicencas isTab />
         </TabsContent>
 
+        <TabsContent value="retencao">
+          <RetencaoPanel />
+        </TabsContent>
+
+
         <TabsContent value="assinaturas">
           <Card>
             <CardHeader>
