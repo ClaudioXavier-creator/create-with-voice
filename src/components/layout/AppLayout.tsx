@@ -191,6 +191,15 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
             <Button
               variant="ghost"
               size="icon"
+              onClick={() => navigate("/portal")}
+              className="h-8 w-8 text-sidebar-foreground/50 hover:text-primary hover:bg-primary/10 rounded-full shrink-0"
+              title="Meu Portal"
+            >
+              <UserIcon className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
               onClick={handleSignOut}
               className="h-8 w-8 text-sidebar-foreground/50 hover:text-destructive hover:bg-destructive/10 rounded-full shrink-0"
               title="Sair da conta"
