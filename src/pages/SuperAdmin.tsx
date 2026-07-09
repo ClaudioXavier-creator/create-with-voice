@@ -214,9 +214,10 @@ export default function SuperAdmin() {
         <TabsContent value="dashboard" className="space-y-6">
           <SuperAdminDashboard onNavigate={handleTabChange} />
         </TabsContent>
-
+        <TabsContent value="leads">
           <AdminLeads isTab />
         </TabsContent>
+
 
         <TabsContent value="crm">
           <CRM isTab />
