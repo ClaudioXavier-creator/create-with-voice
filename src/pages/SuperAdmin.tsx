@@ -27,7 +27,7 @@ import { useLocation } from "react-router-dom";
 export default function SuperAdmin() {
   const { user, roles, loading: authLoading } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
-  const validTabs = ["dashboard", "leads", "scoring", "crm", "licencas", "assinaturas", "marketing", "plano-vendas", "disparo", "campanhas", "whatsapp", "whatsapp-relatorio", "modulos", "suporte", "saude", "error-logs", "historico"];
+  const validTabs = ["dashboard", "leads", "scoring", "crm", "licencas", "retencao", "assinaturas", "marketing", "plano-vendas", "disparo", "campanhas", "whatsapp", "whatsapp-relatorio", "modulos", "suporte", "saude", "error-logs", "historico"];
 
   const initialTab = searchParams.get("tab");
   const [activeTab, setActiveTab] = useState(
