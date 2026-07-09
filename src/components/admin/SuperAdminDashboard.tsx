@@ -47,17 +47,15 @@ export default function SuperAdminDashboard({ onNavigate }: Props) {
       const past24h = new Date(now.getTime() - 24 * 3600000).toISOString();
       const hoje = now.toISOString().split("T")[0];
 
-      const [leadsRes, crmRes, licencasRes, campanhasRes, msgsRes, waRes, errosRes] = await Promise.all([
-        supabase.from("leads").select("id, notificado, created_at"),
-        supabase.from("crm_pipeline").select("etapa, valor_estimado"),
-        supabase.functions.invoke("admin-licencas", { body: { action: "list" } }),
-        supabase.from("campanhas").select("id, status").in("status", ["executando", "agendada", "pausada"]),
-        supabase.from("campanha_mensagens").select("id", { count: "exact", head: true })
-          .eq("status", "enviada").gte("enviado_em", past24h),
-        supabase.from("whatsapp_config").select("connection_status, ultima_verificacao").limit(1).maybeSingle(),
-        supabase.from("app_error_logs").select("id", { count: "exact", head: true })
-          .in("severity", ["error", "critical"]).gte("created_at", past24h),
-      ]);
+      const leadsRes: any = await supabase.from("leads").select("id, notificado, created_at");
+      const crmRes: any = await supabase.from("crm_pipeline").select("etapa, valor_estimado");
+      const licencasRes: any = await supabase.functions.invoke("admin-licencas", { body: { action: "list" } });
+      const campanhasRes: any = await (supabase.from as any)("campanhas").select("id, status").in("status", ["executando", "agendada", "pausada"]);
+      const msgsRes: any = await (supabase.from as any)("campanha_mensagens").select("id", { count: "exact", head: true })
+        .eq("status", "enviada").gte("enviado_em", past24h);
+      const waRes: any = await (supabase.from as any)("whatsapp_config").select("connection_status, ultima_verificacao").limit(1).maybeSingle();
+      const errosRes: any = await (supabase.from as any)("app_error_logs").select("id", { count: "exact", head: true })
+        .in("severity", ["error", "critical"]).gte("created_at", past24h);
 
       const leads = leadsRes.data || [];
       const crm = crmRes.data || [];
