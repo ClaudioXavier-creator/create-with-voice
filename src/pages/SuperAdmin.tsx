@@ -19,6 +19,7 @@ import BenchmarkPanel from "@/components/admin/BenchmarkPanel";
 import CopilotoIAPanel from "@/components/admin/CopilotoIAPanel";
 import AttributionPanel from "@/components/admin/AttributionPanel";
 import NotificacoesPanel from "@/components/admin/NotificacoesPanel";
+import IndicacoesPanel from "@/components/admin/IndicacoesPanel";
 import { canAccessLicenseAdmin } from "@/config/adminAccess";
 import CRM from "./CRM";
 import AdminLicencas from "./AdminLicencas";
