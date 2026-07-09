@@ -274,6 +274,10 @@ export default function SuperAdmin() {
           <NotificacoesPanel />
         </TabsContent>
 
+        <TabsContent value="indicacoes">
+          <IndicacoesPanel />
+        </TabsContent>
+
 
 
         <TabsContent value="licencas">
