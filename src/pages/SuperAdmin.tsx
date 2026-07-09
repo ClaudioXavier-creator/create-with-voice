@@ -242,6 +242,18 @@ export default function SuperAdmin() {
           <CRM isTab />
         </TabsContent>
 
+        <TabsContent value="cadencias">
+          <CadenciasPanel />
+        </TabsContent>
+
+        <TabsContent value="forecast">
+          <ForecastPanel />
+        </TabsContent>
+
+        <TabsContent value="benchmark">
+          <BenchmarkPanel />
+        </TabsContent>
+
         <TabsContent value="licencas">
           <AdminLicencas isTab />
         </TabsContent>
