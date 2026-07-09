@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { Copy, ExternalLink, Key, Building2, LifeBuoy, Gift, User as UserIcon } from "lucide-react";
 import { Link } from "react-router-dom";
-import Seo from "@/components/Seo";
+import { Seo } from "@/components/Seo";
 
 export default function PortalCliente() {
   const { user } = useAuth();
