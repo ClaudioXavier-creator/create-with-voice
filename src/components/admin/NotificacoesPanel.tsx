@@ -222,7 +222,7 @@ export default function NotificacoesPanel() {
                   <Switch
                     checked={prefs?.canais?.[canal] ?? (canal !== "whatsapp")}
                     onCheckedChange={(v) =>
-                      savePrefs.mutate({ canais: { ...(prefs?.canais || {}), [canal]: v } })
+                      savePrefs.mutate({ canais: { ...((prefs?.canais as Record<string, boolean>) || {}), [canal]: v } })
                     }
                   />
                 </div>
