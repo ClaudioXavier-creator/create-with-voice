@@ -249,6 +249,54 @@ export type Database = {
         }
         Relationships: []
       }
+      ai_lead_insights: {
+        Row: {
+          created_at: string
+          gerado_por: string | null
+          id: string
+          lead_id: string
+          lead_origem: string | null
+          proxima_acao: string | null
+          rascunho_email: string | null
+          rascunho_whatsapp: string | null
+          resumo: string | null
+          score: number | null
+          sinais_compra: Json | null
+          temperatura: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          gerado_por?: string | null
+          id?: string
+          lead_id: string
+          lead_origem?: string | null
+          proxima_acao?: string | null
+          rascunho_email?: string | null
+          rascunho_whatsapp?: string | null
+          resumo?: string | null
+          score?: number | null
+          sinais_compra?: Json | null
+          temperatura?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          gerado_por?: string | null
+          id?: string
+          lead_id?: string
+          lead_origem?: string | null
+          proxima_acao?: string | null
+          rascunho_email?: string | null
+          rascunho_whatsapp?: string | null
+          resumo?: string | null
+          score?: number | null
+          sinais_compra?: Json | null
+          temperatura?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       amostras_retencao: {
         Row: {
           created_at: string
@@ -3064,6 +3112,51 @@ export type Database = {
           },
         ]
       }
+      lead_utm: {
+        Row: {
+          created_at: string
+          email: string | null
+          id: string
+          landing_page: string | null
+          lead_id: string | null
+          lead_origem: string | null
+          referrer: string | null
+          utm_campaign: string | null
+          utm_content: string | null
+          utm_medium: string | null
+          utm_source: string | null
+          utm_term: string | null
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          landing_page?: string | null
+          lead_id?: string | null
+          lead_origem?: string | null
+          referrer?: string | null
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+          utm_term?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          landing_page?: string | null
+          lead_id?: string | null
+          lead_origem?: string | null
+          referrer?: string | null
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+          utm_term?: string | null
+        }
+        Relationships: []
+      }
       leads: {
         Row: {
           created_at: string
@@ -4035,6 +4128,81 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      notificacoes_admin: {
+        Row: {
+          created_at: string
+          id: string
+          lida: boolean
+          lida_em: string | null
+          link: string | null
+          mensagem: string | null
+          metadata: Json | null
+          prioridade: string
+          tipo: string
+          titulo: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          lida?: boolean
+          lida_em?: string | null
+          link?: string | null
+          mensagem?: string | null
+          metadata?: Json | null
+          prioridade?: string
+          tipo: string
+          titulo: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          lida?: boolean
+          lida_em?: string | null
+          link?: string | null
+          mensagem?: string | null
+          metadata?: Json | null
+          prioridade?: string
+          tipo?: string
+          titulo?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      notificacoes_preferencias: {
+        Row: {
+          canais: Json
+          created_at: string
+          horario_silencio_fim: string | null
+          horario_silencio_inicio: string | null
+          id: string
+          tipos_habilitados: Json
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          canais?: Json
+          created_at?: string
+          horario_silencio_fim?: string | null
+          horario_silencio_inicio?: string | null
+          id?: string
+          tipos_habilitados?: Json
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          canais?: Json
+          created_at?: string
+          horario_silencio_fim?: string | null
+          horario_silencio_inicio?: string | null
+          id?: string
+          tipos_habilitados?: Json
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       nutricrm_projetos: {
         Row: {
