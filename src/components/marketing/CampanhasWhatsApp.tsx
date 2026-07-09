@@ -13,7 +13,7 @@ import {
   Megaphone, Play, Pause, Square, Trash2, RefreshCw, Users,
   ListChecks, Send, AlertTriangle, Loader2, Eye
 } from "lucide-react";
-import BoasPraticasWhatsApp from "@/components/marketing/BoasPraticasWhatsApp";
+import { BoasPraticasWhatsApp } from "@/components/marketing/BoasPraticasWhatsApp";
 
 type Campanha = {
   id: string;

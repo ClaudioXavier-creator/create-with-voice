@@ -145,6 +145,10 @@ export default function SuperAdmin() {
               <SendHorizontal className="h-4 w-4" />
               <span>Disparos</span>
             </TabsTrigger>
+            <TabsTrigger value="campanhas" className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground py-2 border flex-1">
+              <Megaphone className="h-4 w-4" />
+              <span>Campanhas</span>
+            </TabsTrigger>
             <TabsTrigger value="licencas" className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground py-2 border flex-1">
               <Key className="h-4 w-4" />
               <span>Licenças</span>
