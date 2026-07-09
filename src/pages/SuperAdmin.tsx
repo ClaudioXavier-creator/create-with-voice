@@ -173,6 +173,7 @@ export default function SuperAdmin() {
               label: "Sistema",
               icon: ShieldCheck,
               tabs: [
+                { value: "notificacoes", label: "Notificações", icon: Bell },
                 { value: "modulos", label: "Módulos Externos", icon: Zap },
                 { value: "suporte", label: "Suporte / Tickets", icon: Headphones },
                 { value: "saude", label: "Saúde do Sistema", icon: HeartPulse },
