@@ -98,6 +98,7 @@ const TermsOfService = lazy(() => import("./pages/TermsOfService"));
 const RefundPolicy = lazy(() => import("./pages/RefundPolicy"));
 const AuditLog = lazy(() => import("./pages/AuditLog"));
 const AdminFeedBPFAuditoria = lazy(() => import("./pages/AdminFeedBPFAuditoria"));
+const PortalCliente = lazy(() => import("./pages/PortalCliente"));
 
 // Feed_BPF Custom
 const FeedBpfCustomLanding = lazy(() => import("./pages/FeedBpfCustomLanding"));
@@ -360,6 +361,7 @@ const AppRoutes = () => {
         {/* Portal de Gestão (BPF_Consult) - rotas standalone, fora do AppLayout do Feed_BPF */}
         <Route path="/admin-access" element={<AdminAccess />} />
         <Route path="/admin" element={<ProtectedRoute requireAdmin><SuperAdmin /></ProtectedRoute>} />
+        <Route path="/portal" element={<ProtectedRoute><PortalCliente /></ProtectedRoute>} />
         <Route path="/admin/auditoria-feedbpf" element={<ProtectedRoute requireAdmin><AdminFeedBPFAuditoria /></ProtectedRoute>} />
         <Route path="/crm" element={<ProtectedRoute requireAdmin><Navigate to="/admin?tab=crm" replace /></ProtectedRoute>} />
         <Route path="/leads" element={<ProtectedRoute requireAdmin><Navigate to="/admin?tab=leads" replace /></ProtectedRoute>} />

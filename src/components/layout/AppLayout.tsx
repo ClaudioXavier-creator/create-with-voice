@@ -13,6 +13,7 @@ import { useAuth } from "@/hooks/useAuth";
 import EmpresaSelector from "@/components/EmpresaSelector";
 import LicenseGate from "@/components/LicenseGate";
 import TierGate from "@/components/TierGate";
+import OnboardingAutomatico from "@/components/OnboardingAutomatico";
 import logoFeedBpf from "@/assets/logo-feed-bpf.png";
 import logoAuditsBpf from "@/assets/logo-audits-bpf.png";
 import logoNutricrm from "@/assets/logo-nutricrm.png";
@@ -281,6 +282,8 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
             </TierGate>
           </LicenseGate>
         </div>
+
+        <OnboardingAutomatico produto={product === "feedbpf" ? "feed_bpf" : product === "auditsbpf" ? "audits_bpf" : product} />
 
         
         {/* Floating elements backdrop decoration - Refined for better performance and responsiveness */}
