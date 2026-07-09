@@ -131,6 +131,7 @@ export default function SuperAdmin() {
               tabs: [
                 { value: "dashboard", label: "Dashboard", icon: Activity },
                 { value: "leads", label: "Leads", icon: Users },
+                { value: "scoring", label: "Lead Scoring", icon: Flame },
                 { value: "crm", label: "CRM / Vendas", icon: TrendingUp },
                 { value: "licencas", label: "Licenças", icon: Key },
                 { value: "assinaturas", label: "Assinaturas", icon: CreditCard },
