@@ -1406,6 +1406,105 @@ export type Database = {
           },
         ]
       }
+      crm_cadencia_execucoes: {
+        Row: {
+          cadencia_id: string
+          created_at: string
+          id: string
+          lead_email: string | null
+          lead_nome: string | null
+          lead_telefone: string | null
+          passo_atual: number
+          pipeline_id: string | null
+          proximo_envio_em: string
+          status: string
+          ultimo_erro: string | null
+          updated_at: string
+        }
+        Insert: {
+          cadencia_id: string
+          created_at?: string
+          id?: string
+          lead_email?: string | null
+          lead_nome?: string | null
+          lead_telefone?: string | null
+          passo_atual?: number
+          pipeline_id?: string | null
+          proximo_envio_em?: string
+          status?: string
+          ultimo_erro?: string | null
+          updated_at?: string
+        }
+        Update: {
+          cadencia_id?: string
+          created_at?: string
+          id?: string
+          lead_email?: string | null
+          lead_nome?: string | null
+          lead_telefone?: string | null
+          passo_atual?: number
+          pipeline_id?: string | null
+          proximo_envio_em?: string
+          status?: string
+          ultimo_erro?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "crm_cadencia_execucoes_cadencia_id_fkey"
+            columns: ["cadencia_id"]
+            isOneToOne: false
+            referencedRelation: "crm_cadencias"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "crm_cadencia_execucoes_pipeline_id_fkey"
+            columns: ["pipeline_id"]
+            isOneToOne: false
+            referencedRelation: "crm_pipeline"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      crm_cadencias: {
+        Row: {
+          ativo: boolean
+          created_at: string
+          etapa_gatilho: string
+          id: string
+          nome: string
+          passos: Json
+          produto: string | null
+          tier_gatilho: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          ativo?: boolean
+          created_at?: string
+          etapa_gatilho?: string
+          id?: string
+          nome: string
+          passos?: Json
+          produto?: string | null
+          tier_gatilho?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          ativo?: boolean
+          created_at?: string
+          etapa_gatilho?: string
+          id?: string
+          nome?: string
+          passos?: Json
+          produto?: string | null
+          tier_gatilho?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       crm_emails_enviados: {
         Row: {
           assunto: string
