@@ -344,6 +344,11 @@ export default function SuperAdmin() {
           <SupportTicketsPanel />
         </TabsContent>
 
+        <TabsContent value="saude">
+          <SystemHealthPanel />
+        </TabsContent>
+
+
         <TabsContent value="error-logs">
           <AppErrorLogsViewer />
         </TabsContent>
