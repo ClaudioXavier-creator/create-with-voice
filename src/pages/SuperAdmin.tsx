@@ -260,6 +260,20 @@ export default function SuperAdmin() {
           <BenchmarkPanel />
         </TabsContent>
 
+        <TabsContent value="copiloto">
+          <CopilotoIAPanel />
+        </TabsContent>
+
+        <TabsContent value="attribution">
+          <AttributionPanel />
+        </TabsContent>
+
+        <TabsContent value="notificacoes">
+          <NotificacoesPanel />
+        </TabsContent>
+
+
+
         <TabsContent value="licencas">
           <AdminLicencas isTab />
         </TabsContent>
