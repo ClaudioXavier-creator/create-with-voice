@@ -98,6 +98,7 @@ const TermsOfService = lazy(() => import("./pages/TermsOfService"));
 const RefundPolicy = lazy(() => import("./pages/RefundPolicy"));
 const AuditLog = lazy(() => import("./pages/AuditLog"));
 const AdminFeedBPFAuditoria = lazy(() => import("./pages/AdminFeedBPFAuditoria"));
+const PortalCliente = lazy(() => import("./pages/PortalCliente"));
 
 // Feed_BPF Custom
 const FeedBpfCustomLanding = lazy(() => import("./pages/FeedBpfCustomLanding"));
