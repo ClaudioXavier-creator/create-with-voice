@@ -265,6 +265,15 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
                   <Button
                     variant="ghost"
                     size="sm"
+                    onClick={() => { closeMobile(); navigate("/portal"); }}
+                    className="w-full justify-start text-sidebar-foreground/70 hover:text-primary hover:bg-primary/10 h-10 px-4 rounded-xl transition-all"
+                  >
+                    <UserIcon className="w-4 h-4 mr-3" />
+                    Meu Portal
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
                     onClick={handleSignOut}
                     className="w-full justify-start text-sidebar-foreground/70 hover:text-destructive hover:bg-destructive/10 h-10 px-4 rounded-xl transition-all"
                   >
