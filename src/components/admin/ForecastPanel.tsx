@@ -17,7 +17,7 @@ export default function ForecastPanel() {
 
   useEffect(() => {
     (async () => {
-      const { data } = await supabase.from("crm_pipeline").select("etapa,valor_estimado,produto_interesse,expected_close_date,updated_at");
+      const { data } = await supabase.from("crm_pipeline").select("etapa,valor_estimado,produto_interesse,updated_at,ganho_em");
       setPipeline(data || []); setLoading(false);
     })();
   }, []);
