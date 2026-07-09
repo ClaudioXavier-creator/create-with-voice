@@ -247,7 +247,7 @@ export default function NotificacoesPanel() {
                       checked={prefs?.tipos_habilitados?.[tipo] ?? true}
                       onCheckedChange={(v) =>
                         savePrefs.mutate({
-                          tipos_habilitados: { ...(prefs?.tipos_habilitados || {}), [tipo]: v },
+                          tipos_habilitados: { ...((prefs?.tipos_habilitados as Record<string, boolean>) || {}), [tipo]: v },
                         })
                       }
                     />
