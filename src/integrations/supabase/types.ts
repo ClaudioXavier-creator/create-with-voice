@@ -5655,6 +5655,7 @@ export type Database = {
       }
       whatsapp_config: {
         Row: {
+          alert_email: string | null
           api_key: string
           api_url: string
           created_at: string | null
@@ -5662,9 +5663,14 @@ export type Database = {
           id: string
           instance_name: string | null
           is_connected: boolean | null
+          last_alert_at: string | null
+          last_known_status: string | null
+          last_status_change: string | null
+          last_status_check: string | null
           updated_at: string | null
         }
         Insert: {
+          alert_email?: string | null
           api_key: string
           api_url: string
           created_at?: string | null
@@ -5672,9 +5678,14 @@ export type Database = {
           id?: string
           instance_name?: string | null
           is_connected?: boolean | null
+          last_alert_at?: string | null
+          last_known_status?: string | null
+          last_status_change?: string | null
+          last_status_check?: string | null
           updated_at?: string | null
         }
         Update: {
+          alert_email?: string | null
           api_key?: string
           api_url?: string
           created_at?: string | null
@@ -5682,6 +5693,10 @@ export type Database = {
           id?: string
           instance_name?: string | null
           is_connected?: boolean | null
+          last_alert_at?: string | null
+          last_known_status?: string | null
+          last_status_change?: string | null
+          last_status_check?: string | null
           updated_at?: string | null
         }
         Relationships: [
