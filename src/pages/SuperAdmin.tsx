@@ -136,6 +136,7 @@ export default function SuperAdmin() {
                 { value: "scoring", label: "Lead Scoring", icon: Flame },
                 { value: "crm", label: "CRM / Vendas", icon: TrendingUp },
                 { value: "licencas", label: "Licenças", icon: Key },
+                { value: "retencao", label: "Retenção", icon: TrendingDown },
                 { value: "assinaturas", label: "Assinaturas", icon: CreditCard },
                 { value: "plano-vendas", label: "Plano de Vendas", icon: FileText },
               ],
