@@ -150,6 +150,7 @@ export default function SuperAdmin() {
                 { value: "licencas", label: "Licenças", icon: Key },
                 { value: "retencao", label: "Retenção", icon: TrendingDown },
                 { value: "assinaturas", label: "Assinaturas", icon: CreditCard },
+                { value: "indicacoes", label: "Indicações", icon: Gift },
                 { value: "plano-vendas", label: "Plano de Vendas", icon: FileText },
               ],
             },
