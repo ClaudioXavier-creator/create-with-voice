@@ -7,6 +7,7 @@ import {
   X,
   Search,
   ShieldCheck,
+  User as UserIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
