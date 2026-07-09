@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { ShieldCheck, Users, TrendingUp, Key, CreditCard, Activity, Target, Award, Loader2, Megaphone, FileText, SendHorizontal, Lock, Zap, MessageSquare, ExternalLink, Tag, LayoutDashboard, Building2, AlertTriangle, History as HistoryIcon } from "lucide-react";
 import AppErrorLogsViewer from "@/components/admin/AppErrorLogsViewer";
 import VersionHistory from "@/components/admin/VersionHistory";
+import SuperAdminDashboard from "@/components/admin/SuperAdminDashboard";
 import { canAccessLicenseAdmin } from "@/config/adminAccess";
 import CRM from "./CRM";
 import AdminLicencas from "./AdminLicencas";
@@ -212,121 +213,12 @@ export default function SuperAdmin() {
 
 
         <TabsContent value="dashboard" className="space-y-6">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-             <Card>
-               <CardHeader className="pb-2 flex flex-row items-center justify-between space-y-0">
-                 <CardTitle className="text-sm font-medium">Total de Leads</CardTitle>
-                 <Users className="h-4 w-4 text-muted-foreground" />
-               </CardHeader>
-               <CardContent>
-                 <div className="text-2xl font-bold">{stats.loading ? "..." : stats.totalLeads}</div>
-                 <p className="text-xs text-muted-foreground">{stats.leadsPendente} pendentes de contato</p>
-               </CardContent>
-             </Card>
-
-             <Card>
-               <CardHeader className="pb-2 flex flex-row items-center justify-between space-y-0">
-                 <CardTitle className="text-sm font-medium">Vendas Fechadas</CardTitle>
-                 <Award className="h-4 w-4 text-emerald-500" />
-               </CardHeader>
-               <CardContent>
-                 <div className="text-2xl font-bold">{stats.loading ? "..." : stats.vendasGanhos}</div>
-                 <p className="text-xs text-muted-foreground">Leads convertidos no CRM</p>
-               </CardContent>
-             </Card>
-
-             <Card>
-               <CardHeader className="pb-2 flex flex-row items-center justify-between space-y-0">
-                 <CardTitle className="text-sm font-medium">Receita Estimada</CardTitle>
-                 <Target className="h-4 w-4 text-blue-500" />
-               </CardHeader>
-               <CardContent>
-                 <div className="text-2xl font-bold">
-                   {stats.loading ? "..." : stats.valorTotalGanhos.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
-                 </div>
-                 <p className="text-xs text-muted-foreground">Valor total de negócios ganhos</p>
-               </CardContent>
-             </Card>
-
-             <Card>
-                <CardHeader className="pb-2 flex flex-row items-center justify-between space-y-0">
-                  <CardTitle className="text-sm font-medium">Licenças Ativas</CardTitle>
-                  <Key className="h-4 w-4 text-amber-500" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">{stats.loading ? "..." : stats.totalLicencasAtivas}</div>
-                  <p className="text-xs text-muted-foreground">Total entre todos os programas</p>
-                </CardContent>
-             </Card>
-          </div>
+          <SuperAdminDashboard onNavigate={handleTabChange} />
         </TabsContent>
-
-        <TabsContent value="dashboard" className="mt-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <Card className="bg-gradient-to-br from-primary/10 to-transparent border-primary/20">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Megaphone className="h-5 w-5 text-primary" />
-                  Marketing & Growth Hub
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <p className="text-sm text-muted-foreground">
-                  Acesse as ferramentas de IA para gerar headlines persuasivas e gerencie disparos de marketing para seus leads.
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  <Button size="sm" onClick={() => handleTabChange("marketing")} className="gap-2">
-                    <Zap className="h-4 w-4" />
-                    Gerador de Headlines
-                  </Button>
-                  <Button size="sm" variant="outline" onClick={() => handleTabChange("disparo")} className="gap-2">
-                    <SendHorizontal className="h-4 w-4" />
-                    Central de Disparos
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-gradient-to-br from-amber-500/10 to-transparent border-amber-500/20">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Key className="h-5 w-5 text-amber-500" />
-                  Gestão de Licenças
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <p className="text-sm text-muted-foreground">
-                  Libere acessos manuais, revogue licenças ou altere níveis de permissão (Entrada, Intermediário, Avançado) para qualquer programa.
-                </p>
-                <Button size="sm" variant="outline" onClick={() => handleTabChange("licencas")} className="gap-2 border-amber-500/30 hover:bg-amber-500/10">
-                  <ShieldCheck className="h-4 w-4" />
-                  Administrar Licenças
-                </Button>
-              </CardContent>
-            </Card>
-            <Card className="bg-gradient-to-br from-indigo-500/10 to-transparent border-indigo-500/20">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <HistoryIcon className="h-5 w-5 text-indigo-500" />
-                  Auditoria Feed_BPF
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <p className="text-sm text-muted-foreground">
-                  Verifique o status de todos os cadastros, logs de auditoria e erros recentes específicos do programa Feed_BPF.
-                </p>
-                <Button size="sm" variant="outline" onClick={() => window.location.href = "/admin/auditoria-feedbpf"} className="gap-2 border-indigo-500/30 hover:bg-indigo-500/10">
-                  <ShieldCheck className="h-4 w-4" />
-                  Abrir Auditoria
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
-
         <TabsContent value="leads">
           <AdminLeads isTab />
         </TabsContent>
+
 
         <TabsContent value="crm">
           <CRM isTab />
