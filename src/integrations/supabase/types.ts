@@ -3049,6 +3049,54 @@ export type Database = {
           },
         ]
       }
+      indicacoes: {
+        Row: {
+          cadastrou_em: string | null
+          codigo_referral: string
+          converteu_em: string | null
+          criado_em: string
+          id: string
+          indicado_email: string | null
+          indicado_user_id: string | null
+          indicador_user_id: string
+          observacoes: string | null
+          produto: string | null
+          recompensa_creditada: boolean | null
+          recompensa_valor: number | null
+          status: string
+        }
+        Insert: {
+          cadastrou_em?: string | null
+          codigo_referral: string
+          converteu_em?: string | null
+          criado_em?: string
+          id?: string
+          indicado_email?: string | null
+          indicado_user_id?: string | null
+          indicador_user_id: string
+          observacoes?: string | null
+          produto?: string | null
+          recompensa_creditada?: boolean | null
+          recompensa_valor?: number | null
+          status?: string
+        }
+        Update: {
+          cadastrou_em?: string | null
+          codigo_referral?: string
+          converteu_em?: string | null
+          criado_em?: string
+          id?: string
+          indicado_email?: string | null
+          indicado_user_id?: string | null
+          indicador_user_id?: string
+          observacoes?: string | null
+          produto?: string | null
+          recompensa_creditada?: boolean | null
+          recompensa_valor?: number | null
+          status?: string
+        }
+        Relationships: []
+      }
       inspecoes_iscas: {
         Row: {
           acao_tomada: string | null
@@ -4247,6 +4295,42 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      onboarding_progresso: {
+        Row: {
+          checklist_completo: boolean | null
+          concluido_em: string | null
+          id: string
+          passos_concluidos: Json
+          primeiro_acesso_em: string
+          produto: string
+          tour_completo: boolean | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          checklist_completo?: boolean | null
+          concluido_em?: string | null
+          id?: string
+          passos_concluidos?: Json
+          primeiro_acesso_em?: string
+          produto: string
+          tour_completo?: boolean | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          checklist_completo?: boolean | null
+          concluido_em?: string | null
+          id?: string
+          passos_concluidos?: Json
+          primeiro_acesso_em?: string
+          produto?: string
+          tour_completo?: boolean | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       ordens_producao: {
         Row: {
@@ -6359,6 +6443,14 @@ export type Database = {
           empresa_id: string
           expira_em: string
           id: string
+        }[]
+      }
+      validar_codigo_referral: {
+        Args: { _codigo: string }
+        Returns: {
+          indicacao_id: string
+          indicador_user_id: string
+          valido: boolean
         }[]
       }
       vincular_empresa_licenca_consultor: {
