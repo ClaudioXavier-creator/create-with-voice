@@ -10,6 +10,7 @@ import AppErrorLogsViewer from "@/components/admin/AppErrorLogsViewer";
 import VersionHistory from "@/components/admin/VersionHistory";
 import SuperAdminDashboard from "@/components/admin/SuperAdminDashboard";
 import SupportTicketsPanel from "@/components/admin/SupportTicketsPanel";
+import LeadScoringPanel from "@/components/admin/LeadScoringPanel";
 import { canAccessLicenseAdmin } from "@/config/adminAccess";
 import CRM from "./CRM";
 import AdminLicencas from "./AdminLicencas";
