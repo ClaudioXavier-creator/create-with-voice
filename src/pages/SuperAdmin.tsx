@@ -120,67 +120,96 @@ export default function SuperAdmin() {
       </div>
 
       <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-6">
-        <div className="overflow-x-auto pb-2 -mx-4 px-4 md:mx-0 md:px-0">
-          <TabsList className="flex md:grid md:grid-cols-11 lg:grid-cols-11 w-max md:w-full h-auto gap-2 bg-transparent">
-            <TabsTrigger value="dashboard" className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground py-2 border flex-1">
-              <Activity className="h-4 w-4" />
-              <span>Dashboard</span>
-            </TabsTrigger>
-            <TabsTrigger value="leads" className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground py-2 border flex-1">
-              <Users className="h-4 w-4" />
-              <span>Leads</span>
-            </TabsTrigger>
-            <TabsTrigger value="crm" className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground py-2 border flex-1">
-              <TrendingUp className="h-4 w-4" />
-              <span className="text-xs">CRM/Vendas</span>
-            </TabsTrigger>
-            <TabsTrigger value="whatsapp" className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground py-2 border flex-1">
-              <MessageSquare className="h-4 w-4" />
-              <span>WhatsApp</span>
-            </TabsTrigger>
-            <TabsTrigger value="whatsapp-relatorio" className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground py-2 border flex-1">
-              <FileText className="h-4 w-4" />
-              <span>Relat. WA</span>
-            </TabsTrigger>
-            <TabsTrigger value="disparo" className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground py-2 border flex-1">
-              <SendHorizontal className="h-4 w-4" />
-              <span>Disparos</span>
-            </TabsTrigger>
-            <TabsTrigger value="campanhas" className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground py-2 border flex-1">
-              <Megaphone className="h-4 w-4" />
-              <span>Campanhas</span>
-            </TabsTrigger>
-            <TabsTrigger value="licencas" className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground py-2 border flex-1">
-              <Key className="h-4 w-4" />
-              <span>Licenças</span>
-            </TabsTrigger>
-            <TabsTrigger value="assinaturas" className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground py-2 border flex-1">
-              <CreditCard className="h-4 w-4" />
-              <span>Assinaturas</span>
-            </TabsTrigger>
-            <TabsTrigger value="marketing" className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground py-2 border flex-1">
-              <Megaphone className="h-4 w-4" />
-              <span>Marketing</span>
-            </TabsTrigger>
-            <TabsTrigger value="plano-vendas" className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground py-2 border flex-1">
-              <FileText className="h-4 w-4" />
-              <span className="text-xs">Vendas/Plano</span>
-            </TabsTrigger>
-            <TabsTrigger value="modulos" className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground py-2 border flex-1">
-              <Zap className="h-4 w-4" />
-              <span>Módulos</span>
-            </TabsTrigger>
-            <TabsTrigger value="error-logs" className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground py-2 border flex-1">
-              <AlertTriangle className="h-4 w-4" />
-              <span>Erros</span>
-            </TabsTrigger>
-            <TabsTrigger value="historico" className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground py-2 border flex-1">
-              <HistoryIcon className="h-4 w-4" />
-              <span>Histórico</span>
-            </TabsTrigger>
-          </TabsList>
+        {(() => {
+          const SECTIONS: Record<string, { label: string; icon: any; tabs: { value: string; label: string; icon: any }[] }> = {
+            comercial: {
+              label: "Comercial",
+              icon: TrendingUp,
+              tabs: [
+                { value: "dashboard", label: "Dashboard", icon: Activity },
+                { value: "leads", label: "Leads", icon: Users },
+                { value: "crm", label: "CRM / Vendas", icon: TrendingUp },
+                { value: "licencas", label: "Licenças", icon: Key },
+                { value: "assinaturas", label: "Assinaturas", icon: CreditCard },
+                { value: "plano-vendas", label: "Plano de Vendas", icon: FileText },
+              ],
+            },
+            marketing: {
+              label: "Marketing",
+              icon: Megaphone,
+              tabs: [
+                { value: "marketing", label: "Gerador Headlines", icon: Zap },
+                { value: "disparo", label: "Disparos", icon: SendHorizontal },
+                { value: "campanhas", label: "Campanhas", icon: Megaphone },
+              ],
+            },
+            whatsapp: {
+              label: "WhatsApp",
+              icon: MessageSquare,
+              tabs: [
+                { value: "whatsapp", label: "Configuração", icon: MessageSquare },
+                { value: "whatsapp-relatorio", label: "Relatórios", icon: FileText },
+              ],
+            },
+            sistema: {
+              label: "Sistema",
+              icon: ShieldCheck,
+              tabs: [
+                { value: "modulos", label: "Módulos Externos", icon: Zap },
+                { value: "error-logs", label: "Logs de Erro", icon: AlertTriangle },
+                { value: "historico", label: "Histórico", icon: HistoryIcon },
+              ],
+            },
+          };
 
-        </div>
+          const currentSection =
+            Object.entries(SECTIONS).find(([, s]) => s.tabs.some((t) => t.value === activeTab))?.[0] || "comercial";
+
+          return (
+            <div className="space-y-3">
+              <div className="flex flex-wrap gap-2 border-b border-border/50 pb-2">
+                {Object.entries(SECTIONS).map(([key, sec]) => {
+                  const Icon = sec.icon;
+                  const active = key === currentSection;
+                  return (
+                    <button
+                      key={key}
+                      type="button"
+                      onClick={() => handleTabChange(sec.tabs[0].value)}
+                      className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all ${
+                        active
+                          ? "bg-primary text-primary-foreground shadow-sm"
+                          : "bg-muted/50 text-muted-foreground hover:bg-muted"
+                      }`}
+                    >
+                      <Icon className="h-4 w-4" />
+                      {sec.label}
+                    </button>
+                  );
+                })}
+              </div>
+
+              <div className="overflow-x-auto pb-1 -mx-4 px-4 md:mx-0 md:px-0">
+                <TabsList className="inline-flex w-max h-auto gap-1 bg-muted/30 p-1">
+                  {SECTIONS[currentSection].tabs.map((t) => {
+                    const Icon = t.icon;
+                    return (
+                      <TabsTrigger
+                        key={t.value}
+                        value={t.value}
+                        className="gap-2 data-[state=active]:bg-background data-[state=active]:shadow-sm py-2 px-3"
+                      >
+                        <Icon className="h-4 w-4" />
+                        <span className="text-xs">{t.label}</span>
+                      </TabsTrigger>
+                    );
+                  })}
+                </TabsList>
+              </div>
+            </div>
+          );
+        })()}
+
 
         <TabsContent value="dashboard" className="space-y-6">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
