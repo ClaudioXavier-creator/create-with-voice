@@ -5,11 +5,12 @@ import { supabase } from "@/integrations/supabase/client";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ShieldCheck, Users, TrendingUp, Key, CreditCard, Activity, Target, Award, Loader2, Megaphone, FileText, SendHorizontal, Lock, Zap, MessageSquare, ExternalLink, Tag, LayoutDashboard, Building2, AlertTriangle, History as HistoryIcon, Headphones } from "lucide-react";
+import { ShieldCheck, Users, TrendingUp, Key, CreditCard, Activity, Target, Award, Loader2, Megaphone, FileText, SendHorizontal, Lock, Zap, MessageSquare, ExternalLink, Tag, LayoutDashboard, Building2, AlertTriangle, History as HistoryIcon, Headphones, Flame } from "lucide-react";
 import AppErrorLogsViewer from "@/components/admin/AppErrorLogsViewer";
 import VersionHistory from "@/components/admin/VersionHistory";
 import SuperAdminDashboard from "@/components/admin/SuperAdminDashboard";
 import SupportTicketsPanel from "@/components/admin/SupportTicketsPanel";
+import LeadScoringPanel from "@/components/admin/LeadScoringPanel";
 import { canAccessLicenseAdmin } from "@/config/adminAccess";
 import CRM from "./CRM";
 import AdminLicencas from "./AdminLicencas";
@@ -24,7 +25,7 @@ import { useLocation } from "react-router-dom";
 export default function SuperAdmin() {
   const { user, roles, loading: authLoading } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
-  const validTabs = ["dashboard", "leads", "crm", "licencas", "assinaturas", "marketing", "plano-vendas", "disparo", "campanhas", "whatsapp", "whatsapp-relatorio", "modulos", "suporte", "error-logs", "historico"];
+  const validTabs = ["dashboard", "leads", "scoring", "crm", "licencas", "assinaturas", "marketing", "plano-vendas", "disparo", "campanhas", "whatsapp", "whatsapp-relatorio", "modulos", "suporte", "error-logs", "historico"];
 
   const initialTab = searchParams.get("tab");
   const [activeTab, setActiveTab] = useState(
@@ -130,6 +131,7 @@ export default function SuperAdmin() {
               tabs: [
                 { value: "dashboard", label: "Dashboard", icon: Activity },
                 { value: "leads", label: "Leads", icon: Users },
+                { value: "scoring", label: "Lead Scoring", icon: Flame },
                 { value: "crm", label: "CRM / Vendas", icon: TrendingUp },
                 { value: "licencas", label: "Licenças", icon: Key },
                 { value: "assinaturas", label: "Assinaturas", icon: CreditCard },
@@ -219,6 +221,10 @@ export default function SuperAdmin() {
         </TabsContent>
         <TabsContent value="leads">
           <AdminLeads isTab />
+        </TabsContent>
+
+        <TabsContent value="scoring">
+          <LeadScoringPanel />
         </TabsContent>
 
 
