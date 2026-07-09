@@ -874,6 +874,169 @@ export type Database = {
           },
         ]
       }
+      campanha_mensagens: {
+        Row: {
+          agendado_para: string
+          campanha_id: string
+          created_at: string
+          empresa: string | null
+          enviado_em: string | null
+          erro: string | null
+          id: string
+          mensagem_final: string
+          nome: string | null
+          produto: string | null
+          status: string
+          telefone: string
+          tentativas: number
+        }
+        Insert: {
+          agendado_para?: string
+          campanha_id: string
+          created_at?: string
+          empresa?: string | null
+          enviado_em?: string | null
+          erro?: string | null
+          id?: string
+          mensagem_final: string
+          nome?: string | null
+          produto?: string | null
+          status?: string
+          telefone: string
+          tentativas?: number
+        }
+        Update: {
+          agendado_para?: string
+          campanha_id?: string
+          created_at?: string
+          empresa?: string | null
+          enviado_em?: string | null
+          erro?: string | null
+          id?: string
+          mensagem_final?: string
+          nome?: string | null
+          produto?: string | null
+          status?: string
+          telefone?: string
+          tentativas?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "campanha_mensagens_campanha_id_fkey"
+            columns: ["campanha_id"]
+            isOneToOne: false
+            referencedRelation: "campanhas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      campanha_optout: {
+        Row: {
+          created_at: string
+          motivo: string | null
+          telefone: string
+        }
+        Insert: {
+          created_at?: string
+          motivo?: string | null
+          telefone: string
+        }
+        Update: {
+          created_at?: string
+          motivo?: string | null
+          telefone?: string
+        }
+        Relationships: []
+      }
+      campanhas: {
+        Row: {
+          concluida_em: string | null
+          created_at: string
+          created_by: string | null
+          empresa_id: string | null
+          enviados: number
+          enviados_hoje: number
+          enviados_hoje_data: string | null
+          erros: number
+          filtros: Json
+          id: string
+          iniciada_em: string | null
+          intervalo_max_seg: number
+          intervalo_min_seg: number
+          limite_diario: number
+          nome: string
+          optouts: number
+          origem: string
+          pausa_a_cada: number
+          pausa_duracao_seg: number
+          status: string
+          template_texto: string
+          total: number
+          ultimo_envio_em: string | null
+          updated_at: string
+        }
+        Insert: {
+          concluida_em?: string | null
+          created_at?: string
+          created_by?: string | null
+          empresa_id?: string | null
+          enviados?: number
+          enviados_hoje?: number
+          enviados_hoje_data?: string | null
+          erros?: number
+          filtros?: Json
+          id?: string
+          iniciada_em?: string | null
+          intervalo_max_seg?: number
+          intervalo_min_seg?: number
+          limite_diario?: number
+          nome: string
+          optouts?: number
+          origem?: string
+          pausa_a_cada?: number
+          pausa_duracao_seg?: number
+          status?: string
+          template_texto: string
+          total?: number
+          ultimo_envio_em?: string | null
+          updated_at?: string
+        }
+        Update: {
+          concluida_em?: string | null
+          created_at?: string
+          created_by?: string | null
+          empresa_id?: string | null
+          enviados?: number
+          enviados_hoje?: number
+          enviados_hoje_data?: string | null
+          erros?: number
+          filtros?: Json
+          id?: string
+          iniciada_em?: string | null
+          intervalo_max_seg?: number
+          intervalo_min_seg?: number
+          limite_diario?: number
+          nome?: string
+          optouts?: number
+          origem?: string
+          pausa_a_cada?: number
+          pausa_duracao_seg?: number
+          status?: string
+          template_texto?: string
+          total?: number
+          ultimo_envio_em?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "campanhas_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       checklist_items: {
         Row: {
           area: string
