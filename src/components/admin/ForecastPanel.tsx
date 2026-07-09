@@ -23,10 +23,6 @@ export default function ForecastPanel() {
   }, []);
 
   const stats = useMemo(() => {
-    const now = new Date();
-    const d30 = new Date(now.getTime() + 30 * 86400000);
-    const d60 = new Date(now.getTime() + 60 * 86400000);
-    const d90 = new Date(now.getTime() + 90 * 86400000);
     const abertos = pipeline.filter(p => !["ganho", "perdido"].includes(p.etapa));
     const ganhos = pipeline.filter(p => p.etapa === "ganho");
     const perdidos = pipeline.filter(p => p.etapa === "perdido");
@@ -36,14 +32,12 @@ export default function ForecastPanel() {
     const forecast = ponderado(abertos);
     const ganhoTotal = ganhos.reduce((s, p) => s + (Number(p.valor_estimado) || 0), 0);
 
-    const janela = (limit: Date) => {
-      const inRange = abertos.filter(p => {
-        if (!p.expected_close_date) return false;
-        const d = new Date(p.expected_close_date);
-        return d <= limit && d >= now;
-      });
-      return ponderado(inRange);
-    };
+    // Sem data prevista de fechamento: distribui forecast proporcionalmente por etapa (janelas heurísticas)
+    // Etapas avançadas fecham mais cedo: negociação/proposta => 30d, qualificado => 60d, novo/contato => 90d
+    const janelaEtapa: Record<string, number> = { novo: 90, contato_inicial: 90, qualificado: 60, proposta: 30, negociacao: 30 };
+    const f30 = ponderado(abertos.filter(p => (janelaEtapa[p.etapa] ?? 90) <= 30));
+    const f60 = ponderado(abertos.filter(p => (janelaEtapa[p.etapa] ?? 90) <= 60));
+    const f90 = forecast;
 
     const winRate = ganhos.length + perdidos.length > 0 ? (ganhos.length / (ganhos.length + perdidos.length)) * 100 : 0;
     const ticketMedio = ganhos.length ? ganhoTotal / ganhos.length : 0;
