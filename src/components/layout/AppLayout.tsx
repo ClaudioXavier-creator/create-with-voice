@@ -7,6 +7,7 @@ import {
   X,
   Search,
   ShieldCheck,
+  User as UserIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
@@ -190,6 +191,15 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
             <Button
               variant="ghost"
               size="icon"
+              onClick={() => navigate("/portal")}
+              className="h-8 w-8 text-sidebar-foreground/50 hover:text-primary hover:bg-primary/10 rounded-full shrink-0"
+              title="Meu Portal"
+            >
+              <UserIcon className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
               onClick={handleSignOut}
               className="h-8 w-8 text-sidebar-foreground/50 hover:text-destructive hover:bg-destructive/10 rounded-full shrink-0"
               title="Sair da conta"
@@ -252,6 +262,15 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
                     <span className="text-xs text-sidebar-foreground/50 truncate">{user?.email}</span>
                     <span className="px-2 py-0.5 rounded-full bg-primary/20 text-primary text-[10px] font-bold uppercase tracking-wider">Premium</span>
                   </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => { closeMobile(); navigate("/portal"); }}
+                    className="w-full justify-start text-sidebar-foreground/70 hover:text-primary hover:bg-primary/10 h-10 px-4 rounded-xl transition-all"
+                  >
+                    <UserIcon className="w-4 h-4 mr-3" />
+                    Meu Portal
+                  </Button>
                   <Button
                     variant="ghost"
                     size="sm"

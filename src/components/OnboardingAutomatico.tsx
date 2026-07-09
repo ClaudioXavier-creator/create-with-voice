@@ -27,9 +27,28 @@ const PASSOS_POR_PRODUTO: Record<string, Passo[]> = {
     { id: "risco", titulo: "Preencha 1 Matriz de Risco", descricao: "HACCP simplificado." },
   ],
   nutricrm: [
-    { id: "cliente", titulo: "Cadastre 1 cliente", descricao: "Comece seu funil." },
-    { id: "visita", titulo: "Registre uma visita", descricao: "Salve os dados no campo." },
-    { id: "meta", titulo: "Defina uma meta mensal", descricao: "Acompanhe seu desempenho." },
+    { id: "cliente", titulo: "Cadastre 1 cliente", descricao: "Comece seu funil.", link: "/nutricrm/clientes" },
+    { id: "visita", titulo: "Registre uma visita", descricao: "Salve os dados no campo.", link: "/nutricrm/visitas" },
+    { id: "meta", titulo: "Defina uma meta mensal", descricao: "Acompanhe seu desempenho.", link: "/nutricrm/metas" },
+  ],
+  agrogestao: [
+    { id: "cadastro", titulo: "Cadastre sua propriedade", descricao: "Adicione dados da fazenda.", link: "/agrogestao" },
+    { id: "cliente", titulo: "Cadastre 1 cliente/fornecedor", descricao: "Monte sua base comercial.", link: "/agrogestao/clientes" },
+    { id: "meta", titulo: "Defina uma meta", descricao: "Acompanhe indicadores mensais.", link: "/agrogestao/metas" },
+  ],
+  agrorc: [
+    { id: "cliente", titulo: "Cadastre 1 cliente", descricao: "Inicie o pipeline.", link: "/agrorc/clientes" },
+    { id: "visita", titulo: "Agende uma visita", descricao: "Planeje sua rota.", link: "/agrorc/visitas" },
+    { id: "pipeline", titulo: "Mova um lead", descricao: "Avance no funil.", link: "/agrorc/pipeline" },
+  ],
+  rotulos: [
+    { id: "produto", titulo: "Cadastre 1 produto", descricao: "Base para o rótulo.", link: "/rotulos/produtos" },
+    { id: "rotulo", titulo: "Gere um rótulo", descricao: "Preview e exportação.", link: "/rotulos" },
+  ],
+  feedbpfcustom: [
+    { id: "prefixo", titulo: "Defina seu prefixo", descricao: "Nomeclatura personalizada.", link: "/feedbpf-custom/config" },
+    { id: "modelo", titulo: "Crie um modelo próprio", descricao: "Suba planilha ou formulário.", link: "/feedbpf-custom/meus-modelos" },
+    { id: "importar", titulo: "Importe registros", descricao: "Traga histórico do Excel.", link: "/feedbpf-custom/importar" },
   ],
 };
 
