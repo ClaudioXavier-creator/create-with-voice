@@ -11,6 +11,7 @@ import VersionHistory from "@/components/admin/VersionHistory";
 import SuperAdminDashboard from "@/components/admin/SuperAdminDashboard";
 import SupportTicketsPanel from "@/components/admin/SupportTicketsPanel";
 import SystemHealthPanel from "@/components/admin/SystemHealthPanel";
+import RetencaoPanel from "@/components/admin/RetencaoPanel";
 import LeadScoringPanel from "@/components/admin/LeadScoringPanel";
 import { canAccessLicenseAdmin } from "@/config/adminAccess";
 import CRM from "./CRM";
