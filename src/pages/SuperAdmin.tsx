@@ -323,6 +323,9 @@ export default function SuperAdmin() {
         <TabsContent value="disparo">
           <DisparadorMarketing />
         </TabsContent>
+        <TabsContent value="campanhas">
+          <CampanhasWhatsApp />
+        </TabsContent>
         <TabsContent value="marketing">
           <GeradorHeadlines />
         </TabsContent>
