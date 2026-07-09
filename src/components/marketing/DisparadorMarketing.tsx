@@ -31,6 +31,7 @@ import { getProductLabel } from "@/utils/productUtils";
 import { useAuth } from "@/hooks/useAuth";
 import { useEmpresa } from "@/hooks/useEmpresa";
 import { sendWhatsApp, validatePhoneList, normalizePhoneBR } from "@/lib/evolutionWhatsapp";
+import { BoasPraticasWhatsApp } from "./BoasPraticasWhatsApp";
 
 interface Recipient {
   id: string;
@@ -241,6 +242,9 @@ export default function DisparadorMarketing() {
           <p className="text-muted-foreground text-sm">Envie campanhas via E-mail e WhatsApp para seus contatos.</p>
         </div>
       </div>
+
+      <BoasPraticasWhatsApp />
+
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Coluna 1: Seleção de Contatos */}
