@@ -282,11 +282,12 @@ export default function Auth() {
           return;
         }
 
+        const codigoReferral = searchParams.get("ref") || undefined;
         const { data: signUpData, error } = await supabase.auth.signUp({
           email,
           password,
           options: {
-            data: { nome: nome.trim(), telefone: telefone.trim(), tipo_usuario: tipoUsuario, produto: product },
+            data: { nome: nome.trim(), telefone: telefone.trim(), tipo_usuario: tipoUsuario, produto: product, ...(codigoReferral ? { codigo_referral: codigoReferral } : {}) },
             emailRedirectTo: window.location.origin,
           },
         });
