@@ -332,6 +332,10 @@ export default function SuperAdmin() {
           <WhatsAppRelatorio />
         </TabsContent>
 
+        <TabsContent value="suporte">
+          <SupportTicketsPanel />
+        </TabsContent>
+
         <TabsContent value="error-logs">
           <AppErrorLogsViewer />
         </TabsContent>
