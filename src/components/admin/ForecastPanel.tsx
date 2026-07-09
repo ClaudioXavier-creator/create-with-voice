@@ -57,7 +57,7 @@ export default function ForecastPanel() {
       porProduto[k].forecast += (Number(p.valor_estimado) || 0) * ((PROB[p.etapa] ?? 0) / 100);
     }
 
-    return { totalPipe, forecast, ganhoTotal, f30: janela(d30), f60: janela(d60), f90: janela(d90), winRate, ticketMedio, porEtapa, porProduto, abertos: abertos.length };
+    return { totalPipe, forecast, ganhoTotal, f30, f60, f90, winRate, ticketMedio, porEtapa, porProduto, abertos: abertos.length };
   }, [pipeline]);
 
   if (loading) return <div className="text-center py-12"><Loader2 className="h-6 w-6 animate-spin mx-auto" /></div>;
