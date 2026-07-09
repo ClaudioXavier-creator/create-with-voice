@@ -283,6 +283,8 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
           </LicenseGate>
         </div>
 
+        <OnboardingAutomatico produto={product === "feedbpf" ? "feed_bpf" : product === "auditsbpf" ? "audits_bpf" : product} />
+
         
         {/* Floating elements backdrop decoration - Refined for better performance and responsiveness */}
         <div className="fixed top-0 right-0 -z-0 w-[300px] h-[300px] md:w-[600px] md:h-[600px] bg-primary/5 rounded-full blur-[80px] md:blur-[120px] opacity-30 pointer-events-none translate-x-1/4 -translate-y-1/4 select-none" />
