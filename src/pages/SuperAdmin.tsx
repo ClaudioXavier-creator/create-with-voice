@@ -162,6 +162,7 @@ export default function SuperAdmin() {
               tabs: [
                 { value: "modulos", label: "Módulos Externos", icon: Zap },
                 { value: "suporte", label: "Suporte / Tickets", icon: Headphones },
+                { value: "saude", label: "Saúde do Sistema", icon: HeartPulse },
                 { value: "error-logs", label: "Logs de Erro", icon: AlertTriangle },
                 { value: "historico", label: "Histórico", icon: HistoryIcon },
               ],
