@@ -305,6 +305,7 @@ const AppRoutes = () => {
                   <Route path="registros" element={<FeedCustomRegistros />} />
                   <Route path="registros/novo" element={<FeedCustomRegistros />} />
                   <Route path="google-forms" element={<FeedCustomGoogleForms />} />
+                  <Route path="tutorial-google" element={<FeedCustomTutorialGoogle />} />
                   <Route path="analise-ia" element={<FeedCustomAnaliseIA />} />
                   <Route path="config" element={<FeedCustomConfig />} />
                 </Routes>
