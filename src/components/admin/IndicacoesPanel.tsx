@@ -81,7 +81,10 @@ export default function IndicacoesPanel() {
       </div>
 
       <Card>
-        <CardHeader><CardTitle>Programa de Indicações</CardTitle></CardHeader>
+        <CardHeader className="flex flex-row items-center justify-between">
+          <CardTitle>Programa de Indicações</CardTitle>
+          <Button size="sm" variant="outline" onClick={simular}>Simular conversão</Button>
+        </CardHeader>
         <CardContent>
           {loading ? <p>Carregando...</p> : (
             <div className="space-y-2">
