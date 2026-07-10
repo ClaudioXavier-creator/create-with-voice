@@ -13,6 +13,7 @@ import {
   FileSpreadsheet,
   BookOpenCheck,
   FileText,
+  Rocket,
 
 } from "lucide-react";
 import { cn } from "@/lib/utils";
