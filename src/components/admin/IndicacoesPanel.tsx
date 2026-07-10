@@ -58,13 +58,7 @@ export default function IndicacoesPanel() {
     }).eq("id", ins.id);
     if (e2) return toast.error("Falha ao converter: " + e2.message);
 
-    await supabase.from("notificacoes_admin").insert({
-      tipo: "referral_convertido",
-      titulo: "Indicação convertida (simulação)",
-      mensagem: `Simulação de crédito de R$ 50,00 para código ${codigo}.`,
-      severidade: "info",
-      metadata: { indicacao_id: ins.id, simulado: true },
-    });
+
 
     toast.success("Fluxo simulado: pendente → cadastrado → convertido → creditado");
     load();
