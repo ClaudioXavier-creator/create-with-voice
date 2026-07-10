@@ -68,7 +68,8 @@ export default function ImportacaoMassa() {
       try {
         const sanitized = item.file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
         const hoje = new Date().toISOString().split("T")[0];
-        const path = `${CUSTOM_STORAGE_PREFIX}/${empresaId}/${item.pop || "sem-pop"}/${hoje}/${Date.now()}_${sanitized}`;
+        // RLS do bucket exige que o 1º segmento seja auth.uid()
+        const path = `${user.id}/${CUSTOM_STORAGE_PREFIX}/${empresaId}/${item.pop || "sem-pop"}/${hoje}/${Date.now()}_${sanitized}`;
 
         const { error: upErr } = await supabase.storage.from("documentos-bpf").upload(path, item.file);
         if (upErr) throw upErr;
