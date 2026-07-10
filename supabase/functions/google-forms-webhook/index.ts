@@ -98,7 +98,7 @@ Deno.serve(async (req) => {
         responsavel,
         data_execucao: dataExec,
         dados: respostas,
-        status: "concluido",
+        status: "vigente",
         hash_integridade: hash,
       })
       .select("id")
