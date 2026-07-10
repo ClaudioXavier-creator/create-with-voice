@@ -149,6 +149,7 @@ export default function TutorialGoogleFormsSheets() {
               direito → <strong>Editor de script</strong>. Apague o código padrão, cole o
               script copiado e clique no ícone 💾 <strong>Salvar</strong>.
             </p>
+            <Illustration src={imgAppsScript} alt="Editor do Google Apps Script com o script colado e o botão Salvar em destaque" />
           </Step>
 
           <Step n={6} title="Criar o Gatilho (Trigger)">
@@ -162,6 +163,7 @@ export default function TutorialGoogleFormsSheets() {
               <li>Salvar e <strong>autorizar</strong> com sua conta Google (aparecerá aviso
                 “App não verificado” → “Avançado” → “Acessar mesmo assim”).</li>
             </ol>
+            <Illustration src={imgTrigger} alt="Painel de Acionadores do Apps Script com função onFormSubmit configurada para disparar no envio do formulário" />
           </Step>
 
           <Step n={7} title="Testar">
