@@ -13,6 +13,7 @@ import {
   FileSpreadsheet,
   BookOpenCheck,
   FileText,
+  Rocket,
 
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -37,6 +38,7 @@ const items = [
   { title: "Importar Planilhas", icon: FileSpreadsheet, url: "/feedbpf-custom/planilhas" },
   { title: "Meus Modelos", icon: Layers, url: "/feedbpf-custom/modelos" },
   { title: "Google Forms", icon: FileText, url: "/feedbpf-custom/google-forms" },
+  { title: "Tutorial Forms/Sheets", icon: Rocket, url: "/feedbpf-custom/tutorial-google" },
   { title: "Registros Digitais", icon: FileSignature, url: "/feedbpf-custom/registros" },
   { title: "Análise por IA", icon: Sparkles, url: "/feedbpf-custom/analise-ia" },
   { title: "Configurações", icon: Settings, url: "/feedbpf-custom/config" },
