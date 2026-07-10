@@ -98,32 +98,63 @@ export default function AgroGestaoCRMPage() {
           <div className="text-center mb-10">
             <Badge variant="outline" className="mb-3 text-xs tracking-widest uppercase px-4 py-1">Preços</Badge>
             <h2 className="text-3xl font-bold font-display text-foreground mb-2">Planos AgroGestão</h2>
+            <p className="text-muted-foreground">Semestral 15% OFF • Anual 25% OFF</p>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-4xl mx-auto">
-             {[
-               { nivel: "Empresa", preco: "R$ 97", sub: "/mês", desc: "Até 1 empresa", destaque: false },
-               { nivel: "Gestor", preco: "R$ 297", sub: "/mês", desc: "Até 10 usuários", destaque: true, badge: "Mais Popular" },
-               { nivel: "Consultor", preco: "R$ 497", sub: "/mês", desc: "Até 20 usuários", destaque: false },
-             ].map((p) => (
-               <Card key={p.nivel} className={`transition-all hover:shadow-xl ${p.destaque ? "border-primary/50 bg-primary/5 scale-105" : "border-border"} relative`}>
-                 {p.badge && (
-                   <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground text-xs shadow-lg">
-                     {p.badge}
-                   </Badge>
-                 )}
-                 <CardContent className="p-6 text-center space-y-4">
-                   <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Plano {p.nivel}</p>
-                   <div>
-                     <span className="text-3xl font-bold text-foreground">{p.preco}</span>
-                     <span className="text-muted-foreground">{p.sub}</span>
-                   </div>
-                   <p className="text-xs text-muted-foreground">{p.desc}</p>
-                   <Button asChild variant={p.destaque ? "default" : "outline"} className="w-full gap-2">
-                     <a href={APP_EXTERNO} target="_blank" rel="noopener noreferrer">Começar agora</a>
-                   </Button>
-                 </CardContent>
-               </Card>
-             ))}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-5xl mx-auto">
+            {[
+              {
+                nivel: "Empresa",
+                desc: "1 licença • até 10 usuários",
+                destaque: false,
+                mensal: "R$ 97",
+                semestral: "R$ 494,70",
+                anual: "R$ 873,00",
+              },
+              {
+                nivel: "Gestor Comercial",
+                desc: "Até 10 representantes",
+                destaque: true,
+                badge: "Mais Popular",
+                mensal: "R$ 297",
+                semestral: "R$ 1.514,70",
+                anual: "R$ 2.673,00",
+              },
+              {
+                nivel: "Consultor Comercial",
+                desc: "Até 20 representantes",
+                destaque: false,
+                mensal: "R$ 497",
+                semestral: "R$ 2.534,70",
+                anual: "R$ 4.473,00",
+              },
+            ].map((p) => (
+              <Card key={p.nivel} className={`transition-all hover:shadow-xl ${p.destaque ? "border-primary/50 bg-primary/5 scale-105" : "border-border"} relative`}>
+                {p.badge && (
+                  <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground text-xs shadow-lg">
+                    {p.badge}
+                  </Badge>
+                )}
+                <CardContent className="p-6 text-center space-y-4">
+                  <div>
+                    <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">{p.nivel}</p>
+                    <p className="text-xs text-muted-foreground mt-1">{p.desc}</p>
+                  </div>
+                  <div className="space-y-2 py-3 border-y border-border">
+                    <div>
+                      <span className="text-3xl font-bold text-foreground">{p.mensal}</span>
+                      <span className="text-sm text-muted-foreground">/mês</span>
+                    </div>
+                    <div className="text-xs text-muted-foreground space-y-0.5">
+                      <p>Semestral: <span className="font-semibold text-foreground">{p.semestral}</span></p>
+                      <p>Anual: <span className="font-semibold text-foreground">{p.anual}</span></p>
+                    </div>
+                  </div>
+                  <Button asChild variant={p.destaque ? "default" : "outline"} className="w-full gap-2">
+                    <a href={APP_EXTERNO} target="_blank" rel="noopener noreferrer">Começar agora</a>
+                  </Button>
+                </CardContent>
+              </Card>
+            ))}
           </div>
         </section>
       </main>
