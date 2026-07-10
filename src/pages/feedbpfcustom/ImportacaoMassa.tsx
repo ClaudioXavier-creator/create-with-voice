@@ -68,7 +68,8 @@ export default function ImportacaoMassa() {
       try {
         const sanitized = item.file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
         const hoje = new Date().toISOString().split("T")[0];
-        const path = `${CUSTOM_STORAGE_PREFIX}/${empresaId}/${item.pop || "sem-pop"}/${hoje}/${Date.now()}_${sanitized}`;
+        // RLS do bucket exige que o 1º segmento seja auth.uid()
+        const path = `${user.id}/${CUSTOM_STORAGE_PREFIX}/${empresaId}/${item.pop || "sem-pop"}/${hoje}/${Date.now()}_${sanitized}`;
 
         const { error: upErr } = await supabase.storage.from("documentos-bpf").upload(path, item.file);
         if (upErr) throw upErr;
@@ -87,13 +88,17 @@ export default function ImportacaoMassa() {
 
         alterar(item.id, { status: "ok" });
       } catch (err: any) {
+        console.error("[ImportacaoMassa] falha:", err);
         alterar(item.id, { status: "erro", erro: err.message });
       }
       done++;
       setProgresso(Math.round((done / pendentes.length) * 100));
     }
     setEnviando(false);
-    toast.success("Importação concluída");
+    const okCount = items.filter(i => i.status === "ok").length + pendentes.filter(p => (items.find(i => i.id === p.id)?.status ?? "") === "ok").length;
+    const erroCount = pendentes.filter(p => (items.find(i => i.id === p.id)?.status ?? "") === "erro").length;
+    if (erroCount > 0) toast.error(`${erroCount} arquivo(s) falharam. Veja o detalhe em cada linha.`);
+    else toast.success("Importação concluída");
   };
 
   if (!empresaId) {
