@@ -108,6 +108,76 @@ export default function FeedBPFPage() {
         </section>
 
         <section className="mb-20">
+          <div className="text-center mb-10">
+            <Badge variant="outline" className="mb-3 text-xs tracking-widest uppercase px-4 py-1">Planos e Preços</Badge>
+            <h2 className="text-3xl font-bold font-display text-foreground mb-2">Escolha seu plano Feed_BPF</h2>
+            <p className="text-muted-foreground">Semestral 15% OFF • Anual 25% OFF • 7 dias grátis</p>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-5xl mx-auto">
+            {[
+              {
+                nivel: "Standard",
+                desc: "Até 10 usuários",
+                destaque: false,
+                mensal: "R$ 397",
+                semestral: "R$ 2.024,70",
+                anual: "R$ 3.573,00",
+              },
+              {
+                nivel: "Intermediária",
+                desc: "Até 20 usuários",
+                destaque: true,
+                badge: "Mais Popular",
+                mensal: "R$ 697",
+                semestral: "R$ 3.554,70",
+                anual: "R$ 6.273,00",
+              },
+              {
+                nivel: "Premium",
+                desc: "Usuários ilimitados",
+                destaque: false,
+                mensal: "R$ 1.297",
+                semestral: "R$ 6.614,70",
+                anual: "R$ 11.673,00",
+              },
+            ].map((p) => (
+              <Card key={p.nivel} className={`transition-all hover:shadow-xl ${p.destaque ? "border-primary/50 bg-primary/5 scale-105" : "border-border"} relative`}>
+                {p.badge && (
+                  <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground text-xs shadow-lg">
+                    {p.badge}
+                  </Badge>
+                )}
+                <CardContent className="p-6 text-center space-y-4">
+                  <div>
+                    <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">{p.nivel}</p>
+                    <p className="text-xs text-muted-foreground mt-1">{p.desc}</p>
+                  </div>
+                  <div className="space-y-2 py-3 border-y border-border">
+                    <div>
+                      <span className="text-3xl font-bold text-foreground">{p.mensal}</span>
+                      <span className="text-sm text-muted-foreground">/mês</span>
+                    </div>
+                    <div className="text-xs text-muted-foreground space-y-0.5">
+                      <p>Semestral: <span className="font-semibold text-foreground">{p.semestral}</span></p>
+                      <p>Anual: <span className="font-semibold text-foreground">{p.anual}</span></p>
+                    </div>
+                  </div>
+                  <Button asChild variant={p.destaque ? "default" : "outline"} className="w-full gap-2">
+                    <Link to={signupLink}>
+                      <Sparkles className="h-3.5 w-3.5" />
+                      Testar grátis 7 dias
+                    </Link>
+                  </Button>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+          <p className="text-center text-xs text-muted-foreground mt-6">
+            Após o trial, escolha a licença dentro do sistema. Você pode fazer upgrade a qualquer momento.
+          </p>
+        </section>
+
+        <section className="mb-20">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 max-w-3xl mx-auto">
             {diferenciais.map((d) => (
               <div key={d.title} className="p-6 rounded-xl border border-border bg-card/50 backdrop-blur-sm">
