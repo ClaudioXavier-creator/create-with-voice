@@ -271,8 +271,8 @@ export default function RotulosBPFPage() {
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-4xl mx-auto">
             {[
               { periodo: "Mensal", planoKey: "mensal" as const, preco: "R$ 97", sub: "/mês", nota: "Sem fidelidade", destaque: false },
-              { periodo: "Semestral", planoKey: "semestral" as const, preco: "R$ 497", sub: "", nota: "≈ R$ 83/mês • 14% OFF", destaque: true, badge: "Mais Popular" },
-              { periodo: "Anual", planoKey: "anual" as const, preco: "R$ 897", sub: "", nota: "≈ R$ 75/mês • 23% OFF", destaque: true, badge: "Melhor Custo" },
+              { periodo: "Semestral", planoKey: "semestral" as const, preco: "R$ 494,70", sub: "", nota: "≈ R$ 82,45/mês • 15% OFF", destaque: true, badge: "Mais Popular" },
+              { periodo: "Anual", planoKey: "anual" as const, preco: "R$ 873,00", sub: "", nota: "≈ R$ 72,75/mês • 25% OFF", destaque: true, badge: "Melhor Custo" },
             ].map((plan) => {
               const key = `individual-${plan.planoKey}`;
               const isLoading = loadingKey === key;
