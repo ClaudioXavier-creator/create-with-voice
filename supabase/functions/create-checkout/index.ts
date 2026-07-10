@@ -32,12 +32,15 @@ serve(async (req) => {
     }
     if (!user) throw new Error("Usuário não autenticado");
 
-    const { empresa_id, plano, nivel } = await req.json();
+    const { empresa_id, plano, nivel, produto } = await req.json();
     if (!empresa_id) throw new Error("empresa_id é obrigatório");
 
     let nivelKey = (nivel || "standard").toLowerCase();
     nivelKey = NIVEL_ALIASES[nivelKey] || nivelKey;
     const planoKey = (plano || "mensal").toLowerCase();
+    const produtoKey = (produto || "feedbpf").toLowerCase() === "feedbpfcustom"
+      ? "feedbpfcustom"
+      : "feedbpf";
 
     const nivelPrices = PLAN_PRICES[nivelKey];
     if (!nivelPrices) throw new Error(`Nível inválido: ${nivelKey}`);
@@ -45,19 +48,20 @@ serve(async (req) => {
     if (!priceConfig) throw new Error(`Plano inválido: ${planoKey}`);
 
     const origin = req.headers.get("origin") || "https://bpfconsult.com.br";
+    const successBase = produtoKey === "feedbpfcustom" ? "/feedbpf-custom/acervo" : "/dashboard";
 
     const url = await createPaddleCheckout({
       priceId: priceConfig.id,
       customerEmail: user.email,
       customData: {
-        produto: "feedbpf",
+        produto: produtoKey,
         empresa_id,
         user_id: user.id,
         plano: planoKey,
         nivel: nivelKey,
       },
-      successUrl: `${origin}/dashboard?checkout=success&empresa_id=${empresa_id}`,
-      cancelUrl: `${origin}/dashboard?checkout=canceled&empresa_id=${empresa_id}`,
+      successUrl: `${origin}${successBase}?checkout=success&empresa_id=${empresa_id}`,
+      cancelUrl: `${origin}${successBase}?checkout=canceled&empresa_id=${empresa_id}`,
     });
 
     return new Response(JSON.stringify({ url }), {
