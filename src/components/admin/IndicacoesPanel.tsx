@@ -35,6 +35,41 @@ export default function IndicacoesPanel() {
     load();
   };
 
+  const simular = async () => {
+    const { data: userData } = await supabase.auth.getUser();
+    const uid = userData.user?.id;
+    if (!uid) return toast.error("Não autenticado");
+    const codigo = `REF-TEST-${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
+    const { data: ins, error: e1 } = await supabase.from("indicacoes").insert({
+      indicador_user_id: uid,
+      codigo_referral: codigo,
+      indicado_email: `teste-${Date.now()}@simulacao.local`,
+      status: "cadastrado",
+      cadastrou_em: new Date().toISOString(),
+      recompensa_valor: 50,
+      observacoes: "[simulação de conversão]",
+    }).select("id").single();
+    if (e1 || !ins) return toast.error("Falha ao criar indicação: " + e1?.message);
+
+    const { error: e2 } = await supabase.from("indicacoes").update({
+      status: "convertido",
+      converteu_em: new Date().toISOString(),
+      recompensa_creditada: true,
+    }).eq("id", ins.id);
+    if (e2) return toast.error("Falha ao converter: " + e2.message);
+
+    await supabase.from("notificacoes_admin").insert({
+      tipo: "referral_convertido",
+      titulo: "Indicação convertida (simulação)",
+      mensagem: `Simulação de crédito de R$ 50,00 para código ${codigo}.`,
+      severidade: "info",
+      metadata: { indicacao_id: ins.id, simulado: true },
+    });
+
+    toast.success("Fluxo simulado: pendente → cadastrado → convertido → creditado");
+    load();
+  };
+
   const stats = {
     total: indicacoes.length,
     cadastrados: indicacoes.filter((i) => i.status === "cadastrado" || i.status === "convertido").length,
