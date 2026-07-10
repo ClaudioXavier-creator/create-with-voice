@@ -13,6 +13,19 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import imgCriarForm from "@/assets/tutorial-forms-1-criar.jpg";
+import imgAppsScript from "@/assets/tutorial-forms-2-appsscript.jpg";
+import imgTrigger from "@/assets/tutorial-forms-3-trigger.jpg";
+import imgSheetsFluxo from "@/assets/tutorial-sheets-1-planilha.jpg";
+
+const Illustration = ({ src, alt }: { src: string; alt: string }) => (
+  <figure className="my-3 rounded-lg border border-border/60 overflow-hidden bg-muted/30">
+    <img src={src} alt={alt} loading="lazy" width={1024} height={1024} className="w-full h-auto max-h-64 object-cover" />
+    <figcaption className="text-xs text-muted-foreground px-3 py-2 border-t border-border/60 bg-background/50">
+      {alt}
+    </figcaption>
+  </figure>
+);
 import { Separator } from "@/components/ui/separator";
 
 const Step = ({ n, title, children }: { n: number; title: string; children: React.ReactNode }) => (
@@ -88,6 +101,7 @@ export default function TutorialGoogleFormsSheets() {
               , clique em <strong>+ Em branco</strong> e dê um título claro
               (ex.: “POP-04 — Cloro Diário”).
             </p>
+            <Illustration src={imgCriarForm} alt="Exemplo de formulário criado no Google Forms com campos POP-04 (Data, Responsável, Cloro, pH)" />
           </Step>
 
           <Step n={2} title="Adicionar as perguntas">
@@ -135,6 +149,7 @@ export default function TutorialGoogleFormsSheets() {
               direito → <strong>Editor de script</strong>. Apague o código padrão, cole o
               script copiado e clique no ícone 💾 <strong>Salvar</strong>.
             </p>
+            <Illustration src={imgAppsScript} alt="Editor do Google Apps Script com o script colado e o botão Salvar em destaque" />
           </Step>
 
           <Step n={6} title="Criar o Gatilho (Trigger)">
@@ -148,6 +163,7 @@ export default function TutorialGoogleFormsSheets() {
               <li>Salvar e <strong>autorizar</strong> com sua conta Google (aparecerá aviso
                 “App não verificado” → “Avançado” → “Acessar mesmo assim”).</li>
             </ol>
+            <Illustration src={imgTrigger} alt="Painel de Acionadores do Apps Script com função onFormSubmit configurada para disparar no envio do formulário" />
           </Step>
 
           <Step n={7} title="Testar">
@@ -199,6 +215,7 @@ export default function TutorialGoogleFormsSheets() {
               <code className="px-1 bg-muted rounded">Cloro (ppm)</code>,{" "}
               <code className="px-1 bg-muted rounded">pH</code>.
             </p>
+            <Illustration src={imgSheetsFluxo} alt="Google Sheets com cabeçalhos e dados; cada linha completa vira um Registro Digital com hash SHA-256" />
           </Step>
 
           <Step n={2} title="Abrir o Apps Script">
