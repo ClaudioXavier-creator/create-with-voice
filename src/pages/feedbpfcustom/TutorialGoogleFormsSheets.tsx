@@ -215,6 +215,7 @@ export default function TutorialGoogleFormsSheets() {
               <code className="px-1 bg-muted rounded">Cloro (ppm)</code>,{" "}
               <code className="px-1 bg-muted rounded">pH</code>.
             </p>
+            <Illustration src={imgSheetsFluxo} alt="Google Sheets com cabeçalhos e dados; cada linha completa vira um Registro Digital com hash SHA-256" />
           </Step>
 
           <Step n={2} title="Abrir o Apps Script">
