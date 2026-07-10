@@ -95,6 +95,52 @@ export default function FeedBpfCustomLanding() {
         </div>
       </section>
 
+      {/* Planos */}
+      <section className="container mx-auto px-4 py-16 max-w-5xl">
+        <div className="text-center mb-10">
+          <div className="inline-block px-4 py-1 rounded-full border text-xs tracking-widest uppercase mb-3">Planos e Preços</div>
+          <h2 className="text-2xl sm:text-3xl font-bold">Mesma estrutura de preços do Feed_BPF</h2>
+          <p className="text-muted-foreground mt-2">Semestral 15% OFF • Anual 25% OFF • 7 dias grátis, sem cartão</p>
+        </div>
+        <div className="grid gap-6 sm:grid-cols-3">
+          {[
+            { nivel: "Standard", desc: "Até 10 usuários", destaque: false, mensal: "R$ 397", semestral: "R$ 2.024,70", anual: "R$ 3.573,00" },
+            { nivel: "Intermediária", desc: "Até 20 usuários", destaque: true, badge: "Mais Popular", mensal: "R$ 697", semestral: "R$ 3.554,70", anual: "R$ 6.273,00" },
+            { nivel: "Premium", desc: "Usuários ilimitados", destaque: false, mensal: "R$ 1.297", semestral: "R$ 6.614,70", anual: "R$ 11.673,00" },
+          ].map((p) => (
+            <Card key={p.nivel} className={`relative transition-all hover:shadow-xl ${p.destaque ? "border-emerald-500 bg-emerald-500/5 scale-105" : "border"}`}>
+              {p.badge && (
+                <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-emerald-600 text-white text-xs font-bold uppercase tracking-widest shadow-lg">
+                  {p.badge}
+                </div>
+              )}
+              <CardContent className="p-6 text-center space-y-4">
+                <div>
+                  <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">{p.nivel}</p>
+                  <p className="text-xs text-muted-foreground mt-1">{p.desc}</p>
+                </div>
+                <div className="space-y-2 py-3 border-y">
+                  <div>
+                    <span className="text-3xl font-bold">{p.mensal}</span>
+                    <span className="text-sm text-muted-foreground">/mês</span>
+                  </div>
+                  <div className="text-xs text-muted-foreground space-y-0.5">
+                    <p>Semestral: <span className="font-semibold text-foreground">{p.semestral}</span></p>
+                    <p>Anual: <span className="font-semibold text-foreground">{p.anual}</span></p>
+                  </div>
+                </div>
+                <Button asChild className={p.destaque ? "w-full bg-emerald-600 hover:bg-emerald-700" : "w-full"} variant={p.destaque ? "default" : "outline"}>
+                  <Link to="/cadastro?produto=feedbpfcustom">Testar grátis 7 dias</Link>
+                </Button>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+        <p className="text-center text-xs text-muted-foreground mt-6">
+          Após o trial, escolha a licença dentro do sistema. Upgrade a qualquer momento.
+        </p>
+      </section>
+
       {/* CTA */}
       <section className="container mx-auto px-4 py-16 max-w-3xl text-center">
         <Card className="bg-gradient-to-br from-emerald-600 to-teal-600 text-white border-none">
