@@ -14,14 +14,14 @@ import { toast } from "sonner";
 
 const PLANOS_INFO: Record<string, { titulo: string; preco: string; periodo: string; nota: string }> = {
   "individual-mensal":    { titulo: "Individual", preco: "R$ 97,00",   periodo: "Mensal",    nota: "Assinatura recorrente mensal" },
-  "individual-semestral": { titulo: "Individual", preco: "R$ 497,00",   periodo: "Semestral", nota: "Pagamento único • 14% OFF" },
-  "individual-anual":     { titulo: "Individual", preco: "R$ 897,00",   periodo: "Anual",     nota: "Pagamento único • 23% OFF" },
-  "grupo10-mensal":       { titulo: "Grupo 10 empresas", preco: "R$ 457,00",   periodo: "Mensal",    nota: "Assinatura recorrente mensal" },
-  "grupo10-semestral":    { titulo: "Grupo 10 empresas", preco: "R$ 2.330,70", periodo: "Semestral", nota: "Pagamento único • 15% OFF" },
-  "grupo10-anual":        { titulo: "Grupo 10 empresas", preco: "R$ 4.113,00", periodo: "Anual",     nota: "Pagamento único • 25% OFF" },
-  "grupo20-mensal":       { titulo: "Grupo 20 empresas", preco: "R$ 857,00",   periodo: "Mensal",    nota: "Assinatura recorrente mensal" },
-  "grupo20-semestral":    { titulo: "Grupo 20 empresas", preco: "R$ 4.370,70", periodo: "Semestral", nota: "Pagamento único • 15% OFF" },
-  "grupo20-anual":        { titulo: "Grupo 20 empresas", preco: "R$ 7.713,00", periodo: "Anual",     nota: "Pagamento único • 25% OFF" },
+  "individual-semestral": { titulo: "Individual", preco: "R$ 494,70",   periodo: "Semestral", nota: "Pagamento único • 15% OFF" },
+  "individual-anual":     { titulo: "Individual", preco: "R$ 873,00",   periodo: "Anual",     nota: "Pagamento único • 25% OFF" },
+  "grupo10-mensal":       { titulo: "Grupo 10 empresas", preco: "R$ 297,00",   periodo: "Mensal",    nota: "Assinatura recorrente mensal" },
+  "grupo10-semestral":    { titulo: "Grupo 10 empresas", preco: "R$ 1.514,70", periodo: "Semestral", nota: "Pagamento único • 15% OFF" },
+  "grupo10-anual":        { titulo: "Grupo 10 empresas", preco: "R$ 2.673,00", periodo: "Anual",     nota: "Pagamento único • 25% OFF" },
+  "grupo20-mensal":       { titulo: "Grupo 20 empresas", preco: "R$ 497,00",   periodo: "Mensal",    nota: "Assinatura recorrente mensal" },
+  "grupo20-semestral":    { titulo: "Grupo 20 empresas", preco: "R$ 2.534,70", periodo: "Semestral", nota: "Pagamento único • 15% OFF" },
+  "grupo20-anual":        { titulo: "Grupo 20 empresas", preco: "R$ 4.473,00", periodo: "Anual",     nota: "Pagamento único • 25% OFF" },
 };
 
 const funcionalidades = [
