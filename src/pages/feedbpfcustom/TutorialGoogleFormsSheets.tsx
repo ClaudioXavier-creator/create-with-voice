@@ -13,6 +13,19 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import imgCriarForm from "@/assets/tutorial-forms-1-criar.jpg";
+import imgAppsScript from "@/assets/tutorial-forms-2-appsscript.jpg";
+import imgTrigger from "@/assets/tutorial-forms-3-trigger.jpg";
+import imgSheetsFluxo from "@/assets/tutorial-sheets-1-planilha.jpg";
+
+const Illustration = ({ src, alt }: { src: string; alt: string }) => (
+  <figure className="my-3 rounded-lg border border-border/60 overflow-hidden bg-muted/30">
+    <img src={src} alt={alt} loading="lazy" width={1024} height={1024} className="w-full h-auto max-h-64 object-cover" />
+    <figcaption className="text-xs text-muted-foreground px-3 py-2 border-t border-border/60 bg-background/50">
+      {alt}
+    </figcaption>
+  </figure>
+);
 import { Separator } from "@/components/ui/separator";
 
 const Step = ({ n, title, children }: { n: number; title: string; children: React.ReactNode }) => (
