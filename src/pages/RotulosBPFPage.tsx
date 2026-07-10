@@ -317,23 +317,23 @@ export default function RotulosBPFPage() {
                 {
                   tipo: "grupo10" as const,
                   titulo: "Grupo 10 empresas",
-                  base: "R$ 457/mês",
+                  base: "R$ 297/mês",
                   destaque: false,
                   planos: [
-                    { plano: "mensal" as const, label: "Mensal", preco: "R$ 457,00", sub: "/mês", nota: "Recorrente" },
-                    { plano: "semestral" as const, label: "Semestral", preco: "R$ 2.330,70", sub: "", nota: "15% OFF • Pagamento único" },
-                    { plano: "anual" as const, label: "Anual", preco: "R$ 4.113,00", sub: "", nota: "25% OFF • Pagamento único" },
+                    { plano: "mensal" as const, label: "Mensal", preco: "R$ 297,00", sub: "/mês", nota: "Recorrente" },
+                    { plano: "semestral" as const, label: "Semestral", preco: "R$ 1.514,70", sub: "", nota: "15% OFF • Pagamento único" },
+                    { plano: "anual" as const, label: "Anual", preco: "R$ 2.673,00", sub: "", nota: "25% OFF • Pagamento único" },
                   ],
                 },
                 {
                   tipo: "grupo20" as const,
                   titulo: "Grupo 20 empresas",
-                  base: "R$ 857/mês",
+                  base: "R$ 497/mês",
                   destaque: true,
                   planos: [
-                    { plano: "mensal" as const, label: "Mensal", preco: "R$ 857,00", sub: "/mês", nota: "Recorrente" },
-                    { plano: "semestral" as const, label: "Semestral", preco: "R$ 4.370,70", sub: "", nota: "15% OFF • Pagamento único" },
-                    { plano: "anual" as const, label: "Anual", preco: "R$ 7.713,00", sub: "", nota: "25% OFF • Pagamento único" },
+                    { plano: "mensal" as const, label: "Mensal", preco: "R$ 497,00", sub: "/mês", nota: "Recorrente" },
+                    { plano: "semestral" as const, label: "Semestral", preco: "R$ 2.534,70", sub: "", nota: "15% OFF • Pagamento único" },
+                    { plano: "anual" as const, label: "Anual", preco: "R$ 4.473,00", sub: "", nota: "25% OFF • Pagamento único" },
                   ],
                 },
               ].map((grupo) => (
