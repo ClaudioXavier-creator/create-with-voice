@@ -14,14 +14,14 @@ import { toast } from "sonner";
 
 const PLANOS_INFO: Record<string, { titulo: string; preco: string; periodo: string; nota: string }> = {
   "individual-mensal":    { titulo: "Individual", preco: "R$ 97,00",   periodo: "Mensal",    nota: "Assinatura recorrente mensal" },
-  "individual-semestral": { titulo: "Individual", preco: "R$ 497,00",   periodo: "Semestral", nota: "Pagamento único • 14% OFF" },
-  "individual-anual":     { titulo: "Individual", preco: "R$ 897,00",   periodo: "Anual",     nota: "Pagamento único • 23% OFF" },
-  "grupo10-mensal":       { titulo: "Grupo 10 empresas", preco: "R$ 457,00",   periodo: "Mensal",    nota: "Assinatura recorrente mensal" },
-  "grupo10-semestral":    { titulo: "Grupo 10 empresas", preco: "R$ 2.330,70", periodo: "Semestral", nota: "Pagamento único • 15% OFF" },
-  "grupo10-anual":        { titulo: "Grupo 10 empresas", preco: "R$ 4.113,00", periodo: "Anual",     nota: "Pagamento único • 25% OFF" },
-  "grupo20-mensal":       { titulo: "Grupo 20 empresas", preco: "R$ 857,00",   periodo: "Mensal",    nota: "Assinatura recorrente mensal" },
-  "grupo20-semestral":    { titulo: "Grupo 20 empresas", preco: "R$ 4.370,70", periodo: "Semestral", nota: "Pagamento único • 15% OFF" },
-  "grupo20-anual":        { titulo: "Grupo 20 empresas", preco: "R$ 7.713,00", periodo: "Anual",     nota: "Pagamento único • 25% OFF" },
+  "individual-semestral": { titulo: "Individual", preco: "R$ 494,70",   periodo: "Semestral", nota: "Pagamento único • 15% OFF" },
+  "individual-anual":     { titulo: "Individual", preco: "R$ 873,00",   periodo: "Anual",     nota: "Pagamento único • 25% OFF" },
+  "grupo10-mensal":       { titulo: "Grupo 10 empresas", preco: "R$ 297,00",   periodo: "Mensal",    nota: "Assinatura recorrente mensal" },
+  "grupo10-semestral":    { titulo: "Grupo 10 empresas", preco: "R$ 1.514,70", periodo: "Semestral", nota: "Pagamento único • 15% OFF" },
+  "grupo10-anual":        { titulo: "Grupo 10 empresas", preco: "R$ 2.673,00", periodo: "Anual",     nota: "Pagamento único • 25% OFF" },
+  "grupo20-mensal":       { titulo: "Grupo 20 empresas", preco: "R$ 497,00",   periodo: "Mensal",    nota: "Assinatura recorrente mensal" },
+  "grupo20-semestral":    { titulo: "Grupo 20 empresas", preco: "R$ 2.534,70", periodo: "Semestral", nota: "Pagamento único • 15% OFF" },
+  "grupo20-anual":        { titulo: "Grupo 20 empresas", preco: "R$ 4.473,00", periodo: "Anual",     nota: "Pagamento único • 25% OFF" },
 };
 
 const funcionalidades = [
@@ -271,8 +271,8 @@ export default function RotulosBPFPage() {
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-4xl mx-auto">
             {[
               { periodo: "Mensal", planoKey: "mensal" as const, preco: "R$ 97", sub: "/mês", nota: "Sem fidelidade", destaque: false },
-              { periodo: "Semestral", planoKey: "semestral" as const, preco: "R$ 497", sub: "", nota: "≈ R$ 83/mês • 14% OFF", destaque: true, badge: "Mais Popular" },
-              { periodo: "Anual", planoKey: "anual" as const, preco: "R$ 897", sub: "", nota: "≈ R$ 75/mês • 23% OFF", destaque: true, badge: "Melhor Custo" },
+              { periodo: "Semestral", planoKey: "semestral" as const, preco: "R$ 494,70", sub: "", nota: "≈ R$ 82,45/mês • 15% OFF", destaque: true, badge: "Mais Popular" },
+              { periodo: "Anual", planoKey: "anual" as const, preco: "R$ 873,00", sub: "", nota: "≈ R$ 72,75/mês • 25% OFF", destaque: true, badge: "Melhor Custo" },
             ].map((plan) => {
               const key = `individual-${plan.planoKey}`;
               const isLoading = loadingKey === key;
@@ -317,23 +317,23 @@ export default function RotulosBPFPage() {
                 {
                   tipo: "grupo10" as const,
                   titulo: "Grupo 10 empresas",
-                  base: "R$ 457/mês",
+                  base: "R$ 297/mês",
                   destaque: false,
                   planos: [
-                    { plano: "mensal" as const, label: "Mensal", preco: "R$ 457,00", sub: "/mês", nota: "Recorrente" },
-                    { plano: "semestral" as const, label: "Semestral", preco: "R$ 2.330,70", sub: "", nota: "15% OFF • Pagamento único" },
-                    { plano: "anual" as const, label: "Anual", preco: "R$ 4.113,00", sub: "", nota: "25% OFF • Pagamento único" },
+                    { plano: "mensal" as const, label: "Mensal", preco: "R$ 297,00", sub: "/mês", nota: "Recorrente" },
+                    { plano: "semestral" as const, label: "Semestral", preco: "R$ 1.514,70", sub: "", nota: "15% OFF • Pagamento único" },
+                    { plano: "anual" as const, label: "Anual", preco: "R$ 2.673,00", sub: "", nota: "25% OFF • Pagamento único" },
                   ],
                 },
                 {
                   tipo: "grupo20" as const,
                   titulo: "Grupo 20 empresas",
-                  base: "R$ 857/mês",
+                  base: "R$ 497/mês",
                   destaque: true,
                   planos: [
-                    { plano: "mensal" as const, label: "Mensal", preco: "R$ 857,00", sub: "/mês", nota: "Recorrente" },
-                    { plano: "semestral" as const, label: "Semestral", preco: "R$ 4.370,70", sub: "", nota: "15% OFF • Pagamento único" },
-                    { plano: "anual" as const, label: "Anual", preco: "R$ 7.713,00", sub: "", nota: "25% OFF • Pagamento único" },
+                    { plano: "mensal" as const, label: "Mensal", preco: "R$ 497,00", sub: "/mês", nota: "Recorrente" },
+                    { plano: "semestral" as const, label: "Semestral", preco: "R$ 2.534,70", sub: "", nota: "15% OFF • Pagamento único" },
+                    { plano: "anual" as const, label: "Anual", preco: "R$ 4.473,00", sub: "", nota: "25% OFF • Pagamento único" },
                   ],
                 },
               ].map((grupo) => (

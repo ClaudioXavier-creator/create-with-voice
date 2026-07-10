@@ -3,49 +3,65 @@ import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Check, Loader2, ShieldCheck, Users, Sparkles } from "lucide-react";
+import { ArrowLeft, Check, Loader2, ShieldCheck, Users, UsersRound, Sparkles } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 
-type Nivel = "individual" | "consultor";
+type Nivel = "empresa" | "consultor10" | "consultor20";
 type Periodo = "mensal" | "semestral" | "anual";
 
 const formatBRL = (valor: number) =>
   new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(valor);
 
-// Preço base mensal por nível
+// Preço base mensal por nível (bate com plan.md e paddle-prices.ts)
 const PRECO_BASE: Record<Nivel, number> = {
-  individual: 249,
-  consultor: 499,
+  empresa: 297,
+  consultor10: 297,
+  consultor20: 497,
 };
 
 const NIVEIS: { key: Nivel; nome: string; descricao: string; icon: typeof ShieldCheck; features: string[] }[] = [
   {
-    key: "individual",
-    nome: "Individual",
-    descricao: "Para 1 empresa / fábrica",
+    key: "empresa",
+    nome: "Empresa",
+    descricao: "1 empresa • até 10 usuários",
     icon: ShieldCheck,
     features: [
       "1 empresa cadastrada",
+      "Até 10 usuários",
       "Acesso completo ao Audits BPF",
-      "Checklists baseados no Decreto 12.031/2024",
+      "Checklists Decreto 12.031/2024",
       "Relatórios e exportação PDF",
       "Suporte por e-mail",
     ],
   },
   {
-    key: "consultor",
-    nome: "Consultor",
-    descricao: "Para consultores — até 10 empresas",
+    key: "consultor10",
+    nome: "Consultor 10",
+    descricao: "Até 10 empresas gerenciadas",
     icon: Users,
     features: [
-      "Até 10 empresas gerenciadas",
+      "Até 10 empresas",
       "Painel multi-empresa",
       "Acesso completo ao Audits BPF",
-      "Checklists baseados no Decreto 12.031/2024",
+      "Checklists Decreto 12.031/2024",
       "Relatórios e exportação PDF",
       "Suporte prioritário",
+    ],
+  },
+  {
+    key: "consultor20",
+    nome: "Consultor 20",
+    descricao: "Até 20 empresas gerenciadas",
+    icon: UsersRound,
+    features: [
+      "Até 20 empresas",
+      "Painel multi-empresa avançado",
+      "Acesso completo ao Audits BPF",
+      "Checklists Decreto 12.031/2024",
+      "Relatórios e exportação PDF",
+      "Suporte prioritário + onboarding",
     ],
   },
 ];
@@ -59,7 +75,7 @@ const PERIODOS: { key: Periodo; nome: string; meses: number; desconto: number; b
 export default function AuditsBPFPlanos() {
   const navigate = useNavigate();
   const { session } = useAuth();
-  const [nivelSelecionado, setNivelSelecionado] = useState<Nivel>("individual");
+  const [nivelSelecionado, setNivelSelecionado] = useState<Nivel>("empresa");
   const [loading, setLoading] = useState<Periodo | null>(null);
   const [trialLoading, setTrialLoading] = useState(false);
 
@@ -105,6 +121,8 @@ export default function AuditsBPFPlanos() {
     }
   };
 
+  const nivelAtual = NIVEIS.find((n) => n.key === nivelSelecionado)!;
+
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8 max-w-6xl">
@@ -120,8 +138,8 @@ export default function AuditsBPFPlanos() {
           </p>
         </div>
 
-        {/* Seletor de Nível */}
-        <div className="grid md:grid-cols-2 gap-4 mb-10">
+        {/* Seletor de Nível — 3 opções */}
+        <div className="grid md:grid-cols-3 gap-4 mb-10">
           {NIVEIS.map((nivel) => {
             const Icon = nivel.icon;
             const ativo = nivelSelecionado === nivel.key;
@@ -138,18 +156,22 @@ export default function AuditsBPFPlanos() {
                     <div className={`p-2 rounded-lg ${ativo ? "bg-primary text-primary-foreground" : "bg-muted"}`}>
                       <Icon className="h-5 w-5" />
                     </div>
-                    <div className="flex-1">
-                      <CardTitle className="text-xl">{nivel.nome}</CardTitle>
-                      <CardDescription>{nivel.descricao}</CardDescription>
+                    <div className="flex-1 min-w-0">
+                      <CardTitle className="text-lg">{nivel.nome}</CardTitle>
+                      <CardDescription className="text-xs">{nivel.descricao}</CardDescription>
                     </div>
-                    {ativo && <Badge>Selecionado</Badge>}
+                    {ativo && <Badge className="shrink-0">✓</Badge>}
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <ul className="space-y-2 text-sm">
-                    {nivel.features.map((f, i) => (
+                  <p className="text-2xl font-bold mb-3">
+                    {formatBRL(PRECO_BASE[nivel.key])}
+                    <span className="text-sm font-normal text-muted-foreground">/mês</span>
+                  </p>
+                  <ul className="space-y-1.5 text-xs">
+                    {nivel.features.slice(0, 4).map((f, i) => (
                       <li key={i} className="flex items-start gap-2">
-                        <Check className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+                        <Check className="h-3.5 w-3.5 text-primary shrink-0 mt-0.5" />
                         <span>{f}</span>
                       </li>
                     ))}
@@ -162,7 +184,7 @@ export default function AuditsBPFPlanos() {
 
         {/* Períodos */}
         <h2 className="text-2xl font-bold mb-4 text-center">
-          Escolha a periodicidade — Plano {NIVEIS.find((n) => n.key === nivelSelecionado)?.nome}
+          Periodicidade — Plano {nivelAtual.nome}
         </h2>
 
         <div className="grid md:grid-cols-3 gap-4">
@@ -224,7 +246,7 @@ export default function AuditsBPFPlanos() {
           })}
         </div>
 
-        {nivelSelecionado === "consultor" && (
+        {(nivelSelecionado === "consultor10" || nivelSelecionado === "consultor20") && (
           <div className="mt-8 p-6 rounded-lg border-2 border-dashed border-primary/40 bg-primary/5 text-center">
             <Sparkles className="h-6 w-6 text-primary mx-auto mb-2" />
             <h3 className="font-bold text-lg mb-1">Experimente grátis por 7 dias</h3>
@@ -239,8 +261,7 @@ export default function AuditsBPFPlanos() {
         )}
 
         <p className="text-center text-xs text-muted-foreground mt-8">
-          Pagamento processado com segurança via Paddle. Você poderá cancelar a qualquer momento.
-          {" "}Empresas excedentes (acima de 10) são cobradas automaticamente conforme o plano.
+          Pagamento processado com segurança. Você poderá cancelar a qualquer momento.
         </p>
       </div>
     </div>
