@@ -113,6 +113,7 @@ const FeedCustomAnaliseIA = lazy(() => import("./pages/feedbpfcustom/AnaliseIA")
 const FeedCustomPlanilhas = lazy(() => import("./pages/feedbpfcustom/ImportarPlanilhas"));
 const FeedCustomGuia = lazy(() => import("./pages/feedbpfcustom/GuiaCustomizacao"));
 const FeedCustomGoogleForms = lazy(() => import("./pages/feedbpfcustom/GoogleForms"));
+const FeedCustomTutorialGoogle = lazy(() => import("./pages/feedbpfcustom/TutorialGoogleFormsSheets"));
 
 
 // Agro RC CRM - Páginas Internas
