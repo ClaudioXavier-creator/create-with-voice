@@ -2207,6 +2207,44 @@ export type Database = {
           },
         ]
       }
+      empresa_modulos_custom: {
+        Row: {
+          ativado_por: string | null
+          ativo: boolean
+          created_at: string
+          empresa_id: string
+          id: string
+          modulo_codigo: string
+          updated_at: string
+        }
+        Insert: {
+          ativado_por?: string | null
+          ativo?: boolean
+          created_at?: string
+          empresa_id: string
+          id?: string
+          modulo_codigo: string
+          updated_at?: string
+        }
+        Update: {
+          ativado_por?: string | null
+          ativo?: boolean
+          created_at?: string
+          empresa_id?: string
+          id?: string
+          modulo_codigo?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "empresa_modulos_custom_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       empresa_pin: {
         Row: {
           created_at: string
