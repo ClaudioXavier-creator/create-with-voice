@@ -183,10 +183,7 @@ const ProtectedRoute = ({ children, requireAdmin }: { children: React.ReactNode;
 
   // Proteção extra para módulos administrativos (BPF_Consult)
   if (requireAdmin) {
-    const isSuperAdmin = user?.email?.toLowerCase() === "claudiolx.nunes@gmail.com";
-    const isAdminRole = roles?.includes("admin") || roles?.includes("comercial");
-    
-    if (!isSuperAdmin && !isAdminRole) {
+    if (!canAccessLicenseAdmin(roles, user?.email)) {
       console.warn("Acesso negado: Rota administrativa restrita.");
       return <Navigate to="/404" replace />;
     }
