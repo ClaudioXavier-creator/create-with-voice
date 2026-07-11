@@ -102,6 +102,10 @@ export function FeedBpfCustomSidebar() {
   const { signOut } = useAuth();
   const { toggleSidebar, state } = useSidebar();
   const isCollapsed = state === "collapsed";
+  const { ativos } = useModulosCustom();
+  const modulosAtivos = ativos
+    .map((m) => MODULO_LINKS[m.codigo])
+    .filter(Boolean) as Array<{ title: string; icon: any; url: string }>;
 
   return (
     <Sidebar collapsible="icon" className="border-r border-border/50 bg-card/50 backdrop-blur-xl">
@@ -155,6 +159,48 @@ export function FeedBpfCustomSidebar() {
             );
           })}
         </SidebarMenu>
+
+        {modulosAtivos.length > 0 && (
+          <SidebarGroup className="mt-4">
+            {!isCollapsed && (
+              <SidebarGroupLabel className="text-[10px] uppercase tracking-widest text-emerald-700/70">
+                Módulos ativados
+              </SidebarGroupLabel>
+            )}
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {modulosAtivos.map((item) => {
+                  const active = location.pathname === item.url;
+                  return (
+                    <SidebarMenuItem key={item.url + item.title}>
+                      <SidebarMenuButton
+                        asChild
+                        isActive={active}
+                        tooltip={item.title}
+                        className={cn(
+                          "transition-all",
+                          active
+                            ? "bg-emerald-500/10 text-emerald-600 font-medium"
+                            : "hover:bg-emerald-500/5 hover:text-emerald-600/80"
+                        )}
+                      >
+                        <Link to={item.url} className="flex items-center gap-3">
+                          <item.icon
+                            className={cn(
+                              "h-5 w-5 shrink-0",
+                              active ? "text-emerald-600" : "text-muted-foreground"
+                            )}
+                          />
+                          {!isCollapsed && <span className="truncate">{item.title}</span>}
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  );
+                })}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        )}
       </SidebarContent>
 
       <SidebarFooter className="p-4 space-y-2">
