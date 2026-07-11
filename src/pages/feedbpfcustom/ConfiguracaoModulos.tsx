@@ -13,7 +13,7 @@ import { MODULOS_CUSTOM, GRUPOS_LABEL, type ModuloCustom } from "@/config/modulo
 type EstadoModulos = Record<string, boolean>;
 
 export default function ConfiguracaoModulosCustom() {
-  const { empresa } = useEmpresa();
+  const { empresaAtiva: empresa } = useEmpresa();
   const [estado, setEstado] = useState<EstadoModulos>({});
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
