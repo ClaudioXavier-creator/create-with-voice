@@ -14,6 +14,8 @@ import {
   BookOpenCheck,
   FileText,
   Rocket,
+  ToggleRight,
+
 
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -41,6 +43,7 @@ const items = [
   { title: "Tutorial Forms/Sheets", icon: Rocket, url: "/feedbpf-custom/tutorial-google" },
   { title: "Registros Digitais", icon: FileSignature, url: "/feedbpf-custom/registros" },
   { title: "Análise por IA", icon: Sparkles, url: "/feedbpf-custom/analise-ia" },
+  { title: "Módulos Ativos", icon: ToggleRight, url: "/feedbpf-custom/modulos" },
   { title: "Configurações", icon: Settings, url: "/feedbpf-custom/config" },
 ];
 

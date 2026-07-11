@@ -1,6 +1,6 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
-import { FEED_BPF_PRICES as PLAN_PRICES } from "../_shared/paddle-prices.ts";
+import { FEED_BPF_PRICES, FEED_BPF_CUSTOM_PRICES } from "../_shared/paddle-prices.ts";
 import { createPaddleCheckout } from "../_shared/paddle.ts";
 
 const corsHeaders = {
@@ -35,12 +35,22 @@ serve(async (req) => {
     const { empresa_id, plano, nivel, produto } = await req.json();
     if (!empresa_id) throw new Error("empresa_id é obrigatório");
 
-    let nivelKey = (nivel || "standard").toLowerCase();
-    nivelKey = NIVEL_ALIASES[nivelKey] || nivelKey;
     const planoKey = (plano || "mensal").toLowerCase();
     const produtoKey = (produto || "feedbpf").toLowerCase() === "feedbpfcustom"
       ? "feedbpfcustom"
       : "feedbpf";
+
+    // Custom = plano único; Feed_BPF padrão = 3 níveis
+    let nivelKey: string;
+    let PLAN_PRICES;
+    if (produtoKey === "feedbpfcustom") {
+      nivelKey = "custom";
+      PLAN_PRICES = FEED_BPF_CUSTOM_PRICES;
+    } else {
+      nivelKey = (nivel || "standard").toLowerCase();
+      nivelKey = NIVEL_ALIASES[nivelKey] || nivelKey;
+      PLAN_PRICES = FEED_BPF_PRICES;
+    }
 
     const nivelPrices = PLAN_PRICES[nivelKey];
     if (!nivelPrices) throw new Error(`Nível inválido: ${nivelKey}`);
