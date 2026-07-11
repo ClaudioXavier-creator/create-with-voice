@@ -73,8 +73,10 @@ const HYBRID_SHORTCUTS: Record<string, { templatePath: string; archivePath: stri
  */
 export default function TierGate({ children }: TierGateProps) {
   const { tier } = useLicense();
+  const { user } = useAuth();
   const location = useLocation();
-  const access = checkAccess(tier, location.pathname);
+  const isSuperAdmin = !!(user?.email && SUPER_ADMIN_EMAILS.includes(user.email.toLowerCase() as any));
+  const access = isSuperAdmin ? { allowed: true } : checkAccess(tier, location.pathname);
   const shortcuts = useMemo(
     () => HYBRID_SHORTCUTS[location.pathname] ?? {
       templatePath: "/planilhas-pop",
