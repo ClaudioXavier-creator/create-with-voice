@@ -309,6 +309,7 @@ const AppRoutes = () => {
                   <Route path="tutorial-google" element={<FeedCustomTutorialGoogle />} />
                   <Route path="analise-ia" element={<FeedCustomAnaliseIA />} />
                   <Route path="config" element={<FeedCustomConfig />} />
+                  <Route path="modulos" element={<FeedCustomModulos />} />
                 </Routes>
               </FeedBpfCustomLayout>
             </ProtectedRoute>
