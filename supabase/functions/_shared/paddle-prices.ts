@@ -29,6 +29,15 @@ export const FEED_BPF_PRICES: ProductMap = {
   },
 };
 
+// Feed_BPF Custom — plano único (personalizável pelo cliente)
+export const FEED_BPF_CUSTOM_PRICES: ProductMap = {
+  custom: {
+    mensal:    { id: "feedbpf_custom_mensal",    mode: "subscription" },
+    semestral: { id: "feedbpf_custom_semestral", mode: "payment" },
+    anual:     { id: "feedbpf_custom_anual",     mode: "payment" },
+  },
+};
+
 // Audits_BPF — 3 níveis × 3 períodos
 export const AUDITS_BPF_PRICES: ProductMap = {
   empresa: {
