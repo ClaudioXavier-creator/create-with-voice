@@ -76,7 +76,7 @@ export default function TierGate({ children }: TierGateProps) {
   const { user } = useAuth();
   const location = useLocation();
   const isSuperAdmin = !!(user?.email && SUPER_ADMIN_EMAILS.includes(user.email.toLowerCase() as any));
-  const access = isSuperAdmin ? { allowed: true } : checkAccess(tier, location.pathname);
+  const access = isSuperAdmin ? { allowed: true, hybrid: false, reason: "" } : checkAccess(tier, location.pathname);
   const shortcuts = useMemo(
     () => HYBRID_SHORTCUTS[location.pathname] ?? {
       templatePath: "/planilhas-pop",
