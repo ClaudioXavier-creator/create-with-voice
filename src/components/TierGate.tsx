@@ -7,6 +7,8 @@ import { Badge } from "@/components/ui/badge";
 import { useLicense } from "@/hooks/useLicense";
 import { checkAccess, TIER_LABEL } from "@/config/tiers";
 import { Link } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
+import { SUPER_ADMIN_EMAILS } from "@/config/adminAccess";
 
 interface TierGateProps {
   children: ReactNode;
@@ -71,8 +73,10 @@ const HYBRID_SHORTCUTS: Record<string, { templatePath: string; archivePath: stri
  */
 export default function TierGate({ children }: TierGateProps) {
   const { tier } = useLicense();
+  const { user } = useAuth();
   const location = useLocation();
-  const access = checkAccess(tier, location.pathname);
+  const isSuperAdmin = !!(user?.email && SUPER_ADMIN_EMAILS.includes(user.email.toLowerCase() as any));
+  const access = isSuperAdmin ? { allowed: true, hybrid: false, reason: "" } : checkAccess(tier, location.pathname);
   const shortcuts = useMemo(
     () => HYBRID_SHORTCUTS[location.pathname] ?? {
       templatePath: "/planilhas-pop",
