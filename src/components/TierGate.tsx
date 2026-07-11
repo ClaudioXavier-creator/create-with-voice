@@ -7,6 +7,8 @@ import { Badge } from "@/components/ui/badge";
 import { useLicense } from "@/hooks/useLicense";
 import { checkAccess, TIER_LABEL } from "@/config/tiers";
 import { Link } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
+import { SUPER_ADMIN_EMAILS } from "@/config/adminAccess";
 
 interface TierGateProps {
   children: ReactNode;
