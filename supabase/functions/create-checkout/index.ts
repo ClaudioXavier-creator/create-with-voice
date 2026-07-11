@@ -1,6 +1,6 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
-import { FEED_BPF_PRICES as PLAN_PRICES } from "../_shared/paddle-prices.ts";
+import { FEED_BPF_PRICES, FEED_BPF_CUSTOM_PRICES } from "../_shared/paddle-prices.ts";
 import { createPaddleCheckout } from "../_shared/paddle.ts";
 
 const corsHeaders = {
