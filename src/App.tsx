@@ -108,6 +108,7 @@ const FeedCustomImport = lazy(() => import("./pages/feedbpfcustom/ImportacaoMass
 const FeedCustomModelos = lazy(() => import("./pages/feedbpfcustom/MeusModelos"));
 const FeedCustomRegistros = lazy(() => import("./pages/feedbpfcustom/RegistrosDigitais"));
 const FeedCustomConfig = lazy(() => import("./pages/feedbpfcustom/ConfigCustom"));
+const FeedCustomModulos = lazy(() => import("./pages/feedbpfcustom/ConfiguracaoModulos"));
 const FeedCustomTutorial = lazy(() => import("./pages/feedbpfcustom/TutorialCustom"));
 const FeedCustomAnaliseIA = lazy(() => import("./pages/feedbpfcustom/AnaliseIA"));
 const FeedCustomPlanilhas = lazy(() => import("./pages/feedbpfcustom/ImportarPlanilhas"));
