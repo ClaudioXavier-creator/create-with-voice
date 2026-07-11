@@ -95,50 +95,68 @@ export default function FeedBpfCustomLanding() {
         </div>
       </section>
 
-      {/* Planos */}
-      <section className="container mx-auto px-4 py-16 max-w-5xl">
+      {/* Plano único */}
+      <section className="container mx-auto px-4 py-16 max-w-3xl">
         <div className="text-center mb-10">
-          <div className="inline-block px-4 py-1 rounded-full border text-xs tracking-widest uppercase mb-3">Planos e Preços</div>
-          <h2 className="text-2xl sm:text-3xl font-bold">Mesma estrutura de preços do Feed_BPF</h2>
+          <div className="inline-block px-4 py-1 rounded-full border text-xs tracking-widest uppercase mb-3">Plano Único</div>
+          <h2 className="text-2xl sm:text-3xl font-bold">Um preço, você escolhe o quanto usa</h2>
           <p className="text-muted-foreground mt-2">Semestral 15% OFF • Anual 25% OFF • 7 dias grátis, sem cartão</p>
         </div>
-        <div className="grid gap-6 sm:grid-cols-3">
-          {[
-            { nivel: "Standard", desc: "Até 10 usuários", destaque: false, mensal: "R$ 397", semestral: "R$ 2.024,70", anual: "R$ 3.573,00" },
-            { nivel: "Intermediária", desc: "Até 20 usuários", destaque: true, badge: "Mais Popular", mensal: "R$ 697", semestral: "R$ 3.554,70", anual: "R$ 6.273,00" },
-            { nivel: "Premium", desc: "Usuários ilimitados", destaque: false, mensal: "R$ 1.297", semestral: "R$ 6.614,70", anual: "R$ 11.673,00" },
-          ].map((p) => (
-            <Card key={p.nivel} className={`relative transition-all hover:shadow-xl ${p.destaque ? "border-emerald-500 bg-emerald-500/5 scale-105" : "border"}`}>
-              {p.badge && (
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-emerald-600 text-white text-xs font-bold uppercase tracking-widest shadow-lg">
-                  {p.badge}
+
+        <Card className="border-2 border-emerald-500 shadow-xl shadow-emerald-500/10 relative overflow-hidden">
+          <div className="absolute top-0 right-0 px-3 py-1 rounded-bl-lg bg-emerald-600 text-white text-xs font-bold uppercase tracking-widest">
+            Personalizável
+          </div>
+          <CardContent className="p-8 space-y-6">
+            <div className="text-center space-y-2">
+              <p className="text-sm font-semibold text-emerald-700 uppercase tracking-wider">Feed_BPF Custom</p>
+              <p className="text-xs text-muted-foreground">1 empresa • Módulos ativáveis pelo cliente</p>
+            </div>
+
+            <div className="text-center py-4 border-y">
+              <div className="flex items-baseline justify-center gap-1">
+                <span className="text-5xl font-bold">R$ 497</span>
+                <span className="text-lg text-muted-foreground">/mês</span>
+              </div>
+              <div className="grid grid-cols-2 gap-4 mt-4 text-sm">
+                <div className="p-3 rounded-lg bg-emerald-500/5 border border-emerald-500/20">
+                  <p className="text-xs text-muted-foreground">Semestral</p>
+                  <p className="font-bold">R$ 2.534,70</p>
+                  <p className="text-[10px] text-emerald-600 font-semibold">= R$ 422/mês (15% OFF)</p>
                 </div>
-              )}
-              <CardContent className="p-6 text-center space-y-4">
-                <div>
-                  <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">{p.nivel}</p>
-                  <p className="text-xs text-muted-foreground mt-1">{p.desc}</p>
+                <div className="p-3 rounded-lg bg-emerald-500/5 border border-emerald-500/20">
+                  <p className="text-xs text-muted-foreground">Anual</p>
+                  <p className="font-bold">R$ 4.473,00</p>
+                  <p className="text-[10px] text-emerald-600 font-semibold">= R$ 373/mês (25% OFF)</p>
                 </div>
-                <div className="space-y-2 py-3 border-y">
-                  <div>
-                    <span className="text-3xl font-bold">{p.mensal}</span>
-                    <span className="text-sm text-muted-foreground">/mês</span>
-                  </div>
-                  <div className="text-xs text-muted-foreground space-y-0.5">
-                    <p>Semestral: <span className="font-semibold text-foreground">{p.semestral}</span></p>
-                    <p>Anual: <span className="font-semibold text-foreground">{p.anual}</span></p>
-                  </div>
-                </div>
-                <Button asChild className={p.destaque ? "w-full bg-emerald-600 hover:bg-emerald-700" : "w-full"} variant={p.destaque ? "default" : "outline"}>
-                  <Link to="/cadastro?produto=feedbpfcustom">Testar grátis 7 dias</Link>
-                </Button>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-        <p className="text-center text-xs text-muted-foreground mt-6">
-          Após o trial, escolha a licença dentro do sistema. Upgrade a qualquer momento.
-        </p>
+              </div>
+            </div>
+
+            <ul className="space-y-2 text-sm">
+              {[
+                "Cadastro de produtos, fórmulas, RTPI e rótulos (igual Feed_BPF)",
+                "Você ativa/desativa cada módulo pelo painel de configuração",
+                "Traga seus modelos: PDF, Excel, Google Forms/Sheets",
+                "Assinatura digital SHA-256 e auditoria automática",
+                "Suporte por WhatsApp em horário comercial",
+              ].map((f) => (
+                <li key={f} className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 mt-0.5 shrink-0" />
+                  {f}
+                </li>
+              ))}
+            </ul>
+
+            <Button asChild size="lg" className="w-full bg-emerald-600 hover:bg-emerald-700">
+              <Link to="/cadastro?produto=feedbpfcustom">
+                Testar grátis 7 dias <ArrowRight className="w-4 h-4 ml-2" />
+              </Link>
+            </Button>
+            <p className="text-center text-xs text-muted-foreground">
+              Sem cartão no trial. Após o teste, escolha o período de cobrança dentro do sistema.
+            </p>
+          </CardContent>
+        </Card>
       </section>
 
       {/* CTA */}
