@@ -15,8 +15,27 @@ import {
   FileText,
   Rocket,
   ToggleRight,
-
-
+  Package,
+  FlaskConical,
+  Tag,
+  Truck,
+  Droplets,
+  SprayCan,
+  HeartPulse,
+  Archive,
+  Warehouse,
+  Wrench,
+  Bug,
+  Recycle,
+  ShieldAlert,
+  Grid3x3,
+  ClipboardCheck,
+  ListChecks,
+  GraduationCap as GradCap,
+  Factory,
+  MapPin,
+  Users,
+  Tablet,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -27,12 +46,16 @@ import {
   SidebarMenuItem,
   SidebarMenuButton,
   SidebarFooter,
+  SidebarGroup,
+  SidebarGroupLabel,
+  SidebarGroupContent,
   useSidebar,
 } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
+import { useModulosCustom } from "@/hooks/useModulosCustom";
 
-const items = [
+const baseItems = [
   { title: "Como Usar", icon: GraduationCap, url: "/feedbpf-custom/tutorial" },
   { title: "Guia Detalhado", icon: BookOpenCheck, url: "/feedbpf-custom/guia" },
   { title: "Meu Acervo", icon: FolderOpen, url: "/feedbpf-custom/acervo" },
@@ -47,11 +70,42 @@ const items = [
   { title: "Configurações", icon: Settings, url: "/feedbpf-custom/config" },
 ];
 
+// Mapa: código do módulo → link + ícone da sidebar
+const MODULO_LINKS: Record<string, { title: string; icon: any; url: string }> = {
+  "produtos":         { title: "Produtos",         icon: Package,       url: "/produtos" },
+  "formulas":         { title: "Fórmulas",         icon: FlaskConical,  url: "/formulas" },
+  "rotulos":          { title: "Rótulos e RTPI",   icon: Tag,           url: "/rotulos-bpf" },
+  "fornecedores":     { title: "Fornecedores",     icon: Truck,         url: "/fornecedores" },
+  "pop-01-agua":      { title: "POP 01 — Água",           icon: Droplets,      url: "/potabilidade-agua" },
+  "pop-02-higiene":   { title: "POP 02 — Higiene",        icon: SprayCan,      url: "/higiene-sanitizacao" },
+  "pop-03-saude":     { title: "POP 03 — Saúde/Visitantes", icon: HeartPulse,  url: "/saude-pessoal" },
+  "pop-04-mp":        { title: "POP 04 — Matérias-Primas", icon: Archive,      url: "/recebimento" },
+  "pop-05-armazenamento": { title: "POP 05 — Armazenamento", icon: Warehouse,  url: "/armazenamento-transporte" },
+  "pop-06-manutencao":{ title: "POP 06 — Manutenção",     icon: Wrench,        url: "/manutencao-preventiva" },
+  "pop-07-pragas":    { title: "POP 07 — Pragas",         icon: Bug,           url: "/pragas" },
+  "pop-08-residuos":  { title: "POP 08 — Resíduos",       icon: Recycle,       url: "/controle-residuos" },
+  "pop-09-transporte":{ title: "POP 09 — Transporte",     icon: Truck,         url: "/armazenamento-transporte" },
+  "pop-10-pac":       { title: "POP 10 — PAC",            icon: ShieldAlert,   url: "/matriz-risco" },
+  "pcp":              { title: "PCP e Produção",  icon: Factory,       url: "/pcp" },
+  "expedicao":        { title: "Expedição",       icon: MapPin,        url: "/expedicao" },
+  "rastreabilidade":  { title: "Rastreabilidade", icon: MapPin,        url: "/rastreabilidade" },
+  "tablet":           { title: "Modo Tablet",     icon: Tablet,        url: "/tablet" },
+  "nao-conformidades":{ title: "Não Conformidades", icon: ClipboardCheck, url: "/nao-conformidades" },
+  "matriz-risco":     { title: "Matriz de Risco", icon: Grid3x3,       url: "/matriz-risco" },
+  "auditoria":        { title: "Auditoria",       icon: ListChecks,    url: "/auditoria" },
+  "tf-autocontroles": { title: "TF Autocontroles",icon: ListChecks,    url: "/simulador-tf" },
+  "treinamentos":     { title: "Treinamentos",    icon: GradCap,       url: "/treinamentos" },
+};
+
 export function FeedBpfCustomSidebar() {
   const location = useLocation();
   const { signOut } = useAuth();
   const { toggleSidebar, state } = useSidebar();
   const isCollapsed = state === "collapsed";
+  const { ativos } = useModulosCustom();
+  const modulosAtivos = ativos
+    .map((m) => MODULO_LINKS[m.codigo])
+    .filter(Boolean) as Array<{ title: string; icon: any; url: string }>;
 
   return (
     <Sidebar collapsible="icon" className="border-r border-border/50 bg-card/50 backdrop-blur-xl">
@@ -83,7 +137,7 @@ export function FeedBpfCustomSidebar() {
 
       <SidebarContent className="px-2 py-4">
         <SidebarMenu>
-          {items.map((item) => {
+          {baseItems.map((item) => {
             const active = location.pathname === item.url || location.pathname.startsWith(item.url + "/");
             return (
               <SidebarMenuItem key={item.title}>
@@ -105,6 +159,48 @@ export function FeedBpfCustomSidebar() {
             );
           })}
         </SidebarMenu>
+
+        {modulosAtivos.length > 0 && (
+          <SidebarGroup className="mt-4">
+            {!isCollapsed && (
+              <SidebarGroupLabel className="text-[10px] uppercase tracking-widest text-emerald-700/70">
+                Módulos ativados
+              </SidebarGroupLabel>
+            )}
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {modulosAtivos.map((item) => {
+                  const active = location.pathname === item.url;
+                  return (
+                    <SidebarMenuItem key={item.url + item.title}>
+                      <SidebarMenuButton
+                        asChild
+                        isActive={active}
+                        tooltip={item.title}
+                        className={cn(
+                          "transition-all",
+                          active
+                            ? "bg-emerald-500/10 text-emerald-600 font-medium"
+                            : "hover:bg-emerald-500/5 hover:text-emerald-600/80"
+                        )}
+                      >
+                        <Link to={item.url} className="flex items-center gap-3">
+                          <item.icon
+                            className={cn(
+                              "h-5 w-5 shrink-0",
+                              active ? "text-emerald-600" : "text-muted-foreground"
+                            )}
+                          />
+                          {!isCollapsed && <span className="truncate">{item.title}</span>}
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  );
+                })}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        )}
       </SidebarContent>
 
       <SidebarFooter className="p-4 space-y-2">
