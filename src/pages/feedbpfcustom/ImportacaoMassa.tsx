@@ -56,9 +56,14 @@ export default function ImportacaoMassa() {
   const [items, setItems] = useState<Item[]>([]);
   const [enviando, setEnviando] = useState(false);
   const [progresso, setProgresso] = useState(0);
+  const [historico, setHistorico] = useState<HistoricoExec[]>([]);
+  const [histAberto, setHistAberto] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const empresaId = empresaAtiva?.id;
+
+  useEffect(() => { setHistorico(carregarHistorico(user?.id)); }, [user?.id]);
+
 
   const adicionar = (files: FileList | File[]) => {
     const novos: Item[] = Array.from(files).map(f => {
