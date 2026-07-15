@@ -11,6 +11,23 @@ export const POPS_CUSTOM = [
   { codigo: "POP-10", nome: "PAC — Programa de Autocontrole" },
 ];
 
+/**
+ * Mapeia cada POP do importador → códigos de módulos em MODULOS_CUSTOM.
+ * Um POP é considerado "aceito pela empresa" se pelo menos um módulo mapeado estiver ativo.
+ */
+export const POP_TO_MODULOS: Record<string, string[]> = {
+  "POP-01": ["pop-04-mp", "fornecedores"],
+  "POP-02": ["pop-02-higiene"],
+  "POP-03": ["pop-03-saude"],
+  "POP-04": ["pop-01-agua"],
+  "POP-05": ["pcp"],
+  "POP-06": ["pop-06-manutencao"],
+  "POP-07": ["pop-07-pragas"],
+  "POP-08": ["pop-08-residuos"],
+  "POP-09": ["pop-05-armazenamento", "pop-09-transporte"],
+  "POP-10": ["pop-10-pac", "matriz-risco"],
+};
+
 export const CUSTOM_STORAGE_PREFIX = "custom";
 
 /**
