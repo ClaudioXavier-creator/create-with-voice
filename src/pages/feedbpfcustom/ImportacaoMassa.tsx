@@ -165,6 +165,54 @@ export default function ImportacaoMassa() {
 
             {enviando && <Progress value={progresso} className="h-2" />}
 
+            {(() => {
+              const falhas = items.filter(i => i.status === "erro");
+              if (falhas.length === 0 || enviando) return null;
+
+              const reenviarFalhas = () => {
+                setItems(prev => prev.map(i => i.status === "erro" ? { ...i, status: "pendente", erro: undefined } : i));
+                setTimeout(() => enviar(), 50);
+              };
+              const copiarLog = async () => {
+                const linhas = falhas.map(f => `• ${f.file.name} (${f.pop || "sem POP"}) — ${f.erro || "erro desconhecido"}`).join("\n");
+                await navigator.clipboard.writeText(`Falhas na importação (${falhas.length}):\n${linhas}`);
+                toast.success("Log copiado");
+              };
+
+              return (
+                <div className="rounded-lg border border-destructive/40 bg-destructive/5 p-3 space-y-2">
+                  <div className="flex items-center justify-between gap-2 flex-wrap">
+                    <div className="flex items-center gap-2 text-destructive">
+                      <AlertTriangle className="w-4 h-4" />
+                      <p className="text-sm font-semibold">{falhas.length} arquivo(s) falharam</p>
+                    </div>
+                    <div className="flex gap-2">
+                      <Button size="sm" variant="outline" onClick={copiarLog} className="h-7 text-xs">
+                        <Copy className="w-3 h-3 mr-1" /> Copiar log
+                      </Button>
+                      <Button size="sm" onClick={reenviarFalhas} className="h-7 text-xs bg-destructive hover:bg-destructive/90 text-destructive-foreground">
+                        <RefreshCw className="w-3 h-3 mr-1" /> Reenviar apenas falhas
+                      </Button>
+                    </div>
+                  </div>
+                  <div className="max-h-48 overflow-y-auto divide-y divide-destructive/10">
+                    {falhas.map(f => (
+                      <div key={f.id} className="py-2 text-xs space-y-0.5">
+                        <p className="font-medium truncate" title={f.file.name}>{f.file.name}</p>
+                        <p className="text-muted-foreground">
+                          POP: {f.pop || <span className="text-amber-700">não definido</span>} · {(f.file.size / 1024).toFixed(0)} KB
+                        </p>
+                        <p className="text-destructive break-words">
+                          <span className="font-semibold">Motivo:</span> {f.erro || "erro desconhecido"}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              );
+            })()}
+
+
             <div className="divide-y max-h-[400px] overflow-y-auto -mx-4">
               {items.map(item => (
                 <div key={item.id} className="p-3 flex flex-col sm:flex-row sm:items-center gap-2">
