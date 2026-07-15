@@ -1,5 +1,5 @@
-import { useRef, useState } from "react";
-import { Upload, FileText, Trash2, CheckCircle2, Loader2, Sparkles, AlertTriangle, RefreshCw, Copy } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Upload, FileText, Trash2, CheckCircle2, Loader2, Sparkles, AlertTriangle, RefreshCw, Copy, History, ChevronDown, ChevronUp } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,6 +13,31 @@ import { useAuth } from "@/hooks/useAuth";
 import { useEmpresa } from "@/hooks/useEmpresa";
 import { POPS_CUSTOM, sugerirPopPorNome, CUSTOM_STORAGE_PREFIX } from "@/config/feedBpfCustomConfig";
 import { toast } from "sonner";
+
+interface HistoricoExec {
+  id: string;
+  data: string; // ISO
+  empresaId: string;
+  empresaNome?: string;
+  total: number;
+  ok: number;
+  erro: number;
+  duracaoMs: number;
+  falhas: { nome: string; pop: string; motivo: string }[];
+}
+const HIST_KEY = "feedbpfcustom:importacao-massa:historico";
+const MAX_HIST = 20;
+
+function carregarHistorico(userId?: string): HistoricoExec[] {
+  if (!userId) return [];
+  try {
+    const raw = localStorage.getItem(`${HIST_KEY}:${userId}`);
+    return raw ? JSON.parse(raw) : [];
+  } catch { return []; }
+}
+function salvarHistorico(userId: string, hist: HistoricoExec[]) {
+  try { localStorage.setItem(`${HIST_KEY}:${userId}`, JSON.stringify(hist.slice(0, MAX_HIST))); } catch {}
+}
 
 interface Item {
   id: string;
@@ -31,9 +56,14 @@ export default function ImportacaoMassa() {
   const [items, setItems] = useState<Item[]>([]);
   const [enviando, setEnviando] = useState(false);
   const [progresso, setProgresso] = useState(0);
+  const [historico, setHistorico] = useState<HistoricoExec[]>([]);
+  const [histAberto, setHistAberto] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const empresaId = empresaAtiva?.id;
+
+  useEffect(() => { setHistorico(carregarHistorico(user?.id)); }, [user?.id]);
+
 
   const adicionar = (files: FileList | File[]) => {
     const novos: Item[] = Array.from(files).map(f => {
@@ -61,7 +91,9 @@ export default function ImportacaoMassa() {
     if (!user || !empresaId || items.length === 0) return;
     setEnviando(true);
     setProgresso(0);
+    const inicio = Date.now();
     const pendentes = items.filter(i => i.status !== "ok");
+    const falhasExec: HistoricoExec["falhas"] = [];
     let done = 0;
     let okCount = 0;
     let erroCount = 0;
@@ -70,7 +102,6 @@ export default function ImportacaoMassa() {
       try {
         const sanitized = item.file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
         const hoje = new Date().toISOString().split("T")[0];
-        // RLS do bucket exige que o 1º segmento seja auth.uid()
         const path = `${user.id}/${CUSTOM_STORAGE_PREFIX}/${empresaId}/${item.pop || "sem-pop"}/${hoje}/${Date.now()}_${sanitized}`;
 
         const { error: upErr } = await supabase.storage.from("documentos-bpf").upload(path, item.file);
@@ -94,11 +125,29 @@ export default function ImportacaoMassa() {
         console.error("[ImportacaoMassa] falha:", err);
         alterar(item.id, { status: "erro", erro: err.message });
         erroCount++;
+        falhasExec.push({ nome: item.file.name, pop: item.pop || "", motivo: err?.message || "erro desconhecido" });
       }
       done++;
       setProgresso(Math.round((done / pendentes.length) * 100));
     }
     setEnviando(false);
+
+    // salva histórico
+    const registro: HistoricoExec = {
+      id: `h-${Date.now()}`,
+      data: new Date().toISOString(),
+      empresaId,
+      empresaNome: empresaAtiva?.nome,
+      total: pendentes.length,
+      ok: okCount,
+      erro: erroCount,
+      duracaoMs: Date.now() - inicio,
+      falhas: falhasExec,
+    };
+    const novoHist = [registro, ...historico].slice(0, MAX_HIST);
+    setHistorico(novoHist);
+    salvarHistorico(user.id, novoHist);
+
     if (erroCount > 0 && okCount > 0) {
       toast.warning(`${okCount} enviado(s), ${erroCount} falharam. Veja o detalhe em cada linha.`);
     } else if (erroCount > 0) {
@@ -107,6 +156,14 @@ export default function ImportacaoMassa() {
       toast.success(`Importação concluída: ${okCount} arquivo(s) enviado(s).`);
     }
   };
+
+  const limparHistorico = () => {
+    if (!user) return;
+    setHistorico([]);
+    salvarHistorico(user.id, []);
+    toast.success("Histórico limpo");
+  };
+
 
   if (!empresaId) {
     return (
@@ -238,6 +295,71 @@ export default function ImportacaoMassa() {
                 </div>
               ))}
             </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {historico.length > 0 && (
+        <Card>
+          <CardContent className="p-4 space-y-3">
+            <div className="flex items-center justify-between">
+              <button
+                type="button"
+                onClick={() => setHistAberto(a => !a)}
+                className="flex items-center gap-2 text-sm font-semibold hover:text-emerald-700 transition"
+              >
+                <History className="w-4 h-4 text-emerald-600" />
+                Histórico de importações ({historico.length})
+                {histAberto ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+              </button>
+              {histAberto && (
+                <Button variant="ghost" size="sm" onClick={limparHistorico} className="h-7 text-xs text-destructive">
+                  <Trash2 className="w-3 h-3 mr-1" /> Limpar histórico
+                </Button>
+              )}
+            </div>
+
+            {histAberto && (
+              <div className="divide-y max-h-[420px] overflow-y-auto -mx-2">
+                {historico.map(h => {
+                  const dt = new Date(h.data);
+                  const dur = h.duracaoMs < 1000 ? `${h.duracaoMs}ms` : `${(h.duracaoMs / 1000).toFixed(1)}s`;
+                  return (
+                    <div key={h.id} className="px-2 py-3 space-y-1">
+                      <div className="flex items-center justify-between flex-wrap gap-2">
+                        <p className="text-xs text-muted-foreground">
+                          {dt.toLocaleString("pt-BR")} · {h.empresaNome || h.empresaId.slice(0, 8)} · {dur}
+                        </p>
+                        <div className="flex gap-1">
+                          <Badge className="bg-emerald-500/15 text-emerald-700 border-emerald-200 text-[10px]">
+                            {h.ok} OK
+                          </Badge>
+                          {h.erro > 0 && (
+                            <Badge variant="destructive" className="text-[10px]">{h.erro} erro</Badge>
+                          )}
+                          <Badge variant="outline" className="text-[10px]">{h.total} total</Badge>
+                        </div>
+                      </div>
+                      {h.falhas.length > 0 && (
+                        <details className="text-xs">
+                          <summary className="cursor-pointer text-destructive hover:underline">
+                            Ver {h.falhas.length} falha(s)
+                          </summary>
+                          <div className="mt-1 pl-3 border-l-2 border-destructive/30 space-y-1">
+                            {h.falhas.map((f, i) => (
+                              <div key={i}>
+                                <p className="font-medium truncate" title={f.nome}>{f.nome}</p>
+                                <p className="text-muted-foreground">POP: {f.pop || "—"} · {f.motivo}</p>
+                              </div>
+                            ))}
+                          </div>
+                        </details>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </CardContent>
         </Card>
       )}
