@@ -243,7 +243,7 @@ export default function ImportacaoMassa() {
                   <SelectTrigger className="h-8 w-48 text-xs"><SelectValue placeholder="Aplicar POP a todos..." /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="__none__">— Sem POP —</SelectItem>
-                    {POPS_CUSTOM.map(p => <SelectItem key={p.codigo} value={p.codigo}>{p.codigo} — {p.nome}</SelectItem>)}
+                    {popsDisponiveis.map(p => <SelectItem key={p.codigo} value={p.codigo}>{p.codigo} — {p.nome}</SelectItem>)}
                   </SelectContent>
                 </Select>
                 <Button
