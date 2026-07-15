@@ -61,8 +61,10 @@ export default function ImportacaoMassa() {
     if (!user || !empresaId || items.length === 0) return;
     setEnviando(true);
     setProgresso(0);
-    let done = 0;
     const pendentes = items.filter(i => i.status !== "ok");
+    let done = 0;
+    let okCount = 0;
+    let erroCount = 0;
     for (const item of pendentes) {
       alterar(item.id, { status: "enviando" });
       try {
@@ -87,18 +89,23 @@ export default function ImportacaoMassa() {
         if (dbErr) throw dbErr;
 
         alterar(item.id, { status: "ok" });
+        okCount++;
       } catch (err: any) {
         console.error("[ImportacaoMassa] falha:", err);
         alterar(item.id, { status: "erro", erro: err.message });
+        erroCount++;
       }
       done++;
       setProgresso(Math.round((done / pendentes.length) * 100));
     }
     setEnviando(false);
-    const okCount = items.filter(i => i.status === "ok").length + pendentes.filter(p => (items.find(i => i.id === p.id)?.status ?? "") === "ok").length;
-    const erroCount = pendentes.filter(p => (items.find(i => i.id === p.id)?.status ?? "") === "erro").length;
-    if (erroCount > 0) toast.error(`${erroCount} arquivo(s) falharam. Veja o detalhe em cada linha.`);
-    else toast.success("Importação concluída");
+    if (erroCount > 0 && okCount > 0) {
+      toast.warning(`${okCount} enviado(s), ${erroCount} falharam. Veja o detalhe em cada linha.`);
+    } else if (erroCount > 0) {
+      toast.error(`${erroCount} arquivo(s) falharam. Veja o detalhe em cada linha.`);
+    } else {
+      toast.success(`Importação concluída: ${okCount} arquivo(s) enviado(s).`);
+    }
   };
 
   if (!empresaId) {
