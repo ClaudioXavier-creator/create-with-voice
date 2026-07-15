@@ -293,6 +293,16 @@ export default function ImportacaoMassa() {
                 >
                   <Sparkles className="w-3 h-3 mr-1" /> Auto-sugerir
                 </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={enviando || classificandoIA}
+                  onClick={classificarComIA}
+                  className="border-emerald-300 text-emerald-700 hover:bg-emerald-50"
+                >
+                  {classificandoIA ? <Loader2 className="w-3 h-3 mr-1 animate-spin" /> : <Sparkles className="w-3 h-3 mr-1" />}
+                  Classificar com IA
+                </Button>
                 <Button variant="outline" size="sm" onClick={() => setItems([])} disabled={enviando}>Limpar</Button>
                 <Button size="sm" onClick={enviar} disabled={enviando} className="bg-emerald-600 hover:bg-emerald-700">
                   {enviando && <Loader2 className="w-4 h-4 mr-1 animate-spin" />}
