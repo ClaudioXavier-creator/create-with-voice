@@ -60,8 +60,17 @@ export default function ImportacaoMassa() {
   const [historico, setHistorico] = useState<HistoricoExec[]>([]);
   const [histAberto, setHistAberto] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const { isAtivo, loading: loadingModulos } = useModulosCustom();
 
   const empresaId = empresaAtiva?.id;
+
+  const popAceito = (pop: string): boolean => {
+    if (!pop) return true; // sem POP = sempre aceito (vai para "sem-pop")
+    const mods = POP_TO_MODULOS[pop];
+    if (!mods || mods.length === 0) return true;
+    return mods.some(isAtivo);
+  };
+  const popsDisponiveis = POPS_CUSTOM.filter(p => popAceito(p.codigo));
 
   useEffect(() => { setHistorico(carregarHistorico(user?.id)); }, [user?.id]);
 
