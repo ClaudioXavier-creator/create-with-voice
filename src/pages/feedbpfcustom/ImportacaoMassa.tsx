@@ -59,8 +59,40 @@ export default function ImportacaoMassa() {
   const [progresso, setProgresso] = useState(0);
   const [historico, setHistorico] = useState<HistoricoExec[]>([]);
   const [histAberto, setHistAberto] = useState(false);
+  const [classificandoIA, setClassificandoIA] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const { isAtivo, loading: loadingModulos } = useModulosCustom();
+
+  const classificarComIA = async () => {
+    const alvos = items.filter(i => (i.status === "pendente" || i.status === "erro") && !i.pop);
+    if (alvos.length === 0) {
+      toast.info("Nenhum arquivo sem POP para classificar");
+      return;
+    }
+    setClassificandoIA(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("classificar-pops-ia", {
+        body: {
+          arquivos: alvos.map(i => ({ id: i.id, nome: i.file.name })),
+          pops_disponiveis: popsDisponiveis,
+        },
+      });
+      if (error) throw error;
+      if ((data as any)?.error) throw new Error((data as any).error);
+      const sugestoes: { id: string; pop: string }[] = (data as any)?.sugestoes || [];
+      let aplicados = 0;
+      setItems(prev => prev.map(i => {
+        const s = sugestoes.find(x => x.id === i.id);
+        if (s && s.pop && popAceito(s.pop)) { aplicados++; return { ...i, pop: s.pop }; }
+        return i;
+      }));
+      toast.success(`IA classificou ${aplicados} de ${alvos.length} arquivo(s)`);
+    } catch (err: any) {
+      toast.error("Erro na classificação IA: " + err.message);
+    } finally {
+      setClassificandoIA(false);
+    }
+  };
 
   const empresaId = empresaAtiva?.id;
 
@@ -260,6 +292,16 @@ export default function ImportacaoMassa() {
                   }}
                 >
                   <Sparkles className="w-3 h-3 mr-1" /> Auto-sugerir
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={enviando || classificandoIA}
+                  onClick={classificarComIA}
+                  className="border-emerald-300 text-emerald-700 hover:bg-emerald-50"
+                >
+                  {classificandoIA ? <Loader2 className="w-3 h-3 mr-1 animate-spin" /> : <Sparkles className="w-3 h-3 mr-1" />}
+                  Classificar com IA
                 </Button>
                 <Button variant="outline" size="sm" onClick={() => setItems([])} disabled={enviando}>Limpar</Button>
                 <Button size="sm" onClick={enviar} disabled={enviando} className="bg-emerald-600 hover:bg-emerald-700">
