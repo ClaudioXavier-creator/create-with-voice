@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { Upload, FileText, Trash2, CheckCircle2, Loader2, Sparkles } from "lucide-react";
+import { Upload, FileText, Trash2, CheckCircle2, Loader2, Sparkles, AlertTriangle, RefreshCw, Copy } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
