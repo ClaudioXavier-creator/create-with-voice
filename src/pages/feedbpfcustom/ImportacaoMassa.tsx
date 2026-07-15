@@ -11,7 +11,8 @@ import EmpresaSelector from "@/components/EmpresaSelector";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useEmpresa } from "@/hooks/useEmpresa";
-import { POPS_CUSTOM, sugerirPopPorNome, CUSTOM_STORAGE_PREFIX } from "@/config/feedBpfCustomConfig";
+import { POPS_CUSTOM, sugerirPopPorNome, CUSTOM_STORAGE_PREFIX, POP_TO_MODULOS } from "@/config/feedBpfCustomConfig";
+import { useModulosCustom } from "@/hooks/useModulosCustom";
 import { toast } from "sonner";
 
 interface HistoricoExec {
