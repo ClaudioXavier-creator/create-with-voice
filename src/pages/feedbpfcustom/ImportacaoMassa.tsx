@@ -1,5 +1,5 @@
-import { useRef, useState } from "react";
-import { Upload, FileText, Trash2, CheckCircle2, Loader2, Sparkles, AlertTriangle, RefreshCw, Copy } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Upload, FileText, Trash2, CheckCircle2, Loader2, Sparkles, AlertTriangle, RefreshCw, Copy, History, ChevronDown, ChevronUp } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,6 +13,31 @@ import { useAuth } from "@/hooks/useAuth";
 import { useEmpresa } from "@/hooks/useEmpresa";
 import { POPS_CUSTOM, sugerirPopPorNome, CUSTOM_STORAGE_PREFIX } from "@/config/feedBpfCustomConfig";
 import { toast } from "sonner";
+
+interface HistoricoExec {
+  id: string;
+  data: string; // ISO
+  empresaId: string;
+  empresaNome?: string;
+  total: number;
+  ok: number;
+  erro: number;
+  duracaoMs: number;
+  falhas: { nome: string; pop: string; motivo: string }[];
+}
+const HIST_KEY = "feedbpfcustom:importacao-massa:historico";
+const MAX_HIST = 20;
+
+function carregarHistorico(userId?: string): HistoricoExec[] {
+  if (!userId) return [];
+  try {
+    const raw = localStorage.getItem(`${HIST_KEY}:${userId}`);
+    return raw ? JSON.parse(raw) : [];
+  } catch { return []; }
+}
+function salvarHistorico(userId: string, hist: HistoricoExec[]) {
+  try { localStorage.setItem(`${HIST_KEY}:${userId}`, JSON.stringify(hist.slice(0, MAX_HIST))); } catch {}
+}
 
 interface Item {
   id: string;
