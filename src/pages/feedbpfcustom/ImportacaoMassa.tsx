@@ -11,7 +11,8 @@ import EmpresaSelector from "@/components/EmpresaSelector";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useEmpresa } from "@/hooks/useEmpresa";
-import { POPS_CUSTOM, sugerirPopPorNome, CUSTOM_STORAGE_PREFIX } from "@/config/feedBpfCustomConfig";
+import { POPS_CUSTOM, sugerirPopPorNome, CUSTOM_STORAGE_PREFIX, POP_TO_MODULOS } from "@/config/feedBpfCustomConfig";
+import { useModulosCustom } from "@/hooks/useModulosCustom";
 import { toast } from "sonner";
 
 interface HistoricoExec {
@@ -59,8 +60,17 @@ export default function ImportacaoMassa() {
   const [historico, setHistorico] = useState<HistoricoExec[]>([]);
   const [histAberto, setHistAberto] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const { isAtivo, loading: loadingModulos } = useModulosCustom();
 
   const empresaId = empresaAtiva?.id;
+
+  const popAceito = (pop: string): boolean => {
+    if (!pop) return true; // sem POP = sempre aceito (vai para "sem-pop")
+    const mods = POP_TO_MODULOS[pop];
+    if (!mods || mods.length === 0) return true;
+    return mods.some(isAtivo);
+  };
+  const popsDisponiveis = POPS_CUSTOM.filter(p => popAceito(p.codigo));
 
   useEffect(() => { setHistorico(carregarHistorico(user?.id)); }, [user?.id]);
 
@@ -68,11 +78,12 @@ export default function ImportacaoMassa() {
   const adicionar = (files: FileList | File[]) => {
     const novos: Item[] = Array.from(files).map(f => {
       const sugestao = sugerirPopPorNome(f.name);
+      const popFinal = sugestao && popAceito(sugestao) ? sugestao : "";
       return {
         id: `i-${++seq}`,
         file: f,
         titulo: f.name.replace(/\.[^.]+$/, "").replace(/[_-]/g, " "),
-        pop: sugestao || "",
+        pop: popFinal,
         status: "pendente",
       };
     });
@@ -98,6 +109,16 @@ export default function ImportacaoMassa() {
     let okCount = 0;
     let erroCount = 0;
     for (const item of pendentes) {
+      // Validação: POP deve estar habilitado nos módulos da empresa
+      if (item.pop && !popAceito(item.pop)) {
+        const motivo = `POP ${item.pop} não está ativo para esta empresa. Ative o módulo correspondente em Configuração ou remova/altere o POP.`;
+        alterar(item.id, { status: "erro", erro: motivo });
+        erroCount++;
+        falhasExec.push({ nome: item.file.name, pop: item.pop, motivo });
+        done++;
+        setProgresso(Math.round((done / pendentes.length) * 100));
+        continue;
+      }
       alterar(item.id, { status: "enviando" });
       try {
         const sanitized = item.file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
@@ -223,7 +244,7 @@ export default function ImportacaoMassa() {
                   <SelectTrigger className="h-8 w-48 text-xs"><SelectValue placeholder="Aplicar POP a todos..." /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="__none__">— Sem POP —</SelectItem>
-                    {POPS_CUSTOM.map(p => <SelectItem key={p.codigo} value={p.codigo}>{p.codigo} — {p.nome}</SelectItem>)}
+                    {popsDisponiveis.map(p => <SelectItem key={p.codigo} value={p.codigo}>{p.codigo} — {p.nome}</SelectItem>)}
                   </SelectContent>
                 </Select>
                 <Button
@@ -231,8 +252,11 @@ export default function ImportacaoMassa() {
                   size="sm"
                   disabled={enviando}
                   onClick={() => {
-                    setItems(prev => prev.map(i => ({ ...i, pop: i.pop || sugerirPopPorNome(i.file.name) || "" })));
-                    toast.success("Sugestões reaplicadas pelos nomes");
+                    setItems(prev => prev.map(i => {
+                      const sug = i.pop || sugerirPopPorNome(i.file.name) || "";
+                      return { ...i, pop: sug && popAceito(sug) ? sug : "" };
+                    }));
+                    toast.success("Sugestões reaplicadas (POPs inativos ignorados)");
                   }}
                 >
                   <Sparkles className="w-3 h-3 mr-1" /> Auto-sugerir
@@ -300,17 +324,24 @@ export default function ImportacaoMassa() {
 
 
             <div className="divide-y max-h-[400px] overflow-y-auto -mx-4">
-              {items.map(item => (
-                <div key={item.id} className="p-3 flex flex-col sm:flex-row sm:items-center gap-2">
+              {items.map(item => {
+                const popInvalido = !!item.pop && !popAceito(item.pop);
+                return (
+                <div key={item.id} className={`p-3 flex flex-col sm:flex-row sm:items-center gap-2 ${popInvalido ? "bg-amber-50/60" : ""}`}>
                   <FileText className="w-5 h-5 text-muted-foreground shrink-0" />
                   <div className="flex-1 min-w-0 space-y-1">
                     <Input value={item.titulo} onChange={e => alterar(item.id, { titulo: e.target.value })} className="h-8 text-sm" disabled={enviando} />
                     <p className="text-[11px] text-muted-foreground truncate">{item.file.name} · {(item.file.size / 1024).toFixed(0)} KB</p>
+                    {popInvalido && (
+                      <p className="text-[11px] text-amber-700 flex items-center gap-1">
+                        <AlertTriangle className="w-3 h-3" /> POP {item.pop} não está ativo nesta empresa
+                      </p>
+                    )}
                   </div>
                   <Select value={item.pop} onValueChange={v => alterar(item.id, { pop: v })} disabled={enviando}>
-                    <SelectTrigger className="h-8 w-32 text-xs shrink-0"><SelectValue placeholder="Escolher POP..." /></SelectTrigger>
+                    <SelectTrigger className={`h-8 w-32 text-xs shrink-0 ${popInvalido ? "border-amber-500" : ""}`}><SelectValue placeholder="Escolher POP..." /></SelectTrigger>
                     <SelectContent>
-                      {POPS_CUSTOM.map(p => <SelectItem key={p.codigo} value={p.codigo}>{p.codigo}</SelectItem>)}
+                      {popsDisponiveis.map(p => <SelectItem key={p.codigo} value={p.codigo}>{p.codigo}</SelectItem>)}
                     </SelectContent>
                   </Select>
                   {item.status === "ok" && <Badge className="bg-emerald-500/15 text-emerald-700 border-emerald-200"><CheckCircle2 className="w-3 h-3 mr-1" />OK</Badge>}
@@ -322,7 +353,8 @@ export default function ImportacaoMassa() {
                     </Button>
                   )}
                 </div>
-              ))}
+                );
+              })}
             </div>
           </CardContent>
         </Card>
