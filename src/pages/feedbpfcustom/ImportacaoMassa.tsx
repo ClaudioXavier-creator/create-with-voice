@@ -91,7 +91,9 @@ export default function ImportacaoMassa() {
     if (!user || !empresaId || items.length === 0) return;
     setEnviando(true);
     setProgresso(0);
+    const inicio = Date.now();
     const pendentes = items.filter(i => i.status !== "ok");
+    const falhasExec: HistoricoExec["falhas"] = [];
     let done = 0;
     let okCount = 0;
     let erroCount = 0;
@@ -100,7 +102,6 @@ export default function ImportacaoMassa() {
       try {
         const sanitized = item.file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
         const hoje = new Date().toISOString().split("T")[0];
-        // RLS do bucket exige que o 1º segmento seja auth.uid()
         const path = `${user.id}/${CUSTOM_STORAGE_PREFIX}/${empresaId}/${item.pop || "sem-pop"}/${hoje}/${Date.now()}_${sanitized}`;
 
         const { error: upErr } = await supabase.storage.from("documentos-bpf").upload(path, item.file);
@@ -124,11 +125,29 @@ export default function ImportacaoMassa() {
         console.error("[ImportacaoMassa] falha:", err);
         alterar(item.id, { status: "erro", erro: err.message });
         erroCount++;
+        falhasExec.push({ nome: item.file.name, pop: item.pop || "", motivo: err?.message || "erro desconhecido" });
       }
       done++;
       setProgresso(Math.round((done / pendentes.length) * 100));
     }
     setEnviando(false);
+
+    // salva histórico
+    const registro: HistoricoExec = {
+      id: `h-${Date.now()}`,
+      data: new Date().toISOString(),
+      empresaId,
+      empresaNome: empresaAtiva?.nome,
+      total: pendentes.length,
+      ok: okCount,
+      erro: erroCount,
+      duracaoMs: Date.now() - inicio,
+      falhas: falhasExec,
+    };
+    const novoHist = [registro, ...historico].slice(0, MAX_HIST);
+    setHistorico(novoHist);
+    salvarHistorico(user.id, novoHist);
+
     if (erroCount > 0 && okCount > 0) {
       toast.warning(`${okCount} enviado(s), ${erroCount} falharam. Veja o detalhe em cada linha.`);
     } else if (erroCount > 0) {
@@ -137,6 +156,14 @@ export default function ImportacaoMassa() {
       toast.success(`Importação concluída: ${okCount} arquivo(s) enviado(s).`);
     }
   };
+
+  const limparHistorico = () => {
+    if (!user) return;
+    setHistorico([]);
+    salvarHistorico(user.id, []);
+    toast.success("Histórico limpo");
+  };
+
 
   if (!empresaId) {
     return (
