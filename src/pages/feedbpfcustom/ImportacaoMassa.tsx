@@ -208,10 +208,35 @@ export default function ImportacaoMassa() {
 
       {items.length > 0 && (
         <Card>
-          <CardContent className="p-4 space-y-3">
-            <div className="flex items-center justify-between">
+        <CardContent className="p-4 space-y-3">
+            <div className="flex items-center justify-between flex-wrap gap-2">
               <p className="text-sm font-semibold">{items.length} arquivo(s) na fila</p>
-              <div className="flex gap-2">
+              <div className="flex gap-2 flex-wrap">
+                <Select
+                  onValueChange={v => {
+                    const pop = v === "__none__" ? "" : v;
+                    setItems(prev => prev.map(i => i.status === "pendente" || i.status === "erro" ? { ...i, pop } : i));
+                    toast.success(pop ? `POP ${pop} aplicado a todos` : "POP removido de todos");
+                  }}
+                  disabled={enviando}
+                >
+                  <SelectTrigger className="h-8 w-48 text-xs"><SelectValue placeholder="Aplicar POP a todos..." /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="__none__">— Sem POP —</SelectItem>
+                    {POPS_CUSTOM.map(p => <SelectItem key={p.codigo} value={p.codigo}>{p.codigo} — {p.nome}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={enviando}
+                  onClick={() => {
+                    setItems(prev => prev.map(i => ({ ...i, pop: i.pop || sugerirPopPorNome(i.file.name) || "" })));
+                    toast.success("Sugestões reaplicadas pelos nomes");
+                  }}
+                >
+                  <Sparkles className="w-3 h-3 mr-1" /> Auto-sugerir
+                </Button>
                 <Button variant="outline" size="sm" onClick={() => setItems([])} disabled={enviando}>Limpar</Button>
                 <Button size="sm" onClick={enviar} disabled={enviando} className="bg-emerald-600 hover:bg-emerald-700">
                   {enviando && <Loader2 className="w-4 h-4 mr-1 animate-spin" />}
@@ -219,6 +244,10 @@ export default function ImportacaoMassa() {
                 </Button>
               </div>
             </div>
+
+            <p className="text-[11px] text-muted-foreground">
+              💡 POP é opcional — arquivos sem POP ficam em "Sem classificação" e podem ser organizados depois em Meu Acervo.
+            </p>
 
             {enviando && <Progress value={progresso} className="h-2" />}
 
