@@ -320,17 +320,24 @@ export default function ImportacaoMassa() {
 
 
             <div className="divide-y max-h-[400px] overflow-y-auto -mx-4">
-              {items.map(item => (
-                <div key={item.id} className="p-3 flex flex-col sm:flex-row sm:items-center gap-2">
+              {items.map(item => {
+                const popInvalido = !!item.pop && !popAceito(item.pop);
+                return (
+                <div key={item.id} className={`p-3 flex flex-col sm:flex-row sm:items-center gap-2 ${popInvalido ? "bg-amber-50/60" : ""}`}>
                   <FileText className="w-5 h-5 text-muted-foreground shrink-0" />
                   <div className="flex-1 min-w-0 space-y-1">
                     <Input value={item.titulo} onChange={e => alterar(item.id, { titulo: e.target.value })} className="h-8 text-sm" disabled={enviando} />
                     <p className="text-[11px] text-muted-foreground truncate">{item.file.name} · {(item.file.size / 1024).toFixed(0)} KB</p>
+                    {popInvalido && (
+                      <p className="text-[11px] text-amber-700 flex items-center gap-1">
+                        <AlertTriangle className="w-3 h-3" /> POP {item.pop} não está ativo nesta empresa
+                      </p>
+                    )}
                   </div>
                   <Select value={item.pop} onValueChange={v => alterar(item.id, { pop: v })} disabled={enviando}>
-                    <SelectTrigger className="h-8 w-32 text-xs shrink-0"><SelectValue placeholder="Escolher POP..." /></SelectTrigger>
+                    <SelectTrigger className={`h-8 w-32 text-xs shrink-0 ${popInvalido ? "border-amber-500" : ""}`}><SelectValue placeholder="Escolher POP..." /></SelectTrigger>
                     <SelectContent>
-                      {POPS_CUSTOM.map(p => <SelectItem key={p.codigo} value={p.codigo}>{p.codigo}</SelectItem>)}
+                      {popsDisponiveis.map(p => <SelectItem key={p.codigo} value={p.codigo}>{p.codigo}</SelectItem>)}
                     </SelectContent>
                   </Select>
                   {item.status === "ok" && <Badge className="bg-emerald-500/15 text-emerald-700 border-emerald-200"><CheckCircle2 className="w-3 h-3 mr-1" />OK</Badge>}
@@ -342,7 +349,8 @@ export default function ImportacaoMassa() {
                     </Button>
                   )}
                 </div>
-              ))}
+                );
+              })}
             </div>
           </CardContent>
         </Card>
