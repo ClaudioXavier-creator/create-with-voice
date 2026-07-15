@@ -78,11 +78,12 @@ export default function ImportacaoMassa() {
   const adicionar = (files: FileList | File[]) => {
     const novos: Item[] = Array.from(files).map(f => {
       const sugestao = sugerirPopPorNome(f.name);
+      const popFinal = sugestao && popAceito(sugestao) ? sugestao : "";
       return {
         id: `i-${++seq}`,
         file: f,
         titulo: f.name.replace(/\.[^.]+$/, "").replace(/[_-]/g, " "),
-        pop: sugestao || "",
+        pop: popFinal,
         status: "pendente",
       };
     });
