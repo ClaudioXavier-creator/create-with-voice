@@ -108,6 +108,16 @@ export default function ImportacaoMassa() {
     let okCount = 0;
     let erroCount = 0;
     for (const item of pendentes) {
+      // Validação: POP deve estar habilitado nos módulos da empresa
+      if (item.pop && !popAceito(item.pop)) {
+        const motivo = `POP ${item.pop} não está ativo para esta empresa. Ative o módulo correspondente em Configuração ou remova/altere o POP.`;
+        alterar(item.id, { status: "erro", erro: motivo });
+        erroCount++;
+        falhasExec.push({ nome: item.file.name, pop: item.pop, motivo });
+        done++;
+        setProgresso(Math.round((done / pendentes.length) * 100));
+        continue;
+      }
       alterar(item.id, { status: "enviando" });
       try {
         const sanitized = item.file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
