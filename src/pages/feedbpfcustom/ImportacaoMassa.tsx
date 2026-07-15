@@ -251,8 +251,11 @@ export default function ImportacaoMassa() {
                   size="sm"
                   disabled={enviando}
                   onClick={() => {
-                    setItems(prev => prev.map(i => ({ ...i, pop: i.pop || sugerirPopPorNome(i.file.name) || "" })));
-                    toast.success("Sugestões reaplicadas pelos nomes");
+                    setItems(prev => prev.map(i => {
+                      const sug = i.pop || sugerirPopPorNome(i.file.name) || "";
+                      return { ...i, pop: sug && popAceito(sug) ? sug : "" };
+                    }));
+                    toast.success("Sugestões reaplicadas (POPs inativos ignorados)");
                   }}
                 >
                   <Sparkles className="w-3 h-3 mr-1" /> Auto-sugerir
