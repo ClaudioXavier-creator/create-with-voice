@@ -298,6 +298,71 @@ export default function ImportacaoMassa() {
           </CardContent>
         </Card>
       )}
+
+      {historico.length > 0 && (
+        <Card>
+          <CardContent className="p-4 space-y-3">
+            <div className="flex items-center justify-between">
+              <button
+                type="button"
+                onClick={() => setHistAberto(a => !a)}
+                className="flex items-center gap-2 text-sm font-semibold hover:text-emerald-700 transition"
+              >
+                <History className="w-4 h-4 text-emerald-600" />
+                Histórico de importações ({historico.length})
+                {histAberto ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+              </button>
+              {histAberto && (
+                <Button variant="ghost" size="sm" onClick={limparHistorico} className="h-7 text-xs text-destructive">
+                  <Trash2 className="w-3 h-3 mr-1" /> Limpar histórico
+                </Button>
+              )}
+            </div>
+
+            {histAberto && (
+              <div className="divide-y max-h-[420px] overflow-y-auto -mx-2">
+                {historico.map(h => {
+                  const dt = new Date(h.data);
+                  const dur = h.duracaoMs < 1000 ? `${h.duracaoMs}ms` : `${(h.duracaoMs / 1000).toFixed(1)}s`;
+                  return (
+                    <div key={h.id} className="px-2 py-3 space-y-1">
+                      <div className="flex items-center justify-between flex-wrap gap-2">
+                        <p className="text-xs text-muted-foreground">
+                          {dt.toLocaleString("pt-BR")} · {h.empresaNome || h.empresaId.slice(0, 8)} · {dur}
+                        </p>
+                        <div className="flex gap-1">
+                          <Badge className="bg-emerald-500/15 text-emerald-700 border-emerald-200 text-[10px]">
+                            {h.ok} OK
+                          </Badge>
+                          {h.erro > 0 && (
+                            <Badge variant="destructive" className="text-[10px]">{h.erro} erro</Badge>
+                          )}
+                          <Badge variant="outline" className="text-[10px]">{h.total} total</Badge>
+                        </div>
+                      </div>
+                      {h.falhas.length > 0 && (
+                        <details className="text-xs">
+                          <summary className="cursor-pointer text-destructive hover:underline">
+                            Ver {h.falhas.length} falha(s)
+                          </summary>
+                          <div className="mt-1 pl-3 border-l-2 border-destructive/30 space-y-1">
+                            {h.falhas.map((f, i) => (
+                              <div key={i}>
+                                <p className="font-medium truncate" title={f.nome}>{f.nome}</p>
+                                <p className="text-muted-foreground">POP: {f.pop || "—"} · {f.motivo}</p>
+                              </div>
+                            ))}
+                          </div>
+                        </details>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }
