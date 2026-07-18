@@ -6313,7 +6313,6 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      _export_auth_users_full: { Args: never; Returns: Json }
       aprovar_documento_pop: {
         Args: {
           _aprovador_nome: string
