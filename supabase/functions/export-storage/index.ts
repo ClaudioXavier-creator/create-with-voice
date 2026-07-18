@@ -52,10 +52,14 @@ Deno.serve(async (req) => {
   }
 
   const expected = Deno.env.get("STORAGE_EXPORT_TOKEN");
+  const expectedAlt = Deno.env.get("STORAGE_EXPORT_TOKEN_ALT");
   const provided =
     req.headers.get("x-export-token") ??
     new URL(req.url).searchParams.get("token");
-  if (!expected || provided !== expected) {
+  const ok =
+    (!!expected && provided === expected) ||
+    (!!expectedAlt && provided === expectedAlt);
+  if (!ok) {
     return new Response(JSON.stringify({ error: "unauthorized" }), {
       status: 401,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
