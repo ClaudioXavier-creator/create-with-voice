@@ -119,7 +119,9 @@ Deno.serve(async (req) => {
 
       let result = [...consultor, ...diretas];
       if (filterProduto) {
-        result = result.filter(r => r.produto?.toLowerCase() === filterProduto.toLowerCase());
+        result = result.filter(r =>
+          (r.produto || "").toString().toLowerCase().replace(/[^a-z0-9]/g, "") === filterProduto
+        );
       }
 
       return new Response(JSON.stringify(result), {
