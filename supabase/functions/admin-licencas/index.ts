@@ -154,7 +154,9 @@ Deno.serve(async (req) => {
         ? nivel.toLowerCase()
         : "entrada";
 
-      const normalizedProduto = String(produto).toLowerCase();
+      // Normaliza igual ao hook useLicense (remove _, -, espaços etc.)
+      // para evitar divergência tipo "feed_bpf" vs "feedbpf"
+      const normalizedProduto = String(produto).toLowerCase().replace(/[^a-z0-9]/g, "");
 
       // Check duplicate
       let existsQuery = adminClient
