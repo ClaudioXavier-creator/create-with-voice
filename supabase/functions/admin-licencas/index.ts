@@ -55,14 +55,17 @@ Deno.serve(async (req) => {
     const { action, ...params } = await req.json();
 
     if (action === "list") {
-      const { produto: filterProduto } = params;
+      const { produto: filterProdutoRaw } = params;
+      const filterProduto = filterProdutoRaw
+        ? String(filterProdutoRaw).toLowerCase().replace(/[^a-z0-9]/g, "")
+        : null;
       let licenseQuery = adminClient
         .from("licencas")
         .select("*, empresas(nome)")
         .order("created_at", { ascending: false });
       
       if (filterProduto) {
-        licenseQuery = licenseQuery.eq("produto", filterProduto.toLowerCase());
+        licenseQuery = licenseQuery.eq("produto", filterProduto);
       }
 
       const [licensesRes, vinculosRes, authUsersRes] = await Promise.all([
@@ -116,7 +119,9 @@ Deno.serve(async (req) => {
 
       let result = [...consultor, ...diretas];
       if (filterProduto) {
-        result = result.filter(r => r.produto?.toLowerCase() === filterProduto.toLowerCase());
+        result = result.filter(r =>
+          (r.produto || "").toString().toLowerCase().replace(/[^a-z0-9]/g, "") === filterProduto
+        );
       }
 
       return new Response(JSON.stringify(result), {
@@ -154,7 +159,9 @@ Deno.serve(async (req) => {
         ? nivel.toLowerCase()
         : "entrada";
 
-      const normalizedProduto = String(produto).toLowerCase();
+      // Normaliza igual ao hook useLicense (remove _, -, espaços etc.)
+      // para evitar divergência tipo "feed_bpf" vs "feedbpf"
+      const normalizedProduto = String(produto).toLowerCase().replace(/[^a-z0-9]/g, "");
 
       // Check duplicate
       let existsQuery = adminClient
