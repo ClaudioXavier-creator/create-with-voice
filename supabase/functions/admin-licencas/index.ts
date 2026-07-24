@@ -55,14 +55,17 @@ Deno.serve(async (req) => {
     const { action, ...params } = await req.json();
 
     if (action === "list") {
-      const { produto: filterProduto } = params;
+      const { produto: filterProdutoRaw } = params;
+      const filterProduto = filterProdutoRaw
+        ? String(filterProdutoRaw).toLowerCase().replace(/[^a-z0-9]/g, "")
+        : null;
       let licenseQuery = adminClient
         .from("licencas")
         .select("*, empresas(nome)")
         .order("created_at", { ascending: false });
       
       if (filterProduto) {
-        licenseQuery = licenseQuery.eq("produto", filterProduto.toLowerCase());
+        licenseQuery = licenseQuery.eq("produto", filterProduto);
       }
 
       const [licensesRes, vinculosRes, authUsersRes] = await Promise.all([
