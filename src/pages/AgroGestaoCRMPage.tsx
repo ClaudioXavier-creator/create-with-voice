@@ -37,9 +37,9 @@ export default function AgroGestaoCRMPage() {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Seo
-        title="AgroGest\u00e3o \u2014 Gest\u00e3o Comercial e T\u00e9cnica no Agroneg\u00f3cio"
-        description="Pipeline comercial, visitas e indicadores para equipes t\u00e9cnicas do agroneg\u00f3cio em uma \u00fanica plataforma."
-        jsonLd={{"@context": "https://schema.org", "@type": "Product", "name": "AgroGest\u00e3o", "description": "Gest\u00e3o comercial e t\u00e9cnica para o agroneg\u00f3cio.", "brand": {"@type": "Brand", "name": "BPF_Consult"}}}
+        title="AgroGestão — Gestão Comercial e Técnica no Agronegócio"
+        description="Pipeline comercial, visitas e indicadores para equipes técnicas do agronegócio em uma única plataforma."
+        jsonLd={{"@context": "https://schema.org", "@type": "Product", "name": "AgroGestão", "description": "Gestão comercial e técnica para o agronegócio.", "brand": {"@type": "Brand", "name": "BPF_Consult"}}}
       />
       <header className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 via-indigo-500/5 to-primary/10" />

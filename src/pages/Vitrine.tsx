@@ -168,9 +168,9 @@ export default function Vitrine() {
   return (
     <div className="min-h-screen bg-[#F7F5F0]">
       <Seo
-        title="BPF_Consult \u2014 Software de Boas Pr\u00e1ticas para F\u00e1bricas de Ra\u00e7\u00e3o"
-        description="Plataforma completa de conformidade MAPA: POPs, rastreabilidade, auditorias e r\u00f3tulos para f\u00e1bricas de ra\u00e7\u00e3o e nutri\u00e7\u00e3o animal."
-        jsonLd={{"@context": "https://schema.org", "@type": "Organization", "name": "BPF_Consult", "url": "https://www.bpfconsult.com.br", "description": "Software de conformidade MAPA para f\u00e1bricas de ra\u00e7\u00e3o e nutri\u00e7\u00e3o animal."}}
+        title="BPF_Consult — Software de Boas Práticas para Fábricas de Ração"
+        description="Plataforma completa de conformidade MAPA: POPs, rastreabilidade, auditorias e rótulos para fábricas de ração e nutrição animal."
+        jsonLd={{"@context": "https://schema.org", "@type": "Organization", "name": "BPF_Consult", "url": "https://www.bpfconsult.com.br", "description": "Software de conformidade MAPA para fábricas de ração e nutrição animal."}}
       />
       {/* Top Banner - Urgency */}
       <div className="bg-[#173404] text-[#97C459] py-2 px-4 text-center text-xs font-bold tracking-widest uppercase">

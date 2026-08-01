@@ -101,9 +101,9 @@ export default function RotulosBPFPage() {
   return (
     <div className="min-h-screen bg-background">
       <Seo
-        title="Nutri_Agro Labels \u2014 R\u00f3tulos e RTPI conforme IN MAPA"
-        description="Crie r\u00f3tulos e registros RTPI com n\u00edveis de garantia validados, convers\u00e3o de unidades e exporta\u00e7\u00e3o ZPL."
-        jsonLd={{"@context": "https://schema.org", "@type": "Product", "name": "Nutri_Agro Labels", "description": "Editor de r\u00f3tulos e RTPI para produtos de nutri\u00e7\u00e3o animal.", "brand": {"@type": "Brand", "name": "BPF_Consult"}}}
+        title="Nutri_Agro Labels — Rótulos e RTPI conforme IN MAPA"
+        description="Crie rótulos e registros RTPI com níveis de garantia validados, conversão de unidades e exportação ZPL."
+        jsonLd={{"@context": "https://schema.org", "@type": "Product", "name": "Nutri_Agro Labels", "description": "Editor de rótulos e RTPI para produtos de nutrição animal.", "brand": {"@type": "Brand", "name": "BPF_Consult"}}}
       />
 
       {checkoutStatus && (

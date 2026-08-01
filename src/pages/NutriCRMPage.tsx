@@ -54,9 +54,9 @@ export default function NutriCRMPage() {
   return (
     <div className="min-h-screen bg-background">
       <Seo
-        title="NutriCRM \u2014 CRM para Consultores e Nutricionistas Animais"
-        description="Gerencie clientes, visitas t\u00e9cnicas, projetos e metas comerciais em um CRM feito para nutri\u00e7\u00e3o animal."
-        jsonLd={{"@context": "https://schema.org", "@type": "Product", "name": "NutriCRM", "description": "CRM t\u00e9cnico-comercial para consultores em nutri\u00e7\u00e3o animal.", "brand": {"@type": "Brand", "name": "BPF_Consult"}}}
+        title="NutriCRM — CRM para Consultores e Nutricionistas Animais"
+        description="Gerencie clientes, visitas técnicas, projetos e metas comerciais em um CRM feito para nutrição animal."
+        jsonLd={{"@context": "https://schema.org", "@type": "Product", "name": "NutriCRM", "description": "CRM técnico-comercial para consultores em nutrição animal.", "brand": {"@type": "Brand", "name": "BPF_Consult"}}}
       />
       <header className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-amber-500/10 via-orange-500/5 to-primary/10" />

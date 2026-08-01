@@ -53,9 +53,9 @@ export default function AgroRCCRMPage() {
   return (
     <div className="min-h-screen bg-background">
       <Seo
-        title="Agro RC \u2014 CRM de Representantes Comerciais do Agro"
-        description="Controle carteira de clientes, visitas, pipeline e metas de representantes comerciais do agroneg\u00f3cio."
-        jsonLd={{"@context": "https://schema.org", "@type": "Product", "name": "Agro RC", "description": "CRM para representantes comerciais do agroneg\u00f3cio.", "brand": {"@type": "Brand", "name": "BPF_Consult"}}}
+        title="Agro RC — CRM de Representantes Comerciais do Agro"
+        description="Controle carteira de clientes, visitas, pipeline e metas de representantes comerciais do agronegócio."
+        jsonLd={{"@context": "https://schema.org", "@type": "Product", "name": "Agro RC", "description": "CRM para representantes comerciais do agronegócio.", "brand": {"@type": "Brand", "name": "BPF_Consult"}}}
       />
       <header className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 via-violet-500/5 to-primary/10" />

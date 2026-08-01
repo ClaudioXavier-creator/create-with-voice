@@ -30,8 +30,8 @@ export default function AuditsBPFPage() {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Seo
-        title="Audits_BPF \u2014 Auditorias e Checklists MAPA para F\u00e1bricas"
-        description="Conduza auditorias internas com checklists do Decreto 12.031/2024, planos de a\u00e7\u00e3o e relat\u00f3rios prontos para o fiscal."
+        title="Audits_BPF — Auditorias e Checklists MAPA para Fábricas"
+        description="Conduza auditorias internas com checklists do Decreto 12.031/2024, planos de ação e relatórios prontos para o fiscal."
         jsonLd={{"@context": "https://schema.org", "@type": "Product", "name": "Audits_BPF", "description": "Plataforma de auditorias internas e checklists de conformidade MAPA.", "brand": {"@type": "Brand", "name": "BPF_Consult"}}}
       />
       <header className="relative overflow-hidden">

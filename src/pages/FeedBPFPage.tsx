@@ -48,9 +48,9 @@ export default function FeedBPFPage() {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Seo
-        title="Feed_BPF \u2014 Gest\u00e3o de Boas Pr\u00e1ticas de Fabrica\u00e7\u00e3o de Ra\u00e7\u00e3o"
-        description="Digitalize os 10 POPs obrigat\u00f3rios da IN 04/2007, rastreabilidade e recall conforme o Decreto 12.031/2024."
-        jsonLd={{"@context": "https://schema.org", "@type": "Product", "name": "Feed_BPF", "description": "Sistema de gest\u00e3o de Boas Pr\u00e1ticas de Fabrica\u00e7\u00e3o para f\u00e1bricas de ra\u00e7\u00e3o.", "brand": {"@type": "Brand", "name": "BPF_Consult"}}}
+        title="Feed_BPF — Gestão de Boas Práticas de Fabricação de Ração"
+        description="Digitalize os 10 POPs obrigatórios da IN 04/2007, rastreabilidade e recall conforme o Decreto 12.031/2024."
+        jsonLd={{"@context": "https://schema.org", "@type": "Product", "name": "Feed_BPF", "description": "Sistema de gestão de Boas Práticas de Fabricação para fábricas de ração.", "brand": {"@type": "Brand", "name": "BPF_Consult"}}}
       />
       <header className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-sky-500/10 via-blue-500/5 to-primary/10" />
