@@ -385,6 +385,7 @@ const AppRoutes = () => {
         />
       </Routes>
     </Suspense>
+    </AppErrorBoundary>
   );
 };
 
