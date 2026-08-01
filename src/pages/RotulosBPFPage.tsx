@@ -11,6 +11,7 @@ import logoBpfConsult from "@/assets/logo-bpf-consult.png";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { Seo } from "@/components/Seo";
 
 const PLANOS_INFO: Record<string, { titulo: string; preco: string; periodo: string; nota: string }> = {
   "individual-mensal":    { titulo: "Individual", preco: "R$ 97,00",   periodo: "Mensal",    nota: "Assinatura recorrente mensal" },
@@ -99,6 +100,11 @@ export default function RotulosBPFPage() {
 
   return (
     <div className="min-h-screen bg-background">
+      <Seo
+        title="Nutri_Agro Labels \u2014 R\u00f3tulos e RTPI conforme IN MAPA"
+        description="Crie r\u00f3tulos e registros RTPI com n\u00edveis de garantia validados, convers\u00e3o de unidades e exporta\u00e7\u00e3o ZPL."
+        jsonLd={{"@context": "https://schema.org", "@type": "Product", "name": "Nutri_Agro Labels", "description": "Editor de r\u00f3tulos e RTPI para produtos de nutri\u00e7\u00e3o animal.", "brand": {"@type": "Brand", "name": "BPF_Consult"}}}
+      />
 
       {checkoutStatus && (
         <section className="max-w-6xl mx-auto px-4 pt-6">

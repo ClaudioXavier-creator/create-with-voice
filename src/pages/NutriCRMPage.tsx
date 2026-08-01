@@ -11,6 +11,7 @@ import logoBpfConsult from "@/assets/logo-bpf-consult.png";
 import dashboardPreview from "@/assets/nutricrm-dashboard-preview.jpg";
 
 import { useAuth } from "@/hooks/useAuth";
+import { Seo } from "@/components/Seo";
 
 const funcionalidades = [
   { icon: Users, title: "Gestão de Clientes", desc: "Cadastro completo de clientes e prospects com histórico de interações, contratos e dados técnicos." },
@@ -52,6 +53,11 @@ export default function NutriCRMPage() {
 
   return (
     <div className="min-h-screen bg-background">
+      <Seo
+        title="NutriCRM \u2014 CRM para Consultores e Nutricionistas Animais"
+        description="Gerencie clientes, visitas t\u00e9cnicas, projetos e metas comerciais em um CRM feito para nutri\u00e7\u00e3o animal."
+        jsonLd={{"@context": "https://schema.org", "@type": "Product", "name": "NutriCRM", "description": "CRM t\u00e9cnico-comercial para consultores em nutri\u00e7\u00e3o animal.", "brand": {"@type": "Brand", "name": "BPF_Consult"}}}
+      />
       <header className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-amber-500/10 via-orange-500/5 to-primary/10" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,hsl(30,80%,50%,0.08),transparent_60%)]" />
