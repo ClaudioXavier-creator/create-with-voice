@@ -104,11 +104,20 @@ export default function Producao() {
 
   const fetchData = async () => {
     if (!user) return;
-    let q = supabase.from("producao").select("*").order("data", { ascending: false });
-    if (empresaAtiva) q = q.eq("empresa_id", empresaAtiva.id);
-    const { data } = await q;
-    if (data) setItems(data);
-    setLoading(false);
+    setLoading(true);
+    try {
+      let q = supabase.from("producao").select("*").order("data", { ascending: false });
+      if (empresaAtiva) q = q.eq("empresa_id", empresaAtiva.id);
+      const { data, error } = await q;
+      if (error) throw error;
+      setItems(data || []);
+    } catch (err) {
+      console.error("[Producao] fetchData", err);
+      toast.error("Erro ao carregar registros de produção");
+      setItems([]);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => { 
