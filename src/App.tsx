@@ -260,7 +260,9 @@ const InternalRoutes = () => (
 );
 
 const AppRoutes = () => {
+  const location = useLocation();
   return (
+    <AppErrorBoundary key={location.pathname}>
     <Suspense fallback={<PageLoader />}>
       <Routes>
         <Route path="/" element={<Vitrine />} />
