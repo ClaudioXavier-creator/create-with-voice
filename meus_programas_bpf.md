@@ -13,7 +13,7 @@ Este documento lista todos os programas desenvolvidos sob a marca **BPF_Consult*
 | **Agro RC CRM (Demo)** | `agrorc_demo` | [Agro CRM Demo](/projects/127b1ad7-9b13-4bf4-bdb3-27b6168c48ba) | https://agro-farm-vision.lovable.app |
 | **Agro RC CRM (Beta)** | `agrorc_beta` | [Agro CRM](/projects/ebcef114-655c-4417-9779-4a70993d3306) | https://soil-to-client.lovable.app |
 | **NutriCRM** | `nutricrm` | [Voice On High](/projects/c3aa7714-37a0-482f-91e1-df2d41d4c084) | - |
-| **Agent Hub Pro** | `agente_hub` | [Agent Hub Pro](/projects/5017506e-10c5-4b5c-8305-236fccf62053) | https://rapid-ai-ally.lovable.app |
+| **Agente Hub** | `agente_hub` | [Agent Hub Pro](/projects/5017506e-10c5-4b5c-8305-236fccf62053) | https://www.bpfconsult.com.br |
 | **My Project Hub** | `project_hub` | [My Project Hub](/projects/9fa7215e-4fa7-478e-ada3-a5b2ebd368b3) | - |
 | **Nutri Agro Labels** | `rotulos` | [BPF Site Sync](/projects/1b26243d-b70d-4e7a-8d32-08785733a335) | https://bpf-solutions-suite.lovable.app/rotulos |
 
