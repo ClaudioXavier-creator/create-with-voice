@@ -1,3 +1,4 @@
+// me passe um arquivo com todos os meus programas nominados, quais os nomes genericos, e os repositórios do github
 import React, { Suspense, lazy, useEffect } from "react";
 
 
