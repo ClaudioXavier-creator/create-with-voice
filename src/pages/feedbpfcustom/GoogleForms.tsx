@@ -1,15 +1,15 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowLeft, Copy, Check, RefreshCcw, ExternalLink, FileText, Send, Loader2 } from "lucide-react";
+import { ArrowLeft, ExternalLink, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
-import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
 import { useEmpresa } from "@/hooks/useEmpresa";
 import { toast } from "sonner";
+import { AssistenteGoogleForms } from "@/components/feedbpfcustom/AssistenteGoogleForms";
+import type { CampoModelo } from "@/config/feedBpfCustomConfig";
 
 const WEBHOOK_URL = "https://uyrcxfypdzasdminxizq.supabase.co/functions/v1/google-forms-webhook";
 
