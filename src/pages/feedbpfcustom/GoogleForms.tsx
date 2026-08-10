@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowLeft, Copy, Check, RefreshCcw, ExternalLink, FileText } from "lucide-react";
+import { ArrowLeft, Copy, Check, RefreshCcw, ExternalLink, FileText, Send, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -27,6 +27,8 @@ export default function GoogleForms() {
   const [selecionado, setSelecionado] = useState<string>("");
   const [copiado, setCopiado] = useState<string>("");
   const [loading, setLoading] = useState(true);
+  const [testando, setTestando] = useState(false);
+  const [resultadoTeste, setResultadoTeste] = useState<{ ok: boolean; msg: string } | null>(null);
 
   const modelo = modelos.find((m) => m.id === selecionado);
 
