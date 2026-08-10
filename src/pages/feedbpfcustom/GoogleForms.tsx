@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowLeft, ExternalLink, FileText } from "lucide-react";
+import { ArrowLeft, ExternalLink, FileText, GraduationCap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -69,7 +69,13 @@ export default function GoogleForms() {
             Cada resposta enviada no Google Forms vira automaticamente um Registro Digital assinado com hash SHA-256.
           </p>
         </div>
+        <Button variant="outline" asChild className="shrink-0">
+          <Link to="/feedbpf-custom/tutorial-google">
+            <GraduationCap className="h-4 w-4 mr-1" /> Ver tutorial passo a passo
+          </Link>
+        </Button>
       </div>
+
 
       {empresaAtiva?.id && userId && (
         <ModoRapidoForms
