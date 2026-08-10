@@ -26,10 +26,7 @@ export default function GoogleForms() {
   const { empresaAtiva } = useEmpresa();
   const [modelos, setModelos] = useState<Modelo[]>([]);
   const [selecionado, setSelecionado] = useState<string>("");
-  const [copiado, setCopiado] = useState<string>("");
   const [loading, setLoading] = useState(true);
-  const [testando, setTestando] = useState(false);
-  const [resultadoTeste, setResultadoTeste] = useState<{ ok: boolean; msg: string } | null>(null);
 
   const modelo = modelos.find((m) => m.id === selecionado);
 
