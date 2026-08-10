@@ -65,10 +65,28 @@ export default function GoogleForms() {
         </div>
       </div>
 
+      {empresaAtiva?.id && userId && (
+        <ModoRapidoForms
+          empresaId={empresaAtiva.id}
+          userId={userId}
+          onModeloCriado={async (id) => {
+            const { data } = await supabase
+              .from("modelos_empresa")
+              .select("id, nome, pop_codigo, webhook_token, ativo, campos")
+              .eq("empresa_id", empresaAtiva.id)
+              .eq("ativo", true)
+              .order("nome");
+            setModelos((data as unknown as Modelo[]) ?? []);
+            setSelecionado(id);
+          }}
+        />
+      )}
+
       <Card>
         <CardHeader>
-          <CardTitle>1. Escolha o modelo que receberá as respostas</CardTitle>
+          <CardTitle>Ou escolha um modelo já existente</CardTitle>
         </CardHeader>
+
         <CardContent className="space-y-3">
           {loading ? (
             <p className="text-sm text-muted-foreground">Carregando modelos…</p>
