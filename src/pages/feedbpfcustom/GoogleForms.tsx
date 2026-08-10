@@ -9,7 +9,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { useEmpresa } from "@/hooks/useEmpresa";
 import { toast } from "sonner";
 import { AssistenteGoogleForms } from "@/components/feedbpfcustom/AssistenteGoogleForms";
+import { ModoRapidoForms } from "@/components/feedbpfcustom/ModoRapidoForms";
+import { useAuth } from "@/hooks/useAuth";
 import type { CampoModelo } from "@/config/feedBpfCustomConfig";
+
 
 const WEBHOOK_URL = "https://uyrcxfypdzasdminxizq.supabase.co/functions/v1/google-forms-webhook";
 
