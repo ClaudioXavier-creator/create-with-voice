@@ -19,6 +19,7 @@ interface Modelo {
   pop_codigo: string | null;
   webhook_token: string | null;
   ativo: boolean;
+  campos: CampoModelo[];
 }
 
 export default function GoogleForms() {
