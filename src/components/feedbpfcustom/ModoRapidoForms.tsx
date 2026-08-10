@@ -33,7 +33,7 @@ function slugId(nome: string): string {
 function inferirTipo(titulo: string): CampoTipo {
   const t = titulo.toLowerCase();
   if (/(data|dia|quando)/.test(t)) return "data";
-  if (/(hora|horário|horario)/.test(t)) return "hora";
+  if (/(hora|horário|horario)/.test(t)) return "texto";
   if (/(quantidade|qtd|peso|temperatura|ph|cloro|número|numero|nº|valor|dose)/.test(t)) return "numero";
   if (/(conforme|ok\?|houve|possui|existe|sim\/não|sim\/nao|checou|verificado)/.test(t)) return "checkbox";
   return "texto";
