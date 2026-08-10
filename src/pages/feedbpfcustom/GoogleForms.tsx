@@ -41,7 +41,7 @@ export default function GoogleForms() {
         .eq("ativo", true)
         .order("nome");
       if (error) toast.error("Erro ao carregar modelos");
-      setModelos((data as Modelo[]) ?? []);
+      setModelos((data as unknown as Modelo[]) ?? []);
       setLoading(false);
     })();
   }, [empresaAtiva?.id]);
