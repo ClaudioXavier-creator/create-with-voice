@@ -168,6 +168,27 @@ export default function TutorialCustom() {
         </CardContent>
       </Card>
 
+      {/* CTA para o Tutorial Google Forms/Sheets */}
+      <Card className="border-2 border-emerald-500/40 bg-gradient-to-br from-emerald-500/10 to-teal-500/5">
+        <CardContent className="p-5 sm:p-6 flex flex-col sm:flex-row items-start sm:items-center gap-4">
+          <div className="w-12 h-12 rounded-xl bg-emerald-600 flex items-center justify-center shrink-0">
+            <FileSpreadsheet className="w-6 h-6 text-white" />
+          </div>
+          <div className="flex-1 space-y-1">
+            <h3 className="font-bold text-base">Tutorial: Google Forms &amp; Google Sheets</h3>
+            <p className="text-sm text-muted-foreground">
+              Já usa formulários ou planilhas do Google? Aprenda a conectá-los ao Feed_BPF Custom —
+              cada resposta vira um Registro Digital assinado com hash SHA-256.
+            </p>
+          </div>
+          <Button asChild className="bg-emerald-600 hover:bg-emerald-700 shrink-0">
+            <Link to="/feedbpf-custom/tutorial-google">Abrir tutorial <ArrowRight className="w-4 h-4 ml-1" /></Link>
+          </Button>
+        </CardContent>
+      </Card>
+
+
+
 
       {/* Passos */}
       <div className="space-y-4">
