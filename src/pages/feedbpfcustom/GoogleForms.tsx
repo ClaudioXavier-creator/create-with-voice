@@ -36,7 +36,7 @@ export default function GoogleForms() {
       setLoading(true);
       const { data, error } = await supabase
         .from("modelos_empresa")
-        .select("id, nome, pop_codigo, webhook_token, ativo")
+        .select("id, nome, pop_codigo, webhook_token, ativo, campos")
         .eq("empresa_id", empresaAtiva.id)
         .eq("ativo", true)
         .order("nome");
