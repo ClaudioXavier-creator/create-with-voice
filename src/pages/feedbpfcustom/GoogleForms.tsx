@@ -71,6 +71,50 @@ export default function GoogleForms() {
   const token = modelo?.webhook_token ?? "";
   const urlCompleta = token ? `${WEBHOOK_URL}?token=${token}` : WEBHOOK_URL;
 
+  /**
+   * Envia um payload de teste ao webhook para validar a integração
+   * sem depender de um envio real no Google Forms.
+   */
+  const testarWebhook = async () => {
+    if (!modelo || !token) return;
+    setTestando(true);
+    setResultadoTeste(null);
+    try {
+      const res = await fetch(urlCompleta, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          token,
+          form_title: `[TESTE] ${modelo.nome}`,
+          submitted_at: new Date().toISOString(),
+          respostas: {
+            "Responsável": "Teste automático do sistema",
+            "Observação": "Registro gerado pelo botão Testar Webhook.",
+          },
+        }),
+      });
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        const msg = (json as { error?: string }).error ?? `HTTP ${res.status}`;
+        setResultadoTeste({ ok: false, msg });
+        toast.error(`Falha no teste: ${msg}`);
+        return;
+      }
+      setResultadoTeste({
+        ok: true,
+        msg: `Registro de teste criado (id: ${(json as { registro_id?: string }).registro_id ?? "—"}). Confira em Registros Digitais.`,
+      });
+      toast.success("Webhook funcionando!");
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Erro de rede";
+      setResultadoTeste({ ok: false, msg });
+      toast.error(`Falha no teste: ${msg}`);
+    } finally {
+      setTestando(false);
+    }
+  };
+
+
   const appsScript = `// Cole este código em Extensões > Apps Script do seu Google Form
 // Depois: Gatilhos (relógio) > Adicionar Gatilho > onFormSubmit > No envio do formulário
 const WEBHOOK_URL = "${WEBHOOK_URL}";
