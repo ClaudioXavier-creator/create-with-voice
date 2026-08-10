@@ -186,71 +186,14 @@ function onFormSubmit(e) {
 
       {modelo && (
         <>
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center justify-between">
-                <span>2. Seu token de webhook</span>
-                <Button variant="outline" size="sm" onClick={rotacionar}>
-                  <RefreshCcw className="h-4 w-4 mr-1" /> Rotacionar
-                </Button>
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <div className="flex gap-2">
-                <Input readOnly value={token} className="font-mono text-xs" />
-                <Button variant="outline" onClick={() => copiar(token, "token")}>
-                  {copiado === "token" ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
-                </Button>
-              </div>
-              <div className="flex gap-2">
-                <Input readOnly value={urlCompleta} className="font-mono text-xs" />
-                <Button variant="outline" onClick={() => copiar(urlCompleta, "url")}>
-                  {copiado === "url" ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
-                </Button>
-              </div>
-              <div className="space-y-2">
-                <Button onClick={testarWebhook} disabled={testando || !token} className="w-full">
-                  {testando ? <Loader2 className="h-4 w-4 mr-1 animate-spin" /> : <Send className="h-4 w-4 mr-1" />}
-                  Testar webhook (envia um registro de teste)
-                </Button>
-                {resultadoTeste && (
-                  <p className={resultadoTeste.ok ? "text-xs text-emerald-600" : "text-xs text-destructive"}>
-                    {resultadoTeste.ok ? "✅ " : "❌ "}{resultadoTeste.msg}
-                  </p>
-                )}
-              </div>
-              <p className="text-xs text-muted-foreground">
-                ⚠️ Trate este token como uma senha. Qualquer pessoa com ele pode enviar respostas para este modelo. Rotacione se suspeitar de vazamento.
-              </p>
-            </CardContent>
-          </Card>
+          <AssistenteGoogleForms
+            webhookUrl={WEBHOOK_URL}
+            modelo={modelo}
+            onTokenRotacionado={(novo) =>
+              setModelos((prev) => prev.map((m) => (m.id === modelo.id ? { ...m, webhook_token: novo } : m)))
+            }
+          />
 
-          <Card>
-            <CardHeader>
-              <CardTitle>3. Cole o script no seu Google Form</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <ol className="list-decimal ml-5 text-sm space-y-1">
-                <li>Abra seu Google Form.</li>
-                <li>Menu ⋮ (três pontos) → <strong>Editor de script</strong> (ou <em>Extensões → Apps Script</em>).</li>
-                <li>Apague o conteúdo padrão e cole o código abaixo.</li>
-                <li>Salve (💾) e nomeie o projeto.</li>
-                <li>Ícone de relógio (⏰) → <strong>Adicionar Acionador</strong>:
-                  <ul className="list-disc ml-5 mt-1">
-                    <li>Função: <code>onFormSubmit</code></li>
-                    <li>Evento: <strong>No envio do formulário</strong></li>
-                  </ul>
-                </li>
-                <li>Autorize os acessos solicitados pelo Google.</li>
-                <li>Envie uma resposta de teste — ela aparecerá em <Link to="/feedbpf-custom/registros" className="text-emerald-600 underline">Registros Digitais</Link>.</li>
-              </ol>
-              <Textarea readOnly value={appsScript} rows={22} className="font-mono text-xs" />
-              <Button onClick={() => copiar(appsScript, "script")} className="w-full">
-                {copiado === "script" ? <Check className="h-4 w-4 mr-1" /> : <Copy className="h-4 w-4 mr-1" />}
-                Copiar script completo
-              </Button>
-            </CardContent>
-          </Card>
 
           <Card>
             <CardHeader><CardTitle>4. Dicas importantes</CardTitle></CardHeader>
