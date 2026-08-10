@@ -27,6 +27,9 @@ interface Modelo {
 
 export default function GoogleForms() {
   const { empresaAtiva } = useEmpresa();
+  const { user } = useAuth();
+  const userId = user?.id;
+
   const [modelos, setModelos] = useState<Modelo[]>([]);
   const [selecionado, setSelecionado] = useState<string>("");
   const [loading, setLoading] = useState(true);
