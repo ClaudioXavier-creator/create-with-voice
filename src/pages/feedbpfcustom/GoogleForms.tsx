@@ -208,6 +208,17 @@ function onFormSubmit(e) {
                   {copiado === "url" ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
                 </Button>
               </div>
+              <div className="space-y-2">
+                <Button onClick={testarWebhook} disabled={testando || !token} className="w-full">
+                  {testando ? <Loader2 className="h-4 w-4 mr-1 animate-spin" /> : <Send className="h-4 w-4 mr-1" />}
+                  Testar webhook (envia um registro de teste)
+                </Button>
+                {resultadoTeste && (
+                  <p className={resultadoTeste.ok ? "text-xs text-emerald-600" : "text-xs text-destructive"}>
+                    {resultadoTeste.ok ? "✅ " : "❌ "}{resultadoTeste.msg}
+                  </p>
+                )}
+              </div>
               <p className="text-xs text-muted-foreground">
                 ⚠️ Trate este token como uma senha. Qualquer pessoa com ele pode enviar respostas para este modelo. Rotacione se suspeitar de vazamento.
               </p>
