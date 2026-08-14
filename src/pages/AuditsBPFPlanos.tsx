@@ -98,27 +98,9 @@ export default function AuditsBPFPlanos() {
     }
   };
 
-  const handleCheckout = async (periodo: Periodo) => {
-    if (!session) {
-      navigate("/auth?product=auditsbpf");
-      return;
-    }
-    setLoading(periodo);
-    try {
-      const { data, error } = await supabase.functions.invoke("create-checkout-audits", {
-        body: { plano: periodo, nivel: nivelSelecionado },
-      });
-      if (error) throw error;
-      if (data?.url) {
-        window.open(data.url, "_blank");
-      } else {
-        throw new Error("URL de checkout não retornada");
-      }
-    } catch (err: any) {
-      toast.error(err.message || "Erro ao criar checkout");
-    } finally {
-      setLoading(null);
-    }
+  const handleCheckout = async (_periodo?: Periodo) => {
+    // Checkout temporariamente desativado — contato via WhatsApp
+    window.open("https://wa.me/5562996075522", "_blank", "noopener,noreferrer");
   };
 
   const nivelAtual = NIVEIS.find((n) => n.key === nivelSelecionado)!;
@@ -237,7 +219,7 @@ export default function AuditsBPFPlanos() {
                         Processando...
                       </>
                     ) : (
-                      "Assinar agora"
+                      "Em breve"
                     )}
                   </Button>
                 </CardContent>

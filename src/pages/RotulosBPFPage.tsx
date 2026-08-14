@@ -78,24 +78,9 @@ export default function RotulosBPFPage() {
     setSearchParams(next, { replace: true });
   };
 
-  const handleCheckout = async (tipo: "individual" | "grupo10" | "grupo20", plano: "mensal" | "semestral" | "anual") => {
-    const key = `${tipo}-${plano}`;
-    setLoadingKey(key);
-    try {
-      const { data, error } = await supabase.functions.invoke("create-checkout-nutriagrolabels", {
-        body: { tipo, plano },
-      });
-      if (error) throw error;
-      if (data?.url) {
-        window.location.href = data.url;
-      } else {
-        throw new Error("URL de checkout não retornada");
-      }
-    } catch (e: any) {
-      toast.error("Erro ao iniciar checkout", { description: e.message });
-    } finally {
-      setLoadingKey(null);
-    }
+  const handleCheckout = async (_tipo?: unknown, _plano?: unknown) => {
+    // Checkout temporariamente desativado — contato via WhatsApp
+    window.open("https://wa.me/5562996075522", "_blank", "noopener,noreferrer");
   };
 
   return (
@@ -303,7 +288,7 @@ export default function RotulosBPFPage() {
                       onClick={() => handleCheckout("individual", plan.planoKey)}
                     >
                       {isLoading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Sparkles className="h-3.5 w-3.5" />}
-                      Assinar {plan.periodo}
+                      Em breve
                     </Button>
                   </CardContent>
                 </Card>
@@ -372,7 +357,7 @@ export default function RotulosBPFPage() {
                               onClick={() => handleCheckout(grupo.tipo, p.plano)}
                               className="shrink-0"
                             >
-                              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Assinar"}
+                              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Em breve"}
                             </Button>
                           </div>
                         );
