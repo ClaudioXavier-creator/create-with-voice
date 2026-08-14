@@ -154,6 +154,8 @@ const produtos: ProdutoCard[] = [
   },
 ];
 
+const WHATSAPP_CONTATO = "https://wa.me/5562996075522";
+
 const estatisticas = [
   { valor: "~2.900", label: "Fábricas no Brasil", icon: Building2 },
   { valor: "100%", label: "Adequação IN 17/2023", icon: CheckCircle2 },
@@ -297,9 +299,17 @@ export default function Vitrine() {
                     </div>
                     
                     <Button 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (p.adminOnly) {
+                          navigate(p.appLink || p.link);
+                          return;
+                        }
+                        window.open(WHATSAPP_CONTATO, "_blank", "noopener,noreferrer");
+                      }}
                       className={`w-full font-bold group-hover:bg-[#173404] group-hover:text-white transition-colors ${p.adminOnly ? 'bg-slate-200 text-slate-700' : 'bg-[#F7F5F0] text-[#173404] border border-[#173404]/10'}`}
                     >
-                      {p.adminOnly ? 'Acessar Portal' : 'Ver Detalhes'}
+                      {p.adminOnly ? 'Acessar Portal' : 'Em breve'}
                       <ArrowRight className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform" />
                     </Button>
                   </div>
