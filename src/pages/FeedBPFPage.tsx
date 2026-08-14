@@ -45,6 +45,8 @@ export default function FeedBPFPage() {
     navigate(`${destino}?nivel=${encodeURIComponent(nivel)}&periodo=${encodeURIComponent(periodo)}`);
   };
 
+  const WHATSAPP_CONTATO = "https://wa.me/5562996075522";
+
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Seo
@@ -168,11 +170,13 @@ export default function FeedBPFPage() {
                       <p>Anual: <span className="font-semibold text-foreground">{p.anual}</span></p>
                     </div>
                   </div>
-                  <Button asChild variant={p.destaque ? "default" : "outline"} className="w-full gap-2">
-                    <Link to={signupLink}>
-                      <Sparkles className="h-3.5 w-3.5" />
-                      Testar grátis 7 dias
-                    </Link>
+                  <Button
+                    variant={p.destaque ? "default" : "outline"}
+                    className="w-full gap-2"
+                    onClick={() => window.open(WHATSAPP_CONTATO, "_blank", "noopener,noreferrer")}
+                  >
+                    <Sparkles className="h-3.5 w-3.5" />
+                    Em breve
                   </Button>
                 </CardContent>
               </Card>
