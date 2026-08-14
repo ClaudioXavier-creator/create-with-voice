@@ -12,6 +12,8 @@ import { useAuth } from "@/hooks/useAuth";
 import { PublicFooter } from "@/components/layout/PublicFooter";
 import { Seo } from "@/components/Seo";
 
+const WHATSAPP_CONTATO = "https://wa.me/5562996075522";
+
 const funcionalidades = [
   { icon: ClipboardCheck, title: "Checklist Completo", desc: "Checklist de auditoria interna baseado integralmente no Decreto 12.031/2024, com todos os itens exigidos pelo MAPA." },
   { icon: BarChart3, title: "Cálculo Automático", desc: "Cálculo automático de percentual de conformidade por área e geral, com classificação de criticidade." },
@@ -54,11 +56,13 @@ export default function AuditsBPFPage() {
                 Transforme suas auditorias internas em um processo 100% digital e conforme com o novo <strong className="text-foreground">Decreto 12.031/2024</strong> do MAPA.
               </p>
               <div className="flex flex-col sm:flex-row gap-3">
-                <Button size="lg" className="gap-2 shadow-lg shadow-primary/20" asChild>
-                  <Link to="/auditsbpf/planos">
-                    <Sparkles className="h-4 w-4" />
-                    Ver Planos e Preços
-                  </Link>
+                <Button
+                  size="lg"
+                  className="gap-2 shadow-lg shadow-primary/20"
+                  onClick={() => window.open(WHATSAPP_CONTATO, "_blank", "noopener,noreferrer")}
+                >
+                  <Sparkles className="h-4 w-4" />
+                  Em breve
                 </Button>
                 <Button size="lg" variant="outline" className="gap-2" asChild>
                   <Link to={loginLink}>
