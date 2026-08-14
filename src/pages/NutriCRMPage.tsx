@@ -34,21 +34,9 @@ export default function NutriCRMPage() {
   const signupLink = "/auth?product=nutricrm&mode=signup&redirect=%2Fnutricrm%2Fdashboard";
   const loginLink = "/auth?product=nutricrm&mode=login&redirect=%2Fnutricrm%2Fdashboard";
 
-  const handleCheckout = async (tipo: "individual" | "grupo10" | "grupo20", plano: "mensal" | "semestral" | "anual") => {
-    const key = `${tipo}-${plano}`;
-    setLoadingPlan(key);
-    try {
-      const { data, error } = await supabase.functions.invoke("create-checkout-agrorc", {
-        body: { tipo, plano, produto: "nutricrm" },
-      });
-      if (error) throw error;
-      if (!data?.url) throw new Error("URL de checkout não retornada");
-      window.location.href = data.url;
-    } catch (e: any) {
-      toast.error(e?.message || "Erro ao abrir checkout");
-    } finally {
-      setLoadingPlan(null);
-    }
+  const handleCheckout = async (_tipo?: unknown, _plano?: unknown) => {
+    // Checkout temporariamente desativado — contato via WhatsApp
+    window.open("https://wa.me/5562996075522", "_blank", "noopener,noreferrer");
   };
 
   return (
@@ -191,7 +179,7 @@ export default function NutriCRMPage() {
                       onClick={() => handleCheckout("individual", plan.planoKey)}
                     >
                       {isLoading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Sparkles className="h-3.5 w-3.5" />}
-                      Assinar {plan.periodo}
+                      Em breve
                     </Button>
                   </CardContent>
                 </Card>
@@ -231,7 +219,7 @@ export default function NutriCRMPage() {
                       onClick={() => handleCheckout("grupo10", plan.planoKey)}
                     >
                       {isLoading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Sparkles className="h-3.5 w-3.5" />}
-                      Assinar {plan.periodo}
+                      Em breve
                     </Button>
                   </CardContent>
                 </Card>
@@ -268,7 +256,7 @@ export default function NutriCRMPage() {
                       onClick={() => handleCheckout("grupo20", plan.planoKey)}
                     >
                       {isLoading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Sparkles className="h-3.5 w-3.5" />}
-                      Assinar {plan.periodo}
+                      Em breve
                     </Button>
                   </CardContent>
                 </Card>
