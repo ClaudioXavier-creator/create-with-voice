@@ -80,6 +80,37 @@ Deno.serve(async (req) => {
       if (alertas.treinamentos.length > 0) {
         resumo.push(`${alertas.treinamentos.length} treinamento(s) programado(s)`);
       }
+      
+      // WhatsApp Integration (via evolution-connect)
+      if (resumo.length > 0) {
+        const { data: config } = await supabase
+          .from("whatsapp_config")
+          .select("id, empresa_id")
+          .eq("user_id", userId)
+          .maybeSingle();
+
+        if (config) {
+          try {
+            const msg = `*⚠️ Alerta de Vencimento FeedBPF*\n\nOlá! Identificamos pendências que requerem sua atenção:\n\n${resumo.map(m => `• ${m}`).join("\n")}\n\nPor favor, acesse o painel para regularizar.`;
+            
+            await fetch(`${Deno.env.get("SUPABASE_URL")}/functions/v1/evolution-connect`, {
+              method: "POST",
+              headers: {
+                "Authorization": `Bearer ${serviceKey}`,
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                empresa_id: config.empresa_id,
+                action: "send",
+                message: msg
+              })
+            });
+            console.log(`WhatsApp enviado para usuário ${userId}`);
+          } catch (e) {
+            console.error(`Erro ao enviar WhatsApp para ${userId}:`, e.message);
+          }
+        }
+      }
 
       // Create legislacao_alertas entries for dashboard visibility
       for (const msg of resumo) {
