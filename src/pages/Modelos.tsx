@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Lock, Unlock, Download, FileText, BookOpen, ClipboardList, Table2, Shield, Wrench, FlaskConical, Bug, Droplets, Activity, Users, Truck, Printer, Eye } from "lucide-react";
+import { Lock, Unlock, Download, FileText, BookOpen, ClipboardList, Table2, Shield, Wrench, FlaskConical, Bug, Droplets, Activity, Users, Truck, Printer, Eye, Search, Filter } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import PageHeader from "@/components/PageHeader";
 import { TEMPLATE_GENERATORS } from "@/utils/excelTemplates";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { PrintableTemplate } from "@/components/PrintableTemplate";
 import { printElement } from "@/utils/printUtils";
@@ -161,6 +162,7 @@ export default function Modelos() {
   const [selectedModelo, setSelectedModelo] = useState<ModeloDoc | null>(null);
   const [showPreview, setShowPreview] = useState(false);
   const [modelosCustom, setModelosCustom] = useState<ModeloDoc[]>([]);
+  const [busca, setBusca] = useState("");
 
   useEffect(() => {
     async function fetchModelosCustom() {
@@ -242,7 +244,14 @@ export default function Modelos() {
     }
   };
 
-  const modelosFiltrados = filtro === "todos" ? todosModelos : todosModelos.filter(m => m.categoria === filtro);
+  const modelosFiltrados = todosModelos.filter(m => {
+    const matchesFiltro = filtro === "todos" || m.categoria === filtro;
+    const matchesBusca = busca === "" || 
+      m.nome.toLowerCase().includes(busca.toLowerCase()) || 
+      m.descricao.toLowerCase().includes(busca.toLowerCase());
+    return matchesFiltro && matchesBusca;
+  });
+
   const categorias = ["todos", ...Object.keys(categoriaLabels)];
 
   const handleDownload = (modelo: ModeloDoc) => {
@@ -434,20 +443,41 @@ export default function Modelos() {
         description={`${MODELOS.length} documentos — ${totalNovos} novos modelos adicionados`}
       />
 
-      <div className="flex items-center gap-2 flex-wrap">
+      <div className="flex flex-col md:flex-row gap-4">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          <Input
+            placeholder="Buscar por nome ou descrição..."
+            value={busca}
+            onChange={(e) => setBusca(e.target.value)}
+            className="pl-9"
+          />
+        </div>
+        <div className="flex items-center gap-2 flex-wrap">
+          <Filter className="w-4 h-4 text-muted-foreground mr-1" />
+          <Select value={filtro} onValueChange={setFiltro}>
+            <SelectTrigger className="w-[200px]">
+              <SelectValue placeholder="Filtrar por tipo" />
+            </SelectTrigger>
+            <SelectContent>
+              {categorias.map(cat => (
+                <SelectItem key={cat} value={cat}>
+                  {cat === "todos" ? `Todos (${todosModelos.length})` : categoriaLabels[cat]}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+
+      <div className="flex items-center gap-2">
         <Unlock className="w-5 h-5 text-primary" />
         <span className="text-sm font-medium text-primary">Acesso ativo</span>
-        <span className="text-muted-foreground mx-2">|</span>
-        {categorias.map(cat => (
-          <Button
-            key={cat}
-            variant={filtro === cat ? "default" : "outline"}
-            size="sm"
-            onClick={() => setFiltro(cat)}
-          >
-            {cat === "todos" ? `Todos (${todosModelos.length})` : categoriaLabels[cat]}
-          </Button>
-        ))}
+        {busca && (
+          <span className="text-xs text-muted-foreground bg-muted px-2 py-1 rounded">
+            Resultados para: "{busca}" ({modelosFiltrados.length})
+          </span>
+        )}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
