@@ -18,7 +18,7 @@ import { GraduationCap, Plus, AlertCircle, Trash2, HeartPulse, ShieldCheck, Clip
 import PageHeader from "@/components/PageHeader";
 import * as XLSX from "xlsx";
 
-// ── Triagem diária POP-02 items ──
+// ── Triagem diária POP-03 items ──
 const TRIAGEM_ITENS = [
   "Sem sintomas (febre, diarreia, vômito, lesões de pele)",
   "Uniforme limpo e em bom estado",
@@ -91,7 +91,7 @@ export default function Treinamentos() {
     queryKey: ["triagens_higiene"],
     queryFn: async () => {
       const { data, error } = await supabase.from("execucao_pops").select("*")
-        .eq("codigo_pop", "TRIAGEM-POP02").order("data_execucao", { ascending: false }).limit(100);
+        .eq("codigo_pop", "TRIAGEM-POP03").order("data_execucao", { ascending: false }).limit(100);
       if (error) throw error;
       return data;
     },
