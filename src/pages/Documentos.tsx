@@ -892,17 +892,27 @@ export default function Documentos() {
               : (
                 <div className="overflow-x-auto">
                   <Table>
-                  <TableHeader><TableRow>
-                    <TableHead>POP</TableHead><TableHead>Título</TableHead><TableHead>Categoria</TableHead><TableHead>Arquivo</TableHead>
-                    <TableHead>Descrição</TableHead><TableHead>Data</TableHead><TableHead className="w-16"></TableHead>
-                  </TableRow></TableHeader>
+                    <TableHeader><TableRow>
+                      <TableHead>Local / POP</TableHead>
+                      <TableHead>Título</TableHead>
+                      <TableHead>Categoria</TableHead>
+                      <TableHead>Arquivo</TableHead>
+                      <TableHead>Frequência</TableHead>
+                      <TableHead>Data</TableHead>
+                      <TableHead className="w-16"></TableHead>
+                    </TableRow></TableHeader>
                   <TableBody>
                     {filteredArquivos.map(a => (
                       <TableRow key={a.id}>
                         <TableCell>
-                          {a.pop_codigo
-                            ? <Badge className="text-xs font-mono">{a.pop_codigo}</Badge>
-                            : <Badge variant="outline" className="text-xs text-muted-foreground">sem POP</Badge>}
+                          <div className="flex flex-col gap-1">
+                            {a.pop_codigo
+                              ? <Badge className="text-[10px] font-mono w-fit">{a.pop_codigo}</Badge>
+                              : <Badge variant="outline" className="text-[10px] text-muted-foreground w-fit">sem POP</Badge>}
+                            {a.it_codigo && (
+                              <Badge variant="secondary" className="text-[9px] font-mono w-fit">{a.it_codigo}</Badge>
+                            )}
+                          </div>
                         </TableCell>
                         <TableCell className="font-medium text-sm">{a.titulo}</TableCell>
                         <TableCell>
@@ -917,8 +927,14 @@ export default function Documentos() {
                             </a>
                           ) : <span className="text-xs text-muted-foreground">{a.arquivo_nome || "—"}</span>}
                         </TableCell>
-                        <TableCell className="text-xs text-muted-foreground max-w-[200px] truncate">{a.descricao || "—"}</TableCell>
-                        <TableCell className="text-xs">{a.created_at?.split("T")[0]}</TableCell>
+                        <TableCell>
+                          {a.frequencia ? (
+                            <Badge variant="outline" className="text-[10px] uppercase">
+                              {FREQUENCIAS_DOC.find(f => f.value === a.frequencia)?.label || a.frequencia}
+                            </Badge>
+                          ) : <span className="text-muted-foreground">—</span>}
+                        </TableCell>
+                        <TableCell className="text-xs">{a.data_ref || a.created_at?.split("T")[0]}</TableCell>
                         <TableCell>
                           <div className="flex items-center gap-1">
                             <VincularPopButton arquivoId={a.id} currentPop={a.pop_codigo} onSaved={fetchData} />
