@@ -158,6 +158,7 @@ export default function Modelos() {
   const [desbloqueado, setDesbloqueado] = useState(() => {
     return sessionStorage.getItem("bpf_modelos_unlocked") === "true";
   });
+
   const [senha, setSenha] = useState("");
   const [verificando, setVerificando] = useState(false);
   const [filtro, setFiltro] = useState<string>("todos");
