@@ -322,10 +322,12 @@ export default function Modelos() {
 
   const handlePreview = (modelo: ModeloDoc) => {
     // Se for um asset físico (Word/PDF/Excel do Zip), abrimos direto ou baixamos
-    if (modelo.categoria === "original" || MODELOS_ASSETS[modelo.arquivo]) {
+    const assets = MODELOS_ASSETS[modelo.arquivo];
+    if (modelo.categoria === "original" || (assets && assets.length > 0)) {
       handleDownload(modelo);
       return;
     }
+
     setSelectedModelo(modelo);
     setShowPreview(true);
   };
