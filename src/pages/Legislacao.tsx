@@ -139,8 +139,17 @@ export default function Legislacao() {
       .from("legislacao_alertas")
       .select("*")
       .order("created_at", { ascending: false });
-    if (empresaAtiva) q = q.eq("empresa_id", empresaAtiva.id);
-    const { data } = await q;
+    
+    if (empresaAtiva) {
+      q = q.or(`empresa_id.eq.${empresaAtiva.id},empresa_id.is.null`);
+    } else {
+      q = q.is("empresa_id", null);
+    }
+    
+    const { data, error } = await q;
+    if (error) {
+      console.error("Erro ao buscar alertas:", error);
+    }
     if (data) setAlertas(data as unknown as AlertaDB[]);
     setFetchingDB(false);
   };
