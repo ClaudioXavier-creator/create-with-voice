@@ -742,9 +742,7 @@ export default function HigieneSanitizacao() {
             <TabsTrigger value="silos" className="whitespace-nowrap"><Container className="w-4 h-4 mr-1" />Silos & Transportadores</TabsTrigger>
             <TabsTrigger value="cronogramas" className="whitespace-nowrap"><Droplets className="w-4 h-4 mr-1" />Cronogramas</TabsTrigger>
             <TabsTrigger value="registros" className="whitespace-nowrap"><CheckCircle2 className="w-4 h-4 mr-1" />Registros Limpeza</TabsTrigger>
-            
             <TabsTrigger value="planilha" className="whitespace-nowrap"><ClipboardList className="w-4 h-4 mr-1" />Planilha Mensal</TabsTrigger>
-            <TabsTrigger value="arquivo" className="whitespace-nowrap"><Archive className="w-4 h-4 mr-1" />Arquivo 2 Anos</TabsTrigger>
           </TabsList>
         </div>
 
