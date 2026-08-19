@@ -17,7 +17,10 @@ import {
   History,
   Sparkles,
   Save,
-  FileCheck
+  FileCheck,
+  Printer,
+  FileSearch,
+  ArrowRight
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -40,6 +43,7 @@ import {
 import PageHeader from "@/components/PageHeader";
 import { POPS_CUSTOM } from "@/config/feedBpfCustomConfig";
 import { MODELOS_ASSETS } from "@/config/modelosAssetsMapping";
+import { POPS_CONFIG } from "@/config/popsConfig";
 import { getItsPorPop, POP_TO_MODULOS } from "@/config/documentosCentral";
 import { useNavigate } from "react-router-dom";
 import { useEmpresa } from "@/hooks/useEmpresa";
@@ -206,6 +210,7 @@ export default function PlanilhasPop() {
   );
 
   const relatedIts = getItsPorPop(selectedPop.codigo);
+  const popConfig = POPS_CONFIG.find(p => p.codigo === selectedPop.codigo);
 
   
   // No documentosCentral.ts temos o mapeamento para nomes de rotas amigáveis
@@ -538,6 +543,58 @@ export default function PlanilhasPop() {
                       </Button>
                     ))}
                   </div>
+                </div>
+              </div>
+
+              {/* Seção de Atalhos (Cópia do POP e Impressão Manual) */}
+              <div className="mt-8 pt-6 border-t space-y-4">
+                <h3 className="text-sm font-bold flex items-center gap-2 text-muted-foreground uppercase tracking-wider">
+                  <ArrowRight className="w-4 h-4" /> Atalhos e Acessos Rápidos
+                </h3>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* Atalho para Última Versão do POP */}
+                  <Card className="bg-primary/5 border-primary/10 shadow-none">
+                    <CardContent className="p-4 flex items-center gap-4">
+                      <div className="p-2 bg-primary/10 rounded-lg text-primary">
+                        <FileSearch className="w-5 h-5" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h4 className="text-sm font-bold truncate">Última Versão Salva</h4>
+                        <p className="text-xs text-muted-foreground">Procedimento técnico vigente</p>
+                      </div>
+                      {historico.length > 0 ? (
+                        <Button variant="ghost" size="sm" asChild>
+                          <a href={historico[0].url} target="_blank" rel="noopener noreferrer">
+                            <Download className="w-4 h-4" />
+                          </a>
+                        </Button>
+                      ) : (
+                        <Badge variant="outline" className="text-[10px] opacity-50">Nenhuma</Badge>
+                      )}
+                    </CardContent>
+                  </Card>
+
+                  {/* Atalho para Impressão Manual (Planilhas em Branco) */}
+                  <Card className="bg-amber-50/50 border-amber-200/50 shadow-none">
+                    <CardContent className="p-4 flex items-center gap-4">
+                      <div className="p-2 bg-amber-100 rounded-lg text-amber-700">
+                        <Printer className="w-5 h-5" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h4 className="text-sm font-bold truncate text-amber-900">Impressão p/ Registro Manual</h4>
+                        <p className="text-xs text-amber-700/70">Planilhas físicas para campo</p>
+                      </div>
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="text-amber-700 hover:text-amber-800 hover:bg-amber-100"
+                        onClick={() => navigate('/documentos-bpf?tab=modelos')}
+                      >
+                        <ExternalLink className="w-4 h-4" />
+                      </Button>
+                    </CardContent>
+                  </Card>
                 </div>
               </div>
 
