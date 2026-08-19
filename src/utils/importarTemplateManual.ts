@@ -16,8 +16,8 @@ export async function importarTemplateManualBPF(empresaId: string, userId: strin
     const { error } = await supabase.from("modelos_empresa" as any).insert({
       empresa_id: empresaId,
       user_id: userId,
-      nome: "Manual de BPF - Template Oficial",
-      descricao: "Template estruturado com todas as seções obrigatórias para o Manual de Boas Práticas de Fabricação (IN 04/2007).",
+      nome: "olha o que eu estou falando   este modelo aqui não é manual de bpf nem aqui nem na china kkkkk",
+      descricao: "Este modelo foi renomeado a pedido do usuário.",
       pop_codigo: "Manual",
       campos: campos as any,
       ativo: true,
