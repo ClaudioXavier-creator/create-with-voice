@@ -156,6 +156,20 @@ export default function Modelos() {
   const [selectedModelo, setSelectedModelo] = useState<ModeloDoc | null>(null);
   const [showPreview, setShowPreview] = useState(false);
 
+  // Mapear arquivos originais para o formato da lista de modelos
+  const modelosOriginais: ModeloDoc[] = Object.entries(MODELOS_ASSETS).flatMap(([key, items]) => 
+    items.map(item => ({
+      nome: item.label,
+      descricao: `Arquivo original enviado via Zip — Vinculado a ${key}`,
+      categoria: "original",
+      arquivo: key, // Usamos a chave do grupo para download
+      novo: true
+    }))
+  );
+
+  const todosModelos = [...MODELOS, ...modelosOriginais];
+
+
   const verificarSenha = async () => {
     if (!senha.trim()) { toast.error("Digite a senha de acesso"); return; }
     setVerificando(true);
