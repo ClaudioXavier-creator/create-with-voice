@@ -145,6 +145,7 @@ const categoriaLabels: Record<string, string> = {
   auditoria: "Auditoria/Gestão",
   produto: "Produtos/Rótulos",
   instrucao: "Instruções de Trabalho",
+  original: "Arquivos Originais (Zip)",
 };
 
 export default function Modelos() {
