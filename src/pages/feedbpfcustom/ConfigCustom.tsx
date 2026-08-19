@@ -1,17 +1,19 @@
-import { Settings, Info, ShieldCheck, Download, Database, FileArchive, Loader2 } from "lucide-react";
+import { Settings, Info, ShieldCheck, Download, Database, FileArchive, Loader2, Upload } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import PageHeader from "@/components/PageHeader";
 import EmpresaSelector from "@/components/EmpresaSelector";
 import { useEmpresa } from "@/hooks/useEmpresa";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 export default function ConfigCustom() {
   const { empresaAtiva } = useEmpresa();
   const [loadingBackup, setLoadingBackup] = useState(false);
+  const [loadingRestore, setLoadingRestore] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleExportData = async () => {
     if (!empresaAtiva?.id) {
@@ -22,7 +24,10 @@ export default function ConfigCustom() {
     setLoadingBackup(true);
     try {
       const { data, error } = await supabase.functions.invoke("backup-manager", {
-        body: { empresa_id: empresaAtiva.id },
+        body: { 
+          action: "export",
+          empresa_id: empresaAtiva.id 
+        },
       });
 
       if (error) throw error;
@@ -55,6 +60,40 @@ export default function ConfigCustom() {
     toast.info("Redirecionando para a central de exportação de arquivos...");
     window.open("https://github.com/lovable-dev/lovable-assets/blob/main/download-storage.mjs", "_blank");
     toast.success("Para exportação integral de arquivos (S3), utilize o script de download em massa.");
+  };
+
+  const handleImportData = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file || !empresaAtiva?.id) return;
+
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      setLoadingRestore(true);
+      try {
+        const content = e.target?.result as string;
+        const backupData = JSON.parse(content);
+
+        const { data, error } = await supabase.functions.invoke("backup-manager", {
+          body: { 
+            action: "restore",
+            empresa_id: empresaAtiva.id,
+            backup: backupData
+          },
+        });
+
+        if (error) throw error;
+
+        toast.success("Dados restaurados com sucesso!");
+        console.log("Resultados da restauração:", data.results);
+      } catch (err: any) {
+        console.error("Erro ao restaurar dados:", err);
+        toast.error("Falha ao restaurar dados: " + (err.message || "Formato de arquivo inválido"));
+      } finally {
+        setLoadingRestore(false);
+        if (fileInputRef.current) fileInputRef.current.value = "";
+      }
+    };
+    reader.readAsText(file);
   };
 
   return (
@@ -103,6 +142,25 @@ export default function ConfigCustom() {
                 {loadingBackup ? <Loader2 className="w-4 h-4 animate-spin" /> : <Database className="w-4 h-4" />}
                 Exportar Dados (JSON)
               </Button>
+              
+              <input 
+                type="file" 
+                ref={fileInputRef}
+                onChange={handleImportData}
+                accept=".json"
+                className="hidden"
+              />
+              
+              <Button 
+                onClick={() => fileInputRef.current?.click()} 
+                disabled={loadingRestore}
+                variant="outline" 
+                className="w-full justify-start gap-2 border-amber-200 text-amber-700 hover:bg-amber-50"
+              >
+                {loadingRestore ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
+                Importar Dados (JSON)
+              </Button>
+
               <Button 
                 onClick={handleExportFiles}
                 variant="outline" 
