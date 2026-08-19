@@ -17,6 +17,8 @@ import { useAuth } from "@/hooks/useAuth";
 import { useEmpresa } from "@/hooks/useEmpresa";
 import { POPS_CUSTOM, type CampoModelo, type CampoTipo } from "@/config/feedBpfCustomConfig";
 import { toast } from "sonner";
+import { importarTemplateManualBPF } from "@/utils/importarTemplateManual";
+import { Book } from "lucide-react";
 
 interface Modelo {
   id: string;
