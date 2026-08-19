@@ -1,14 +1,54 @@
 export const POPS_CUSTOM = [
-  { codigo: "POP-01", nome: "Recebimento de Matérias-Primas" },
-  { codigo: "POP-02", nome: "Higiene e Sanitização" },
-  { codigo: "POP-03", nome: "Saúde dos Manipuladores" },
-  { codigo: "POP-04", nome: "Potabilidade da Água" },
-  { codigo: "POP-05", nome: "Produção e PCP" },
-  { codigo: "POP-06", nome: "Manutenção e Calibração" },
-  { codigo: "POP-07", nome: "Controle de Pragas" },
-  { codigo: "POP-08", nome: "Resíduos e Efluentes" },
-  { codigo: "POP-09", nome: "Armazenamento e Transporte" },
-  { codigo: "POP-10", nome: "PAC — Programa de Autocontrole" },
+  { 
+    codigo: "POP-01", 
+    nome: "Recebimento de Matérias-Primas",
+    descricao: "Procedimentos para qualificação de fornecedores, inspeção, amostragem e recepção de grãos, ensacados e granéis, garantindo a conformidade desde a origem."
+  },
+  { 
+    codigo: "POP-02", 
+    nome: "Higiene e Sanitização",
+    descricao: "Controle de limpeza a seco e úmida de instalações e equipamentos, sanitização de áreas críticas e remoção de resíduos para evitar contaminação cruzada."
+  },
+  { 
+    codigo: "POP-03", 
+    nome: "Saúde dos Manipuladores",
+    descricao: "Gestão da saúde ocupacional, exames médicos (ASO), higiene pessoal e conduta dos colaboradores e visitantes dentro das áreas produtivas."
+  },
+  { 
+    codigo: "POP-04", 
+    nome: "Potabilidade da Água",
+    descricao: "Monitoramento da qualidade da água, níveis de cloro residual, limpeza semestral de reservatórios e análises laboratoriais físico-químicas e microbiológicas."
+  },
+  { 
+    codigo: "POP-05", 
+    nome: "Produção e PCP",
+    descricao: "Controle das etapas de fabricação, moagem, dosagem e mistura, incluindo o sequenciamento de produção e flushing para mitigar o carry-over de medicamentos."
+  },
+  { 
+    codigo: "POP-06", 
+    nome: "Manutenção e Calibração",
+    descricao: "Manutenção preventiva e corretiva de equipamentos críticos, além da calibração periódica de balanças e medidores para garantir a precisão dos processos."
+  },
+  { 
+    codigo: "POP-07", 
+    nome: "Controle de Pragas",
+    descricao: "Programa de manejo integrado de pragas, monitoramento de iscas e armadilhas, e controle de vetores e roedores nas áreas internas e externas."
+  },
+  { 
+    codigo: "POP-08", 
+    nome: "Resíduos e Efluentes",
+    descricao: "Gerenciamento de resíduos sólidos e efluentes líquidos, classificação de descartes e atendimento às normas ambientais vigentes."
+  },
+  { 
+    codigo: "POP-09", 
+    nome: "Armazenamento e Transporte",
+    descricao: "Boas práticas de estocagem de insumos e produtos acabados, controle de temperatura, umidade e inspeção de veículos de transporte."
+  },
+  { 
+    codigo: "POP-10", 
+    nome: "PAC — Programa de Autocontrole",
+    descricao: "Sistema de monitoramento, verificação e ações corretivas para garantir que todos os processos operacionais estejam sob controle e em conformidade técnica."
+  },
 ];
 
 /**

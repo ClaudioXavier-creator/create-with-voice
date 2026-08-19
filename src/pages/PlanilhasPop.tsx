@@ -104,8 +104,16 @@ export default function PlanilhasPop() {
                 )}
               </div>
               <CardTitle className="text-2xl mt-2">{selectedPop.nome}</CardTitle>
-              <CardDescription className="text-base">
-                Gestão integrada de documentos e registros conforme IN 04/2007.
+              <CardDescription className="text-base space-y-2">
+                <p>Gestão integrada de documentos e registros conforme IN 04/2007.</p>
+                {selectedPop.descricao && (
+                  <div className="mt-3 p-4 bg-primary/10 rounded-lg border border-primary/20 text-foreground text-sm leading-relaxed italic">
+                    <div className="flex items-start gap-2">
+                      <Info className="w-4 h-4 mt-0.5 text-primary shrink-0" />
+                      <span>{selectedPop.descricao}</span>
+                    </div>
+                  </div>
+                )}
               </CardDescription>
             </CardHeader>
             <CardContent className="pt-6">
