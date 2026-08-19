@@ -344,6 +344,9 @@ export default function PlanilhasPop() {
               ))}
             </div>
           </CardContent>
+        </Card>
+      )}
+
       {selectedPop.periodicidades.length === 0 && (
         <Card className="border-dashed">
           <CardContent className="py-8 text-center">
