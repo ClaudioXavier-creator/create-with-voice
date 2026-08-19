@@ -305,9 +305,10 @@ export default function DocumentosBPF() {
 
       {/* Filters + Upload */}
       <div className="flex flex-wrap items-end gap-3">
-
+        <div className="space-y-1">
           <Label className="text-xs">Tipo</Label>
           <Select value={filtroTipo} onValueChange={setFiltroTipo}>
+
             <SelectTrigger className="w-40"><SelectValue /></SelectTrigger>
             <SelectContent>
               <SelectItem value="todos">Todos</SelectItem>
