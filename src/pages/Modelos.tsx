@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Lock, Unlock, Download, FileText, BookOpen, ClipboardList, Table2, Shield, Wrench, FlaskConical, Bug, Droplets, Activity, Users, Truck, Printer, Eye, Search, Filter } from "lucide-react";
+import { Lock, Unlock, Download, FileText, BookOpen, ClipboardList, Table2, Shield, Wrench, FlaskConical, Bug, Droplets, Activity, Users, Truck, Printer, Eye, Search, Filter, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import PageHeader from "@/components/PageHeader";
 import { TEMPLATE_GENERATORS } from "@/utils/excelTemplates";
+import { INSTRUCOES_TRABALHO } from "@/config/instrucoesTrabalho";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { PrintableTemplate } from "@/components/PrintableTemplate";
@@ -23,6 +24,7 @@ interface ModeloDoc {
   categoria: string;
   arquivo: string;
   novo?: boolean;
+  it_conteudo?: string;
 }
 
 const MODELOS: ModeloDoc[] = [
@@ -163,6 +165,18 @@ export default function Modelos() {
   const [showPreview, setShowPreview] = useState(false);
   const [modelosCustom, setModelosCustom] = useState<ModeloDoc[]>([]);
   const [busca, setBusca] = useState("");
+  const [favoritos, setFavoritos] = useState<string[]>(() => {
+    return JSON.parse(localStorage.getItem("bpf_modelos_favoritos") || "[]");
+  });
+
+  const toggleFavorito = (arquivo: string) => {
+    const newFavoritos = favoritos.includes(arquivo)
+      ? favoritos.filter(f => f !== arquivo)
+      : [...favoritos, arquivo];
+    setFavoritos(newFavoritos);
+    localStorage.setItem("bpf_modelos_favoritos", JSON.stringify(newFavoritos));
+    toast.success(favoritos.includes(arquivo) ? "Removido dos favoritos" : "Adicionado aos favoritos");
+  };
 
   useEffect(() => {
     async function fetchModelosCustom() {
@@ -209,8 +223,17 @@ export default function Modelos() {
     }))
   );
 
-  const todosModelos = [...MODELOS, ...modelosOriginais, ...modelosCustom];
-
+  const todosModelos = [...MODELOS, ...modelosOriginais, ...modelosCustom].map(m => {
+    // Vincular conteúdo das ITs para busca interna
+    const itRelacionada = INSTRUCOES_TRABALHO.find(it => it.id === m.arquivo);
+    if (itRelacionada) {
+      return {
+        ...m,
+        it_conteudo: `${itRelacionada.objetivo} ${itRelacionada.passos.join(" ")} ${itRelacionada.materiais.join(" ")}`
+      };
+    }
+    return m;
+  });
 
   const verificarSenha = async () => {
     if (!senha.trim()) { toast.error("Digite a senha de acesso"); return; }
@@ -245,14 +268,19 @@ export default function Modelos() {
   };
 
   const modelosFiltrados = todosModelos.filter(m => {
-    const matchesFiltro = filtro === "todos" || m.categoria === filtro;
+    const matchesFiltro = filtro === "todos" 
+      || (filtro === "favoritos" && favoritos.includes(m.arquivo))
+      || m.categoria === filtro;
+      
     const matchesBusca = busca === "" || 
       m.nome.toLowerCase().includes(busca.toLowerCase()) || 
-      m.descricao.toLowerCase().includes(busca.toLowerCase());
+      m.descricao.toLowerCase().includes(busca.toLowerCase()) ||
+      (m.it_conteudo && m.it_conteudo.toLowerCase().includes(busca.toLowerCase()));
+      
     return matchesFiltro && matchesBusca;
   });
 
-  const categorias = ["todos", ...Object.keys(categoriaLabels)];
+  const categorias = ["todos", "favoritos", ...Object.keys(categoriaLabels)];
 
   const handleDownload = (modelo: ModeloDoc) => {
     // 1. Tentar baixar do mapeamento de assets (arquivos físicos importados)
@@ -462,7 +490,9 @@ export default function Modelos() {
             <SelectContent>
               {categorias.map(cat => (
                 <SelectItem key={cat} value={cat}>
-                  {cat === "todos" ? `Todos (${todosModelos.length})` : categoriaLabels[cat]}
+                  {cat === "todos" ? `Todos (${todosModelos.length})` : 
+                   cat === "favoritos" ? `Favoritos (${favoritos.length})` :
+                   categoriaLabels[cat]}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -496,7 +526,18 @@ export default function Modelos() {
                     <Icon className="w-5 h-5 text-primary" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <CardTitle className="text-sm leading-tight">{modelo.nome}</CardTitle>
+                    <div className="flex items-start justify-between gap-2">
+                      <CardTitle className="text-sm leading-tight">{modelo.nome}</CardTitle>
+                      <button 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleFavorito(modelo.arquivo);
+                        }}
+                        className="shrink-0 text-muted-foreground hover:text-yellow-500 transition-colors"
+                      >
+                        <Star className={`w-4 h-4 ${favoritos.includes(modelo.arquivo) ? "fill-yellow-500 text-yellow-500" : ""}`} />
+                      </button>
+                    </div>
                     <span className="text-xs text-muted-foreground mt-1 inline-block px-2 py-0.5 bg-muted rounded-full">
                       {categoriaLabels[modelo.categoria]}
                     </span>
