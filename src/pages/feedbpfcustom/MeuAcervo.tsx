@@ -27,6 +27,7 @@ interface Doc {
   pop_codigo: string | null;
   it_codigo: string | null;
   frequencia: string | null;
+  versao: number | null;
   arquivo_nome: string;
   arquivo_path: string;
   data_documento: string | null;
@@ -52,7 +53,7 @@ export default function MeuAcervo() {
       setLoading(true);
       const { data } = await supabase
         .from("documentos_bpf")
-        .select("id,titulo,tipo,pop_codigo,it_codigo,frequencia,arquivo_nome,arquivo_path,data_documento,created_at")
+        .select("id,titulo,tipo,pop_codigo,it_codigo,frequencia,versao,arquivo_nome,arquivo_path,data_documento,created_at")
         .eq("empresa_id", empresaId)
         .order("created_at", { ascending: false });
       setDocs((data as any as Doc[]) || []);
@@ -335,6 +336,7 @@ export default function MeuAcervo() {
                       <div className="flex items-center gap-2">
                         <p className="text-sm font-medium truncate">{d.titulo}</p>
                         {d.it_codigo && <Badge variant="secondary" className="text-[9px] font-mono h-4">{d.it_codigo}</Badge>}
+                        {d.versao && <Badge variant="outline" className="text-[9px] font-mono h-4 border-emerald-200 text-emerald-700">v{d.versao}</Badge>}
                       </div>
                       <p className="text-xs text-muted-foreground truncate">
                         {d.arquivo_nome} · {d.data_documento ? new Date(d.data_documento + "T12:00").toLocaleDateString("pt-BR") : "sem data"}

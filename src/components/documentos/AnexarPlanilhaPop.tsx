@@ -54,6 +54,7 @@ export function AnexarPlanilhaPop({
   const [frequencia, setFrequencia] = useState<FrequenciaDoc>("DIARIA");
   const [file, setFile] = useState<File | null>(null);
   const [saving, setSaving] = useState(false);
+  const [versao, setVersao] = useState<number>(1);
 
   // Sugere próximo número disponível ao abrir ou trocar tipo
   const sugerirProximoNumero = async () => {
@@ -71,8 +72,22 @@ export function AnexarPlanilhaPop({
       const { data } = await q;
       const max = (data?.[0] as any)?.numero_doc ?? 0;
       setNumero(formatNumero(max + 1));
+      
+      // Busca versão atual do documento se já existir com mesmo nome/tipo/numero/data
+      const { data: vData } = await supabase
+        .from("arquivos_bpf")
+        .select("versao")
+        .eq("pop_codigo", popCodigo)
+        .eq("tipo_doc", tipo)
+        .eq("numero_doc", max)
+        .order("versao", { ascending: false })
+        .limit(1);
+      
+      const lastVersion = (vData?.[0] as any)?.versao ?? 0;
+      setVersao(lastVersion + 1);
     } catch {
       setNumero("001");
+      setVersao(1);
     }
   };
 
@@ -99,7 +114,7 @@ export function AnexarPlanilhaPop({
     setSaving(true);
     try {
       const scopeId = empresaAtiva?.id || user.id;
-      const path = storagePath(scopeId, popCodigo, tipo, numero, dataRef, file.name, prefixo, itCodigo, frequencia);
+      const path = storagePath(scopeId, popCodigo, tipo, numero, dataRef, file.name, prefixo, itCodigo, frequencia, versao);
 
       const { error: upErr } = await supabase.storage
         .from("documentos-bpf")
@@ -127,6 +142,7 @@ export function AnexarPlanilhaPop({
         data_ref: dataRef,
         it_codigo: itCodigo || null,
         frequencia: frequencia || null,
+        versao: versao,
         nome_padronizado: arquivoFinal.replace(/\.[^.]+$/, ""),
       } as any);
       if (error) {

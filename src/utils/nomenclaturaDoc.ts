@@ -93,7 +93,7 @@ export function nomeDisplay(
 
 /**
  * Caminho de storage padronizado:
- *   {scopeId}/POP-01/IT-01-01/MENSAL/POP-01_PL-001_08-07-2026.pdf
+ *   {scopeId}/POP-01/IT-01-01/MENSAL/v1/POP-01_PL-001_08-07-2026.pdf
  */
 export function storagePath(
   scopeId: string,
@@ -104,7 +104,8 @@ export function storagePath(
   originalFileName: string,
   prefixo?: string | null,
   itCodigo?: string | null,
-  frequencia?: string | null
+  frequencia?: string | null,
+  versao?: number | string
 ): string {
   const ext = originalFileName.includes(".")
     ? originalFileName.split(".").pop()!.toLowerCase().replace(/[^a-z0-9]/g, "")
@@ -114,8 +115,9 @@ export function storagePath(
   const popDir = `POP-${popShort(popCodigo)}`;
   const itDir = itCodigo ? itCodigo.replace(/[^A-Z0-9-]/gi, "") : tipo;
   const freqDir = frequencia ? frequencia.toUpperCase() : "GERAL";
+  const vDir = versao ? `v${versao}` : "v1";
 
-  return `bpf/${scopeId}/${popDir}/${itDir}/${freqDir}/${base}.${ext}`;
+  return `bpf/${scopeId}/${popDir}/${itDir}/${freqDir}/${vDir}/${base}.${ext}`;
 }
 
 /** Extrai a extensão preservando pontos internos do nome original */

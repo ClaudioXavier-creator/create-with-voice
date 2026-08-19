@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { 
   Clipboard, 
   ChevronRight, 
@@ -6,29 +6,102 @@ import {
   CheckCircle2, 
   Download, 
   Search, 
-  FileSignature,
-  FileBadge,
-  AlertTriangle,
-  Info,
-  ExternalLink,
-  BookOpen
+  FileSignature, 
+  FileBadge, 
+  AlertTriangle, 
+  Info, 
+  ExternalLink, 
+  BookOpen, 
+  Settings2, 
+  Lock, 
+  History 
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Switch } from "@/components/ui/switch";
+import { Progress } from "@/components/ui/progress";
 import PageHeader from "@/components/PageHeader";
 import { POPS_CUSTOM } from "@/config/feedBpfCustomConfig";
 import { MODELOS_ASSETS } from "@/config/modelosAssetsMapping";
 import { getItsPorPop, POP_TO_MODULOS } from "@/config/documentosCentral";
 import { useNavigate } from "react-router-dom";
+import { useEmpresa } from "@/hooks/useEmpresa";
+import { useLicense } from "@/hooks/useLicense";
+import { POP_PESOS, LIMITE_PONTOS_INTERMEDIARIO, calcularTotalPontos } from "@/config/popsPesos";
+import { TIER_LABEL } from "@/config/tiers";
+import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 export default function PlanilhasPop() {
   const navigate = useNavigate();
   const [selectedPop, setSelectedPop] = useState(POPS_CUSTOM[0]);
   const [searchTerm, setSearchTerm] = useState("");
+  const { empresaAtiva, recarregar } = useEmpresa();
+  const { tier } = useLicense();
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [historico, setHistorico] = useState<any[]>([]);
+
+  const configModos = empresaAtiva?.config_modos_preenchimento || {};
+  const totalPontos = useMemo(() => calcularTotalPontos(configModos), [configModos]);
+  const isIntermediario = tier === "intermediario";
+
+  // Carrega histórico de versões para o POP selecionado
+  useEffect(() => {
+    if (!empresaAtiva) return;
+    
+    const fetchHistorico = async () => {
+      const { data } = await supabase
+        .from("arquivos_bpf")
+        .select("*")
+        .eq("empresa_id", empresaAtiva.id)
+        .eq("pop_codigo", selectedPop.codigo)
+        .order("versao", { ascending: false });
+      
+      setHistorico(data || []);
+    };
+
+    fetchHistorico();
+  }, [selectedPop.codigo, empresaAtiva]);
+
+  const toggleModo = async (popCodigo: string) => {
+    if (!empresaAtiva || isUpdating) return;
+
+    const novoModo = configModos[popCodigo] === "digital" ? "hibrido" : "digital";
+    
+    // Validação de limite para plano intermediário
+    if (isIntermediario && novoModo === "digital") {
+      const pesoPop = POP_PESOS[popCodigo] || 0;
+      if (totalPontos + pesoPop > LIMITE_PONTOS_INTERMEDIARIO) {
+        toast.error(`Limite atingido! O Plano Intermediário permite apenas ${LIMITE_PONTOS_INTERMEDIARIO} pontos digitais.`);
+        return;
+      }
+    }
+
+    setIsUpdating(true);
+    const newConfig = { ...configModos, [popCodigo]: novoModo };
+
+    try {
+      // Usamos uma tipagem forçada para o Supabase ignorar o erro de schema local
+      // até que a migração seja processada no ambiente de build.
+      const { error } = await supabase
+        .from("empresas")
+        .update({ config_modos_preenchimento: newConfig } as any)
+        .eq("id", empresaAtiva.id);
+
+      if (error) throw error;
+      
+      toast.success(`${popCodigo} configurado como ${novoModo === "digital" ? "DIGITAL" : "HÍBRIDO"}`);
+      await recarregar();
+    } catch (err: any) {
+      toast.error("Erro ao atualizar configuração: " + err.message);
+    } finally {
+      setIsUpdating(false);
+    }
+  };
 
   const filteredPops = POPS_CUSTOM.filter(pop => 
     pop.nome.toLowerCase().includes(searchTerm.toLowerCase()) || 
@@ -117,6 +190,14 @@ export default function PlanilhasPop() {
               </CardDescription>
             </CardHeader>
             <CardContent className="pt-6">
+              <Tabs defaultValue="conteudo" className="w-full">
+                <TabsList className="grid w-full grid-cols-3 mb-6">
+                  <TabsTrigger value="conteudo">Conteúdo do POP</TabsTrigger>
+                  <TabsTrigger value="configuracao">Configuração & Limites</TabsTrigger>
+                  <TabsTrigger value="historico">Histórico de Versões</TabsTrigger>
+                </TabsList>
+
+                <TabsContent value="conteudo" className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Procedimento Descritivo (Word/PDF) */}
                 <div className="space-y-4">
@@ -232,6 +313,100 @@ export default function PlanilhasPop() {
                   </div>
                 )}
               </div>
+            </TabsContent>
+
+                <TabsContent value="configuracao" className="space-y-6">
+                  <div className="p-6 border rounded-xl bg-card space-y-6">
+                    <div className="flex items-center justify-between pb-4 border-b">
+                      <div>
+                        <h4 className="text-lg font-bold">Modo de Operação</h4>
+                        <p className="text-sm text-muted-foreground">Defina se este POP será 100% digital ou seguirá o modelo híbrido (papel + upload).</p>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <span className="text-sm font-medium">{configModos[selectedPop.codigo] === "digital" ? "DIGITAL" : "HÍBRIDO"}</span>
+                        <Switch 
+                          checked={configModos[selectedPop.codigo] === "digital"}
+                          onCheckedChange={() => toggleModo(selectedPop.codigo)}
+                          disabled={tier === "entrada" || isUpdating}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+                      <div className="space-y-2">
+                        <div className="flex justify-between text-xs font-bold uppercase text-muted-foreground">
+                          <span>Complexidade do POP</span>
+                          <span>{POP_PESOS[selectedPop.codigo] || 0} pts</span>
+                        </div>
+                        <Progress value={(POP_PESOS[selectedPop.codigo] || 0) * 4} className="h-1.5" />
+                      </div>
+
+                      <div className="space-y-2">
+                        <div className="flex justify-between text-xs font-bold uppercase text-muted-foreground">
+                          <span>Uso da Licença ({TIER_LABEL[tier]})</span>
+                          <span>{totalPontos} / {isIntermediario ? LIMITE_PONTOS_INTERMEDIARIO : "∞"} pts</span>
+                        </div>
+                        <Progress 
+                          value={isIntermediario ? (totalPontos / LIMITE_PONTOS_INTERMEDIARIO) * 100 : 100} 
+                          className={`h-1.5 ${totalPontos > LIMITE_PONTOS_INTERMEDIARIO * 0.9 ? "[&>div]:bg-destructive" : ""}`} 
+                        />
+                      </div>
+                    </div>
+
+                    {tier === "entrada" && (
+                      <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg flex gap-3 text-amber-800 text-sm">
+                        <Lock className="w-5 h-5 shrink-0" />
+                        <p>O <strong>Plano Entrada</strong> opera exclusivamente em modo híbrido. Faça upgrade para o Intermediário ou Avançado para habilitar registros 100% digitais.</p>
+                      </div>
+                    )}
+                  </div>
+                </TabsContent>
+
+                <TabsContent value="historico" className="space-y-4">
+                  <div className="border rounded-xl overflow-hidden">
+                    <table className="w-full text-sm">
+                      <thead className="bg-muted/50 border-b">
+                        <tr>
+                          <th className="px-4 py-3 text-left font-bold uppercase text-[10px] text-muted-foreground">Versão</th>
+                          <th className="px-4 py-3 text-left font-bold uppercase text-[10px] text-muted-foreground">Data</th>
+                          <th className="px-4 py-3 text-left font-bold uppercase text-[10px] text-muted-foreground">Arquivo</th>
+                          <th className="px-4 py-3 text-right font-bold uppercase text-[10px] text-muted-foreground">Ações</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y">
+                        {historico.length > 0 ? (
+                          historico.map((v) => (
+                            <tr key={v.id} className="hover:bg-muted/30 transition-colors">
+                              <td className="px-4 py-3">
+                                <Badge variant="outline" className="font-mono">v{v.versao || 1}</Badge>
+                              </td>
+                              <td className="px-4 py-3 text-muted-foreground">
+                                {new Date(v.created_at).toLocaleDateString("pt-BR")}
+                              </td>
+                              <td className="px-4 py-3 font-medium">
+                                {v.nome_arquivo}
+                              </td>
+                              <td className="px-4 py-3 text-right">
+                                <Button variant="ghost" size="sm" asChild>
+                                  <a href={v.url} target="_blank" rel="noopener noreferrer">
+                                    <Download className="w-4 h-4" />
+                                  </a>
+                                </Button>
+                              </td>
+                            </tr>
+                          ))
+                        ) : (
+                          <tr>
+                            <td colSpan={4} className="px-4 py-12 text-center text-muted-foreground italic">
+                              Nenhum histórico de versão encontrado para este POP.
+                            </td>
+                          </tr>
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                </TabsContent>
+              </Tabs>
             </CardContent>
           </Card>
         </div>
