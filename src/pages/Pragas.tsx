@@ -169,7 +169,7 @@ export default function Pragas() {
 
   return (
     <div className="space-y-6">
-      <PageHeader icon={Bug} title="POP 07 - Controle Integrado de Pragas" description="Monitoramento integrado de pragas e registros de expurgo — IN 04/2007"
+      <PageHeader icon={Bug} title="POP 07 - Controle de Pragas" description="Monitoramento integrado de pragas e registros de expurgo — IN 04/2007"
         orientacaoModuloId="pragas" />
       <div className="flex justify-end mb-3"><AnexarPlanilhaPop popCodigo="POP-07" popNome="Controle Integrado de Pragas" /></div>
 
