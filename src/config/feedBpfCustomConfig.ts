@@ -59,4 +59,5 @@ export interface CampoModelo {
   tipo: CampoTipo;
   obrigatorio: boolean;
   opcoes?: string[]; // usado quando tipo = select
+  valorPadrao?: string;
 }

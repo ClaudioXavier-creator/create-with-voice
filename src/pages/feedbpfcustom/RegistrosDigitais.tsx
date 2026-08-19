@@ -251,7 +251,7 @@ function NovoRegistro({ modeloId }: { modeloId: string | null }) {
                 {modelo.campos.map(c => (
                   <div key={c.id}>
                     <Label>{c.nome} {c.obrigatorio && <span className="text-destructive">*</span>}</Label>
-                    <CampoInput campo={c} value={dados[c.id]} onChange={(v) => setDados({ ...dados, [c.id]: v })} />
+                    <CampoInput campo={c} value={dados[c.id] !== undefined ? dados[c.id] : c.valorPadrao} onChange={(v) => setDados({ ...dados, [c.id]: v })} />
                   </div>
                 ))}
               </div>
