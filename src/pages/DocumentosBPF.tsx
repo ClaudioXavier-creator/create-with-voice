@@ -203,7 +203,7 @@ export default function DocumentosBPF() {
 
   return (
     <div className="space-y-6">
-      <PageHeader icon={FolderOpen} title="Documentos BPF — Arquivo Digital" description="Checklist de documentos obrigatórios + arquivo livre de POPs, ITs e planilhas escaneadas" />
+      <PageHeader icon={FolderOpen} title="Arquivo Digital (Arquivo de POPs e ITs)" description="Checklist de documentos obrigatórios + arquivo livre de POPs, ITs e planilhas escaneadas" />
       <EmpresaSelector />
 
       <Tabs defaultValue="checklist" className="space-y-4">
