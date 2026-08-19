@@ -52,10 +52,10 @@ export default function MeuAcervo() {
       setLoading(true);
       const { data } = await supabase
         .from("documentos_bpf")
-        .select("id,titulo,tipo,pop_codigo,arquivo_nome,arquivo_path,data_documento,created_at")
+        .select("id,titulo,tipo,pop_codigo,it_codigo,frequencia,arquivo_nome,arquivo_path,data_documento,created_at")
         .eq("empresa_id", empresaId)
         .order("created_at", { ascending: false });
-      setDocs((data as Doc[]) || []);
+      setDocs((data as any as Doc[]) || []);
       setSelecionados(new Set());
       setLoading(false);
     })();
