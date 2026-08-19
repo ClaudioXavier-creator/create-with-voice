@@ -18,6 +18,7 @@ import { MODELOS_ASSETS } from "@/config/modelosAssetsMapping";
 import PopPlanilhaForm from "@/components/pop/PopPlanilhaForm";
 import { TEMPLATE_GENERATORS, exportPopDataToExcel } from "@/utils/excelTemplates";
 import { markPopVisited } from "@/components/OnboardingChecklist";
+import { INSTRUCOES_TRABALHO } from "@/config/instrucoesTrabalho";
 
 const MESES = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
 
