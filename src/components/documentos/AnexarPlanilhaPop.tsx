@@ -114,7 +114,7 @@ export function AnexarPlanilhaPop({
     setSaving(true);
     try {
       const scopeId = empresaAtiva?.id || user.id;
-      const path = storagePath(scopeId, popCodigo, tipo, numero, dataRef, file.name, prefixo, itCodigo, frequencia);
+      const path = storagePath(scopeId, popCodigo, tipo, numero, dataRef, file.name, prefixo, itCodigo, frequencia, versao);
 
       const { error: upErr } = await supabase.storage
         .from("documentos-bpf")
