@@ -736,12 +736,13 @@ export default function HigieneSanitizacao() {
         orientacaoModuloId="higiene" 
       />
       
-      <div className="flex justify-between items-center mb-3">
-        <Button variant="outline" size="sm" onClick={() => navigate("/documentos-bpf")} className="gap-2">
-          <Archive className="w-4 h-4" /> Arquivo Digital (Retenção 2 Anos)
+      <div className="flex flex-wrap justify-between items-center gap-3 mb-3">
+        <Button variant="outline" size="sm" onClick={() => navigate("/documentos-bpf?tab=retencao")} className="gap-2">
+          <Clock className="w-4 h-4" /> Gestão de Retenção (2 Anos)
         </Button>
         <AnexarPlanilhaPop popCodigo="POP-02" popNome="Higiene e Sanitização" />
       </div>
+
 
 
       <Tabs defaultValue="preop">
