@@ -1,4 +1,5 @@
-// Alterações solicitadas aplicadas:
-// 1. Inclusão de atalho para a última versão do POP (cópia do gerado/importado) na aba do respectivo POP.
-// 2. Inclusão de caminho para impressão das planilhas de registro (atalho para Biblioteca de Modelos) na aba do POP.
-// Modificações realizadas em src/pages/PlanilhasPop.tsx.
+// Resultado da implementação dos atalhos no módulo de Planilhas de POPs:
+// 1. Atalho "Última Versão Salva": Exibe dinamicamente o link para o download da versão mais recente do POP (gerada ou importada).
+// 2. Atalho "Impressão p/ Registro Manual": Link direto para a Biblioteca de Modelos para baixar formulários físicos.
+// Os componentes foram integrados em src/pages/PlanilhasPop.tsx utilizando Cards semânticos e ícones da Lucide-react.
+
