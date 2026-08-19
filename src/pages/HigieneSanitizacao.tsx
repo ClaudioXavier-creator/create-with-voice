@@ -727,8 +727,8 @@ export default function HigieneSanitizacao() {
     <div className="space-y-6">
       <PageHeader 
         icon={Droplets}
-        title="POP 02 - Limpeza de Instalações, Equipamentos e Utensílios" 
-        description="Procedimentos de limpeza e higienização conforme IN 04/2007 e IN 15/2009"
+        title="POP 02 - Higiene e Sanitização" 
+        description="Procedimentos de limpeza de instalações, equipamentos e utensílios conforme IN 04/2007 e IN 15/2009"
         orientacaoModuloId="higiene" 
       />
       <div className="flex justify-end mb-3"><AnexarPlanilhaPop popCodigo="POP-02" popNome="Higiene e Sanitização" /></div>

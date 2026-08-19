@@ -269,7 +269,7 @@ export default function Fornecedores() {
 
   return (
     <>
-      <PageHeader icon={Users} title="POP 01 - Qualificação de Fornecedores" description="Cadastro, avaliação e histórico integrado ao Recebimento de MP — IN 04/2007"
+      <PageHeader icon={Users} title="POP 01 - Qualificação de Fornecedores" description="Cadastro e avaliação de fornecedores conforme IN 04/2007"
         orientacaoModuloId="fornecedores" />
 
       {/* Validação SIPEAGRO — links oficiais MAPA */}
