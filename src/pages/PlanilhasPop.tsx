@@ -309,7 +309,8 @@ export default function PlanilhasPop() {
                     <p className="text-sm text-muted-foreground">Nenhuma Instrução de Trabalho mapeada para este POP ainda.</p>
                   </div>
                 )}
-                </TabsContent>
+              </div>
+            </TabsContent>
 
                 <TabsContent value="configuracao" className="space-y-6">
                   <div className="p-6 border rounded-xl bg-card space-y-6">
