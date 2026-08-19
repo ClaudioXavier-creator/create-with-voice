@@ -17,6 +17,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useEmpresa } from "@/hooks/useEmpresa";
 import { POPS_CUSTOM } from "@/config/feedBpfCustomConfig";
+import { MODELOS_ASSETS } from "@/config/modelosAssetsMapping";
 import { toast } from "sonner";
 
 interface Doc {
@@ -216,6 +217,66 @@ export default function MeuAcervo() {
           </div>
           <p className="text-xs text-amber-800 mt-2 font-medium">Sem POP vinculado</p>
         </button>
+      </div>
+
+      {/* Atalhos para Modelos Originais (Zip) */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <Card className="border-emerald-200 bg-emerald-50/50">
+          <CardHeader className="pb-3 pt-4">
+            <CardTitle className="text-sm flex items-center gap-2">
+              <FileSpreadsheet className="w-4 h-4 text-emerald-600" />
+              Modelos Rápidos (Arquivos do Material Enviado)
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="pb-4">
+            <div className="flex flex-wrap gap-2">
+              {Object.keys(MODELOS_ASSETS).slice(0, 5).map(popKey => (
+                <Button 
+                  key={popKey} 
+                  variant="outline" 
+                  size="xs" 
+                  className="text-[10px] h-7 border-emerald-200 hover:bg-emerald-100"
+                  onClick={() => setPopFiltro(popKey)}
+                >
+                  Modelos {popKey}
+                </Button>
+              ))}
+              <Button 
+                variant="ghost" 
+                size="xs" 
+                className="text-[10px] h-7"
+                asChild
+              >
+                <Link to="/modelos">Ver todos na Biblioteca →</Link>
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+        
+        {popFiltro && MODELOS_ASSETS[popFiltro] && (
+          <Card className="border-primary/20 bg-primary/5">
+            <CardHeader className="pb-2 pt-4">
+              <CardTitle className="text-xs font-bold uppercase tracking-wider text-primary">
+                Downloads disponíveis para {popFiltro}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pb-3">
+              <div className="flex flex-wrap gap-2">
+                {MODELOS_ASSETS[popFiltro].map((m, idx) => (
+                  <Button 
+                    key={idx} 
+                    variant="link" 
+                    size="sm" 
+                    className="h-auto p-0 text-xs text-primary underline decoration-primary/30"
+                    onClick={() => window.open(m.url, "_blank")}
+                  >
+                    <Download className="w-3 h-3 mr-1" /> {m.label}
+                  </Button>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
       </div>
 
       {/* Barra de ações em lote */}
