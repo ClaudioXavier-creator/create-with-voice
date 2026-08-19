@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { Lock, Unlock, Download, FileText, BookOpen, ClipboardList, Table2, Shield, Wrench, FlaskConical, Bug, Droplets, Activity, Users, Truck, Printer, Eye, Search, Filter, Star } from "lucide-react";
+import { Lock, Unlock, Download, FileText, BookOpen, ClipboardList, Table2, Shield, Wrench, FlaskConical, Bug, Droplets, Activity, Users, Truck, Printer, Eye, Search, Filter, Star, FileSignature } from "lucide-react";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -24,6 +25,7 @@ interface ModeloDoc {
   categoria: string;
   arquivo: string;
   novo?: boolean;
+  digitalRoute?: string;
   it_conteudo?: string;
 }
 
@@ -227,13 +229,25 @@ export default function Modelos() {
   const todosModelos = [...MODELOS, ...modelosOriginais, ...modelosCustom].map(m => {
     // Vincular conteúdo das ITs para busca interna
     const itRelacionada = INSTRUCOES_TRABALHO.find(it => it.id === m.arquivo);
+    
+    // Vincular rota de formulário digital se existir
+    let digitalRoute = "";
+    if (m.categoria === "formulario" || m.categoria === "planilha") {
+      // Tentar encontrar modelo custom correspondente para link direto
+      const customMatch = modelosCustom.find(c => c.nome === m.nome);
+      if (customMatch) {
+        digitalRoute = `/feedbpf-custom/registros/novo?modelo=${customMatch.arquivo.replace("custom-", "")}`;
+      }
+    }
+
     if (itRelacionada) {
       return {
         ...m,
+        digitalRoute,
         it_conteudo: `${itRelacionada.objetivo} ${itRelacionada.passos.join(" ")} ${itRelacionada.materiais.join(" ")}`
       };
     }
-    return m;
+    return { ...m, digitalRoute };
   });
 
   const verificarSenha = async () => {
@@ -548,13 +562,36 @@ export default function Modelos() {
               </CardHeader>
               <CardContent>
                 <p className="text-xs text-muted-foreground mb-3 h-8 line-clamp-2">{modelo.descricao}</p>
-                <div className="flex gap-2">
-                  <Button size="sm" variant="outline" className="flex-1" onClick={() => handlePreview(modelo)}>
-                    <Eye className="w-4 h-4 mr-1" /> Ver/Imprimir
-                  </Button>
-                  <Button size="sm" variant="default" className="flex-1" onClick={() => handleDownload(modelo)}>
-                    <Download className="w-4 h-4 mr-1" /> Excel
-                  </Button>
+                <div className="flex flex-col gap-2">
+                  <div className="flex gap-2">
+                    <Button size="sm" variant="outline" className="flex-1" onClick={() => handlePreview(modelo)}>
+                      <Eye className="w-4 h-4 mr-1" /> Ver/Imprimir
+                    </Button>
+                    <Button size="sm" variant="default" className="flex-1" onClick={() => handleDownload(modelo)}>
+                      <Download className="w-4 h-4 mr-1" /> Excel
+                    </Button>
+                  </div>
+                  
+                  {(modelo as any).digitalRoute && (
+                    <Button asChild size="sm" className="w-full bg-emerald-600 hover:bg-emerald-700">
+                      <Link to={(modelo as any).digitalRoute}>
+                        <FileSignature className="w-4 h-4 mr-1" /> Registro Digital
+                      </Link>
+                    </Button>
+                  )}
+                  
+                  {modelo.categoria === "instrucao" && (
+                    <Button 
+                      size="sm" 
+                      variant="secondary" 
+                      className="w-full"
+                      asChild
+                    >
+                      <Link to={`/execucao-pops?pop=${modelo.arquivo.split("-")[1]}`}>
+                        <Eye className="w-4 h-4 mr-1" /> Ver IT Detalhada
+                      </Link>
+                    </Button>
+                  )}
                 </div>
               </CardContent>
             </Card>

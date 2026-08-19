@@ -395,7 +395,8 @@ export default function Documentos() {
     if (arqFilterPop !== "todos" && (a.pop_codigo || "") !== arqFilterPop) return false;
     if (arqSearch.trim()) {
       const q = arqSearch.trim().toLowerCase();
-      const hay = `${a.titulo || ""} ${a.descricao || ""} ${a.arquivo_nome || ""} ${a.pop_codigo || ""}`.toLowerCase();
+      // Incluir busca por IT no filtro
+      const hay = `${a.titulo || ""} ${a.descricao || ""} ${a.arquivo_nome || ""} ${a.pop_codigo || ""} ${a.it_codigo || ""}`.toLowerCase();
       if (!hay.includes(q)) return false;
     }
     return true;
