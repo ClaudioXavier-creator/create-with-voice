@@ -158,7 +158,7 @@ export default function Legislacao() {
       if (data?.error) { toast.error(data.error); setLoading(false); return; }
 
       const result = data?.data;
-      if (result?.alertas) {
+      if (result?.alertas && Array.isArray(result.alertas)) {
         setAlertasIA(result.alertas);
         setResumoGeral(result.resumo_geral || "");
         const records = result.alertas.map((a: Alerta) => ({
@@ -171,9 +171,14 @@ export default function Legislacao() {
           relevancia: a.relevancia || "media",
           data_publicacao: a.data_aproximada || new Date().toISOString().split("T")[0],
         }));
-        await supabase.from("legislacao_alertas").insert(records as any);
-        fetchAlertas();
-        toast.success(`${result.alertas.length} alertas encontrados e salvos!`);
+        
+        if (records.length > 0) {
+          await supabase.from("legislacao_alertas").insert(records as any);
+          fetchAlertas();
+          toast.success(`${result.alertas.length} alertas encontrados e salvos!`);
+        } else {
+          toast.info("Nenhum novo alerta relevante encontrado no momento.");
+        }
       } else {
         toast.warning("Nenhum alerta retornado pela IA.");
       }
