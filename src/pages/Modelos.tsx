@@ -25,6 +25,7 @@ interface ModeloDoc {
   categoria: string;
   arquivo: string;
   novo?: boolean;
+  digitalRoute?: string;
   it_conteudo?: string;
 }
 
