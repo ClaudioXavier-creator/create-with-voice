@@ -11,6 +11,8 @@ import { TEMPLATE_GENERATORS } from "@/utils/excelTemplates";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { PrintableTemplate } from "@/components/PrintableTemplate";
 import { printElement } from "@/utils/printUtils";
+import { MODELOS_ASSETS } from "@/config/modelosAssetsMapping";
+
 
 
 
