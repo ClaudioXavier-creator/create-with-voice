@@ -227,13 +227,25 @@ export default function Modelos() {
   const todosModelos = [...MODELOS, ...modelosOriginais, ...modelosCustom].map(m => {
     // Vincular conteúdo das ITs para busca interna
     const itRelacionada = INSTRUCOES_TRABALHO.find(it => it.id === m.arquivo);
+    
+    // Vincular rota de formulário digital se existir
+    let digitalRoute = "";
+    if (m.categoria === "formulario" || m.categoria === "planilha") {
+      // Tentar encontrar modelo custom correspondente para link direto
+      const customMatch = modelosCustom.find(c => c.nome === m.nome);
+      if (customMatch) {
+        digitalRoute = `/feedbpf-custom/registros/novo?modelo=${customMatch.arquivo.replace("custom-", "")}`;
+      }
+    }
+
     if (itRelacionada) {
       return {
         ...m,
+        digitalRoute,
         it_conteudo: `${itRelacionada.objetivo} ${itRelacionada.passos.join(" ")} ${itRelacionada.materiais.join(" ")}`
       };
     }
-    return m;
+    return { ...m, digitalRoute };
   });
 
   const verificarSenha = async () => {
