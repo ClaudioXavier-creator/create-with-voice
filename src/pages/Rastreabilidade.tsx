@@ -939,7 +939,7 @@ export default function Rastreabilidade() {
 
   return (
     <>
-      <PageHeader icon={History} title="POP 09 - Programa de Rastreabilidade e Recolhimento (Recall)" description="Rastreabilidade de produtos, controle de RNC e programa de recolhimento — IN 04/2007" 
+      <PageHeader icon={History} title="POP 09 - Rastreabilidade e Recolhimento" description="Rastreabilidade de produtos, controle de RNC e programa de recolhimento — IN 04/2007" 
         orientacaoModuloId="rastreabilidade" />
       <div className="flex justify-end mb-3"><AnexarPlanilhaPop popCodigo="POP-09" popNome="Rastreabilidade e Recall" /></div>
 

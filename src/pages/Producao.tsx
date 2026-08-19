@@ -203,7 +203,7 @@ export default function Producao() {
 
   return (
     <>
-      <PageHeader icon={Factory} title="Controle de Produção" description="Registro de fabricação, tempo de mistura e sobras — IN 04/2007 e IN 15/2009"
+      <PageHeader icon={Factory} title="POP 05 - Controle de Produção" description="Registro de fabricação, tempo de mistura e sobras — IN 04/2007 e IN 15/2009"
         orientacaoModuloId="producao" />
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">

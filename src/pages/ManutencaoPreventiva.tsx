@@ -246,7 +246,7 @@ export default function ManutencaoPreventiva() {
 
   return (
     <div className="space-y-6">
-      <PageHeader title="POP 06 - Manutenção e Calibração de Equipamentos e Instrumentos" description="Plano de manutenção preventiva e calibração de instrumentos — IN 04/2007 e IN 15/2009"
+      <PageHeader title="POP 06 - Manutenção e Calibração" description="Plano de manutenção preventiva e calibração de instrumentos — IN 04/2007 e IN 15/2009"
         orientacaoModuloId="manutencao" />
       <div className="flex justify-end mb-3"><AnexarPlanilhaPop popCodigo="POP-06" popNome="Manutenção e Calibração" /></div>
 

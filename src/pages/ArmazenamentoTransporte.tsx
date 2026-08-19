@@ -335,11 +335,11 @@ export default function ArmazenamentoTransporte() {
   };
 
   return (
-    <div>
+    <div className="space-y-6">
       <PageHeader
         icon={Warehouse}
-        title="Armazenamento & Transporte"
-        description="Armazenamento (POP-01 — Recebimento/Estocagem de MP) e Transporte (POP-02 / PL POP 2.4 — Higiene e Limpeza de Veículos)"
+        title="POP 01 e POP 02 - Armazenamento e Transporte"
+        description="Armazenamento (POP 01) e Transporte (POP 02 - Higiene de Veículos) — IN 04/2007"
         orientacaoModuloId="armazenamento-transporte"
       />
 

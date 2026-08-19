@@ -97,7 +97,7 @@ export default function ControleVisitantes() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Controle de Visitantes"
+        title="POP 03 - Controle de Visitantes"
         description="Registro de entrada de visitantes conforme IN 56/2007 (Biosseguridade) e IN 04/2007"
         orientacaoModuloId="visitantes"
       />
