@@ -275,7 +275,7 @@ export default function PlanilhasPop() {
                 <FileSignature className="w-3.5 h-3.5 mr-2 shrink-0 text-emerald-600" />
                 <span className="flex flex-col items-start">
                   <span className="font-medium text-xs text-emerald-800">Novo Registro Digital Customizado</span>
-                  <span className="text-[11px] text-muted-foreground font-normal">Preencher formulário digital personalizado para este POP</span>
+                  <span className="text-[11px] text-muted-foreground font-normal">Distribuir todas as ITS de forma automática nos POPs respectivos, para eu ter registro completo ao abrir a tela de cada POP.</span>
                 </span>
               </Button>
             </div>
