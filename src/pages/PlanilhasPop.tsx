@@ -404,10 +404,7 @@ export default function PlanilhasPop() {
                       </Button>
                       <Button 
                         className="bg-emerald-600 hover:bg-emerald-700"
-                        onClick={() => {
-                          toast.success("POP Salvo no Histórico de Versões!");
-                          setShowPreview(false);
-                        }}
+                        onClick={handleSalvarVersao}
                       >
                         <Save className="w-4 h-4 mr-2" />
                         Salvar Versão
