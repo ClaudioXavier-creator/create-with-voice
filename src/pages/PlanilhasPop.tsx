@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
-import { ClipboardList, Plus, Download, Check, FileSpreadsheet, ExternalLink, Info } from "lucide-react";
+import { ClipboardList, Plus, Download, Check, FileSpreadsheet, ExternalLink, Info, BookOpen } from "lucide-react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -339,6 +339,40 @@ export default function PlanilhasPop() {
                   <span className="flex flex-col items-start">
                     <span className="font-medium text-xs text-emerald-800">{m.label}</span>
                     <span className="text-[10px] text-muted-foreground font-normal">Clique para baixar o modelo original</span>
+                  </span>
+                </Button>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Manual de BPF (Caso especial) */}
+      {selectedPop.codigo === "POP-10" && MODELOS_ASSETS["Manual"] && (
+        <Card className="mb-6 border-blue-400 bg-blue-50">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm flex items-center gap-2">
+              <BookOpen className="w-4 h-4 text-blue-600" />
+              Manual de BPF e Documentos de Gestão
+            </CardTitle>
+            <CardDescription className="text-xs">
+              Modelos do Manual e estudos de complexidade.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+              {MODELOS_ASSETS["Manual"].map((m) => (
+                <Button
+                  key={m.url}
+                  variant="outline"
+                  size="sm"
+                  className="justify-start h-auto py-2 text-left border-blue-200 hover:bg-blue-100"
+                  onClick={() => window.open(m.url, "_blank")}
+                >
+                  <Download className="w-3.5 h-3.5 mr-2 shrink-0 text-blue-600" />
+                  <span className="flex flex-col items-start">
+                    <span className="font-medium text-xs text-blue-800">{m.label}</span>
+                    <span className="text-[10px] text-muted-foreground font-normal">Clique para baixar</span>
                   </span>
                 </Button>
               ))}

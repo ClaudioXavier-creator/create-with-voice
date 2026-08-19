@@ -11,6 +11,8 @@ import { TEMPLATE_GENERATORS } from "@/utils/excelTemplates";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { PrintableTemplate } from "@/components/PrintableTemplate";
 import { printElement } from "@/utils/printUtils";
+import { MODELOS_ASSETS } from "@/config/modelosAssetsMapping";
+
 
 
 
@@ -24,7 +26,7 @@ interface ModeloDoc {
 
 const MODELOS: ModeloDoc[] = [
   // Manual
-  { nome: "Manual BPF", descricao: "Manual de Boas Práticas de Fabricação completo (IN 04/2007)", categoria: "manual", arquivo: "Manual_BPF" },
+  { nome: "Manual BPF", descricao: "Manual de Boas Práticas de Fabricação completo (IN 04/2007)", categoria: "manual", arquivo: "Manual" },
 
   // POPs atualizados conforme estrutura do sistema (10 POPs)
   { nome: "POP 01 — Qualificação de Fornecedores", descricao: "Seleção, avaliação e qualificação de fornecedores de matérias-primas", categoria: "pop", arquivo: "POP-01" },
@@ -143,6 +145,7 @@ const categoriaLabels: Record<string, string> = {
   auditoria: "Auditoria/Gestão",
   produto: "Produtos/Rótulos",
   instrucao: "Instruções de Trabalho",
+  original: "Arquivos Originais (Zip)",
 };
 
 export default function Modelos() {
@@ -152,6 +155,20 @@ export default function Modelos() {
   const [filtro, setFiltro] = useState<string>("todos");
   const [selectedModelo, setSelectedModelo] = useState<ModeloDoc | null>(null);
   const [showPreview, setShowPreview] = useState(false);
+
+  // Mapear arquivos originais para o formato da lista de modelos
+  const modelosOriginais: ModeloDoc[] = Object.entries(MODELOS_ASSETS).flatMap(([key, items]) => 
+    items.map(item => ({
+      nome: item.label,
+      descricao: `Arquivo original enviado via Zip — Vinculado a ${key}`,
+      categoria: "original",
+      arquivo: key, // Usamos a chave do grupo para download
+      novo: true
+    }))
+  );
+
+  const todosModelos = [...MODELOS, ...modelosOriginais];
+
 
   const verificarSenha = async () => {
     if (!senha.trim()) { toast.error("Digite a senha de acesso"); return; }
@@ -184,10 +201,30 @@ export default function Modelos() {
     }
   };
 
-  const modelosFiltrados = filtro === "todos" ? MODELOS : MODELOS.filter(m => m.categoria === filtro);
+  const modelosFiltrados = filtro === "todos" ? todosModelos : todosModelos.filter(m => m.categoria === filtro);
   const categorias = ["todos", ...Object.keys(categoriaLabels)];
 
   const handleDownload = (modelo: ModeloDoc) => {
+    // 1. Tentar baixar do mapeamento de assets (arquivos físicos importados)
+    const assetGroup = MODELOS_ASSETS[modelo.arquivo];
+    if (assetGroup && assetGroup.length > 0) {
+      // Se for um item da categoria "original", procuramos pelo label exato
+      if (modelo.categoria === "original") {
+        const specificAsset = assetGroup.find(a => a.label === modelo.nome);
+        if (specificAsset) {
+          window.open(specificAsset.url, "_blank");
+          toast.success(`${modelo.nome} — Download iniciado!`);
+          return;
+        }
+      } else {
+        // Fallback para o primeiro item do grupo se não for categoria "original"
+        window.open(assetGroup[0].url, "_blank");
+        toast.success(`${modelo.nome} — Download iniciado!`);
+        return;
+      }
+    }
+
+    // 2. Fallback para geradores de template Excel dinâmicos
     const generator = TEMPLATE_GENERATORS[modelo.arquivo];
     if (generator) {
       generator();
@@ -198,6 +235,11 @@ export default function Modelos() {
   };
 
   const handlePreview = (modelo: ModeloDoc) => {
+    // Se for um asset físico (Word/PDF/Excel do Zip), abrimos direto ou baixamos
+    if (modelo.categoria === "original" || MODELOS_ASSETS[modelo.arquivo]) {
+      handleDownload(modelo);
+      return;
+    }
     setSelectedModelo(modelo);
     setShowPreview(true);
   };
@@ -355,7 +397,7 @@ export default function Modelos() {
             size="sm"
             onClick={() => setFiltro(cat)}
           >
-            {cat === "todos" ? `Todos (${MODELOS.length})` : categoriaLabels[cat]}
+            {cat === "todos" ? `Todos (${todosModelos.length})` : categoriaLabels[cat]}
           </Button>
         ))}
       </div>
