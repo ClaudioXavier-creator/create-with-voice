@@ -26,7 +26,7 @@ interface ModeloDoc {
 
 const MODELOS: ModeloDoc[] = [
   // Manual
-  { nome: "Manual BPF", descricao: "Manual de Boas Práticas de Fabricação completo (IN 04/2007)", categoria: "manual", arquivo: "Manual_BPF" },
+  { nome: "Manual BPF", descricao: "Manual de Boas Práticas de Fabricação completo (IN 04/2007)", categoria: "manual", arquivo: "Manual" },
 
   // POPs atualizados conforme estrutura do sistema (10 POPs)
   { nome: "POP 01 — Qualificação de Fornecedores", descricao: "Seleção, avaliação e qualificação de fornecedores de matérias-primas", categoria: "pop", arquivo: "POP-01" },
@@ -190,6 +190,15 @@ export default function Modelos() {
   const categorias = ["todos", ...Object.keys(categoriaLabels)];
 
   const handleDownload = (modelo: ModeloDoc) => {
+    // 1. Tentar baixar do mapeamento de assets (arquivos físicos importados)
+    const assetGroup = MODELOS_ASSETS[modelo.arquivo];
+    if (assetGroup && assetGroup.length > 0) {
+      window.open(assetGroup[0].url, "_blank");
+      toast.success(`${modelo.nome} — Download iniciado!`);
+      return;
+    }
+
+    // 2. Fallback para geradores de template Excel dinâmicos
     const generator = TEMPLATE_GENERATORS[modelo.arquivo];
     if (generator) {
       generator();
@@ -200,6 +209,11 @@ export default function Modelos() {
   };
 
   const handlePreview = (modelo: ModeloDoc) => {
+    // Se for um asset físico (Word/PDF), não temos preview interativo ainda
+    if (MODELOS_ASSETS[modelo.arquivo]) {
+      handleDownload(modelo);
+      return;
+    }
     setSelectedModelo(modelo);
     setShowPreview(true);
   };
