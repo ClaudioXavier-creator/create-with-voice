@@ -54,6 +54,7 @@ export function AnexarPlanilhaPop({
   const [frequencia, setFrequencia] = useState<FrequenciaDoc>("DIARIA");
   const [file, setFile] = useState<File | null>(null);
   const [saving, setSaving] = useState(false);
+  const [versao, setVersao] = useState<number>(1);
 
   // Sugere próximo número disponível ao abrir ou trocar tipo
   const sugerirProximoNumero = async () => {
