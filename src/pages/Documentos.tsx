@@ -30,7 +30,10 @@ import {
   storagePath,
   formatNumero,
   nomePadronizado,
+  FREQUENCIAS_DOC,
+  type FrequenciaDoc,
 } from "@/utils/nomenclaturaDoc";
+import { INSTRUCOES_TRABALHO } from "@/config/instrucoesTrabalho";
 
 const POPS_OBRIGATORIOS = POPS_CONFIG.map((p) => {
   const moduloMap: Record<string, { modulo: string; moduloLabel: string }> = {
@@ -82,6 +85,7 @@ interface ArquivoBpf {
   pop_codigo?: string | null;
   tipo_doc?: string | null; numero_doc?: number | null;
   data_ref?: string | null; nome_padronizado?: string | null;
+  it_codigo?: string | null; frequencia?: string | null;
 }
 
 
@@ -156,6 +160,8 @@ export default function Documentos() {
   const [padronizando, setPadronizando] = useState(false);
   const [arqFilterCat, setArqFilterCat] = useState("todos");
   const [arqFilterPop, setArqFilterPop] = useState("todos");
+  const [arqItCodigo, setArqItCodigo] = useState("");
+  const [arqFrequencia, setArqFrequencia] = useState<FrequenciaDoc>("DIARIA");
   const [arqSearch, setArqSearch] = useState("");
 
 
@@ -285,9 +291,9 @@ export default function Documentos() {
     if (!arqFile || !arqPopCodigo || !arqNumero || !arqDataRef || !user) return;
     setSaving(true);
     const scopeId = empresaAtiva?.id || user.id;
-    const path = storagePath(scopeId, arqPopCodigo, arqTipo, arqNumero, arqDataRef, arqFile.name);
-    const arquivoFinal = nomeArquivoFinal(arqPopCodigo, arqTipo, arqNumero, arqDataRef, arqFile.name);
-    const titulo = nomeDisplay(arqPopCodigo, arqTipo, arqNumero, arqDataRef);
+    const path = storagePath(scopeId, arqPopCodigo, arqTipo, arqNumero, arqDataRef, arqFile.name, empresaAtiva?.prefixo_doc, arqItCodigo, arqFrequencia);
+    const arquivoFinal = nomeArquivoFinal(arqPopCodigo, arqTipo, arqNumero, arqDataRef, arqFile.name, empresaAtiva?.prefixo_doc);
+    const titulo = nomeDisplay(arqPopCodigo, arqTipo, arqNumero, arqDataRef, empresaAtiva?.prefixo_doc);
 
     let arquivo_url = "";
     const { error: upErr } = await supabase.storage.from("documentos-bpf").upload(path, arqFile, { upsert: false });
@@ -309,6 +315,8 @@ export default function Documentos() {
       tipo_doc: arqTipo,
       numero_doc: parseInt(arqNumero, 10) || 0,
       data_ref: arqDataRef,
+      it_codigo: arqItCodigo || null,
+      frequencia: arqFrequencia || null,
       nome_padronizado: arquivoFinal.replace(/\.[^.]+$/, ""),
     } as any);
     if (error) toast.error("Erro ao salvar arquivo");
@@ -317,7 +325,7 @@ export default function Documentos() {
       setArqOpen(false);
       setArqPopCodigo(""); setArqTipo("PL"); setArqNumero("001");
       setArqDataRef(new Date().toISOString().split("T")[0]);
-      setArqDescricao(""); setArqFile(null);
+      setArqDescricao(""); setArqFile(null); setArqItCodigo(""); setArqFrequencia("DIARIA");
       fetchData();
     }
     setSaving(false);
@@ -816,9 +824,36 @@ export default function Documentos() {
                             placeholder="001"
                             inputMode="numeric"
                           />
-                        </div>
-                      </div>
-                      <div>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <Label>IT Específica (opcional)</Label>
+                      <Select value={arqItCodigo} onValueChange={setArqItCodigo}>
+                        <SelectTrigger><SelectValue placeholder="Selecione a IT" /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="none">Nenhuma IT (Geral)</SelectItem>
+                          {arqPopCodigo && INSTRUCOES_TRABALHO.filter(it => it.popCodigo === arqPopCodigo).map((it) => (
+                            <SelectItem key={it.id} value={it.id}>{it.id} - {it.titulo.slice(0, 30)}...</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label>Frequência *</Label>
+                      <Select value={arqFrequencia} onValueChange={(v) => setArqFrequencia(v as FrequenciaDoc)}>
+                        <SelectTrigger><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                          {FREQUENCIAS_DOC.map((f) => (
+                            <SelectItem key={f.value} value={f.value}>{f.label}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+
+                  <div>
                         <Label>Data de referência *</Label>
                         <Input type="date" value={arqDataRef} onChange={(e) => setArqDataRef(e.target.value)} />
                       </div>
