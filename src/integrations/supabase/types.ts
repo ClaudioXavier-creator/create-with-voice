@@ -518,6 +518,7 @@ export type Database = {
           frequencia: string | null
           id: string
           it_codigo: string | null
+          metadata: Json | null
           nome_padronizado: string | null
           numero_doc: number | null
           pop_codigo: string | null
@@ -525,6 +526,7 @@ export type Database = {
           titulo: string
           updated_at: string
           user_id: string
+          versao: number | null
         }
         Insert: {
           arquivo_nome?: string | null
@@ -538,6 +540,7 @@ export type Database = {
           frequencia?: string | null
           id?: string
           it_codigo?: string | null
+          metadata?: Json | null
           nome_padronizado?: string | null
           numero_doc?: number | null
           pop_codigo?: string | null
@@ -545,6 +548,7 @@ export type Database = {
           titulo: string
           updated_at?: string
           user_id: string
+          versao?: number | null
         }
         Update: {
           arquivo_nome?: string | null
@@ -558,6 +562,7 @@ export type Database = {
           frequencia?: string | null
           id?: string
           it_codigo?: string | null
+          metadata?: Json | null
           nome_padronizado?: string | null
           numero_doc?: number | null
           pop_codigo?: string | null
@@ -565,6 +570,7 @@ export type Database = {
           titulo?: string
           updated_at?: string
           user_id?: string
+          versao?: number | null
         }
         Relationships: [
           {

@@ -158,54 +158,6 @@ export default function PlanilhasPop() {
       const { data: userData } = await supabase.auth.getUser();
       if (!userData.user) throw new Error("Usuário não autenticado");
 
-      // Buscar última versão
-      const { data: ultimaVersao } = await supabase
-        .from("arquivos_bpf")
-        .select("versao")
-        .eq("empresa_id", empresaAtiva.id)
-        .eq("pop_codigo", selectedPop.codigo)
-        .order("versao", { ascending: false })
-        .limit(1);
-
-      const proximaVersao = (ultimaVersao?.[0]?.versao || 0) + 1;
-      
-      const { error } = await supabase.from("arquivos_bpf").insert({
-        empresa_id: empresaAtiva.id,
-        user_id: userData.user.id,
-        pop_codigo: selectedPop.codigo,
-        nome: `POP-${selectedPop.codigo} v${proximaVersao} (Gerado por IA)`,
-        tipo: "procedimento",
-        versao: proximaVersao,
-        status: "vigente",
-        metadata: popGerado
-      });
-
-      if (error) throw error;
-
-      toast.success("POP Salvo no Histórico de Versões!");
-      setShowPreview(false);
-      
-      // Recarregar histórico
-      const { data: novoHistorico } = await supabase
-        .from("arquivos_bpf")
-        .select("*")
-        .eq("empresa_id", empresaAtiva.id)
-        .eq("pop_codigo", selectedPop.codigo)
-        .order("versao", { ascending: false });
-      
-      setHistorico(novoHistorico || []);
-    } catch (err: any) {
-      toast.error("Erro ao salvar versão: " + err.message);
-    }
-  };
-
-  const handleSalvarVersao = async () => {
-    if (!empresaAtiva || !popGerado) return;
-
-    try {
-      const { data: userData } = await supabase.auth.getUser();
-      if (!userData.user) throw new Error("Usuário não autenticado");
-
       // Buscar última versão usando as colunas que acabamos de adicionar
       const { data: ultimaVersao } = await supabase
         .from("arquivos_bpf")
@@ -246,6 +198,7 @@ export default function PlanilhasPop() {
       toast.error("Erro ao salvar versão: " + err.message);
     }
   };
+
 
   const filteredPops = POPS_CUSTOM.filter(pop => 
     pop.nome.toLowerCase().includes(searchTerm.toLowerCase()) || 
