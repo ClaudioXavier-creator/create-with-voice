@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Lock, Unlock, Download, FileText, BookOpen, ClipboardList, Table2, Shield, Wrench, FlaskConical, Bug, Droplets, Activity, Users, Truck, Printer, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -136,25 +136,63 @@ const categoriaIcons: Record<string, React.ElementType> = {
 };
 
 const categoriaLabels: Record<string, string> = {
-  manual: "Manual",
-  pop: "POPs",
-  planilha: "Planilhas POP",
-  formulario: "Formulários",
-  equipamento: "Equipamentos",
-  treinamento: "Treinamentos",
-  auditoria: "Auditoria/Gestão",
-  produto: "Produtos/Rótulos",
-  instrucao: "Instruções de Trabalho",
+  manual: "Manual de BPF",
+  pop: "POPs Descritivos (Word)",
+  planilha: "Planilhas com Código (Excel)",
+  formulario: "Formulários / Registros",
+  equipamento: "Equipamentos / Calibração",
+  treinamento: "Treinamentos / RH",
+  auditoria: "Auditoria / Gestão",
+  produto: "Produtos / Rótulos",
+  instrucao: "Instruções de Trabalho (ITs)",
+  configuracao: "Documentos de Configuração",
   original: "Arquivos Originais (Zip)",
 };
 
 export default function Modelos() {
-  const [desbloqueado, setDesbloqueado] = useState(false);
+  const [desbloqueado, setDesbloqueado] = useState(() => {
+    return sessionStorage.getItem("bpf_modelos_unlocked") === "true";
+  });
   const [senha, setSenha] = useState("");
   const [verificando, setVerificando] = useState(false);
   const [filtro, setFiltro] = useState<string>("todos");
   const [selectedModelo, setSelectedModelo] = useState<ModeloDoc | null>(null);
   const [showPreview, setShowPreview] = useState(false);
+  const [modelosCustom, setModelosCustom] = useState<ModeloDoc[]>([]);
+
+  useEffect(() => {
+    async function fetchModelosCustom() {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) return;
+
+        // Buscar empresa ativa do localStorage (padrao do hook useEmpresa)
+        const empresaId = localStorage.getItem("bpf_empresa_ativa_id");
+        if (!empresaId) return;
+
+        const { data, error } = await supabase
+          .from("modelos_empresa")
+          .select("nome, descricao, pop_codigo")
+          .eq("empresa_id", empresaId)
+          .eq("ativo", true);
+
+        if (data && !error) {
+          const mapped: ModeloDoc[] = data.map(m => ({
+            nome: m.nome,
+            descricao: m.descricao || `Documento configurado vinculado ao ${m.pop_codigo}`,
+            categoria: "configuracao",
+            arquivo: `custom-${m.nome.replace(/\s+/g, "-")}`, // ID temporário para identificação
+            novo: true
+          }));
+          setModelosCustom(mapped);
+        }
+      } catch (err) {
+        console.error("Erro ao buscar modelos custom:", err);
+      }
+    }
+
+    fetchModelosCustom();
+  }, []);
 
   // Mapear arquivos originais para o formato da lista de modelos
   const modelosOriginais: ModeloDoc[] = Object.entries(MODELOS_ASSETS).flatMap(([key, items]) => 
@@ -167,7 +205,7 @@ export default function Modelos() {
     }))
   );
 
-  const todosModelos = [...MODELOS, ...modelosOriginais];
+  const todosModelos = [...MODELOS, ...modelosOriginais, ...modelosCustom];
 
 
   const verificarSenha = async () => {
@@ -190,6 +228,7 @@ export default function Modelos() {
       const result = await res.json();
       if (res.ok && result.success) {
         setDesbloqueado(true);
+        sessionStorage.setItem("bpf_modelos_unlocked", "true");
         toast.success("Acesso liberado! Bem-vindo à biblioteca de modelos.");
       } else {
         toast.error(result.error || "Senha incorreta");
@@ -224,7 +263,14 @@ export default function Modelos() {
       }
     }
 
-    // 2. Fallback para geradores de template Excel dinâmicos
+    // 2. Fallback para documentos de configuração (redirecionar para Registros Digitais)
+    if (modelo.categoria === "configuracao") {
+      toast.info("Redirecionando para a área de Registros Digitais para visualizar este documento...");
+      window.location.href = "/feedbpf-custom/registros";
+      return;
+    }
+
+    // 3. Fallback para geradores de template Excel dinâmicos
     const generator = TEMPLATE_GENERATORS[modelo.arquivo];
     if (generator) {
       generator();
