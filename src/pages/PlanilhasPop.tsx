@@ -15,7 +15,9 @@ import {
   Settings2, 
   Lock, 
   History,
-  Sparkles
+  Sparkles,
+  Save,
+  FileCheck
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -27,6 +29,14 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
 import { Progress } from "@/components/ui/progress";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import PageHeader from "@/components/PageHeader";
 import { POPS_CUSTOM } from "@/config/feedBpfCustomConfig";
 import { MODELOS_ASSETS } from "@/config/modelosAssetsMapping";
@@ -38,6 +48,7 @@ import { POP_PESOS, LIMITE_PONTOS_INTERMEDIARIO, calcularTotalPontos } from "@/c
 import { TIER_LABEL } from "@/config/tiers";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { formatarPopDocx } from "@/utils/exportPop";
 
 export default function PlanilhasPop() {
   const navigate = useNavigate();
@@ -49,6 +60,8 @@ export default function PlanilhasPop() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [adendos, setAdendos] = useState("");
   const [historico, setHistorico] = useState<any[]>([]);
+  const [showPreview, setShowPreview] = useState(false);
+  const [popGerado, setPopGerado] = useState<any>(null);
 
   const configModos = empresaAtiva?.config_modos_preenchimento || {};
   const totalPontos = useMemo(() => calcularTotalPontos(configModos), [configModos]);
@@ -124,7 +137,9 @@ export default function PlanilhasPop() {
       });
 
       if (error) throw error;
-
+      
+      setPopGerado({ ...data.data, codigo: selectedPop.codigo, nome: selectedPop.nome });
+      setShowPreview(true);
       toast.success("Rascunho do POP gerado com sucesso pela IA!");
       console.log("POP Gerado:", data);
       // Aqui poderíamos abrir um modal com o resultado ou salvar diretamente
@@ -274,6 +289,132 @@ export default function PlanilhasPop() {
                     </CardContent>
                   </Card>
                 </TabsContent>
+
+                {/* Modal de Visualização da IA */}
+                <Dialog open={showPreview} onOpenChange={setShowPreview}>
+                  <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
+                    <DialogHeader>
+                      <DialogTitle className="flex items-center gap-2">
+                        <FileCheck className="w-5 h-5 text-emerald-600" />
+                        Visualização do POP Gerado por IA
+                      </DialogTitle>
+                      <DialogDescription>
+                        Revise o conteúdo técnico gerado antes de salvar ou exportar.
+                      </DialogDescription>
+                    </DialogHeader>
+
+                    <ScrollArea className="flex-1 pr-4 mt-4">
+                      {popGerado && (
+                        <div className="space-y-6 text-sm">
+                          <section>
+                            <h4 className="font-bold text-primary uppercase border-b pb-1 mb-2">1. Objetivo</h4>
+                            <p className="leading-relaxed">{popGerado.objetivo}</p>
+                          </section>
+
+                          <section>
+                            <h4 className="font-bold text-primary uppercase border-b pb-1 mb-2">2. Campo de Aplicação</h4>
+                            <p className="leading-relaxed">{popGerado.campo_aplicacao}</p>
+                          </section>
+
+                          <section>
+                            <h4 className="font-bold text-primary uppercase border-b pb-1 mb-2">3. Documentos de Referência</h4>
+                            <ul className="list-disc pl-5 space-y-1">
+                              {popGerado.documentos_referencia.map((doc: string, i: number) => (
+                                <li key={i}>{doc}</li>
+                              ))}
+                            </ul>
+                          </section>
+
+                          <section>
+                            <h4 className="font-bold text-primary uppercase border-b pb-1 mb-2">4. Definições</h4>
+                            <div className="space-y-2">
+                              {popGerado.definicoes.map((def: any, i: number) => (
+                                <div key={i}>
+                                  <span className="font-semibold">{def.termo}:</span> {def.definicao}
+                                </div>
+                              ))}
+                            </div>
+                          </section>
+
+                          <section>
+                            <h4 className="font-bold text-primary uppercase border-b pb-1 mb-2">5. Procedimentos Operacionais</h4>
+                            <div className="space-y-3">
+                              {popGerado.procedimentos.map((proc: string, i: number) => (
+                                <div key={i} className="flex gap-3">
+                                  <span className="font-mono text-xs text-muted-foreground pt-1">{i + 1}.</span>
+                                  <p className="leading-relaxed">{proc}</p>
+                                </div>
+                              ))}
+                            </div>
+                          </section>
+
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <section className="p-4 bg-muted/30 rounded-lg">
+                              <h4 className="font-bold text-primary uppercase border-b pb-1 mb-3">6. Monitoramento</h4>
+                              <div className="space-y-2">
+                                <p><span className="font-semibold">O que:</span> {popGerado.monitoramento.controle}</p>
+                                <p><span className="font-semibold">Frequência:</span> {popGerado.monitoramento.frequencia}</p>
+                                <p><span className="font-semibold">Registro:</span> {popGerado.monitoramento.registro}</p>
+                                <p><span className="font-semibold">Resp.:</span> {popGerado.monitoramento.responsavel}</p>
+                              </div>
+                            </section>
+
+                            <section className="p-4 bg-muted/30 rounded-lg">
+                              <h4 className="font-bold text-primary uppercase border-b pb-1 mb-3">7. Verificação</h4>
+                              <div className="space-y-2">
+                                <p><span className="font-semibold">O que:</span> {popGerado.verificacao.controle}</p>
+                                <p><span className="font-semibold">Frequência:</span> {popGerado.verificacao.frequencia}</p>
+                                <p><span className="font-semibold">Registro:</span> {popGerado.verificacao.registro}</p>
+                                <p><span className="font-semibold">Resp.:</span> {popGerado.verificacao.responsavel}</p>
+                              </div>
+                            </section>
+                          </div>
+
+                          <section>
+                            <h4 className="font-bold text-destructive uppercase border-b pb-1 mb-2">8. Ações Corretivas</h4>
+                            <div className="space-y-2">
+                              {popGerado.acoes_corretivas.map((acao: any, i: number) => (
+                                <div key={i} className="p-3 border border-destructive/20 rounded bg-destructive/5">
+                                  <p className="font-semibold text-destructive mb-1">{acao.nao_conformidade}</p>
+                                  <p>{acao.acao}</p>
+                                </div>
+                              ))}
+                            </div>
+                          </section>
+
+                          <section>
+                            <h4 className="font-bold text-primary uppercase border-b pb-1 mb-2">9. Retenção de Registros</h4>
+                            <p>{popGerado.tempo_retencao}</p>
+                          </section>
+                        </div>
+                      )}
+                    </ScrollArea>
+
+                    <DialogFooter className="mt-6 border-t pt-4">
+                      <Button variant="outline" onClick={() => setShowPreview(false)}>
+                        Fechar e Ajustar
+                      </Button>
+                      <Button 
+                        variant="secondary"
+                        onClick={() => formatarPopDocx(popGerado)}
+                        className="bg-primary/10 hover:bg-primary/20 text-primary"
+                      >
+                        <Download className="w-4 h-4 mr-2" />
+                        Exportar (.txt)
+                      </Button>
+                      <Button 
+                        className="bg-emerald-600 hover:bg-emerald-700"
+                        onClick={() => {
+                          toast.success("POP Salvo no Histórico de Versões!");
+                          setShowPreview(false);
+                        }}
+                      >
+                        <Save className="w-4 h-4 mr-2" />
+                        Salvar Versão
+                      </Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
 
                 <TabsContent value="conteudo" className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
