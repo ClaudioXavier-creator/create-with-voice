@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
-import { FolderOpen, Upload, Trash2, Download, FileText, Filter, Loader2, Calendar, Tag, ClipboardCheck, Archive, CheckCircle2 } from "lucide-react";
+import { FolderOpen, Upload, Trash2, Download, FileText, Filter, Loader2, Calendar, Tag, ClipboardCheck, Archive, CheckCircle2, Clock } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -58,7 +58,9 @@ export default function DocumentosBPF() {
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
   const [openUpload, setOpenUpload] = useState(false);
+  const [activeTab, setActiveTab] = useState("checklist");
   const [filtroTipo, setFiltroTipo] = useState("todos");
+
   const [filtroCodigo, setFiltroCodigo] = useState("todos");
 
   // Upload form
@@ -73,11 +75,14 @@ export default function DocumentosBPF() {
     const shouldOpenUpload = searchParams.get("upload") === "1";
     const tipoParam = searchParams.get("tipo");
     const popParam = searchParams.get("pop");
+    const tabParam = searchParams.get("tab");
 
+    if (tabParam) setActiveTab(tabParam);
     if (tipoParam && TIPOS_DOC.some((item) => item.value === tipoParam)) setTipo(tipoParam);
     if (popParam) setPopCodigo(popParam);
     if (shouldOpenUpload) setOpenUpload(true);
   }, [searchParams]);
+
 
   const fetchDocs = async () => {
     if (!user || !empresaId) return;
@@ -206,12 +211,13 @@ export default function DocumentosBPF() {
       <PageHeader icon={FolderOpen} title="Arquivo Digital (Arquivo de POPs e ITs)" description="Checklist de documentos obrigatórios + arquivo livre de POPs, ITs e planilhas escaneadas" />
       <EmpresaSelector />
 
-      <Tabs defaultValue="checklist" className="space-y-4">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
         <TabsList>
           <TabsTrigger value="checklist"><ClipboardCheck className="w-4 h-4 mr-2" />Checklist Obrigatórios</TabsTrigger>
           <TabsTrigger value="arquivo"><FolderOpen className="w-4 h-4 mr-2" />Arquivo Livre</TabsTrigger>
-          <TabsTrigger value="retencao"><Archive className="w-4 h-4 mr-2" />Gestão de Retenção (2 Anos)</TabsTrigger>
+          <TabsTrigger value="retencao"><Clock className="w-4 h-4 mr-2" />Gestão de Retenção (2 Anos)</TabsTrigger>
         </TabsList>
+
 
         <TabsContent value="checklist">
           <ChecklistObrigatorios empresaId={empresaId} userId={user!.id} />

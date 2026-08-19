@@ -732,14 +732,15 @@ export default function HigieneSanitizacao() {
         title="POP 02 - Higiene e Sanitização" 
         description="Procedimentos de limpeza de instalações, equipamentos e utensílios conforme IN 04/2007 e IN 15/2009"
         orientacaoModuloId="higiene" 
-        action={
-          <Button variant="outline" size="sm" onClick={() => navigate("/documentos-bpf")} className="gap-2">
-            <Archive className="w-4 h-4" /> Arquivo Digital
-          </Button>
-        }
       />
+      
+      <div className="flex justify-between items-center mb-3">
+        <Button variant="outline" size="sm" onClick={() => navigate("/documentos-bpf")} className="gap-2">
+          <Archive className="w-4 h-4" /> Arquivo Digital (Retenção 2 Anos)
+        </Button>
+        <AnexarPlanilhaPop popCodigo="POP-02" popNome="Higiene e Sanitização" />
+      </div>
 
-      <div className="flex justify-end mb-3"><AnexarPlanilhaPop popCodigo="POP-02" popNome="Higiene e Sanitização" /></div>
 
       <Tabs defaultValue="preop">
         <div className="w-full overflow-x-auto pb-1">
