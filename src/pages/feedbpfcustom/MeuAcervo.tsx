@@ -27,6 +27,7 @@ interface Doc {
   pop_codigo: string | null;
   it_codigo: string | null;
   frequencia: string | null;
+  versao: number | null;
   arquivo_nome: string;
   arquivo_path: string;
   data_documento: string | null;
