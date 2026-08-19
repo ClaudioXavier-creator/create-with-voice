@@ -34,7 +34,7 @@ serve(async (req) => {
     }
 
     const body = await req.json().catch(() => ({}));
-    const { empresa_id } = body;
+    const { action, empresa_id, backup } = body;
     
     if (!empresa_id) {
       return new Response(JSON.stringify({ error: "empresa_id is required" }), {
@@ -43,28 +43,76 @@ serve(async (req) => {
       });
     }
 
-    const tables = ["documentos_bpf", "modelos_empresa", "registros_customizados"];
-    const backupData: any = {};
+    // Ação: Exportar Dados
+    if (action === "export" || !action) {
+      const tables = ["documentos_bpf", "modelos_empresa", "registros_customizados"];
+      const backupData: any = {};
 
-    for (const table of tables) {
-      const { data, error } = await supabaseClient
-        .from(table)
-        .select("*")
-        .eq("empresa_id", empresa_id);
-      
-      if (error) {
-        console.error(`Error fetching table ${table}:`, error);
-        backupData[table] = [];
-      } else {
-        backupData[table] = data;
+      for (const table of tables) {
+        const { data, error } = await supabaseClient
+          .from(table)
+          .select("*")
+          .eq("empresa_id", empresa_id);
+        
+        if (error) {
+          console.error(`Error fetching table ${table}:`, error);
+          backupData[table] = [];
+        } else {
+          backupData[table] = data;
+        }
       }
+
+      return new Response(JSON.stringify({ 
+        ok: true, 
+        generated_at: new Date().toISOString(),
+        backup: backupData 
+      }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
-    return new Response(JSON.stringify({ 
-      ok: true, 
-      generated_at: new Date().toISOString(),
-      backup: backupData 
-    }), {
+    // Ação: Restaurar Dados
+    if (action === "restore") {
+      if (!backup) {
+        throw new Error("Backup data is required for restore action");
+      }
+
+      const results: any = {};
+      const tables = Object.keys(backup);
+
+      for (const table of tables) {
+        const data = backup[table];
+        if (!Array.isArray(data) || data.length === 0) continue;
+
+        // Filtrar para garantir que todos os registros pertencem à empresa alvo
+        const sanitizedData = data.map((item: any) => ({
+          ...item,
+          empresa_id: empresa_id // Forçar o empresa_id correto por segurança
+        }));
+
+        const { error } = await supabaseClient
+          .from(table)
+          .upsert(sanitizedData, { onConflict: 'id' });
+
+        if (error) {
+          console.error(`Error restoring table ${table}:`, error);
+          results[table] = { success: false, error: error.message };
+        } else {
+          results[table] = { success: true, count: data.length };
+        }
+      }
+
+      return new Response(JSON.stringify({ 
+        ok: true, 
+        message: "Restauração concluída",
+        results 
+      }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    return new Response(JSON.stringify({ error: "Invalid action" }), {
+      status: 400,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
 
