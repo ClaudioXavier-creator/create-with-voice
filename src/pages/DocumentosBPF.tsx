@@ -213,6 +213,10 @@ export default function DocumentosBPF() {
           <TabsTrigger value="retencao"><Archive className="w-4 h-4 mr-2" />Gestão de Retenção (2 Anos)</TabsTrigger>
         </TabsList>
 
+        <TabsContent value="checklist">
+          <ChecklistObrigatorios empresaId={empresaId} userId={user!.id} />
+        </TabsContent>
+
         <TabsContent value="retencao" className="space-y-4">
           <Card className="border-primary/20 bg-primary/5">
             <CardContent className="pt-4">
@@ -277,13 +281,8 @@ export default function DocumentosBPF() {
           </Card>
         </TabsContent>
 
-        </TabsList>
-
-        <TabsContent value="checklist">
-          <ChecklistObrigatorios empresaId={empresaId} userId={user!.id} />
-        </TabsContent>
-
         <TabsContent value="arquivo" className="space-y-6">
+
 
       {/* Filters + Upload */}
       <div className="flex flex-wrap items-end gap-3">
