@@ -1,5 +1,6 @@
-// Resultado da implementação dos atalhos no módulo de Planilhas de POPs:
-// 1. Atalho "Última Versão Salva": Exibe dinamicamente o link para o download da versão mais recente do POP (gerada ou importada).
-// 2. Atalho "Impressão p/ Registro Manual": Link direto para a Biblioteca de Modelos para baixar formulários físicos.
-// Os componentes foram integrados em src/pages/PlanilhasPop.tsx utilizando Cards semânticos e ícones da Lucide-react.
+// Configuração de Conformidade MAPA (Decreto 12.031/2024 e IN 04/2007):
+// 1. Implementado alertas visuais de "Vencimento: 1 Ano" nos cabeçalhos dos POPs em src/pages/PlanilhasPop.tsx.
+// 2. Adicionado selo de "Revisão Anual Obrigatória" para atender às exigências da fiscalização federal.
+// 3. Os atalhos de versão e impressão foram mantidos para facilitar o acesso aos documentos vigentes.
+
 
