@@ -58,6 +58,7 @@ import { useModulosCustom } from "@/hooks/useModulosCustom";
 const baseItems = [
   { title: "Como Usar", icon: GraduationCap, url: "/feedbpf-custom/tutorial" },
   { title: "Guia Detalhado", icon: BookOpenCheck, url: "/feedbpf-custom/guia" },
+  { title: "Arquivo Digital", icon: Archive, url: "/documentos-bpf" },
   { title: "Meu Acervo", icon: FolderOpen, url: "/feedbpf-custom/acervo" },
   { title: "Importação em Massa", icon: Upload, url: "/feedbpf-custom/importacao" },
   { title: "Importar Planilhas", icon: FileSpreadsheet, url: "/feedbpf-custom/planilhas" },
