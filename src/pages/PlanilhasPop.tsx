@@ -85,9 +85,11 @@ export default function PlanilhasPop() {
     const newConfig = { ...configModos, [popCodigo]: novoModo };
 
     try {
+      // Usamos uma tipagem forçada para o Supabase ignorar o erro de schema local
+      // até que a migração seja processada no ambiente de build.
       const { error } = await supabase
         .from("empresas")
-        .update({ config_modos_preenchimento: newConfig })
+        .update({ config_modos_preenchimento: newConfig } as any)
         .eq("id", empresaAtiva.id);
 
       if (error) throw error;
