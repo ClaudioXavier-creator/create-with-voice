@@ -1,13 +1,13 @@
 export const POPS_CUSTOM = [
   { 
     codigo: "POP-01", 
-    nome: "Recebimento de Matérias-Primas",
-    descricao: "Procedimentos para qualificação de fornecedores, inspeção, amostragem e recepção de grãos, ensacados e granéis, garantindo a conformidade desde a origem."
+    nome: "Recebimento e Armazenamento",
+    descricao: "Procedimentos para qualificação de fornecedores, recepção de insumos e boas práticas de estocagem (PEPS/FIFO)."
   },
   { 
     codigo: "POP-02", 
-    nome: "Higiene e Sanitização",
-    descricao: "Controle de limpeza a seco e úmida de instalações e equipamentos, sanitização de áreas críticas e remoção de resíduos para evitar contaminação cruzada."
+    nome: "Higiene, Sanitização e Transporte",
+    descricao: "Controle de limpeza de instalações e equipamentos, sanitização de áreas críticas e inspeção de veículos de transporte."
   },
   { 
     codigo: "POP-03", 
@@ -21,7 +21,7 @@ export const POPS_CUSTOM = [
   },
   { 
     codigo: "POP-05", 
-    nome: "Produção e PCP",
+    nome: "Controle da Produção",
     descricao: "Controle das etapas de fabricação, moagem, dosagem e mistura, incluindo o sequenciamento de produção e flushing para mitigar o carry-over de medicamentos."
   },
   { 
@@ -41,8 +41,8 @@ export const POPS_CUSTOM = [
   },
   { 
     codigo: "POP-09", 
-    nome: "Armazenamento e Transporte",
-    descricao: "Boas práticas de estocagem de insumos e produtos acabados, controle de temperatura, umidade e inspeção de veículos de transporte."
+    nome: "Rastreabilidade e Recolhimento (Recall)",
+    descricao: "Procedimentos de rastreabilidade de produtos, controle de não conformidades e programa de recolhimento (recall) conforme IN 04/2007."
   },
   { 
     codigo: "POP-10", 
