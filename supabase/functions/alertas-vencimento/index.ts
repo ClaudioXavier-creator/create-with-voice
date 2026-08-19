@@ -31,6 +31,18 @@ Deno.serve(async (req) => {
     const em30dias = new Date(hoje.getTime() + 30 * 86400000).toISOString().split("T")[0];
     const hojeStr = hoje.toISOString().split("T")[0];
 
+    // Cache para empresas
+    const empresaCache: Record<string, string> = {};
+    const getEmpresaId = async (userId: string) => {
+      if (empresaCache[userId]) return empresaCache[userId];
+      const { data } = await supabase.from("empresas").select("id").eq("user_id", userId).limit(1).maybeSingle();
+      if (data) {
+        empresaCache[userId] = data.id;
+        return data.id;
+      }
+      return null;
+    };
+
     // 1. Calibrações vencidas ou próximas de vencer
     const { data: calibracoes } = await supabase
       .from("calibracoes")
@@ -122,6 +134,30 @@ Deno.serve(async (req) => {
           relevancia: "alta",
           fonte: "Sistema FeedBPF",
         });
+
+        // Auto-gerar Não Conformidade para documentos vencidos ou prestes a vencer
+        const empresaId = await getEmpresaId(userId);
+        if (empresaId) {
+          const docsVencidos = alertas.documentos.filter(d => 
+            (d.proxima_revisao && d.proxima_revisao <= hojeStr) || 
+            (d.validade_revisao && d.validade_revisao <= hojeStr)
+          );
+
+          for (const doc of docsVencidos) {
+            await supabase.from("nao_conformidades").insert({
+              user_id: userId,
+              empresa_id: empresaId,
+              data: hojeStr,
+              setor: "Administrativo/Qualidade",
+              descricao: `[AUTO] Documento ${doc.codigo} - ${doc.nome} está com a revisão/validade vencida.`,
+              causa: "Vencimento do prazo de revisão anual obrigatória.",
+              acao_corretiva: "Revisar o documento, atualizar versão e salvar no sistema.",
+              responsavel: "RT / Responsável pela Qualidade",
+              prazo: em30dias,
+              status: "aberta"
+            });
+          }
+        }
       }
     }
 
