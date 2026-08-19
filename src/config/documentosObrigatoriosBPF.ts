@@ -36,7 +36,7 @@ export const DOCS_OBRIGATORIOS_POP: PopObrigatorios[] = [
   },
   {
     codigo: "POP-02",
-    nome: "Higiene, Sanitização e Transporte",
+    nome: "Limpeza de Instalações, Equipamentos e Utensílios",
     documentos: [
       { nome: "POP de higienização por área", descricao: "Um procedimento por área crítica (moagem, mistura, expedição etc.).", criticidade: "essencial" },
       { nome: "Cronograma de limpeza", descricao: "Frequência (diária/semanal/mensal), área, responsável.", criticidade: "essencial" },
@@ -48,7 +48,7 @@ export const DOCS_OBRIGATORIOS_POP: PopObrigatorios[] = [
   },
   {
     codigo: "POP-03",
-    nome: "Saúde dos Manipuladores",
+    nome: "Higiene e Saúde Pessoal (Treinamentos)",
     documentos: [
       { nome: "POP de saúde e higiene pessoal", descricao: "Regras de EPI, uniforme, higiene das mãos.", criticidade: "essencial" },
       { nome: "ASO — Atestado de Saúde Ocupacional", descricao: "Um por manipulador, dentro da validade (NR-07).", criticidade: "essencial" },

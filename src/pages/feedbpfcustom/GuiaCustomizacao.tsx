@@ -37,7 +37,7 @@ const SECOES: Secao[] = [
     passos: [
       { acao: "Junte todos os documentos que a fábrica já usa hoje.", detalhe: "POPs, planilhas de higiene, laudos de água, registros de pragas, ASOs, contratos com fornecedores, notas fiscais de matéria-prima, checklists impressos, fotos de auditorias etc." },
       { acao: "Digitalize (scanner ou foto do celular) o que ainda está em papel.", detalhe: "Prefira PDF para documentos com várias páginas e JPG/PNG para folhas soltas. Google Sheets e Excel podem ser importados no formato original." },
-      { acao: "Renomeie os arquivos com palavras-chave.", detalhe: "Exemplos: 'higiene_limpeza_jan2026.pdf' (POP-02), 'controle_pragas_dez.xlsx' (POP-07), 'aso_joao_silva_2026.pdf' (POP-03). Isso ativa a sugestão automática de POP na importação." },
+      { acao: "Renomeie os arquivos com palavras-chave.", detalhe: "Exemplos: 'limpeza_equipamentos_jan2026.pdf' (POP-02), 'controle_pragas_dez.xlsx' (POP-07), 'saude_joao_silva_2026.pdf' (POP-03). Isso ativa a sugestão automática de POP na importação." },
       { acao: "Organize em uma pasta única no computador.", detalhe: "Pode manter subpastas por POP se quiser, mas não é obrigatório — o sistema reagrupa depois." },
     ],
     resultado: "Uma pasta local com todos os arquivos nomeados e prontos para upload em lote.",
