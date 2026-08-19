@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
-import { ClipboardList, Plus, Download, Check, FileSpreadsheet, ExternalLink, Info } from "lucide-react";
+import { ClipboardList, Plus, Download, Check, FileSpreadsheet, ExternalLink, Info, BookOpen } from "lucide-react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
