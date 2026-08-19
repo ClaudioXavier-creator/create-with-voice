@@ -3,4 +3,8 @@
 // 2. Adicionado selo de "Revisão Anual Obrigatória" para atender às exigências da fiscalização federal.
 // 3. Central de Alertas no Dashboard Principal configurada para monitorar conformidade em tempo real.
 
+// Próximos passos sugeridos:
+// - Implementar notificações via WhatsApp/Email para alertas de vencimento com 30 dias de antecedência.
+// - Adicionar filtro de conformidade na Sala do Auditor para exibir apenas documentos dentro do prazo de validade.
+
 
