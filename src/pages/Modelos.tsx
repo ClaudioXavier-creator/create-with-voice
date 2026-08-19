@@ -201,7 +201,7 @@ export default function Modelos() {
     }
   };
 
-  const modelosFiltrados = filtro === "todos" ? MODELOS : MODELOS.filter(m => m.categoria === filtro);
+  const modelosFiltrados = filtro === "todos" ? todosModelos : todosModelos.filter(m => m.categoria === filtro);
   const categorias = ["todos", ...Object.keys(categoriaLabels)];
 
   const handleDownload = (modelo: ModeloDoc) => {
