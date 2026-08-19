@@ -603,7 +603,7 @@ export default function Treinamentos() {
                   </div>
 
                   <div className="p-3 rounded-lg border-2 border-primary/30 bg-primary/5 space-y-2">
-                    <p className="text-xs font-semibold text-primary">📋 Checklist de Higiene Pessoal — IN 15/2009</p>
+                    <p className="text-xs font-semibold text-primary">📋 Checklist de Higiene Pessoal — POP 03</p>
                     <p className="text-xs text-muted-foreground">Marque ✅ (Conforme) ou ❌ (Não Conforme):</p>
                     <div className="space-y-1.5">
                       {TRIAGEM_ITENS.map((item, idx) => (
@@ -637,9 +637,9 @@ export default function Treinamentos() {
               <div className="flex items-start gap-3">
                 <ClipboardCheck className="w-6 h-6 text-yellow-600 mt-0.5" />
                 <div>
-                  <h4 className="font-display font-semibold text-sm">Triagem Diária de Higiene e Saúde — POP-02</h4>
+                  <h4 className="font-display font-semibold text-sm">Triagem Diária de Higiene e Saúde — POP 03</h4>
                   <p className="text-xs text-muted-foreground mt-1">
-                    Verificação obrigatória antes do início da jornada conforme IN 15/2009.
+                    Verificação obrigatória antes do início da jornada conforme IN 04/2007.
                     Colaboradores com sintomas ou itens não conformes devem ser afastados da área de produção.
                   </p>
                 </div>
