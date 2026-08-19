@@ -88,7 +88,7 @@ const MODULO_LINKS: Record<string, { title: string; icon: any; url: string }> = 
   "pop-10-pac":       { title: "POP 10 — PAC",            icon: ShieldAlert,   url: "/matriz-risco" },
   "pcp":              { title: "PCP e Produção",  icon: Factory,       url: "/pcp" },
   "expedicao":        { title: "Expedição",       icon: MapPin,        url: "/expedicao" },
-  "rastreabilidade":  { title: "Rastreabilidade", icon: MapPin,        url: "/rastreabilidade" },
+  "rastreabilidade":  { title: "POP 09 — Rastreabilidade", icon: MapPin,        url: "/rastreabilidade" },
   "tablet":           { title: "Modo Tablet",     icon: Tablet,        url: "/tablet" },
   "nao-conformidades":{ title: "Não Conformidades", icon: ClipboardCheck, url: "/nao-conformidades" },
   "matriz-risco":     { title: "Matriz de Risco", icon: Grid3x3,       url: "/matriz-risco" },
