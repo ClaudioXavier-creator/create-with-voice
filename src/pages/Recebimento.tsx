@@ -239,7 +239,7 @@ export default function Recebimento() {
 
   return (
     <>
-      <PageHeader icon={Package} title="Recebimento de Matérias-Primas" description="Controle de qualidade e FIFO" />
+      <PageHeader icon={Package} title="POP 01 - Recebimento de Matérias-Primas" description="Controle de qualidade e FIFO — IN 04/2007" />
       <div className="flex justify-end mb-3"><AnexarPlanilhaPop popCodigo="POP-01" popNome="Recebimento de Matérias-Primas" /></div>
       <div className="flex justify-between items-center mb-4">
         <Input placeholder="Buscar..." value={busca} onChange={e => setBusca(e.target.value)} className="max-w-xs" />
