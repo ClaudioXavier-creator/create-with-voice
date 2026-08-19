@@ -639,7 +639,7 @@ export default function Treinamentos() {
                 <div>
                   <h4 className="font-display font-semibold text-sm">Triagem Diária de Higiene e Saúde — POP 03</h4>
                   <p className="text-xs text-muted-foreground mt-1">
-                    Verificação obrigatória antes do início da jornada conforme IN 15/2009.
+                    Verificação obrigatória antes do início da jornada conforme IN 04/2007.
                     Colaboradores com sintomas ou itens não conformes devem ser afastados da área de produção.
                   </p>
                 </div>
