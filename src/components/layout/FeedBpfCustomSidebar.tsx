@@ -68,6 +68,7 @@ const baseItems = [
   { title: "Registros Digitais", icon: FileSignature, url: "/feedbpf-custom/registros" },
   { title: "Análise por IA", icon: Sparkles, url: "/feedbpf-custom/analise-ia" },
   { title: "Módulos Ativos", icon: ToggleRight, url: "/feedbpf-custom/modulos" },
+  { title: "Backup e Dados", icon: ShieldAlert, url: "/feedbpf-custom/config" },
   { title: "Configurações", icon: Settings, url: "/feedbpf-custom/config" },
 ];
 
