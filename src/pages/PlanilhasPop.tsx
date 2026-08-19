@@ -199,12 +199,61 @@ export default function PlanilhasPop() {
     }
   };
 
+  const handleSalvarVersao = async () => {
+    if (!empresaAtiva || !popGerado) return;
+
+    try {
+      const { data: userData } = await supabase.auth.getUser();
+      if (!userData.user) throw new Error("Usuário não autenticado");
+
+      // Buscar última versão usando as colunas que acabamos de adicionar
+      const { data: ultimaVersao } = await supabase
+        .from("arquivos_bpf")
+        .select("versao" as any)
+        .eq("empresa_id", empresaAtiva.id)
+        .eq("pop_codigo", selectedPop.codigo)
+        .order("versao" as any, { ascending: false })
+        .limit(1);
+
+      const proximaVersao = (Number((ultimaVersao?.[0] as any)?.versao) || 0) + 1;
+      
+      const { error } = await supabase.from("arquivos_bpf").insert({
+        empresa_id: empresaAtiva.id,
+        user_id: userData.user.id,
+        pop_codigo: selectedPop.codigo,
+        titulo: `POP-${selectedPop.codigo} v${proximaVersao} (Gerado por IA)`,
+        categoria: "procedimento",
+        versao: proximaVersao,
+        metadata: popGerado,
+        descricao: `Rascunho técnico gerado via IA em ${new Date().toLocaleDateString("pt-BR")}`
+      } as any);
+
+      if (error) throw error;
+
+      toast.success("POP Salvo no Histórico de Versões!");
+      setShowPreview(false);
+      
+      // Recarregar histórico
+      const { data: novoHistorico } = await supabase
+        .from("arquivos_bpf")
+        .select("*")
+        .eq("empresa_id", empresaAtiva.id)
+        .eq("pop_codigo", selectedPop.codigo)
+        .order("versao" as any, { ascending: false });
+      
+      setHistorico(novoHistorico || []);
+    } catch (err: any) {
+      toast.error("Erro ao salvar versão: " + err.message);
+    }
+  };
+
   const filteredPops = POPS_CUSTOM.filter(pop => 
     pop.nome.toLowerCase().includes(searchTerm.toLowerCase()) || 
     pop.codigo.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const relatedIts = getItsPorPop(selectedPop.codigo);
+
   
   // No documentosCentral.ts temos o mapeamento para nomes de rotas amigáveis
   const moduloAtivoPath = (() => {
