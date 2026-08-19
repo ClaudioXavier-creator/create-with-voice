@@ -1,39 +1,44 @@
 # Plano de Implementação: Gestão de POPs e Versionamento por IA
 
-Este plano descreve as melhorias na gestão de POPs e Manual, incluindo a integração de geração por IA, versionamento e fluxos diferenciados por plano de licenciamento.
+Este plano descreve as melhorias na gestão de POPs e Manual, incluindo a integração de geração por IA, versionamento real e fluxos diferenciados por plano de licenciamento.
 
 ## Alterações Propostas
 
-### 1. Versionamento e Gestão de Documentos
-- **Versionamento Automático:** Implementar lógica para que cada POP e o Manual gerado pela IA sejam salvos com controle de versão (v1, v2, etc.) na tabela `arquivos_bpf`.
-- **Organização por POP:** Garantir que uploads de planilhas e documentos gerados fiquem estritamente vinculados ao seu respectivo código de POP (`pop_codigo`).
-- **Histórico de Revisões:** Adicionar visualização de histórico na aba de cada POP na tela de Planilhas de POPs.
+### 1. Banco de Dados e Versionamento
+- **Nova Coluna de Versão:** Adicionar coluna `versao` (INTEGER ou TEXT) na tabela `arquivos_bpf`. Isso permitirá filtrar e ordenar versões de forma eficiente, evitando o uso de JSON para metadados críticos.
+- **Histórico no Storage:** Ajustar a lógica de `storagePath` para garantir que o versionamento não sobrescreva arquivos anteriores. Embora o timestamp já ajude, garantiremos que cada versão tenha um identificador único no path (ex: `.../v1/...`, `.../v2/...`).
+- **Padrão de Nomenclatura:** Refinar o `nomenclaturaDoc.ts` para incluir o sufixo de versão.
 
-### 2. Fluxos por Plano de Licenciamento (TierGate)
+### 2. Gestão de POPs e Manual (IA)
+- **Salvamento por POP:** Todo POP ou Manual gerado por IA será salvo automaticamente no acervo do respectivo POP (`pop_codigo`).
+- **Fluxo de Atualização:** Ao gerar uma nova versão via IA, o sistema incrementará a coluna `versao` e manterá a anterior como "histórico".
+
+### 3. Fluxos por Tier de Licença (TierGate)
 - **Plano Entrada:**
-  - Desabilitar preenchimento digital de formulários (Registros Digitais Customizados).
-  - Manter apenas download de planilhas em branco e upload de documentos escaneados.
+  - Lançamento digital desabilitado.
+  - Apenas download de planilhas em branco e upload de documentos escaneados.
 - **Plano Intermediário:**
-  - Implementar seletor de "Modo de Preenchimento" (Digital ou Upload) configurável por POP.
-  - Limite sugerido: 50-60% dos POPs configurados para preenchimento digital, o restante via upload, conforme preferência do RT.
+  - **Modo Híbrido Flexível:** O RT ou Proprietário pode escolher quais POPs (entre 50% a 60% do total) terão preenchimento digital habilitado. Os demais seguem o fluxo de upload.
+  - Adicionar configuração de `modo_preenchimento` por POP na tabela `empresas`.
 - **Plano Avançado:**
-  - Acesso total a preenchimento digital em todos os POPs e geração via IA.
+  - Acesso total e irrestrito a todos os recursos digitais e IA.
 
-### 3. Interface de Geração por IA
-- **Assistente de Geração:** Criar/Refinar a interface de geração de POPs via IA, permitindo salvar o resultado diretamente no acervo do POP correspondente como uma nova versão.
+### 4. Interface e UI
+- **Central de Documentos:** Integrar a visualização de versões na aba de cada POP em `PlanilhasPop.tsx`.
+- **Seletor de Modo (Intermediário):** Interface administrativa para o RT configurar o modo de preenchimento de cada POP.
 
 ## Detalhes Técnicos
 
-### Banco de Dados
-- **Tabela `arquivos_bpf`:** Usar o campo `versao` (se existir) ou adicionar metadado de versão no JSON de metadados.
-- **Tabela `empresas` / `configuracoes_bpf`:** Adicionar campo para armazenar a preferência de modo de preenchimento por POP (ex: `config_modos_preenchimento: Record<string, 'digital' | 'upload'>`).
+### Migrações SQL
+1. `ALTER TABLE public.arquivos_bpf ADD COLUMN versao INTEGER DEFAULT 1;`
+2. `ALTER TABLE public.empresas ADD COLUMN config_modos_preenchimento JSONB DEFAULT '{}';`
 
-### Componentes
-- **`PlanilhasPop.tsx`:** Atualizar para exibir o seletor de modo e a lista de versões/histórico.
-- **`AnexarPlanilhaPop.tsx`:** Ajustar para facilitar o upload direto vinculado ao POP selecionado.
-- **`TierGate.tsx`:** Refinar a lógica de `hybrid` para suportar as novas regras de 50-60%.
+### Componentes Afetados
+- `src/utils/nomenclaturaDoc.ts`: Incluir versão no path.
+- `src/components/TierGate.tsx`: Lógica de 50-60% para plano intermediário.
+- `src/pages/PlanilhasPop.tsx`: Exibição de histórico e botões de ação diferenciados.
 
 ## Próximos Passos
-1. Criar migração para campos de configuração de preenchimento.
-2. Atualizar `TierGate.tsx` com as novas restrições de planos.
-3. Implementar a interface de versionamento em `PlanilhasPop.tsx`.
+1. Executar a migração para a nova coluna de versão.
+2. Atualizar a lógica de upload para respeitar o versionamento.
+3. Implementar a restrição de 50-60% no `TierGate`.
