@@ -312,6 +312,8 @@ export default function PlanilhasPop() {
                     <p className="text-sm text-muted-foreground">Nenhuma Instrução de Trabalho mapeada para este POP ainda.</p>
                   </div>
                 )}
+                  </div>
+                )}
               </div>
             </TabsContent>
 
