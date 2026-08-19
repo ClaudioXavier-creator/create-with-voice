@@ -79,7 +79,7 @@ const MODULO_LINKS: Record<string, { title: string; icon: any; url: string }> = 
   "pop-01-agua":      { title: "POP 04 — Água",           icon: Droplets,      url: "/potabilidade-agua" },
   "pop-02-higiene":   { title: "POP 02 — Higiene",        icon: SprayCan,      url: "/higiene-sanitizacao" },
   "pop-03-saude":     { title: "POP 03 — Saúde e Visitantes", icon: HeartPulse, url: "/saude-pessoal" },
-  "pop-04-mp":        { title: "POP 01 — Matérias-Primas", icon: Archive,      url: "/recebimento" },
+  "pop-04-mp":        { title: "POP 01 — Recebimento",    icon: Archive,      url: "/recebimento" },
   "pop-05-armazenamento": { title: "POP 01 — Armazenamento", icon: Warehouse,    url: "/armazenamento-transporte" },
   "pop-06-manutencao":{ title: "POP 06 — Manutenção",     icon: Wrench,        url: "/manutencao-preventiva" },
   "pop-07-pragas":    { title: "POP 07 — Pragas",         icon: Bug,           url: "/pragas" },

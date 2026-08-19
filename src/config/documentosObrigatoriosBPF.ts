@@ -24,23 +24,24 @@ export interface PopObrigatorios {
 export const DOCS_OBRIGATORIOS_POP: PopObrigatorios[] = [
   {
     codigo: "POP-01",
-    nome: "Recebimento de Matérias-Primas",
+    nome: "Recebimento e Armazenamento",
     documentos: [
-      { nome: "Procedimento escrito de recebimento", descricao: "POP redigido, assinado, com data e responsável.", criticidade: "essencial" },
+      { nome: "Procedimento escrito de recebimento e estocagem", descricao: "POP redigido, assinado, com data e responsável.", criticidade: "essencial" },
       { nome: "Registro de recebimento por lote", descricao: "Fornecedor, nota fiscal, lote, quantidade, laudo, temperatura.", criticidade: "essencial" },
       { nome: "Qualificação de fornecedores (SIPEAGRO)", descricao: "Cadastro do fornecedor, registro MAPA ou declaração de isento.", criticidade: "essencial" },
       { nome: "Laudos de análise da MP", descricao: "Laudo do fornecedor ou análise interna (micotoxinas, contaminantes).", criticidade: "importante" },
+      { nome: "Registro de temperatura no armazenamento", descricao: "Termohigrômetro, planilha diária.", criticidade: "importante" },
       { nome: "Amostras de retenção", descricao: "Registro de coleta e prazo de guarda (mínimo 30 dias após validade).", criticidade: "importante" },
     ],
   },
   {
     codigo: "POP-02",
-    nome: "Higiene e Sanitização",
+    nome: "Higiene, Sanitização e Transporte",
     documentos: [
       { nome: "POP de higienização por área", descricao: "Um procedimento por área crítica (moagem, mistura, expedição etc.).", criticidade: "essencial" },
       { nome: "Cronograma de limpeza", descricao: "Frequência (diária/semanal/mensal), área, responsável.", criticidade: "essencial" },
       { nome: "Registro de execução da limpeza", descricao: "Checklist assinado por turno/data.", criticidade: "essencial" },
-      { nome: "Fichas técnicas dos produtos de limpeza", descricao: "FISPQ, dosagem, princípio ativo.", criticidade: "importante" },
+      { nome: "Checklist de veículo (pré-carregamento)", descricao: "Limpeza, integridade, ausência de EEB.", criticidade: "essencial" },
       { nome: "Validação de limpeza (IN 15/2009)", descricao: "Ensaio de carry-over para princípios ativos críticos.", criticidade: "importante" },
       { nome: "Liberação de linha", descricao: "Checklist de 23 itens antes de iniciar produção.", criticidade: "importante" },
     ],
@@ -68,7 +69,7 @@ export const DOCS_OBRIGATORIOS_POP: PopObrigatorios[] = [
   },
   {
     codigo: "POP-05",
-    nome: "Produção e PCP",
+    nome: "Controle da Produção",
     documentos: [
       { nome: "POP de produção por linha", descricao: "Sequência de batidas, tempos, dosagens.", criticidade: "essencial" },
       { nome: "Fórmulas versionadas", descricao: "Ficha técnica assinada, controle de versões.", criticidade: "essencial" },
@@ -111,12 +112,12 @@ export const DOCS_OBRIGATORIOS_POP: PopObrigatorios[] = [
   },
   {
     codigo: "POP-09",
-    nome: "Armazenamento e Transporte",
+    nome: "Rastreabilidade e Recolhimento (Recall)",
     documentos: [
-      { nome: "POP de armazenamento", descricao: "PEPS/FIFO, empilhamento, temperatura, umidade.", criticidade: "essencial" },
-      { nome: "Checklist de veículo (pré-carregamento)", descricao: "Limpeza, integridade, ausência de EEB.", criticidade: "essencial" },
-      { nome: "Registro de temperatura no armazenamento", descricao: "Termohigrômetro, planilha diária.", criticidade: "importante" },
-      { nome: "Nota de expedição rastreável", descricao: "Lote, cliente, veículo, motorista.", criticidade: "essencial" },
+      { nome: "Procedimento de rastreabilidade e recall", descricao: "Fluxo de recolhimento, contatos de emergência e árvore de rastreio.", criticidade: "essencial" },
+      { nome: "Simulação anual de recall", descricao: "Exercício prático registrado com tempo de resposta e eficácia.", criticidade: "importante" },
+      { nome: "Registro de não conformidades (RNC)", descricao: "Tratamento de desvios, causas e ações corretivas.", criticidade: "essencial" },
+      { nome: "Relatório de rastreabilidade (In/Out)", descricao: "Lotes de MP vinculados a Lotes de PA e Clientes.", criticidade: "essencial" },
     ],
   },
   {

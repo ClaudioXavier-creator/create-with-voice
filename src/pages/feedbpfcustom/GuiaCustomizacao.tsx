@@ -100,8 +100,8 @@ const SECOES: Secao[] = [
   },
   {
     n: "4",
-    titulo: "Rodar a análise por IA para saber o que falta",
-    objetivo: "Descobrir quais documentos obrigatórios (IN MAPA 04/2007 + Decreto 12.031/2024) estão faltando no seu acervo antes de criar modelos digitais.",
+    titulo: "Analisar conformidade com os 10 POPs",
+    objetivo: "Descobrir quais documentos obrigatórios (IN MAPA 04/2007 + Decreto 12.031/2024) faltam no acervo.",
     prereq: [
       "Passos 1 a 3 concluídos.",
       "Acervo com pelo menos 10 documentos importados (para a IA ter contexto suficiente).",
@@ -137,7 +137,7 @@ const SECOES: Secao[] = [
     ],
     campos: [
       { nome: "Nome do modelo", descricao: "Como aparecerá na lista. Ex: 'Higiene diária — área de produção'.", obrigatorio: true },
-      { nome: "POP vinculado", descricao: "Escolha entre POP-01 a POP-10. Define onde os registros aparecem no acervo.", obrigatorio: true },
+      { nome: "POP vinculado", descricao: "Escolha entre POP-01 a POP-10. Define a numeração oficial e onde os registros aparecem.", obrigatorio: true },
       { nome: "Descrição", descricao: "Quando esse modelo deve ser preenchido, por quem, e com que frequência.", obrigatorio: false },
       { nome: "Frequência sugerida", descricao: "Diária, semanal, mensal, por lote, por turno etc. Ajuda o operador a saber quando preencher.", obrigatorio: false },
     ],

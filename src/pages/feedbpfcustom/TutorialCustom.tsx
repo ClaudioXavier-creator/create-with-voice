@@ -125,8 +125,8 @@ export default function TutorialCustom() {
     <div className="space-y-8 max-w-4xl">
       <PageHeader
         icon={GraduationCap}
-        title="Como usar o Feed_BPF Custom"
-        description="Do primeiro upload à operação 100% digital — em 4 passos"
+        title="Guia do Feed_BPF Custom"
+        description="Como organizar seu acervo e digitalizar planilhas — conforme IN 04/2007"
       />
 
       {/* Vídeo/gif placeholder + resumo */}
@@ -139,7 +139,7 @@ export default function TutorialCustom() {
             <div className="space-y-2">
               <h2 className="text-xl font-bold">Em 5 minutos você entende tudo</h2>
               <p className="text-sm text-muted-foreground leading-relaxed">
-                O Feed_BPF Custom é um <strong>gestor da sua documentação</strong>. Ele não te obriga a usar planilhas nossas — ele organiza o que você já tem e, quando quiser, transforma suas planilhas de papel em formulários digitais respeitando SEUS modelos.
+                O Feed_BPF Custom é um <strong>gestor da sua documentação</strong>. Ele organiza o que você já tem e permite criar planilhas digitais respeitando a numeração oficial dos 10 POPs (IN 04/2007).
               </p>
               <div className="flex flex-wrap gap-2 pt-2">
                 <Badge className="bg-emerald-600 hover:bg-emerald-700"><Sparkles className="w-3 h-3 mr-1" /> Sem migração forçada</Badge>
