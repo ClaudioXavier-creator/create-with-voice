@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, Link } from "react-router-dom";
+
 import { FolderOpen, Upload, Trash2, Download, FileText, Filter, Loader2, Calendar, Tag, ClipboardCheck, Archive, CheckCircle2, Clock } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
