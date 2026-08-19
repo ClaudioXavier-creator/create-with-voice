@@ -2403,6 +2403,50 @@ export type Database = {
           },
         ]
       }
+      execucao_its: {
+        Row: {
+          created_at: string | null
+          data_execucao: string | null
+          empresa_id: string | null
+          id: string
+          it_codigo: string
+          observacoes: string | null
+          pop_codigo: string
+          responsavel_nome: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          data_execucao?: string | null
+          empresa_id?: string | null
+          id?: string
+          it_codigo: string
+          observacoes?: string | null
+          pop_codigo: string
+          responsavel_nome?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          data_execucao?: string | null
+          empresa_id?: string | null
+          id?: string
+          it_codigo?: string
+          observacoes?: string | null
+          pop_codigo?: string
+          responsavel_nome?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "execucao_its_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       execucao_pop_carimbos: {
         Row: {
           carimbo_data: string
