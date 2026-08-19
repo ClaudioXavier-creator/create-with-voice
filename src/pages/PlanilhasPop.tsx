@@ -417,6 +417,50 @@ export default function PlanilhasPop() {
         </Card>
       )}
 
+      {/* Instruções de Trabalho (ITs) Relacionadas */}
+      <Card className="mb-6 border-blue-400 bg-blue-50/30">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-sm flex items-center gap-2">
+            <BookOpen className="w-4 h-4 text-blue-600" />
+            Instruções de Trabalho (ITs) — Procedimento Prático
+          </CardTitle>
+          <CardDescription className="text-xs">
+            Guia passo a passo para execução correta das atividades deste POP.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {INSTRUCOES_TRABALHO.filter(it => it.popCodigo === selectedPop.codigo).length > 0 ? (
+              INSTRUCOES_TRABALHO.filter(it => it.popCodigo === selectedPop.codigo).map((it) => (
+                <Card key={it.id} className="border-blue-100 shadow-none hover:border-blue-300 transition-colors">
+                  <CardContent className="p-3">
+                    <div className="flex justify-between items-start mb-2">
+                      <h4 className="text-xs font-bold text-blue-900">{it.titulo}</h4>
+                      <Badge variant="outline" className="text-[9px] bg-white">{it.id}</Badge>
+                    </div>
+                    <p className="text-[11px] text-muted-foreground line-clamp-2 mb-3">
+                      {it.objetivo}
+                    </p>
+                    <div className="flex gap-2">
+                      <Button 
+                        size="sm" 
+                        variant="ghost" 
+                        className="h-7 text-[10px] text-blue-700 hover:text-blue-900 hover:bg-blue-100"
+                        onClick={() => navigate(`/execucao-pops?pop=${selectedPop.codigo.split('-')[1]}&it=${it.id}`)}
+                      >
+                        <Eye className="w-3 h-3 mr-1" /> Abrir IT Completa
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))
+            ) : (
+              <p className="text-xs text-muted-foreground italic col-span-2">Nenhuma instrução de trabalho específica para este POP.</p>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+
       {selectedPop.periodicidades.length === 0 && (
         <Card className="border-dashed">
           <CardContent className="py-8 text-center">
