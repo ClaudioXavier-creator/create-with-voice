@@ -266,6 +266,18 @@ export default function PlanilhasPop() {
                   </span>
                 </Button>
               ))}
+              <Button
+                variant="outline"
+                size="sm"
+                className="justify-start h-auto py-2 text-left border-emerald-200 bg-emerald-50/50 hover:bg-emerald-50"
+                onClick={() => navigate(`/feedbpf-custom/registros/novo?modelo=${selectedPop.codigo}`)}
+              >
+                <FileSignature className="w-3.5 h-3.5 mr-2 shrink-0 text-emerald-600" />
+                <span className="flex flex-col items-start">
+                  <span className="font-medium text-xs text-emerald-800">Novo Registro Digital Customizado</span>
+                  <span className="text-[11px] text-muted-foreground font-normal">Preencher formulário digital personalizado para este POP</span>
+                </span>
+              </Button>
             </div>
           </CardContent>
         </Card>
