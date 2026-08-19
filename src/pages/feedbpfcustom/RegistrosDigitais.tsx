@@ -160,6 +160,15 @@ function NovoRegistro({ modeloId }: { modeloId: string | null }) {
     if (found) {
       setModelo(found);
       if (!titulo) setTitulo(found.nome + " — " + new Date().toLocaleDateString("pt-BR"));
+      
+      // Pre-popular valores padrão dos campos
+      const initialValues: Record<string, any> = {};
+      found.campos.forEach(campo => {
+        if ((campo as any).valorPadrao !== undefined) {
+          initialValues[campo.id] = (campo as any).valorPadrao;
+        }
+      });
+      setDados(initialValues);
     }
   }, [selectedId, modelos]);
 
