@@ -100,8 +100,8 @@ const SECOES: Secao[] = [
   },
   {
     n: "4",
-    titulo: "Rodar a análise por IA para saber o que falta",
-    objetivo: "Descobrir quais documentos obrigatórios (IN MAPA 04/2007 + Decreto 12.031/2024) estão faltando no seu acervo antes de criar modelos digitais.",
+    titulo: "Analisar conformidade com os 10 POPs",
+    objetivo: "Descobrir quais documentos obrigatórios (IN MAPA 04/2007 + Decreto 12.031/2024) faltam no acervo.",
     prereq: [
       "Passos 1 a 3 concluídos.",
       "Acervo com pelo menos 10 documentos importados (para a IA ter contexto suficiente).",
