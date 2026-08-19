@@ -326,22 +326,58 @@ export default function PlanilhasPop() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-              {MODELOS_ASSETS[selectedPop.codigo].map((m) => (
-                <Button
-                  key={m.url}
-                  variant="outline"
-                  size="sm"
-                  className="justify-start h-auto py-2 text-left border-emerald-200 hover:bg-emerald-100"
-                  onClick={() => window.open(m.url, "_blank")}
-                >
-                  <Download className="w-3.5 h-3.5 mr-2 shrink-0 text-emerald-600" />
-                  <span className="flex flex-col items-start">
-                    <span className="font-medium text-xs text-emerald-800">{m.label}</span>
-                    <span className="text-[10px] text-muted-foreground font-normal">Clique para baixar o modelo original</span>
-                  </span>
-                </Button>
-              ))}
+            <div className="space-y-4">
+              {/* Planilhas (Excel) */}
+              {MODELOS_ASSETS[selectedPop.codigo].filter(m => m.label.toLowerCase().includes("pl") || m.url.includes(".xls")).length > 0 && (
+                <div className="space-y-2">
+                  <h4 className="text-xs font-semibold text-emerald-700 uppercase tracking-wider">Planilhas com Código (Excel)</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                    {MODELOS_ASSETS[selectedPop.codigo]
+                      .filter(m => m.label.toLowerCase().includes("pl") || m.url.includes(".xls"))
+                      .map((m) => (
+                        <Button
+                          key={m.url}
+                          variant="outline"
+                          size="sm"
+                          className="justify-start h-auto py-2 text-left border-emerald-200 hover:bg-emerald-100"
+                          onClick={() => window.open(m.url, "_blank")}
+                        >
+                          <FileSpreadsheet className="w-3.5 h-3.5 mr-2 shrink-0 text-emerald-600" />
+                          <span className="flex flex-col items-start">
+                            <span className="font-medium text-xs text-emerald-800">{m.label}</span>
+                            <span className="text-[10px] text-muted-foreground font-normal">Clique para baixar a planilha original</span>
+                          </span>
+                        </Button>
+                      ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Documentos Descritivos (Word/PDF) */}
+              {MODELOS_ASSETS[selectedPop.codigo].filter(m => !m.label.toLowerCase().includes("pl") && !m.url.includes(".xls")).length > 0 && (
+                <div className="space-y-2">
+                  <h4 className="text-xs font-semibold text-blue-700 uppercase tracking-wider">Procedimentos Descritivos (Word)</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                    {MODELOS_ASSETS[selectedPop.codigo]
+                      .filter(m => !m.label.toLowerCase().includes("pl") && !m.url.includes(".xls"))
+                      .map((m) => (
+                        <Button
+                          key={m.url}
+                          variant="outline"
+                          size="sm"
+                          className="justify-start h-auto py-2 text-left border-blue-200 hover:bg-blue-100"
+                          onClick={() => window.open(m.url, "_blank")}
+                        >
+                          <BookOpen className="w-3.5 h-3.5 mr-2 shrink-0 text-blue-600" />
+                          <span className="flex flex-col items-start">
+                            <span className="font-medium text-xs text-blue-800">{m.label}</span>
+                            <span className="text-[10px] text-muted-foreground font-normal">Clique para baixar o descritivo original</span>
+                          </span>
+                        </Button>
+                      ))}
+                  </div>
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>
