@@ -42,7 +42,7 @@ const PASSOS: Passo[] = [
     resumo: "Suba tudo que sua fábrica já tem — PDFs, planilhas, laudos, fotos.",
     detalhes: [
       "Vá em Importação em Massa e arraste a pasta inteira (ou selecione vários arquivos).",
-      "O sistema lê o nome de cada arquivo e sugere automaticamente o POP (ex: 'higiene_pessoal_jan.pdf' → POP-03).",
+      "O sistema lê o nome de cada arquivo e sugere automaticamente o POP (ex: 'saude_pessoal_jan.pdf' → POP-03).",
       "Você pode ajustar o POP, dar um título melhor a cada arquivo e clicar Enviar tudo.",
       "Formatos aceitos: PDF, JPG, PNG, XLSX, DOC, DOCX.",
     ],

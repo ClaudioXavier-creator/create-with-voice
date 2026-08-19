@@ -150,7 +150,7 @@ export default function TutorialGoogleFormsSheets() {
                 forms.google.com <ExternalLink className="h-3 w-3" />
               </a>
               , clique em <strong>+ Em branco</strong> e dê um título claro
-              (ex.: “POP-03 — Higiene Pessoal”).
+              (ex.: “POP-03 — Saúde e Treinamentos”).
             </p>
             <Illustration src={imgCriarForm} alt="Exemplo de formulário criado no Google Forms com campos POP-03 (Data, Responsável, Treinamento, ASO)" />
           </Step>

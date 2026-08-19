@@ -851,7 +851,7 @@ export const ORIENTACOES: ModuloOrientacao[] = [
       { titulo: "1. Ver alertas de atraso", descricao: "Painel mostra POPs cuja periodicidade venceu (ex: POP-02 deveria ser semanal e está há 10 dias sem registro).", dica: "Vermelho = ação urgente antes da auditoria." },
       { titulo: "2. Nova Execução", descricao: "Selecione o POP/IT já vinculado em Documentos, informe executor, setor e status." },
       { titulo: "3. Criação automática da planilha", descricao: "Se o POP/IT estiver cadastrado em Documentos, o registro da execução também cria automaticamente a planilha operacional do mês/período quando ela ainda não existir.", dica: "Se não aparecer opção para executar ou a planilha não nascer, o primeiro lugar para conferir é o módulo Documentos." },
-      { titulo: "4. Preencher checklist específico", descricao: "POP-02 (12 itens triagem + ASO), POP-03 (15 itens limpeza + produto químico), POP-04 (11 itens água + laudo), POP-05 (16 itens higiene pessoal), POP-09 (8 itens veículo) — sistema carrega automaticamente conforme o POP escolhido." },
+      { titulo: "4. Preencher checklist específico", descricao: "POP-02 (Instalações e Equipamentos), POP-03 (Higiene Pessoal e ASO), POP-04 (Água), POP-05 (Produção), POP-09 (Veículos e Rastreio) — sistema carrega automaticamente conforme o POP escolhido." },
       { titulo: "5. Filtrar por período", descricao: "Use Status + POP + Data início/fim para auditoria mensal, trimestral ou por setor." },
       { titulo: "6. Exportar histórico", descricao: "PDF com carimbo SHA-256 do período filtrado — entregar ao auditor MAPA." },
     ],
