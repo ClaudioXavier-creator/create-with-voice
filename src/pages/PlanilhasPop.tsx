@@ -158,20 +158,6 @@ export default function PlanilhasPop() {
                       </Button>
                     )}
 
-                    {/* Link para o Módulo Integrado */}
-                    {moduloAtivoPath && (
-                      <Button 
-                        className="w-full justify-start text-left h-auto py-3 bg-emerald-600 hover:bg-emerald-700"
-                        onClick={() => navigate(moduloAtivoPath)}
-                      >
-                        <ExternalLink className="w-4 h-4 mr-3" />
-                        <div className="flex flex-col">
-                          <span className="text-sm font-semibold">Ir para o Módulo do Sistema</span>
-                          <span className="text-[11px] opacity-80 font-normal">Preenchimento automatizado via formulários</span>
-                        </div>
-                      </Button>
-                    )}
-
                     {/* Novo Registro Digital Customizado */}
                     <Button 
                       variant="outline"
@@ -184,69 +170,6 @@ export default function PlanilhasPop() {
                         <span className="text-[11px] text-muted-foreground font-normal">Preencher formulário digital personalizado</span>
                       </div>
                     </Button>
-
-                    {/* Planilhas Excel Originais */}
-                    {MODELOS_ASSETS[selectedPop.codigo]?.filter(m => m.label.toLowerCase().includes("planilha")).map((doc, idx) => (
-                      <Button 
-                        key={idx} 
-                        variant="ghost" 
-                        className="w-full justify-start text-left h-auto py-2 hover:bg-primary/5"
-                        onClick={() => window.open(doc.url, "_blank")}
-                      >
-                        <Download className="w-3.5 h-3.5 mr-3 text-primary" />
-                        <span className="text-xs">{doc.label}</span>
-                      </Button>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              {/* Instruções de Trabalho (ITs) Relacionadas */}
-              <div className="mt-8 pt-6 border-t">
-                <h3 className="text-sm font-bold flex items-center gap-2 text-muted-foreground uppercase tracking-wider mb-4">
-                  <BookOpen className="w-4 h-4" /> Instruções de Trabalho (ITs) Vinculadas
-                </h3>
-                {relatedIts.length > 0 ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    {relatedIts.map((it) => (
-                      <Card key={it.id} className="bg-muted/30 border-none shadow-none">
-                        <CardContent className="p-4">
-                          <div className="flex items-center justify-between mb-2">
-                            <Badge variant="secondary" className="text-[10px] font-mono h-5">
-                              {it.id}
-                            </Badge>
-                            <span className="text-[10px] text-muted-foreground uppercase font-bold">{it.frequencia}</span>
-                          </div>
-                          <h4 className="text-sm font-bold mb-1">{it.titulo}</h4>
-                          <p className="text-xs text-muted-foreground line-clamp-2 mb-3">{it.objetivo}</p>
-                          <Button 
-                            variant="link" 
-                            size="sm" 
-                            className="p-0 h-auto text-primary text-xs"
-                            onClick={() => navigate(`/execucao-pops`)}
-                          >
-                            Ver detalhes e registrar execução →
-                          </Button>
-                        </CardContent>
-                      </Card>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="p-8 text-center bg-muted/20 rounded-xl border border-dashed">
-                    <AlertTriangle className="w-6 h-6 mx-auto text-amber-500 mb-2 opacity-50" />
-                    <p className="text-sm text-muted-foreground">Nenhuma Instrução de Trabalho mapeada para este POP ainda.</p>
-                  </div>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-
 
                     {/* Planilhas Excel Originais */}
                     {MODELOS_ASSETS[selectedPop.codigo]?.filter(m => m.label.toLowerCase().includes("planilha")).map((doc, idx) => (
