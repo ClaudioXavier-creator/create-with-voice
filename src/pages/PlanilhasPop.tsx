@@ -328,12 +328,12 @@ export default function PlanilhasPop() {
           <CardContent>
             <div className="space-y-4">
               {/* Planilhas (Excel) */}
-              {MODELOS_ASSETS[selectedPop.codigo].filter(m => m.label.toLowerCase().includes("pl") || m.url.includes(".xls")).length > 0 && (
+              {MODELOS_ASSETS[selectedPop.codigo].filter(m => m.label.toLowerCase().includes("pl") || m.url.includes(".xls") || m.url.includes(".xlsx")).length > 0 && (
                 <div className="space-y-2">
                   <h4 className="text-xs font-semibold text-emerald-700 uppercase tracking-wider">Planilhas com Código (Excel)</h4>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                     {MODELOS_ASSETS[selectedPop.codigo]
-                      .filter(m => m.label.toLowerCase().includes("pl") || m.url.includes(".xls"))
+                      .filter(m => m.label.toLowerCase().includes("pl") || m.url.includes(".xls") || m.url.includes(".xlsx"))
                       .map((m) => (
                         <Button
                           key={m.url}
@@ -354,12 +354,12 @@ export default function PlanilhasPop() {
               )}
 
               {/* Documentos Descritivos (Word/PDF) */}
-              {MODELOS_ASSETS[selectedPop.codigo].filter(m => !m.label.toLowerCase().includes("pl") && !m.url.includes(".xls")).length > 0 && (
+              {MODELOS_ASSETS[selectedPop.codigo].filter(m => !m.label.toLowerCase().includes("pl") && !m.url.includes(".xls") && !m.url.includes(".xlsx")).length > 0 && (
                 <div className="space-y-2">
                   <h4 className="text-xs font-semibold text-blue-700 uppercase tracking-wider">Procedimentos Descritivos (Word)</h4>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                     {MODELOS_ASSETS[selectedPop.codigo]
-                      .filter(m => !m.label.toLowerCase().includes("pl") && !m.url.includes(".xls"))
+                      .filter(m => !m.label.toLowerCase().includes("pl") && !m.url.includes(".xls") && !m.url.includes(".xlsx"))
                       .map((m) => (
                         <Button
                           key={m.url}
