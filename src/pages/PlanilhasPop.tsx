@@ -14,12 +14,15 @@ import {
   BookOpen, 
   Settings2, 
   Lock, 
-  History 
+  History,
+  Sparkles
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
@@ -191,11 +194,49 @@ export default function PlanilhasPop() {
             </CardHeader>
             <CardContent className="pt-6">
               <Tabs defaultValue="conteudo" className="w-full">
-                <TabsList className="grid w-full grid-cols-3 mb-6">
+                <TabsList className="grid w-full grid-cols-4 mb-6">
                   <TabsTrigger value="conteudo">Conteúdo do POP</TabsTrigger>
+                  <TabsTrigger value="geracao-ia">Geração com IA</TabsTrigger>
                   <TabsTrigger value="configuracao">Configuração & Limites</TabsTrigger>
                   <TabsTrigger value="historico">Histórico de Versões</TabsTrigger>
                 </TabsList>
+
+                <TabsContent value="geracao-ia" className="space-y-6">
+                  <Card className="border-emerald-200 bg-emerald-50/30">
+                    <CardHeader>
+                      <CardTitle className="text-lg flex items-center gap-2">
+                        <Sparkles className="w-5 h-5 text-emerald-600" />
+                        Geração de Documento com IA
+                      </CardTitle>
+                      <CardDescription>
+                        Gere um rascunho técnico personalizado para este POP baseado nas normas do MAPA e nas especificidades da sua unidade.
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="adendos" className="text-sm font-semibold">
+                          Adendos do Cliente / RT (Opcional)
+                        </Label>
+                        <Textarea 
+                          id="adendos"
+                          placeholder="Descreva aqui particularidades da sua fábrica, equipamentos específicos, fluxos diferenciados ou exigências locais que a IA deve considerar no texto..."
+                          className="min-h-[120px] bg-white"
+                        />
+                        <p className="text-[11px] text-muted-foreground italic">
+                          Dica: A geração de IA também deve dar opção para gerar com adendos do cliente / RT, pois pode ter especificidades que não contempla nos modelos versionados.
+                        </p>
+                      </div>
+                      <Button className="w-full bg-emerald-600 hover:bg-emerald-700" disabled>
+                        <Sparkles className="w-4 h-4 mr-2" />
+                        Gerar Rascunho do {selectedPop.codigo} com IA
+                      </Button>
+                      <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg flex gap-3 text-amber-800 text-xs">
+                        <Info className="w-4 h-4 shrink-0" />
+                        <p>A função de geração de documentos descritivos via IA está em fase de homologação para garantir total conformidade com a IN 04/2007.</p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </TabsContent>
 
                 <TabsContent value="conteudo" className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
