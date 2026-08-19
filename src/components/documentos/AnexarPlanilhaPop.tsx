@@ -18,7 +18,10 @@ import {
   nomeArquivoFinal,
   storagePath,
   formatNumero,
+  FREQUENCIAS_DOC,
+  type FrequenciaDoc,
 } from "@/utils/nomenclaturaDoc";
+import { INSTRUCOES_TRABALHO } from "@/config/instrucoesTrabalho";
 
 interface Props {
   popCodigo: string;         // ex: "POP-07"
@@ -47,6 +50,8 @@ export function AnexarPlanilhaPop({
   const [numero, setNumero] = useState<string>("001");
   const [dataRef, setDataRef] = useState<string>(new Date().toISOString().split("T")[0]);
   const [descricao, setDescricao] = useState("");
+  const [itCodigo, setItCodigo] = useState<string>("");
+  const [frequencia, setFrequencia] = useState<FrequenciaDoc>("DIARIA");
   const [file, setFile] = useState<File | null>(null);
   const [saving, setSaving] = useState(false);
 
@@ -78,7 +83,7 @@ export function AnexarPlanilhaPop({
 
   const reset = () => {
     setTipo("PL"); setNumero("001"); setDataRef(new Date().toISOString().split("T")[0]);
-    setDescricao(""); setFile(null);
+    setDescricao(""); setFile(null); setItCodigo(""); setFrequencia("DIARIA");
   };
 
   const tipoLabel = TIPOS_DOC.find((t) => t.value === tipo)?.label || tipo;
@@ -94,7 +99,7 @@ export function AnexarPlanilhaPop({
     setSaving(true);
     try {
       const scopeId = empresaAtiva?.id || user.id;
-      const path = storagePath(scopeId, popCodigo, tipo, numero, dataRef, file.name, prefixo);
+      const path = storagePath(scopeId, popCodigo, tipo, numero, dataRef, file.name, prefixo, itCodigo, frequencia);
 
       const { error: upErr } = await supabase.storage
         .from("documentos-bpf")
@@ -120,6 +125,8 @@ export function AnexarPlanilhaPop({
         tipo_doc: tipo,
         numero_doc: numeroInt,
         data_ref: dataRef,
+        it_codigo: itCodigo || null,
+        frequencia: frequencia || null,
         nome_padronizado: arquivoFinal.replace(/\.[^.]+$/, ""),
       } as any);
       if (error) {
@@ -172,6 +179,31 @@ export function AnexarPlanilhaPop({
                 placeholder="001"
                 inputMode="numeric"
               />
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <Label>IT Específica (opcional)</Label>
+              <Select value={itCodigo} onValueChange={setItCodigo}>
+                <SelectTrigger><SelectValue placeholder="Selecione a IT" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">Nenhuma IT (Geral)</SelectItem>
+                  {INSTRUCOES_TRABALHO.filter(it => it.popCodigo === popCodigo).map((it) => (
+                    <SelectItem key={it.id} value={it.id}>{it.id} - {it.titulo.slice(0, 30)}...</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label>Frequência *</Label>
+              <Select value={frequencia} onValueChange={(v) => setFrequencia(v as FrequenciaDoc)}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {FREQUENCIAS_DOC.map((f) => (
+                    <SelectItem key={f.value} value={f.value}>{f.label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </div>
           <div>
