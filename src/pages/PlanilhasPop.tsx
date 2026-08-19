@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { 
   Clipboard, 
   ChevronRight, 
@@ -11,18 +11,28 @@ import {
   AlertTriangle,
   Info,
   ExternalLink,
-  BookOpen
+  BookOpen,
+  Settings2,
+  Lock,
+  History
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Switch } from "@/components/ui/switch";
+import { Progress } from "@/components/ui/progress";
 import PageHeader from "@/components/PageHeader";
 import { POPS_CUSTOM } from "@/config/feedBpfCustomConfig";
 import { MODELOS_ASSETS } from "@/config/modelosAssetsMapping";
 import { getItsPorPop, POP_TO_MODULOS } from "@/config/documentosCentral";
 import { useNavigate } from "react-router-dom";
+import { useEmpresa } from "@/hooks/useEmpresa";
+import { useLicense } from "@/hooks/useLicense";
+import { POP_PESOS, LIMITE_PONTOS_INTERMEDIARIO, calcularTotalPontos } from "@/config/popsPesos";
+import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 export default function PlanilhasPop() {
