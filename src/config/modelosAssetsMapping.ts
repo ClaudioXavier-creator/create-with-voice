@@ -4,35 +4,35 @@ import pop1_3Asset from "@/assets/modelos/pop1_3.xlsx.asset.json";
 import pop1_6Asset from "@/assets/modelos/pop1_6.xls.asset.json";
 import pop1_7Asset from "@/assets/modelos/pop1_7.xlsx.asset.json";
 import pop1_8Asset from "@/assets/modelos/pop1_8.xlsx.asset.json";
-import pop1_4Asset from "@/assets/modelos/entrada de embalagens PL pop 1.4.xlsx.asset.json";
-import pop1_5Asset from "@/assets/modelos/Medicao de umidade nos silos - PL POP 1.5.xls.asset.json";
-import pop1_1QualifAsset from "@/assets/modelos/Questionário Qualificação Fornecedores de MP - PL POP 1.1.xls.asset.json";
+import pop1_4Asset from "@/assets/modelos/pop1_4_embalagens.xlsx.asset.json";
+import pop1_5Asset from "@/assets/modelos/pop1_5_umidade.xls.asset.json";
+import pop1_1QualifAsset from "@/assets/modelos/pop1_1_questionario.xls.asset.json";
 
 import pop2_1Asset from "@/assets/modelos/pop2_1.xlsx.asset.json";
 import pop2_2Asset from "@/assets/modelos/pop2_2.xlsx.asset.json";
 import pop2_3Asset from "@/assets/modelos/pop2_3.xlsx.asset.json";
 import pop2_4Asset from "@/assets/modelos/pop2_4.xlsx.asset.json";
-import pop2DocAsset from "@/assets/modelos/POP 02.doc.asset.json";
+import pop2DocAsset from "@/assets/modelos/pop2_doc.doc.asset.json";
 
-import pop3AgroAsset from "@/assets/modelos/POP 03 Agrocampo.doc.asset.json";
-import treinamentosAsset from "@/assets/modelos/LISTA DE PRESENÇA PARA TREINAMENTOS.docx.asset.json";
+import pop3AgroAsset from "@/assets/modelos/pop3_agrocampo.doc.asset.json";
+import treinamentosAsset from "@/assets/modelos/treinamento_presenca.docx.asset.json";
 
 import pop6_1Asset from "@/assets/modelos/pop6_1.xlsx.asset.json";
 import pop6_3Asset from "@/assets/modelos/pop6_3.xlsx.asset.json";
-import listaEquipAsset from "@/assets/modelos/Lista de Equipamentos.xlsx.asset.json";
+import listaEquipAsset from "@/assets/modelos/lista_equipamentos.xlsx.asset.json";
 
 import pop7_1Asset from "@/assets/modelos/pop7_1.xlsx.asset.json";
 import pop8Asset from "@/assets/modelos/pop8.xlsx.asset.json";
 
 import pop9_1Asset from "@/assets/modelos/pop9_1.xlsx.asset.json";
 import pop9_4Asset from "@/assets/modelos/pop9_4.xlsx.asset.json";
-import pop9_02Asset from "@/assets/modelos/Planilhas POP 09.02 PLANILHA DE EXPEDIÇÃO DE PRODUTO POR CLIENTE E  LOTE.xlsx.asset.json";
-import pop9_03Asset from "@/assets/modelos/Planilhas POP 09.03 ORDEM DE PRODUÇÃO -- FÓRMULA E INCLUSÃO DE MATÉRIAS PRIMAS.xlsx.asset.json";
-import pop9_05Asset from "@/assets/modelos/Planilhas POP 09.05 Controle de RNC  - Relatório de Não Conformidade.xlsx.asset.json";
-import pop9_06Asset from "@/assets/modelos/Planilhas POP 09.06 REGISTRO DE RECLAMAÇÕES DE CLIENTES-PRODUTOS.xlsx.asset.json";
+import pop9_02Asset from "@/assets/modelos/pop9_02_expedicao.xlsx.asset.json";
+import pop9_03Asset from "@/assets/modelos/pop9_03_producao.xlsx.asset.json";
+import pop9_05Asset from "@/assets/modelos/pop9_05_rnc.xlsx.asset.json";
+import pop9_06Asset from "@/assets/modelos/pop9_06_reclamacoes.xlsx.asset.json";
 
 import manualBpfAsset from "@/assets/modelos/manual_bpf.docx.asset.json";
-import complexidadeAsset from "@/assets/modelos/Estudo_Complexidade_Registros_BPF (1).pdf.asset.json";
+import complexidadeAsset from "@/assets/modelos/complexidade_bpf.pdf.asset.json";
 
 interface AssetPointer {
   url: string;
