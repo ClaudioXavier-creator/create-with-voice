@@ -60,7 +60,10 @@ export function DashboardPopStatus({ execucoes }: DashboardPopStatusProps) {
             <ShieldCheck className="w-4 h-4 text-primary" />
             Status BPF (10 POPs + PAC)
           </CardTitle>
-          <Badge variant="outline" className="text-[10px] font-mono">MAPA Assertivo</Badge>
+          <div className="flex gap-2">
+            <Badge variant="outline" className="text-[9px] font-mono border-amber-200 text-amber-800 bg-amber-50">Rev. 1 Ano</Badge>
+            <Badge variant="outline" className="text-[9px] font-mono border-primary/20">MAPA Assertivo</Badge>
+          </div>
         </div>
       </CardHeader>
       <CardContent className="p-0">
