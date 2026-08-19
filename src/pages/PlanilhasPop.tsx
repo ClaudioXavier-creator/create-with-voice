@@ -39,6 +39,66 @@ export default function PlanilhasPop() {
   const navigate = useNavigate();
   const [selectedPop, setSelectedPop] = useState(POPS_CUSTOM[0]);
   const [searchTerm, setSearchTerm] = useState("");
+  const { empresaAtiva, recarregar } = useEmpresa();
+  const { tier } = useLicense();
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [historico, setHistorico] = useState<any[]>([]);
+
+  const configModos = empresaAtiva?.config_modos_preenchimento || {};
+  const totalPontos = useMemo(() => calcularTotalPontos(configModos), [configModos]);
+  const isIntermediario = tier === "intermediario";
+
+  // Carrega histórico de versões para o POP selecionado
+  useEffect(() => {
+    if (!empresaAtiva) return;
+    
+    const fetchHistorico = async () => {
+      const { data } = await supabase
+        .from("arquivos_bpf")
+        .select("*")
+        .eq("empresa_id", empresaAtiva.id)
+        .eq("pop_codigo", selectedPop.codigo)
+        .order("versao", { ascending: false });
+      
+      setHistorico(data || []);
+    };
+
+    fetchHistorico();
+  }, [selectedPop.codigo, empresaAtiva]);
+
+  const toggleModo = async (popCodigo: string) => {
+    if (!empresaAtiva || isUpdating) return;
+
+    const novoModo = configModos[popCodigo] === "digital" ? "hibrido" : "digital";
+    
+    // Validação de limite para plano intermediário
+    if (isIntermediario && novoModo === "digital") {
+      const pesoPop = POP_PESOS[popCodigo] || 0;
+      if (totalPontos + pesoPop > LIMITE_PONTOS_INTERMEDIARIO) {
+        toast.error(`Limite atingido! O Plano Intermediário permite apenas ${LIMITE_PONTOS_INTERMEDIARIO} pontos digitais.`);
+        return;
+      }
+    }
+
+    setIsUpdating(true);
+    const newConfig = { ...configModos, [popCodigo]: novoModo };
+
+    try {
+      const { error } = await supabase
+        .from("empresas")
+        .update({ config_modos_preenchimento: newConfig })
+        .eq("id", empresaAtiva.id);
+
+      if (error) throw error;
+      
+      toast.success(`${popCodigo} configurado como ${novoModo === "digital" ? "DIGITAL" : "HÍBRIDO"}`);
+      await recarregar();
+    } catch (err: any) {
+      toast.error("Erro ao atualizar configuração: " + err.message);
+    } finally {
+      setIsUpdating(false);
+    }
+  };
 
   const filteredPops = POPS_CUSTOM.filter(pop => 
     pop.nome.toLowerCase().includes(searchTerm.toLowerCase()) || 
