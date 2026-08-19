@@ -118,8 +118,8 @@ export default function PlanilhasPop() {
           codigo_pop: selectedPop.codigo, 
           nome_pop: selectedPop.nome,
           observacoes: adendos,
-          especies: empresaAtiva.especies_alvo?.join(", "),
-          capacidade: empresaAtiva.capacidade_producao
+          especies: empresaAtiva.tipo_producao?.join(", "),
+          capacidade: empresaAtiva.capacidade
         }
       });
 
