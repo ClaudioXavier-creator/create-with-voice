@@ -515,7 +515,9 @@ export type Database = {
           descricao: string | null
           documento_ref_id: string | null
           empresa_id: string | null
+          frequencia: string | null
           id: string
+          it_codigo: string | null
           nome_padronizado: string | null
           numero_doc: number | null
           pop_codigo: string | null
@@ -533,7 +535,9 @@ export type Database = {
           descricao?: string | null
           documento_ref_id?: string | null
           empresa_id?: string | null
+          frequencia?: string | null
           id?: string
+          it_codigo?: string | null
           nome_padronizado?: string | null
           numero_doc?: number | null
           pop_codigo?: string | null
@@ -551,7 +555,9 @@ export type Database = {
           descricao?: string | null
           documento_ref_id?: string | null
           empresa_id?: string | null
+          frequencia?: string | null
           id?: string
+          it_codigo?: string | null
           nome_padronizado?: string | null
           numero_doc?: number | null
           pop_codigo?: string | null
