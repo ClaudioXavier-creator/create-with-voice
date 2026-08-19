@@ -138,17 +138,21 @@ export const NAV_ENTRIES: NavEntry[] = [
   },
 
 
-  // --- DOCUMENTAÇÃO & REGISTROS (FLAT) ---
+  // --- DOCUMENTAÇÃO & REGISTROS (CENTRALIZADOS) ---
+  {
+    label: "Central de Documentos",
+    icon: FolderOpen,
+    items: [
+      { path: "/documentos", label: "Documentos e Registros", icon: FileText, keywords: ["pop", "it", "manual", "procedimento"] },
+      { path: "/documentos-bpf", label: "Arquivo Digital BPF", icon: FolderOpen, keywords: ["anexos", "scaneados", "upload", "acervo"] },
+      { path: "/modelos", label: "Biblioteca de Modelos", icon: FolderOpen, keywords: ["template", "excel", "word", "original"] },
+      { path: "/planilhas-pop", label: "Planilhas de POPs", icon: Clipboard, keywords: ["digital", "assinatura", "registro"] },
+      { path: "/execucao-pops", label: "Execução ITs / POPs", icon: Clipboard, keywords: ["instrução", "trabalho", "operacional"] },
+      { path: "/legislacao", label: "Legislação e Normas", icon: BookOpen },
+    ],
+  },
   { path: "/manual", label: "Manual Feed_BPF", icon: BookOpen },
-  { path: "/documentos", label: "Documentos e Registros", icon: FileText },
-  { path: "/documentos-bpf", label: "Arquivo Digital BPF", icon: FolderOpen, keywords: ["anexos", "scaneados", "upload", "acervo"] },
-  { path: "/execucao-pops", label: "Execução ITs/POPs", icon: Clipboard },
-  { path: "/planilhas-pop", label: "Planilhas de POPs", icon: Clipboard },
-  { path: "/guia-geral-pops", label: "Guia Geral POPs", icon: ClipboardList },
-  { path: "/guia-pops", label: "ITs Detalhadas", icon: FileText },
-  { path: "/modelos", label: "Biblioteca de Modelos", icon: FolderOpen },
   { path: "/orientacoes", label: "Central de Orientações", icon: GraduationCap },
-  { path: "/legislacao", label: "Legislação e Normas", icon: BookOpen, keywords: ["mapa", "in", "decreto", "norma"] },
 
   // --- AUDITORIA & MELHORIA (FLAT) ---
   { path: "/auditoria", label: "Auditoria BPF", icon: ClipboardCheck },
