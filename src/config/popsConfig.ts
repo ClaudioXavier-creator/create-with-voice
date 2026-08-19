@@ -130,7 +130,7 @@ export const POPS_CONFIG: PopConfig[] = [
   {
     codigo: "POP-02",
     nome: "Limpeza de Instalações, Equipamentos e Utensílios",
-    descricao: "Procedimentos de limpeza e higienização de todas as áreas, equipamentos e utensílios da fábrica conforme IN 04/2007 e IN 15/2009.",
+    descricao: "Procedimentos de limpeza e higienização de todas as instalações, áreas, equipamentos e utensílios da fábrica conforme IN 04/2007 e IN 15/2009 (Nota: A higiene humana reside no POP 03).",
     modulos_vinculados: [
       { rota: "/higiene", label: "Higiene / Sanitização", descricao: "Cronogramas e checklists de limpeza pesada/concorrente" },
     ],
