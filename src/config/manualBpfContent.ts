@@ -450,7 +450,7 @@ export const MANUAL_BPF_SECTIONS: ManualBpfSection[] = [
       "─── REGISTRO DA EXECUÇÃO (DIÁRIO OPERACIONAL) ───",
       "Toda execução de POP/IT deve ser registrada no módulo Execução de ITs/POPs (/execucao-pops), que funciona como o diário de bordo digital da fábrica. Este registro é a evidência exigida pelo MAPA (IN 04/2007 Art. 4º e Decreto 12.031/2024) de que os procedimentos não ficam apenas no papel.",
       "• Painel de alertas: o sistema monitora a periodicidade de cada POP (POP-02 e POP-05 = 7 dias; POP-06 = 7 dias; POP-01, POP-03, POP-04, POP-07, POP-09 = 30 dias; POP-08 = 90 dias) e exibe em vermelho qualquer POP com execução atrasada.",
-      "• Checklist específico por POP: ao registrar uma execução, o sistema carrega automaticamente o checklist do POP escolhido (12 itens triagem + ASO para POP-02; 15 itens limpeza + produto químico para POP-03; 11 itens potabilidade + laudo para POP-04; 16 itens higiene pessoal para POP-05; 8 itens vistoria veículo para POP-09).",
+      "• Checklist específico por POP: ao registrar uma execução, o sistema carrega automaticamente o checklist do POP escolhido (ex: Limpeza para POP-02; Saúde e ASO para POP-03; Potabilidade para POP-04; Controle de Produção para POP-05; Vistoria de Veículo para POP-09).",
       "• Filtros de período: status, POP/IT, data início e data fim — permitindo gerar relatórios mensais, trimestrais ou por setor para auditoria.",
       "• Carimbo anti-fraude: cada execução exportada em PDF recebe selo SHA-256 + data/hora conforme MP 2.200-2/2001.",
       "Recomenda-se ao Responsável Técnico revisar este painel diariamente e não permitir que nenhum POP fique com status de atraso por mais de 48h.",
