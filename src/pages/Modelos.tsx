@@ -288,20 +288,19 @@ export default function Modelos() {
     const assetGroup = MODELOS_ASSETS[modelo.arquivo];
     if (assetGroup && assetGroup.length > 0) {
       // Se for um item da categoria "original", procuramos pelo label exato
-      if (modelo.categoria === "original") {
-        const specificAsset = assetGroup.find(a => a.label === modelo.nome);
-        if (specificAsset) {
-          window.open(specificAsset.url, "_blank");
-          toast.success(`${modelo.nome} — Download iniciado!`);
-          return;
-        }
-      } else {
-        // Fallback para o primeiro item do grupo se não for categoria "original"
-        window.open(assetGroup[0].url, "_blank");
+      const specificAsset = assetGroup.find(a => a.label === modelo.nome);
+      if (specificAsset) {
+        window.open(specificAsset.url, "_blank");
         toast.success(`${modelo.nome} — Download iniciado!`);
         return;
       }
+      
+      // Fallback para o primeiro item do grupo se não encontrou pelo label
+      window.open(assetGroup[0].url, "_blank");
+      toast.success(`${modelo.nome} — Download iniciado!`);
+      return;
     }
+
 
     // 2. Fallback para documentos de configuração (redirecionar para Registros Digitais)
     if (modelo.categoria === "configuracao") {
