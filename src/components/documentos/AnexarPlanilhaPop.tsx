@@ -72,8 +72,22 @@ export function AnexarPlanilhaPop({
       const { data } = await q;
       const max = (data?.[0] as any)?.numero_doc ?? 0;
       setNumero(formatNumero(max + 1));
+      
+      // Busca versão atual do documento se já existir com mesmo nome/tipo/numero/data
+      const { data: vData } = await supabase
+        .from("arquivos_bpf")
+        .select("versao")
+        .eq("pop_codigo", popCodigo)
+        .eq("tipo_doc", tipo)
+        .eq("numero_doc", max)
+        .order("versao", { ascending: false })
+        .limit(1);
+      
+      const lastVersion = (vData?.[0] as any)?.versao ?? 0;
+      setVersao(lastVersion + 1);
     } catch {
       setNumero("001");
+      setVersao(1);
     }
   };
 
