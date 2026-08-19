@@ -1,531 +1,233 @@
-import { useState, useEffect, useCallback, useMemo } from "react";
-import { ClipboardList, Plus, Download, Check, FileSpreadsheet, ExternalLink, Info, BookOpen, Eye, FileSignature } from "lucide-react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { 
+  Clipboard, 
+  ChevronRight, 
+  FileText, 
+  CheckCircle2, 
+  Download, 
+  Search, 
+  FileSignature,
+  FileBadge,
+  AlertTriangle,
+  Info,
+  ExternalLink,
+  BookOpen
+} from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Skeleton } from "@/components/ui/skeleton";
-import { toast } from "sonner";
+import { Input } from "@/components/ui/input";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import PageHeader from "@/components/PageHeader";
-import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/hooks/useAuth";
-import { useEmpresa } from "@/hooks/useEmpresa";
-import { POPS_CONFIG, type PopConfig, type PopPeriodicidade } from "@/config/popsConfig";
+import { POPS_CUSTOM } from "@/config/feedBpfCustomConfig";
 import { MODELOS_ASSETS } from "@/config/modelosAssetsMapping";
-import PopPlanilhaForm from "@/components/pop/PopPlanilhaForm";
-import { TEMPLATE_GENERATORS, exportPopDataToExcel } from "@/utils/excelTemplates";
-import { markPopVisited } from "@/components/OnboardingChecklist";
-import { INSTRUCOES_TRABALHO } from "@/config/instrucoesTrabalho";
-
-const MESES = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+import { getItsPorPop, POP_TO_MODULOS } from "@/config/documentosCentral";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 export default function PlanilhasPop() {
-  const { user } = useAuth();
-  const { empresaAtiva } = useEmpresa();
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const initialPopCode = searchParams.get("pop");
-  const [selectedPop, setSelectedPop] = useState<PopConfig>(POPS_CONFIG[1]); // POP-02 default
-  const preselectedPop = useMemo(
-    () => POPS_CONFIG.find((p) => p.codigo === initialPopCode) ?? null,
-    [initialPopCode],
+  const [selectedPop, setSelectedPop] = useState(POPS_CUSTOM[0]);
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const filteredPops = POPS_CUSTOM.filter(pop => 
+    pop.nome.toLowerCase().includes(searchTerm.toLowerCase()) || 
+    pop.codigo.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  useEffect(() => { markPopVisited(); }, []);
-
-
-  useEffect(() => {
-    if (preselectedPop) setSelectedPop(preselectedPop);
-  }, [preselectedPop]);
-
-  const [selectedPeriodicidade, setSelectedPeriodicidade] = useState<PopPeriodicidade | null>(null);
-  const [mes, setMes] = useState(new Date().getMonth() + 1);
-  const [ano, setAno] = useState(new Date().getFullYear());
-  const [planilhaId, setPlanilhaId] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [showForm, setShowForm] = useState(false);
-
-  useEffect(() => {
-    if (selectedPop.periodicidades.length > 0) {
-      // POP-04: pré-seleciona conforme origem_agua da empresa ativa
-      if (selectedPop.codigo === "POP-04" && empresaAtiva?.origem_agua) {
-        const targetKey = empresaAtiva.origem_agua === "concessionaria" ? "cloro_semanal" : "cloro_diario";
-        const match = selectedPop.periodicidades.find((p) => p.key === targetKey);
-        setSelectedPeriodicidade(match ?? selectedPop.periodicidades[0]);
-      } else {
-        setSelectedPeriodicidade(selectedPop.periodicidades[0]);
-      }
-    } else {
-      setSelectedPeriodicidade(null);
-    }
-  }, [selectedPop, empresaAtiva?.origem_agua]);
-
-  const loadOrCreatePlanilha = useCallback(async (per?: PopPeriodicidade) => {
-    const target = per || selectedPeriodicidade;
-    if (!user) return;
-    if (!target) {
-      toast.error("Selecione uma periodicidade antes de abrir a planilha.");
-      return;
-    }
-    if (selectedPop.codigo === "POP-04") {
-      const validKeys = ["cloro_diario", "cloro_semanal"];
-      if (!validKeys.includes(target.key)) {
-        toast.error("POP-04 exige Cloro Diário (poço) ou Cloro Semanal (concessionária).");
-        return;
-      }
-      if (!empresaAtiva?.origem_agua) {
-        toast.warning("Defina a origem da água no Cadastro da empresa para automatizar a periodicidade.");
-      } else {
-        const esperado = empresaAtiva.origem_agua === "concessionaria" ? "cloro_semanal" : "cloro_diario";
-        if (target.key !== esperado) {
-          toast.warning(
-            `Empresa configurada como "${empresaAtiva.origem_agua}". Recomendado: ${esperado === "cloro_semanal" ? "Semanal" : "Diário"}.`
-          );
-        }
-      }
-    }
-    setLoading(true);
-
-
-    const { data: existing } = await supabase
-      .from("pop_planilhas")
-      .select("id")
-      .eq("user_id", user.id)
-      .eq("pop_codigo", selectedPop.codigo)
-      .eq("periodicidade", target.key)
-      .eq("mes", mes)
-      .eq("ano", ano)
-      .maybeSingle();
-
-    if (existing) {
-      setPlanilhaId(existing.id);
-    } else {
-      const { data: created, error } = await supabase
-        .from("pop_planilhas")
-        .insert({
-          user_id: user.id,
-          pop_codigo: selectedPop.codigo,
-          pop_nome: selectedPop.nome,
-          periodicidade: target.key,
-          mes,
-          ano,
-        })
-        .select("id")
-        .single();
-
-      if (error) {
-        toast.error("Erro ao criar planilha: " + error.message);
-        setLoading(false);
-        return;
-      }
-      setPlanilhaId(created.id);
-    }
-
-    setLoading(false);
-    setShowForm(true);
-  }, [user, selectedPop, selectedPeriodicidade, mes, ano, empresaAtiva?.origem_agua]);
-
-  const exportToExcel = async () => {
-    if (!planilhaId || !selectedPeriodicidade || !selectedPop) return;
-
-    const { data: itens } = await supabase
-      .from("pop_planilha_itens")
-      .select("*")
-      .eq("planilha_id", planilhaId);
-
-    const rows = itens || [];
-    
-    exportPopDataToExcel(
-      { codigo: selectedPop.codigo, nome: selectedPop.nome },
-      selectedPeriodicidade,
-      mes,
-      ano,
-      rows
-    );
-    
-    toast.success("Planilha exportada com sucesso!");
-  };
-
-
-  if (showForm && planilhaId && selectedPeriodicidade) {
-    return (
-      <>
-        <PageHeader icon={ClipboardList} title={`${selectedPop.codigo} - ${selectedPeriodicidade.label}`} description={`${MESES[mes - 1]} / ${ano}`}
-        orientacaoModuloId="planilhas-pop" />
-        <div className="flex gap-2 mb-4">
-          <Button variant="outline" size="sm" onClick={() => setShowForm(false)}>
-            ← Voltar
-          </Button>
-          <Button variant="outline" size="sm" onClick={exportToExcel}>
-            <Download className="w-4 h-4 mr-1" /> Exportar Excel
-          </Button>
-
-        </div>
-        <PopPlanilhaForm
-          planilhaId={planilhaId}
-          periodicidade={selectedPeriodicidade}
-          userId={user!.id}
-          popCodigo={selectedPop.codigo}
-          popNome={selectedPop.nome}
-          empresaId={empresaAtiva?.id}
-        />
-      </>
-    );
-  }
+  const relatedIts = getItsPorPop(selectedPop.codigo);
+  
+  // No documentosCentral.ts temos o mapeamento para nomes de rotas amigáveis
+  const moduloAtivoPath = (() => {
+    const modulos = POP_TO_MODULOS[selectedPop.codigo];
+    if (!modulos || modulos.length === 0) return null;
+    return `/${modulos[0]}`;
+  })();
 
   return (
-    <>
-      <PageHeader icon={ClipboardList} title="Planilhas de POPs" description="Registros específicos por atividade conforme IN 04/2007" />
+    <div className="space-y-6">
+      <PageHeader 
+        icon={Clipboard} 
+        title="Planilhas de POPs" 
+        description="Acesso centralizado aos procedimentos, instruções de trabalho e registros digitais por POP."
+      />
 
-      {/* Seleção de POP */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-        <div>
-          <label className="text-sm font-medium text-foreground mb-1.5 block">POP</label>
-          <Select
-            value={selectedPop.codigo}
-            onValueChange={(v) => {
-              const pop = POPS_CONFIG.find((p) => p.codigo === v);
-              if (pop) setSelectedPop(pop);
-            }}
-          >
-            <SelectTrigger><SelectValue /></SelectTrigger>
-            <SelectContent>
-              {POPS_CONFIG.map((p) => {
-                const popNum = p.codigo.split("-")[1]?.replace(/^0+/, "");
-                return (
-                  <SelectItem key={p.codigo} value={p.codigo}>
-                    Pop {popNum} - {p.nome}
-                  </SelectItem>
-                );
-              })}
-            </SelectContent>
-          </Select>
-        </div>
-        <div>
-          <label className="text-sm font-medium text-foreground mb-1.5 block">Mês</label>
-          <Select value={String(mes)} onValueChange={(v) => setMes(Number(v))}>
-            <SelectTrigger><SelectValue /></SelectTrigger>
-            <SelectContent>
-              {MESES.map((m, i) => (
-                <SelectItem key={i} value={String(i + 1)}>{m}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-        <div>
-          <label className="text-sm font-medium text-foreground mb-1.5 block">Ano</label>
-          <Select value={String(ano)} onValueChange={(v) => setAno(Number(v))}>
-            <SelectTrigger><SelectValue /></SelectTrigger>
-            <SelectContent>
-              {[2024, 2025, 2026, 2027].map((a) => (
-                <SelectItem key={a} value={String(a)}>{a}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
-
-      {/* Descrição do POP */}
-      <Card className="mb-6">
-        <CardHeader className="pb-3">
-          <CardTitle className="text-base">{selectedPop.codigo} - {selectedPop.nome}</CardTitle>
-          <CardDescription>{selectedPop.descricao}</CardDescription>
-        </CardHeader>
-      </Card>
-
-      {/* Aviso de lançamento único em módulos específicos */}
-      {selectedPop.modulos_vinculados && selectedPop.modulos_vinculados.length > 0 && (
-        <Card className="mb-6 border-primary/40 bg-primary/5">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        {/* Barra Lateral de Seleção */}
+        <Card className="lg:col-span-4 h-fit">
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm flex items-center gap-2">
-              <Info className="w-4 h-4 text-primary" />
-              Lançamento único — registros operacionais deste POP
-            </CardTitle>
-            <CardDescription className="text-xs">
-              Para evitar duplicidade, os registros do dia a dia deste POP são feitos diretamente nos módulos abaixo.
-              As planilhas digitais oficiais (com assinatura RT) e os relatórios já consomem esses dados.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-              {selectedPop.modulos_vinculados.map((m) => (
-                <Button
-                  key={m.rota}
-                  variant="outline"
-                  size="sm"
-                  className="justify-start h-auto py-2 text-left"
-                  onClick={() => navigate(m.rota)}
-                >
-                  <ExternalLink className="w-3.5 h-3.5 mr-2 shrink-0 text-primary" />
-                  <span className="flex flex-col items-start">
-                    <span className="font-medium text-xs">{m.label}</span>
-                    <span className="text-[11px] text-muted-foreground font-normal">{m.descricao}</span>
-                  </span>
-                </Button>
-              ))}
-              <Button
-                variant="outline"
-                size="sm"
-                className="justify-start h-auto py-2 text-left border-emerald-200 bg-emerald-50/50 hover:bg-emerald-50"
-                onClick={() => navigate(`/feedbpf-custom/registros/novo?modelo=${selectedPop.codigo}`)}
-              >
-                <FileSignature className="w-3.5 h-3.5 mr-2 shrink-0 text-emerald-600" />
-                <span className="flex flex-col items-start">
-                  <span className="font-medium text-xs text-emerald-800">Novo Registro Digital Customizado</span>
-                  <span className="text-[11px] text-muted-foreground font-normal">Preencher formulário digital personalizado para este POP</span>
-                </span>
-              </Button>
+            <div className="relative">
+              <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+              <Input 
+                placeholder="Buscar POP..." 
+                className="pl-9 h-9 text-sm"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
             </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Planilhas para Impressão (modelos manuais em branco) */}
-      {selectedPop.planilhas_impressao && selectedPop.planilhas_impressao.length > 0 && (
-        <Card className="mb-6 border-primary/40 bg-primary/5">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm flex items-center gap-2">
-              <Download className="w-4 h-4 text-primary" />
-              Planilhas para Impressão (registro manual em campo)
-            </CardTitle>
-            <CardDescription className="text-xs">
-              Modelos em branco para imprimir, preencher à mão e arquivar (mínimo 2 anos — IN 04/2007 MAPA).
-              Para preenchimento digital com assinatura, use os módulos vinculados acima.
-            </CardDescription>
           </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-              {selectedPop.planilhas_impressao.map((p) => (
-                <Button
-                  key={p.arquivo}
-                  variant="outline"
-                  size="sm"
-                  className="justify-start h-auto py-2 text-left"
-                  onClick={() => {
-                    const gen = TEMPLATE_GENERATORS[p.arquivo];
-                    if (gen) {
-                      gen();
-                      toast.success("Planilha gerada");
-                    } else {
-                      toast.error("Modelo não encontrado");
-                    }
-                  }}
-                >
-                  <Download className="w-3.5 h-3.5 mr-2 shrink-0 text-primary" />
-                  <span className="flex flex-col items-start">
-                    <span className="font-medium text-xs">{p.label}</span>
-                    <span className="text-[11px] text-muted-foreground font-normal">{p.descricao}</span>
-                  </span>
-                </Button>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Novos Modelos de Planilhas Vinculados do Zip */}
-      {MODELOS_ASSETS[selectedPop.codigo] && (
-        <Card className="mb-6 border-emerald-400 bg-emerald-50">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm flex items-center gap-2">
-              <FileSpreadsheet className="w-4 h-4 text-emerald-600" />
-              Modelos Oficiais de Referência (Arquivos Originais)
-            </CardTitle>
-            <CardDescription className="text-xs">
-              Estes são os modelos de planilhas Excel/Word originais configurados para este POP.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {/* Planilhas (Excel) */}
-              {MODELOS_ASSETS[selectedPop.codigo].filter(m => m.label.toLowerCase().includes("pl") || m.url.includes(".xls") || m.url.includes(".xlsx")).length > 0 && (
-                <div className="space-y-2">
-                  <h4 className="text-xs font-semibold text-emerald-700 uppercase tracking-wider">Planilhas com Código (Excel)</h4>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                    {MODELOS_ASSETS[selectedPop.codigo]
-                      .filter(m => m.label.toLowerCase().includes("pl") || m.url.includes(".xls") || m.url.includes(".xlsx"))
-                      .map((m) => (
-                        <Button
-                          key={m.url}
-                          variant="outline"
-                          size="sm"
-                          className="justify-start h-auto py-2 text-left border-emerald-200 hover:bg-emerald-100"
-                          onClick={() => window.open(m.url, "_blank")}
-                        >
-                          <FileSpreadsheet className="w-3.5 h-3.5 mr-2 shrink-0 text-emerald-600" />
-                          <span className="flex flex-col items-start">
-                            <span className="font-medium text-xs text-emerald-800">{m.label}</span>
-                            <span className="text-[10px] text-muted-foreground font-normal">Clique para baixar a planilha original</span>
-                          </span>
-                        </Button>
-                      ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Documentos Descritivos (Word/PDF) */}
-              {MODELOS_ASSETS[selectedPop.codigo].filter(m => !m.label.toLowerCase().includes("pl") && !m.url.includes(".xls") && !m.url.includes(".xlsx")).length > 0 && (
-                <div className="space-y-2">
-                  <h4 className="text-xs font-semibold text-blue-700 uppercase tracking-wider">Procedimentos Descritivos (Word)</h4>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                    {MODELOS_ASSETS[selectedPop.codigo]
-                      .filter(m => !m.label.toLowerCase().includes("pl") && !m.url.includes(".xls") && !m.url.includes(".xlsx"))
-                      .map((m) => (
-                        <Button
-                          key={m.url}
-                          variant="outline"
-                          size="sm"
-                          className="justify-start h-auto py-2 text-left border-blue-200 hover:bg-blue-100"
-                          onClick={() => window.open(m.url, "_blank")}
-                        >
-                          <BookOpen className="w-3.5 h-3.5 mr-2 shrink-0 text-blue-600" />
-                          <span className="flex flex-col items-start">
-                            <span className="font-medium text-xs text-blue-800">{m.label}</span>
-                            <span className="text-[10px] text-muted-foreground font-normal">Clique para baixar o descritivo original</span>
-                          </span>
-                        </Button>
-                      ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Manual de BPF (Caso especial) */}
-      {selectedPop.codigo === "POP-10" && MODELOS_ASSETS["Manual"] && (
-        <Card className="mb-6 border-blue-400 bg-blue-50">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm flex items-center gap-2">
-              <BookOpen className="w-4 h-4 text-blue-600" />
-              Manual de BPF e Documentos de Gestão
-            </CardTitle>
-            <CardDescription className="text-xs">
-              Modelos do Manual e estudos de complexidade.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-              {MODELOS_ASSETS["Manual"].map((m) => (
-                <Button
-                  key={m.url}
-                  variant="outline"
-                  size="sm"
-                  className="justify-start h-auto py-2 text-left border-blue-200 hover:bg-blue-100"
-                  onClick={() => window.open(m.url, "_blank")}
-                >
-                  <Download className="w-3.5 h-3.5 mr-2 shrink-0 text-blue-600" />
-                  <span className="flex flex-col items-start">
-                    <span className="font-medium text-xs text-blue-800">{m.label}</span>
-                    <span className="text-[10px] text-muted-foreground font-normal">Clique para baixar</span>
-                  </span>
-                </Button>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Instruções de Trabalho (ITs) Relacionadas */}
-      <Card className="mb-6 border-blue-400 bg-blue-50/30">
-        <CardHeader className="pb-3">
-          <CardTitle className="text-sm flex items-center gap-2">
-            <BookOpen className="w-4 h-4 text-blue-600" />
-            Instruções de Trabalho (ITs) — Procedimento Prático
-          </CardTitle>
-          <CardDescription className="text-xs">
-            Guia passo a passo para execução correta das atividades deste POP.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            {INSTRUCOES_TRABALHO.filter(it => it.popCodigo === selectedPop.codigo).length > 0 ? (
-              INSTRUCOES_TRABALHO.filter(it => it.popCodigo === selectedPop.codigo).map((it) => (
-                <Card key={it.id} className="border-blue-100 shadow-none hover:border-blue-300 transition-colors">
-                  <CardContent className="p-3">
-                    <div className="flex justify-between items-start mb-2">
-                      <h4 className="text-xs font-bold text-blue-900">{it.titulo}</h4>
-                      <Badge variant="outline" className="text-[9px] bg-white">{it.id}</Badge>
+          <CardContent className="p-0">
+            <ScrollArea className="h-[500px]">
+              <div className="divide-y">
+                {filteredPops.map((pop) => (
+                  <button
+                    key={pop.codigo}
+                    onClick={() => setSelectedPop(pop)}
+                    className={`w-full text-left p-4 hover:bg-muted/50 transition-colors flex items-center justify-between group ${
+                      selectedPop.codigo === pop.codigo ? "bg-primary/5 border-l-4 border-primary" : "border-l-4 border-transparent"
+                    }`}
+                  >
+                    <div className="flex flex-col gap-1">
+                      <span className="text-xs font-bold text-primary">{pop.codigo}</span>
+                      <span className="text-sm font-medium leading-tight">{pop.nome}</span>
                     </div>
-                    <p className="text-[11px] text-muted-foreground line-clamp-2 mb-3">
-                      {it.objetivo}
-                    </p>
-                    <div className="flex gap-2">
-                      <Button 
-                        size="sm" 
-                        variant="ghost" 
-                        className="h-7 text-[10px] text-blue-700 hover:text-blue-900 hover:bg-blue-100"
-                        onClick={() => navigate(`/execucao-pops?pop=${selectedPop.codigo.split('-')[1]}&it=${it.id}`)}
-                      >
-                        <Eye className="w-3 h-3 mr-1" /> Abrir IT Completa
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))
-            ) : (
-              <p className="text-xs text-muted-foreground italic col-span-2">Nenhuma instrução de trabalho específica para este POP.</p>
-            )}
-          </div>
-        </CardContent>
-      </Card>
-
-      {selectedPop.periodicidades.length === 0 && (
-        <Card className="border-dashed">
-          <CardContent className="py-8 text-center">
-            <ClipboardList className="w-10 h-10 mx-auto text-muted-foreground mb-3" />
-            <p className="text-sm text-muted-foreground">
-              Este POP não possui planilhas próprias nesta tela. Todos os registros são lançados nos módulos vinculados acima.
-            </p>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Periodicidades disponíveis */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {selectedPop.periodicidades.map((per) => (
-          <Card
-            key={per.key}
-            className="border border-border hover:shadow-md transition-shadow cursor-pointer"
-            onClick={() => {
-              setSelectedPeriodicidade(per);
-              loadOrCreatePlanilha(per);
-            }}
-          >
-            <CardHeader className="pb-3">
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-sm font-semibold">{per.label}</CardTitle>
-                <Badge variant="secondary" className="text-xs">{per.periodos.length} períodos</Badge>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-1">
-                {per.areas.slice(0, 4).map((a) => (
-                  <p key={a.area} className="text-xs text-muted-foreground">• {a.area}</p>
+                    <ChevronRight className={`w-4 h-4 transition-transform ${selectedPop.codigo === pop.codigo ? "translate-x-1 text-primary" : "text-muted-foreground group-hover:translate-x-1"}`} />
+                  </button>
                 ))}
-                {per.areas.length > 4 && (
-                  <p className="text-xs text-muted-foreground font-medium">+ {per.areas.length - 4} áreas</p>
+              </div>
+            </ScrollArea>
+          </CardContent>
+        </Card>
+
+        {/* Área de Conteúdo do POP Selecionado */}
+        <div className="lg:col-span-8 space-y-6">
+          <Card className="border-primary/20">
+            <CardHeader className="bg-primary/5 pb-6">
+              <div className="flex items-center justify-between">
+                <Badge variant="outline" className="text-primary font-mono border-primary/30">
+                  {selectedPop.codigo}
+                </Badge>
+                {moduloAtivoPath && (
+                  <Badge className="bg-emerald-500/15 text-emerald-700 hover:bg-emerald-500/20 border-emerald-200">
+                    <CheckCircle2 className="w-3 h-3 mr-1" /> Módulo Ativo
+                  </Badge>
                 )}
               </div>
-              <Button
-                size="sm"
-                className="w-full mt-3"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setSelectedPeriodicidade(per);
-                  loadOrCreatePlanilha(per);
-                }}
-              >
-                <FileSpreadsheet className="w-4 h-4 mr-1" /> Abrir Planilha
-              </Button>
+              <CardTitle className="text-2xl mt-2">{selectedPop.nome}</CardTitle>
+              <CardDescription className="text-base">
+                Gestão integrada de documentos e registros conforme IN 04/2007.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="pt-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Procedimento Descritivo (Word/PDF) */}
+                <div className="space-y-4">
+                  <h3 className="text-sm font-bold flex items-center gap-2 text-muted-foreground uppercase tracking-wider">
+                    <FileText className="w-4 h-4" /> Procedimento Descritivo
+                  </h3>
+                  <div className="space-y-2">
+                    {MODELOS_ASSETS[selectedPop.codigo]?.filter(m => !m.label.toLowerCase().includes("planilha")).map((doc, idx) => (
+                      <Button 
+                        key={idx}
+                        variant="outline" 
+                        className="w-full justify-start text-left h-auto py-3 border-dashed"
+                        onClick={() => window.open(doc.url, "_blank")}
+                      >
+                        <Download className="w-4 h-4 mr-3 text-primary" />
+                        <div className="flex flex-col">
+                          <span className="text-sm font-semibold">{doc.label}</span>
+                          <span className="text-[11px] text-muted-foreground font-normal">Documento original (Word/PDF)</span>
+                        </div>
+                      </Button>
+                    ))}
+                    {!MODELOS_ASSETS[selectedPop.codigo]?.some(m => !m.label.toLowerCase().includes("planilha")) && (
+                      <div className="text-xs p-3 bg-muted rounded-md text-muted-foreground flex items-center gap-2">
+                        <Info className="w-3 h-3" /> Nenhum procedimento Word encontrado.
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Planilhas e Registros Digitais */}
+                <div className="space-y-4">
+                  <h3 className="text-sm font-bold flex items-center gap-2 text-muted-foreground uppercase tracking-wider">
+                    <FileSignature className="w-4 h-4" /> Registros e Planilhas
+                  </h3>
+                  <div className="space-y-2">
+                    {/* Link para o Módulo Integrado */}
+                    {moduloAtivoPath && (
+                      <Button 
+                        className="w-full justify-start text-left h-auto py-3 bg-emerald-600 hover:bg-emerald-700"
+                        onClick={() => navigate(moduloAtivoPath)}
+                      >
+                        <ExternalLink className="w-4 h-4 mr-3" />
+                        <div className="flex flex-col">
+                          <span className="text-sm font-semibold">Ir para o Módulo do Sistema</span>
+                          <span className="text-[11px] opacity-80 font-normal">Preenchimento automatizado via formulários</span>
+                        </div>
+                      </Button>
+                    )}
+
+                    {/* Novo Registro Digital Customizado */}
+                    <Button 
+                      variant="outline"
+                      className="w-full justify-start text-left h-auto py-3 border-emerald-200 bg-emerald-50/50 hover:bg-emerald-50"
+                      onClick={() => navigate(`/feedbpf-custom/registros/novo?modelo=${selectedPop.codigo}`)}
+                    >
+                      <FileBadge className="w-4 h-4 mr-3 text-emerald-600" />
+                      <div className="flex flex-col">
+                        <span className="text-sm font-semibold text-emerald-800">Novo Registro Digital Customizado</span>
+                        <span className="text-[11px] text-muted-foreground font-normal">Preencher formulário digital personalizado</span>
+                      </div>
+                    </Button>
+
+                    {/* Planilhas Excel Originais */}
+                    {MODELOS_ASSETS[selectedPop.codigo]?.filter(m => m.label.toLowerCase().includes("planilha")).map((doc, idx) => (
+                      <Button 
+                        key={idx} 
+                        variant="ghost" 
+                        className="w-full justify-start text-left h-auto py-2 hover:bg-primary/5"
+                        onClick={() => window.open(doc.url, "_blank")}
+                      >
+                        <Download className="w-3.5 h-3.5 mr-3 text-primary" />
+                        <span className="text-xs">{doc.label}</span>
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Instruções de Trabalho (ITs) Relacionadas */}
+              <div className="mt-8 pt-6 border-t">
+                <h3 className="text-sm font-bold flex items-center gap-2 text-muted-foreground uppercase tracking-wider mb-4">
+                  <BookOpen className="w-4 h-4" /> Instruções de Trabalho (ITs) Vinculadas
+                </h3>
+                {relatedIts.length > 0 ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {relatedIts.map((it) => (
+                      <Card key={it.id} className="bg-muted/30 border-none shadow-none">
+                        <CardContent className="p-4">
+                          <div className="flex items-center justify-between mb-2">
+                            <Badge variant="secondary" className="text-[10px] font-mono h-5">
+                              {it.id}
+                            </Badge>
+                            <span className="text-[10px] text-muted-foreground uppercase font-bold">{it.frequencia}</span>
+                          </div>
+                          <h4 className="text-sm font-bold mb-1">{it.titulo}</h4>
+                          <p className="text-xs text-muted-foreground line-clamp-2 mb-3">{it.objetivo}</p>
+                          <Button 
+                            variant="link" 
+                            size="sm" 
+                            className="p-0 h-auto text-primary text-xs"
+                            onClick={() => navigate(`/execucao-pops`)}
+                          >
+                            Ver detalhes e registrar execução →
+                          </Button>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="p-8 text-center bg-muted/20 rounded-xl border border-dashed">
+                    <AlertTriangle className="w-6 h-6 mx-auto text-amber-500 mb-2 opacity-50" />
+                    <p className="text-sm text-muted-foreground">Nenhuma Instrução de Trabalho mapeada para este POP ainda.</p>
+                  </div>
+                )}
+              </div>
             </CardContent>
           </Card>
-        ))}
+        </div>
       </div>
-    </>
+    </div>
   );
 }
