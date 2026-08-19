@@ -234,7 +234,7 @@ export default function MeuAcervo() {
                 <Button 
                   key={popKey} 
                   variant="outline" 
-                  size="xs" 
+                  size="sm" 
                   className="text-[10px] h-7 border-emerald-200 hover:bg-emerald-100"
                   onClick={() => setPopFiltro(popKey)}
                 >
@@ -243,7 +243,7 @@ export default function MeuAcervo() {
               ))}
               <Button 
                 variant="ghost" 
-                size="xs" 
+                size="sm" 
                 className="text-[10px] h-7"
                 asChild
               >
