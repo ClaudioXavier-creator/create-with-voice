@@ -332,8 +332,14 @@ export default function MeuAcervo() {
                   <div key={d.id} className={`p-3 flex flex-col sm:flex-row sm:items-center gap-2 hover:bg-muted/30 ${marcado ? "bg-emerald-500/5" : ""}`}>
                     <Checkbox checked={marcado} onCheckedChange={() => toggleSel(d.id)} className="shrink-0" />
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium truncate">{d.titulo}</p>
-                      <p className="text-xs text-muted-foreground truncate">{d.arquivo_nome} · {d.data_documento ? new Date(d.data_documento + "T12:00").toLocaleDateString("pt-BR") : "sem data"}</p>
+                      <div className="flex items-center gap-2">
+                        <p className="text-sm font-medium truncate">{d.titulo}</p>
+                        {d.it_codigo && <Badge variant="secondary" className="text-[9px] font-mono h-4">{d.it_codigo}</Badge>}
+                      </div>
+                      <p className="text-xs text-muted-foreground truncate">
+                        {d.arquivo_nome} · {d.data_documento ? new Date(d.data_documento + "T12:00").toLocaleDateString("pt-BR") : "sem data"}
+                        {d.frequencia && ` · ${d.frequencia}`}
+                      </p>
                     </div>
                     <div className="flex items-center gap-2 shrink-0">
                       <Select value={d.pop_codigo || ""} onValueChange={(v) => atualizarPop(d, v)}>
