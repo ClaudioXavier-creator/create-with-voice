@@ -165,10 +165,10 @@ export default function Treinamentos() {
         return `${v === true ? "✅" : v === false ? "❌" : "⬜"} ${item}`;
       }).join("\n");
       const naoConformes = TRIAGEM_ITENS.filter((_, i) => triagemChecks[i] === false).length;
-      const obs = `[TRIAGEM DIÁRIA POP-02 — IN 15/2009]\nColaborador: ${triagemForm.funcionario}\nSetor: ${triagemForm.setor}\n${checks}\n${naoConformes > 0 ? `⚠️ ${naoConformes} item(ns) não conforme(s)` : "✅ Todos conformes"}`;
+      const obs = `[TRIAGEM DIÁRIA POP-03 — IN 04/2007]\nColaborador: ${triagemForm.funcionario}\nSetor: ${triagemForm.setor}\n${checks}\n${naoConformes > 0 ? `⚠️ ${naoConformes} item(ns) não conforme(s)` : "✅ Todos conformes"}`;
       const { error } = await supabase.from("execucao_pops").insert({
         user_id: user!.id,
-        codigo_pop: "TRIAGEM-POP02",
+        codigo_pop: "TRIAGEM-POP03",
         nome_pop: "Triagem Diária Higiene e Saúde",
         executor: triagemForm.responsavel,
         setor: triagemForm.setor,
@@ -230,7 +230,7 @@ export default function Treinamentos() {
 
   return (
     <div className="space-y-6">
-      <PageHeader icon={GraduationCap} title="Treinamentos, Saúde e Higiene Pessoal" description="POP-02 (IN 04/2007) — Capacitação, ASOs e triagem diária de higiene"
+      <PageHeader icon={GraduationCap} title="POP 03 — Higiene e Saúde Pessoal" description="Capacitação, ASOs, Saúde e triagem diária de higiene pessoal conforme IN 04/2007"
         orientacaoModuloId="treinamentos" />
 
       {/* Summary */}

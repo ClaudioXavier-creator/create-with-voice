@@ -6,13 +6,13 @@ export const POPS_CUSTOM = [
   },
   { 
     codigo: "POP-02", 
-    nome: "Higiene, Sanitização e Transporte",
-    descricao: "Controle de limpeza de instalações e equipamentos, sanitização de áreas críticas e inspeção de veículos de transporte."
+    nome: "Limpeza de Instalações, Equipamentos e Utensílios",
+    descricao: "Controle de limpeza de instalações e equipamentos, sanitização de áreas críticas e cronogramas de higienização conforme IN 04/2007 e IN 15/2009."
   },
   { 
     codigo: "POP-03", 
-    nome: "Saúde dos Manipuladores",
-    descricao: "Gestão da saúde ocupacional, exames médicos (ASO), higiene pessoal e conduta dos colaboradores e visitantes dentro das áreas produtivas."
+    nome: "Higiene e Saúde Pessoal",
+    descricao: "Gestão da saúde ocupacional, exames médicos (ASO), higiene pessoal, capacitação e comportamento nas áreas de produção conforme IN 04/2007."
   },
   { 
     codigo: "POP-04", 
@@ -42,7 +42,7 @@ export const POPS_CUSTOM = [
   { 
     codigo: "POP-09", 
     nome: "Rastreabilidade e Recolhimento (Recall)",
-    descricao: "Procedimentos de rastreabilidade de produtos, controle de não conformidades e programa de recolhimento (recall) conforme IN 04/2007."
+    descricao: "Procedimentos de rastreabilidade de produtos, controle de não conformidades, expedição e programa de recolhimento (recall) conforme IN 04/2007."
   },
   { 
     codigo: "POP-10", 
@@ -58,13 +58,13 @@ export const POPS_CUSTOM = [
 export const POP_TO_MODULOS: Record<string, string[]> = {
   "POP-01": ["pop-04-mp", "fornecedores"],
   "POP-02": ["pop-02-higiene"],
-  "POP-03": ["pop-03-saude"],
+  "POP-03": ["pop-03-saude", "treinamentos", "visitantes"],
   "POP-04": ["pop-01-agua"],
   "POP-05": ["pcp"],
   "POP-06": ["pop-06-manutencao"],
   "POP-07": ["pop-07-pragas"],
   "POP-08": ["pop-08-residuos"],
-  "POP-09": ["pop-05-armazenamento", "pop-09-transporte"],
+  "POP-09": ["pop-05-armazenamento", "pop-09-transporte", "rastreabilidade"],
   "POP-10": ["pop-10-pac", "matriz-risco"],
 };
 
@@ -77,14 +77,14 @@ export function sugerirPopPorNome(nomeArquivo: string): string | null {
   const nome = nomeArquivo.toLowerCase();
   const regras: Array<[RegExp, string]> = [
     [/receb|materia[- ]?prima|mp\b|fornecedor/, "POP-01"],
-    [/higien|sanitiz|limpez|desinfec/, "POP-02"],
-    [/saud|aso|manipulador|epi\b/, "POP-03"],
+    [/sanitiz|limpez|desinfec/, "POP-02"],
+    [/saud|aso|manipulador|epi\b|treinamento|visitante/, "POP-03"],
     [/agua|potab|cloro|reservat/, "POP-04"],
     [/produc|pcp|batida|formul|mistur/, "POP-05"],
     [/manutenc|calibr|equipam/, "POP-06"],
     [/praga|isca|armadilha|dedetiz|roedor/, "POP-07"],
     [/residu|efluent|lixo|descart/, "POP-08"],
-    [/armazen|transport|expedic|veicul/, "POP-09"],
+    [/armazen|transport|expedic|veicul|rastre/, "POP-09"],
     [/pac\b|autocontrol|haccp|appcc/, "POP-10"],
   ];
   for (const [re, pop] of regras) if (re.test(nome)) return pop;
