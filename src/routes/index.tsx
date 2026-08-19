@@ -6,8 +6,9 @@
 // 5. Automação: Configurada Edge Function 'alertas-vencimento' para notificações de 30 dias via WhatsApp e e-mail.
 
 // Próximos passos sugeridos:
+// - Configurar o gatilho CRON (no banco) para disparar a função de alertas diariamente.
+// - Integrar a visualização de "Não Conformidades" geradas automaticamente por documentos vencidos e a vencer a partir de 30 dias.
 // - Refinar a matriz de riscos integrada à Sala do Auditor.
-// - Expandir o simulador de carimbos para novos selos estaduais (SIE/SIM).
 
 
 
