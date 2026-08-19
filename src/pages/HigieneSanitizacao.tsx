@@ -132,7 +132,7 @@ const CHECKLIST_SILOS_TRANSPORT: { area: string; itens: string[] }[] = [
   ]},
 ];
 
-// ── CHECKLIST MONITORAMENTO DE SUPERFÍCIES (POP-02/03 / IN 04/2007) ──
+// ── CHECKLIST MONITORAMENTO DE SUPERFÍCIES (POP-02 / IN 04/2007) ──
 const CHECKLIST_SUPERFICIES: { area: string; itens: string[] }[] = [
   { area: "Superfícies de Contato Direto", itens: [
     "Misturador — parede interna",

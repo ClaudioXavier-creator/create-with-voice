@@ -42,7 +42,7 @@ const SECOES: Secao[] = [
     ],
     resultado: "Uma pasta local com todos os arquivos nomeados e prontos para upload em lote.",
     dicas: [
-      "Nomeie SEMPRE em minúsculas, sem acentos e com underline no lugar de espaço. Ex: 'higiene_semanal_area_producao.pdf'.",
+      "Nomeie SEMPRE em minúsculas, sem acentos e com underline no lugar de espaço. Ex: 'limpeza_semanal_area_producao.pdf'.",
       "Se um documento cobre vários POPs (ex: manual BPF completo), duplique o arquivo com nomes diferentes ou faça upload uma vez e vincule ao POP principal.",
     ],
     erros: [
