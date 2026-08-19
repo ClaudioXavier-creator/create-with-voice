@@ -137,7 +137,7 @@ const SECOES: Secao[] = [
     ],
     campos: [
       { nome: "Nome do modelo", descricao: "Como aparecerá na lista. Ex: 'Higiene diária — área de produção'.", obrigatorio: true },
-      { nome: "POP vinculado", descricao: "Escolha entre POP-01 a POP-10. Define onde os registros aparecem no acervo.", obrigatorio: true },
+      { nome: "POP vinculado", descricao: "Escolha entre POP-01 a POP-10. Define a numeração oficial e onde os registros aparecem.", obrigatorio: true },
       { nome: "Descrição", descricao: "Quando esse modelo deve ser preenchido, por quem, e com que frequência.", obrigatorio: false },
       { nome: "Frequência sugerida", descricao: "Diária, semanal, mensal, por lote, por turno etc. Ajuda o operador a saber quando preencher.", obrigatorio: false },
     ],
