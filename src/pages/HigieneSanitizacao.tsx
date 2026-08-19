@@ -4,6 +4,8 @@ import { useEmpresa } from "@/hooks/useEmpresa";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -228,6 +230,8 @@ const CHECKLIST_RESERVATORIO: { area: string; itens: string[] }[] = [
 export default function HigieneSanitizacao() {
   const { user } = useAuth();
   const { empresaAtiva } = useEmpresa();
+  const navigate = useNavigate();
+
   const qc = useQueryClient();
   const [openCronograma, setOpenCronograma] = useState(false);
   const [openRegistro, setOpenRegistro] = useState(false);
@@ -731,7 +735,15 @@ export default function HigieneSanitizacao() {
         description="Procedimentos de limpeza de instalações, equipamentos e utensílios conforme IN 04/2007 e IN 15/2009"
         orientacaoModuloId="higiene" 
       />
-      <div className="flex justify-end mb-3"><AnexarPlanilhaPop popCodigo="POP-02" popNome="Higiene e Sanitização" /></div>
+      
+      <div className="flex flex-wrap justify-between items-center gap-3 mb-3">
+        <Button variant="outline" size="sm" onClick={() => navigate("/documentos-bpf?tab=retencao")} className="gap-2">
+          <Clock className="w-4 h-4" /> Gestão de Retenção (2 Anos)
+        </Button>
+        <AnexarPlanilhaPop popCodigo="POP-02" popNome="Higiene e Sanitização" />
+      </div>
+
+
 
       <Tabs defaultValue="preop">
         <div className="w-full overflow-x-auto pb-1">
@@ -742,9 +754,7 @@ export default function HigieneSanitizacao() {
             <TabsTrigger value="silos" className="whitespace-nowrap"><Container className="w-4 h-4 mr-1" />Silos & Transportadores</TabsTrigger>
             <TabsTrigger value="cronogramas" className="whitespace-nowrap"><Droplets className="w-4 h-4 mr-1" />Cronogramas</TabsTrigger>
             <TabsTrigger value="registros" className="whitespace-nowrap"><CheckCircle2 className="w-4 h-4 mr-1" />Registros Limpeza</TabsTrigger>
-            
             <TabsTrigger value="planilha" className="whitespace-nowrap"><ClipboardList className="w-4 h-4 mr-1" />Planilha Mensal</TabsTrigger>
-            <TabsTrigger value="arquivo" className="whitespace-nowrap"><Archive className="w-4 h-4 mr-1" />Arquivo 2 Anos</TabsTrigger>
           </TabsList>
         </div>
 
@@ -1666,95 +1676,6 @@ export default function HigieneSanitizacao() {
         </TabsContent>
 
 
-        {/* ── ARQUIVO 2 ANOS (Decreto 12.031/2024) ── */}
-        <TabsContent value="arquivo" className="space-y-4">
-          <Card className="border-primary/20 bg-primary/5">
-            <CardContent className="pt-4">
-              <div className="flex items-start gap-3">
-                <Archive className="w-6 h-6 text-primary mt-0.5" />
-                <div>
-                  <h4 className="font-display font-semibold text-sm">Política de Retenção de Registros — Decreto 12.031/2024</h4>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Todos os registros de BPF devem ser mantidos por no mínimo <strong>2 (dois) anos</strong> e estar
-                    disponíveis para fiscalização a qualquer momento. O sistema retém automaticamente todos os dados
-                    e impede exclusão de registros dentro do prazo de guarda obrigatório.
-                  </p>
-                  <div className="flex flex-wrap gap-2 mt-2">
-                    <Badge variant="outline" className="text-[10px]">Art. 18 — Decreto 12.031/2024</Badge>
-                    <Badge variant="outline" className="text-[10px]">IN 04/2007 — Requisitos de Documentação</Badge>
-                    <Badge variant="outline" className="text-[10px]">IN 15/2009 — Controle de Registros</Badge>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {archiveCounts && (
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-              {[
-                { label: "Execuções de POPs", count: archiveCounts.pops, icon: "📋" },
-                { label: "Registros de Limpeza", count: archiveCounts.limpeza, icon: "🧹" },
-                { label: "Análises Laboratoriais", count: archiveCounts.agua, icon: "🔬" },
-                { label: "Controle de Resíduos", count: archiveCounts.residuos, icon: "♻️" },
-                { label: "Calibrações", count: archiveCounts.calibracoes, icon: "⚖️" },
-                { label: "Não Conformidades", count: archiveCounts.nc, icon: "⚠️" },
-              ].map(item => (
-                <Card key={item.label}>
-                  <CardContent className="pt-4">
-                    <div className="flex items-center gap-3">
-                      <span className="text-2xl">{item.icon}</span>
-                      <div>
-                        <p className="text-2xl font-bold text-primary">{item.count}</p>
-                        <p className="text-xs text-muted-foreground">{item.label}</p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          )}
-
-          <Card>
-            <CardContent className="pt-6 space-y-4">
-              <h4 className="font-semibold text-sm">Status de Conformidade — Retenção Documental</h4>
-              {[
-                { modulo: "Execução de POPs (POP-01 a POP-10)", status: true, detalhe: "Todos os registros de execução de POPs são armazenados permanentemente no banco de dados com timestamp e user_id." },
-                { modulo: "Registros de Limpeza e Higienização (POP-02)", status: true, detalhe: "Cronogramas, checklists pré-operacionais, liberação de linha e monitoramento de superfícies retidos integralmente." },
-                { modulo: "Saúde e Higiene Pessoal (POP-03)", status: true, detalhe: "ASOs, registros de afastamento por sintomas e controle de visitantes mantidos." },
-                { modulo: "Controle de Água e Laudos (POP-04)", status: true, detalhe: "Registros de potabilidade, laudos laboratoriais e certificados de limpeza de reservatório arquivados." },
-                { modulo: "Controle de Resíduos e Efluentes (POP-08)", status: true, detalhe: "Manifestos de transporte, licenças ambientais e registros de descarte mantidos com rastreabilidade completa." },
-                { modulo: "Calibrações e Manutenções (POP-06)", status: true, detalhe: "Certificados de calibração, verificações intermediárias e planos preventivos arquivados." },
-                { modulo: "Rastreabilidade e Recall (POP-09)", status: true, detalhe: "Correlação MP↔PA, testes de recall simulado e certificados de análise retidos por tempo indeterminado." },
-                { modulo: "Não Conformidades e Ações Corretivas", status: true, detalhe: "NCs, causas-raiz, planos de ação e verificações de eficácia mantidos para auditoria." },
-                { modulo: "Treinamentos e ASOs", status: true, detalhe: "Registros de capacitação, ASOs e monitoramento de sintomas armazenados permanentemente." },
-              ].map(item => (
-                <div key={item.modulo} className="p-3 rounded-lg border bg-background">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium">{item.modulo}</span>
-                    <Badge className="bg-primary/20 text-primary">✅ Retido ≥ 2 anos</Badge>
-                  </div>
-                  <p className="text-xs text-muted-foreground mt-1">{item.detalhe}</p>
-                </div>
-              ))}
-            </CardContent>
-          </Card>
-
-          <Card className="border-green-500/20 bg-green-50 dark:bg-green-900/10">
-            <CardContent className="pt-4">
-              <div className="flex items-center gap-3">
-                <CheckCircle2 className="w-6 h-6 text-green-600" />
-                <div>
-                  <h4 className="font-semibold text-sm text-green-700 dark:text-green-400">Sistema em Conformidade com a Política de Retenção</h4>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Todos os módulos do sistema armazenam registros em banco de dados permanente com backup automático.
-                    A exclusão de registros dentro do período de guarda de 2 anos é controlada por políticas de acesso.
-                    Os dados estão disponíveis para exportação e fiscalização a qualquer momento.
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
       </Tabs>
     </div>
   );
