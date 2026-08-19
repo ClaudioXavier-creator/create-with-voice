@@ -20,7 +20,9 @@ import {
   FileCheck,
   Printer,
   FileSearch,
-  ArrowRight
+  ArrowRight,
+  CalendarDays,
+  RefreshCcw
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -283,10 +285,20 @@ export default function PlanilhasPop() {
               <CardDescription className="text-base space-y-2">
                 <p>Gestão integrada de documentos e registros conforme IN 04/2007.</p>
                 {selectedPop.descricao && (
-                  <div className="mt-3 p-4 bg-primary/10 rounded-lg border border-primary/20 text-foreground text-sm leading-relaxed italic">
+                  <div className="mt-3 p-4 bg-primary/10 rounded-lg border border-primary/20 text-foreground text-sm leading-relaxed italic relative">
                     <div className="flex items-start gap-2">
                       <Info className="w-4 h-4 mt-0.5 text-primary shrink-0" />
-                      <span>{selectedPop.descricao}</span>
+                      <div className="space-y-2">
+                        <span>{selectedPop.descricao}</span>
+                        <div className="flex flex-wrap gap-2 mt-2 pt-2 border-t border-primary/10">
+                          <Badge variant="secondary" className="bg-amber-100 text-amber-800 border-amber-200 text-[10px] py-0">
+                            <CalendarDays className="w-3 h-3 mr-1" /> Vencimento: 1 Ano
+                          </Badge>
+                          <Badge variant="secondary" className="bg-blue-100 text-blue-800 border-blue-200 text-[10px] py-0">
+                            <RefreshCcw className="w-3 h-3 mr-1" /> Revisão Anual Obrigatória
+                          </Badge>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 )}
