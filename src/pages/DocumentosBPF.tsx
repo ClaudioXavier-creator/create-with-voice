@@ -288,10 +288,21 @@ export default function DocumentosBPF() {
         </TabsContent>
 
         <TabsContent value="arquivo" className="space-y-6">
+          <div className="flex justify-between items-center bg-muted/30 p-4 rounded-lg border border-border/50">
+            <div className="flex items-center gap-2">
+              <Archive className="w-5 h-5 text-emerald-600" />
+              <div>
+                <h3 className="text-sm font-semibold">Gestão de Backup Local</h3>
+                <p className="text-[11px] text-muted-foreground">Exporte seu acervo para armazenamento externo de segurança.</p>
+              </div>
+            </div>
+            <Button asChild variant="outline" size="sm" className="gap-2">
+              <Link to="/feedbpf-custom/config">
+                <Download className="w-4 h-4" /> Configurar Backup
+              </Link>
+            </Button>
+          </div>
 
-
-      {/* Filters + Upload */}
-      <div className="flex flex-wrap items-end gap-3">
         <div className="space-y-1">
           <Label className="text-xs">Tipo</Label>
           <Select value={filtroTipo} onValueChange={setFiltroTipo}>
