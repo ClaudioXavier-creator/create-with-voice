@@ -4,7 +4,8 @@
 // 3. Central de Alertas no Dashboard Principal configurada para monitorar conformidade em tempo real.
 
 // Próximos passos sugeridos:
-// - Implementar notificações via WhatsApp/Email para alertas de vencimento com 30 dias de antecedência.
-// - Adicionar filtro de conformidade na Sala do Auditor para exibir apenas documentos dentro do prazo de validade.
+// - Implementar as notificações automáticas via Edge Function para os alertas de 30 dias.
+// - Criar a lógica de filtragem na "Sala do Auditor" baseada no status de validade dos documentos.
+
 
 
