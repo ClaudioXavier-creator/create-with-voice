@@ -1,5 +1,5 @@
 import { DOCUMENTOS_ATIVACAO_CHECKLIST } from "@/config/documentosAtivacaoChecklist";
-import manualBpfDocAsset from "@/assets/modelos/MODELO MANUAL BPF.docx.asset.json";
+import manualBpfDocAsset from "@/assets/modelos/manual_bpf.docx.asset.json";
 
 export interface ManualBpfSection {
   id: string;
