@@ -21,7 +21,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import PageHeader from "@/components/PageHeader";
 import { POPS_CUSTOM } from "@/config/feedBpfCustomConfig";
 import { MODELOS_ASSETS } from "@/config/modelosAssetsMapping";
-import { getItsPorPop } from "@/config/documentosCentral";
+import { getItsPorPop, POP_TO_MODULOS } from "@/config/documentosCentral";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
@@ -36,6 +36,13 @@ export default function PlanilhasPop() {
   );
 
   const relatedIts = getItsPorPop(selectedPop.codigo);
+  
+  // No documentosCentral.ts temos o mapeamento para nomes de rotas amigáveis
+  const moduloAtivoPath = (() => {
+    const modulos = POP_TO_MODULOS[selectedPop.codigo];
+    if (!modulos || modulos.length === 0) return null;
+    return `/${modulos[0]}`;
+  })();
 
   return (
     <div className="space-y-6">
@@ -90,7 +97,7 @@ export default function PlanilhasPop() {
                 <Badge variant="outline" className="text-primary font-mono border-primary/30">
                   {selectedPop.codigo}
                 </Badge>
-                {selectedPop.moduloAtivo && (
+                {moduloAtivoPath && (
                   <Badge className="bg-emerald-500/15 text-emerald-700 hover:bg-emerald-500/20 border-emerald-200">
                     <CheckCircle2 className="w-3 h-3 mr-1" /> Módulo Ativo
                   </Badge>
@@ -138,10 +145,10 @@ export default function PlanilhasPop() {
                   </h3>
                   <div className="space-y-2">
                     {/* Link para o Módulo Integrado */}
-                    {selectedPop.moduloAtivo && (
+                    {moduloAtivoPath && (
                       <Button 
                         className="w-full justify-start text-left h-auto py-3 bg-emerald-600 hover:bg-emerald-700"
-                        onClick={() => navigate(selectedPop.moduloAtivo!)}
+                        onClick={() => navigate(moduloAtivoPath)}
                       >
                         <ExternalLink className="w-4 h-4 mr-3" />
                         <div className="flex flex-col">
@@ -163,6 +170,7 @@ export default function PlanilhasPop() {
                         <span className="text-[11px] text-muted-foreground font-normal">Preencher formulário digital personalizado</span>
                       </div>
                     </Button>
+
 
                     {/* Planilhas Excel Originais */}
                     {MODELOS_ASSETS[selectedPop.codigo]?.filter(m => m.label.toLowerCase().includes("planilha")).map((doc, idx) => (
