@@ -208,9 +208,20 @@ export default function Modelos() {
     // 1. Tentar baixar do mapeamento de assets (arquivos físicos importados)
     const assetGroup = MODELOS_ASSETS[modelo.arquivo];
     if (assetGroup && assetGroup.length > 0) {
-      window.open(assetGroup[0].url, "_blank");
-      toast.success(`${modelo.nome} — Download iniciado!`);
-      return;
+      // Se for um item da categoria "original", procuramos pelo label exato
+      if (modelo.categoria === "original") {
+        const specificAsset = assetGroup.find(a => a.label === modelo.nome);
+        if (specificAsset) {
+          window.open(specificAsset.url, "_blank");
+          toast.success(`${modelo.nome} — Download iniciado!`);
+          return;
+        }
+      } else {
+        // Fallback para o primeiro item do grupo se não for categoria "original"
+        window.open(assetGroup[0].url, "_blank");
+        toast.success(`${modelo.nome} — Download iniciado!`);
+        return;
+      }
     }
 
     // 2. Fallback para geradores de template Excel dinâmicos
@@ -224,8 +235,8 @@ export default function Modelos() {
   };
 
   const handlePreview = (modelo: ModeloDoc) => {
-    // Se for um asset físico (Word/PDF), não temos preview interativo ainda
-    if (MODELOS_ASSETS[modelo.arquivo]) {
+    // Se for um asset físico (Word/PDF/Excel do Zip), abrimos direto ou baixamos
+    if (modelo.categoria === "original" || MODELOS_ASSETS[modelo.arquivo]) {
       handleDownload(modelo);
       return;
     }
