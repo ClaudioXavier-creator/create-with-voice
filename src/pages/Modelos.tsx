@@ -133,6 +133,8 @@ const categoriaIcons: Record<string, React.ElementType> = {
   auditoria: Shield,
   produto: FlaskConical,
   instrucao: ClipboardList,
+  configuracao: Wrench,
+  original: Download,
 };
 
 const categoriaLabels: Record<string, string> = {
