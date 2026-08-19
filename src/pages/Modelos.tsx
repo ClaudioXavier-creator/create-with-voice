@@ -561,13 +561,36 @@ export default function Modelos() {
               </CardHeader>
               <CardContent>
                 <p className="text-xs text-muted-foreground mb-3 h-8 line-clamp-2">{modelo.descricao}</p>
-                <div className="flex gap-2">
-                  <Button size="sm" variant="outline" className="flex-1" onClick={() => handlePreview(modelo)}>
-                    <Eye className="w-4 h-4 mr-1" /> Ver/Imprimir
-                  </Button>
-                  <Button size="sm" variant="default" className="flex-1" onClick={() => handleDownload(modelo)}>
-                    <Download className="w-4 h-4 mr-1" /> Excel
-                  </Button>
+                <div className="flex flex-col gap-2">
+                  <div className="flex gap-2">
+                    <Button size="sm" variant="outline" className="flex-1" onClick={() => handlePreview(modelo)}>
+                      <Eye className="w-4 h-4 mr-1" /> Ver/Imprimir
+                    </Button>
+                    <Button size="sm" variant="default" className="flex-1" onClick={() => handleDownload(modelo)}>
+                      <Download className="w-4 h-4 mr-1" /> Excel
+                    </Button>
+                  </div>
+                  
+                  {(modelo as any).digitalRoute && (
+                    <Button asChild size="sm" className="w-full bg-emerald-600 hover:bg-emerald-700">
+                      <Link to={(modelo as any).digitalRoute}>
+                        <FileSignature className="w-4 h-4 mr-1" /> Registro Digital
+                      </Link>
+                    </Button>
+                  )}
+                  
+                  {modelo.categoria === "instrucao" && (
+                    <Button 
+                      size="sm" 
+                      variant="secondary" 
+                      className="w-full"
+                      asChild
+                    >
+                      <Link to={`/execucao-pops?pop=${modelo.arquivo.split("-")[1]}`}>
+                        <Eye className="w-4 h-4 mr-1" /> Ver IT Detalhada
+                      </Link>
+                    </Button>
+                  )}
                 </div>
               </CardContent>
             </Card>
