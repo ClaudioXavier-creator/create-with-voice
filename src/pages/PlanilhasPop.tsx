@@ -46,6 +46,8 @@ export default function PlanilhasPop() {
   const { empresaAtiva, recarregar } = useEmpresa();
   const { tier } = useLicense();
   const [isUpdating, setIsUpdating] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [adendos, setAdendos] = useState("");
   const [historico, setHistorico] = useState<any[]>([]);
 
   const configModos = empresaAtiva?.config_modos_preenchimento || {};
@@ -106,7 +108,36 @@ export default function PlanilhasPop() {
     }
   };
 
+  const handleGerarPop = async () => {
+    if (!empresaAtiva || isGenerating) return;
+
+    setIsGenerating(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("gerar-pop-ia", {
+        body: { 
+          codigo_pop: selectedPop.codigo, 
+          nome_pop: selectedPop.nome,
+          observacoes: adendos,
+          especies: empresaAtiva.tipo_producao?.join(", "),
+          capacidade: empresaAtiva.capacidade
+        }
+      });
+
+      if (error) throw error;
+
+      toast.success("Rascunho do POP gerado com sucesso pela IA!");
+      console.log("POP Gerado:", data);
+      // Aqui poderíamos abrir um modal com o resultado ou salvar diretamente
+    } catch (err: any) {
+      console.error("Erro na geração:", err);
+      toast.error("Erro ao gerar rascunho: " + (err.message || "Tente novamente mais tarde."));
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
   const filteredPops = POPS_CUSTOM.filter(pop => 
+
     pop.nome.toLowerCase().includes(searchTerm.toLowerCase()) || 
     pop.codigo.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -219,6 +250,8 @@ export default function PlanilhasPop() {
                         </Label>
                         <Textarea 
                           id="adendos"
+                          value={adendos}
+                          onChange={(e) => setAdendos(e.target.value)}
                           placeholder="Descreva aqui particularidades da sua fábrica, equipamentos específicos, fluxos diferenciados ou exigências locais que a IA deve considerar no texto..."
                           className="min-h-[120px] bg-white"
                         />
@@ -226,9 +259,13 @@ export default function PlanilhasPop() {
                           Dica: A geração de IA também deve dar opção para gerar com adendos do cliente / RT, pois pode ter especificidades que não contempla nos modelos versionados.
                         </p>
                       </div>
-                      <Button className="w-full bg-emerald-600 hover:bg-emerald-700" disabled>
-                        <Sparkles className="w-4 h-4 mr-2" />
-                        Gerar Rascunho do {selectedPop.codigo} com IA
+                      <Button 
+                        className="w-full bg-emerald-600 hover:bg-emerald-700" 
+                        onClick={handleGerarPop}
+                        disabled={isGenerating}
+                      >
+                        <Sparkles className={`w-4 h-4 mr-2 ${isGenerating ? "animate-spin" : ""}`} />
+                        {isGenerating ? "Gerando Rascunho..." : `Gerar Rascunho do ${selectedPop.codigo} com IA`}
                       </Button>
                       <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg flex gap-3 text-amber-800 text-xs">
                         <Info className="w-4 h-4 shrink-0" />
