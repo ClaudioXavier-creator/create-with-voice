@@ -105,7 +105,7 @@ export default function MeusModelos() {
           onClick={async () => {
             const res = await importarTemplateManualBPF(empresaId, user!.id);
             if (res.success) {
-              toast.success("Template de Manual BPF importado com sucesso!");
+              toast.success("Manual e ITs importados com sucesso!");
               carregar();
             } else {
               toast.error("Erro ao importar template.");
