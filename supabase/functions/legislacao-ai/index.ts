@@ -62,10 +62,23 @@ serve(async (req) => {
 
     let parsed;
     try {
-      const cleaned = content.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
+      // Limpeza mais robusta de blocos de código markdown
+      const cleaned = content.replace(/```json\n?|```\n?/g, "").trim();
       parsed = JSON.parse(cleaned);
-    } catch {
-      parsed = { raw: content };
+      
+      // Normalização para garantir que alertas seja um array
+      if (action === "buscar_atualizacoes" && !Array.isArray(parsed.alertas)) {
+        parsed.alertas = [];
+      }
+      if (action === "pesquisar_legislacao" && !Array.isArray(parsed.resultados)) {
+        parsed.resultados = [];
+      }
+    } catch (parseError) {
+      console.error("Erro ao parsear JSON da IA:", parseError, content);
+      // Fallback para evitar erro de crash no frontend
+      if (action === "buscar_atualizacoes") parsed = { alertas: [], resumo_geral: "Erro ao processar resposta da IA." };
+      else if (action === "pesquisar_legislacao") parsed = { resultados: [], resumo_pesquisa: "Erro ao processar resultados." };
+      else parsed = { error: "Formato de resposta inválido" };
     }
 
     return new Response(JSON.stringify({ success: true, data: parsed }), {
