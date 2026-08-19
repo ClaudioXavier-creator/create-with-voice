@@ -6,15 +6,15 @@ import {
   CheckCircle2, 
   Download, 
   Search, 
-  FileSignature,
-  FileBadge,
-  AlertTriangle,
-  Info,
-  ExternalLink,
-  BookOpen,
-  Settings2,
-  Lock,
-  History
+  FileSignature, 
+  FileBadge, 
+  AlertTriangle, 
+  Info, 
+  ExternalLink, 
+  BookOpen, 
+  Settings2, 
+  Lock, 
+  History 
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -32,6 +32,7 @@ import { useNavigate } from "react-router-dom";
 import { useEmpresa } from "@/hooks/useEmpresa";
 import { useLicense } from "@/hooks/useLicense";
 import { POP_PESOS, LIMITE_PONTOS_INTERMEDIARIO, calcularTotalPontos } from "@/config/popsPesos";
+import { TIER_LABEL } from "@/config/tiers";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
