@@ -397,7 +397,7 @@ export default function Modelos() {
             size="sm"
             onClick={() => setFiltro(cat)}
           >
-            {cat === "todos" ? `Todos (${MODELOS.length})` : categoriaLabels[cat]}
+            {cat === "todos" ? `Todos (${todosModelos.length})` : categoriaLabels[cat]}
           </Button>
         ))}
       </div>
