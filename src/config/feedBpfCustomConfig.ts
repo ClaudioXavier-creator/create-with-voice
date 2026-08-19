@@ -6,13 +6,13 @@ export const POPS_CUSTOM = [
   },
   { 
     codigo: "POP-02", 
-    nome: "Higiene, Sanitização e Transporte",
-    descricao: "Controle de limpeza de instalações e equipamentos, sanitização de áreas críticas e inspeção de veículos de transporte."
+    nome: "Limpeza de Instalações, Equipamentos e Utensílios",
+    descricao: "Controle de limpeza de instalações e equipamentos, sanitização de áreas críticas e cronogramas de higienização conforme IN 04/2007 e IN 15/2009."
   },
   { 
     codigo: "POP-03", 
-    nome: "Saúde dos Manipuladores",
-    descricao: "Gestão da saúde ocupacional, exames médicos (ASO), higiene pessoal e conduta dos colaboradores e visitantes dentro das áreas produtivas."
+    nome: "Higiene e Saúde Pessoal",
+    descricao: "Gestão da saúde ocupacional, exames médicos (ASO), higiene pessoal, capacitação e comportamento nas áreas de produção conforme IN 04/2007."
   },
   { 
     codigo: "POP-04", 
@@ -42,7 +42,7 @@ export const POPS_CUSTOM = [
   { 
     codigo: "POP-09", 
     nome: "Rastreabilidade e Recolhimento (Recall)",
-    descricao: "Procedimentos de rastreabilidade de produtos, controle de não conformidades e programa de recolhimento (recall) conforme IN 04/2007."
+    descricao: "Procedimentos de rastreabilidade de produtos, controle de não conformidades, expedição e programa de recolhimento (recall) conforme IN 04/2007."
   },
   { 
     codigo: "POP-10", 
