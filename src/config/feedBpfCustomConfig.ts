@@ -7,7 +7,7 @@ export const POPS_CUSTOM = [
   { 
     codigo: "POP-02", 
     nome: "Limpeza de Instalações, Equipamentos e Utensílios",
-    descricao: "Controle de limpeza de instalações e equipamentos, sanitização de áreas críticas e cronogramas de higienização conforme IN 04/2007 e IN 15/2009."
+    descricao: "Controle de limpeza de instalações e equipamentos, sanitização de áreas críticas e cronogramas de higienização conforme IN 04/2007 e IN 15/2009 (Nota: A higiene humana reside no POP 03)."
   },
   { 
     codigo: "POP-03", 
