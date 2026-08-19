@@ -14,6 +14,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useEmpresa } from "@/hooks/useEmpresa";
 import { POPS_CONFIG, type PopConfig, type PopPeriodicidade } from "@/config/popsConfig";
+import { MODELOS_ASSETS } from "@/config/modelosAssetsMapping";
 import PopPlanilhaForm from "@/components/pop/PopPlanilhaForm";
 import { TEMPLATE_GENERATORS, exportPopDataToExcel } from "@/utils/excelTemplates";
 import { markPopVisited } from "@/components/OnboardingChecklist";
@@ -311,6 +312,38 @@ export default function PlanilhasPop() {
           </CardContent>
         </Card>
       )}
+
+      {/* Novos Modelos de Planilhas Vinculados do Zip */}
+      {MODELOS_ASSETS[selectedPop.codigo] && (
+        <Card className="mb-6 border-emerald-400 bg-emerald-50">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm flex items-center gap-2">
+              <FileSpreadsheet className="w-4 h-4 text-emerald-600" />
+              Modelos Oficiais de Referência (Arquivos Originais)
+            </CardTitle>
+            <CardDescription className="text-xs">
+              Estes são os modelos de planilhas Excel/Word originais configurados para este POP.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+              {MODELOS_ASSETS[selectedPop.codigo].map((m) => (
+                <Button
+                  key={m.url}
+                  variant="outline"
+                  size="sm"
+                  className="justify-start h-auto py-2 text-left border-emerald-200 hover:bg-emerald-100"
+                  onClick={() => window.open(m.url, "_blank")}
+                >
+                  <Download className="w-3.5 h-3.5 mr-2 shrink-0 text-emerald-600" />
+                  <span className="flex flex-col items-start">
+                    <span className="font-medium text-xs text-emerald-800">{m.label}</span>
+                    <span className="text-[10px] text-muted-foreground font-normal">Clique para baixar o modelo original</span>
+                  </span>
+                </Button>
+              ))}
+            </div>
+          </CardContent>
       {selectedPop.periodicidades.length === 0 && (
         <Card className="border-dashed">
           <CardContent className="py-8 text-center">
