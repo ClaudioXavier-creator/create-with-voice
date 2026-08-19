@@ -132,7 +132,7 @@ export function gerarPL_POP_3() {
   const wb = XLSX.utils.book_new();
 
   const higiene = [
-    ["PLANILHA 3.1 — CHECKLIST DE HIGIENE PESSOAL"],
+    ["PLANILHA 3.1 — HIGIENE E SAÚDE PESSOAL (TREINAMENTOS)"],
     ["Empresa:", "", "", "Mês/Ano:", ""],
     [""],
     ["Data", "Colaborador", "Uniforme Limpo", "Sem Adornos", "Unhas Cortadas", "Barba Feita", "Mãos Lavadas", "EPI Completo", "Sem Sintomas", "Conforme", "Verificado por", "Obs."],
@@ -151,7 +151,7 @@ export function gerarPL_POP_3() {
   const ws = createSheet(higiene, [10, 18, 12, 12, 12, 10, 12, 12, 12, 10, 14, 18]);
   XLSX.utils.book_append_sheet(wb, ws, "3.1 Higiene Pessoal");
 
-  downloadWorkbook(wb, "PL_POP_3_Higiene_Pessoal");
+  downloadWorkbook(wb, "PL_POP_3_Higiene_Saude_Pessoal");
 }
 
 // ─── POP 4: Água ───
