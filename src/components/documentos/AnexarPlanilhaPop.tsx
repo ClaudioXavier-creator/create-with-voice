@@ -142,6 +142,7 @@ export function AnexarPlanilhaPop({
         data_ref: dataRef,
         it_codigo: itCodigo || null,
         frequencia: frequencia || null,
+        versao: versao,
         nome_padronizado: arquivoFinal.replace(/\.[^.]+$/, ""),
       } as any);
       if (error) {
