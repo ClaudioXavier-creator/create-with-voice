@@ -1,5 +1,7 @@
 // Título: [Qualidade & Compliance] Homologação de NCs via PCC, Régua de Alertas D-30 e Auditoria (Dec. 12.031/2024)
 //
+// Observação: não fazer Ia validação dos disparos de NC automática, não vejo necessidade disto.
+//
 // Escopo de Execução:
 //
 // Automação de NCs: Alinhar com o RT os critérios de severidade, responsabilidades e gatilhos de abertura automática de NC ao registrar desvios em PCCs.
