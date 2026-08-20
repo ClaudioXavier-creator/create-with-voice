@@ -472,7 +472,7 @@ export default function Expedicao() {
   const handleDelete = async (id: string) => {
     if (!confirm("Excluir esta expedição?")) return;
     const { error } = await supabase.from("expedicoes" as any).delete().eq("id", id);
-    if (error) toast.error(error.message);
+    if (error) toast.error(mensagemErroRegistro(error, "Erro ao excluir expedição"));
     else { toast.success("Excluída"); fetchData(); }
   };
 
