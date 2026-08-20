@@ -501,6 +501,7 @@ export default function Producao() {
                   <TableHead>Operador</TableHead>
                   <TableHead>Tempo Mistura</TableHead>
                   <TableHead>Quantidade</TableHead>
+                  <TableHead className="text-right">Ações</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -518,6 +519,14 @@ export default function Producao() {
                       ) : "—"}
                     </TableCell>
                     <TableCell>{p.quantidade || "—"}</TableCell>
+                    <TableCell className="text-right whitespace-nowrap">
+                      <Button size="sm" variant="ghost" onClick={() => abrirEdicao(p)} title="Editar registro">
+                        <Pencil className="w-4 h-4" />
+                      </Button>
+                      <Button size="sm" variant="ghost" onClick={() => handleDelete(p)} disabled={deletingId === p.id} title="Excluir registro">
+                        {deletingId === p.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4 text-destructive" />}
+                      </Button>
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
