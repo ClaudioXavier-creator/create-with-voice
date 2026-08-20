@@ -1,24 +1,37 @@
-// Título: [Qualidade & Compliance] Homologação de NCs via PCC, Régua de Alertas D-30 e Auditoria (Dec. 12.031/2024)
+// MISSÃO: Atue como auditor técnico no Feed_BPF (/opt/feed-bpf, branch main, já com a
+// feature de conformidade MAPA mergeada). NÃO implemente nada nesta etapa —
+// produza um relatório de prontidão para homologação com o RT.
 //
-// Observação: não fazer Ia validação dos disparos de NC automática, não vejo necessidade disto.
+// Contexto regulatório: Decreto 12.031/2024.
 //
-// Escopo de Execução:
+// ESCOPO REDUZIDO — atenção:
+// A lógica de disparo de NC automática já está definida e aceita como está,
+// diretamente no banco/código. NÃO analise, NÃO sugira mudanças, NÃO questione
+// os critérios de severidade ou gatilhos de NC — isso está fora de escopo e
+// foi decisão deliberada. Qualquer comentário sobre esse tópico deve ser
+// ignorado nesta tarefa.
 //
-// Automação de NCs: Alinhar com o RT os critérios de severidade, responsabilidades e gatilhos de abertura automática de NC ao registrar desvios em PCCs.
+// Audite e relate, com evidência de código (arquivo + trecho), apenas os 2 pontos abaixo:
 //
-// Validação em Campo: Homologar com a equipe técnica se o aviso prévio de 30 dias para revisões anuais atende à rotina operacional.
+// 1. RÉGUA DE ALERTA D-30
+//    - Confirme que o alerta de 30 dias antes do vencimento está implementado
+//      exatamente como D-30 (não D-15, D-7, etc.) e onde isso está configurado
+//      no código (constante, coluna de banco, ou hardcoded).
+//    - Estime o volume: rodando hoje contra os dados reais de produção
+//      (read-only, sem disparar nada), quantos alertas D-30 seriam gerados essa
+//      semana? Isso ajuda a avaliar "ruído operacional" antes de perguntar ao campo.
 //
-// Trilha de Auditoria: Monitorar e verificar se os logs registram adequadamente autoria, data/hora e alterações para fins fiscalizatórios.
+// 2. TRILHA DE AUDITORIA
+//    - Verifique se cada ação relevante (criação de NC automática, alerta
+//      disparado, restauração de backup) grava: autor (usuário ou "sistema"),
+//      data/hora, e o que mudou.
+//    - Se NÃO houver log estruturado para alguma dessas ações, aponte
+//      explicitamente — é um requisito do Decreto 12.031/2024 para fins
+//      fiscalizatórios, e a ausência bloqueia a homologação.
 //
-// Critérios de Aceite:
-//
-// [ ] Fluxo de disparo de NC automática aprovado formalmente pelo RT.
-//
-// [ ] Régua de alerta D-30 validada sem gerar ruído operacional para o campo.
-//
-// [ ] Relatório/logs de auditoria validados conforme os parâmetros regulatórios do Decreto 12.031/2024.
-// Estender a trava a Produção e Monitoramento de PCC caso queira status de assinatura nelas
-// Botão "Abrir NC a partir deste registro" para correções pós-assinatura
+// Entregue como relatório único, com uma seção final "Pronto para homologação"
+// ou "Bloqueadores encontrados" por item. Não corrija nada automaticamente —
+// se achar lacuna, apenas relate, para eu decidir com o RT.
 // Load the security issues from the scan results and fix the selected issues.
 // Segurança: Aplicada correção para SECURITY DEFINER (search_path e revogação de EXECUTE público).
 // Auditoria: Reduzidas vulnerabilidades de 44 para 16 (restantes são necessárias para a lógica do app).
