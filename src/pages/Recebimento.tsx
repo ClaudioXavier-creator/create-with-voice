@@ -578,12 +578,20 @@ export default function Recebimento() {
                       Liberar
                     </Button>
                   )}
-                  <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => abrirEdicao(item)} title="Editar registro">
-                    <Pencil className="h-4 w-4" />
-                  </Button>
-                  <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => setExcluirId(item.id)} title="Excluir registro">
-                    <Trash2 className="h-4 w-4 text-destructive" />
-                  </Button>
+                  {registroBloqueado(item) ? (
+                    <Badge variant="outline" className="gap-1 text-[10px] text-muted-foreground">
+                      <Lock className="h-3 w-3" /> Assinado — imutável
+                    </Badge>
+                  ) : (
+                    <>
+                      <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => abrirEdicao(item)} title="Editar registro">
+                        <Pencil className="h-4 w-4" />
+                      </Button>
+                      <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => setExcluirId(item.id)} title="Excluir registro">
+                        <Trash2 className="h-4 w-4 text-destructive" />
+                      </Button>
+                    </>
+                  )}
                 </div>
               </TableCell>
             </TableRow>
