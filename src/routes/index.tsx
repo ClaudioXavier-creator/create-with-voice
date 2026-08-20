@@ -1,4 +1,4 @@
-// Implementar auto-save nos formulários para evitar perda de dados ao navegar entre páginas.
+// faça, plano aprovado
 /**
  * Relatório de Atividades: Feed_BPF & Custom (Ontem e Hoje)
  * 
