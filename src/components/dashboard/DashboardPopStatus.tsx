@@ -19,9 +19,10 @@ const POPS_CONFIG: Record<string, { label: string; freq: number }> = {
 
 interface DashboardPopStatusProps {
   execucoes: any[];
+  documentos: any[];
 }
 
-export function DashboardPopStatus({ execucoes }: DashboardPopStatusProps) {
+export function DashboardPopStatus({ execucoes, documentos }: DashboardPopStatusProps) {
   const hoje = new Date();
 
   const popStatus = Object.entries(POPS_CONFIG).map(([codigo, config]) => {
