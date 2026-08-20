@@ -27,6 +27,8 @@ export function DashboardPopStatus({ execucoes, documentos }: DashboardPopStatus
 
   const popStatus = Object.entries(POPS_CONFIG).map(([codigo, config]) => {
     const ultimaExec = execucoes.find(e => e.codigo_pop === codigo);
+    const docRelacionado = documentos.find(d => d.codigo === codigo);
+    
     let status = "pendente";
     let diasAtraso = 0;
     let dataUltima = "-";
@@ -44,12 +46,26 @@ export function DashboardPopStatus({ execucoes, documentos }: DashboardPopStatus
       }
     }
 
+    // Alerta de Revisão Anual (Documento)
+    let statusRevisao = "no_prazo";
+    let dataRevisao = null;
+    if (docRelacionado) {
+      dataRevisao = docRelacionado.proxima_revisao || docRelacionado.validade_revisao;
+      if (dataRevisao) {
+        const diasParaRevisao = differenceInDays(parseISO(dataRevisao), hoje);
+        if (diasParaRevisao < 0) statusRevisao = "vencido";
+        else if (diasParaRevisao <= 30) statusRevisao = "alerta";
+      }
+    }
+
     return {
       codigo,
       ...config,
       status,
       diasAtraso,
-      dataUltima
+      dataUltima,
+      statusRevisao,
+      dataRevisao
     };
   });
 
