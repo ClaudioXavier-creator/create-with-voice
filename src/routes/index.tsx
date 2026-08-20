@@ -1,6 +1,7 @@
 // faça, plano aprovado
 // Estender a trava a Produção e Monitoramento de PCC caso queira status de assinatura nelas
 // Botão "Abrir NC a partir deste registro" para correções pós-assinatura
+// Load the security issues from the scan results and fix the selected issues.
 /**
  * Relatório de Atividades: Feed_BPF & Custom (Ontem e Hoje)
  * 
