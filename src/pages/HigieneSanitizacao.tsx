@@ -679,7 +679,7 @@ export default function HigieneSanitizacao() {
     if (!user) return;
     if (!window.confirm("Excluir definitivamente este registro? A ação ficará na trilha de auditoria.")) return;
     const { error } = await (supabase.from(tabela as any) as any).delete().eq("id", id);
-    if (error) return toast.error("Erro ao excluir registro");
+    if (error) return toast.error(mensagemErroRegistro(error, "Erro ao excluir registro"));
     toast.success("Registro excluído");
     registrarAuditLog({
       userId: user.id,
