@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Factory, Plus, Loader2, AlertTriangle, Trash2, Download, Pencil, X } from "lucide-react";
+import { Factory, Plus, Loader2, AlertTriangle, Trash2, Download, Pencil, X, Lock as LockIcon } from "lucide-react";
 import { registrarAuditLog } from "@/utils/auditLog";
 import { gerarHashIntegridade, adicionarRodapeIntegridade } from "@/utils/integridade";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
