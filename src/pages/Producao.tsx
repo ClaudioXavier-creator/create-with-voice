@@ -520,12 +520,31 @@ export default function Producao() {
                     </TableCell>
                     <TableCell>{p.quantidade || "—"}</TableCell>
                     <TableCell className="text-right whitespace-nowrap">
-                      <Button size="sm" variant="ghost" onClick={() => abrirEdicao(p)} title="Editar registro">
-                        <Pencil className="w-4 h-4" />
-                      </Button>
-                      <Button size="sm" variant="ghost" onClick={() => handleDelete(p)} disabled={deletingId === p.id} title="Excluir registro">
-                        {deletingId === p.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4 text-destructive" />}
-                      </Button>
+                      {p.status === 'concluido' || p.status === 'assinado' ? (
+                        <div className="flex justify-end gap-1">
+                          <Badge variant="outline" className="h-7 px-2 border-amber-200 bg-amber-50 text-amber-700 text-[10px] gap-1">
+                            <LockIcon className="w-3 h-3" /> Assinado
+                          </Badge>
+                          <Button 
+                            size="sm" 
+                            variant="ghost" 
+                            className="h-7 w-7 p-0 text-primary" 
+                            onClick={() => navigate("/nao-conformidades")}
+                            title="Abrir NC corretiva"
+                          >
+                            <AlertTriangle className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      ) : (
+                        <div className="flex justify-end gap-1">
+                          <Button size="sm" variant="ghost" onClick={() => abrirEdicao(p)} title="Editar registro">
+                            <Pencil className="w-4 h-4" />
+                          </Button>
+                          <Button size="sm" variant="ghost" onClick={() => handleDelete(p)} disabled={deletingId === p.id} title="Excluir registro">
+                            {deletingId === p.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4 text-destructive" />}
+                          </Button>
+                        </div>
+                      )}
                     </TableCell>
                   </TableRow>
                 ))}
