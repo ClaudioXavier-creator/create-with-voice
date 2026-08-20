@@ -61,6 +61,69 @@ export default function Producao() {
   const [prodAnteriorMedicado, setProdAnteriorMedicado] = useState(false);
   const [obsFlush, setObsFlush] = useState("");
 
+  // --- Persistência de rascunho (sessionStorage) ---
+  const DRAFT_KEY = "draft_producao_form";
+
+  useEffect(() => {
+    try {
+      const raw = sessionStorage.getItem(DRAFT_KEY);
+      if (!raw) return;
+      const d = JSON.parse(raw);
+      setProduto(d.produto || ""); setLote(d.lote || ""); setOperador(d.operador || "");
+      setTempoMistura(d.tempoMistura || ""); setQuantidade(d.quantidade || "");
+      setHouveSobra(!!d.houveSobra); setQtdSobra(d.qtdSobra || ""); setDestinoSobra(d.destinoSobra || "reprocesso"); setObsSobra(d.obsSobra || "");
+      setRealizouFlush(!!d.realizouFlush); setTipoLimpeza(d.tipoLimpeza || "flush_inerte"); setVolumeFlush(d.volumeFlush || "");
+      setProdutoAnterior(d.produtoAnterior || ""); setProdAnteriorMedicado(!!d.prodAnteriorMedicado); setObsFlush(d.obsFlush || "");
+    } catch { /* rascunho inválido — ignora */ }
+  }, []);
+
+  useEffect(() => {
+    if (editId) return; // edições não sobrescrevem o rascunho de novo registro
+    try {
+      sessionStorage.setItem(DRAFT_KEY, JSON.stringify({
+        produto, lote, operador, tempoMistura, quantidade,
+        houveSobra, qtdSobra, destinoSobra, obsSobra,
+        realizouFlush, tipoLimpeza, volumeFlush, produtoAnterior, prodAnteriorMedicado, obsFlush,
+      }));
+    } catch { /* storage cheio — ignora */ }
+  }, [editId, produto, lote, operador, tempoMistura, quantidade, houveSobra, qtdSobra, destinoSobra, obsSobra, realizouFlush, tipoLimpeza, volumeFlush, produtoAnterior, prodAnteriorMedicado, obsFlush]);
+
+  const limparFormulario = () => {
+    setProduto(""); setLote(""); setOperador(""); setTempoMistura(""); setQuantidade("");
+    setHouveSobra(false); setQtdSobra(""); setDestinoSobra("reprocesso"); setObsSobra("");
+    setRealizouFlush(false); setTipoLimpeza("flush_inerte"); setVolumeFlush(""); setProdutoAnterior(""); setProdAnteriorMedicado(false); setObsFlush("");
+    sessionStorage.removeItem(DRAFT_KEY);
+  };
+
+  const abrirEdicao = (p: ProdRow) => {
+    setEditId(p.id);
+    setProduto(p.produto || "");
+    setLote(p.lote || "");
+    setOperador(p.operador || "");
+    setTempoMistura((p.tempo_mistura || "").replace(/[^\d.,]/g, "").replace(",", "."));
+    setQuantidade(p.quantidade || "");
+    setOpen(true);
+  };
+
+  const handleDelete = async (p: ProdRow) => {
+    if (!user) return;
+    if (!window.confirm(`Excluir definitivamente o registro do lote "${p.lote || p.produto}"?`)) return;
+    setDeletingId(p.id);
+    const { error } = await supabase.from("producao").delete().eq("id", p.id);
+    if (error) toast.error("Erro ao excluir registro");
+    else {
+      toast.success("Registro excluído");
+      registrarAuditLog({
+        userId: user.id, empresaId: empresaAtiva?.id, tabela: "producao",
+        registroId: p.id, acao: "excluir", dadosAnteriores: p as any,
+      });
+      fetchData();
+    }
+    setDeletingId(null);
+  };
+
+
+
   const fetchProdutos = async () => {
     try {
       let q = supabase.from("produtos").select("id, nome").eq("status", "ativo");
