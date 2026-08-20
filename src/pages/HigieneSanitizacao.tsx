@@ -1564,7 +1564,7 @@ export default function HigieneSanitizacao() {
               <Table>
                 <TableHeader><TableRow>
                   <TableHead>Data</TableHead><TableHead>Executor</TableHead><TableHead>Tipo Limpeza</TableHead><TableHead>Horário</TableHead>
-                  <TableHead>Conforme</TableHead><TableHead>Verificação</TableHead><TableHead>Observações</TableHead>
+                  <TableHead>Conforme</TableHead><TableHead>Verificação</TableHead><TableHead>Observações</TableHead><TableHead className="text-right">Ações</TableHead>
                 </TableRow></TableHeader>
 
                 <TableBody>
