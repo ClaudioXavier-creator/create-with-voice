@@ -88,7 +88,15 @@ export function DashboardPopStatus({ execucoes, documentos }: DashboardPopStatus
           {popStatus.map((pop) => (
             <div key={pop.codigo} className="flex items-center justify-between p-3 hover:bg-muted/30 transition-colors">
               <div className="flex flex-col">
-                <span className="text-[11px] font-bold text-foreground">{pop.codigo}</span>
+                <div className="flex items-center gap-2">
+                  <span className="text-[11px] font-bold text-foreground">{pop.codigo}</span>
+                  {pop.statusRevisao === "vencido" && (
+                    <Badge variant="destructive" className="h-3.5 px-1 text-[8px] animate-pulse">REV VENCIDA</Badge>
+                  )}
+                  {pop.statusRevisao === "alerta" && (
+                    <Badge variant="outline" className="h-3.5 px-1 text-[8px] border-amber-300 bg-amber-50 text-amber-700">REV 30D</Badge>
+                  )}
+                </div>
                 <span className="text-[10px] text-muted-foreground truncate w-32">{pop.label}</span>
               </div>
               
