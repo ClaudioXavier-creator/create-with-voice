@@ -27,7 +27,7 @@ interface ProdRow {
   operador: string | null;
   tempo_mistura: string | null;
   quantidade: string | null;
-  status: string | null;
+  status?: string | null;
 }
 
 const TEMPO_MISTURA_MINIMO = 3; // minutos — padrão IN 04/2007
@@ -35,6 +35,7 @@ const TEMPO_MISTURA_MINIMO = 3; // minutos — padrão IN 04/2007
 export default function Producao() {
   const { user } = useAuth();
   const { empresaAtiva } = useEmpresa();
+  const navigate = useNavigate();
   const [items, setItems] = useState<ProdRow[]>([]);
   const [produtosCadastrados, setProdutosCadastrados] = useState<{id: string, nome: string}[]>([]);
   const [loading, setLoading] = useState(true);
