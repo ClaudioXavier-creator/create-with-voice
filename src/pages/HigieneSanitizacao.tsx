@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useEmpresa } from "@/hooks/useEmpresa";
+import { registrarAuditLog } from "@/utils/auditLog";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -1674,7 +1675,7 @@ export default function HigieneSanitizacao() {
                         <Table>
                           <TableHeader><TableRow>
                             <TableHead>Data</TableHead><TableHead>Executor</TableHead><TableHead>Horário</TableHead>
-                            <TableHead>Conforme</TableHead><TableHead>Observações</TableHead>
+                            <TableHead>Conforme</TableHead><TableHead>Observações</TableHead><TableHead className="text-right">Ações</TableHead>
                           </TableRow></TableHeader>
                           <TableBody>
                             {registrosMes.map((r: any) => (
