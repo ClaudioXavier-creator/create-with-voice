@@ -1,18 +1,18 @@
-// Objetivo: Implementar melhorias funcionais no módulo de POPs e homologar o sistema de alertas de revisão anual.
+// Título: [POPs & Dashboard] Implementação de melhorias funcionais e validação de regras de revisão anual
 //
-// Escopo de Execução:
+// Escopo:
 //
-// Dar andamento aos itens de backlog previstos para as sprints de refinamento de POPs.
+// Iniciar o desenvolvimento das melhorias funcionais no módulo de POPs conforme os requisitos da sprint.
 //
-// Testar os fluxos de ponta a ponta dos alertas no dashboard (cálculo de periodicidade anual, alteração de status visual e disparo de avisos).
+// Revisar e homologar as regras de negócio e a lógica de cálculo por trás dos alertas de revisão anual exibidos no dashboard.
 //
 // Critérios de Aceite:
 //
-// [ ] Funcionalidades da sprint de POPs concluídas e integradas.
+// [ ] Código das novas melhorias funcionais de POPs implementado e testado.
 //
-// [ ] Alertas de revisão anual exibem status corretos (ex.: No prazo, Próximo ao vencimento, Vencido).
+// [ ] Algoritmo de cálculo de revisão anual validado com base na data da última aprovação/revisão.
 //
-// [ ] Notificações e filtros do dashboard operando sem inconsistências.
+// [ ] Painel do dashboard refletindo corretamente as faixas de alerta (ex.: 30 dias antes do vencimento, vencido).
 //
 // Antes de qualquer alteração, faça um reconhecimento completo deste projeto e me devolva um mapa: quais páginas e rotas existem, qual a stack e as bibliotecas usadas, se existe banco de dados e quais tabelas com seus campos, de onde vêm os dados que aparecem em cada tela, e qual o padrão visual adotado. Não altere nada agora. Apenas devolva esse mapa e confirme que está pronto para receber as próximas solicitações.
 // Estender a trava a Produção e Monitoramento de PCC caso queira status de assinatura nelas
