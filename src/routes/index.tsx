@@ -1,4 +1,4 @@
-// faça, plano aprovado
+// Antes de qualquer alteração, faça um reconhecimento completo deste projeto e me devolva um mapa: quais páginas e rotas existem, qual a stack e as bibliotecas usadas, se existe banco de dados e quais tabelas com seus campos, de onde vêm os dados que aparecem em cada tela, e qual o padrão visual adotado. Não altere nada agora. Apenas devolva esse mapa e confirme que está pronto para receber as próximas solicitações.
 // Estender a trava a Produção e Monitoramento de PCC caso queira status de assinatura nelas
 // Botão "Abrir NC a partir deste registro" para correções pós-assinatura
 // Load the security issues from the scan results and fix the selected issues.
