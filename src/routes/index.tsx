@@ -4,6 +4,8 @@
 // Load the security issues from the scan results and fix the selected issues.
 // Segurança: Aplicada correção para SECURITY DEFINER (search_path e revogação de EXECUTE público).
 // Auditoria: Reduzidas vulnerabilidades de 44 para 16 (restantes são necessárias para a lógica do app).
+// Prosseguir com a implementação de novas funcionalidades conforme o plano de sprints.
+// Iniciar o refinamento dos POPs via IA utilizando os adendos configurados.
 /**
  * Relatório de Atividades: Feed_BPF & Custom (Ontem e Hoje)
  * 
