@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Factory, Plus, Loader2, AlertTriangle, Trash2, Download } from "lucide-react";
+import { Factory, Plus, Loader2, AlertTriangle, Trash2, Download, Pencil, X } from "lucide-react";
 import { registrarAuditLog } from "@/utils/auditLog";
 import { gerarHashIntegridade, adicionarRodapeIntegridade } from "@/utils/integridade";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -38,6 +38,8 @@ export default function Producao() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [open, setOpen] = useState(false);
+  const [editId, setEditId] = useState<string | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const [produto, setProduto] = useState("");
   const [lote, setLote] = useState("");
@@ -58,6 +60,69 @@ export default function Producao() {
   const [produtoAnterior, setProdutoAnterior] = useState("");
   const [prodAnteriorMedicado, setProdAnteriorMedicado] = useState(false);
   const [obsFlush, setObsFlush] = useState("");
+
+  // --- Persistência de rascunho (sessionStorage) ---
+  const DRAFT_KEY = "draft_producao_form";
+
+  useEffect(() => {
+    try {
+      const raw = sessionStorage.getItem(DRAFT_KEY);
+      if (!raw) return;
+      const d = JSON.parse(raw);
+      setProduto(d.produto || ""); setLote(d.lote || ""); setOperador(d.operador || "");
+      setTempoMistura(d.tempoMistura || ""); setQuantidade(d.quantidade || "");
+      setHouveSobra(!!d.houveSobra); setQtdSobra(d.qtdSobra || ""); setDestinoSobra(d.destinoSobra || "reprocesso"); setObsSobra(d.obsSobra || "");
+      setRealizouFlush(!!d.realizouFlush); setTipoLimpeza(d.tipoLimpeza || "flush_inerte"); setVolumeFlush(d.volumeFlush || "");
+      setProdutoAnterior(d.produtoAnterior || ""); setProdAnteriorMedicado(!!d.prodAnteriorMedicado); setObsFlush(d.obsFlush || "");
+    } catch { /* rascunho inválido — ignora */ }
+  }, []);
+
+  useEffect(() => {
+    if (editId) return; // edições não sobrescrevem o rascunho de novo registro
+    try {
+      sessionStorage.setItem(DRAFT_KEY, JSON.stringify({
+        produto, lote, operador, tempoMistura, quantidade,
+        houveSobra, qtdSobra, destinoSobra, obsSobra,
+        realizouFlush, tipoLimpeza, volumeFlush, produtoAnterior, prodAnteriorMedicado, obsFlush,
+      }));
+    } catch { /* storage cheio — ignora */ }
+  }, [editId, produto, lote, operador, tempoMistura, quantidade, houveSobra, qtdSobra, destinoSobra, obsSobra, realizouFlush, tipoLimpeza, volumeFlush, produtoAnterior, prodAnteriorMedicado, obsFlush]);
+
+  const limparFormulario = () => {
+    setProduto(""); setLote(""); setOperador(""); setTempoMistura(""); setQuantidade("");
+    setHouveSobra(false); setQtdSobra(""); setDestinoSobra("reprocesso"); setObsSobra("");
+    setRealizouFlush(false); setTipoLimpeza("flush_inerte"); setVolumeFlush(""); setProdutoAnterior(""); setProdAnteriorMedicado(false); setObsFlush("");
+    sessionStorage.removeItem(DRAFT_KEY);
+  };
+
+  const abrirEdicao = (p: ProdRow) => {
+    setEditId(p.id);
+    setProduto(p.produto || "");
+    setLote(p.lote || "");
+    setOperador(p.operador || "");
+    setTempoMistura((p.tempo_mistura || "").replace(/[^\d.,]/g, "").replace(",", "."));
+    setQuantidade(p.quantidade || "");
+    setOpen(true);
+  };
+
+  const handleDelete = async (p: ProdRow) => {
+    if (!user) return;
+    if (!window.confirm(`Excluir definitivamente o registro do lote "${p.lote || p.produto}"?`)) return;
+    setDeletingId(p.id);
+    const { error } = await supabase.from("producao").delete().eq("id", p.id);
+    if (error) toast.error("Erro ao excluir registro");
+    else {
+      toast.success("Registro excluído");
+      registrarAuditLog({
+        userId: user.id, empresaId: empresaAtiva?.id, tabela: "producao",
+        registroId: p.id, acao: "excluir", dadosAnteriores: p as any,
+      });
+      fetchData();
+    }
+    setDeletingId(null);
+  };
+
+
 
   const fetchProdutos = async () => {
     try {
@@ -154,8 +219,7 @@ export default function Producao() {
       quantidadeFinal += ` | [CONTRAPROVA] ${cpQtd} em ${cpLocal}`;
     }
 
-    const { error } = await supabase.from("producao").insert({
-      user_id: user.id, empresa_id: empresaAtiva?.id || null,
+    const payload = {
       produto,
       lote,
       operador,
@@ -170,22 +234,30 @@ export default function Producao() {
       flush_tipo: realizouFlush ? tipoLimpeza : "",
       flush_volume: realizouFlush ? volumeFlush : "",
       flush_produto_anterior: realizouFlush ? produtoAnterior : "",
-    } as any);
-    if (error) toast.error("Erro ao salvar");
+    };
+
+    const { error } = editId
+      ? await (supabase.from("producao") as any).update(payload).eq("id", editId)
+      : await supabase.from("producao").insert({
+          user_id: user.id, empresa_id: empresaAtiva?.id || null, ...payload,
+        } as any);
+
+    if (error) toast.error(editId ? "Erro ao atualizar" : "Erro ao salvar");
     else {
-      toast.success("Registro salvo!");
+      toast.success(editId ? "Registro atualizado!" : "Registro salvo!");
       registrarAuditLog({
-        userId: user.id, tabela: "producao", acao: "criar",
+        userId: user.id, empresaId: empresaAtiva?.id, tabela: "producao",
+        registroId: editId || undefined, acao: editId ? "editar" : "criar",
         dadosNovos: { produto, lote, operador, flush_realizado: realizouFlush, flush_tipo: tipoLimpeza },
       });
       setOpen(false);
-      setProduto(""); setLote(""); setOperador(""); setTempoMistura(""); setQuantidade("");
-      setHouveSobra(false); setQtdSobra(""); setDestinoSobra("reprocesso"); setObsSobra("");
-      setRealizouFlush(false); setTipoLimpeza("flush_inerte"); setVolumeFlush(""); setProdutoAnterior(""); setProdAnteriorMedicado(false); setObsFlush("");
+      setEditId(null);
+      limparFormulario();
       fetchData();
     }
     setSaving(false);
   };
+
 
   const exportCSV = async () => {
     const headers = ["Data", "Produto", "Lote", "Operador", "Tempo Mistura", "Quantidade"];
@@ -232,12 +304,12 @@ export default function Producao() {
             <Button size="sm" variant="outline" onClick={exportCSV} disabled={items.length === 0}>
               <Download className="w-4 h-4 mr-1" /> CSV
             </Button>
-            <Dialog open={open} onOpenChange={setOpen}>
+            <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) setEditId(null); }}>
               <DialogTrigger asChild>
                 <Button size="sm"><Plus className="w-4 h-4 mr-1" /> Novo Registro</Button>
               </DialogTrigger>
               <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto">
-                <DialogHeader><DialogTitle>Novo Registro de Produção</DialogTitle></DialogHeader>
+                <DialogHeader><DialogTitle>{editId ? "Editar Registro de Produção" : "Novo Registro de Produção"}</DialogTitle></DialogHeader>
                 <div className="space-y-3">
                   <div>
                     <Label>Produto *</Label>
@@ -398,10 +470,17 @@ export default function Producao() {
                     </div>
                   </div>
 
-                  <Button onClick={handleAdd} className="w-full" disabled={saving || !produto}>
-                    {saving && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-                    Salvar
-                  </Button>
+                  <div className="flex gap-2">
+                    {editId && (
+                      <Button variant="outline" className="flex-1" onClick={() => { setOpen(false); setEditId(null); limparFormulario(); }}>
+                        <X className="w-4 h-4 mr-1" /> Cancelar
+                      </Button>
+                    )}
+                    <Button onClick={handleAdd} className="flex-1" disabled={saving || !produto}>
+                      {saving && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+                      {editId ? "Salvar alterações" : "Salvar"}
+                    </Button>
+                  </div>
                 </div>
               </DialogContent>
             </Dialog>
@@ -422,6 +501,7 @@ export default function Producao() {
                   <TableHead>Operador</TableHead>
                   <TableHead>Tempo Mistura</TableHead>
                   <TableHead>Quantidade</TableHead>
+                  <TableHead className="text-right">Ações</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -439,6 +519,14 @@ export default function Producao() {
                       ) : "—"}
                     </TableCell>
                     <TableCell>{p.quantidade || "—"}</TableCell>
+                    <TableCell className="text-right whitespace-nowrap">
+                      <Button size="sm" variant="ghost" onClick={() => abrirEdicao(p)} title="Editar registro">
+                        <Pencil className="w-4 h-4" />
+                      </Button>
+                      <Button size="sm" variant="ghost" onClick={() => handleDelete(p)} disabled={deletingId === p.id} title="Excluir registro">
+                        {deletingId === p.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4 text-destructive" />}
+                      </Button>
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
