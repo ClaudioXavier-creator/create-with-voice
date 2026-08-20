@@ -1,4 +1,4 @@
-// por favor artrumar os registros digitais, uma vez salvos não editam, ex.: salvamos um rebimento de materia prima, salvomos e não lliberamos, agora não tem como liberar, arruma um botão para fazer a liberação e edição, inclusive exclusão, que podem ter lançamento errado. Aproveite e olhe todos os registro de planulhas e dados inseridos da mesma forma. Outra coisa, e que ao preencher qualquer formulario, ao sair dele perde tudo que estava digitado, crie persistencia na edição.
+// já foram implementadas?
 /**
  * Relatório de Atividades: Feed_BPF & Custom (Ontem e Hoje)
  * 
