@@ -442,11 +442,11 @@ export default function Recebimento() {
             <div className="grid grid-cols-1 gap-4">
               <div className="space-y-2">
                 <Label>Upload da Nota Fiscal</Label>
-                <FileUploadComponent bucket="documentos_bpf" onUploadComplete={(url) => set("nfUrl", url)} label="Clique para subir a NF" />
+                <FileUploadComponent bucket="documentos-bpf" onUploadComplete={(url) => set("nfUrl", url)} label="Clique para subir a NF" />
               </div>
               <div className="space-y-2">
                 <Label>Upload do Laudo/Certificado</Label>
-                <FileUploadComponent bucket="documentos_bpf" onUploadComplete={(url) => set("certUrl", url)} label="Clique para subir o Laudo" />
+                <FileUploadComponent bucket="documentos-bpf" onUploadComplete={(url) => set("certUrl", url)} label="Clique para subir o Laudo" />
               </div>
             </div>
 
