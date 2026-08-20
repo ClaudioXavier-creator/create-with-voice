@@ -16,6 +16,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useEmpresa } from "@/hooks/useEmpresa";
 import { toast } from "sonner";
+import { mensagemErroRegistro } from "@/utils/registroImutavel";
 import { LoteProdutoPicker } from "@/components/expedicao/LoteProdutoPicker";
 import { MapaExpedicaoDigital } from "@/components/expedicao/MapaExpedicaoDigital";
 
