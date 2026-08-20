@@ -1,4 +1,4 @@
-// Implemente botões de edição e exclusão para os registros e garanta que as ações não lancem dados incorretos.
+// Implementar auto-save nos formulários para evitar perda de dados ao navegar entre páginas.
 /**
  * Relatório de Atividades: Feed_BPF & Custom (Ontem e Hoje)
  * 
