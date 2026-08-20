@@ -1,20 +1,20 @@
-// Título: [POPs & Dashboard] Implementação de melhorias funcionais e validação de regras de revisão anual
+// Título: [Qualidade & Compliance] Homologação de NCs via PCC, Régua de Alertas D-30 e Auditoria (Dec. 12.031/2024)
 //
-// Escopo:
+// Escopo de Execução:
 //
-// Iniciar o desenvolvimento das melhorias funcionais no módulo de POPs conforme os requisitos da sprint.
+// Automação de NCs: Alinhar com o RT os critérios de severidade, responsabilidades e gatilhos de abertura automática de NC ao registrar desvios em PCCs.
 //
-// Revisar e homologar as regras de negócio e a lógica de cálculo por trás dos alertas de revisão anual exibidos no dashboard.
+// Validação em Campo: Homologar com a equipe técnica se o aviso prévio de 30 dias para revisões anuais atende à rotina operacional.
+//
+// Trilha de Auditoria: Monitorar e verificar se os logs registram adequadamente autoria, data/hora e alterações para fins fiscalizatórios.
 //
 // Critérios de Aceite:
 //
-// [ ] Código das novas melhorias funcionais de POPs implementado e testado.
+// [ ] Fluxo de disparo de NC automática aprovado formalmente pelo RT.
 //
-// [ ] Algoritmo de cálculo de revisão anual validado com base na data da última aprovação/revisão.
+// [ ] Régua de alerta D-30 validada sem gerar ruído operacional para o campo.
 //
-// [ ] Painel do dashboard refletindo corretamente as faixas de alerta (ex.: 30 dias antes do vencimento, vencido).
-//
-// Antes de qualquer alteração, faça um reconhecimento completo deste projeto e me devolva um mapa: quais páginas e rotas existem, qual a stack e as bibliotecas usadas, se existe banco de dados e quais tabelas com seus campos, de onde vêm os dados que aparecem em cada tela, e qual o padrão visual adotado. Não altere nada agora. Apenas devolva esse mapa e confirme que está pronto para receber as próximas solicitações.
+// [ ] Relatório/logs de auditoria validados conforme os parâmetros regulatórios do Decreto 12.031/2024.
 // Estender a trava a Produção e Monitoramento de PCC caso queira status de assinatura nelas
 // Botão "Abrir NC a partir deste registro" para correções pós-assinatura
 // Load the security issues from the scan results and fix the selected issues.
