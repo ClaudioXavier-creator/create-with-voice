@@ -219,8 +219,7 @@ export default function Producao() {
       quantidadeFinal += ` | [CONTRAPROVA] ${cpQtd} em ${cpLocal}`;
     }
 
-    const { error } = await supabase.from("producao").insert({
-      user_id: user.id, empresa_id: empresaAtiva?.id || null,
+    const payload = {
       produto,
       lote,
       operador,
@@ -235,22 +234,30 @@ export default function Producao() {
       flush_tipo: realizouFlush ? tipoLimpeza : "",
       flush_volume: realizouFlush ? volumeFlush : "",
       flush_produto_anterior: realizouFlush ? produtoAnterior : "",
-    } as any);
-    if (error) toast.error("Erro ao salvar");
+    };
+
+    const { error } = editId
+      ? await (supabase.from("producao") as any).update(payload).eq("id", editId)
+      : await supabase.from("producao").insert({
+          user_id: user.id, empresa_id: empresaAtiva?.id || null, ...payload,
+        } as any);
+
+    if (error) toast.error(editId ? "Erro ao atualizar" : "Erro ao salvar");
     else {
-      toast.success("Registro salvo!");
+      toast.success(editId ? "Registro atualizado!" : "Registro salvo!");
       registrarAuditLog({
-        userId: user.id, tabela: "producao", acao: "criar",
+        userId: user.id, empresaId: empresaAtiva?.id, tabela: "producao",
+        registroId: editId || undefined, acao: editId ? "editar" : "criar",
         dadosNovos: { produto, lote, operador, flush_realizado: realizouFlush, flush_tipo: tipoLimpeza },
       });
       setOpen(false);
-      setProduto(""); setLote(""); setOperador(""); setTempoMistura(""); setQuantidade("");
-      setHouveSobra(false); setQtdSobra(""); setDestinoSobra("reprocesso"); setObsSobra("");
-      setRealizouFlush(false); setTipoLimpeza("flush_inerte"); setVolumeFlush(""); setProdutoAnterior(""); setProdAnteriorMedicado(false); setObsFlush("");
+      setEditId(null);
+      limparFormulario();
       fetchData();
     }
     setSaving(false);
   };
+
 
   const exportCSV = async () => {
     const headers = ["Data", "Produto", "Lote", "Operador", "Tempo Mistura", "Quantidade"];
