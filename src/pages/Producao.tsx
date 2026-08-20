@@ -38,6 +38,8 @@ export default function Producao() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [open, setOpen] = useState(false);
+  const [editId, setEditId] = useState<string | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const [produto, setProduto] = useState("");
   const [lote, setLote] = useState("");
