@@ -1,4 +1,4 @@
-// já foram implementadas?
+// Implemente botões de edição e exclusão para os registros e garanta que as ações não lancem dados incorretos.
 /**
  * Relatório de Atividades: Feed_BPF & Custom (Ontem e Hoje)
  * 
