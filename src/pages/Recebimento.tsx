@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Package, Plus, Loader2, FileText, AlertTriangle, ShieldAlert, FlaskConical, Printer, Camera, Pencil, Trash2, CheckCircle2 } from "lucide-react";
+import { Package, Plus, Loader2, FileText, AlertTriangle, ShieldAlert, FlaskConical, Printer, Camera, Pencil, Trash2, CheckCircle2, Lock as LockIcon } from "lucide-react";
 
 import FileUploadComponent from "@/components/FileUpload";
 import { registrarAuditLog } from "@/utils/auditLog";
@@ -155,7 +155,17 @@ export default function Recebimento() {
     setOpen(true);
   };
 
+  /**
+   * Registro liberado = assinado digitalmente (trilha de auditoria fechada).
+   * MAPA / Decreto 12.031/2024: registro concluído não pode ser alterado nem excluído.
+   */
+  const registroBloqueado = (item: RecebimentoRow) => item.status !== "bloqueado";
+
   const abrirEdicao = (item: RecebimentoRow) => {
+    if (registroBloqueado(item)) {
+      toast.error("Registro liberado/assinado não pode ser editado (exigência MAPA). Registre uma Não Conformidade para correções.");
+      return;
+    }
     setEditId(item.id);
     setForm({
       fornecedor: item.fornecedor || "",
@@ -260,6 +270,11 @@ export default function Recebimento() {
   const handleExcluir = async () => {
     if (!excluirId || !user) return;
     const anterior = items.find(i => i.id === excluirId);
+    if (anterior && registroBloqueado(anterior)) {
+      toast.error("Registro liberado/assinado não pode ser excluído (exigência MAPA).");
+      setExcluirId(null);
+      return;
+    }
     const { error } = await supabase.from("recebimento_mp").delete().eq("id", excluirId);
     if (error) {
       toast.error("Erro ao excluir: " + error.message);
@@ -563,12 +578,20 @@ export default function Recebimento() {
                       Liberar
                     </Button>
                   )}
-                  <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => abrirEdicao(item)} title="Editar registro">
-                    <Pencil className="h-4 w-4" />
-                  </Button>
-                  <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => setExcluirId(item.id)} title="Excluir registro">
-                    <Trash2 className="h-4 w-4 text-destructive" />
-                  </Button>
+                  {registroBloqueado(item) ? (
+                    <Badge variant="outline" className="gap-1 text-[10px] text-muted-foreground">
+                      <LockIcon className="h-3 w-3" /> Assinado — imutável
+                    </Badge>
+                  ) : (
+                    <>
+                      <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => abrirEdicao(item)} title="Editar registro">
+                        <Pencil className="h-4 w-4" />
+                      </Button>
+                      <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => setExcluirId(item.id)} title="Excluir registro">
+                        <Trash2 className="h-4 w-4 text-destructive" />
+                      </Button>
+                    </>
+                  )}
                 </div>
               </TableCell>
             </TableRow>
@@ -585,8 +608,9 @@ export default function Recebimento() {
             <div className="flex gap-3 rounded-md border-l-4 border-yellow-400 bg-yellow-50 dark:bg-yellow-950/20 p-4">
               <AlertTriangle className="h-5 w-5 shrink-0 text-yellow-500" />
               <p className="text-sm text-muted-foreground">
-                A liberação libera o lote para consumo na produção e fica registrada na trilha de auditoria.
-                A justificativa é opcional, mas recomendada quando houver quebra de FIFO.
+                A liberação equivale à assinatura digital do registro: após confirmar, o lançamento fica
+                <strong> imutável</strong> (sem edição ou exclusão), conforme exigência do MAPA. Correções posteriores
+                só por Não Conformidade. A justificativa é opcional, mas recomendada quando houver quebra de FIFO.
               </p>
             </div>
 
