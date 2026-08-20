@@ -304,12 +304,12 @@ export default function Producao() {
             <Button size="sm" variant="outline" onClick={exportCSV} disabled={items.length === 0}>
               <Download className="w-4 h-4 mr-1" /> CSV
             </Button>
-            <Dialog open={open} onOpenChange={setOpen}>
+            <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) setEditId(null); }}>
               <DialogTrigger asChild>
                 <Button size="sm"><Plus className="w-4 h-4 mr-1" /> Novo Registro</Button>
               </DialogTrigger>
               <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto">
-                <DialogHeader><DialogTitle>Novo Registro de Produção</DialogTitle></DialogHeader>
+                <DialogHeader><DialogTitle>{editId ? "Editar Registro de Produção" : "Novo Registro de Produção"}</DialogTitle></DialogHeader>
                 <div className="space-y-3">
                   <div>
                     <Label>Produto *</Label>
