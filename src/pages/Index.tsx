@@ -166,7 +166,8 @@ export default function Index() {
           { label: "Treinamento da equipe", valor: progressFromOverdue(treinamentosPendentes, Math.max(treinamentos.length, 1)), descricao: `${treinamentosPendentes} pendência(s).`, link: "/treinamentos" },
           { label: "Resposta a desvios", valor: progressFromOverdue(ncAbertas, Math.max(ncs.length, 1)), descricao: `${ncAbertas} NC(s) em aberto.`, link: "/nao-conformidades" },
         ],
-        execucoes: execPopsRes.data || []
+        execucoes: execPopsRes.data || [],
+        documentosResData: documentosRes.data || []
       };
     },
     enabled: !!user,
