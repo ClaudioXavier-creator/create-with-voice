@@ -672,6 +672,23 @@ export default function HigieneSanitizacao() {
     }
   };
 
+  /** Exclusão auditada de um registro de higiene (POP-02). */
+  const handleExcluirRegistro = async (tabela: string, id: string) => {
+    if (!user) return;
+    if (!window.confirm("Excluir definitivamente este registro? A ação ficará na trilha de auditoria.")) return;
+    const { error } = await (supabase.from(tabela as any) as any).delete().eq("id", id);
+    if (error) return toast.error("Erro ao excluir registro");
+    toast.success("Registro excluído");
+    registrarAuditLog({
+      userId: user.id,
+      empresaId: empresaAtiva?.id,
+      tabela,
+      registroId: id,
+      acao: "excluir",
+    });
+    qc.invalidateQueries();
+  };
+
   // ── Save Monitoramento de Superfícies ──
 
   const salvarSup = async () => {
@@ -890,7 +907,7 @@ export default function HigieneSanitizacao() {
               <Table>
                 <TableHeader><TableRow>
                   <TableHead>Data</TableHead><TableHead>Responsável</TableHead><TableHead>Turno</TableHead>
-                  <TableHead>Status</TableHead><TableHead>Verificação</TableHead><TableHead className="max-w-[250px]">Detalhes</TableHead>
+                  <TableHead>Status</TableHead><TableHead>Verificação</TableHead><TableHead className="max-w-[250px]">Detalhes</TableHead><TableHead className="text-right">Ações</TableHead>
                 </TableRow></TableHeader>
                 <TableBody>
                   {historicoPreOp.map((r: any) => (
@@ -913,6 +930,11 @@ export default function HigieneSanitizacao() {
                         )}
                       </TableCell>
                       <TableCell className="max-w-[250px] text-xs whitespace-pre-line truncate">{(r.observacoes || "").slice(0, 120)}{(r.observacoes?.length || 0) > 120 ? "…" : ""}</TableCell>
+                      <TableCell className="text-right">
+                        <Button size="sm" variant="ghost" className="h-7 px-2" title="Excluir registro" onClick={() => handleExcluirRegistro('execucao_pops', r.id)}>
+                          <Trash2 className="w-3.5 h-3.5 text-destructive" />
+                        </Button>
+                      </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -1004,7 +1026,7 @@ export default function HigieneSanitizacao() {
               <Table>
                 <TableHeader><TableRow>
                   <TableHead>Data</TableHead><TableHead>Executor</TableHead><TableHead>Linha/Setor</TableHead>
-                  <TableHead>Status</TableHead><TableHead>Verificação</TableHead><TableHead className="max-w-[250px]">Detalhes</TableHead>
+                  <TableHead>Status</TableHead><TableHead>Verificação</TableHead><TableHead className="max-w-[250px]">Detalhes</TableHead><TableHead className="text-right">Ações</TableHead>
                 </TableRow></TableHeader>
 
                 <TableBody>
@@ -1028,6 +1050,11 @@ export default function HigieneSanitizacao() {
                         )}
                       </TableCell>
                       <TableCell className="max-w-[250px] text-xs whitespace-pre-line truncate">{(r.observacoes || "").slice(0, 120)}{(r.observacoes?.length || 0) > 120 ? "…" : ""}</TableCell>
+                      <TableCell className="text-right">
+                        <Button size="sm" variant="ghost" className="h-7 px-2" title="Excluir registro" onClick={() => handleExcluirRegistro('execucao_pops', r.id)}>
+                          <Trash2 className="w-3.5 h-3.5 text-destructive" />
+                        </Button>
+                      </TableCell>
 
                     </TableRow>
                   ))}
@@ -1132,7 +1159,7 @@ export default function HigieneSanitizacao() {
               <Table>
                 <TableHeader><TableRow>
                   <TableHead>Data</TableHead><TableHead>Executor</TableHead><TableHead>Setor</TableHead>
-                  <TableHead>Status</TableHead><TableHead>Verificação</TableHead><TableHead className="max-w-[250px]">Detalhes</TableHead>
+                  <TableHead>Status</TableHead><TableHead>Verificação</TableHead><TableHead className="max-w-[250px]">Detalhes</TableHead><TableHead className="text-right">Ações</TableHead>
                 </TableRow></TableHeader>
 
                 <TableBody>
@@ -1156,6 +1183,11 @@ export default function HigieneSanitizacao() {
                         )}
                       </TableCell>
                       <TableCell className="max-w-[250px] text-xs whitespace-pre-line truncate">{(r.observacoes || "").slice(0, 120)}{(r.observacoes?.length || 0) > 120 ? "…" : ""}</TableCell>
+                      <TableCell className="text-right">
+                        <Button size="sm" variant="ghost" className="h-7 px-2" title="Excluir registro" onClick={() => handleExcluirRegistro('execucao_pops', r.id)}>
+                          <Trash2 className="w-3.5 h-3.5 text-destructive" />
+                        </Button>
+                      </TableCell>
 
                     </TableRow>
                   ))}
@@ -1307,7 +1339,7 @@ export default function HigieneSanitizacao() {
               <Table>
                 <TableHeader><TableRow>
                   <TableHead>Data</TableHead><TableHead>Executor</TableHead><TableHead>Equipamento</TableHead>
-                  <TableHead>Status</TableHead><TableHead>Verificação</TableHead><TableHead className="max-w-[250px]">Detalhes</TableHead>
+                  <TableHead>Status</TableHead><TableHead>Verificação</TableHead><TableHead className="max-w-[250px]">Detalhes</TableHead><TableHead className="text-right">Ações</TableHead>
                 </TableRow></TableHeader>
                 <TableBody>
                   {historicoSilos.map((r: any) => (
@@ -1330,6 +1362,11 @@ export default function HigieneSanitizacao() {
                         )}
                       </TableCell>
                       <TableCell className="max-w-[250px] text-xs whitespace-pre-line truncate">{(r.observacoes || "").slice(0, 120)}{(r.observacoes?.length || 0) > 120 ? "…" : ""}</TableCell>
+                      <TableCell className="text-right">
+                        <Button size="sm" variant="ghost" className="h-7 px-2" title="Excluir registro" onClick={() => handleExcluirRegistro('execucao_pops', r.id)}>
+                          <Trash2 className="w-3.5 h-3.5 text-destructive" />
+                        </Button>
+                      </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -1553,6 +1590,11 @@ export default function HigieneSanitizacao() {
                         )}
                       </TableCell>
                       <TableCell className="max-w-[200px] truncate">{r.observacoes}</TableCell>
+                      <TableCell className="text-right">
+                        <Button size="sm" variant="ghost" className="h-7 px-2" title="Excluir registro" onClick={() => handleExcluirRegistro('registros_limpeza', r.id)}>
+                          <Trash2 className="w-3.5 h-3.5 text-destructive" />
+                        </Button>
+                      </TableCell>
                     </TableRow>
 
                   ))}
@@ -1642,6 +1684,11 @@ export default function HigieneSanitizacao() {
                                 <TableCell>{r.hora_inicio}{r.hora_fim ? ` — ${r.hora_fim}` : ""}</TableCell>
                                 <TableCell>{r.conforme ? <CheckCircle2 className="w-4 h-4 text-green-600" /> : <Badge variant="destructive">NC</Badge>}</TableCell>
                                 <TableCell className="max-w-[200px] truncate">{r.observacoes}</TableCell>
+                                <TableCell className="text-right">
+                                  <Button size="sm" variant="ghost" className="h-7 px-2" title="Excluir registro" onClick={() => handleExcluirRegistro('registros_limpeza', r.id)}>
+                                    <Trash2 className="w-3.5 h-3.5 text-destructive" />
+                                  </Button>
+                                </TableCell>
                               </TableRow>
                             ))}
                           </TableBody>
