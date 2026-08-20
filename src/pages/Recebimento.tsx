@@ -270,6 +270,11 @@ export default function Recebimento() {
   const handleExcluir = async () => {
     if (!excluirId || !user) return;
     const anterior = items.find(i => i.id === excluirId);
+    if (anterior && registroBloqueado(anterior)) {
+      toast.error("Registro liberado/assinado não pode ser excluído (exigência MAPA).");
+      setExcluirId(null);
+      return;
+    }
     const { error } = await supabase.from("recebimento_mp").delete().eq("id", excluirId);
     if (error) {
       toast.error("Erro ao excluir: " + error.message);
