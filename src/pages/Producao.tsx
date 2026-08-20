@@ -470,10 +470,17 @@ export default function Producao() {
                     </div>
                   </div>
 
-                  <Button onClick={handleAdd} className="w-full" disabled={saving || !produto}>
-                    {saving && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-                    Salvar
-                  </Button>
+                  <div className="flex gap-2">
+                    {editId && (
+                      <Button variant="outline" className="flex-1" onClick={() => { setOpen(false); setEditId(null); limparFormulario(); }}>
+                        <X className="w-4 h-4 mr-1" /> Cancelar
+                      </Button>
+                    )}
+                    <Button onClick={handleAdd} className="flex-1" disabled={saving || !produto}>
+                      {saving && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+                      {editId ? "Salvar alterações" : "Salvar"}
+                    </Button>
+                  </div>
                 </div>
               </DialogContent>
             </Dialog>
