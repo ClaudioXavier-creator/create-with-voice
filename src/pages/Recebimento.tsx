@@ -155,7 +155,17 @@ export default function Recebimento() {
     setOpen(true);
   };
 
+  /**
+   * Registro liberado = assinado digitalmente (trilha de auditoria fechada).
+   * MAPA / Decreto 12.031/2024: registro concluído não pode ser alterado nem excluído.
+   */
+  const registroBloqueado = (item: RecebimentoRow) => item.status !== "bloqueado";
+
   const abrirEdicao = (item: RecebimentoRow) => {
+    if (registroBloqueado(item)) {
+      toast.error("Registro liberado/assinado não pode ser editado (exigência MAPA). Registre uma Não Conformidade para correções.");
+      return;
+    }
     setEditId(item.id);
     setForm({
       fornecedor: item.fornecedor || "",
