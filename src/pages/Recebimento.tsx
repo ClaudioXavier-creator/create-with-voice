@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Package, Plus, Loader2, FileText, AlertTriangle, ShieldAlert, FlaskConical, Printer, Camera, Pencil, Trash2, CheckCircle2, Lock } from "lucide-react";
+import { Package, Plus, Loader2, FileText, AlertTriangle, ShieldAlert, FlaskConical, Printer, Camera, Pencil, Trash2, CheckCircle2, Lock as LockIcon } from "lucide-react";
 
 import FileUploadComponent from "@/components/FileUpload";
 import { registrarAuditLog } from "@/utils/auditLog";
@@ -580,7 +580,7 @@ export default function Recebimento() {
                   )}
                   {registroBloqueado(item) ? (
                     <Badge variant="outline" className="gap-1 text-[10px] text-muted-foreground">
-                      <Lock className="h-3 w-3" /> Assinado — imutável
+                      <LockIcon className="h-3 w-3" /> Assinado — imutável
                     </Badge>
                   ) : (
                     <>
