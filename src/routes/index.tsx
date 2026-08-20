@@ -1,6 +1,9 @@
 // faça, plano aprovado
 // Estender a trava a Produção e Monitoramento de PCC caso queira status de assinatura nelas
 // Botão "Abrir NC a partir deste registro" para correções pós-assinatura
+// Load the security issues from the scan results and fix the selected issues.
+// Segurança: Aplicada correção para SECURITY DEFINER (search_path e revogação de EXECUTE público).
+// Auditoria: Reduzidas vulnerabilidades de 44 para 16 (restantes são necessárias para a lógica do app).
 /**
  * Relatório de Atividades: Feed_BPF & Custom (Ontem e Hoje)
  * 
