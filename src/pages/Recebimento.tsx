@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Package, Plus, Loader2, FileText, AlertTriangle, ShieldAlert, FlaskConical, Printer, Camera, Pencil, Trash2, CheckCircle2 } from "lucide-react";
+import { Package, Plus, Loader2, FileText, AlertTriangle, ShieldAlert, FlaskConical, Printer, Camera, Pencil, Trash2, CheckCircle2, Lock } from "lucide-react";
 
 import FileUploadComponent from "@/components/FileUpload";
 import { registrarAuditLog } from "@/utils/auditLog";
