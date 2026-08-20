@@ -225,7 +225,7 @@ export default function Index() {
         <div className="space-y-6">
           <DashboardPriorities acoes={data.acoesPrioritarias} />
           <DashboardOperationalHealth items={data.saudeOperacional} />
-          <DashboardPopStatus execucoes={data.execucoes} />
+          <DashboardPopStatus execucoes={data.execucoes} documentos={data.documentosResData || []} />
           <DashboardAlerts alertas={data.alertasVencimento} />
         </div>
       </div>
