@@ -608,8 +608,9 @@ export default function Recebimento() {
             <div className="flex gap-3 rounded-md border-l-4 border-yellow-400 bg-yellow-50 dark:bg-yellow-950/20 p-4">
               <AlertTriangle className="h-5 w-5 shrink-0 text-yellow-500" />
               <p className="text-sm text-muted-foreground">
-                A liberação libera o lote para consumo na produção e fica registrada na trilha de auditoria.
-                A justificativa é opcional, mas recomendada quando houver quebra de FIFO.
+                A liberação equivale à assinatura digital do registro: após confirmar, o lançamento fica
+                <strong> imutável</strong> (sem edição ou exclusão), conforme exigência do MAPA. Correções posteriores
+                só por Não Conformidade. A justificativa é opcional, mas recomendada quando houver quebra de FIFO.
               </p>
             </div>
 
