@@ -17,6 +17,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useEmpresa } from "@/hooks/useEmpresa";
 import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
 
 interface ProdRow {
   id: string;
@@ -26,6 +27,7 @@ interface ProdRow {
   operador: string | null;
   tempo_mistura: string | null;
   quantidade: string | null;
+  status: string | null;
 }
 
 const TEMPO_MISTURA_MINIMO = 3; // minutos — padrão IN 04/2007
