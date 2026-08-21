@@ -1,37 +1,40 @@
-// MISSÃO: Atue como auditor técnico no Feed_BPF (/opt/feed-bpf, branch main, já com a
-// feature de conformidade MAPA mergeada). NÃO implemente nada nesta etapa —
-// produza um relatório de prontidão para homologação com o RT.
+// MISSÃO: Atue como Engenheiro Backend Supabase no Feed_BPF (/opt/feed-bpf, branch main).
 //
-// Contexto regulatório: Decreto 12.031/2024.
+// Corrija os 2 bloqueadores de auditoria encontrados no relatório de homologação
+// D-30/trilha de auditoria (Decreto 12.031/2024):
 //
-// ESCOPO REDUZIDO — atenção:
-// A lógica de disparo de NC automática já está definida e aceita como está,
-// diretamente no banco/código. NÃO analise, NÃO sugira mudanças, NÃO questione
-// os critérios de severidade ou gatilhos de NC — isso está fora de escopo e
-// foi decisão deliberada. Qualquer comentário sobre esse tópico deve ser
-// ignorado nesta tarefa.
+// 1. AUSÊNCIA DE TRIGGER DE AUDITORIA
+//    As tabelas `modelos_empresa` e `registros_customizados` não têm o gatilho
+//    de auditoria ativado, diferente das outras 70 tabelas já cobertas pela
+//    função `process_audit_log()`. Gere a migração SQL para ativar o mesmo
+//    trigger padrão nessas duas tabelas, seguindo exatamente o modelo já usado
+//    nas demais (mesma função, mesmo padrão de nome de trigger). Migração deve
+//    ser idempotente (verificar se o trigger já não existe antes de criar).
 //
-// Audite e relate, com evidência de código (arquivo + trecho), apenas os 2 pontos abaixo:
+// 2. RESTAURAÇÃO DE BACKUP SEM RASTRO DE AUTORIA
+//    A Edge Function `backup-manager` executa restore via service_role, o que
+//    faz o audit_log gravar user_id=NULL (a função de auditoria depende de
+//    auth.uid(), que não existe em contexto service_role). Adicione um log
+//    explícito e manual no início da execução de restore, ANTES do upsert em
+//    massa, gravando:
+//    - quem disparou a ação (o usuário autenticado que chamou a Edge Function,
+//      capturado do JWT ANTES de trocar para service_role — não confundir com
+//      o service_role em si)
+//    - empresa_id envolvida
+//    - timestamp
+//    - ação = "restore_backup"
+//    Grave isso na mesma tabela audit_log, usando insert direto (não depende do
+//    trigger, já que a limitação é justamente essa).
 //
-// 1. RÉGUA DE ALERTA D-30
-//    - Confirme que o alerta de 30 dias antes do vencimento está implementado
-//      exatamente como D-30 (não D-15, D-7, etc.) e onde isso está configurado
-//      no código (constante, coluna de banco, ou hardcoded).
-//    - Estime o volume: rodando hoje contra os dados reais de produção
-//      (read-only, sem disparar nada), quantos alertas D-30 seriam gerados essa
-//      semana? Isso ajuda a avaliar "ruído operacional" antes de perguntar ao campo.
+// RESTRIÇÕES
+// - Não altere a lógica de disparo de NC automática (alertas-vencimento) —
+//   está fora de escopo, decisão já tomada e documentada no código.
+// - Rode a suíte de testes existente antes de considerar concluído.
+// - Não faça push nem PR automaticamente — deixe committed localmente em um
+//   branch novo (sugestão: fix/auditoria-backup-restore) para eu revisar antes.
 //
-// 2. TRILHA DE AUDITORIA
-//    - Verifique se cada ação relevante (criação de NC automática, alerta
-//      disparado, restauração de backup) grava: autor (usuário ou "sistema"),
-//      data/hora, e o que mudou.
-//    - Se NÃO houver log estruturado para alguma dessas ações, aponte
-//      explicitamente — é um requisito do Decreto 12.031/2024 para fins
-//      fiscalizatórios, e a ausência bloqueia a homologação.
-//
-// Entregue como relatório único, com uma seção final "Pronto para homologação"
-// ou "Bloqueadores encontrados" por item. Não corrija nada automaticamente —
-// se achar lacuna, apenas relate, para eu decidir com o RT.
+// Ao final, gere um resumo curto: o que foi alterado, se os testes passaram, e
+// se sobrou algum ponto que precisa de decisão minha antes do merge.
 // Load the security issues from the scan results and fix the selected issues.
 // Segurança: Aplicada correção para SECURITY DEFINER (search_path e revogação de EXECUTE público).
 // Auditoria: Reduzidas vulnerabilidades de 44 para 16 (restantes são necessárias para a lógica do app).
