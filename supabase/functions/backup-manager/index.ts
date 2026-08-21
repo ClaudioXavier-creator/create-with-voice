@@ -77,7 +77,22 @@ serve(async (req) => {
         throw new Error("Backup data is required for restore action");
       }
 
+      // Log manual de auditoria para ação de sistema (restauração)
+      // Necessário pois service_role faria o trigger gravar user_id=NULL
+      await supabaseClient.from('audit_log').insert({
+        tabela: 'system_backup',
+        registro_id: empresa_id,
+        operacao: 'restore_backup',
+        usuario_id: user.id,
+        dados_novos: { 
+          tables: Object.keys(backup), 
+          empresa_id,
+          timestamp: new Date().toISOString()
+        }
+      });
+
       const results: any = {};
+
       const tables = Object.keys(backup);
 
       for (const table of tables) {
