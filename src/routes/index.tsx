@@ -1,43 +1,58 @@
 // [Contexto da Aplicação]
 //
-// Linguagem / Stack: [TypeScript / Node.js (Deno) / PostgreSQL]
+// Ambiente/Runtime: Edge Function (ex.: Supabase Edge Functions / Cloudflare Workers / Vercel Edge / Deno / Node.js)
 //
-// Nome da Função / Módulo: backup-manager (Função de Backup do Sistema)
+// Nome da Função: backup-manager
 //
-// [Objetivo]
+// Objetivo Principal: Implementar validação de integridade criptográfica e criar uma suíte de testes automatizados com suporte a grandes volumes de dados.
 //
-// Quero criar um plano de testes completo e um script de validação para a função de backup `backup-manager`. Preciso ter certeza absoluta de que ela não falha silenciosamente e que o arquivo de backup gerado é válido e recuperável.
+// [Código Atual da Edge Function backup-manager]
 //
-// [Instruções para a IA]
+// ```[Cole o código atual da função backup-manager aqui]```
 //
-// Por favor, gere:
+// ---
 //
-// 1. **Checklist de Testes de Borda / Falhas (Edge Cases):**
+// [Tarefas Requeridas]
 //
-//    - O que acontece se o banco de dados retornar erro parcial em uma das tabelas?
+// 1. **Validação de Integridade SHA-256:**
 //
-//    - O que acontece se o JSON for inválido na restauração?
+//    - Adicionar verificação obrigatória do hash SHA-256 do payload recebido.
 //
-//    - Como garantir que o `empresa_id` e `user_id` não sejam burlados no restore (Injeção de Dados)?
+//    - O payload deve vir acompanhado de um header ou campo (ex.: `x-payload-sha256` ou `checksum`).
 //
-//    - Como é tratado o limite de memória do Deno para backups gigantes (>50MB)?
+//    - A função deve recalcular o hash SHA-256 do payload/buffer na chegada e rejeitar a requisição com HTTP 400 (Bad Request) ou 422 caso o hash não coincida (dados corrompidos ou adulterados).
 //
-// 2. **Script de Teste Automatizado / Validação:**
+//    - Utilizar a Web Crypto API (`crypto.subtle.digest`) para garantir compatibilidade nativa com ambientes Edge/Serverless.
 //
-//    - Crie um script (ou rota de teste) que execute a função `backup-manager` em um ambiente seguro de testes.
+// 2. **Script de Teste Automatizado:**
 //
-//    - Faça o script verificar se:
+//    - Criar um script de teste completo (usando Deno test, Vitest ou Jest) que cubra:
 //
-//      a) O JSON de exportação contém as chaves obrigatórias (`documentos_bpf`, `modelos_empresa`, `registros_customizados`).
+//      a) **Cenário de Sucesso:** Envio de payload íntegro com SHA-256 correspondente -> Status 200/201.
 //
-//      b) O `audit_log` registrou a ação de `restore_backup` com o `user_id` correto.
+//      b) **Cenário de Corrupção (Hash Mismatch):** Envio de payload alterado ou hash incorreto -> Rejeição imediata com status 400/422.
 //
-//      c) A integridade referencial foi mantida após o `upsert` em massa.
+//      c) **Payload Ausente/Vazio:** Verificação defensiva de corpo nulo ou sem hash.
 //
-// 3. **Sugestão de Melhorias Defensivas:**
+// 3. **Teste de Carga / Volume Superior a 50MB:**
 //
-//    - Implementar verificação de hash (SHA-256) no JSON para garantir que o arquivo não foi alterado entre export e import.
-//    - Adicionar paginação (limit/offset) para evitar estouro de memória em empresas com milhares de registros.
+//    - Incluir no script de teste uma função geradora de dados simulados (> 50MB) via stream ou buffer.
+//
+//    - Tratar e validar os limites de memória e tempo de execução (*timeout*) típicos de Edge Functions:
+//
+//      - Evitar carregar tudo de uma vez na memória RAM se o ambiente tiver limite de memória (ex.: 128MB).
+//
+//      - Usar processamento por stream (*ReadableStream / Chunking*) para o cálculo do hash e upload se necessário.
+//
+// ---
+//
+// [Formato de Resposta Esperado]
+//
+// 1. O código completo e otimizado da Edge Function `backup-manager` com a validação SHA-256.
+//
+// 2. O código do script de teste automatizado (`backup-manager.test.ts` ou `.js`).
+//
+// 3. Instruções de execução do script no terminal e recomendações sobre limites de timeout/RAM para payloads > 50MB em Edge.
 
 export const TechnicalLog = () => {
   return null;
