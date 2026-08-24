@@ -1,28 +1,48 @@
-// [LOG TÉCNICO - 24/08/2026] Fix de Integridade de Dados e Monitoramento de Projetos
+// [Contexto da Aplicação]
 //
-// 1. CORREÇÃO DE PERDA DE DADOS NO POP 05 (Produção)
-//    Identificado que a edição de registros em `src/pages/Producao.tsx` sobrescrevia campos críticos
-//    (Flush, Sobras e Contraprova) com valores vazios por falta de restauração no modal de edição.
-//    - Implementada restauração completa em `abrirEdicao(p)`.
-//    - Refatorada a Contraprova para usar React state em vez de direct DOM access, garantindo persistência no ciclo de vida do componente.
-//    - Atualizada a persistência de rascunhos (useSessionDraft) para incluir os novos campos.
+// Linguagem / Stack: [ex.: Python / Node.js / PostgreSQL / SQLite]
 //
-// 2. DIAGNÓSTICO DE FALHA EM EMAILS TRANSACIONAIS (403 recipient_mismatch)
-//    Identificado que o erro 403 retornado pela Lovable Email API nas Edge Functions
-//    (`process-email-queue`) é decorrente do modo "Test/Preview" da plataforma.
-//    - Adicionado log de erro descritivo na Edge Function para facilitar a ação do proprietário.
-//    - Ação Requerida do Proprietário: Verificar o domínio `notify.www.bpfconsult.com.br` e alternar a integração para o modo "LIVE" no painel Lovable.
+// Nome da Função / Módulo: feed_bpf (Função de Backup do Sistema)
 //
-// 3. HARDENING DE AUDITORIA (Decreto 12.031/2024)
-//    - Ativados triggers de auditoria nas tabelas faltantes (`modelos_empresa`, `registros_customizados`).
-//    - Implementado log manual de autoria na função de restore (backup-manager) para superar a limitação de contexto do `service_role`.
+// [Objetivo]
 //
-// realize o teste de backup completo
-// Load the security issues from the scan results and fix the selected issues.
-// Segurança: Aplicada correção para SECURITY DEFINER (search_path e revogação de EXECUTE público).
-// Auditoria: Reduzidas vulnerabilidades de 44 para 16 (restantes são necessárias para a lógica do app).
-// Prosseguir com a implementação de novas funcionalidades conforme o plano de sprints.
-// Iniciar o refinamento dos POPs via IA utilizando os adendos configurados.
+// Quero criar um plano de testes completo e um script de validação para a função de backup `feed_bpf`. Preciso ter certeza absoluta de que ela não falha silenciosamente e que o arquivo de backup gerado é válido e recuperável.
+//
+// [Código da Função feed_bpf]
+//
+// ```[cole aqui o código da função feed_bpf]```
+//
+// [Instruções para a IA]
+//
+// Por favor, gere:
+//
+// 1. **Checklist de Testes de Borda / Falhas (Edge Cases):**
+//
+//    - O que acontece se o disco estiver sem espaço ou sem permissão de escrita?
+//
+//    - O que acontece se o banco de dados estiver travado ou em uso no momento do backup?
+//
+//    - Como garantir que o arquivo final não ficou corrompido ou com 0 bytes?
+//
+//    - Como é tratado o timeout caso o volume de dados seja grande?
+//
+// 2. **Script de Teste Automatizado / Validação:**
+//
+//    - Crie um script (ou rota de teste) que execute a função `feed_bpf` em um ambiente seguro de testes.
+//
+//    - Faça o script verificar se:
+//
+//      a) O arquivo/dump foi criado no diretório correto.
+//
+//      b) O tamanho do arquivo gerado é maior que zero.
+//
+//      c) O log de sucesso/erro foi gravado com clareza.
+//
+//      d) Uma simulação rápida de restauração/leitura confirma que os dados estão íntegros.
+//
+// 3. **Sugestão de Melhorias Defensivas:**
+//
+//    - Aponte se faltam blocos `try/catch` (ou `try/except`), logs contextuais ou validações de integridade no código atual.
 /**
  * Relatório de Atividades: Feed_BPF & Custom (Ontem e Hoje)
  * 
