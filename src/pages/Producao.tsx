@@ -245,9 +245,6 @@ export default function Producao() {
     ].filter(Boolean).join("\n\n").trim();
     
     // Contraprova
-    const cpQtd = (document.getElementById("prod-cp-qtd") as HTMLInputElement)?.value || "";
-    const cpLocal = (document.getElementById("prod-cp-local") as HTMLInputElement)?.value || "";
-    const cpVal = (document.getElementById("prod-cp-val") as HTMLInputElement)?.value || "";
     const cpRetida = !!(cpQtd || cpLocal);
     
     let quantidadeFinal = quantidade ? `${quantidade}${obsCompleta ? ` | Sobra: ${qtdSobra || "?"} kg` : ""}` : "";
