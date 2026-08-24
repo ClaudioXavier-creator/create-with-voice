@@ -125,7 +125,7 @@ export default function ExecucaoPops() {
   const isPOP04 = selectedDoc?.codigo?.includes("POP-04");
   const isPOP05 = selectedDoc?.codigo?.includes("POP-05");
   const isPOP09 = selectedDoc?.codigo?.includes("POP-09");
-  const activeChecklist = isPOP02 ? POP02_TRIAGEM_ITENS : isPOP03 ? POP03_LIMPEZA_ITENS : isPOP04 ? POP04_AGUA_ITENS : isPOP05 ? POP05_HIGIENE_PESSOAL_ITENS : isPOP09 ? POP09_VEICULO_ITENS : null;
+  const activeChecklist = isPOP02 ? POP02_LIMPEZA_ITENS : isPOP03 ? POP03_HIGIENE_PESSOAL_ITENS : isPOP04 ? POP04_AGUA_ITENS : isPOP05 ? POP05_ARMAZENAMENTO_ITENS : isPOP09 ? POP09_VEICULO_ITENS : null;
 
   const handleAdd = async () => {
     if (!selectedDoc || !executor || !user) return;
