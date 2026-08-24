@@ -104,9 +104,10 @@ export default function Producao() {
         produto, lote, operador, tempoMistura, quantidade,
         houveSobra, qtdSobra, destinoSobra, obsSobra,
         realizouFlush, tipoLimpeza, volumeFlush, produtoAnterior, prodAnteriorMedicado, obsFlush,
+        cpRetida, cpQtd, cpLocal, cpVal,
       }));
     } catch { /* storage cheio — ignora */ }
-  }, [editId, produto, lote, operador, tempoMistura, quantidade, houveSobra, qtdSobra, destinoSobra, obsSobra, realizouFlush, tipoLimpeza, volumeFlush, produtoAnterior, prodAnteriorMedicado, obsFlush]);
+  }, [editId, produto, lote, operador, tempoMistura, quantidade, houveSobra, qtdSobra, destinoSobra, obsSobra, realizouFlush, tipoLimpeza, volumeFlush, produtoAnterior, prodAnteriorMedicado, obsFlush, cpRetida, cpQtd, cpLocal, cpVal]);
 
   const limparFormulario = () => {
     setProduto(""); setLote(""); setOperador(""); setTempoMistura(""); setQuantidade("");
