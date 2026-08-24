@@ -360,18 +360,18 @@ export default function HigieneSanitizacao() {
   });
 
   const { data: cronogramas = [] } = useQuery({
-    queryKey: ["cronogramas_higiene"],
+    queryKey: ["cronogramas_higiene", empId],
     queryFn: async () => {
-      const { data, error } = await (() => { let q = supabase.from("cronogramas_higiene").select("*").order("area"); if (empresaAtiva) q = q.eq("empresa_id", empresaAtiva.id); return q; })();
+      const { data, error } = await scope(supabase.from("cronogramas_higiene").select("*").order("area"));
       if (error) throw error;
       return data;
     },
   });
 
   const { data: registros = [] } = useQuery({
-    queryKey: ["registros_limpeza", selectedCronograma],
+    queryKey: ["registros_limpeza", selectedCronograma, empId],
     queryFn: async () => {
-      let q = supabase.from("registros_limpeza").select("*").order("data_execucao", { ascending: false });
+      let q = scope(supabase.from("registros_limpeza").select("*").order("data_execucao", { ascending: false }));
       if (selectedCronograma) q = q.eq("cronograma_id", selectedCronograma);
       const { data, error } = await q.limit(50);
       if (error) throw error;
@@ -380,20 +380,20 @@ export default function HigieneSanitizacao() {
   });
 
   const { data: registrosAgua = [] } = useQuery({
-    queryKey: ["registros_agua"],
+    queryKey: ["registros_agua", empId],
     queryFn: async () => {
-      const { data, error } = await supabase.from("execucao_pops").select("*")
-        .eq("codigo_pop", "POP-04-AGUA").order("data_execucao", { ascending: false }).limit(100);
+      const { data, error } = await scope(supabase.from("execucao_pops").select("*")
+        .eq("codigo_pop", "POP-04-AGUA")).order("data_execucao", { ascending: false }).limit(100);
       if (error) throw error;
       return data;
     },
   });
 
   const { data: laudosAgua = [] } = useQuery({
-    queryKey: ["laudos_agua"],
+    queryKey: ["laudos_agua", empId],
     queryFn: async () => {
-      const { data, error } = await supabase.from("analises_laboratorio").select("*")
-        .or("produto.ilike.%água%,produto.ilike.%agua%,parametro.ilike.%cloro%,parametro.ilike.%coliform%,parametro.ilike.%turbidez%,parametro.ilike.%ph%")
+      const { data, error } = await scope(supabase.from("analises_laboratorio").select("*")
+        .or("produto.ilike.%água%,produto.ilike.%agua%,parametro.ilike.%cloro%,parametro.ilike.%coliform%,parametro.ilike.%turbidez%,parametro.ilike.%ph%"))
         .order("data_analise", { ascending: false }).limit(50);
       if (error) throw error;
       return data;
@@ -402,10 +402,10 @@ export default function HigieneSanitizacao() {
 
   // Histórico de Liberação de Linha
   const { data: historicoLibLinha = [] } = useQuery({
-    queryKey: ["historico_lib_linha"],
+    queryKey: ["historico_lib_linha", empId],
     queryFn: async () => {
-      const { data, error } = await supabase.from("execucao_pops").select("*")
-        .eq("codigo_pop", "POP-02-LIB-LINHA").order("data_execucao", { ascending: false }).limit(50);
+      const { data, error } = await scope(supabase.from("execucao_pops").select("*")
+        .eq("codigo_pop", "POP-02-LIB-LINHA")).order("data_execucao", { ascending: false }).limit(50);
       if (error) throw error;
       return data;
     },
@@ -413,9 +413,9 @@ export default function HigieneSanitizacao() {
 
   // ASO / Saúde dos manipuladores
   const { data: saudeManipuladores = [] } = useQuery({
-    queryKey: ["saude_manipuladores_higiene"],
+    queryKey: ["saude_manipuladores_higiene", empId],
     queryFn: async () => {
-      const { data, error } = await supabase.from("saude_manipuladores").select("*").order("data_validade", { ascending: true });
+      const { data, error } = await scope(supabase.from("saude_manipuladores").select("*")).order("data_validade", { ascending: true });
       if (error) throw error;
       return data;
     },
@@ -423,10 +423,10 @@ export default function HigieneSanitizacao() {
 
   // Histórico de sintomas diários
   const { data: historicoSintomas = [] } = useQuery({
-    queryKey: ["historico_sintomas"],
+    queryKey: ["historico_sintomas", empId],
     queryFn: async () => {
-      const { data, error } = await supabase.from("execucao_pops").select("*")
-        .eq("codigo_pop", "POP-03-SINTOMAS").order("data_execucao", { ascending: false }).limit(50);
+      const { data, error } = await scope(supabase.from("execucao_pops").select("*")
+        .eq("codigo_pop", "POP-03-SINTOMAS")).order("data_execucao", { ascending: false }).limit(50);
       if (error) throw error;
       return data;
     },
@@ -434,18 +434,18 @@ export default function HigieneSanitizacao() {
 
   // Archive counts for 2-year retention
   const { data: archiveCounts } = useQuery({
-    queryKey: ["archive_counts"],
+    queryKey: ["archive_counts", empId],
     queryFn: async () => {
       const twoYearsAgo = new Date();
       twoYearsAgo.setFullYear(twoYearsAgo.getFullYear() - 2);
       const cutoff = twoYearsAgo.toISOString();
       const [pops, limpeza, agua, residuos, calibr, nc] = await Promise.all([
-        supabase.from("execucao_pops").select("id", { count: "exact", head: true }).gte("created_at", cutoff),
-        supabase.from("registros_limpeza").select("id", { count: "exact", head: true }).gte("created_at", cutoff),
-        supabase.from("analises_laboratorio").select("id", { count: "exact", head: true }).gte("created_at", cutoff),
-        supabase.from("controle_residuos").select("id", { count: "exact", head: true }).gte("created_at", cutoff),
-        supabase.from("calibracoes").select("id", { count: "exact", head: true }).gte("created_at", cutoff),
-        supabase.from("nao_conformidades").select("id", { count: "exact", head: true }).gte("created_at", cutoff),
+        scope(supabase.from("execucao_pops").select("id", { count: "exact", head: true }).gte("created_at", cutoff)),
+        scope(supabase.from("registros_limpeza").select("id", { count: "exact", head: true }).gte("created_at", cutoff)),
+        scope(supabase.from("analises_laboratorio").select("id", { count: "exact", head: true }).gte("created_at", cutoff)),
+        scope(supabase.from("controle_residuos").select("id", { count: "exact", head: true }).gte("created_at", cutoff)),
+        scope(supabase.from("calibracoes").select("id", { count: "exact", head: true }).gte("created_at", cutoff)),
+        scope(supabase.from("nao_conformidades").select("id", { count: "exact", head: true }).gte("created_at", cutoff)),
       ]);
       return { pops: pops.count || 0, limpeza: limpeza.count || 0, agua: agua.count || 0, residuos: residuos.count || 0, calibracoes: calibr.count || 0, nc: nc.count || 0 };
     },
@@ -453,20 +453,20 @@ export default function HigieneSanitizacao() {
 
 
   const { data: historicoSup = [] } = useQuery({
-    queryKey: ["historico_sup"],
+    queryKey: ["historico_sup", empId],
     queryFn: async () => {
-      const { data, error } = await supabase.from("execucao_pops").select("*")
-        .eq("codigo_pop", "POP-02-SUPERFICIE").order("data_execucao", { ascending: false }).limit(50);
+      const { data, error } = await scope(supabase.from("execucao_pops").select("*")
+        .eq("codigo_pop", "POP-02-SUPERFICIE")).order("data_execucao", { ascending: false }).limit(50);
       if (error) throw error;
       return data;
     },
   });
 
   const { data: historicoPreOp = [] } = useQuery({
-    queryKey: ["historico_preop"],
+    queryKey: ["historico_preop", empId],
     queryFn: async () => {
-      const { data, error } = await supabase.from("execucao_pops").select("*")
-        .eq("codigo_pop", "POP-02/03-PREOP").order("data_execucao", { ascending: false }).limit(50);
+      const { data, error } = await scope(supabase.from("execucao_pops").select("*")
+        .eq("codigo_pop", "POP-02/03-PREOP")).order("data_execucao", { ascending: false }).limit(50);
       if (error) throw error;
       return data;
     },
@@ -474,14 +474,15 @@ export default function HigieneSanitizacao() {
 
   // Histórico de Silos
   const { data: historicoSilos = [] } = useQuery({
-    queryKey: ["historico_silos"],
+    queryKey: ["historico_silos", empId],
     queryFn: async () => {
-      const { data, error } = await supabase.from("execucao_pops").select("*")
-        .in("codigo_pop", ["POP-02-SILOS", "POP-03-SILOS"]).order("data_execucao", { ascending: false }).limit(50);
+      const { data, error } = await scope(supabase.from("execucao_pops").select("*")
+        .in("codigo_pop", ["POP-02-SILOS", "POP-03-SILOS"])).order("data_execucao", { ascending: false }).limit(50);
       if (error) throw error;
       return data;
     },
   });
+
 
   const [mesAno, setMesAno] = useState(() => {
 
