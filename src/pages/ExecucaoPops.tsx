@@ -245,7 +245,7 @@ export default function ExecucaoPops() {
                                       ))}
                                   </div>
 
-                                  {(isPOP02 || isPOP05) && (
+                                  {isPOP03 && (
                                       <div className="space-y-3 pt-4 border-t">
                                           <p className="text-xs font-bold text-emerald-600">Registro de ASO / Exames</p>
                                           <div className="grid grid-cols-2 gap-3">
