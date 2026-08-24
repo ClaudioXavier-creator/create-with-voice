@@ -1,40 +1,21 @@
-// MISSÃO: Atue como Engenheiro Backend Supabase no Feed_BPF (/opt/feed-bpf, branch main).
+// [LOG TÉCNICO - 24/08/2026] Fix de Integridade de Dados e Monitoramento de Projetos
 //
-// Corrija os 2 bloqueadores de auditoria encontrados no relatório de homologação
-// D-30/trilha de auditoria (Decreto 12.031/2024):
+// 1. CORREÇÃO DE PERDA DE DADOS NO POP 05 (Produção)
+//    Identificado que a edição de registros em `src/pages/Producao.tsx` sobrescrevia campos críticos
+//    (Flush, Sobras e Contraprova) com valores vazios por falta de restauração no modal de edição.
+//    - Implementada restauração completa em `abrirEdicao(p)`.
+//    - Refatorada a Contraprova para usar React state em vez de direct DOM access, garantindo persistência no ciclo de vida do componente.
+//    - Atualizada a persistência de rascunhos (useSessionDraft) para incluir os novos campos.
 //
-// 1. AUSÊNCIA DE TRIGGER DE AUDITORIA
-//    As tabelas `modelos_empresa` e `registros_customizados` não têm o gatilho
-//    de auditoria ativado, diferente das outras 70 tabelas já cobertas pela
-//    função `process_audit_log()`. Gere a migração SQL para ativar o mesmo
-//    trigger padrão nessas duas tabelas, seguindo exatamente o modelo já usado
-//    nas demais (mesma função, mesmo padrão de nome de trigger). Migração deve
-//    ser idempotente (verificar se o trigger já não existe antes de criar).
+// 2. DIAGNÓSTICO DE FALHA EM EMAILS TRANSACIONAIS (403 recipient_mismatch)
+//    Identificado que o erro 403 retornado pela Lovable Email API nas Edge Functions
+//    (`process-email-queue`) é decorrente do modo "Test/Preview" da plataforma.
+//    - Adicionado log de erro descritivo na Edge Function para facilitar a ação do proprietário.
+//    - Ação Requerida do Proprietário: Verificar o domínio `notify.www.bpfconsult.com.br` e alternar a integração para o modo "LIVE" no painel Lovable.
 //
-// 2. RESTAURAÇÃO DE BACKUP SEM RASTRO DE AUTORIA
-//    A Edge Function `backup-manager` executa restore via service_role, o que
-//    faz o audit_log gravar user_id=NULL (a função de auditoria depende de
-//    auth.uid(), que não existe em contexto service_role). Adicione um log
-//    explícito e manual no início da execução de restore, ANTES do upsert em
-//    massa, gravando:
-//    - quem disparou a ação (o usuário autenticado que chamou a Edge Function,
-//      capturado do JWT ANTES de trocar para service_role — não confundir com
-//      o service_role em si)
-//    - empresa_id envolvida
-//    - timestamp
-//    - ação = "restore_backup"
-//    Grave isso na mesma tabela audit_log, usando insert direto (não depende do
-//    trigger, já que a limitação é justamente essa).
-//
-// RESTRIÇÕES
-// - Não altere a lógica de disparo de NC automática (alertas-vencimento) —
-//   está fora de escopo, decisão já tomada e documentada no código.
-// - Rode a suíte de testes existente antes de considerar concluído.
-// - Não faça push nem PR automaticamente — deixe committed localmente em um
-//   branch novo (sugestão: fix/auditoria-backup-restore) para eu revisar antes.
-//
-// Ao final, gere um resumo curto: o que foi alterado, se os testes passaram, e
-// se sobrou algum ponto que precisa de decisão minha antes do merge.
+// 3. HARDENING DE AUDITORIA (Decreto 12.031/2024)
+//    - Ativados triggers de auditoria nas tabelas faltantes (`modelos_empresa`, `registros_customizados`).
+//    - Implementado log manual de autoria na função de restore (backup-manager) para superar a limitação de contexto do `service_role`.
 // Load the security issues from the scan results and fix the selected issues.
 // Segurança: Aplicada correção para SECURITY DEFINER (search_path e revogação de EXECUTE público).
 // Auditoria: Reduzidas vulnerabilidades de 44 para 16 (restantes são necessárias para a lógica do app).

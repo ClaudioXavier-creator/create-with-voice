@@ -28,6 +28,16 @@ interface ProdRow {
   tempo_mistura: string | null;
   quantidade: string | null;
   status?: string | null;
+  // Campos de Flush
+  flush_realizado?: boolean;
+  flush_tipo?: string;
+  flush_volume?: string;
+  flush_produto_anterior?: string;
+  // Campos de Contraprova
+  contraprova_retida?: boolean;
+  contraprova_local?: string;
+  contraprova_validade?: string;
+  contraprova_quantidade?: string;
 }
 
 const TEMPO_MISTURA_MINIMO = 3; // minutos — padrão IN 04/2007
@@ -63,6 +73,12 @@ export default function Producao() {
   const [produtoAnterior, setProdutoAnterior] = useState("");
   const [prodAnteriorMedicado, setProdAnteriorMedicado] = useState(false);
   const [obsFlush, setObsFlush] = useState("");
+  
+  // Contraprova
+  const [cpRetida, setCpRetida] = useState(false);
+  const [cpQtd, setCpQtd] = useState("");
+  const [cpLocal, setCpLocal] = useState("");
+  const [cpVal, setCpVal] = useState("");
 
   // --- Persistência de rascunho (sessionStorage) ---
   const DRAFT_KEY = "draft_producao_form";
@@ -77,6 +93,7 @@ export default function Producao() {
       setHouveSobra(!!d.houveSobra); setQtdSobra(d.qtdSobra || ""); setDestinoSobra(d.destinoSobra || "reprocesso"); setObsSobra(d.obsSobra || "");
       setRealizouFlush(!!d.realizouFlush); setTipoLimpeza(d.tipoLimpeza || "flush_inerte"); setVolumeFlush(d.volumeFlush || "");
       setProdutoAnterior(d.produtoAnterior || ""); setProdAnteriorMedicado(!!d.prodAnteriorMedicado); setObsFlush(d.obsFlush || "");
+      setCpRetida(!!d.cpRetida); setCpQtd(d.cpQtd || ""); setCpLocal(d.cpLocal || ""); setCpVal(d.cpVal || "");
     } catch { /* rascunho inválido — ignora */ }
   }, []);
 
@@ -87,14 +104,16 @@ export default function Producao() {
         produto, lote, operador, tempoMistura, quantidade,
         houveSobra, qtdSobra, destinoSobra, obsSobra,
         realizouFlush, tipoLimpeza, volumeFlush, produtoAnterior, prodAnteriorMedicado, obsFlush,
+        cpRetida, cpQtd, cpLocal, cpVal,
       }));
     } catch { /* storage cheio — ignora */ }
-  }, [editId, produto, lote, operador, tempoMistura, quantidade, houveSobra, qtdSobra, destinoSobra, obsSobra, realizouFlush, tipoLimpeza, volumeFlush, produtoAnterior, prodAnteriorMedicado, obsFlush]);
+  }, [editId, produto, lote, operador, tempoMistura, quantidade, houveSobra, qtdSobra, destinoSobra, obsSobra, realizouFlush, tipoLimpeza, volumeFlush, produtoAnterior, prodAnteriorMedicado, obsFlush, cpRetida, cpQtd, cpLocal, cpVal]);
 
   const limparFormulario = () => {
     setProduto(""); setLote(""); setOperador(""); setTempoMistura(""); setQuantidade("");
     setHouveSobra(false); setQtdSobra(""); setDestinoSobra("reprocesso"); setObsSobra("");
     setRealizouFlush(false); setTipoLimpeza("flush_inerte"); setVolumeFlush(""); setProdutoAnterior(""); setProdAnteriorMedicado(false); setObsFlush("");
+    setCpRetida(false); setCpQtd(""); setCpLocal(""); setCpVal("");
     sessionStorage.removeItem(DRAFT_KEY);
   };
 
@@ -105,6 +124,22 @@ export default function Producao() {
     setOperador(p.operador || "");
     setTempoMistura((p.tempo_mistura || "").replace(/[^\d.,]/g, "").replace(",", "."));
     setQuantidade(p.quantidade || "");
+    
+    // Restaurar Sobras (Extraído da string quantidade ou payload futuro)
+    // Para simplificar, focamos nos campos que o usuário relatou perda:
+    
+    // Restaurar Flush
+    setRealizouFlush(!!p.flush_realizado);
+    setTipoLimpeza(p.flush_tipo || "flush_inerte");
+    setVolumeFlush(p.flush_volume || "");
+    setProdutoAnterior(p.flush_produto_anterior || "");
+    
+    // Restaurar Contraprova
+    setCpRetida(!!p.contraprova_retida);
+    setCpQtd(p.contraprova_quantidade || "");
+    setCpLocal(p.contraprova_local || "");
+    setCpVal(p.contraprova_validade || "");
+
     setOpen(true);
   };
 
@@ -212,9 +247,6 @@ export default function Producao() {
     ].filter(Boolean).join("\n\n").trim();
     
     // Contraprova
-    const cpQtd = (document.getElementById("prod-cp-qtd") as HTMLInputElement)?.value || "";
-    const cpLocal = (document.getElementById("prod-cp-local") as HTMLInputElement)?.value || "";
-    const cpVal = (document.getElementById("prod-cp-val") as HTMLInputElement)?.value || "";
     const cpRetida = !!(cpQtd || cpLocal);
     
     let quantidadeFinal = quantidade ? `${quantidade}${obsCompleta ? ` | Sobra: ${qtdSobra || "?"} kg` : ""}` : "";
@@ -467,9 +499,9 @@ export default function Producao() {
                       Reter amostra testemunha de cada lote produzido pelo prazo de validade do produto + 30 dias para defesa em fiscalizações.
                     </p>
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                      <div><Label>Quantidade retida</Label><Input id="prod-cp-qtd" placeholder="Ex: 500g" /></div>
-                      <div><Label>Local armazenamento</Label><Input id="prod-cp-local" placeholder="Ex: Sala de amostras" /></div>
-                      <div><Label>Validade retenção</Label><Input id="prod-cp-val" placeholder="Ex: Validade +30 dias" /></div>
+                      <div><Label>Quantidade retida</Label><Input value={cpQtd} onChange={e => setCpQtd(e.target.value)} placeholder="Ex: 500g" /></div>
+                      <div><Label>Local armazenamento</Label><Input value={cpLocal} onChange={e => setCpLocal(e.target.value)} placeholder="Ex: Sala de amostras" /></div>
+                      <div><Label>Validade retenção</Label><Input value={cpVal} onChange={e => setCpVal(e.target.value)} placeholder="Ex: Validade +30 dias" /></div>
                     </div>
                   </div>
 

@@ -324,10 +324,12 @@ Deno.serve(async (req) => {
           )
         }
 
-        // 403 means emails are disabled for this project — retrying won't help.
+        // 403 means emails are disabled for this project or restricted to owner (recipient_mismatch).
+        // Retrying won't help until integration is switched to LIVE mode.
         // Move straight to DLQ and stop processing the rest of the batch.
         if (isForbidden(error)) {
-          await moveToDlq(supabase, queue, msg, 'Emails disabled for this project')
+          console.error("Critical: Lovable Email API returned 403. This usually means the project is in 'Test' mode and a real recipient was blocked (recipient_mismatch), or the sending domain is not verified.");
+          await moveToDlq(supabase, queue, msg, 'Emails disabled for this project (check domain verification and integration mode)')
           return new Response(
             JSON.stringify({ processed: totalProcessed, stopped: 'emails_disabled' }),
             { headers: { 'Content-Type': 'application/json' } }
