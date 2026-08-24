@@ -110,9 +110,12 @@ export default function RelatorioProducao() {
       const endYear = Number(mes) === 12 ? Number(ano) + 1 : Number(ano);
       const endDate = `${endYear}-${String(endMonth).padStart(2, "0")}-01`;
 
+      // Escopo obrigatório: dados apenas da empresa ativa (isolamento multiempresa)
+      const empId = empresaAtiva?.id;
+      const scoped = (q: any) => (empId ? q.eq("empresa_id", empId) : q);
       const [prodRes, produtosRes] = await Promise.all([
-        supabase.from("producao").select("produto, quantidade").gte("data", startDate).lt("data", endDate),
-        supabase.from("produtos").select("nome, classificacao, especie_alvo"),
+        scoped(supabase.from("producao").select("produto, quantidade").gte("data", startDate).lt("data", endDate)),
+        scoped(supabase.from("produtos").select("nome, classificacao, especie_alvo")),
       ]);
 
       // Build mapping from produto name to MAPA item

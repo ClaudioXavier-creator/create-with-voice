@@ -200,21 +200,28 @@ export default function Relatorios() {
       const now = new Date();
       const dataGeracao = now.toLocaleString("pt-BR");
 
+      // Escopo obrigatório: todos os dados do relatório anual são da empresa ativa
+      const empId = empresaAtiva?.id;
+      const scoped = (q: any) => (empId ? q.eq("empresa_id", empId) : q);
+
       const [empresaRes, prodRes, recebRes, ncRes, treinRes, pragRes, execRes, checkRes, calibRes, limpRes, analisesRes, rastRes, reclamRes] = await Promise.all([
-        supabase.from("empresas").select("*").limit(1).single(),
-        supabase.from("producao").select("*").gte("data", anoStart).lte("data", anoEnd),
-        supabase.from("recebimento_mp").select("*").gte("data", anoStart).lte("data", anoEnd),
-        supabase.from("nao_conformidades").select("*").gte("data", anoStart).lte("data", anoEnd),
-        supabase.from("treinamentos").select("*").gte("data", anoStart).lte("data", anoEnd),
-        supabase.from("controle_pragas").select("*").gte("data", anoStart).lte("data", anoEnd),
-        supabase.from("execucao_pops").select("*").gte("data_execucao", anoStart).lte("data_execucao", anoEnd),
-        supabase.from("checklist_items").select("*").gte("auditoria_data", anoStart).lte("auditoria_data", anoEnd),
-        supabase.from("calibracoes").select("*"),
-        supabase.from("registros_limpeza").select("*").gte("data_execucao", anoStart).lte("data_execucao", anoEnd),
-        supabase.from("analises_laboratorio").select("*").gte("data_analise", anoStart).lte("data_analise", anoEnd),
-        supabase.from("rastreabilidade").select("*"),
-        supabase.from("reclamacoes_qualidade").select("*").gte("data_reclamacao", anoStart).lte("data_reclamacao", anoEnd),
+        empId
+          ? supabase.from("empresas").select("*").eq("id", empId).maybeSingle()
+          : supabase.from("empresas").select("*").limit(1).maybeSingle(),
+        scoped(supabase.from("producao").select("*").gte("data", anoStart).lte("data", anoEnd)),
+        scoped(supabase.from("recebimento_mp").select("*").gte("data", anoStart).lte("data", anoEnd)),
+        scoped(supabase.from("nao_conformidades").select("*").gte("data", anoStart).lte("data", anoEnd)),
+        scoped(supabase.from("treinamentos").select("*").gte("data", anoStart).lte("data", anoEnd)),
+        scoped(supabase.from("controle_pragas").select("*").gte("data", anoStart).lte("data", anoEnd)),
+        scoped(supabase.from("execucao_pops").select("*").gte("data_execucao", anoStart).lte("data_execucao", anoEnd)),
+        scoped(supabase.from("checklist_items").select("*").gte("auditoria_data", anoStart).lte("auditoria_data", anoEnd)),
+        scoped(supabase.from("calibracoes").select("*")),
+        scoped(supabase.from("registros_limpeza").select("*").gte("data_execucao", anoStart).lte("data_execucao", anoEnd)),
+        scoped(supabase.from("analises_laboratorio").select("*").gte("data_analise", anoStart).lte("data_analise", anoEnd)),
+        scoped(supabase.from("rastreabilidade").select("*")),
+        scoped(supabase.from("reclamacoes_qualidade").select("*").gte("data_reclamacao", anoStart).lte("data_reclamacao", anoEnd)),
       ]);
+
 
       const emp = (empresaRes.data || {}) as any;
       const prod = prodRes.data || [];
@@ -372,10 +379,12 @@ ${(() => {
       fullCsv += `\n`;
 
       for (const mod of modulesToExport) {
-        const { data, error } = await supabase
+        let modQuery = supabase
           .from(mod.table)
           .select("*")
           .order("created_at", { ascending: false });
+        if (empresaAtiva?.id) modQuery = modQuery.eq("empresa_id", empresaAtiva.id);
+        const { data, error } = await modQuery;
 
         if (error) {
           toast.error(`Erro ao exportar ${mod.label}`);
@@ -584,7 +593,9 @@ ${(() => {
                       for (const key of selectedModules) {
                         const mod = EXPORT_MODULES.find(m => m.key === key);
                         if (!mod) continue;
-                        const { data } = await supabase.from(mod.table).select("*").order("created_at", { ascending: false });
+                        let pdfQuery = supabase.from(mod.table).select("*").order("created_at", { ascending: false });
+                        if (empresaAtiva?.id) pdfQuery = pdfQuery.eq("empresa_id", empresaAtiva.id);
+                        const { data } = await pdfQuery;
                         const labels = COLUMN_LABELS[mod.key] || {};
                         const cols = Object.keys(labels);
                         gerarRelatorioPDF({
