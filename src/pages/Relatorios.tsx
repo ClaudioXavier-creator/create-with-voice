@@ -593,7 +593,9 @@ ${(() => {
                       for (const key of selectedModules) {
                         const mod = EXPORT_MODULES.find(m => m.key === key);
                         if (!mod) continue;
-                        const { data } = await supabase.from(mod.table).select("*").order("created_at", { ascending: false });
+                        let pdfQuery = supabase.from(mod.table).select("*").order("created_at", { ascending: false });
+                        if (empresaAtiva?.id) pdfQuery = pdfQuery.eq("empresa_id", empresaAtiva.id);
+                        const { data } = await pdfQuery;
                         const labels = COLUMN_LABELS[mod.key] || {};
                         const cols = Object.keys(labels);
                         gerarRelatorioPDF({
