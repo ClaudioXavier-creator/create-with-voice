@@ -232,6 +232,9 @@ const CHECKLIST_RESERVATORIO: { area: string; itens: string[] }[] = [
 export default function HigieneSanitizacao() {
   const { user } = useAuth();
   const { empresaAtiva } = useEmpresa();
+  const empId = empresaAtiva?.id;
+  /** Restringe qualquer consulta à empresa ativa (isolamento multiempresa). */
+  const scope = <T,>(q: T): T => (empId ? (q as any).eq("empresa_id", empId) : q);
   const navigate = useNavigate();
 
   const qc = useQueryClient();
