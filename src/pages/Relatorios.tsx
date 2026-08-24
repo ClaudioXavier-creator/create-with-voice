@@ -379,10 +379,12 @@ ${(() => {
       fullCsv += `\n`;
 
       for (const mod of modulesToExport) {
-        const { data, error } = await supabase
+        let modQuery = supabase
           .from(mod.table)
           .select("*")
           .order("created_at", { ascending: false });
+        if (empresaAtiva?.id) modQuery = modQuery.eq("empresa_id", empresaAtiva.id);
+        const { data, error } = await modQuery;
 
         if (error) {
           toast.error(`Erro ao exportar ${mod.label}`);
