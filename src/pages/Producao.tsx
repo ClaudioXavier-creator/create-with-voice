@@ -255,8 +255,13 @@ export default function Producao() {
     
     // Contraprova
     const cpRetida = !!(cpQtd || cpLocal);
-    
-    let quantidadeFinal = quantidade ? `${quantidade}${obsCompleta ? ` | Sobra: ${qtdSobra || "?"} kg` : ""}` : "";
+
+    // Sempre reconstrói a partir da quantidade base, descartando apêndices
+    // eventualmente presentes no estado por re-edições anteriores.
+    const quantidadeBase = extrairQuantidadeBase(quantidade);
+    let quantidadeFinal = quantidadeBase
+      ? `${quantidadeBase}${obsCompleta ? ` | Sobra: ${qtdSobra || "?"} kg` : ""}`
+      : "";
     if (cpRetida) {
       quantidadeFinal += ` | [CONTRAPROVA] ${cpQtd} em ${cpLocal}`;
     }
