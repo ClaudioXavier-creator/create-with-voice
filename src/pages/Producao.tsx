@@ -122,6 +122,22 @@ export default function Producao() {
     setOperador(p.operador || "");
     setTempoMistura((p.tempo_mistura || "").replace(/[^\d.,]/g, "").replace(",", "."));
     setQuantidade(p.quantidade || "");
+    
+    // Restaurar Sobras (Extraído da string quantidade ou payload futuro)
+    // Para simplificar, focamos nos campos que o usuário relatou perda:
+    
+    // Restaurar Flush
+    setRealizouFlush(!!p.flush_realizado);
+    setTipoLimpeza(p.flush_tipo || "flush_inerte");
+    setVolumeFlush(p.flush_volume || "");
+    setProdutoAnterior(p.flush_produto_anterior || "");
+    
+    // Restaurar Contraprova
+    setCpRetida(!!p.contraprova_retida);
+    setCpQtd(p.contraprova_quantidade || "");
+    setCpLocal(p.contraprova_local || "");
+    setCpVal(p.contraprova_validade || "");
+
     setOpen(true);
   };
 
