@@ -17,7 +17,7 @@
 //    - Ativados triggers de auditoria nas tabelas faltantes (`modelos_empresa`, `registros_customizados`).
 //    - Implementado log manual de autoria na função de restore (backup-manager) para superar a limitação de contexto do `service_role`.
 //
-// quero o teste do backup
+// realize o teste de backup completo
 // Load the security issues from the scan results and fix the selected issues.
 // Segurança: Aplicada correção para SECURITY DEFINER (search_path e revogação de EXECUTE público).
 // Auditoria: Reduzidas vulnerabilidades de 44 para 16 (restantes são necessárias para a lógica do app).
