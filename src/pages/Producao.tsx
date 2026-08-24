@@ -73,6 +73,12 @@ export default function Producao() {
   const [produtoAnterior, setProdutoAnterior] = useState("");
   const [prodAnteriorMedicado, setProdAnteriorMedicado] = useState(false);
   const [obsFlush, setObsFlush] = useState("");
+  
+  // Contraprova
+  const [cpRetida, setCpRetida] = useState(false);
+  const [cpQtd, setCpQtd] = useState("");
+  const [cpLocal, setCpLocal] = useState("");
+  const [cpVal, setCpVal] = useState("");
 
   // --- Persistência de rascunho (sessionStorage) ---
   const DRAFT_KEY = "draft_producao_form";
