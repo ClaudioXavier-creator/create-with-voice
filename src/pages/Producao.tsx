@@ -93,6 +93,7 @@ export default function Producao() {
       setHouveSobra(!!d.houveSobra); setQtdSobra(d.qtdSobra || ""); setDestinoSobra(d.destinoSobra || "reprocesso"); setObsSobra(d.obsSobra || "");
       setRealizouFlush(!!d.realizouFlush); setTipoLimpeza(d.tipoLimpeza || "flush_inerte"); setVolumeFlush(d.volumeFlush || "");
       setProdutoAnterior(d.produtoAnterior || ""); setProdAnteriorMedicado(!!d.prodAnteriorMedicado); setObsFlush(d.obsFlush || "");
+      setCpRetida(!!d.cpRetida); setCpQtd(d.cpQtd || ""); setCpLocal(d.cpLocal || ""); setCpVal(d.cpVal || "");
     } catch { /* rascunho inválido — ignora */ }
   }, []);
 
