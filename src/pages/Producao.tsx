@@ -28,6 +28,16 @@ interface ProdRow {
   tempo_mistura: string | null;
   quantidade: string | null;
   status?: string | null;
+  // Campos de Flush
+  flush_realizado?: boolean;
+  flush_tipo?: string;
+  flush_volume?: string;
+  flush_produto_anterior?: string;
+  // Campos de Contraprova
+  contraprova_retida?: boolean;
+  contraprova_local?: string;
+  contraprova_validade?: string;
+  contraprova_quantidade?: string;
 }
 
 const TEMPO_MISTURA_MINIMO = 3; // minutos — padrão IN 04/2007
