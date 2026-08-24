@@ -525,7 +525,7 @@ export default function HigieneSanitizacao() {
 
   const addCronograma = useMutation({
     mutationFn: async () => {
-      const { error } = await supabase.from("cronogramas_higiene").insert({ ...form, user_id: user!.id });
+      const { error } = await supabase.from("cronogramas_higiene").insert({ ...form, user_id: user!.id, empresa_id: empId ?? null });
       if (error) throw error;
     },
     onSuccess: () => { qc.invalidateQueries({ queryKey: ["cronogramas_higiene"] }); toast.success("Cronograma cadastrado"); setOpenCronograma(false); setForm({ area: "", equipamento: "", procedimento: "", produto_utilizado: "", concentracao: "", frequencia: "diario", responsavel: "", horario_previsto: "", observacoes: "" }); },
@@ -534,7 +534,7 @@ export default function HigieneSanitizacao() {
 
   const addRegistro = useMutation({
     mutationFn: async () => {
-      const payload = { ...regForm, user_id: user!.id, tipo_limpeza: (regForm as any).tipo_limpeza || "umida" };
+      const payload = { ...regForm, user_id: user!.id, empresa_id: empId ?? null, tipo_limpeza: (regForm as any).tipo_limpeza || "umida" };
       const { data, error } = await supabase.from("registros_limpeza").insert(payload as any).select().single();
       if (error) throw error;
       
@@ -577,7 +577,7 @@ export default function HigieneSanitizacao() {
       ].filter(Boolean).join("\n");
 
       const { error } = await supabase.from("execucao_pops").insert({
-        user_id: user!.id,
+        user_id: user!.id, empresa_id: empId ?? null,
         codigo_pop: "POP-04-AGUA",
         nome_pop: "Controle Potabilidade da Água",
         executor: aguaForm.responsavel,
