@@ -63,10 +63,10 @@ const POP02_LIMPEZA_ITENS = ["Pisos limpos", "Paredes limpas", "Equipamentos lim
 const POP03_HIGIENE_PESSOAL_ITENS = ["Colaborador sem sintomas", "ASO válido", "Exame admissional/periódico em dia", "Exame retorno realizado", "Uniforme limpo", "Uso de EPIs", "Ausência de adornos", "Unhas curtas/sem esmalte", "Barba aparada", "Ausência de ferimentos", "Sem perfume/maquiagem", "Mãos lavadas", "BPF orientado", "Capacitação válida", "Triagem diária preenchida", "Apto médico"];
 // POP 04 = Potabilidade da água
 const POP04_AGUA_ITENS = ["Cloro residual (0,2-2,0mg/L)", "pH (6,0-9,5)", "Turbidez (≤ 5 NTU)", "Ausência de odor", "Reservatório com tampa", "Laudo laboratorial mensal", "Certificado de limpeza", "Ponto de coleta identificado", "Laudo microbiológico", "Registro de tratamento"];
-// POP 05 = Armazenamento de matérias-primas e produtos acabados
-const POP05_ARMAZENAMENTO_ITENS = ["Paletes em bom estado", "Distância mínima de paredes", "Empilhamento adequado", "Identificação de lotes", "Segregação de produtos medicados", "Ausência de sinais de pragas", "Ventilação/temperatura adequadas", "Ausência de umidade/infiltração", "Produtos químicos em área isolada", "Controle PEPS aplicado"];
-// POP 09 = Transporte / expedição
-const POP09_VEICULO_ITENS = ["Carroceria limpa", "Ausência de odor", "Lona em bom estado", "Ausência de pragas", "Sem carga proibida", "Lacre íntegro", "DANFE completa", "Temperatura adequada"];
+// POP 05 = Controle da produção e prevenção de contaminação cruzada
+const POP05_PRODUCAO_ITENS = ["Ordem de produção conferida", "Fórmula e versão aprovadas", "Matérias-primas liberadas", "Dosagem conferida", "Sequenciamento respeitado", "Flushing executado quando aplicável", "Carry-over controlado", "Tempo de mistura validado", "Lote identificado", "Contraprova coletada", "Rendimento verificado", "Liberação registrada"];
+// POP 09 = Rastreabilidade e recolhimento (recall)
+const POP09_RASTREABILIDADE_ITENS = ["Lote identificado", "Matérias-primas rastreáveis", "Fornecedores vinculados", "Clientes/destinos vinculados", "Quantidades conciliadas", "Documentos de expedição disponíveis", "Teste de rastreabilidade vigente", "Plano de recolhimento disponível", "Contatos de crise atualizados", "Tempo de resposta registrado"];
 
 const POPS_PERIODICIDADE: Record<string, number> = {
   "POP-01": 30, "POP-02": 7, "POP-03": 30, "POP-04": 30, "POP-05": 7, "POP-06": 7, "POP-07": 30, "POP-08": 90, "POP-09": 30, "POP-10": 30,
@@ -125,7 +125,7 @@ export default function ExecucaoPops() {
   const isPOP04 = selectedDoc?.codigo?.includes("POP-04");
   const isPOP05 = selectedDoc?.codigo?.includes("POP-05");
   const isPOP09 = selectedDoc?.codigo?.includes("POP-09");
-  const activeChecklist = isPOP02 ? POP02_LIMPEZA_ITENS : isPOP03 ? POP03_HIGIENE_PESSOAL_ITENS : isPOP04 ? POP04_AGUA_ITENS : isPOP05 ? POP05_ARMAZENAMENTO_ITENS : isPOP09 ? POP09_VEICULO_ITENS : null;
+  const activeChecklist = isPOP02 ? POP02_LIMPEZA_ITENS : isPOP03 ? POP03_HIGIENE_PESSOAL_ITENS : isPOP04 ? POP04_AGUA_ITENS : isPOP05 ? POP05_PRODUCAO_ITENS : isPOP09 ? POP09_RASTREABILIDADE_ITENS : null;
 
   const handleAdd = async () => {
     if (!selectedDoc || !executor || !user) return;

@@ -126,8 +126,9 @@ export default function ArmazenamentoTransporte() {
 
   // Fetch records
   const { data: registros = [] } = useQuery({
-    queryKey: ["armazenamento_transporte_pops"],
+    queryKey: ["armazenamento_transporte_pops", empresaAtiva?.id],
     queryFn: async () => {
+      if (!empresaAtiva?.id) return [];
       const { data, error } = await supabase
         .from("execucao_pops")
         .select("*")
@@ -137,11 +138,13 @@ export default function ArmazenamentoTransporte() {
           "POP-01-DEPOSITO", "POP-DEPOSITO",
           "POP-01-TEMP-UMID", "POP-TEMP-UMID",
         ])
+        .eq("empresa_id", empresaAtiva.id)
         .order("data_execucao", { ascending: false })
         .limit(200);
       if (error) throw error;
       return data;
     },
+    enabled: !!empresaAtiva?.id,
   });
 
   const veicRegistros = registros.filter((r: any) => r.codigo_pop?.includes("VEICULO"));
@@ -149,7 +152,7 @@ export default function ArmazenamentoTransporte() {
   const tempRegistros = registros.filter((r: any) => r.codigo_pop?.includes("TEMP-UMID"));
 
   const saveVeiculoInspecao = async () => {
-    if (!user || !veicResp) return;
+    if (!user || !empresaAtiva?.id || !veicResp) return;
     setSavingVeic(true);
     const totalItens = CHECKLIST_VEICULO.flatMap(a => a.itens).length;
     const conformes = Object.values(veicChecklist).filter(Boolean).length;
@@ -167,7 +170,7 @@ export default function ArmazenamentoTransporte() {
     ].filter(Boolean).join("\n");
 
     const { error } = await supabase.from("execucao_pops").insert({
-      user_id: user.id, empresa_id: empresaAtiva?.id || null,
+      user_id: user.id, empresa_id: empresaAtiva.id,
       codigo_pop: "POP-02-VEICULO",
       nome_pop: "PL POP 2.4 — Inspeção/Higiene de Veículo de Transporte",
       executor: veicResp,
@@ -190,7 +193,7 @@ export default function ArmazenamentoTransporte() {
   };
 
   const saveDepositoInspecao = async () => {
-    if (!user || !depResp) return;
+    if (!user || !empresaAtiva?.id || !depResp) return;
     setSavingDep(true);
     const totalItens = CHECKLIST_DEPOSITO.flatMap(a => a.itens).length;
     const conformes = Object.values(depChecklist).filter(Boolean).length;
@@ -207,7 +210,7 @@ export default function ArmazenamentoTransporte() {
     ].filter(Boolean).join("\n");
 
     const { error } = await supabase.from("execucao_pops").insert({
-      user_id: user.id, empresa_id: empresaAtiva?.id || null,
+      user_id: user.id, empresa_id: empresaAtiva.id,
       codigo_pop: "POP-01-DEPOSITO",
       nome_pop: "Inspeção de Depósito / Armazém (Armazenamento de MP)",
       executor: depResp,
@@ -231,7 +234,7 @@ export default function ArmazenamentoTransporte() {
   };
 
   const saveLogTempUmid = async () => {
-    if (!user || !logResp) return;
+    if (!user || !empresaAtiva?.id || !logResp) return;
     setSavingLog(true);
     const tempNum = parseFloat(logTemp);
     const umidNum = parseFloat(logUmid);
@@ -248,7 +251,7 @@ export default function ArmazenamentoTransporte() {
     ].filter(Boolean).join("\n");
 
     const { error } = await supabase.from("execucao_pops").insert({
-      user_id: user.id, empresa_id: empresaAtiva?.id || null,
+      user_id: user.id, empresa_id: empresaAtiva.id,
       codigo_pop: "POP-01-TEMP-UMID",
       nome_pop: "Monitoramento de Temperatura e Umidade (Armazenamento)",
       executor: logResp,
