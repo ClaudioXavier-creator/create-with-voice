@@ -81,6 +81,7 @@ export const NAV_ENTRIES: NavEntry[] = [
     items: [
       { path: "/fornecedores", label: "Qualificação de Fornecedores", icon: Users, keywords: ["parceiros", "compras", "homologação"] },
       { path: "/recebimento", label: "Recebimento de Matéria Prima e Embalagens", icon: ClipboardList, keywords: ["matéria-prima", "conferência", "entrada", "embalagens"] },
+      { path: "/armazenamento-transporte", label: "Armazenamento e Higiene do Transporte (POP 01/02)", icon: Truck, keywords: ["estocagem", "veículo", "carga", "eeb"] },
     ],
   },
   {
@@ -114,7 +115,6 @@ export const NAV_ENTRIES: NavEntry[] = [
       { path: "/status-lotes", label: "Status & Fila de Lotes", icon: Tag, keywords: ["estoque", "fifo", "bloqueio", "mp"] },
       { path: "/analises", label: "Análises Laboratoriais", icon: FlaskConical, keywords: ["laudo", "laboratório", "amostra", "resultado"] },
       { path: "/substancias", label: "Substâncias Restritas (IN 17/2017)", icon: ShieldAlert, keywords: ["ractopamina", "medicamento", "aditivo", "proibido"] },
-      { path: "/armazenamento-transporte", label: "Armazenamento e Transporte", icon: Truck, keywords: ["estocagem", "veículo", "carga", "eeb"] },
     ],
   },
   { path: "/manutencao", label: "POP 06 - Manutenção e Calibração de Equipamentos e Instrumentos", icon: Wrench, keywords: ["máquinas", "equipamentos", "reparo", "calibração", "inventário"] },

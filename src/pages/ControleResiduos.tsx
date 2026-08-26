@@ -61,17 +61,20 @@ export default function ControleResiduos() {
   const isEfluente = ["Efluente líquido", "Efluente industrial", "Água de lavagem"].includes(form.tipo_residuo);
 
   const { data: residuos = [] } = useQuery({
-    queryKey: ["controle_residuos"],
+    queryKey: ["controle_residuos", empresaAtiva?.id],
     queryFn: async () => {
-      const { data, error } = await supabase.from("controle_residuos").select("*").order("data_coleta", { ascending: false });
+      if (!empresaAtiva?.id) return [];
+      const { data, error } = await supabase.from("controle_residuos").select("*").eq("empresa_id", empresaAtiva.id).order("data_coleta", { ascending: false });
       if (error) throw error;
       return data;
     },
+    enabled: !!empresaAtiva?.id,
   });
 
   const add = useMutation({
     mutationFn: async () => {
-      const { error } = await supabase.from("controle_residuos").insert({ ...form, user_id: user!.id, empresa_id: empresaAtiva?.id || null });
+      if (!user || !empresaAtiva?.id) throw new Error("Selecione uma empresa antes de registrar resíduos.");
+      const { error } = await supabase.from("controle_residuos").insert({ ...form, user_id: user.id, empresa_id: empresaAtiva.id });
       if (error) throw error;
 
       // Auto-register in execucao_pops for discarded products (IN 15/2009)
@@ -91,7 +94,8 @@ export default function ControleResiduos() {
         ].filter(Boolean).join("\n");
 
         await supabase.from("execucao_pops").insert({
-          user_id: user!.id,
+          user_id: user.id,
+          empresa_id: empresaAtiva.id,
           codigo_pop: "POP-08-DESCARTE",
           nome_pop: "Registro de Descarte de Produto",
           executor: form.responsavel || "—",

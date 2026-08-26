@@ -69,41 +69,50 @@ export default function Treinamentos() {
 
   // ── Queries ──
   const { data: treinamentos = [] } = useQuery({
-    queryKey: ["treinamentos"],
+    queryKey: ["treinamentos", empresaAtiva?.id],
     queryFn: async () => {
-      const { data, error } = await supabase.from("treinamentos").select("*").order("data", { ascending: false }).then(r => empresaAtiva ? { ...r, data: r.data?.filter((d: any) => d.empresa_id === empresaAtiva.id) || null } : r);
+      if (!empresaAtiva?.id) return [];
+      const { data, error } = await supabase.from("treinamentos").select("*").eq("empresa_id", empresaAtiva.id).order("data", { ascending: false });
       if (error) throw error;
       return data;
     },
+    enabled: !!empresaAtiva?.id,
   });
 
   const { data: checklist_asos = [] } = useQuery({
-    queryKey: ["saude_manipuladores"],
+    queryKey: ["saude_manipuladores", empresaAtiva?.id],
     queryFn: async () => {
+      if (!empresaAtiva?.id) return [];
       const { data, error } = await supabase.from("saude_manipuladores" as any).select("*")
+        .eq("empresa_id", empresaAtiva.id)
         .order("data_exame", { ascending: false });
       if (error) throw error;
       return data as any[];
     },
+    enabled: !!empresaAtiva?.id,
   });
 
   const { data: triagens = [] } = useQuery({
-    queryKey: ["triagens_higiene"],
+    queryKey: ["triagens_higiene", empresaAtiva?.id],
     queryFn: async () => {
+      if (!empresaAtiva?.id) return [];
       const { data, error } = await supabase.from("execucao_pops").select("*")
-        .eq("codigo_pop", "TRIAGEM-POP03").order("data_execucao", { ascending: false }).limit(100);
+        .eq("empresa_id", empresaAtiva.id).eq("codigo_pop", "TRIAGEM-POP03").order("data_execucao", { ascending: false }).limit(100);
       if (error) throw error;
       return data;
     },
+    enabled: !!empresaAtiva?.id,
   });
 
   // ── Mutations ──
   const addTreino = useMutation({
     mutationFn: async () => {
+      if (!user || !empresaAtiva?.id) throw new Error("Selecione uma empresa antes de registrar a triagem.");
       const { error } = await supabase.from("treinamentos").insert({
         ...treinoForm,
         validade: treinoForm.validade || null,
-        user_id: user!.id,
+        user_id: user.id,
+        empresa_id: empresaAtiva.id,
         empresa_id: empresaAtiva?.id || null,
       });
       if (error) throw error;

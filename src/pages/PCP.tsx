@@ -225,8 +225,8 @@ export default function PCP() {
         (() => { let q = supabase.from("formula_itens").select("*").order("created_at"); if (empresaAtiva) q = q.eq("empresa_id", empresaAtiva.id); return q; })(),
         (() => { let q = supabase.from("batidas_producao").select("*").order("numero_batida"); if (empresaAtiva) q = q.eq("empresa_id", empresaAtiva.id); return q; })(),
         (() => { let q = supabase.from("matriz_sensibilidade").select("*").order("produto_anterior"); if (empresaAtiva) q = q.eq("empresa_id", empresaAtiva.id); return q; })(),
-        supabase.from("execucao_pops").select("*").eq("codigo_pop", "POP-CARRYOVER").order("data_execucao", { ascending: false }).limit(100),
-        supabase.from("execucao_pops").select("*").eq("codigo_pop", "POP-FLUSH").order("data_execucao", { ascending: false }).limit(100),
+        (() => { let q = supabase.from("execucao_pops").select("*").eq("codigo_pop", "POP-CARRYOVER").order("data_execucao", { ascending: false }).limit(100); if (empresaAtiva) q = q.eq("empresa_id", empresaAtiva.id); return q; })(),
+        (() => { let q = supabase.from("execucao_pops").select("*").eq("codigo_pop", "POP-FLUSH").order("data_execucao", { ascending: false }).limit(100); if (empresaAtiva) q = q.eq("empresa_id", empresaAtiva.id); return q; })(),
         (() => { let q = supabase.from("formulas" as any).select("*").order("status").order("data_versao", { ascending: false }); if (empresaAtiva) q = q.eq("empresa_id", empresaAtiva.id); return q; })(),
       ]);
       if (ordensRes.data) setOrdens(ordensRes.data as unknown as OrdemProd[]);
