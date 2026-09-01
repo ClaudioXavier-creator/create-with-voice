@@ -1,4 +1,5 @@
 import { createClient } from 'npm:@supabase/supabase-js@2'
+import { sendTemplateEmailLogged } from '../_shared/transactional-email-templates/send-and-log.ts'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -62,15 +63,14 @@ Deno.serve(async (req) => {
   let status = 'enviado'
   let erro: string | null = null
   try {
-    const res = await admin.functions.invoke('send-transactional-email', {
-      body: {
-        templateName: 'crm-message',
-        recipientEmail: para,
-        idempotencyKey: messageId,
-        templateData: { assunto, corpo_html: corpoHtml, remetente_nome: remetenteNome },
-      },
+    const res = await sendTemplateEmailLogged(admin, 'crm-message', para, {
+      idempotencyKey: messageId,
+      templateData: { assunto, corpo_html: corpoHtml, remetente_nome: remetenteNome },
     })
-    if (res.error) throw res.error
+    if (!res.sent) {
+      status = 'suprimido'
+      erro = 'Destinatário bloqueado para novos envios (bounce/spam/descadastro)'
+    }
   } catch (e) {
     status = 'falhou'
     erro = String(e)
