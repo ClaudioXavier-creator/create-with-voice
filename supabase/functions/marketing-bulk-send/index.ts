@@ -1,4 +1,5 @@
 import { createClient } from 'npm:@supabase/supabase-js@2'
+import { sendTemplateEmailLogged } from '../_shared/transactional-email-templates/send-and-log.ts'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -49,25 +50,49 @@ Deno.serve(async (req) => {
       if (!rec.email) continue
       
       const messageId = `marketing-${crypto.randomUUID()}`
-      
-      // We'll call the send-transactional-email function or use the RPC directly
-      // Using the RPC is faster for bulk
-      const { error: enqueueError } = await admin.functions.invoke('send-transactional-email', {
-        body: {
-          templateName: 'crm-message',
-          recipientEmail: rec.email,
+
+      let sendError: string | null = null
+      let delivered = false
+      try {
+        const res = await sendTemplateEmailLogged(admin, 'crm-message', rec.email, {
+          idempotencyKey: messageId,
           templateData: {
             assunto: emailSubject.replace('{{nome}}', rec.nome || 'Cliente'),
             corpo_html: emailBodyHtml.replace('{{nome}}', rec.nome || 'Cliente'),
             remetente_nome: senderName
           }
+        })
+        delivered = res.sent
+        if (!res.sent) sendError = 'recipient_suppressed'
+      } catch (e) {
+        // 429: respeitar a janela informada antes de tentar novamente uma vez.
+        const status = (e as { status?: number })?.status
+        if (status === 429) {
+          const wait = (e as { retryAfterSeconds?: number | null })?.retryAfterSeconds ?? 60
+          await new Promise((r) => setTimeout(r, wait * 1000))
+          try {
+            const retry = await sendTemplateEmailLogged(admin, 'crm-message', rec.email, {
+              idempotencyKey: messageId,
+              templateData: {
+                assunto: emailSubject.replace('{{nome}}', rec.nome || 'Cliente'),
+                corpo_html: emailBodyHtml.replace('{{nome}}', rec.nome || 'Cliente'),
+                remetente_nome: senderName
+              }
+            })
+            delivered = retry.sent
+            if (!retry.sent) sendError = 'recipient_suppressed'
+          } catch (retryErr) {
+            sendError = String(retryErr)
+          }
+        } else {
+          sendError = String(e)
         }
-      })
+      }
 
-      results.push({ email: rec.email, success: !enqueueError, error: enqueueError })
-      
+      results.push({ email: rec.email, success: delivered, error: sendError })
+
       // Optional: Add to CRM interaction history if it's a pipeline lead
-      if (rec.pipeline_id && !enqueueError) {
+      if (rec.pipeline_id && delivered) {
         await admin.from('crm_interacoes').insert({
           pipeline_id: rec.pipeline_id,
           tipo: 'email',
