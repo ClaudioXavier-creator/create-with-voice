@@ -1,17 +1,15 @@
 project_id = "uyrcxfypdzasdminxizq"
 
-[functions.google-forms-webhook]
-verify_jwt = false
-
-[functions.evolution-webhook]
-verify_jwt = false
-
-[functions.handle-email-unsubscribe]
-verify_jwt = false
-
-[functions.handle-email-suppression]
-verify_jwt = false
-
-[functions.export-storage]
-verify_jwt = false
-
+[functions]
+  [functions.auth-email-hook]
+    verify_jwt = false
+  [functions.evolution-webhook]
+    verify_jwt = false
+  [functions.export-storage]
+    verify_jwt = false
+  [functions.google-forms-webhook]
+    verify_jwt = false
+  [functions.handle-email-suppression]
+    verify_jwt = false
+  [functions.handle-email-unsubscribe]
+    verify_jwt = false
