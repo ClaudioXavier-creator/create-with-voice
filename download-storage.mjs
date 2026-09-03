@@ -61,9 +61,9 @@ async function run() {
   try {
     const response = await new Promise((resolve, reject) => {
       const url = new URL(exportUrl);
-      url.searchParams.set("token", token);
-      
-      https.get(url, (res) => {
+
+      // Token SEMPRE via header (query string vaza em logs/histórico/Referer).
+      https.get(url, { headers: { "x-export-token": token } }, (res) => {
         let data = "";
         res.on("data", (chunk) => (data += chunk));
         res.on("end", () => {
