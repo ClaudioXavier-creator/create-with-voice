@@ -93,6 +93,12 @@ Deno.serve(async (req) => {
     erro,
     message_id: messageId,
   })
+  if (histErro) {
+    console.error('Falha ao gravar histórico de e-mail do CRM', {
+      code: histErro.code,
+      message: histErro.message,
+    })
+  }
 
   // Registrar interação automaticamente
   if (status === 'enviado') {
