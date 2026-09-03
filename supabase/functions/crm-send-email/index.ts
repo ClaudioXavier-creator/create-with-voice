@@ -112,7 +112,7 @@ Deno.serve(async (req) => {
   }
 
   return new Response(
-    JSON.stringify({ ok: status === 'enviado', status, erro }),
+    JSON.stringify({ ok: status === 'enviado', status: suprimido ? 'suprimido' : status, erro }),
     { status: status === 'enviado' ? 200 : 502, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
   )
 })
