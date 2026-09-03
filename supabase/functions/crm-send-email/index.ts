@@ -60,15 +60,19 @@ Deno.serve(async (req) => {
 
   const messageId = `crm-${pipelineId}-${Date.now()}`
 
-  let status = 'enviado'
+  // `crm_emails_enviados.status` aceita apenas 'enviado' | 'falhou' (CHECK).
+  // Supressão é registrada como 'falhou' com o motivo explícito em `erro`.
+  let status: 'enviado' | 'falhou' = 'enviado'
   let erro: string | null = null
+  let suprimido = false
   try {
     const res = await sendTemplateEmailLogged(admin, 'crm-message', para, {
       idempotencyKey: messageId,
       templateData: { assunto, corpo_html: corpoHtml, remetente_nome: remetenteNome },
     })
     if (!res.sent) {
-      status = 'suprimido'
+      status = 'falhou'
+      suprimido = true
       erro = 'Destinatário bloqueado para novos envios (bounce/spam/descadastro)'
     }
   } catch (e) {
@@ -78,7 +82,7 @@ Deno.serve(async (req) => {
   }
 
   // Registrar no histórico
-  await admin.from('crm_emails_enviados').insert({
+  const { error: histErro } = await admin.from('crm_emails_enviados').insert({
     pipeline_id: pipelineId,
     para_email: para,
     assunto,
