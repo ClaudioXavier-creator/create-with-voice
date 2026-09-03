@@ -11,9 +11,13 @@ import { exec } from "child_process";
  * Requisitos:
  * 1. Node.js instalado.
  * 2. URL da Edge Function e o Token de Exportação.
- * 
- * Uso:
- * node download-storage.mjs <SUPABASE_URL_OR_FUNCTION_URL> <EXPORT_TOKEN>
+ *
+ * Uso recomendado (token fora do histórico do shell e de `ps`):
+ *   export STORAGE_EXPORT_TOKEN=<token>
+ *   node download-storage.mjs <SUPABASE_URL_OR_FUNCTION_URL>
+ *
+ * Uso legado (ainda aceito, porém menos seguro — emite aviso):
+ *   node download-storage.mjs <SUPABASE_URL_OR_FUNCTION_URL> <EXPORT_TOKEN>
  */
 
 const execAsync = promisify(exec);
@@ -44,11 +48,22 @@ async function downloadFile(url, dest) {
 }
 
 async function run() {
-  const [,, baseUrl, token] = process.argv;
+  const [,, baseUrl, tokenArg] = process.argv;
+
+  // Preferência: variável de ambiente — evita que o token caia no histórico
+  // do shell e na lista de processos (ps). Fallback: argumento de linha de
+  // comando, com aviso explícito do risco.
+  let token = process.env.STORAGE_EXPORT_TOKEN;
+  if (token) {
+    console.log("🔑 Token lido de STORAGE_EXPORT_TOKEN (variável de ambiente).");
+  } else if (tokenArg) {
+    console.warn("⚠️  Token passado como argumento: ele fica visível no histórico do shell e em `ps`. Prefira `export STORAGE_EXPORT_TOKEN=...`.");
+    token = tokenArg;
+  }
 
   if (!baseUrl || !token) {
-    console.error("Uso: node download-storage.mjs <FUNCTION_URL> <EXPORT_TOKEN>");
-    console.log("Exemplo: node download-storage.mjs https://xxxx.supabase.co/functions/v1/export-storage meu-token-seguro");
+    console.error("Uso: STORAGE_EXPORT_TOKEN=<token> node download-storage.mjs <FUNCTION_URL>");
+    console.log("Exemplo: export STORAGE_EXPORT_TOKEN=meu-token-seguro && node download-storage.mjs https://xxxx.supabase.co/functions/v1/export-storage");
     process.exit(1);
   }
 
