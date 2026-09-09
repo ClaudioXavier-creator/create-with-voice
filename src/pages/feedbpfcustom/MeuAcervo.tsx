@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { FolderOpen, AlertTriangle, Link2Off, Upload, ChevronRight, Search, Download, Trash2, Loader2, CheckSquare, Square, FileSpreadsheet } from "lucide-react";
+import { FolderOpen, AlertTriangle, Link2Off, Upload, ChevronRight, Search, Download, Trash2, Loader2, CheckSquare, Square, FileSpreadsheet, Palette } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -336,11 +336,22 @@ export default function MeuAcervo() {
                         <p className="text-sm font-medium truncate">{d.titulo}</p>
                         {d.it_codigo && <Badge variant="secondary" className="text-[9px] font-mono h-4">{d.it_codigo}</Badge>}
                         {d.versao && <Badge variant="outline" className="text-[9px] font-mono h-4 border-emerald-200 text-emerald-700">v{d.versao}</Badge>}
+                        {isArquivoArte(d.arquivo_nome) && (
+                          <Badge
+                            variant="outline"
+                            className="text-[9px] h-4 border-violet-300 text-violet-700 bg-violet-500/10"
+                            title={`Arquivo de arte — abra no ${programaRecomendado(d.arquivo_nome)}. Não abre no Word.`}
+                          >
+                            <Palette className="w-2.5 h-2.5 mr-1" />
+                            arte .{extensaoDe(d.arquivo_nome)}
+                          </Badge>
+                        )}
                       </div>
                       <p className="text-xs text-muted-foreground truncate">
                         {d.arquivo_nome} · {d.data_documento ? new Date(d.data_documento + "T12:00").toLocaleDateString("pt-BR") : "sem data"}
                         {d.frequencia && ` · ${d.frequencia}`}
                       </p>
+
                     </div>
                     <div className="flex items-center gap-2 shrink-0">
                       <Select value={d.pop_codigo || ""} onValueChange={(v) => atualizarPop(d, v)}>
