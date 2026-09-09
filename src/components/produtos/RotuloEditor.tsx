@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
-import { Loader2, Printer, Download, Save, RefreshCw, Settings, Eye, Send, FileText } from "lucide-react";
+import { Loader2, Printer, Download, Save, RefreshCw, Settings, Eye, Send, FileText, FileDown } from "lucide-react";
 import { exportRotuloDocx } from "@/utils/rotuloDocxExport";
+import { exportRotuloPdf } from "@/utils/rotuloPdfExport";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -1217,6 +1218,15 @@ export default function RotuloEditor({ produtoId, produtoNome }: Props) {
     printWindow.document.close();
   }
 
+  async function handleExportPdf() {
+    await exportRotuloPdf({
+      larguraMm: rotulo.largura_mm,
+      alturaMm: rotulo.altura_mm,
+      nomeArquivo: `Rotulo-${(rotulo.nome_comercial || "sem-nome").replace(/[^\w\-]+/g, "_")}`,
+      html: buildPrintHTML(rotulo, niveisObj),
+    });
+  }
+
   const updateField = (field: keyof RotuloData, value: any) => {
     setRotulo((prev) => ({ ...prev, [field]: value }));
   };
@@ -1263,10 +1273,13 @@ export default function RotuloEditor({ produtoId, produtoNome }: Props) {
                     <Download className="w-4 h-4 mr-1" /> Download ZPL
                   </Button>
                   <Button variant="outline" size="sm" onClick={handlePrint}>
-                    <Printer className="w-4 h-4 mr-1" /> PDF / Jato de Tinta
+                    <Printer className="w-4 h-4 mr-1" /> Imprimir
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={handleExportPdf}>
+                    <FileDown className="w-4 h-4 mr-1" /> Exportar PDF
                   </Button>
                   <Button variant="outline" size="sm" onClick={() => exportRotuloDocx(rotulo, niveisObj)}>
-                    <FileText className="w-4 h-4 mr-1" /> Editar no Word
+                    <FileText className="w-4 h-4 mr-1" /> Exportar Word
                   </Button>
                 </div>
               </CardTitle>
@@ -1449,10 +1462,13 @@ export default function RotuloEditor({ produtoId, produtoNome }: Props) {
               <Download className="w-4 h-4 mr-1" /> Download ZPL
             </Button>
             <Button variant="outline" onClick={handlePrint}>
-              <Printer className="w-4 h-4 mr-1" /> Imprimir PDF
+              <Printer className="w-4 h-4 mr-1" /> Imprimir
+            </Button>
+            <Button variant="outline" onClick={handleExportPdf}>
+              <FileDown className="w-4 h-4 mr-1" /> Exportar PDF
             </Button>
             <Button variant="outline" onClick={() => exportRotuloDocx(rotulo, niveisObj)}>
-              <FileText className="w-4 h-4 mr-1" /> Editar no Word
+              <FileText className="w-4 h-4 mr-1" /> Exportar Word
             </Button>
           </div>
         </TabsContent>
