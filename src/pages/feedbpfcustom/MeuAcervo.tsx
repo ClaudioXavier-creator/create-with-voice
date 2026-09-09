@@ -19,6 +19,8 @@ import { useEmpresa } from "@/hooks/useEmpresa";
 import { POPS_CUSTOM } from "@/config/feedBpfCustomConfig";
 import { MODELOS_ASSETS } from "@/config/modelosAssetsMapping";
 import { toast } from "sonner";
+import { baixarArquivoStorage, isArquivoArte, extensaoDe, programaRecomendado } from "@/utils/fileTypes";
+
 
 interface Doc {
   id: string;
@@ -101,14 +103,11 @@ export default function MeuAcervo() {
   const limparSelecao = () => setSelecionados(new Set());
 
   const handleDownload = async (d: Doc) => {
-    const { data, error } = await supabase.storage.from("documentos-bpf").createSignedUrl(d.arquivo_path, 300);
-    if (error || !data?.signedUrl) {
-      const alt = await supabase.storage.from("feed-bpf").createSignedUrl(d.arquivo_path, 300);
-      if (alt.data?.signedUrl) return window.open(alt.data.signedUrl, "_blank");
-      return toast.error("Erro ao gerar link");
-    }
-    window.open(data.signedUrl, "_blank");
+    await baixarArquivoStorage("documentos-bpf", d.arquivo_path, d.arquivo_nome, {
+      bucketsAlternativos: ["feed-bpf"],
+    });
   };
+
 
   const executarExclusao = async () => {
     if (!confirmarExclusao) return;

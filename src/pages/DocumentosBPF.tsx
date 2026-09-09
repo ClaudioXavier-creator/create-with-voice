@@ -144,15 +144,11 @@ export default function DocumentosBPF() {
   };
 
   const handleDownload = async (doc: DocBPF) => {
-    const { data, error } = await supabase.storage
-      .from("feed-bpf")
-      .createSignedUrl(doc.arquivo_path, 300);
-    if (error || !data?.signedUrl) {
-      toast.error("Erro ao gerar link de download");
-      return;
-    }
-    window.open(data.signedUrl, "_blank");
+    await baixarArquivoStorage("feed-bpf", doc.arquivo_path, (doc as any).arquivo_nome || doc.titulo, {
+      bucketsAlternativos: ["documentos-bpf"],
+    });
   };
+
 
   const handleDelete = async (doc: DocBPF) => {
     if (!confirm(`Excluir "${doc.titulo}"?`)) return;
