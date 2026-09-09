@@ -18,6 +18,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useEmpresa } from "@/hooks/useEmpresa";
 import { toast } from "sonner";
+import { baixarArquivoStorage } from "@/utils/fileTypes";
+
 
 const TIPOS_DOC = [
   { value: "pop", label: "POP — Procedimento Operacional Padrão" },
