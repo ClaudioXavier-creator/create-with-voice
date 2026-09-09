@@ -18,6 +18,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useEmpresa } from "@/hooks/useEmpresa";
 import { toast } from "sonner";
+import { baixarArquivoStorage } from "@/utils/fileTypes";
+
 
 const TIPOS_DOC = [
   { value: "pop", label: "POP — Procedimento Operacional Padrão" },
@@ -144,15 +146,11 @@ export default function DocumentosBPF() {
   };
 
   const handleDownload = async (doc: DocBPF) => {
-    const { data, error } = await supabase.storage
-      .from("feed-bpf")
-      .createSignedUrl(doc.arquivo_path, 300);
-    if (error || !data?.signedUrl) {
-      toast.error("Erro ao gerar link de download");
-      return;
-    }
-    window.open(data.signedUrl, "_blank");
+    await baixarArquivoStorage("feed-bpf", doc.arquivo_path, (doc as any).arquivo_nome || doc.titulo, {
+      bucketsAlternativos: ["documentos-bpf"],
+    });
   };
+
 
   const handleDelete = async (doc: DocBPF) => {
     if (!confirm(`Excluir "${doc.titulo}"?`)) return;
