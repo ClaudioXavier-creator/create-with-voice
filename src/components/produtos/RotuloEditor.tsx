@@ -1272,10 +1272,13 @@ export default function RotuloEditor({ produtoId, produtoNome }: Props) {
                     <Download className="w-4 h-4 mr-1" /> Download ZPL
                   </Button>
                   <Button variant="outline" size="sm" onClick={handlePrint}>
-                    <Printer className="w-4 h-4 mr-1" /> PDF / Jato de Tinta
+                    <Printer className="w-4 h-4 mr-1" /> Imprimir
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={handleExportPdf}>
+                    <FileDown className="w-4 h-4 mr-1" /> Exportar PDF
                   </Button>
                   <Button variant="outline" size="sm" onClick={() => exportRotuloDocx(rotulo, niveisObj)}>
-                    <FileText className="w-4 h-4 mr-1" /> Editar no Word
+                    <FileText className="w-4 h-4 mr-1" /> Exportar Word
                   </Button>
                 </div>
               </CardTitle>
