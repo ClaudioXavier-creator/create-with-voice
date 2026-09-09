@@ -48,12 +48,19 @@ export async function exportRotuloPdf({
       logging: false,
     });
 
-    const orientation = larguraMm >= alturaMm ? "landscape" : "portrait";
-    const pdf = new jsPDF({ orientation, unit: "mm", format: [larguraMm, alturaMm] });
-
-    // Mantém a proporção real do conteúdo renderizado dentro da página.
+    // Altura real ocupada pelo conteúdo, na largura do rótulo.
     const proporcao = canvas.height / canvas.width;
-    const alturaImagem = Math.min(alturaMm, larguraMm * proporcao);
+    const alturaConteudoMm = larguraMm * proporcao;
+
+    // Se o conteúdo passar da altura declarada, a página cresce para não cortar nada.
+    const alturaPaginaMm = Math.max(alturaMm, Math.ceil(alturaConteudoMm * 100) / 100);
+
+    const orientation = larguraMm >= alturaPaginaMm ? "landscape" : "portrait";
+    const pdf = new jsPDF({
+      orientation,
+      unit: "mm",
+      format: [larguraMm, alturaPaginaMm],
+    });
 
     pdf.addImage(
       canvas.toDataURL("image/jpeg", 0.95),
@@ -61,9 +68,17 @@ export async function exportRotuloPdf({
       0,
       0,
       larguraMm,
-      alturaImagem,
+      alturaConteudoMm,
     );
     pdf.save(`${nomeArquivo || "rotulo"}.pdf`);
+
+    if (alturaPaginaMm > alturaMm + 0.5) {
+      toast.warning(
+        `PDF gerado com ${alturaPaginaMm.toFixed(0)} mm de altura: o conteúdo não cabe nos ${alturaMm} mm do rótulo.`,
+      );
+      return true;
+    }
+
     toast.success("PDF do rótulo gerado.");
     return true;
   } catch (error) {
