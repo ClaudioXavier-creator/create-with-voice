@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
-import { Loader2, Printer, Download, Save, RefreshCw, Settings, Eye, Send, FileText } from "lucide-react";
+import { Loader2, Printer, Download, Save, RefreshCw, Settings, Eye, Send, FileText, FileDown } from "lucide-react";
 import { exportRotuloDocx } from "@/utils/rotuloDocxExport";
+import { exportRotuloPdf } from "@/utils/rotuloPdfExport";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
