@@ -1217,6 +1217,15 @@ export default function RotuloEditor({ produtoId, produtoNome }: Props) {
     printWindow.document.close();
   }
 
+  async function handleExportPdf() {
+    await exportRotuloPdf({
+      larguraMm: rotulo.largura_mm,
+      alturaMm: rotulo.altura_mm,
+      nomeArquivo: `Rotulo-${(rotulo.nome_comercial || "sem-nome").replace(/[^\w\-]+/g, "_")}`,
+      html: buildPrintHTML(rotulo, niveisObj),
+    });
+  }
+
   const updateField = (field: keyof RotuloData, value: any) => {
     setRotulo((prev) => ({ ...prev, [field]: value }));
   };
