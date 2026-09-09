@@ -351,14 +351,16 @@ export async function exportRotuloDocx(rotulo: RotuloDocxData, niveisObj: Record
     sections: [{
       properties: {
         page: {
+          // docx-js espera as medidas em retrato e faz a troca ao aplicar LANDSCAPE
           size: {
-            width: 15840,  // landscape letter
-            height: 12240,
+            width: 12240,
+            height: 15840,
             orientation: PageOrientation.LANDSCAPE,
           },
           margin: { top: 360, right: 360, bottom: 360, left: 360 },
         },
       },
+
       children: [
         headerTable,
         bodyTable,
