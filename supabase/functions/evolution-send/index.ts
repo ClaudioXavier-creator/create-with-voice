@@ -202,9 +202,12 @@ Deno.serve(async (req) => {
       const friendly = provider === 'whatsapp_oficial'
         ? friendlyMetaError(result.status, result.data)
         : 'Falha ao enviar via Evolution';
+      // Se o provedor respondeu 2xx mas reportou falha no corpo (ok:false),
+      // devolvemos 502 para que o cliente (supabase.functions.invoke) trate como erro.
+      const httpStatus = result.status >= 200 && result.status < 300 ? 502 : (result.status === 0 ? 502 : result.status);
       return new Response(
         JSON.stringify({ error: friendly, provider, status: result.status, details: result.data }),
-        { status: result.status === 0 ? 502 : result.status, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        { status: httpStatus, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
