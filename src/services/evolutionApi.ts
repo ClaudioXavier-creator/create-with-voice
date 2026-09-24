@@ -258,17 +258,26 @@ export const evolutionService = {
   /**
    * Send a text message through the backend (bypasses browser CORS and hides the API key).
    */
-  async sendMessageViaBackend({ empresaId, instanceName, number, text }: EvolutionSendViaBackendParams) {
-    const { data, error } = await supabase.functions.invoke("evolution-connect", {
+  async sendMessageViaBackend({ empresaId, number, text }: EvolutionSendViaBackendParams) {
+    // Envio agora passa pelo canal oficial (WhatsApp Business/Meta) via evolution-send.
+    // O servidor Evolution legado ficava em timeout e não é mais usado para envio.
+    const { data, error } = await supabase.functions.invoke("evolution-send", {
       body: {
-        empresa_id: empresaId,
-        instance_name: instanceName,
-        action: "send",
-        to_number: number,
+        to: number,
         message: text,
+        empresa_id: empresaId,
+        modulo: "portal",
+        tipo: "manual",
       },
     });
-    if (error) throw error;
+    if (error) {
+      let details: unknown = error.message;
+      const ctx = (error as { context?: Response }).context;
+      if (ctx && typeof ctx.text === "function") {
+        try { details = await ctx.text(); } catch { /* ignore */ }
+      }
+      throw new EvolutionApiError("Falha ao enviar mensagem pelo WhatsApp oficial", details);
+    }
     if (data?.error) throw new EvolutionApiError(data.error, data.details ?? data, data.status);
     return data?.response ?? data;
   },
