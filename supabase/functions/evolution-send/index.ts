@@ -180,7 +180,7 @@ Deno.serve(async (req) => {
       }
       provider = 'evolution';
       result = await sendViaEvolution(evolutionConfig, number, message);
-ecutive    }
+}
 
     // Log persistente em whatsapp_mensagens (best-effort, não bloqueia a resposta)
     try {
