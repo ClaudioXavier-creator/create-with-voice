@@ -169,7 +169,7 @@ Deno.serve(async (req) => {
       // Canal primário: WhatsApp Business oficial (Meta)
       provider = 'whatsapp_oficial';
       result = await sendViaOfficial(number, message);
-ecutive    } else {
+} else {
       // Fallback legado: Evolution self-hosted
       const evolutionConfig = await resolveEvolutionConfig(empresa_id);
       if (!evolutionConfig) {
