@@ -272,11 +272,20 @@ export const evolutionService = {
     });
     if (error) {
       let details: unknown = error.message;
+      let friendly = "Falha ao enviar mensagem pelo WhatsApp oficial";
+      let status: number | undefined;
       const ctx = (error as { context?: Response }).context;
       if (ctx && typeof ctx.text === "function") {
-        try { details = await ctx.text(); } catch { /* ignore */ }
+        try {
+          const txt = await ctx.text();
+          details = txt;
+          const parsed = JSON.parse(txt) as { error?: unknown; details?: unknown; status?: unknown };
+          if (typeof parsed?.error === "string" && parsed.error) friendly = parsed.error;
+          if (parsed?.details !== undefined) details = parsed.details;
+          if (typeof parsed?.status === "number") status = parsed.status;
+        } catch { /* corpo não-JSON: mantém mensagem padrão */ }
       }
-      throw new EvolutionApiError("Falha ao enviar mensagem pelo WhatsApp oficial", details);
+      throw new EvolutionApiError(friendly, details, status);
     }
     if (data?.error) throw new EvolutionApiError(data.error, data.details ?? data, data.status);
     return data?.response ?? data;
