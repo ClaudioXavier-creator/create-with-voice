@@ -57,7 +57,7 @@ Deno.serve(async (req) => {
     const { error: recErr } = await supabase.from('campanha_mensagens')
       .update({ status: 'pendente' })
       .eq('status', 'enviando')
-      .lt('updated_at', stuckBefore);
+      .lt('agendado_para', stuckBefore);
     if (recErr) console.error('recovery error', recErr);
 
     // 1. Buscar campanhas ativas
