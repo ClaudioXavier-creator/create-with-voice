@@ -41,6 +41,7 @@ interface Expedicao {
 }
 
 interface Item {
+  id?: string; // id do registro em expedicao_itens (presente só na edição)
   produto: string;
   codigo_produto: string;
   lote_produto: string;
@@ -363,7 +364,8 @@ export default function Expedicao() {
       peso_bruto_kg: e.peso_bruto_kg?.toString() || "", peso_liquido_kg: e.peso_liquido_kg?.toString() || "",
       valor_total: e.valor_total?.toString() || "", observacoes: e.observacoes || "",
     });
-    setItens(((data as any) || []).map((i: any) => ({
+    setItens(((data as any) || []).filter((i: any) => (i.status || "ativo") === "ativo").map((i: any) => ({
+      id: i.id,
       produto: i.produto, codigo_produto: i.codigo_produto || "", lote_produto: i.lote_produto || "",
       quantidade: Number(i.quantidade) || 0, unidade: i.unidade || "kg",
       quantidade_sacos: i.quantidade_sacos || undefined,
