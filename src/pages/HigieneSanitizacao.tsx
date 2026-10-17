@@ -19,7 +19,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { Switch } from "@/components/ui/switch";
-import { Plus, Droplets, CheckCircle2, Clock, Trash2, Beaker, FileText, ClipboardList, Download, ShieldCheck, Layers, FlaskConical, Container, UserCheck, Droplet, HeartPulse, Archive, AlertTriangle, Printer } from "lucide-react";
+import { Plus, Droplets, CheckCircle2, Clock, Trash2, Beaker, FileText, ClipboardList, Download, ShieldCheck, Layers, FlaskConical, Container, UserCheck, Droplet, HeartPulse, AlertTriangle, Printer } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import PageHeader from "@/components/PageHeader";
 import { AnexarPlanilhaPop } from "@/components/documentos/AnexarPlanilhaPop";
@@ -50,7 +50,7 @@ const CHECKLIST_PRE_OP: { area: string; itens: string[] }[] = [
   { area: "Paredes e Tetos", itens: ["Sem manchas ou mofos", "Pinturas íntegras", "Sem teias de aranha"] },
   { area: "Equipamentos de Produção", itens: ["Misturador limpo internamente", "Moinho sem resíduo de MP anterior", "Elevadores/transportadores limpos", "Peletizadora/Extrusora sem obstrução"] },
   { area: "Silos", itens: ["Silo limpo conforme cronograma", "Sem formação de crostas internas", "Bocal de carga/descarga limpo"] },
-  { area: "Balanças e Dosadores", itens: ["Superfície de pesagem limpa", "Sem resíduo de produto anterior", "Calibração verificada"] },
+  { area: "Balanças e Dosadores", itens: ["Superfície de pesagem limpa", "Sem resíduo de produto anterior", "Balança com calibração vigente (ver POP 06)"] },
   { area: "Utensílios e EPI", itens: ["Pás e vassouras limpas", "EPIs disponíveis e limpos", "Coletores de amostra higienizados"] },
   { area: "Instalações de Apoio", itens: ["Banheiros limpos e abastecidos", "Lavatórios com sabonete e papel", "Lixeiras com tampa e identificadas"] },
 ];
@@ -432,24 +432,6 @@ export default function HigieneSanitizacao() {
     },
   });
 
-  // Archive counts for 2-year retention
-  const { data: archiveCounts } = useQuery({
-    queryKey: ["archive_counts", empId],
-    queryFn: async () => {
-      const twoYearsAgo = new Date();
-      twoYearsAgo.setFullYear(twoYearsAgo.getFullYear() - 2);
-      const cutoff = twoYearsAgo.toISOString();
-      const [pops, limpeza, agua, residuos, calibr, nc] = await Promise.all([
-        scope(supabase.from("execucao_pops").select("id", { count: "exact", head: true }).gte("created_at", cutoff)),
-        scope(supabase.from("registros_limpeza").select("id", { count: "exact", head: true }).gte("created_at", cutoff)),
-        scope(supabase.from("analises_laboratorio").select("id", { count: "exact", head: true }).gte("created_at", cutoff)),
-        scope(supabase.from("controle_residuos").select("id", { count: "exact", head: true }).gte("created_at", cutoff)),
-        scope(supabase.from("calibracoes").select("id", { count: "exact", head: true }).gte("created_at", cutoff)),
-        scope(supabase.from("nao_conformidades").select("id", { count: "exact", head: true }).gte("created_at", cutoff)),
-      ]);
-      return { pops: pops.count || 0, limpeza: limpeza.count || 0, agua: agua.count || 0, residuos: residuos.count || 0, calibracoes: calibr.count || 0, nc: nc.count || 0 };
-    },
-  });
 
 
   const { data: historicoSup = [] } = useQuery({

@@ -24,7 +24,7 @@ export const CHECKLIST_PRE_OP = [
   { area: "Paredes e Tetos", itens: ["Sem manchas ou mofos", "Pinturas íntegras", "Sem teias de aranha"] },
   { area: "Equipamentos de Produção", itens: ["Misturador limpo internamente", "Moinho sem resíduo de MP anterior", "Elevadores/transportadores limpos", "Peletizadora/Extrusora sem obstrução"] },
   { area: "Silos", itens: ["Silo limpo conforme cronograma", "Sem formação de crostas internas", "Bocal de carga/descarga limpo"] },
-  { area: "Balanças e Dosadores", itens: ["Superfície de pesagem limpa", "Sem resíduo de produto anterior", "Calibração verificada"] },
+  { area: "Balanças e Dosadores", itens: ["Superfície de pesagem limpa", "Sem resíduo de produto anterior", "Balança com calibração vigente (ver POP 06)"] },
   { area: "Utensílios e EPI", itens: ["Pás e vassouras limpas", "EPIs disponíveis e limpos", "Coletores de amostra higienizados"] },
   { area: "Instalações de Apoio", itens: ["Banheiros limpos e abastecidos", "Lavatórios com sabonete e papel", "Lixeiras com tampa e identificadas"] },
 ];
