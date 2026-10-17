@@ -84,22 +84,30 @@ export default function SimulacaoRecall() {
 
     if (!user) return;
 
-    // Save as a NC for audit trail
-    const { error } = await supabase.from("nao_conformidades").insert({
+    // Grava na tabela própria de simulações (não infla os indicadores de NC)
+    const { error } = await supabase.from("simulacoes_recall" as any).insert({
       user_id: user.id,
       empresa_id: empresaAtiva?.id || null,
-      setor: "Qualidade",
-      descricao: `[SIMULAÇÃO RECALL] Produto: ${produtoSimulado} | Lote: ${loteSimulado} | Tempo total: ${formatTime(tempoTotal)} | Etapas concluídas: ${concluidas}/${etapas.length}`,
-      causa: "Exercício anual de recall conforme Decreto 12.031/2024",
-      acao_corretiva: observacoes || "Exercício simulado — sem ação corretiva necessária",
-      status: "fechada",
+      data: new Date().toISOString().slice(0, 10),
+      produto: produtoSimulado,
+      lote: loteSimulado,
+      tempo_total_min: Math.round(tempoTotal / 60),
+      etapas: etapas.map(e => ({
+        id: e.id,
+        label: e.label,
+        concluido: e.concluido,
+        horaInicio: e.horaInicio || null,
+        horaFim: e.horaFim || null,
+      })),
+      observacoes: observacoes || null,
       responsavel: user.email || "",
+      status: "concluida",
     });
 
     if (error) {
       toast({ title: "Erro ao salvar simulação", description: error.message, variant: "destructive" });
     } else {
-      toast({ title: "Simulação de Recall registrada!", description: "O exercício foi salvo como registro de NC para fins de auditoria." });
+      toast({ title: "Simulação de Recall registrada!", description: "O exercício foi salvo no registro de simulações para fins de auditoria." });
     }
   };
 

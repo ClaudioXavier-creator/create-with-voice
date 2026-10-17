@@ -31,6 +31,7 @@ interface BuildChecklistItemsParams {
   ncs: Array<{ status?: string | null }>;
   rastreabilidade: Array<unknown>;
   higiene: Array<unknown>;
+  simulacoes: Array<{ data?: string | null }>;
 }
 
 export function buildChecklistItems({
@@ -45,6 +46,7 @@ export function buildChecklistItems({
   ncs,
   rastreabilidade,
   higiene,
+  simulacoes,
 }: BuildChecklistItemsParams): CheckItem[] {
   const docsVencidos = docs.filter((d) => {
     const ref = d.proxima_revisao || d.validade_revisao;
@@ -68,6 +70,15 @@ export function buildChecklistItems({
   );
 
   const ncsAbertas = ncs.filter((nc) => nc.status === "aberta" || nc.status === "em_andamento").length;
+
+  // Última simulação de recall (exigência anual — Decreto 12.031/2024)
+  const datasSimulacao = simulacoes
+    .map((s) => s.data)
+    .filter((d): d is string => !!d)
+    .sort()
+    .reverse();
+  const ultimaSimulacao = datasSimulacao[0] || null;
+  const diasDesdeSimulacao = ultimaSimulacao ? differenceInDays(hoje, parseISO(ultimaSimulacao)) : null;
 
   return [
     {
@@ -157,6 +168,20 @@ export function buildChecklistItems({
           : "Nenhum cronograma de higiene cadastrado",
       link: "/higiene",
       icon: Droplets,
+    },
+    {
+      area: "Recall",
+      item: "Simulação de recall realizada nos últimos 12 meses",
+      status:
+        diasDesdeSimulacao === null ? "critico" : diasDesdeSimulacao > 365 ? "critico" : "ok",
+      detalhe:
+        diasDesdeSimulacao === null
+          ? "Nenhuma simulação de recall registrada"
+          : diasDesdeSimulacao > 365
+            ? `Última simulação em ${parseISO(ultimaSimulacao!).toLocaleDateString("pt-BR")} — há mais de 12 meses`
+            : `Última simulação em ${parseISO(ultimaSimulacao!).toLocaleDateString("pt-BR")}`,
+      link: "/simulacao-recall",
+      icon: AlertTriangle,
     },
   ];
 }
