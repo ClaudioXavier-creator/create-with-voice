@@ -232,3 +232,14 @@ export const SINTOMAS_DIARIOS = [
   "Lesões cutâneas (feridas, abscessos)", "Secreção ocular ou nasal", "Icterícia (pele/olhos amarelados)",
   "Dor abdominal intensa", "Infecção de ouvido", "Outros sintomas infectocontagiosos"
 ];
+
+export const TIPOS_VALIDACAO = [
+  { value: "visual", label: "Inspeção Visual" },
+  { value: "swab", label: "Swab / Teste de Superfície" },
+  { value: "laboratorial", label: "Análise Laboratorial" },
+  { value: "rinse", label: "Água de Enxágue" },
+  { value: "homogeneidade", label: "Teste de Homogeneidade (CV%)" },
+  { value: "carryover", label: "Teste de Carry-Over / Arraste" },
+  { value: "tempo_mistura", label: "Validação Tempo de Mistura" },
+  { value: "flushing", label: "Flushing / Limpeza de Linha" },
+];

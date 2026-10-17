@@ -1,3 +1,3 @@
 # Project Rules
 
-- Shared lookup and checklist lists for the hygiene module live in `src/components/higiene/constants.ts`, and screens import them instead of redefining local copies — so a wording change lands in one place and the two copies cannot drift apart again.
+- Fixed POP module checklists, catalogs and lookup lists live in `src/components/<module>/constants.ts`, and screens import them instead of keeping local copies — one source prevents drift; preserve separate module-specific variants when content differs.

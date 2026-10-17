@@ -1,3 +1,4 @@
+import { TIPOS_PRAGA, ACOES, TIPOS_PRODUTO_EXPURGO, METODOS_EXPURGO } from "@/components/pragas/constants";
 import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useEmpresa } from "@/hooks/useEmpresa";
@@ -20,12 +21,12 @@ import { Checkbox } from "@/components/ui/checkbox";
 import PageHeader from "@/components/PageHeader";
 import { AnexarPlanilhaPop } from "@/components/documentos/AnexarPlanilhaPop";
 
-const TIPOS_PRAGA = ["Roedores", "Insetos voadores", "Insetos rasteiros", "Aves", "Morcegos", "Outros"];
-const ACOES = ["Reposição de iscas", "Desinsetização geral", "Vedação de aberturas", "Remoção de ninhos", "Inspeção rotineira", "Aplicação de gel", "Outra"];
+
+
 
 // Expurgo: tipos de produto e métodos
-const TIPOS_PRODUTO_EXPURGO = ["Matéria-prima (grãos)", "Matéria-prima (farelos)", "Produto acabado", "Embalagem", "Silo", "Armazém"];
-const METODOS_EXPURGO = ["Fosfina (PH₃)", "Deltametrina", "Pirimifós-metílico", "Ozônio", "Atmosfera controlada", "Outro"];
+
+
 
 export default function Pragas() {
   const { user } = useAuth();
