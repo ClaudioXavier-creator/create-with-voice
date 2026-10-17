@@ -114,7 +114,7 @@ export default function Expedicao() {
     else setExpedicoes((data as any) || []);
 
     // Carregar itens para o filtro de lotes
-    let qi = supabase.from("expedicao_itens" as any).select("expedicao_id, lote_produto");
+    let qi = supabase.from("expedicao_itens" as any).select("expedicao_id, lote_produto").neq("status", "cancelado");
     if (empresaAtiva) qi = qi.eq("empresa_id", empresaAtiva.id);
     const { data: ditens } = await qi;
     setTodosItens(ditens || []);
@@ -510,7 +510,7 @@ export default function Expedicao() {
 
   const verDetalhe = async (exp: Expedicao) => {
     setDetalheExp(exp);
-    const { data } = await supabase.from("expedicao_itens" as any).select("*").eq("expedicao_id", exp.id);
+    const { data } = await supabase.from("expedicao_itens" as any).select("*").eq("expedicao_id", exp.id).neq("status", "cancelado");
     setDetalheItens((data as any) || []);
     setDetalheOpen(true);
   };
