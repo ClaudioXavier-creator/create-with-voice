@@ -429,21 +429,9 @@ export default function HigieneSanitizacao() {
     }
   };
 
-  /** Exclusão auditada de um registro de higiene (POP-02). */
-  const handleExcluirRegistro = async (tabela: string, id: string) => {
-    if (!user) return;
-    if (!window.confirm("Excluir definitivamente este registro? A ação ficará na trilha de auditoria.")) return;
-    const { error } = await (supabase.from(tabela as any) as any).delete().eq("id", id);
-    if (error) return toast.error(mensagemErroRegistro(error, "Erro ao excluir registro"));
-    toast.success("Registro excluído");
-    registrarAuditLog({
-      userId: user.id,
-      empresaId: empresaAtiva?.id,
-      tabela,
-      registroId: id,
-      acao: "excluir",
-    });
-    qc.invalidateQueries();
+  /** Registros de higiene não são excluídos (Decreto 12.031/2024) — correção via NC. */
+  const handleCorrigirRegistro = (tabela: string, id: string, descricao: string) => {
+    corrigirViaNC(navigate, { tabela, registroId: id, descricao });
   };
 
   // ── Save Monitoramento de Superfícies ──

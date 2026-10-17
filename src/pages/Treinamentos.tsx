@@ -15,7 +15,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { GraduationCap, Plus, AlertCircle, Trash2, HeartPulse, ShieldCheck, ClipboardCheck, Download, FileText } from "lucide-react";
+import { GraduationCap, Plus, AlertCircle, FileWarning, HeartPulse, ShieldCheck, ClipboardCheck, Download, FileText } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { corrigirViaNC } from "@/utils/correcaoNC";
 import PageHeader from "@/components/PageHeader";
 import * as XLSX from "xlsx";
 
@@ -141,13 +143,7 @@ export default function Treinamentos() {
     onError: () => toast.error("Erro ao salvar ASO"),
   });
 
-  const delAso = useMutation({
-    mutationFn: async (id: string) => {
-      const { error } = await supabase.from("saude_manipuladores" as any).delete().eq("id", id);
-      if (error) throw error;
-    },
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ["saude_manipuladores"] }); toast.success("ASO removido"); },
-  });
+  const navigate = useNavigate();
 
   const isAsoVencido = (val: string | null) => val ? new Date(val) < new Date() : false;
   const isAsoProximo = (val: string | null) => {
@@ -188,13 +184,6 @@ export default function Treinamentos() {
     onError: () => toast.error("Erro ao salvar triagem"),
   });
 
-  const delTreino = useMutation({
-    mutationFn: async (id: string) => {
-      const { error } = await supabase.from("treinamentos").delete().eq("id", id);
-      if (error) throw error;
-    },
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ["treinamentos"] }); toast.success("Removido"); },
-  });
 
   const isVencido = (val: string | null) => val ? new Date(val) < new Date() : false;
   const isProximo = (val: string | null) => {
@@ -327,7 +316,7 @@ export default function Treinamentos() {
                           <Badge className="bg-primary/20 text-primary">Válido</Badge>
                         )}
                       </TableCell>
-                      <TableCell><Button variant="ghost" size="icon" onClick={() => delTreino.mutate(t.id)}><Trash2 className="w-4 h-4 text-destructive" /></Button></TableCell>
+                      <TableCell><Button variant="ghost" size="sm" className="gap-1 text-xs" title="Registros não são excluídos — correção via Não Conformidade" onClick={() => corrigirViaNC(navigate, { tabela: "treinamentos", registroId: t.id, descricao: `Treinamento — ${t.funcionario} — ${t.treinamento} — data: ${t.data}` })}><FileWarning className="w-4 h-4 text-primary" /> Corrigir via NC</Button></TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -365,8 +354,8 @@ export default function Treinamentos() {
                       </div>
                       
                       <div className="flex justify-end gap-2 pt-1">
-                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={() => delTreino.mutate(t.id)}>
-                          <Trash2 className="h-4 w-4 text-destructive" />
+                        <Button variant="ghost" size="sm" className="gap-1 text-xs" title="Registros não são excluídos — correção via Não Conformidade" onClick={() => corrigirViaNC(navigate, { tabela: "treinamentos", registroId: t.id, descricao: `Treinamento — ${t.funcionario} — ${t.treinamento} — data: ${t.data}` })}>
+                          <FileWarning className="h-4 w-4 text-primary" /> Corrigir via NC
                         </Button>
                       </div>
                     </CardContent>
@@ -577,7 +566,7 @@ export default function Treinamentos() {
                           <Badge className="bg-primary/20 text-primary">Válido</Badge>
                         )}
                       </TableCell>
-                      <TableCell><Button variant="ghost" size="icon" onClick={() => delAso.mutate(a.id)}><Trash2 className="w-4 h-4 text-destructive" /></Button></TableCell>
+                      <TableCell><Button variant="ghost" size="sm" className="gap-1 text-xs" title="Registros não são excluídos — correção via Não Conformidade" onClick={() => corrigirViaNC(navigate, { tabela: "saude_manipuladores", registroId: a.id, descricao: `ASO — ${a.funcionario || a.nome} — validade: ${a.validade}` })}><FileWarning className="w-4 h-4 text-primary" /> Corrigir via NC</Button></TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
