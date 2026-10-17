@@ -1,3 +1,13 @@
+# Normalização dos códigos de POP (DocumentosBPF)
+
+- [x] Mover `normalizarPopCodigo()` para util compartilhado e reaproveitar no checklist e em DocumentosBPF.
+- [x] Trocar a lista `POP_CODIGOS` de `POP-001…POP-010` para `POP-01…POP-10` e normalizar o filtro por código.
+- [x] Confirmar build, tipos e teste; listar arquivos alterados (build OK, tsgo limpo, 3 testes).
+
+Não alterar banco, registros salvos nem publicar.
+
+---
+
 # Unificação das listas dos POPs
 
 - [x] Identificar listas fixas locais e eventuais diferenças, preservando o conteúdo das telas.
