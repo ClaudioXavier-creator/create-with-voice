@@ -589,7 +589,7 @@ export default function Expedicao() {
             <Download className="h-4 w-4 mr-2" />Romaneio por NF
           </Button>
           <Button variant="default" size="sm" onClick={async () => {
-            const { data } = await supabase.from("expedicao_itens" as any).select("*");
+            const { data } = await supabase.from("expedicao_itens" as any).select("*").neq("status", "cancelado");
             const mapped = filtered.map(f => ({ ...f, itens: data?.filter((i: any) => i.expedicao_id === f.id) }));
             setMapaDados(mapped);
             setMapaOpen(true);
@@ -597,7 +597,7 @@ export default function Expedicao() {
             <Eye className="h-4 w-4 mr-2" />Visualizar Mapa de Expedição (Digital)
           </Button>
           <Button variant="outline" size="sm" onClick={async () => {
-            const { data } = await supabase.from("expedicao_itens" as any).select("*");
+            const { data } = await supabase.from("expedicao_itens" as any).select("*").neq("status", "cancelado");
             const mapped = filtered.map(f => ({ ...f, itens: data?.filter((i: any) => i.expedicao_id === f.id) }));
             gerarMapaExpedicaoMAPA(mapped, empresaAtiva);
           }}>
