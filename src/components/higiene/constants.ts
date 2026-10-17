@@ -146,7 +146,7 @@ export const CHECKLIST_HIGIENE_PESSOAL = [
     "Uso de touca/gorro cobrindo todo o cabelo",
     "Uso de máscara descartável (quando aplicável)",
     "Luvas descartáveis (manipulação de premix/micro-ingredientes)",
-    "Protetor auricular disponível e em uso (areas de ruído)",
+    "Protetor auricular disponível e em uso (áreas de ruído)",
     "Óculos de proteção em áreas de risco (moagem, dosagem)",
   ]},
   { area: "Higiene Pessoal", itens: [
