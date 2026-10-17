@@ -2642,6 +2642,7 @@ export type Database = {
           quantidade: number
           quantidade_sacos: number | null
           rastreabilidade_id: string | null
+          status: string
           unidade: string | null
           user_id: string
           valor_total: number | null
@@ -2662,6 +2663,7 @@ export type Database = {
           quantidade?: number
           quantidade_sacos?: number | null
           rastreabilidade_id?: string | null
+          status?: string
           unidade?: string | null
           user_id: string
           valor_total?: number | null
@@ -2682,6 +2684,7 @@ export type Database = {
           quantidade?: number
           quantidade_sacos?: number | null
           rastreabilidade_id?: string | null
+          status?: string
           unidade?: string | null
           user_id?: string
           valor_total?: number | null
