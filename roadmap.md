@@ -1,3 +1,10 @@
+# Revisão dos textos de identificação e integridade
+
+- [ ] Corrigir as alegações nos nove arquivos solicitados, sem mudar campos, registros ou hashes.
+- [ ] Listar cada texto antes/depois, conferir PDFs e confirmar build; não publicar.
+
+---
+
 # Normalização dos códigos de POP (DocumentosBPF)
 
 - [x] Mover `normalizarPopCodigo()` para util compartilhado e reaproveitar no checklist e em DocumentosBPF.
