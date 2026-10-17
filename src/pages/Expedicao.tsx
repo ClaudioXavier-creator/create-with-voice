@@ -432,7 +432,7 @@ export default function Expedicao() {
       expedicaoId = (exp as any).id;
     }
 
-    const itensPayload = itensValidos.map(i => ({
+    const montarItemPayload = (i: Item) => ({
       user_id: user.id,
       empresa_id: empresaAtiva?.id || null,
       expedicao_id: expedicaoId,
@@ -444,9 +444,39 @@ export default function Expedicao() {
       quantidade_sacos: i.quantidade_sacos || null,
       valor_unitario: i.valor_unitario || null,
       valor_total: i.valor_total || null,
-    }));
-    const { error: errItens } = await supabase.from("expedicao_itens" as any).insert(itensPayload);
-    if (errItens) toast.error("NF salva, mas erro nos itens: " + errItens.message);
+    });
+
+    if (editId) {
+      // Sem DELETE: registros salvos não são apagados (Decreto 12.031/2024).
+      // Itens existentes são atualizados; novos são inseridos; removidos do formulário são marcados como "cancelado".
+      const { data: existentes } = await supabase.from("expedicao_itens" as any)
+        .select("id, status").eq("expedicao_id", editId);
+      const idsNoForm = new Set(itensValidos.filter(i => i.id).map(i => i.id as string));
+
+      for (const item of itensValidos) {
+        const payloadItem = montarItemPayload(item);
+        if (item.id) {
+          const { error } = await supabase.from("expedicao_itens" as any).update(payloadItem).eq("id", item.id);
+          if (error) toast.error("Erro ao atualizar item: " + error.message);
+        } else {
+          const { error } = await supabase.from("expedicao_itens" as any).insert({ ...payloadItem, status: "ativo" });
+          if (error) toast.error("Erro ao inserir item: " + error.message);
+        }
+      }
+
+      const idsParaCancelar = ((existentes as any) || [])
+        .filter((e: any) => (e.status || "ativo") === "ativo" && !idsNoForm.has(e.id))
+        .map((e: any) => e.id);
+      if (idsParaCancelar.length > 0) {
+        const { error } = await supabase.from("expedicao_itens" as any)
+          .update({ status: "cancelado" }).in("id", idsParaCancelar);
+        if (error) toast.error("Erro ao cancelar itens removidos: " + error.message);
+      }
+    } else {
+      const itensPayload = itensValidos.map(i => ({ ...montarItemPayload(i), status: "ativo" }));
+      const { error: errItens } = await supabase.from("expedicao_itens" as any).insert(itensPayload);
+      if (errItens) toast.error("NF salva, mas erro nos itens: " + errItens.message);
+    }
 
     if (!editId) {
       const rastroPayload = itensValidos.filter(i => i.lote_produto).map(i => ({
