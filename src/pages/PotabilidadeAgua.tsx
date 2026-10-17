@@ -1,5 +1,7 @@
 import { PONTOS_COLETA, PARAMETROS_ANALISE, CHECKLIST_RESERVATORIO } from "@/components/agua/constants";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { corrigirViaNC } from "@/utils/correcaoNC";
 import { useAuth } from "@/hooks/useAuth";
 import { useEmpresa } from "@/hooks/useEmpresa";
 import { supabase } from "@/integrations/supabase/client";
@@ -16,7 +18,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Switch } from "@/components/ui/switch";
-import { Plus, Droplet, CheckCircle2, AlertTriangle, Trash2, FileText, Beaker, Container, Download, ShieldCheck } from "lucide-react";
+import { Plus, Droplet, CheckCircle2, AlertTriangle, FileWarning, FileText, Beaker, Container, Download, ShieldCheck } from "lucide-react";
 import PageHeader from "@/components/PageHeader";
 import { AnexarPlanilhaPop } from "@/components/documentos/AnexarPlanilhaPop";
 
@@ -204,16 +206,7 @@ export default function PotabilidadeAgua() {
     },
   });
 
-  const deleteAnalise = useMutation({
-    mutationFn: async (id: string) => {
-      const { error } = await supabase.from("analises_laboratorio").delete().eq("id", id);
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["potabilidade-agua"] });
-      toast.success("Registro excluído");
-    },
-  });
+  const navigate = useNavigate();
 
   const conformes = analises.filter(a => a.conforme).length;
   const naoConformes = analises.filter(a => a.conforme === false).length;
@@ -355,7 +348,7 @@ export default function PotabilidadeAgua() {
                         </TableCell>
                         <TableCell className="text-xs">{a.laudo_numero || "—"}</TableCell>
                         <TableCell>
-                          <Button variant="ghost" size="icon" onClick={() => deleteAnalise.mutate(a.id)}><Trash2 className="w-4 h-4 text-destructive" /></Button>
+                          <Button variant="ghost" size="sm" className="gap-1 text-xs" title="Registros não são excluídos — correção via Não Conformidade" onClick={() => corrigirViaNC(navigate, { tabela: "analises_laboratorio", registroId: a.id, descricao: `Análise de água — ponto: ${a.ponto_coleta || a.produto} — parâmetro: ${a.parametro} — resultado: ${a.resultado}` })}><FileWarning className="w-4 h-4 text-primary" /> Corrigir via NC</Button>
                         </TableCell>
                       </TableRow>
                     ))}
@@ -446,11 +439,7 @@ export default function PotabilidadeAgua() {
                       <TableCell className="text-xs max-w-xs truncate">{l.observacoes}</TableCell>
 
                       <TableCell>
-                        <Button variant="ghost" size="icon" onClick={async () => {
-                          await supabase.from("registros_limpeza").delete().eq("id", l.id);
-                          queryClient.invalidateQueries({ queryKey: ["limpeza-reservatorio"] });
-                          toast.success("Excluído");
-                        }}><Trash2 className="w-4 h-4 text-destructive" /></Button>
+                        <Button variant="ghost" size="sm" className="gap-1 text-xs" title="Registros não são excluídos — correção via Não Conformidade" onClick={() => corrigirViaNC(navigate, { tabela: "registros_limpeza", registroId: l.id, descricao: `Limpeza de reservatório — data: ${l.data_limpeza || l.created_at} — responsável: ${l.responsavel || "—"}` })}><FileWarning className="w-4 h-4 text-primary" /> Corrigir via NC</Button>
                       </TableCell>
                     </TableRow>
                   ))}
