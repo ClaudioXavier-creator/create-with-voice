@@ -1,3 +1,4 @@
+import { TIPOS_EXAME } from "@/components/saude/constants";
 import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useEmpresa } from "@/hooks/useEmpresa";
@@ -18,17 +19,7 @@ import { Plus, HeartPulse, CheckCircle2, AlertTriangle, Trash2, UserCheck, Clock
 import PageHeader from "@/components/PageHeader";
 import { AnexarPlanilhaPop } from "@/components/documentos/AnexarPlanilhaPop";
 
-const TIPOS_EXAME = [
-  { value: "admissional", label: "Admissional" },
-  { value: "periodico", label: "Periódico" },
-  { value: "retorno", label: "Retorno ao Trabalho" },
-  { value: "mudanca_funcao", label: "Mudança de Função" },
-  { value: "demissional", label: "Demissional" },
-  { value: "coprocultura", label: "Coprocultura" },
-  { value: "hemograma", label: "Hemograma" },
-  { value: "vdrl", label: "VDRL" },
-  { value: "parasitologico", label: "Parasitológico de Fezes" },
-];
+
 
 export default function SaudePessoal() {
   const { user } = useAuth();

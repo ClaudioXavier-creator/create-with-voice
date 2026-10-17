@@ -1,3 +1,4 @@
+import { TIPOS_VALIDACAO } from "@/components/higiene/constants";
 import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useEmpresa } from "@/hooks/useEmpresa";
@@ -16,16 +17,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Plus, Trash2, ShieldCheck, AlertTriangle } from "lucide-react";
 import PageHeader from "@/components/PageHeader";
 
-const TIPOS_VALIDACAO = [
-  { value: "visual", label: "Inspeção Visual" },
-  { value: "swab", label: "Swab / Teste de Superfície" },
-  { value: "laboratorial", label: "Análise Laboratorial" },
-  { value: "rinse", label: "Água de Enxágue" },
-  { value: "homogeneidade", label: "Teste de Homogeneidade (CV%)" },
-  { value: "carryover", label: "Teste de Carry-Over / Arraste" },
-  { value: "tempo_mistura", label: "Validação Tempo de Mistura" },
-  { value: "flushing", label: "Flushing / Limpeza de Linha" },
-];
+
 
 export default function ValidacaoLimpezaLinha() {
   const { user } = useAuth();
