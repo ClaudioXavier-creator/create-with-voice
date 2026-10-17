@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { corrigirViaNC } from "@/utils/correcaoNC";
 import { useAuth } from "@/hooks/useAuth";
 import { useEmpresa } from "@/hooks/useEmpresa";
 import { supabase } from "@/integrations/supabase/client";
@@ -14,7 +16,7 @@ import { ReceituariosMedSection } from "@/components/mapa-evolucao/MapaEvolucaoS
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Plus, Trash2, ShieldAlert } from "lucide-react";
+import { Plus, FileWarning, ShieldAlert } from "lucide-react";
 import PageHeader from "@/components/PageHeader";
 
 const TIPOS_SUBSTANCIA = [
@@ -67,10 +69,7 @@ export default function ControleSubstancias() {
     onError: () => toast.error("Erro ao salvar"),
   });
 
-  const del = useMutation({
-    mutationFn: async (id: string) => { const { error } = await supabase.from("controle_substancias").delete().eq("id", id); if (error) throw error; },
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ["controle_substancias"] }); toast.success("Removido"); },
-  });
+  const navigate = useNavigate();
 
   const ncCount = registros.filter((r: any) => !r.conforme).length;
 
@@ -207,7 +206,7 @@ export default function ControleSubstancias() {
                   <TableCell>{r.limite_maximo} {r.unidade}</TableCell>
                   <TableCell>{r.resultado} {r.unidade}</TableCell>
                   <TableCell>{r.conforme ? <Badge className="bg-green-600">Conforme</Badge> : <Badge variant="destructive">NC</Badge>}</TableCell>
-                  <TableCell><Button variant="ghost" size="icon" onClick={() => del.mutate(r.id)}><Trash2 className="w-4 h-4 text-destructive" /></Button></TableCell>
+                  <TableCell><Button variant="ghost" size="sm" className="gap-1 text-xs" title="Registros não são excluídos — correção via Não Conformidade" onClick={() => corrigirViaNC(navigate, { tabela: "controle_substancias", registroId: r.id, descricao: `Substância: ${r.substancia} — resultado ${r.resultado} ${r.unidade}` })}><FileWarning className="w-4 h-4 text-primary" /> Corrigir via NC</Button></TableCell>
                 </TableRow>
               ))}
             </TableBody>

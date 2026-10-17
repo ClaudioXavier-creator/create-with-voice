@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { Factory, Plus, Loader2, AlertTriangle, Trash2, Download, Pencil, X, Lock as LockIcon } from "lucide-react";
+import { Factory, Plus, Loader2, AlertTriangle, Trash2, FileWarning, Download, Pencil, X, Lock as LockIcon } from "lucide-react";
+import { corrigirViaNC } from "@/utils/correcaoNC";
 import { registrarAuditLog } from "@/utils/auditLog";
 import { gerarHashIntegridade, adicionarRodapeIntegridade } from "@/utils/integridade";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -52,7 +53,6 @@ export default function Producao() {
   const [saving, setSaving] = useState(false);
   const [open, setOpen] = useState(false);
   const [editId, setEditId] = useState<string | null>(null);
-  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const [produto, setProduto] = useState("");
   const [lote, setLote] = useState("");
@@ -150,22 +150,7 @@ export default function Producao() {
     setOpen(true);
   };
 
-  const handleDelete = async (p: ProdRow) => {
-    if (!user) return;
-    if (!window.confirm(`Excluir definitivamente o registro do lote "${p.lote || p.produto}"?`)) return;
-    setDeletingId(p.id);
-    const { error } = await supabase.from("producao").delete().eq("id", p.id);
-    if (error) toast.error("Erro ao excluir registro");
-    else {
-      toast.success("Registro excluído");
-      registrarAuditLog({
-        userId: user.id, empresaId: empresaAtiva?.id, tabela: "producao",
-        registroId: p.id, acao: "excluir", dadosAnteriores: p as any,
-      });
-      fetchData();
-    }
-    setDeletingId(null);
-  };
+  // Registros de produção não são excluídos (Decreto 12.031/2024) — correção via NC
 
 
 
@@ -587,8 +572,8 @@ export default function Producao() {
                           <Button size="sm" variant="ghost" onClick={() => abrirEdicao(p)} title="Editar registro">
                             <Pencil className="w-4 h-4" />
                           </Button>
-                          <Button size="sm" variant="ghost" onClick={() => handleDelete(p)} disabled={deletingId === p.id} title="Excluir registro">
-                            {deletingId === p.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4 text-destructive" />}
+                          <Button size="sm" variant="ghost" className="gap-1 text-xs" title="Registros não são excluídos — correção via Não Conformidade" onClick={() => corrigirViaNC(navigate, { tabela: "producao", registroId: p.id, descricao: `Produção — produto: ${p.produto} — lote: ${p.lote || "—"}` })}>
+                            <FileWarning className="w-4 h-4 text-primary" /> Corrigir via NC
                           </Button>
                         </div>
                       )}

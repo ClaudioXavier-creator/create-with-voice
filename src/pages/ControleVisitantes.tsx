@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { corrigirViaNC } from "@/utils/correcaoNC";
 import { useAuth } from "@/hooks/useAuth";
 import { useEmpresa } from "@/hooks/useEmpresa";
 import { supabase } from "@/integrations/supabase/client";
@@ -13,7 +15,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Switch } from "@/components/ui/switch";
-import { Plus, Users, ShieldCheck, Trash2, ClipboardCheck } from "lucide-react";
+import { Plus, Users, ShieldCheck, FileWarning, ClipboardCheck } from "lucide-react";
 import PageHeader from "@/components/PageHeader";
 
 export default function ControleVisitantes() {
@@ -83,16 +85,7 @@ export default function ControleVisitantes() {
     onError: () => toast.error("Erro ao salvar"),
   });
 
-  const deleteVisitante = useMutation({
-    mutationFn: async (id: string) => {
-      const { error } = await supabase.from("controle_visitantes").delete().eq("id", id);
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["controle-visitantes"] });
-      toast.success("Excluído");
-    },
-  });
+  const navigate = useNavigate();
 
   return (
     <div className="space-y-6">
@@ -189,7 +182,7 @@ export default function ControleVisitantes() {
                     <TableCell>{v.epi_fornecido ? <Badge variant="default" className="text-xs">Sim</Badge> : <Badge variant="secondary" className="text-xs">Não</Badge>}</TableCell>
                     <TableCell>{v.orientacao_biosseguridade ? <Badge variant="default" className="text-xs">Sim</Badge> : <Badge variant="secondary" className="text-xs">Não</Badge>}</TableCell>
                     <TableCell>
-                      <Button variant="ghost" size="icon" onClick={() => deleteVisitante.mutate(v.id)}><Trash2 className="w-4 h-4 text-destructive" /></Button>
+                      <Button variant="ghost" size="sm" className="gap-1 text-xs" title="Registros não são excluídos — correção via Não Conformidade" onClick={() => corrigirViaNC(navigate, { tabela: "controle_visitantes", registroId: v.id, descricao: `Visitante: ${v.nome_visitante}${v.empresa ? ` (${v.empresa})` : ""} — visita em ${v.data_visita}` })}><FileWarning className="w-4 h-4 text-primary" /> Corrigir via NC</Button>
                     </TableCell>
                   </TableRow>
                 ))}

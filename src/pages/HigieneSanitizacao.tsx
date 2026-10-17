@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
+import { corrigirViaNC } from "@/utils/correcaoNC";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -19,7 +20,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { Switch } from "@/components/ui/switch";
-import { Plus, Droplets, CheckCircle2, Clock, Trash2, ClipboardList, Download, ShieldCheck, Layers, FlaskConical, Container, Printer } from "lucide-react";
+import { Plus, Droplets, CheckCircle2, Clock, Trash2, FileWarning, ClipboardList, Download, ShieldCheck, Layers, FlaskConical, Container, Printer } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import PageHeader from "@/components/PageHeader";
 import { AnexarPlanilhaPop } from "@/components/documentos/AnexarPlanilhaPop";
@@ -429,21 +430,9 @@ export default function HigieneSanitizacao() {
     }
   };
 
-  /** Exclusão auditada de um registro de higiene (POP-02). */
-  const handleExcluirRegistro = async (tabela: string, id: string) => {
-    if (!user) return;
-    if (!window.confirm("Excluir definitivamente este registro? A ação ficará na trilha de auditoria.")) return;
-    const { error } = await (supabase.from(tabela as any) as any).delete().eq("id", id);
-    if (error) return toast.error(mensagemErroRegistro(error, "Erro ao excluir registro"));
-    toast.success("Registro excluído");
-    registrarAuditLog({
-      userId: user.id,
-      empresaId: empresaAtiva?.id,
-      tabela,
-      registroId: id,
-      acao: "excluir",
-    });
-    qc.invalidateQueries();
+  /** Registros de higiene não são excluídos (Decreto 12.031/2024) — correção via NC. */
+  const handleCorrigirRegistro = (tabela: string, id: string, descricao: string) => {
+    corrigirViaNC(navigate, { tabela, registroId: id, descricao });
   };
 
   // ── Save Monitoramento de Superfícies ──
@@ -688,9 +677,7 @@ export default function HigieneSanitizacao() {
                       </TableCell>
                       <TableCell className="max-w-[250px] text-xs whitespace-pre-line truncate">{(r.observacoes || "").slice(0, 120)}{(r.observacoes?.length || 0) > 120 ? "…" : ""}</TableCell>
                       <TableCell className="text-right">
-                        <Button size="sm" variant="ghost" className="h-7 px-2" title="Excluir registro" onClick={() => handleExcluirRegistro('execucao_pops', r.id)}>
-                          <Trash2 className="w-3.5 h-3.5 text-destructive" />
-                        </Button>
+                        <Button size="sm" variant="ghost" className="h-7 px-2 gap-1 text-xs" title="Registros não são excluídos — correção via Não Conformidade" onClick={() => handleCorrigirRegistro('execucao_pops', r.id, `Registro ${r.id} — ${r.data_execucao || r.data_limpeza || r.created_at}`)}><FileWarning className="w-3.5 h-3.5 text-primary" /> Corrigir via NC</Button>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -808,9 +795,7 @@ export default function HigieneSanitizacao() {
                       </TableCell>
                       <TableCell className="max-w-[250px] text-xs whitespace-pre-line truncate">{(r.observacoes || "").slice(0, 120)}{(r.observacoes?.length || 0) > 120 ? "…" : ""}</TableCell>
                       <TableCell className="text-right">
-                        <Button size="sm" variant="ghost" className="h-7 px-2" title="Excluir registro" onClick={() => handleExcluirRegistro('execucao_pops', r.id)}>
-                          <Trash2 className="w-3.5 h-3.5 text-destructive" />
-                        </Button>
+                        <Button size="sm" variant="ghost" className="h-7 px-2 gap-1 text-xs" title="Registros não são excluídos — correção via Não Conformidade" onClick={() => handleCorrigirRegistro('execucao_pops', r.id, `Registro ${r.id} — ${r.data_execucao || r.data_limpeza || r.created_at}`)}><FileWarning className="w-3.5 h-3.5 text-primary" /> Corrigir via NC</Button>
                       </TableCell>
 
                     </TableRow>
@@ -941,9 +926,7 @@ export default function HigieneSanitizacao() {
                       </TableCell>
                       <TableCell className="max-w-[250px] text-xs whitespace-pre-line truncate">{(r.observacoes || "").slice(0, 120)}{(r.observacoes?.length || 0) > 120 ? "…" : ""}</TableCell>
                       <TableCell className="text-right">
-                        <Button size="sm" variant="ghost" className="h-7 px-2" title="Excluir registro" onClick={() => handleExcluirRegistro('execucao_pops', r.id)}>
-                          <Trash2 className="w-3.5 h-3.5 text-destructive" />
-                        </Button>
+                        <Button size="sm" variant="ghost" className="h-7 px-2 gap-1 text-xs" title="Registros não são excluídos — correção via Não Conformidade" onClick={() => handleCorrigirRegistro('execucao_pops', r.id, `Registro ${r.id} — ${r.data_execucao || r.data_limpeza || r.created_at}`)}><FileWarning className="w-3.5 h-3.5 text-primary" /> Corrigir via NC</Button>
                       </TableCell>
 
                     </TableRow>
@@ -1120,9 +1103,7 @@ export default function HigieneSanitizacao() {
                       </TableCell>
                       <TableCell className="max-w-[250px] text-xs whitespace-pre-line truncate">{(r.observacoes || "").slice(0, 120)}{(r.observacoes?.length || 0) > 120 ? "…" : ""}</TableCell>
                       <TableCell className="text-right">
-                        <Button size="sm" variant="ghost" className="h-7 px-2" title="Excluir registro" onClick={() => handleExcluirRegistro('execucao_pops', r.id)}>
-                          <Trash2 className="w-3.5 h-3.5 text-destructive" />
-                        </Button>
+                        <Button size="sm" variant="ghost" className="h-7 px-2 gap-1 text-xs" title="Registros não são excluídos — correção via Não Conformidade" onClick={() => handleCorrigirRegistro('execucao_pops', r.id, `Registro ${r.id} — ${r.data_execucao || r.data_limpeza || r.created_at}`)}><FileWarning className="w-3.5 h-3.5 text-primary" /> Corrigir via NC</Button>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -1348,9 +1329,7 @@ export default function HigieneSanitizacao() {
                       </TableCell>
                       <TableCell className="max-w-[200px] truncate">{r.observacoes}</TableCell>
                       <TableCell className="text-right">
-                        <Button size="sm" variant="ghost" className="h-7 px-2" title="Excluir registro" onClick={() => handleExcluirRegistro('registros_limpeza', r.id)}>
-                          <Trash2 className="w-3.5 h-3.5 text-destructive" />
-                        </Button>
+                        <Button size="sm" variant="ghost" className="h-7 px-2 gap-1 text-xs" title="Registros não são excluídos — correção via Não Conformidade" onClick={() => handleCorrigirRegistro('registros_limpeza', r.id, `Registro ${r.id} — ${r.data_execucao || r.data_limpeza || r.created_at}`)}><FileWarning className="w-3.5 h-3.5 text-primary" /> Corrigir via NC</Button>
                       </TableCell>
                     </TableRow>
 
@@ -1442,9 +1421,7 @@ export default function HigieneSanitizacao() {
                                 <TableCell>{r.conforme ? <CheckCircle2 className="w-4 h-4 text-green-600" /> : <Badge variant="destructive">NC</Badge>}</TableCell>
                                 <TableCell className="max-w-[200px] truncate">{r.observacoes}</TableCell>
                                 <TableCell className="text-right">
-                                  <Button size="sm" variant="ghost" className="h-7 px-2" title="Excluir registro" onClick={() => handleExcluirRegistro('registros_limpeza', r.id)}>
-                                    <Trash2 className="w-3.5 h-3.5 text-destructive" />
-                                  </Button>
+                                  <Button size="sm" variant="ghost" className="h-7 px-2 gap-1 text-xs" title="Registros não são excluídos — correção via Não Conformidade" onClick={() => handleCorrigirRegistro('registros_limpeza', r.id, `Registro ${r.id} — ${r.data_execucao || r.data_limpeza || r.created_at}`)}><FileWarning className="w-3.5 h-3.5 text-primary" /> Corrigir via NC</Button>
                                 </TableCell>
                               </TableRow>
                             ))}

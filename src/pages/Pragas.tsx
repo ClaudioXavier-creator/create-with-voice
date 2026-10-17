@@ -1,11 +1,13 @@
 import { TIPOS_PRAGA, ACOES, TIPOS_PRODUTO_EXPURGO, METODOS_EXPURGO } from "@/components/pragas/constants";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { corrigirViaNC } from "@/utils/correcaoNC";
 import { useAuth } from "@/hooks/useAuth";
 import { useEmpresa } from "@/hooks/useEmpresa";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Bug, Plus, Trash2, Flame, AlertTriangle, ShieldCheck, CheckCircle2 } from "lucide-react";
+import { Bug, Plus, FileWarning, Flame, AlertTriangle, ShieldCheck, CheckCircle2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
@@ -156,13 +158,7 @@ export default function Pragas() {
     },
   });
 
-  const deletePraga = useMutation({
-    mutationFn: async (id: string) => {
-      const { error } = await supabase.from("controle_pragas").delete().eq("id", id);
-      if (error) throw error;
-    },
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ["controle_pragas"] }); toast.success("Removido"); },
-  });
+  const navigate = useNavigate();
 
   const parseExpurgoExtras = (acao: string) => {
     try { return JSON.parse(acao); } catch { return null; }
@@ -255,7 +251,7 @@ export default function Pragas() {
                           </Button>
                         )}
                       </TableCell>
-                      <TableCell><Button size="icon" variant="ghost" onClick={() => deletePraga.mutate(r.id)}><Trash2 className="w-4 h-4 text-destructive" /></Button></TableCell>
+                      <TableCell><Button size="sm" variant="ghost" className="gap-1 text-xs" title="Registros não são excluídos — correção via Não Conformidade" onClick={() => corrigirViaNC(navigate, { tabela: "controle_pragas", registroId: r.id, descricao: `Controle de pragas — local: ${r.local} — praga: ${r.tipo_praga} — ação: ${r.acao}` })}><FileWarning className="w-4 h-4 text-primary" /> Corrigir via NC</Button></TableCell>
                     </TableRow>
                   ))}
 
@@ -374,7 +370,7 @@ export default function Pragas() {
                               {x?.epi_adequado && <Badge variant="outline" className="text-[10px] px-1">EPI</Badge>}
                             </div>
                           </TableCell>
-                          <TableCell><Button size="icon" variant="ghost" onClick={() => deletePraga.mutate(r.id)}><Trash2 className="w-4 h-4 text-destructive" /></Button></TableCell>
+                          <TableCell><Button size="sm" variant="ghost" className="gap-1 text-xs" title="Registros não são excluídos — correção via Não Conformidade" onClick={() => corrigirViaNC(navigate, { tabela: "controle_pragas", registroId: r.id, descricao: `Expurgo — local: ${r.local} — data: ${r.data}` })}><FileWarning className="w-4 h-4 text-primary" /> Corrigir via NC</Button></TableCell>
                         </TableRow>
                       );
                     })}
