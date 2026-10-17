@@ -743,6 +743,50 @@ export type Database = {
           },
         ]
       }
+      auditorias_bpf: {
+        Row: {
+          auditor: string
+          created_at: string
+          data_auditoria: string
+          empresa_id: string | null
+          escopo: string | null
+          id: string
+          observacoes: string | null
+          status: string
+          user_id: string
+        }
+        Insert: {
+          auditor: string
+          created_at?: string
+          data_auditoria?: string
+          empresa_id?: string | null
+          escopo?: string | null
+          id?: string
+          observacoes?: string | null
+          status?: string
+          user_id: string
+        }
+        Update: {
+          auditor?: string
+          created_at?: string
+          data_auditoria?: string
+          empresa_id?: string | null
+          escopo?: string | null
+          id?: string
+          observacoes?: string | null
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "auditorias_bpf_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       batida_lotes: {
         Row: {
           created_at: string
@@ -1101,6 +1145,7 @@ export type Database = {
         Row: {
           area: string
           auditoria_data: string | null
+          auditoria_id: string | null
           conforme: boolean | null
           created_at: string
           empresa_id: string | null
@@ -1112,6 +1157,7 @@ export type Database = {
         Insert: {
           area: string
           auditoria_data?: string | null
+          auditoria_id?: string | null
           conforme?: boolean | null
           created_at?: string
           empresa_id?: string | null
@@ -1123,6 +1169,7 @@ export type Database = {
         Update: {
           area?: string
           auditoria_data?: string | null
+          auditoria_id?: string | null
           conforme?: boolean | null
           created_at?: string
           empresa_id?: string | null
@@ -1132,6 +1179,13 @@ export type Database = {
           user_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "checklist_items_auditoria_id_fkey"
+            columns: ["auditoria_id"]
+            isOneToOne: false
+            referencedRelation: "auditorias_bpf"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "checklist_items_empresa_id_fkey"
             columns: ["empresa_id"]
