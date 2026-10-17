@@ -426,7 +426,6 @@ export default function Expedicao() {
       const { error } = await supabase.from("expedicoes" as any).update(payload).eq("id", editId);
       if (error) { toast.error(mensagemErroRegistro(error, "Erro ao atualizar expedição")); setSaving(false); return; }
       expedicaoId = editId;
-      await supabase.from("expedicao_itens" as any).delete().eq("expedicao_id", editId);
     } else {
       const { data: exp, error } = await supabase.from("expedicoes" as any).insert(payload).select().single();
       if (error || !exp) { toast.error("Erro ao salvar: " + (error?.message || "")); setSaving(false); return; }
