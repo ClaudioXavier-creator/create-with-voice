@@ -1,7 +1,7 @@
 # Revisão dos textos de identificação e integridade
 
-- [ ] Corrigir as alegações nos nove arquivos solicitados, sem mudar campos, registros ou hashes.
-- [ ] Listar cada texto antes/depois, conferir PDFs e confirmar build; não publicar.
+- [x] Corrigir as alegações nos nove arquivos solicitados, sem mudar campos, registros ou hashes (34 substituições).
+- [x] Listar cada texto antes/depois, conferir o conteúdo imprimível do PDF e confirmar build (build OK; relatório com sessão ativa, sem erros; hashes idênticos); não publicar.
 
 ---
 
