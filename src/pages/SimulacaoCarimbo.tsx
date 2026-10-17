@@ -33,7 +33,7 @@ export default function SimulacaoCarimbo() {
   const imprimirRelatorio = () => {
     gerarRelatorioPDF({
       title: "Relatório de Produção (SIMULAÇÃO)",
-      subtitle: "Dados fictícios para demonstração do carimbo anti-fraude",
+      subtitle: "Dados fictícios para demonstração do selo de integridade",
       empresa: "Fazenda Modelo Ltda.",
       responsavel: "Dr. João Silva — CRMV/SP 12345",
       periodo: "Janeiro/2026",
@@ -45,22 +45,22 @@ export default function SimulacaoCarimbo() {
         { header: "Status", accessor: "status" },
       ],
       data: DADOS_FICTICIOS,
-      footer: "BPF_Consult — Demonstração de carimbo anti-fraude MAPA",
+      footer: "BPF_Consult — Demonstração de selo de integridade",
     });
   };
 
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Simulação — Carimbo Anti-Fraude"
-        description="Demonstração com dados fictícios do selo de integridade aplicado em todos os documentos do sistema (Decreto 12.031/2024 & MP 2.200-2/2001)."
+        title="Simulação — Selo de Integridade"
+        description="Registro com identificação do responsável, data e hora; selo de integridade (dados fictícios). Referência: Decreto 12.031/2024 (art. 40, §3º)."
         icon={ShieldCheck}
       />
 
       <Card>
         <CardHeader>
           <CardTitle className="text-base flex items-center gap-2">
-            <ShieldCheck className="w-5 h-5 text-primary" /> Carimbo gerado agora
+            <ShieldCheck className="w-5 h-5 text-primary" /> Selo de integridade gerado agora
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
@@ -76,7 +76,7 @@ export default function SimulacaoCarimbo() {
               <Badge variant="secondary" className="font-mono">{carimbo.selo}</Badge>
             </div>
           </div>
-          <Button variant="outline" onClick={regerar}>Regerar carimbo</Button>
+          <Button variant="outline" onClick={regerar}>Regerar selo de integridade</Button>
         </CardContent>
       </Card>
 
@@ -109,7 +109,7 @@ export default function SimulacaoCarimbo() {
         </CardHeader>
         <CardContent className="space-y-3">
           <p className="text-sm text-muted-foreground">
-            Gera um relatório PDF de produção com {DADOS_FICTICIOS.length} lotes fictícios e o carimbo anti-fraude aplicado automaticamente no rodapé.
+            Gera um relatório PDF de produção com {DADOS_FICTICIOS.length} lotes fictícios e o selo de integridade aplicado automaticamente no rodapé.
           </p>
           <Button onClick={imprimirRelatorio}>
             <Printer className="w-4 h-4 mr-2" /> Gerar PDF de demonstração

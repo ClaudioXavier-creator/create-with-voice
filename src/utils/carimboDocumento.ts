@@ -1,9 +1,9 @@
 /**
- * Carimbo Anti-Fraude para Documentos — Decreto 12.031/2024 & MP 2.200-2/2001 (MAPA)
+ * Selo de integridade para documentos — Decreto 12.031/2024 (art. 40, §3º)
  *
  * Padroniza data/hora de emissão, usuário responsável, identificação do documento
  * e hash curto de integridade em TODOS os documentos (impressos e digitais) gerados
- * pelo sistema, atendendo à exigência regulatória contra fraudes em registros oficiais.
+ * pelo sistema, sem representar assinatura com certificado ICP-Brasil.
  */
 
 export interface CarimboInfo {
@@ -143,8 +143,7 @@ export function carimboHTML(info: CarimboInfo): string {
     </div>
   </div>
   <div style="margin-top:4px;font-size:8px;color:#888;">
-    Documento com data/hora de emissão e selo de integridade — Decreto 12.031/2024 &amp; MP 2.200-2/2001 (MAPA).
-    Adulteração invalida o registro.
+    Registro com identificação do responsável, data e hora; selo de integridade — Decreto 12.031/2024 (art. 40, §3º).
   </div>
 </div>`;
 }
@@ -168,7 +167,7 @@ export function carimboTexto(info: CarimboInfo): string {
     `Emitido em: ${info.dataHoraBR}`,
     info.usuario ? `Por: ${info.usuario}` : "",
     info.selo,
-    "Decreto 12.031/2024 & MP 2.200-2/2001 (MAPA) — Adulteração invalida o registro.",
+    "Registro com identificação do responsável, data e hora; selo de integridade — Decreto 12.031/2024 (art. 40, §3º).",
     "─────────────────────────────────────────────",
   ].filter(Boolean).join("\n");
 }

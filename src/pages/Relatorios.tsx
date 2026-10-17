@@ -164,7 +164,7 @@ export default function Relatorios() {
       arquivoNome = arquivo.name;
     }
 
-    const rtInfo = rtAssinado ? ` | [ASSINATURA RT] ${rtNome} - CRMV: ${rtCrmv} - ${new Date().toISOString()}` : "";
+    const rtInfo = rtAssinado ? ` | [Registro com identificação do responsável, data e hora] ${rtNome} - CRMV: ${rtCrmv} - ${new Date().toISOString()}` : "";
     const { error } = await supabase.from("relatorios").insert({
       user_id: user.id,
       empresa_id: empresaAtiva?.id || null,
@@ -309,7 +309,7 @@ ${recallAtivos.length>0?`<div class="ab">&#9888; ${recallAtivos.length} recall(s
 <p style="font-size:10pt;line-height:1.7;text-align:justify;">O presente relat&oacute;rio consolida as atividades de autocontrole da <b>${esc(emp.nome)}</b> durante <b>${anualAno}</b>, conforme BPF (IN 04/2007, Decreto 6.296/2007).</p>
 <p style="font-size:10pt;line-height:1.7;text-align:justify;margin-top:6px;">Foram produzidos <b>${prod.length} lotes</b>, realizadas <b>${analises.length} an&aacute;lises</b>, <b>${treins.length} treinamentos</b> para <b>${funcionariosTreinados} colaborador(es)</b> e tratadas <b>${ncs.length} NC(s)</b>${ncFechadas>0?` (${ncFechadas} encerrada(s))`:""}.${recallAtivos.length===0?" N&atilde;o houve recall.":" Houve "+recallAtivos.length+" recall(s)."}</p>
 <p style="font-size:10pt;line-height:1.7;text-align:justify;margin-top:6px;">Os registros atendem IN 04/2007, IN 15/2009, IN 22/2009 e Decreto 12.031/2024.</p>
-<div class="sig"><div class="sl"></div><p style="font-size:10pt;font-weight:bold;">${esc(anualRtNome||emp.responsavel_tecnico||"Respons&aacute;vel T&eacute;cnico")}</p><p style="font-size:9pt;">CRMV: ${esc(anualRtCrmv||emp.crmv)||"&mdash;"}</p><p style="font-size:8pt;color:#666;margin-top:3px;">[ASSINATURA DIGITAL &mdash; ${now.toISOString()} &mdash; MP 2.200-2/2001]</p></div></div>
+<div class="sig"><div class="sl"></div><p style="font-size:10pt;font-weight:bold;">${esc(anualRtNome||emp.responsavel_tecnico||"Respons&aacute;vel T&eacute;cnico")}</p><p style="font-size:9pt;">CRMV: ${esc(anualRtCrmv||emp.crmv)||"&mdash;"}</p><p style="font-size:8pt;color:#666;margin-top:3px;">[Registro com identificação do responsável, data e hora &mdash; ${now.toISOString()}]</p></div></div>
 
 <div class="ft"><p>Relat&oacute;rio Anual de Autocontrole &mdash; ${esc(emp.nome)} &mdash; ${anualAno}</p><p>BPF_Consult &mdash; ${dataGeracao}</p><p>IN 04/2007 | IN 15/2009 | Decreto 6.296/2007 | Decreto 12.031/2024</p></div>
 ${(() => {
@@ -323,7 +323,7 @@ ${(() => {
       <div><strong>Relat&oacute;rio Anual de Autocontrole</strong> &mdash; ${anualAno}<br/>Empresa: ${esc(emp.nome)}</div>
       <div style="text-align:right;">Emitido em: <strong>${dt}</strong><br/><span style="font-family:monospace;color:#1a1a2e;">INTEGRIDADE: ${hash}</span></div>
     </div>
-    <div style="margin-top:4px;font-size:8px;color:#888;">Documento com data/hora de emiss&atilde;o e selo de integridade &mdash; Decreto 12.031/2024 &amp; MP 2.200-2/2001 (MAPA). Adultera&ccedil;&atilde;o invalida o registro.</div>
+    <div style="margin-top:4px;font-size:8px;color:#888;">Registro com identificação do responsável, data e hora; selo de integridade &mdash; Decreto 12.031/2024 (art. 40, §3º).</div>
   </div>`;
 })()}
 </body></html>`;
@@ -541,7 +541,7 @@ ${(() => {
                       <span>6. Treinamentos</span>
                       <span>7. Auditorias</span>
                       <span>8. Recall e Reclamações</span>
-                      <span>9. Conclusão Técnica + Assinatura RT</span>
+                      <span>9. Conclusão Técnica + Identificação do RT</span>
                     </div>
                   </div>
                   <Button onClick={handleExportAnual} className="w-full" disabled={anualExporting}>
@@ -662,11 +662,11 @@ ${(() => {
                       <p className="text-xs text-muted-foreground mt-1">Planilha preenchida em papel, assinada e escaneada/fotografada</p>
                     </div>
                   )}
-                  {/* Assinatura Digital do RT — Decreto 12.031/2024, Art. 18 */}
+                  {/* Identificação do responsável técnico */}
                   <div className="p-3 rounded-lg border bg-muted/20 space-y-3">
                     <div className="flex items-center justify-between">
                       <p className="text-sm font-semibold flex items-center gap-2">
-                        <CheckSquare className="w-4 h-4" /> Assinatura Digital do RT (Decreto 12.031/2024)
+                        <CheckSquare className="w-4 h-4" /> Registro com identificação do responsável, data e hora
                       </p>
                       <Switch checked={rtAssinado} onCheckedChange={setRtAssinado} />
                     </div>
@@ -678,14 +678,14 @@ ${(() => {
                     )}
                     {rtAssinado && (
                       <p className="text-xs text-primary">
-                        ✓ Ao salvar, o relatório será assinado digitalmente com data/hora e dados do RT, conferindo validade para fiscalizações remotas.
+                        ✓ Registro com identificação do responsável, data e hora ao salvar o relatório.
                       </p>
                     )}
                   </div>
 
                   <Button onClick={handleAdd} className="w-full" disabled={saving}>
                     {saving && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-                    {rtAssinado ? "Salvar e Assinar Relatório" : "Salvar Relatório"}
+                    {rtAssinado ? "Salvar com identificação do responsável" : "Salvar Relatório"}
                   </Button>
                 </div>
               </DialogContent>
