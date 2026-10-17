@@ -150,22 +150,7 @@ export default function Producao() {
     setOpen(true);
   };
 
-  const handleDelete = async (p: ProdRow) => {
-    if (!user) return;
-    if (!window.confirm(`Excluir definitivamente o registro do lote "${p.lote || p.produto}"?`)) return;
-    setDeletingId(p.id);
-    const { error } = await supabase.from("producao").delete().eq("id", p.id);
-    if (error) toast.error("Erro ao excluir registro");
-    else {
-      toast.success("Registro excluído");
-      registrarAuditLog({
-        userId: user.id, empresaId: empresaAtiva?.id, tabela: "producao",
-        registroId: p.id, acao: "excluir", dadosAnteriores: p as any,
-      });
-      fetchData();
-    }
-    setDeletingId(null);
-  };
+  // Registros de produção não são excluídos (Decreto 12.031/2024) — correção via NC
 
 
 
@@ -587,8 +572,8 @@ export default function Producao() {
                           <Button size="sm" variant="ghost" onClick={() => abrirEdicao(p)} title="Editar registro">
                             <Pencil className="w-4 h-4" />
                           </Button>
-                          <Button size="sm" variant="ghost" onClick={() => handleDelete(p)} disabled={deletingId === p.id} title="Excluir registro">
-                            {deletingId === p.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4 text-destructive" />}
+                          <Button size="sm" variant="ghost" className="gap-1 text-xs" title="Registros não são excluídos — correção via Não Conformidade" onClick={() => corrigirViaNC(navigate, { tabela: "producao", registroId: p.id, descricao: `Produção — produto: ${p.produto} — lote: ${p.lote || "—"}` })}>
+                            <FileWarning className="w-4 h-4 text-primary" /> Corrigir via NC
                           </Button>
                         </div>
                       )}

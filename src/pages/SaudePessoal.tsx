@@ -1,5 +1,7 @@
 import { TIPOS_EXAME } from "@/components/saude/constants";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { corrigirViaNC } from "@/utils/correcaoNC";
 import { useAuth } from "@/hooks/useAuth";
 import { useEmpresa } from "@/hooks/useEmpresa";
 import { supabase } from "@/integrations/supabase/client";
@@ -15,7 +17,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Switch } from "@/components/ui/switch";
-import { Plus, HeartPulse, CheckCircle2, AlertTriangle, Trash2, UserCheck, Clock } from "lucide-react";
+import { Plus, HeartPulse, CheckCircle2, AlertTriangle, FileWarning, UserCheck, Clock } from "lucide-react";
 import PageHeader from "@/components/PageHeader";
 import { AnexarPlanilhaPop } from "@/components/documentos/AnexarPlanilhaPop";
 
@@ -81,16 +83,7 @@ export default function SaudePessoal() {
     onError: () => toast.error("Erro ao salvar"),
   });
 
-  const deleteRegistro = useMutation({
-    mutationFn: async (id: string) => {
-      const { error } = await supabase.from("saude_manipuladores").delete().eq("id", id);
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["saude-manipuladores"] });
-      toast.success("Excluído");
-    },
-  });
+  const navigate = useNavigate();
 
   const today = new Date().toISOString().split("T")[0];
   const aptos = registros.filter(r => r.apto).length;
@@ -206,7 +199,7 @@ export default function SaudePessoal() {
                       </TableCell>
                       <TableCell className="text-xs max-w-[120px] truncate">{r.restricoes || "—"}</TableCell>
                       <TableCell>
-                        <Button variant="ghost" size="icon" onClick={() => deleteRegistro.mutate(r.id)}><Trash2 className="w-4 h-4 text-destructive" /></Button>
+                        <Button variant="ghost" size="sm" className="gap-1 text-xs" title="Registros não são excluídos — correção via Não Conformidade" onClick={() => corrigirViaNC(navigate, { tabela: "saude_manipuladores", registroId: r.id, descricao: `Saúde de manipulador — ${r.nome || r.funcionario || "registro"} — exame: ${r.tipo_exame || "—"}` })}><FileWarning className="w-4 h-4 text-primary" /> Corrigir via NC</Button>
                       </TableCell>
                     </TableRow>
                   );
