@@ -1,5 +1,29 @@
 import { useState, useEffect, useRef } from "react";
-import { Scale, Sparkles, Loader2, RefreshCw, Bell, BookOpen, CheckCircle2, AlertTriangle, Info, Eye, Search, Upload, FileText, Trash2, ExternalLink, Plus, X, FolderOpen, Globe, Filter, Save, ShieldAlert, Ban } from "lucide-react";
+import {
+  Scale,
+  Sparkles,
+  Loader2,
+  RefreshCw,
+  Bell,
+  BookOpen,
+  CheckCircle2,
+  AlertTriangle,
+  Info,
+  Eye,
+  Search,
+  Upload,
+  FileText,
+  Trash2,
+  ExternalLink,
+  Plus,
+  X,
+  FolderOpen,
+  Globe,
+  Filter,
+  Save,
+  ShieldAlert,
+  Ban,
+} from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -135,17 +159,14 @@ export default function Legislacao() {
 
   const fetchAlertas = async () => {
     if (!user) return;
-    let q = supabase
-      .from("legislacao_alertas")
-      .select("*")
-      .order("created_at", { ascending: false });
-    
+    let q = supabase.from("legislacao_alertas").select("*").order("created_at", { ascending: false });
+
     if (empresaAtiva) {
       q = q.or(`empresa_id.eq.${empresaAtiva.id},empresa_id.is.null`);
     } else {
       q = q.is("empresa_id", null);
     }
-    
+
     const { data, error } = await q;
     if (error) {
       console.error("Erro ao buscar alertas:", error);
@@ -154,7 +175,10 @@ export default function Legislacao() {
     setFetchingDB(false);
   };
 
-  useEffect(() => { fetchAlertas(); fetchNormas(); }, [user, empresaAtiva]);
+  useEffect(() => {
+    fetchAlertas();
+    fetchNormas();
+  }, [user, empresaAtiva]);
 
   const buscarAtualizacoes = async () => {
     if (!user) return;
@@ -163,8 +187,16 @@ export default function Legislacao() {
       const { data, error } = await supabase.functions.invoke("legislacao-ai", {
         body: { action: "buscar_atualizacoes" },
       });
-      if (error) { toast.error("Erro ao buscar atualizações: " + error.message); setLoading(false); return; }
-      if (data?.error) { toast.error(data.error); setLoading(false); return; }
+      if (error) {
+        toast.error("Erro ao buscar atualizações: " + error.message);
+        setLoading(false);
+        return;
+      }
+      if (data?.error) {
+        toast.error(data.error);
+        setLoading(false);
+        return;
+      }
 
       const result = data?.data;
       if (result?.alertas && Array.isArray(result.alertas)) {
@@ -173,14 +205,14 @@ export default function Legislacao() {
         const records = result.alertas.map((a: Alerta) => ({
           user_id: user.id,
           empresa_id: empresaAtiva?.id || null,
-          titulo: a.titulo,
+          titulo: "[IA — a confirmar] " + a.titulo,
           resumo: a.resumo,
           fonte: a.fonte || "",
           tipo: a.tipo || "atualizacao",
           relevancia: a.relevancia || "media",
           data_publicacao: a.data_aproximada || new Date().toISOString().split("T")[0],
         }));
-        
+
         if (records.length > 0) {
           await supabase.from("legislacao_alertas").insert(records as any);
           fetchAlertas();
@@ -204,16 +236,33 @@ export default function Legislacao() {
       const { data, error } = await supabase.functions.invoke("legislacao-ai", {
         body: { action: "resumo_sistema" },
       });
-      if (error) { toast.error("Erro ao gerar resumo: " + error.message); setLoadingResumo(false); return; }
-      if (data?.error) { toast.error(data.error); setLoadingResumo(false); return; }
+      if (error) {
+        toast.error("Erro ao gerar resumo: " + error.message);
+        setLoadingResumo(false);
+        return;
+      }
+      if (data?.error) {
+        toast.error(data.error);
+        setLoadingResumo(false);
+        return;
+      }
       const result = data?.data;
-      if (result) { setResumoSistema(result as ResumoSistema); toast.success("Resumo do sistema gerado!"); }
-    } catch (err) { toast.error("Erro ao conectar com a IA"); console.error(err); }
+      if (result) {
+        setResumoSistema(result as ResumoSistema);
+        toast.success("Resumo do sistema gerado!");
+      }
+    } catch (err) {
+      toast.error("Erro ao conectar com a IA");
+      console.error(err);
+    }
     setLoadingResumo(false);
   };
 
   const marcarLido = async (id: string) => {
-    await supabase.from("legislacao_alertas").update({ lido: true } as any).eq("id", id);
+    await supabase
+      .from("legislacao_alertas")
+      .update({ lido: true } as any)
+      .eq("id", id);
     fetchAlertas();
   };
 
@@ -222,18 +271,15 @@ export default function Legislacao() {
   const fetchNormas = async () => {
     if (!user) return;
     setNormasLoading(true);
-    let q = supabase
-      .from("normas_legislacao")
-      .select("*")
-      .order("created_at", { ascending: false });
-    
+    let q = supabase.from("normas_legislacao").select("*").order("created_at", { ascending: false });
+
     // Check if we should filter by company or show global/user norms
     if (empresaAtiva) {
       q = q.or(`empresa_id.eq.${empresaAtiva.id},empresa_id.is.null`);
     } else {
       q = q.is("empresa_id", null);
     }
-    
+
     const { data, error } = await q;
     if (error) {
       console.error("Erro ao buscar normas:", error);
@@ -260,7 +306,7 @@ export default function Legislacao() {
 
     const { data: urlData } = supabase.storage.from("normas_legislacao").getPublicUrl(path);
 
-    setNormaForm(prev => ({
+    setNormaForm((prev) => ({
       ...prev,
       arquivo_nome: file.name,
       arquivo_url: urlData.publicUrl,
@@ -287,12 +333,18 @@ export default function Legislacao() {
       resumo: normaForm.resumo,
       arquivo_nome: normaForm.arquivo_nome,
       arquivo_url: normaForm.arquivo_url,
-      tags: normaForm.tags ? normaForm.tags.split(",").map(t => t.trim()).filter(Boolean) : [],
+      tags: normaForm.tags
+        ? normaForm.tags
+            .split(",")
+            .map((t) => t.trim())
+            .filter(Boolean)
+        : [],
     };
 
     const { error } = await supabase.from("normas_legislacao").insert(payload as any);
-    if (error) { toast.error("Erro: " + error.message); }
-    else {
+    if (error) {
+      toast.error("Erro: " + error.message);
+    } else {
       toast.success("Norma salva com sucesso!");
       setNormaDialogOpen(false);
       resetNormaForm();
@@ -304,11 +356,24 @@ export default function Legislacao() {
   const handleDeleteNorma = async (id: string) => {
     const { error } = await supabase.from("normas_legislacao").delete().eq("id", id);
     if (error) toast.error("Erro ao excluir: " + error.message);
-    else { toast.success("Norma excluída."); fetchNormas(); }
+    else {
+      toast.success("Norma excluída.");
+      fetchNormas();
+    }
   };
 
   const resetNormaForm = () => {
-    setNormaForm({ titulo: "", codigo: "", tipo: "instrucao_normativa", orgao: "MAPA", data_publicacao: "", resumo: "", arquivo_nome: "", arquivo_url: "", tags: "" });
+    setNormaForm({
+      titulo: "",
+      codigo: "",
+      tipo: "instrucao_normativa",
+      orgao: "MAPA",
+      data_publicacao: "",
+      resumo: "",
+      arquivo_nome: "",
+      arquivo_url: "",
+      tags: "",
+    });
   };
 
   const handleQuickUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -319,7 +384,8 @@ export default function Legislacao() {
 
     for (const file of Array.from(files)) {
       const safeName = file.name
-        .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
         .replace(/[^a-zA-Z0-9._-]/g, "_");
       const empresaSegment = empresaAtiva ? `${empresaAtiva.id}/` : "";
       const path = `${user.id}/${empresaSegment}${Date.now()}_${safeName}`;
@@ -360,7 +426,7 @@ export default function Legislacao() {
     if (quickUploadRef.current) quickUploadRef.current.value = "";
   };
 
-  const filteredNormas = normas.filter(n => {
+  const filteredNormas = normas.filter((n) => {
     if (!normaSearch) return true;
     const q = normaSearch.toLowerCase();
     return (
@@ -368,7 +434,7 @@ export default function Legislacao() {
       (n.codigo || "").toLowerCase().includes(q) ||
       (n.orgao || "").toLowerCase().includes(q) ||
       (n.resumo || "").toLowerCase().includes(q) ||
-      (n.tags || []).some(t => t.toLowerCase().includes(q))
+      (n.tags || []).some((t) => t.toLowerCase().includes(q))
     );
   });
 
@@ -379,10 +445,22 @@ export default function Legislacao() {
     setPesquisaResumo("");
     try {
       const { data, error } = await supabase.functions.invoke("legislacao-ai", {
-        body: { action: "pesquisar_legislacao", termo: pesquisaTermo || "alimentação animal", categoria: pesquisaCategoria },
+        body: {
+          action: "pesquisar_legislacao",
+          termo: pesquisaTermo || "alimentação animal",
+          categoria: pesquisaCategoria,
+        },
       });
-      if (error) { toast.error("Erro na pesquisa: " + error.message); setPesquisaLoading(false); return; }
-      if (data?.error) { toast.error(data.error); setPesquisaLoading(false); return; }
+      if (error) {
+        toast.error("Erro na pesquisa: " + error.message);
+        setPesquisaLoading(false);
+        return;
+      }
+      if (data?.error) {
+        toast.error(data.error);
+        setPesquisaLoading(false);
+        return;
+      }
       const result = data?.data;
       if (result?.resultados) {
         setPesquisaResultados(result.resultados);
@@ -404,16 +482,26 @@ export default function Legislacao() {
       user_id: user.id,
       titulo: resultado.titulo,
       codigo: resultado.codigo || "",
-      tipo: resultado.tipo === "consulta_publica" ? "outro" : (resultado.tipo || "instrucao_normativa"),
+      tipo: resultado.tipo === "consulta_publica" ? "outro" : resultado.tipo || "instrucao_normativa",
       orgao: resultado.orgao || "MAPA",
       data_publicacao: resultado.data_publicacao || null,
-      resumo: resultado.resumo + (resultado.impacto_bpf ? `\n\nImpacto BPF: ${resultado.impacto_bpf}` : ""),
-      arquivo_url: resultado.link_referencia || "",
-      arquivo_nome: resultado.link_referencia ? "Link SISLEGIS" : "",
-      tags: [resultado.categoria || "pesquisa", "sislegis"],
+      resumo:
+        "[Gerado por IA — confirmar no SISLEGIS ou no DOU antes de usar]\n\n" +
+        resultado.resumo +
+        (resultado.impacto_bpf ? `\n\nImpacto BPF: ${resultado.impacto_bpf}` : ""),
+      arquivo_url: /^https:\/\/([a-z0-9-]+\.)*(gov\.br|in\.gov\.br)\//i.test(resultado.link_referencia || "")
+        ? resultado.link_referencia
+        : "",
+      arquivo_nome: /^https:\/\/([a-z0-9-]+\.)*(gov\.br|in\.gov\.br)\//i.test(resultado.link_referencia || "")
+        ? "Link oficial (conferir)"
+        : "",
+      tags: [resultado.categoria || "pesquisa", "ia-a-confirmar"],
     } as any);
     if (error) toast.error("Erro ao salvar: " + error.message);
-    else { toast.success("Norma salva na biblioteca!"); fetchNormas(); }
+    else {
+      toast.success("Norma salva na biblioteca!");
+      fetchNormas();
+    }
   };
 
   const categoriaLabel = (cat: string) => {
@@ -430,9 +518,9 @@ export default function Legislacao() {
     };
     return map[s] || { label: s, cls: "bg-muted text-muted-foreground" };
   };
-  const tipoNormaLabel = (tipo: string) => TIPO_NORMA_OPTIONS.find(t => t.value === tipo)?.label || tipo;
+  const tipoNormaLabel = (tipo: string) => TIPO_NORMA_OPTIONS.find((t) => t.value === tipo)?.label || tipo;
 
-  const naoLidos = alertas.filter(a => !a.lido).length;
+  const naoLidos = alertas.filter((a) => !a.lido).length;
 
   return (
     <>
@@ -445,22 +533,32 @@ export default function Legislacao() {
 
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-        <Card><CardContent className="pt-4 text-center">
-          <p className="text-2xl font-bold font-display">{alertas.length}</p>
-          <p className="text-xs text-muted-foreground">Total alertas</p>
-        </CardContent></Card>
-        <Card><CardContent className="pt-4 text-center">
-          <p className="text-2xl font-bold font-display text-destructive">{naoLidos}</p>
-          <p className="text-xs text-muted-foreground">Não lidos</p>
-        </CardContent></Card>
-        <Card><CardContent className="pt-4 text-center">
-          <p className="text-2xl font-bold font-display text-primary">{normas.length}</p>
-          <p className="text-xs text-muted-foreground">Normas salvas</p>
-        </CardContent></Card>
-        <Card><CardContent className="pt-4 text-center">
-          <p className="text-2xl font-bold font-display text-info">{resumoSistema ? resumoSistema.modulos_implementados.length : "—"}</p>
-          <p className="text-xs text-muted-foreground">Módulos analisados</p>
-        </CardContent></Card>
+        <Card>
+          <CardContent className="pt-4 text-center">
+            <p className="text-2xl font-bold font-display">{alertas.length}</p>
+            <p className="text-xs text-muted-foreground">Total alertas</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="pt-4 text-center">
+            <p className="text-2xl font-bold font-display text-destructive">{naoLidos}</p>
+            <p className="text-xs text-muted-foreground">Não lidos</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="pt-4 text-center">
+            <p className="text-2xl font-bold font-display text-primary">{normas.length}</p>
+            <p className="text-xs text-muted-foreground">Normas salvas</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="pt-4 text-center">
+            <p className="text-2xl font-bold font-display text-info">
+              {resumoSistema ? resumoSistema.modulos_implementados.length : "—"}
+            </p>
+            <p className="text-xs text-muted-foreground">Módulos analisados</p>
+          </CardContent>
+        </Card>
       </div>
 
       <Tabs defaultValue="normas" className="space-y-4">
@@ -472,11 +570,13 @@ export default function Legislacao() {
           <TabsTrigger value="alertas">
             <Bell className="w-4 h-4 mr-1" />
             Alertas
-            {naoLidos > 0 && <Badge className="ml-2 bg-destructive text-destructive-foreground text-xs">{naoLidos}</Badge>}
+            {naoLidos > 0 && (
+              <Badge className="ml-2 bg-destructive text-destructive-foreground text-xs">{naoLidos}</Badge>
+            )}
           </TabsTrigger>
           <TabsTrigger value="pesquisa">
             <Globe className="w-4 h-4 mr-1" />
-            Pesquisa SISLEGIS
+            Pesquisa assistida por IA
           </TabsTrigger>
           <TabsTrigger value="resumo">
             <Sparkles className="w-4 h-4 mr-1" />
@@ -510,10 +610,19 @@ export default function Legislacao() {
                   onChange={handleQuickUpload}
                 />
                 <Button variant="outline" onClick={() => quickUploadRef.current?.click()} disabled={quickUploading}>
-                  {quickUploading ? <Loader2 className="w-4 h-4 mr-1 animate-spin" /> : <FolderOpen className="w-4 h-4 mr-1" />}
+                  {quickUploading ? (
+                    <Loader2 className="w-4 h-4 mr-1 animate-spin" />
+                  ) : (
+                    <FolderOpen className="w-4 h-4 mr-1" />
+                  )}
                   {quickUploading ? "Importando..." : "Importar do Dispositivo"}
                 </Button>
-                <Button onClick={() => { resetNormaForm(); setNormaDialogOpen(true); }}>
+                <Button
+                  onClick={() => {
+                    resetNormaForm();
+                    setNormaDialogOpen(true);
+                  }}
+                >
                   <Plus className="w-4 h-4 mr-1" /> Adicionar Norma
                 </Button>
               </div>
@@ -531,11 +640,15 @@ export default function Legislacao() {
               </div>
 
               {normasLoading ? (
-                <div className="flex justify-center py-8"><Loader2 className="w-6 h-6 animate-spin text-muted-foreground" /></div>
+                <div className="flex justify-center py-8">
+                  <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+                </div>
               ) : filteredNormas.length === 0 ? (
                 <div className="text-center py-8 text-muted-foreground">
                   <BookOpen className="w-12 h-12 mx-auto mb-3 opacity-30" />
-                  <p>{normaSearch ? "Nenhuma norma encontrada para esta pesquisa." : "Nenhuma norma cadastrada ainda."}</p>
+                  <p>
+                    {normaSearch ? "Nenhuma norma encontrada para esta pesquisa." : "Nenhuma norma cadastrada ainda."}
+                  </p>
                   <p className="text-sm mt-1">Clique em "Adicionar Norma" para começar.</p>
                 </div>
               ) : (
@@ -560,12 +673,18 @@ export default function Legislacao() {
                           {norma.tags && norma.tags.length > 0 && (
                             <div className="flex gap-1 mt-1 flex-wrap">
                               {norma.tags.map((tag, i) => (
-                                <Badge key={i} variant="outline" className="text-[10px]">{tag}</Badge>
+                                <Badge key={i} variant="outline" className="text-[10px]">
+                                  {tag}
+                                </Badge>
                               ))}
                             </div>
                           )}
                         </TableCell>
-                        <TableCell><Badge variant="secondary" className="text-xs">{tipoNormaLabel(norma.tipo || "")}</Badge></TableCell>
+                        <TableCell>
+                          <Badge variant="secondary" className="text-xs">
+                            {tipoNormaLabel(norma.tipo || "")}
+                          </Badge>
+                        </TableCell>
                         <TableCell className="text-xs">{norma.orgao}</TableCell>
                         <TableCell className="text-xs">{norma.data_publicacao || "—"}</TableCell>
                         <TableCell>
@@ -583,11 +702,30 @@ export default function Legislacao() {
                         <TableCell>
                           <div className="flex gap-1">
                             {norma.resumo && (
-                              <Button variant="ghost" size="sm" onClick={() => { setSelectedAlerta({ titulo: norma.titulo, resumo: norma.resumo || "", fonte: norma.orgao || "", tipo: "nova_norma", relevancia: "media", data_aproximada: norma.data_publicacao || "" }); setDetailOpen(true); }}>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => {
+                                  setSelectedAlerta({
+                                    titulo: norma.titulo,
+                                    resumo: norma.resumo || "",
+                                    fonte: norma.orgao || "",
+                                    tipo: "nova_norma",
+                                    relevancia: "media",
+                                    data_aproximada: norma.data_publicacao || "",
+                                  });
+                                  setDetailOpen(true);
+                                }}
+                              >
                                 <Eye className="w-4 h-4" />
                               </Button>
                             )}
-                            <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive" onClick={() => handleDeleteNorma(norma.id)}>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="text-destructive hover:text-destructive"
+                              onClick={() => handleDeleteNorma(norma.id)}
+                            >
                               <Trash2 className="w-4 h-4" />
                             </Button>
                           </div>
@@ -628,7 +766,9 @@ export default function Legislacao() {
               )}
 
               {fetchingDB ? (
-                <div className="flex justify-center py-8"><Loader2 className="w-6 h-6 animate-spin text-muted-foreground" /></div>
+                <div className="flex justify-center py-8">
+                  <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+                </div>
               ) : alertas.length === 0 ? (
                 <div className="text-center py-8 text-muted-foreground">
                   <Scale className="w-12 h-12 mx-auto mb-3 opacity-30" />
@@ -655,18 +795,31 @@ export default function Legislacao() {
                       return (
                         <TableRow key={alerta.id} className={!alerta.lido ? "bg-primary/5" : ""}>
                           <TableCell>
-                            {alerta.lido
-                              ? <CheckCircle2 className="w-4 h-4 text-primary" />
-                              : <div className="w-3 h-3 rounded-full bg-destructive animate-pulse" />}
+                            {alerta.lido ? (
+                              <CheckCircle2 className="w-4 h-4 text-primary" />
+                            ) : (
+                              <div className="w-3 h-3 rounded-full bg-destructive animate-pulse" />
+                            )}
                           </TableCell>
                           <TableCell className="font-medium max-w-xs truncate">{alerta.titulo}</TableCell>
-                          <TableCell><Badge className={tipo.className}>{tipo.label}</Badge></TableCell>
-                          <TableCell><Badge className={rel.className}>{rel.label}</Badge></TableCell>
+                          <TableCell>
+                            <Badge className={tipo.className}>{tipo.label}</Badge>
+                          </TableCell>
+                          <TableCell>
+                            <Badge className={rel.className}>{rel.label}</Badge>
+                          </TableCell>
                           <TableCell className="text-xs text-muted-foreground">{alerta.fonte}</TableCell>
                           <TableCell className="text-xs">{alerta.data_publicacao}</TableCell>
                           <TableCell>
                             <div className="flex gap-1">
-                              <Button variant="ghost" size="sm" onClick={() => { setSelectedAlerta(alerta); setDetailOpen(true); }}>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => {
+                                  setSelectedAlerta(alerta);
+                                  setDetailOpen(true);
+                                }}
+                              >
                                 <Eye className="w-4 h-4" />
                               </Button>
                               {!alerta.lido && (
@@ -692,11 +845,19 @@ export default function Legislacao() {
             <CardHeader>
               <CardTitle className="font-display flex items-center gap-2">
                 <Globe className="w-5 h-5 text-primary" />
-                Pesquisa de Legislação — SISLEGIS / MAPA
+                Pesquisa de Legislação assistida por IA
               </CardTitle>
               <p className="text-sm text-muted-foreground">
-                Pesquise normas, alterações e consultas públicas na área de alimentação animal.
-                Referência: <a href="https://sistemasweb.agricultura.gov.br/sislegis/loginAction.do?method=exibirTela" target="_blank" rel="noopener noreferrer" className="text-primary underline">SISLEGIS/MAPA</a>
+                Resultado gerado por IA, sem consulta direta ao SISLEGIS. Confira no SISLEGIS ou no DOU antes de usar.
+                Referência:{" "}
+                <a
+                  href="https://sistemasweb.agricultura.gov.br/sislegis/loginAction.do?method=exibirTela"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-primary underline"
+                >
+                  SISLEGIS/MAPA
+                </a>
               </p>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -724,8 +885,16 @@ export default function Legislacao() {
                     <SelectItem value="consultas_publicas">Consultas Públicas</SelectItem>
                   </SelectContent>
                 </Select>
-                <Button onClick={pesquisarLegislacao} disabled={pesquisaLoading} className="bg-primary hover:bg-primary/90">
-                  {pesquisaLoading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Search className="w-4 h-4 mr-2" />}
+                <Button
+                  onClick={pesquisarLegislacao}
+                  disabled={pesquisaLoading}
+                  className="bg-primary hover:bg-primary/90"
+                >
+                  {pesquisaLoading ? (
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  ) : (
+                    <Search className="w-4 h-4 mr-2" />
+                  )}
                   {pesquisaLoading ? "Pesquisando..." : "Pesquisar"}
                 </Button>
               </div>
@@ -758,20 +927,25 @@ export default function Legislacao() {
               ) : (
                 <div className="space-y-3">
                   {pesquisaResultados.map((r, i) => {
-                    const st = statusLabel(r.status || "vigente");
+                    const st = { label: "A confirmar", cls: "bg-yellow-500/20 text-yellow-700" };
                     return (
                       <div key={i} className="p-4 rounded-lg border bg-card hover:shadow-sm transition-shadow">
                         <div className="flex items-start justify-between gap-3">
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2 flex-wrap mb-1">
                               {r.codigo && <span className="font-mono text-xs font-bold text-primary">{r.codigo}</span>}
-                              <Badge variant="secondary" className="text-[10px]">{categoriaLabel(r.categoria)}</Badge>
+                              <Badge variant="secondary" className="text-[10px]">
+                                {categoriaLabel(r.categoria)}
+                              </Badge>
                               <Badge className={`text-[10px] ${st.cls}`}>{st.label}</Badge>
                             </div>
                             <h4 className="font-medium text-sm leading-snug">{r.titulo}</h4>
                             <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{r.resumo}</p>
                             {r.impacto_bpf && (
-                              <p className="text-xs mt-1"><span className="font-medium text-primary">Impacto BPF:</span> <span className="text-muted-foreground">{r.impacto_bpf}</span></p>
+                              <p className="text-xs mt-1">
+                                <span className="font-medium text-primary">Impacto BPF:</span>{" "}
+                                <span className="text-muted-foreground">{r.impacto_bpf}</span>
+                              </p>
                             )}
                             <div className="flex items-center gap-3 mt-2 text-xs text-muted-foreground">
                               {r.orgao && <span>{r.orgao}</span>}
@@ -779,7 +953,12 @@ export default function Legislacao() {
                             </div>
                           </div>
                           <div className="flex flex-col gap-1 shrink-0">
-                            <Button variant="outline" size="sm" onClick={() => salvarResultadoComoNorma(r)} title="Salvar na biblioteca">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => salvarResultadoComoNorma(r)}
+                              title="Salvar na biblioteca"
+                            >
                               <Save className="w-4 h-4" />
                             </Button>
                             {r.link_referencia && (
@@ -808,7 +987,11 @@ export default function Legislacao() {
                 Resumo do Sistema — Análise IA
               </CardTitle>
               <Button onClick={buscarResumoSistema} disabled={loadingResumo} className="bg-primary hover:bg-primary/90">
-                {loadingResumo ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Sparkles className="w-4 h-4 mr-2" />}
+                {loadingResumo ? (
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                ) : (
+                  <Sparkles className="w-4 h-4 mr-2" />
+                )}
                 {loadingResumo ? "Analisando..." : "Gerar Resumo com IA"}
               </Button>
             </CardHeader>
@@ -834,7 +1017,13 @@ export default function Legislacao() {
                         <div key={i} className="p-3 rounded-lg border bg-card">
                           <div className="flex items-center justify-between mb-1">
                             <span className="font-medium text-sm">{m.modulo}</span>
-                            <Badge className={m.status === "completo" ? "bg-primary/20 text-primary" : "bg-yellow-500/20 text-yellow-700"}>
+                            <Badge
+                              className={
+                                m.status === "completo"
+                                  ? "bg-primary/20 text-primary"
+                                  : "bg-yellow-500/20 text-yellow-700"
+                              }
+                            >
                               {m.status === "completo" ? "Completo" : "Parcial"}
                             </Badge>
                           </div>
@@ -851,7 +1040,9 @@ export default function Legislacao() {
                       <ul className="space-y-2">
                         {resumoSistema.recomendacoes.map((r, i) => (
                           <li key={i} className="flex items-start gap-2 text-sm">
-                            <span className="w-5 h-5 rounded-full bg-yellow-500/20 text-yellow-700 flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">{i + 1}</span>
+                            <span className="w-5 h-5 rounded-full bg-yellow-500/20 text-yellow-700 flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">
+                              {i + 1}
+                            </span>
                             <span className="text-muted-foreground">{r}</span>
                           </li>
                         ))}
@@ -871,10 +1062,13 @@ export default function Legislacao() {
               <div className="flex items-start gap-3">
                 <FileText className="w-6 h-6 text-primary mt-0.5 shrink-0" />
                 <div>
-                  <h4 className="font-display font-semibold text-sm">IN 17/2017 — Rotulagem e Níveis de Garantia para Fabricantes</h4>
+                  <h4 className="font-display font-semibold text-sm">
+                    IN 17/2017 — Rotulagem e Níveis de Garantia para Fabricantes
+                  </h4>
                   <p className="text-xs text-muted-foreground mt-1">
-                    A Instrução Normativa nº 17/2017 do MAPA estabelece as diretrizes de rotulagem para produtos destinados à alimentação animal,
-                    complementando a IN 22/2009 e IN 12/2004 com requisitos específicos para fabricantes.
+                    A Instrução Normativa nº 17/2017 do MAPA estabelece as diretrizes de rotulagem para produtos
+                    destinados à alimentação animal, complementando a IN 22/2009 e IN 12/2004 com requisitos específicos
+                    para fabricantes.
                   </p>
                 </div>
               </div>
@@ -883,7 +1077,9 @@ export default function Legislacao() {
 
           <div className="grid md:grid-cols-2 gap-4">
             <Card>
-              <CardHeader><CardTitle className="font-display text-sm">📋 Requisitos de Rotulagem (IN 17/2017)</CardTitle></CardHeader>
+              <CardHeader>
+                <CardTitle className="font-display text-sm">📋 Requisitos de Rotulagem (IN 17/2017)</CardTitle>
+              </CardHeader>
               <CardContent className="space-y-2 text-sm">
                 {[
                   "Nome comercial do produto em destaque",
@@ -910,12 +1106,14 @@ export default function Legislacao() {
             </Card>
 
             <Card>
-              <CardHeader><CardTitle className="font-display text-sm">📊 Níveis de Garantia — Diretrizes</CardTitle></CardHeader>
+              <CardHeader>
+                <CardTitle className="font-display text-sm">📊 Níveis de Garantia — Diretrizes</CardTitle>
+              </CardHeader>
               <CardContent className="space-y-2 text-sm">
                 {[
                   "Declarar parâmetros mínimos e máximos conforme registro",
                   "Utilizar unidades do Sistema Internacional (g/kg, mg/kg, UI/kg)",
-                  "Indicar \"(Mín.)\" ou \"(Máx.)\" conforme aplicável",
+                  'Indicar "(Mín.)" ou "(Máx.)" conforme aplicável',
                   "Umidade máxima sempre declarada para produtos secos",
                   "Proteína bruta, extrato etéreo e matéria fibrosa obrigatórios",
                   "Matéria mineral (cinzas) quando aplicável ao tipo de produto",
@@ -936,7 +1134,9 @@ export default function Legislacao() {
           </div>
 
           <Card>
-            <CardHeader><CardTitle className="font-display text-sm">⚠️ Proibições e Alertas (IN 17/2017)</CardTitle></CardHeader>
+            <CardHeader>
+              <CardTitle className="font-display text-sm">⚠️ Proibições e Alertas (IN 17/2017)</CardTitle>
+            </CardHeader>
             <CardContent>
               <div className="grid md:grid-cols-2 gap-4 text-sm">
                 <div className="space-y-2">
@@ -959,7 +1159,7 @@ export default function Legislacao() {
                   {[
                     "Declarar princípio ativo e dosagem no rótulo",
                     "Período de carência claramente informado",
-                    "Frase: \"VENDA SOB PRESCRIÇÃO DE MÉDICO VETERINÁRIO\"",
+                    'Frase: "VENDA SOB PRESCRIÇÃO DE MÉDICO VETERINÁRIO"',
                     "Identificação do medicamento veterinário utilizado",
                     "Espécie e fase de produção obrigatórias",
                   ].map((item, i) => (
@@ -976,9 +1176,11 @@ export default function Legislacao() {
           <Card className="bg-muted/30">
             <CardContent className="pt-4">
               <p className="text-xs text-muted-foreground">
-                <strong>Referência cruzada:</strong> As diretrizes de rotulagem da IN 17/2017 estão integradas ao módulo de
-                <strong> Produtos → Editor de Rótulos</strong>, que automatiza a conformidade com campos obrigatórios, níveis de garantia
-                e geração de etiquetas ZPL. A tabela de valores de referência de consumo segue a IN 12/2004.
+                <strong>Referência cruzada:</strong> As diretrizes de rotulagem da IN 17/2017 estão integradas ao módulo
+                de
+                <strong> Produtos → Editor de Rótulos</strong>, que automatiza a conformidade com campos obrigatórios,
+                níveis de garantia e geração de etiquetas ZPL. A tabela de valores de referência de consumo segue a IN
+                12/2004.
               </p>
             </CardContent>
           </Card>
@@ -992,10 +1194,12 @@ export default function Legislacao() {
                 <div className="flex items-start gap-3">
                   <ShieldAlert className="w-6 h-6 text-destructive mt-0.5" />
                   <div>
-                    <h4 className="font-display font-semibold text-sm">Mapeamento de Substâncias Proibidas e com Limite de Uso</h4>
+                    <h4 className="font-display font-semibold text-sm">
+                      Mapeamento de Substâncias Proibidas e com Limite de Uso
+                    </h4>
                     <p className="text-xs text-muted-foreground mt-1">
-                      Referência normativa: Decreto 12.031/2024, IN 15/2009, IN 13/2004, IN 65/2006, IN 14/2012.
-                      Lista atualizada conforme publicações do MAPA/SDA.
+                      Referência normativa: Decreto 12.031/2024, Portaria SDA 798/2023, Portaria SDA 1.180/2024, IN
+                      13/2004, IN 14/2012, IN 45/2016, IN 1/2020. Lista atualizada conforme publicações do MAPA/SDA.
                     </p>
                   </div>
                 </div>
@@ -1003,29 +1207,97 @@ export default function Legislacao() {
             </Card>
 
             <Card>
-              <CardHeader><CardTitle className="font-display text-sm flex items-center gap-2"><Ban className="w-5 h-5 text-destructive" /> Substâncias PROIBIDAS em Alimentação Animal</CardTitle></CardHeader>
+              <CardHeader>
+                <CardTitle className="font-display text-sm flex items-center gap-2">
+                  <Ban className="w-5 h-5 text-destructive" /> Substâncias PROIBIDAS em Alimentação Animal
+                </CardTitle>
+              </CardHeader>
               <CardContent>
                 <Table>
-                  <TableHeader><TableRow><TableHead>Substância / Grupo</TableHead><TableHead>Norma</TableHead><TableHead>Espécies</TableHead><TableHead>Observação</TableHead></TableRow></TableHeader>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Substância / Grupo</TableHead>
+                      <TableHead>Norma</TableHead>
+                      <TableHead>Espécies</TableHead>
+                      <TableHead>Observação</TableHead>
+                    </TableRow>
+                  </TableHeader>
                   <TableBody>
                     {[
-                      { substancia: "Proteínas e gorduras de ruminantes", norma: "IN 08/2004, IN 15/2009", especies: "Ruminantes", obs: "Prevenção de EEB (Encefalopatia Espongiforme Bovina)" },
-                      { substancia: "Cloranfenicol", norma: "IN 09/2003", especies: "Todas", obs: "Proibido como aditivo ou promotor de crescimento" },
-                      { substancia: "Nitrofuranos e seus derivados", norma: "IN 09/2003", especies: "Todas", obs: "Proibido — resíduo cancerígeno" },
-                      { substancia: "Dietilestilbestrol (DES)", norma: "Portaria 51/1991", especies: "Todas", obs: "Hormônio proibido como promotor" },
-                      { substancia: "Clenbuterol", norma: "IN 17/2004", especies: "Todas", obs: "Beta-agonista proibido como promotor de crescimento" },
-                      { substancia: "Olaquindox", norma: "IN 11/2004", especies: "Todas", obs: "Proibido como promotor de crescimento (desde 2005)" },
-                      { substancia: "Carbadox", norma: "IN 35/2005", especies: "Todas", obs: "Proibido — potencial cancerígeno" },
-                      { substancia: "Avoparcina", norma: "Portaria 448/1998", especies: "Todas", obs: "Proibido como promotor — resistência a vancomicina" },
-                      { substancia: "Espiramicina e Eritromicina", norma: "IN 14/2012", especies: "Aves e Suínos", obs: "Proibidos como aditivos melhoradores de desempenho" },
-                      { substancia: "Colistina (uso como promotor)", norma: "IN 45/2016", especies: "Todas", obs: "Proibida como aditivo zootécnico (último recurso humano)" },
-                      { substancia: "Tilosina e Lincomicina (promotor)", norma: "IN 01/2020", especies: "Todas", obs: "Proibidos como aditivos melhoradores de desempenho" },
-                      { substancia: "Bacitracina de Zinco (promotor)", norma: "IN 01/2020", especies: "Todas", obs: "Proibida como aditivo melhorador de desempenho" },
-                      { substancia: "Virginiamicina (promotor)", norma: "IN 01/2020", especies: "Todas", obs: "Proibida como aditivo melhorador de desempenho" },
+                      {
+                        substancia: "Proteínas e gorduras de ruminantes",
+                        norma: "Portaria SDA 1.180/2024 (PNEEB)",
+                        especies: "Ruminantes",
+                        obs: "Prevenção de EEB (Encefalopatia Espongiforme Bovina)",
+                      },
+                      {
+                        substancia: "Cloranfenicol",
+                        norma: "IN 09/2003",
+                        especies: "Todas",
+                        obs: "Proibido como aditivo ou promotor de crescimento",
+                      },
+                      {
+                        substancia: "Nitrofuranos e seus derivados",
+                        norma: "IN 09/2003",
+                        especies: "Todas",
+                        obs: "Proibido — resíduo cancerígeno",
+                      },
+                      {
+                        substancia: "Dietilestilbestrol (DES)",
+                        norma: "Portaria 51/1991",
+                        especies: "Todas",
+                        obs: "Hormônio proibido como promotor",
+                      },
+                      {
+                        substancia: "Clenbuterol",
+                        norma: "IN 17/2004",
+                        especies: "Todas",
+                        obs: "Beta-agonista proibido como promotor de crescimento",
+                      },
+                      {
+                        substancia: "Olaquindox",
+                        norma: "IN 11/2004",
+                        especies: "Todas",
+                        obs: "Proibido como promotor de crescimento (desde 2005)",
+                      },
+                      {
+                        substancia: "Carbadox",
+                        norma: "IN 35/2005",
+                        especies: "Todas",
+                        obs: "Proibido — potencial cancerígeno",
+                      },
+                      {
+                        substancia: "Avoparcina",
+                        norma: "Portaria 448/1998",
+                        especies: "Todas",
+                        obs: "Proibido como promotor — resistência a vancomicina",
+                      },
+                      {
+                        substancia: "Espiramicina e Eritromicina",
+                        norma: "IN 14/2012",
+                        especies: "Aves e Suínos",
+                        obs: "Proibidos como aditivos melhoradores de desempenho",
+                      },
+                      {
+                        substancia: "Colistina (uso como promotor)",
+                        norma: "IN 45/2016",
+                        especies: "Todas",
+                        obs: "Proibida como aditivo zootécnico (último recurso humano)",
+                      },
+                      {
+                        substancia: "Tilosina, Lincomicina e Tiamulina (promotor)",
+                        norma: "IN 01/2020",
+                        especies: "Todas",
+                        obs: "Proibidos como aditivos melhoradores de desempenho",
+                      },
                     ].map((s, i) => (
                       <TableRow key={i}>
                         <TableCell className="font-medium text-sm">{s.substancia}</TableCell>
-                        <TableCell><Badge variant="outline" className="text-[10px] font-mono">{s.norma}</Badge></TableCell>
+                        <TableCell>
+                          <Badge variant="outline" className="text-[10px] font-mono">
+                            {s.norma}
+                          </Badge>
+                        </TableCell>
                         <TableCell className="text-xs">{s.especies}</TableCell>
                         <TableCell className="text-xs text-muted-foreground max-w-[250px]">{s.obs}</TableCell>
                       </TableRow>
@@ -1036,28 +1308,111 @@ export default function Legislacao() {
             </Card>
 
             <Card>
-              <CardHeader><CardTitle className="font-display text-sm flex items-center gap-2"><AlertTriangle className="w-5 h-5 text-yellow-600" /> Substâncias com LIMITE DE USO (Monitoramento obrigatório)</CardTitle></CardHeader>
+              <CardHeader>
+                <CardTitle className="font-display text-sm flex items-center gap-2">
+                  <AlertTriangle className="w-5 h-5 text-yellow-600" /> Substâncias com LIMITE DE USO (Monitoramento
+                  obrigatório)
+                </CardTitle>
+              </CardHeader>
               <CardContent>
                 <Table>
-                  <TableHeader><TableRow><TableHead>Substância</TableHead><TableHead>Limite</TableHead><TableHead>Norma</TableHead><TableHead>Espécies</TableHead><TableHead>Ação BPF</TableHead></TableRow></TableHeader>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Substância</TableHead>
+                      <TableHead>Limite</TableHead>
+                      <TableHead>Norma</TableHead>
+                      <TableHead>Espécies</TableHead>
+                      <TableHead>Ação BPF</TableHead>
+                    </TableRow>
+                  </TableHeader>
                   <TableBody>
                     {[
-                      { substancia: "Ionóforos (Monensina, Salinomicina, Lasalocida)", limite: "Carry-over < 1%", norma: "IN 15/2009", especies: "Bovinos, Aves", acao: "Sequenciamento + flushing obrigatório" },
-                      { substancia: "Medicamentos veterinários em ração", limite: "Carry-over < 3%", norma: "IN 15/2009", especies: "Todas", acao: "Limpeza de linha + teste de arraste" },
-                      { substancia: "Aflatoxina B1 (Micotoxina)", limite: "≤ 20 ppb (μg/kg)", norma: "RDC 07/2011", especies: "Bovinos leiteiros, Suínos jovens", acao: "Análise de recebimento + contraprova" },
-                      { substancia: "Aflatoxinas totais", limite: "≤ 50 ppb (μg/kg)", norma: "IN 13/2004, RDC 07/2011", especies: "Todas (ração animal geral)", acao: "Monitoramento de MP (milho, amendoim, algodão)" },
-                      { substancia: "Deoxinivalenol (DON)", limite: "≤ 5.000 ppb", norma: "RDC 07/2011", especies: "Suínos (mais sensíveis)", acao: "Controle de recebimento de trigo/milho" },
-                      { substancia: "Fumonisinas (FB1 + FB2)", limite: "≤ 5.000 ppb", norma: "RDC 07/2011", especies: "Equinos (leucoencefalomalácia)", acao: "Análise de milho e subprodutos" },
-                      { substancia: "Zearalenona", limite: "≤ 1.000 ppb", norma: "Referência internacional", especies: "Suínos reprodução", acao: "Monitoramento de milho e subprodutos" },
-                      { substancia: "Cobre (CuSO₄)", limite: "≤ 250 mg/kg (suínos), ≤ 35 mg/kg (ovinos)", norma: "IN 13/2004", especies: "Suínos, Ovinos", acao: "Controle na formulação — tóxico para ovinos" },
-                      { substancia: "Zinco (ZnO)", limite: "≤ 2.500 mg/kg (suínos desmame, 14 dias)", norma: "Prática regulatória", especies: "Suínos", acao: "Uso terapêutico temporário — registrar duração" },
-                      { substancia: "Selênio", limite: "≤ 0,3 mg/kg na dieta final", norma: "IN 13/2004", especies: "Todas", acao: "Controle de dosagem — margem tóxica estreita" },
-                      { substancia: "Ureia (NNP)", limite: "Máx. 30% eq. proteico", norma: "Prática regulatória", especies: "Ruminantes exclusivo", acao: "PROIBIDO para monogástricos — controle de formulação" },
+                      {
+                        substancia: "Ionóforos (Monensina, Salinomicina, Lasalocida)",
+                        limite: "Sem limite fixado em norma — controlar por sequenciamento",
+                        norma: "IN 4/2007, item 6.2",
+                        especies: "Bovinos, Aves",
+                        acao: "Sequenciamento + flushing obrigatório",
+                      },
+                      {
+                        substancia: "Medicamentos veterinários em ração",
+                        limite: "Até 2,5% do princípio ativo no produto seguinte",
+                        norma: "Portaria SDA 798/2023, art. 29",
+                        especies: "Todas",
+                        acao: "Limpeza de linha + teste de arraste",
+                      },
+                      {
+                        substancia: "Aflatoxina B1 (Micotoxina)",
+                        limite: "≤ 20 ppb (μg/kg)",
+                        norma: "Referência técnica (sem norma MAPA específica)",
+                        especies: "Bovinos leiteiros, Suínos jovens",
+                        acao: "Análise de recebimento + contraprova",
+                      },
+                      {
+                        substancia: "Aflatoxinas totais",
+                        limite: "≤ 50 ppb (μg/kg)",
+                        norma: "Referência técnica (sem norma MAPA específica)",
+                        especies: "Todas (ração animal geral)",
+                        acao: "Monitoramento de MP (milho, amendoim, algodão)",
+                      },
+                      {
+                        substancia: "Deoxinivalenol (DON)",
+                        limite: "≤ 5.000 ppb",
+                        norma: "Referência técnica (sem norma MAPA específica)",
+                        especies: "Suínos (mais sensíveis)",
+                        acao: "Controle de recebimento de trigo/milho",
+                      },
+                      {
+                        substancia: "Fumonisinas (FB1 + FB2)",
+                        limite: "≤ 5.000 ppb",
+                        norma: "Referência técnica (sem norma MAPA específica)",
+                        especies: "Equinos (leucoencefalomalácia)",
+                        acao: "Análise de milho e subprodutos",
+                      },
+                      {
+                        substancia: "Zearalenona",
+                        limite: "≤ 1.000 ppb",
+                        norma: "Referência internacional",
+                        especies: "Suínos reprodução",
+                        acao: "Monitoramento de milho e subprodutos",
+                      },
+                      {
+                        substancia: "Cobre (CuSO₄)",
+                        limite: "≤ 250 mg/kg (suínos), ≤ 35 mg/kg (ovinos)",
+                        norma: "IN 13/2004",
+                        especies: "Suínos, Ovinos",
+                        acao: "Controle na formulação — tóxico para ovinos",
+                      },
+                      {
+                        substancia: "Zinco (ZnO)",
+                        limite: "≤ 2.500 mg/kg (suínos desmame, 14 dias)",
+                        norma: "Prática regulatória",
+                        especies: "Suínos",
+                        acao: "Uso terapêutico temporário — registrar duração",
+                      },
+                      {
+                        substancia: "Selênio",
+                        limite: "≤ 0,3 mg/kg na dieta final",
+                        norma: "IN 13/2004",
+                        especies: "Todas",
+                        acao: "Controle de dosagem — margem tóxica estreita",
+                      },
+                      {
+                        substancia: "Ureia (NNP)",
+                        limite: "Máx. 30% eq. proteico",
+                        norma: "Prática regulatória",
+                        especies: "Ruminantes exclusivo",
+                        acao: "PROIBIDO para monogástricos — controle de formulação",
+                      },
                     ].map((s, i) => (
                       <TableRow key={i}>
                         <TableCell className="font-medium text-sm">{s.substancia}</TableCell>
                         <TableCell className="font-mono text-xs">{s.limite}</TableCell>
-                        <TableCell><Badge variant="outline" className="text-[10px] font-mono">{s.norma}</Badge></TableCell>
+                        <TableCell>
+                          <Badge variant="outline" className="text-[10px] font-mono">
+                            {s.norma}
+                          </Badge>
+                        </TableCell>
                         <TableCell className="text-xs">{s.especies}</TableCell>
                         <TableCell className="text-xs text-muted-foreground max-w-[200px]">{s.acao}</TableCell>
                       </TableRow>
@@ -1068,7 +1423,11 @@ export default function Legislacao() {
             </Card>
 
             <Card>
-              <CardHeader><CardTitle className="font-display text-sm flex items-center gap-2"><Info className="w-5 h-5 text-primary" /> Aditivos com Restrição por Espécie</CardTitle></CardHeader>
+              <CardHeader>
+                <CardTitle className="font-display text-sm flex items-center gap-2">
+                  <Info className="w-5 h-5 text-primary" /> Aditivos com Restrição por Espécie
+                </CardTitle>
+              </CardHeader>
               <CardContent>
                 <div className="grid md:grid-cols-2 gap-4">
                   <div className="space-y-2">
@@ -1107,16 +1466,18 @@ export default function Legislacao() {
             <Card className="bg-muted/30">
               <CardContent className="pt-4">
                 <p className="text-xs text-muted-foreground">
-                  <strong>⚡ Integração com o sistema:</strong> Estas listas de substâncias proibidas e com limite de uso estão integradas aos módulos de
-                  <strong> Controle de Substâncias</strong>, <strong>PCP (Sequenciamento e Carry-over)</strong>, <strong>Validação de Limpeza de Linha</strong> e
-                  <strong> Rastreabilidade</strong>. O sistema alerta automaticamente ao registrar ingredientes de origem animal e monitora os limites de carry-over
-                  conforme IN 15/2009. Mantenha esta lista atualizada conforme novas publicações do MAPA/SDA.
+                  <strong>⚡ Integração com o sistema:</strong> Estas listas de substâncias proibidas e com limite de
+                  uso estão integradas aos módulos de
+                  <strong> Controle de Substâncias</strong>, <strong>PCP (Sequenciamento e Carry-over)</strong>,{" "}
+                  <strong>Validação de Limpeza de Linha</strong> e<strong> Rastreabilidade</strong>. O sistema alerta
+                  automaticamente ao registrar ingredientes de origem animal e monitora os limites de carry-over
+                  conforme a Portaria SDA 798/2023. Mantenha esta lista atualizada conforme novas publicações do
+                  MAPA/SDA.
                 </p>
               </CardContent>
             </Card>
           </div>
         </TabsContent>
-
       </Tabs>
 
       {/* ──── Detail Dialog (shared) ──── */}
@@ -1141,10 +1502,15 @@ export default function Legislacao() {
               </div>
               <p className="text-sm leading-relaxed">{(selectedAlerta as any).resumo}</p>
               {(selectedAlerta as any).fonte && (
-                <p className="text-xs text-muted-foreground"><strong>Fonte:</strong> {(selectedAlerta as any).fonte}</p>
+                <p className="text-xs text-muted-foreground">
+                  <strong>Fonte:</strong> {(selectedAlerta as any).fonte}
+                </p>
               )}
               {((selectedAlerta as any).data_publicacao || (selectedAlerta as any).data_aproximada) && (
-                <p className="text-xs text-muted-foreground"><strong>Data:</strong> {(selectedAlerta as any).data_publicacao || (selectedAlerta as any).data_aproximada}</p>
+                <p className="text-xs text-muted-foreground">
+                  <strong>Data:</strong>{" "}
+                  {(selectedAlerta as any).data_publicacao || (selectedAlerta as any).data_aproximada}
+                </p>
               )}
             </div>
           )}
@@ -1161,35 +1527,59 @@ export default function Legislacao() {
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <Label className="text-xs">Código</Label>
-                <Input placeholder="Ex: IN 12/2004" value={normaForm.codigo} onChange={(e) => setNormaForm(prev => ({ ...prev, codigo: e.target.value }))} />
+                <Input
+                  placeholder="Ex: IN 12/2004"
+                  value={normaForm.codigo}
+                  onChange={(e) => setNormaForm((prev) => ({ ...prev, codigo: e.target.value }))}
+                />
               </div>
               <div>
                 <Label className="text-xs">Data de Publicação</Label>
-                <Input type="date" value={normaForm.data_publicacao} onChange={(e) => setNormaForm(prev => ({ ...prev, data_publicacao: e.target.value }))} />
+                <Input
+                  type="date"
+                  value={normaForm.data_publicacao}
+                  onChange={(e) => setNormaForm((prev) => ({ ...prev, data_publicacao: e.target.value }))}
+                />
               </div>
             </div>
 
             <div>
               <Label className="text-xs">Título *</Label>
-              <Input placeholder="Ex: Instrução Normativa nº 12 – Suplementos para Bovinos" value={normaForm.titulo} onChange={(e) => setNormaForm(prev => ({ ...prev, titulo: e.target.value }))} />
+              <Input
+                placeholder="Ex: Instrução Normativa nº 12 – Suplementos para Bovinos"
+                value={normaForm.titulo}
+                onChange={(e) => setNormaForm((prev) => ({ ...prev, titulo: e.target.value }))}
+              />
             </div>
 
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <Label className="text-xs">Tipo</Label>
-                <Select value={normaForm.tipo} onValueChange={(v) => setNormaForm(prev => ({ ...prev, tipo: v }))}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
+                <Select value={normaForm.tipo} onValueChange={(v) => setNormaForm((prev) => ({ ...prev, tipo: v }))}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
                   <SelectContent>
-                    {TIPO_NORMA_OPTIONS.map(t => <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>)}
+                    {TIPO_NORMA_OPTIONS.map((t) => (
+                      <SelectItem key={t.value} value={t.value}>
+                        {t.label}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
               <div>
                 <Label className="text-xs">Órgão</Label>
-                <Select value={normaForm.orgao} onValueChange={(v) => setNormaForm(prev => ({ ...prev, orgao: v }))}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
+                <Select value={normaForm.orgao} onValueChange={(v) => setNormaForm((prev) => ({ ...prev, orgao: v }))}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
                   <SelectContent>
-                    {ORGAO_OPTIONS.map(o => <SelectItem key={o} value={o}>{o}</SelectItem>)}
+                    {ORGAO_OPTIONS.map((o) => (
+                      <SelectItem key={o} value={o}>
+                        {o}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
@@ -1200,30 +1590,54 @@ export default function Legislacao() {
               <Textarea
                 placeholder="Breve descrição do conteúdo da norma..."
                 value={normaForm.resumo}
-                onChange={(e) => setNormaForm(prev => ({ ...prev, resumo: e.target.value }))}
+                onChange={(e) => setNormaForm((prev) => ({ ...prev, resumo: e.target.value }))}
                 rows={3}
               />
             </div>
 
             <div>
               <Label className="text-xs">Tags (separadas por vírgula)</Label>
-              <Input placeholder="Ex: bovinos, suplemento, sal mineral, IN 12" value={normaForm.tags} onChange={(e) => setNormaForm(prev => ({ ...prev, tags: e.target.value }))} />
+              <Input
+                placeholder="Ex: bovinos, suplemento, sal mineral, IN 12"
+                value={normaForm.tags}
+                onChange={(e) => setNormaForm((prev) => ({ ...prev, tags: e.target.value }))}
+              />
             </div>
 
             {/* File upload */}
             <div>
               <Label className="text-xs">Arquivo (PDF, DOCX, etc.)</Label>
-              <input ref={fileInputRef} type="file" accept=".pdf,.doc,.docx,.xls,.xlsx,.txt" className="hidden" onChange={handleFileUpload} />
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept=".pdf,.doc,.docx,.xls,.xlsx,.txt"
+                className="hidden"
+                onChange={handleFileUpload}
+              />
               <div className="flex gap-2 items-center mt-1">
-                <Button variant="outline" size="sm" onClick={() => fileInputRef.current?.click()} disabled={uploadingFile}>
-                  {uploadingFile ? <Loader2 className="w-4 h-4 mr-1 animate-spin" /> : <Upload className="w-4 h-4 mr-1" />}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={uploadingFile}
+                >
+                  {uploadingFile ? (
+                    <Loader2 className="w-4 h-4 mr-1 animate-spin" />
+                  ) : (
+                    <Upload className="w-4 h-4 mr-1" />
+                  )}
                   {uploadingFile ? "Enviando..." : "Enviar do Computador"}
                 </Button>
                 {normaForm.arquivo_nome && (
                   <div className="flex items-center gap-1 text-xs text-muted-foreground">
                     <FileText className="w-3 h-3" />
                     <span className="truncate max-w-[150px]">{normaForm.arquivo_nome}</span>
-                    <Button variant="ghost" size="sm" className="h-5 w-5 p-0" onClick={() => setNormaForm(prev => ({ ...prev, arquivo_nome: "", arquivo_url: "" }))}>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-5 w-5 p-0"
+                      onClick={() => setNormaForm((prev) => ({ ...prev, arquivo_nome: "", arquivo_url: "" }))}
+                    >
                       <X className="w-3 h-3" />
                     </Button>
                   </div>
@@ -1235,7 +1649,17 @@ export default function Legislacao() {
             {!normaForm.arquivo_nome && (
               <div>
                 <Label className="text-xs">Ou informe uma URL externa</Label>
-                <Input placeholder="https://www.gov.br/..." value={normaForm.arquivo_url} onChange={(e) => setNormaForm(prev => ({ ...prev, arquivo_url: e.target.value, arquivo_nome: e.target.value ? "Link externo" : "" }))} />
+                <Input
+                  placeholder="https://www.gov.br/..."
+                  value={normaForm.arquivo_url}
+                  onChange={(e) =>
+                    setNormaForm((prev) => ({
+                      ...prev,
+                      arquivo_url: e.target.value,
+                      arquivo_nome: e.target.value ? "Link externo" : "",
+                    }))
+                  }
+                />
               </div>
             )}
 
