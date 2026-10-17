@@ -1,5 +1,7 @@
 import { TIPOS_VALIDACAO } from "@/components/higiene/constants";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { corrigirViaNC } from "@/utils/correcaoNC";
 import { useAuth } from "@/hooks/useAuth";
 import { useEmpresa } from "@/hooks/useEmpresa";
 import { supabase } from "@/integrations/supabase/client";
@@ -14,7 +16,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Plus, Trash2, ShieldCheck, AlertTriangle } from "lucide-react";
+import { Plus, FileWarning, ShieldCheck, AlertTriangle } from "lucide-react";
 import PageHeader from "@/components/PageHeader";
 
 
@@ -55,10 +57,7 @@ export default function ValidacaoLimpezaLinha() {
     onError: () => toast.error("Erro ao salvar"),
   });
 
-  const del = useMutation({
-    mutationFn: async (id: string) => { const { error } = await supabase.from("validacao_limpeza_linha").delete().eq("id", id); if (error) throw error; },
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ["validacao_limpeza_linha"] }); toast.success("Removido"); },
-  });
+  const navigate = useNavigate();
 
   const reprovados = validacoes.filter((v: any) => v.resultado === "reprovado").length;
   const comMed = validacoes.filter((v: any) => v.contem_medicamento).length;
@@ -182,7 +181,7 @@ export default function ValidacaoLimpezaLinha() {
                   <TableCell>{v.contem_medicamento ? <AlertTriangle className="w-4 h-4 text-yellow-600" /> : "—"}</TableCell>
                   <TableCell>{TIPOS_VALIDACAO.find(t => t.value === v.tipo_validacao)?.label}</TableCell>
                   <TableCell>{v.resultado === "aprovado" ? <Badge className="bg-green-600">Aprovado</Badge> : <Badge variant="destructive">Reprovado</Badge>}</TableCell>
-                  <TableCell><Button variant="ghost" size="icon" onClick={() => del.mutate(v.id)}><Trash2 className="w-4 h-4 text-destructive" /></Button></TableCell>
+                  <TableCell><Button variant="ghost" size="sm" className="gap-1 text-xs" title="Registros não são excluídos — correção via Não Conformidade" onClick={() => corrigirViaNC(navigate, { tabela: "validacao_limpeza_linha", registroId: v.id, descricao: `Linha: ${v.linha_producao} — ${v.produto_anterior} → ${v.produto_seguinte} — resultado: ${v.resultado}` })}><FileWarning className="w-4 h-4 text-primary" /> Corrigir via NC</Button></TableCell>
                 </TableRow>
               ))}
             </TableBody>

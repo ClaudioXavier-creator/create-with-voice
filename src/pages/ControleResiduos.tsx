@@ -1,5 +1,7 @@
 import { TIPOS_RESIDUO, TRATAMENTO_EFLUENTE, CLASSIFICACOES, MOTIVOS_DESCARTE } from "@/components/residuos/constants";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { corrigirViaNC } from "@/utils/correcaoNC";
 import { useAuth } from "@/hooks/useAuth";
 import { useEmpresa } from "@/hooks/useEmpresa";
 import { supabase } from "@/integrations/supabase/client";
@@ -15,7 +17,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Plus, Trash2, Recycle, ShieldAlert, Droplets, PackageX, AlertTriangle } from "lucide-react";
+import { Plus, FileWarning, Recycle, ShieldAlert, Droplets, PackageX, AlertTriangle } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import PageHeader from "@/components/PageHeader";
 import { AnexarPlanilhaPop } from "@/components/documentos/AnexarPlanilhaPop";
@@ -96,10 +98,7 @@ export default function ControleResiduos() {
     onError: () => toast.error("Erro ao salvar"),
   });
 
-  const del = useMutation({
-    mutationFn: async (id: string) => { const { error } = await supabase.from("controle_residuos").delete().eq("id", id); if (error) throw error; },
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ["controle_residuos"] }); toast.success("Removido"); },
-  });
+  const navigate = useNavigate();
 
   const totalResiduos = residuos.length;
   const comManifesto = residuos.filter((r: any) => r.manifesto_numero).length;
@@ -268,7 +267,7 @@ export default function ControleResiduos() {
                       <TableCell>{r.destino_final}</TableCell>
                       <TableCell>{r.empresa_coletora}</TableCell>
                       <TableCell>{r.manifesto_numero}</TableCell>
-                      <TableCell><Button variant="ghost" size="icon" onClick={() => del.mutate(r.id)}><Trash2 className="w-4 h-4 text-destructive" /></Button></TableCell>
+                      <TableCell><Button variant="ghost" size="sm" className="gap-1 text-xs" title="Registros não são excluídos — correção via Não Conformidade" onClick={() => corrigirViaNC(navigate, { tabela: "controle_residuos", registroId: r.id, descricao: `Resíduo: ${r.tipo_residuo} — ${r.quantidade} ${r.unidade} — destino: ${r.destino_final}` })}><FileWarning className="w-4 h-4 text-primary" /> Corrigir via NC</Button></TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
