@@ -6608,6 +6608,10 @@ export type Database = {
         Args: { _empresa_id: string; _user_id: string }
         Returns: boolean
       }
+      pode_editar_empresa: {
+        Args: { _empresa_id: string; _user_id: string }
+        Returns: boolean
+      }
       pode_usar_empresa: {
         Args: { _empresa_id: string; _user_id: string }
         Returns: boolean
@@ -6644,7 +6648,7 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "moderator" | "user" | "comercial"
-      papel_empresa: "admin" | "rt" | "operador"
+      papel_empresa: "admin" | "rt" | "operador" | "visualizador"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -6773,7 +6777,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "moderator", "user", "comercial"],
-      papel_empresa: ["admin", "rt", "operador"],
+      papel_empresa: ["admin", "rt", "operador", "visualizador"],
     },
   },
 } as const
