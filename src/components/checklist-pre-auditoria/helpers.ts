@@ -71,7 +71,9 @@ export function buildChecklistItems({
   const mesAtual = hoje.getMonth() + 1;
   const anoAtual = hoje.getFullYear();
   const planilhasMesAtual = pops.filter((p) => p.mes === mesAtual && p.ano === anoAtual);
-  const popsPreenchidos = new Set(planilhasMesAtual.map((p) => p.pop_codigo));
+  const popsPreenchidos = new Set(
+    planilhasMesAtual.map((p) => normalizarPopCodigo(p.pop_codigo)),
+  );
   const popsFaltantes = POPS_CODIGOS.filter((codigo) => !popsPreenchidos.has(codigo));
 
   const calibVencidas = calibracoes.filter(
