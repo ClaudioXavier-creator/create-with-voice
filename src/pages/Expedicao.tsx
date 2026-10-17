@@ -41,6 +41,7 @@ interface Expedicao {
 }
 
 interface Item {
+  id?: string; // id do registro em expedicao_itens (presente só na edição)
   produto: string;
   codigo_produto: string;
   lote_produto: string;
@@ -113,7 +114,7 @@ export default function Expedicao() {
     else setExpedicoes((data as any) || []);
 
     // Carregar itens para o filtro de lotes
-    let qi = supabase.from("expedicao_itens" as any).select("expedicao_id, lote_produto");
+    let qi = supabase.from("expedicao_itens" as any).select("expedicao_id, lote_produto").neq("status", "cancelado");
     if (empresaAtiva) qi = qi.eq("empresa_id", empresaAtiva.id);
     const { data: ditens } = await qi;
     setTodosItens(ditens || []);
@@ -363,7 +364,8 @@ export default function Expedicao() {
       peso_bruto_kg: e.peso_bruto_kg?.toString() || "", peso_liquido_kg: e.peso_liquido_kg?.toString() || "",
       valor_total: e.valor_total?.toString() || "", observacoes: e.observacoes || "",
     });
-    setItens(((data as any) || []).map((i: any) => ({
+    setItens(((data as any) || []).filter((i: any) => (i.status || "ativo") === "ativo").map((i: any) => ({
+      id: i.id,
       produto: i.produto, codigo_produto: i.codigo_produto || "", lote_produto: i.lote_produto || "",
       quantidade: Number(i.quantidade) || 0, unidade: i.unidade || "kg",
       quantidade_sacos: i.quantidade_sacos || undefined,
@@ -424,14 +426,13 @@ export default function Expedicao() {
       const { error } = await supabase.from("expedicoes" as any).update(payload).eq("id", editId);
       if (error) { toast.error(mensagemErroRegistro(error, "Erro ao atualizar expedição")); setSaving(false); return; }
       expedicaoId = editId;
-      await supabase.from("expedicao_itens" as any).delete().eq("expedicao_id", editId);
     } else {
       const { data: exp, error } = await supabase.from("expedicoes" as any).insert(payload).select().single();
       if (error || !exp) { toast.error("Erro ao salvar: " + (error?.message || "")); setSaving(false); return; }
       expedicaoId = (exp as any).id;
     }
 
-    const itensPayload = itensValidos.map(i => ({
+    const montarItemPayload = (i: Item) => ({
       user_id: user.id,
       empresa_id: empresaAtiva?.id || null,
       expedicao_id: expedicaoId,
@@ -443,9 +444,39 @@ export default function Expedicao() {
       quantidade_sacos: i.quantidade_sacos || null,
       valor_unitario: i.valor_unitario || null,
       valor_total: i.valor_total || null,
-    }));
-    const { error: errItens } = await supabase.from("expedicao_itens" as any).insert(itensPayload);
-    if (errItens) toast.error("NF salva, mas erro nos itens: " + errItens.message);
+    });
+
+    if (editId) {
+      // Sem DELETE: registros salvos não são apagados (Decreto 12.031/2024).
+      // Itens existentes são atualizados; novos são inseridos; removidos do formulário são marcados como "cancelado".
+      const { data: existentes } = await supabase.from("expedicao_itens" as any)
+        .select("id, status").eq("expedicao_id", editId);
+      const idsNoForm = new Set(itensValidos.filter(i => i.id).map(i => i.id as string));
+
+      for (const item of itensValidos) {
+        const payloadItem = montarItemPayload(item);
+        if (item.id) {
+          const { error } = await supabase.from("expedicao_itens" as any).update(payloadItem).eq("id", item.id);
+          if (error) toast.error("Erro ao atualizar item: " + error.message);
+        } else {
+          const { error } = await supabase.from("expedicao_itens" as any).insert({ ...payloadItem, status: "ativo" });
+          if (error) toast.error("Erro ao inserir item: " + error.message);
+        }
+      }
+
+      const idsParaCancelar = ((existentes as any) || [])
+        .filter((e: any) => (e.status || "ativo") === "ativo" && !idsNoForm.has(e.id))
+        .map((e: any) => e.id);
+      if (idsParaCancelar.length > 0) {
+        const { error } = await supabase.from("expedicao_itens" as any)
+          .update({ status: "cancelado" }).in("id", idsParaCancelar);
+        if (error) toast.error("Erro ao cancelar itens removidos: " + error.message);
+      }
+    } else {
+      const itensPayload = itensValidos.map(i => ({ ...montarItemPayload(i), status: "ativo" }));
+      const { error: errItens } = await supabase.from("expedicao_itens" as any).insert(itensPayload);
+      if (errItens) toast.error("NF salva, mas erro nos itens: " + errItens.message);
+    }
 
     if (!editId) {
       const rastroPayload = itensValidos.filter(i => i.lote_produto).map(i => ({
@@ -479,7 +510,7 @@ export default function Expedicao() {
 
   const verDetalhe = async (exp: Expedicao) => {
     setDetalheExp(exp);
-    const { data } = await supabase.from("expedicao_itens" as any).select("*").eq("expedicao_id", exp.id);
+    const { data } = await supabase.from("expedicao_itens" as any).select("*").eq("expedicao_id", exp.id).neq("status", "cancelado");
     setDetalheItens((data as any) || []);
     setDetalheOpen(true);
   };
@@ -558,7 +589,7 @@ export default function Expedicao() {
             <Download className="h-4 w-4 mr-2" />Romaneio por NF
           </Button>
           <Button variant="default" size="sm" onClick={async () => {
-            const { data } = await supabase.from("expedicao_itens" as any).select("*");
+            const { data } = await supabase.from("expedicao_itens" as any).select("*").neq("status", "cancelado");
             const mapped = filtered.map(f => ({ ...f, itens: data?.filter((i: any) => i.expedicao_id === f.id) }));
             setMapaDados(mapped);
             setMapaOpen(true);
@@ -566,7 +597,7 @@ export default function Expedicao() {
             <Eye className="h-4 w-4 mr-2" />Visualizar Mapa de Expedição (Digital)
           </Button>
           <Button variant="outline" size="sm" onClick={async () => {
-            const { data } = await supabase.from("expedicao_itens" as any).select("*");
+            const { data } = await supabase.from("expedicao_itens" as any).select("*").neq("status", "cancelado");
             const mapped = filtered.map(f => ({ ...f, itens: data?.filter((i: any) => i.expedicao_id === f.id) }));
             gerarMapaExpedicaoMAPA(mapped, empresaAtiva);
           }}>

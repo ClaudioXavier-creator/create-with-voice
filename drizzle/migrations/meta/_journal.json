@@ -15,6 +15,13 @@
       "when": 1792278898841,
       "tag": "0001_bloquear_delete_registros",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1792279243842,
+      "tag": "0002_status_expedicao_itens",
+      "breakpoints": true
     }
   ]
 }
