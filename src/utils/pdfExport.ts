@@ -2,8 +2,8 @@
  * PDF Export Utility — Generates professional PDF reports using browser print.
  * Uses a hidden iframe to render styled HTML, then triggers print-to-PDF.
  *
- * Todos os relatórios incluem CARIMBO ANTI-FRAUDE com data/hora de emissão,
- * usuário responsável e selo de integridade (Decreto 12.031/2024 & MP 2.200-2/2001).
+ * Todos os relatórios incluem registro com identificação do responsável, data e hora
+ * e selo de integridade (Decreto 12.031/2024, art. 40, §3º).
  */
 
 import { gerarCarimboSync, carimboHTML } from "./carimboDocumento";

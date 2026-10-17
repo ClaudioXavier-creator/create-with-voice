@@ -2167,12 +2167,12 @@ export default function Rastreabilidade() {
               </div>
             )}
 
-            {/* Assinatura Digital */}
+            {/* Identificação do responsável */}
             <div className="p-3 rounded-lg border bg-muted/30 space-y-2">
-              <p className="text-xs font-semibold flex items-center gap-1">✍️ Assinatura Digital — MP 2.200-2/2001</p>
+              <p className="text-xs font-semibold flex items-center gap-1">✍️ Registro com identificação do responsável, data e hora</p>
               <div>
                 <Label className="text-xs">Nome completo do responsável</Label>
-                <Input placeholder="Assinatura digital do registro" onChange={(e) => {
+                <Input placeholder="Nome completo do responsável" onChange={(e) => {
                   setRecallMotivo(prev => {
                     const base = prev.replace(/\[ASSINATURA:.*?\]/g, "").trim();
                     return `${base} [ASSINATURA: ${e.target.value} — ${new Date().toLocaleString("pt-BR")}]`;
@@ -2180,7 +2180,7 @@ export default function Rastreabilidade() {
                 }} />
               </div>
               <p className="text-[10px] text-muted-foreground">
-                Registro com validade jurídica conforme MP 2.200-2/2001. Data/hora registradas automaticamente.
+                Registro com identificação do responsável, data e hora. Data e hora registradas automaticamente.
               </p>
             </div>
 

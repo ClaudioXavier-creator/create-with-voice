@@ -371,7 +371,7 @@ export default function HigieneSanitizacao() {
       `Itens conformes: ${marcados}/${totalItens}`,
       ncs.length > 0 ? `NCs: ${ncs.join("; ")}` : "Todos conformes ✅",
       libLinhaObs ? `Obs: ${libLinhaObs}` : "",
-      `[ASSINATURA DIGITAL: ${libLinhaResp} — ${new Date().toLocaleString("pt-BR")} — MP 2.200-2/2001]`,
+      `[Registro com identificação do responsável, data e hora: ${libLinhaResp} — ${new Date().toLocaleString("pt-BR")}]`,
     ].filter(Boolean).join("\n");
 
     const { data: record, error } = await supabase.from("execucao_pops").insert({
@@ -463,7 +463,7 @@ export default function HigieneSanitizacao() {
       `Itens conformes: ${marcados}/${totalItens}`,
       ncs.length > 0 ? `NCs: ${ncs.join("; ")}` : "Todas as superfícies conformes ✅",
       supObs ? `Obs: ${supObs}` : "",
-      `[ASSINATURA DIGITAL: ${supResp} — ${new Date().toLocaleString("pt-BR")} — MP 2.200-2/2001]`,
+      `[Registro com identificação do responsável, data e hora: ${supResp} — ${new Date().toLocaleString("pt-BR")}]`,
     ].filter(Boolean).join("\n");
 
     const { data: record, error } = await supabase.from("execucao_pops").insert({
@@ -618,7 +618,7 @@ export default function HigieneSanitizacao() {
                       `Data: ${preOpData} | Turno: ${preOpSetor}`,
                       `Itens conformes: ${marcados}/${totalItens}`,
                       ncs.length > 0 ? `NCs: ${ncs.join("; ")}` : "Todos conformes",
-                      `[ASSINATURA DIGITAL: ${preOpResponsavel} — ${new Date().toLocaleString("pt-BR")} — MP 2.200-2/2001]`,
+                      `[Registro com identificação do responsável, data e hora: ${preOpResponsavel} — ${new Date().toLocaleString("pt-BR")}]`,
                     ].join("\n");
                     const { data: record, error } = await supabase.from("execucao_pops").insert({
                       user_id: user.id, empresa_id: empresaAtiva?.id || null,

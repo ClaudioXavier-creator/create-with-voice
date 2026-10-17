@@ -452,7 +452,7 @@ export const MANUAL_BPF_SECTIONS: ManualBpfSection[] = [
       "• Painel de alertas: o sistema monitora a periodicidade de cada POP (POP-02 e POP-05 = 7 dias; POP-06 = 7 dias; POP-01, POP-03, POP-04, POP-07, POP-09 = 30 dias; POP-08 = 90 dias) e exibe em vermelho qualquer POP com execução atrasada.",
       "• Checklist específico por POP: ao registrar uma execução, o sistema carrega automaticamente o checklist do POP escolhido (ex: Limpeza para POP-02; Saúde e ASO para POP-03; Potabilidade para POP-04; Controle de Produção para POP-05; Vistoria de Veículo para POP-09).",
       "• Filtros de período: status, POP/IT, data início e data fim — permitindo gerar relatórios mensais, trimestrais ou por setor para auditoria.",
-      "• Carimbo anti-fraude: cada execução exportada em PDF recebe selo SHA-256 + data/hora conforme MP 2.200-2/2001.",
+      "• Registro com identificação do responsável, data e hora; selo de integridade nas execuções exportadas em PDF. Referência: Decreto 12.031/2024 (art. 40, §3º).",
       "Recomenda-se ao Responsável Técnico revisar este painel diariamente e não permitir que nenhum POP fique com status de atraso por mais de 48h.",
     ],
   },
@@ -465,7 +465,7 @@ export const MANUAL_BPF_SECTIONS: ManualBpfSection[] = [
       "O preenchimento padrão recomendado é: versão 01, data de revisão 2026-04-22, próxima revisão 2027-04-22, status Ativo e responsável 'Responsável Técnico / Qualidade'.",
       `Checklist-base: ${DOCUMENTOS_ATIVACAO_CHECKLIST.map((item) => `${item.codigo} — ${item.nome}`).join(" | ")}`,
       "Este cadastro inicial habilita os vínculos automáticos entre Documentos, Guia de POPs/ITs, planilhas físicas impressas, planilhas digitais e diário operacional.",
-      "As impressões devem manter o carimbo de impressão e os PDFs/exportações devem preservar o carimbo anti-fraude SHA-256 para rastreabilidade documental.",
+      "As impressões devem manter o carimbo de impressão e os PDFs/exportações devem preservar o selo de integridade para rastreabilidade documental.",
     ],
   },
   {
