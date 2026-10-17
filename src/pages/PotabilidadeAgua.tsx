@@ -348,7 +348,7 @@ export default function PotabilidadeAgua() {
                         </TableCell>
                         <TableCell className="text-xs">{a.laudo_numero || "—"}</TableCell>
                         <TableCell>
-                          <Button variant="ghost" size="sm" className="gap-1 text-xs" title="Registros não são excluídos — correção via Não Conformidade" onClick={() => corrigirViaNC(navigate, { tabela: "analises_laboratorio", registroId: a.id, descricao: `Análise de água — ponto: ${a.ponto_coleta || a.produto} — parâmetro: ${a.parametro} — resultado: ${a.resultado}` })}><FileWarning className="w-4 h-4 text-primary" /> Corrigir via NC</Button>
+                          <Button variant="ghost" size="sm" className="gap-1 text-xs" title="Registros não são excluídos — correção via Não Conformidade" onClick={() => corrigirViaNC(navigate, { tabela: "analises_laboratorio", registroId: a.id, descricao: `Análise de água — parâmetro: ${a.parametro} — resultado: ${a.resultado} — data: ${a.data_analise}` })}><FileWarning className="w-4 h-4 text-primary" /> Corrigir via NC</Button>
                         </TableCell>
                       </TableRow>
                     ))}
@@ -439,7 +439,7 @@ export default function PotabilidadeAgua() {
                       <TableCell className="text-xs max-w-xs truncate">{l.observacoes}</TableCell>
 
                       <TableCell>
-                        <Button variant="ghost" size="sm" className="gap-1 text-xs" title="Registros não são excluídos — correção via Não Conformidade" onClick={() => corrigirViaNC(navigate, { tabela: "registros_limpeza", registroId: l.id, descricao: `Limpeza de reservatório — data: ${l.data_limpeza || l.created_at} — responsável: ${l.responsavel || "—"}` })}><FileWarning className="w-4 h-4 text-primary" /> Corrigir via NC</Button>
+                        <Button variant="ghost" size="sm" className="gap-1 text-xs" title="Registros não são excluídos — correção via Não Conformidade" onClick={() => corrigirViaNC(navigate, { tabela: "registros_limpeza", registroId: l.id, descricao: `Limpeza de reservatório — data: ${l.data_execucao} — executor: ${l.executor || "—"}` })}><FileWarning className="w-4 h-4 text-primary" /> Corrigir via NC</Button>
                       </TableCell>
                     </TableRow>
                   ))}

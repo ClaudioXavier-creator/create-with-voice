@@ -199,7 +199,7 @@ export default function SaudePessoal() {
                       </TableCell>
                       <TableCell className="text-xs max-w-[120px] truncate">{r.restricoes || "—"}</TableCell>
                       <TableCell>
-                        <Button variant="ghost" size="sm" className="gap-1 text-xs" title="Registros não são excluídos — correção via Não Conformidade" onClick={() => corrigirViaNC(navigate, { tabela: "saude_manipuladores", registroId: r.id, descricao: `Saúde de manipulador — ${r.nome || r.funcionario || "registro"} — exame: ${r.tipo_exame || "—"}` })}><FileWarning className="w-4 h-4 text-primary" /> Corrigir via NC</Button>
+                        <Button variant="ghost" size="sm" className="gap-1 text-xs" title="Registros não são excluídos — correção via Não Conformidade" onClick={() => corrigirViaNC(navigate, { tabela: "saude_manipuladores", registroId: r.id, descricao: `Saúde de manipulador — ${r.funcionario} — exame: ${r.tipo_exame || "—"} — validade: ${r.data_validade || "—"}` })}><FileWarning className="w-4 h-4 text-primary" /> Corrigir via NC</Button>
                       </TableCell>
                     </TableRow>
                   );
