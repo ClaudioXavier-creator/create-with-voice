@@ -31,6 +31,7 @@ interface BuildChecklistItemsParams {
   ncs: Array<{ status?: string | null }>;
   rastreabilidade: Array<unknown>;
   higiene: Array<unknown>;
+  simulacoes: Array<{ data?: string | null }>;
 }
 
 export function buildChecklistItems({
@@ -45,6 +46,7 @@ export function buildChecklistItems({
   ncs,
   rastreabilidade,
   higiene,
+  simulacoes,
 }: BuildChecklistItemsParams): CheckItem[] {
   const docsVencidos = docs.filter((d) => {
     const ref = d.proxima_revisao || d.validade_revisao;
