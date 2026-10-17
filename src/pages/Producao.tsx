@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { Factory, Plus, Loader2, AlertTriangle, Trash2, Download, Pencil, X, Lock as LockIcon } from "lucide-react";
+import { Factory, Plus, Loader2, AlertTriangle, Trash2, FileWarning, Download, Pencil, X, Lock as LockIcon } from "lucide-react";
+import { corrigirViaNC } from "@/utils/correcaoNC";
 import { registrarAuditLog } from "@/utils/auditLog";
 import { gerarHashIntegridade, adicionarRodapeIntegridade } from "@/utils/integridade";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -52,7 +53,6 @@ export default function Producao() {
   const [saving, setSaving] = useState(false);
   const [open, setOpen] = useState(false);
   const [editId, setEditId] = useState<string | null>(null);
-  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const [produto, setProduto] = useState("");
   const [lote, setLote] = useState("");
