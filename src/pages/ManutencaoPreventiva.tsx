@@ -1,5 +1,7 @@
 import { EQUIPAMENTOS_CRITICOS, TIPOS, STATUS_LIST } from "@/components/manutencao/constants";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { corrigirViaNC } from "@/utils/correcaoNC";
 import { useAuth } from "@/hooks/useAuth";
 import { useEmpresa } from "@/hooks/useEmpresa";
 import { supabase } from "@/integrations/supabase/client";
@@ -14,7 +16,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Plus, Wrench, Trash2, AlertTriangle, Scale, Cog, Calendar, ClipboardList } from "lucide-react";
+import { Plus, Wrench, Trash2, FileWarning, AlertTriangle, Scale, Cog, Calendar, ClipboardList } from "lucide-react";
 import PageHeader from "@/components/PageHeader";
 import { AnexarPlanilhaPop } from "@/components/documentos/AnexarPlanilhaPop";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -94,13 +96,7 @@ export default function ManutencaoPreventiva() {
     onError: () => toast.error("Erro ao salvar"),
   });
 
-  const deleteManut = useMutation({
-    mutationFn: async (id: string) => {
-      const { error } = await supabase.from("manutencoes").delete().eq("id", id);
-      if (error) throw error;
-    },
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ["manutencoes"] }); toast.success("Removido"); },
-  });
+  const navigate = useNavigate();
 
   const addTrocaPecas = useMutation({
     mutationFn: async () => {
@@ -147,13 +143,6 @@ export default function ManutencaoPreventiva() {
     onError: () => toast.error("Erro ao salvar calibração"),
   });
 
-  const deleteCalib = useMutation({
-    mutationFn: async (id: string) => {
-      const { error } = await supabase.from("calibracoes").delete().eq("id", id);
-      if (error) throw error;
-    },
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ["calibracoes"] }); toast.success("Calibração removida"); },
-  });
 
   const { data: equipamentos = [] } = useQuery({
     queryKey: ["equipamentos"],
@@ -387,7 +376,7 @@ export default function ManutencaoPreventiva() {
                   <TableCell>{m.data_programada}</TableCell>
                   <TableCell>{m.data_execucao || "—"}</TableCell>
                  <TableCell><Badge variant={statusVariant(m.status)}>{STATUS_LIST.find(s => s.value === m.status)?.label || m.status}</Badge></TableCell>
-                  <TableCell><Button variant="ghost" size="icon" onClick={() => deleteManut.mutate(m.id)}><Trash2 className="w-4 h-4 text-destructive" /></Button></TableCell>
+                  <TableCell><Button variant="ghost" size="sm" className="gap-1 text-xs" title="Registros não são excluídos — correção via Não Conformidade" onClick={() => corrigirViaNC(navigate, { tabela: "manutencoes", registroId: m.id, descricao: `Manutenção ${m.tipo} — ${m.descricao} — programada: ${m.data_programada}` })}><FileWarning className="w-4 h-4 text-primary" /> Corrigir via NC</Button></TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -617,7 +606,7 @@ export default function ManutencaoPreventiva() {
                            verifPendente ? <Badge variant="outline" className="border-yellow-500 text-yellow-700">Verif. Pendente</Badge> :
                            <Badge variant="default">Calibrado</Badge>}
                         </TableCell>
-                        <TableCell><Button variant="ghost" size="icon" onClick={() => deleteCalib.mutate(c.id)}><Trash2 className="w-4 h-4 text-destructive" /></Button></TableCell>
+                        <TableCell><Button variant="ghost" size="sm" className="gap-1 text-xs" title="Registros não são excluídos — correção via Não Conformidade" onClick={() => corrigirViaNC(navigate, { tabela: "calibracoes", registroId: c.id, descricao: `Calibração — equipamento: ${c.equipamento_nome || c.equipamento_id} — data: ${c.data_calibracao}` })}><FileWarning className="w-4 h-4 text-primary" /> Corrigir via NC</Button></TableCell>
                       </TableRow>
                     );
                   })}
@@ -877,7 +866,7 @@ export default function ManutencaoPreventiva() {
                       <TableCell>{m.data_execucao || "—"}</TableCell>
                       <TableCell>{m.proxima_manutencao || <span className="text-destructive text-xs">Não definida</span>}</TableCell>
                       <TableCell><Badge variant={statusVariant(m.status)}>{STATUS_LIST.find(s => s.value === m.status)?.label || m.status}</Badge></TableCell>
-                      <TableCell><Button variant="ghost" size="icon" onClick={() => deleteManut.mutate(m.id)}><Trash2 className="w-4 h-4 text-destructive" /></Button></TableCell>
+                      <TableCell><Button variant="ghost" size="sm" className="gap-1 text-xs" title="Registros não são excluídos — correção via Não Conformidade" onClick={() => corrigirViaNC(navigate, { tabela: "manutencoes", registroId: m.id, descricao: `Manutenção ${m.tipo} — ${m.descricao} — programada: ${m.data_programada}` })}><FileWarning className="w-4 h-4 text-primary" /> Corrigir via NC</Button></TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
