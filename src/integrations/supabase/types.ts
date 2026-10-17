@@ -5963,6 +5963,65 @@ export type Database = {
           },
         ]
       }
+      simulacoes_recall: {
+        Row: {
+          created_at: string
+          data: string
+          empresa_id: string | null
+          etapas: Json
+          id: string
+          lote: string
+          observacoes: string | null
+          produto: string
+          responsavel: string | null
+          rt: string | null
+          status: string
+          tempo_total_min: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          data?: string
+          empresa_id?: string | null
+          etapas?: Json
+          id?: string
+          lote: string
+          observacoes?: string | null
+          produto: string
+          responsavel?: string | null
+          rt?: string | null
+          status?: string
+          tempo_total_min?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          data?: string
+          empresa_id?: string | null
+          etapas?: Json
+          id?: string
+          lote?: string
+          observacoes?: string | null
+          produto?: string
+          responsavel?: string | null
+          rt?: string | null
+          status?: string
+          tempo_total_min?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "simulacoes_recall_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       suppressed_emails: {
         Row: {
           created_at: string
