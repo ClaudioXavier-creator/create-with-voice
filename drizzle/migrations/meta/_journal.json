@@ -8,6 +8,13 @@
       "when": 1792278440691,
       "tag": "0000_create_auditorias_bpf",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1792278898841,
+      "tag": "0001_bloquear_delete_registros",
+      "breakpoints": true
     }
   ]
 }
