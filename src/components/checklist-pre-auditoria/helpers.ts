@@ -8,28 +8,11 @@ import {
   Wrench,
 } from "lucide-react";
 import { CheckItem, ChecklistMetrics } from "./types";
+import { normalizarPopCodigo, POPS_CODIGOS } from "@/lib/popCodigo";
+
+export { normalizarPopCodigo };
 
 type RowWithEmpresa = { empresa_id?: string | null };
-
-const POPS_CODIGOS = [
-  "POP-01",
-  "POP-02",
-  "POP-03",
-  "POP-04",
-  "POP-05",
-  "POP-06",
-  "POP-07",
-  "POP-08",
-  "POP-09",
-  "POP-10",
-];
-
-/** Normaliza "POP-001" e "POP-01" para o mesmo código canônico ("POP-01"). */
-export function normalizarPopCodigo(codigo?: string | null): string {
-  const m = /^POP-0*(\d{1,2})$/i.exec((codigo || "").trim());
-  if (!m) return (codigo || "").trim();
-  return `POP-${m[1].padStart(2, "0")}`;
-}
 
 export function filterByEmpresa<T extends RowWithEmpresa>(rows: T[], empresaId?: string) {
   if (!empresaId) return rows;

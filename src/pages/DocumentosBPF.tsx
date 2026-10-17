@@ -19,6 +19,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useEmpresa } from "@/hooks/useEmpresa";
 import { toast } from "sonner";
 import { baixarArquivoStorage } from "@/utils/fileTypes";
+import { normalizarPopCodigo, POPS_CODIGOS } from "@/lib/popCodigo";
 
 
 const TIPOS_DOC = [
@@ -31,8 +32,7 @@ const TIPOS_DOC = [
 ];
 
 const POP_CODIGOS = [
-  "POP-001", "POP-002", "POP-003", "POP-004", "POP-005",
-  "POP-006", "POP-007", "POP-008", "POP-009", "POP-010",
+  ...POPS_CODIGOS,
   "IT-01-01", "IT-01-02", "IT-01-03", "IT-02-01", "IT-02-02", "IT-02-03",
   "IT-03-01", "IT-03-02", "IT-04-01", "IT-04-02", "IT-05-01", "IT-05-02",
   "IT-06-01", "IT-06-02", "IT-07-01", "IT-07-02", "IT-08-01", "IT-08-02",
@@ -168,7 +168,7 @@ export default function DocumentosBPF() {
   const filtered = useMemo(() => {
     return docs.filter(d => {
       if (filtroTipo !== "todos" && d.tipo !== filtroTipo) return false;
-      if (filtroCodigo !== "todos" && d.pop_codigo !== filtroCodigo) return false;
+      if (filtroCodigo !== "todos" && normalizarPopCodigo(d.pop_codigo) !== normalizarPopCodigo(filtroCodigo)) return false;
       return true;
     });
   }, [docs, filtroTipo, filtroCodigo]);
@@ -356,7 +356,7 @@ export default function DocumentosBPF() {
               </div>
               <div>
                 <Label>Título *</Label>
-                <Input value={titulo} onChange={e => setTitulo(e.target.value)} placeholder="Ex: POP-001 Recebimento MP - Janeiro 2025" />
+                <Input value={titulo} onChange={e => setTitulo(e.target.value)} placeholder="Ex: POP-01 Recebimento MP - Janeiro 2025" />
               </div>
               <div>
                 <Label>Descrição</Label>
