@@ -87,7 +87,6 @@ export default function HigieneSanitizacao() {
     concentracao: "", frequencia: "diario", responsavel: "", horario_previsto: "", observacoes: ""
   });
 
-
   const [aguaChecklist, setAguaChecklist] = useState<Record<string, boolean>>({});
   const [aguaCheckResp, setAguaCheckResp] = useState("");
   const [aguaCheckData, setAguaCheckData] = useState(new Date().toISOString().split("T")[0]);
