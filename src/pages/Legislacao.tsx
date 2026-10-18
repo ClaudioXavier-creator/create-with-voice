@@ -1,3 +1,4 @@
+import { getBaseLegal } from "@/config/baseLegal";
 import { useState, useEffect, useRef } from "react";
 import {
   Scale,
@@ -584,7 +585,7 @@ export default function Legislacao() {
           </TabsTrigger>
           <TabsTrigger value="rotulagem">
             <FileText className="w-4 h-4 mr-1" />
-            IN 17/2017
+            {getBaseLegal("rotulagem").citacao}
           </TabsTrigger>
           <TabsTrigger value="substancias">
             <ShieldAlert className="w-4 h-4 mr-1" />
@@ -1063,11 +1064,11 @@ export default function Legislacao() {
                 <FileText className="w-6 h-6 text-primary mt-0.5 shrink-0" />
                 <div>
                   <h4 className="font-display font-semibold text-sm">
-                    IN 17/2017 — Rotulagem e Níveis de Garantia para Fabricantes
+                    {getBaseLegal("rotulagem").citacao} — Rotulagem e Níveis de Garantia para Fabricantes
                   </h4>
                   <p className="text-xs text-muted-foreground mt-1">
-                    A Instrução Normativa nº 17/2017 do MAPA estabelece as diretrizes de rotulagem para produtos
-                    destinados à alimentação animal, complementando a IN 22/2009 e IN 12/2004 com requisitos específicos
+                    A {getBaseLegal("rotulagem").citacao} do MAPA estabelece as diretrizes de rotulagem para produtos
+                    destinados à alimentação animal, complementando a {getBaseLegal("rotulagem").citacao} e IN 12/2004 com requisitos específicos
                     para fabricantes.
                   </p>
                 </div>
@@ -1078,7 +1079,7 @@ export default function Legislacao() {
           <div className="grid md:grid-cols-2 gap-4">
             <Card>
               <CardHeader>
-                <CardTitle className="font-display text-sm">📋 Requisitos de Rotulagem (IN 17/2017)</CardTitle>
+                <CardTitle className="font-display text-sm">📋 Requisitos de Rotulagem ({getBaseLegal("rotulagem").citacao})</CardTitle>
               </CardHeader>
               <CardContent className="space-y-2 text-sm">
                 {[
@@ -1135,7 +1136,7 @@ export default function Legislacao() {
 
           <Card>
             <CardHeader>
-              <CardTitle className="font-display text-sm">⚠️ Proibições e Alertas (IN 17/2017)</CardTitle>
+              <CardTitle className="font-display text-sm">⚠️ Proibições e Alertas ({getBaseLegal("rotulagem").citacao})</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="grid md:grid-cols-2 gap-4 text-sm">
@@ -1176,7 +1177,7 @@ export default function Legislacao() {
           <Card className="bg-muted/30">
             <CardContent className="pt-4">
               <p className="text-xs text-muted-foreground">
-                <strong>Referência cruzada:</strong> As diretrizes de rotulagem da IN 17/2017 estão integradas ao módulo
+                <strong>Referência cruzada:</strong> As diretrizes de rotulagem da {getBaseLegal("rotulagem").citacao} estão integradas ao módulo
                 de
                 <strong> Produtos → Editor de Rótulos</strong>, que automatiza a conformidade com campos obrigatórios,
                 níveis de garantia e geração de etiquetas ZPL. A tabela de valores de referência de consumo segue a IN
@@ -1198,8 +1199,8 @@ export default function Legislacao() {
                       Mapeamento de Substâncias Proibidas e com Limite de Uso
                     </h4>
                     <p className="text-xs text-muted-foreground mt-1">
-                      Referência normativa: Decreto 12.031/2024, Portaria SDA 798/2023, Portaria SDA 1.180/2024, IN
-                      13/2004, IN 14/2012, IN 45/2016, IN 1/2020. Lista atualizada conforme publicações do MAPA/SDA.
+                      Referência normativa: {getBaseLegal("decreto_base").citacao}, {getBaseLegal("alimentos_medicados").citacao}, {getBaseLegal("pneeb").citacao}, IN
+                      13/2004, {getBaseLegal("substancias_proibidas").citacao}, {getBaseLegal("substancias_proibidas").citacao}, {getBaseLegal("substancias_proibidas").citacao}. Lista atualizada conforme publicações do MAPA/SDA.
                     </p>
                   </div>
                 </div>
@@ -1226,19 +1227,19 @@ export default function Legislacao() {
                     {[
                       {
                         substancia: "Proteínas e gorduras de ruminantes",
-                        norma: "Portaria SDA 1.180/2024 (PNEEB)",
+                        norma: `${getBaseLegal("pneeb").citacao} (PNEEB)`,
                         especies: "Ruminantes",
                         obs: "Prevenção de EEB (Encefalopatia Espongiforme Bovina)",
                       },
                       {
                         substancia: "Cloranfenicol",
-                        norma: "IN 09/2003",
+                        norma: `${getBaseLegal("substancias_proibidas").citacao}`,
                         especies: "Todas",
                         obs: "Proibido como aditivo ou promotor de crescimento",
                       },
                       {
                         substancia: "Nitrofuranos e seus derivados",
-                        norma: "IN 09/2003",
+                        norma: `${getBaseLegal("substancias_proibidas").citacao}`,
                         especies: "Todas",
                         obs: "Proibido — resíduo cancerígeno",
                       },
@@ -1250,7 +1251,7 @@ export default function Legislacao() {
                       },
                       {
                         substancia: "Clenbuterol",
-                        norma: "IN 17/2004",
+                        norma: `${getBaseLegal("substancias_proibidas").citacao}`,
                         especies: "Todas",
                         obs: "Beta-agonista proibido como promotor de crescimento",
                       },
@@ -1274,19 +1275,19 @@ export default function Legislacao() {
                       },
                       {
                         substancia: "Espiramicina e Eritromicina",
-                        norma: "IN 14/2012",
+                        norma: `${getBaseLegal("substancias_proibidas").citacao}`,
                         especies: "Aves e Suínos",
                         obs: "Proibidos como aditivos melhoradores de desempenho",
                       },
                       {
                         substancia: "Colistina (uso como promotor)",
-                        norma: "IN 45/2016",
+                        norma: `${getBaseLegal("substancias_proibidas").citacao}`,
                         especies: "Todas",
                         obs: "Proibida como aditivo zootécnico (último recurso humano)",
                       },
                       {
                         substancia: "Tilosina, Lincomicina e Tiamulina (promotor)",
-                        norma: "IN 01/2020",
+                        norma: `${getBaseLegal("substancias_proibidas").citacao}`,
                         especies: "Todas",
                         obs: "Proibidos como aditivos melhoradores de desempenho",
                       },
@@ -1330,14 +1331,14 @@ export default function Legislacao() {
                       {
                         substancia: "Ionóforos (Monensina, Salinomicina, Lasalocida)",
                         limite: "Sem limite fixado em norma — controlar por sequenciamento",
-                        norma: "IN 4/2007, item 6.2",
+                        norma: `${getBaseLegal("bpf_geral").citacao}, item 6.2`,
                         especies: "Bovinos, Aves",
                         acao: "Sequenciamento + flushing obrigatório",
                       },
                       {
                         substancia: "Medicamentos veterinários em ração",
                         limite: "Até 2,5% do princípio ativo no produto seguinte",
-                        norma: "Portaria SDA 798/2023, art. 29",
+                        norma: `${getBaseLegal("alimentos_medicados").citacao}, art. 29`,
                         especies: "Todas",
                         acao: "Limpeza de linha + teste de arraste",
                       },
@@ -1471,7 +1472,7 @@ export default function Legislacao() {
                   <strong> Controle de Substâncias</strong>, <strong>PCP (Sequenciamento e Carry-over)</strong>,{" "}
                   <strong>Validação de Limpeza de Linha</strong> e<strong> Rastreabilidade</strong>. O sistema alerta
                   automaticamente ao registrar ingredientes de origem animal e monitora os limites de carry-over
-                  conforme a Portaria SDA 798/2023. Mantenha esta lista atualizada conforme novas publicações do
+                  conforme a {getBaseLegal("alimentos_medicados").citacao}. Mantenha esta lista atualizada conforme novas publicações do
                   MAPA/SDA.
                 </p>
               </CardContent>

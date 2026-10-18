@@ -1,3 +1,4 @@
+import { getBaseLegal } from "@/config/baseLegal";
 import { useState } from "react";
 import {
   BookOpen, LayoutDashboard, Building2, FileText, ClipboardCheck, AlertTriangle,
@@ -60,7 +61,7 @@ const sections: ManualSection[] = [
     icon: Tag,
     badge: "Início",
     description:
-      "Cadastro completo de produtos acabados com dados regulatórios (MAPA), ficha técnica e editor de rótulos conforme IN 30/2009.",
+      `Cadastro completo de produtos acabados com dados regulatórios (MAPA), ficha técnica e editor de rótulos conforme ${getBaseLegal("rotulagem").citacao}.`,
     features: [
       { title: "Cadastro de Produto", text: "Registre nome, classificação (ração, suplemento, premix, etc.), espécie alvo, forma física, registro MAPA e composição." },
       { title: "Níveis de Garantia", text: "Informe os níveis de garantia do produto (umidade, PB, EE, FB, minerais, vitaminas, etc.) com valores mínimos e máximos." },
@@ -136,7 +137,7 @@ const sections: ManualSection[] = [
     icon: Droplets,
     badge: "POP 02",
     description:
-      "Módulo para POP 02 — Limpeza e Higienização das Instalações e Equipamentos, conforme IN 04/2007.",
+      `Módulo para POP 02 — Limpeza e Higienização das Instalações e Equipamentos, conforme ${getBaseLegal("bpf_geral").citacao}.`,
     features: [
       { title: "Checklist Pré-Operacional", text: "7 áreas de verificação (pisos, silos, moegas, misturadores, etc.) com registro digital de conformidade antes de cada turno." },
       { title: "Cronograma de Higienização", text: "Programe limpezas por área, frequência, produto utilizado, concentração e responsável." },
@@ -152,7 +153,7 @@ const sections: ManualSection[] = [
     icon: UserCheck,
     badge: "POP 03",
     description:
-      "Gestão completa de Atestados de Saúde Ocupacional (ASO), exames laboratoriais e monitoramento de saúde dos manipuladores conforme POP 03 (IN 04/2007) e NR-7.",
+      `Gestão completa de Atestados de Saúde Ocupacional (ASO), exames laboratoriais e monitoramento de saúde dos manipuladores conforme POP 03 (${getBaseLegal("bpf_geral").citacao}) e NR-7.`,
     features: [
       { title: "Cadastro de Colaboradores", text: "Registre nome, cargo, data de admissão e tipo de exame (admissional, periódico, demissional, retorno ao trabalho)." },
       { title: "Controle de ASO", text: "Acompanhe a validade dos ASOs com alertas automáticos para exames vencidos ou a vencer em 30 dias." },
@@ -202,7 +203,7 @@ const sections: ManualSection[] = [
     icon: Beaker,
     badge: "POP 04",
     description:
-      "Módulo dedicado ao controle de potabilidade da água, monitoramento de cloro residual, pH, coliformes e higienização de reservatórios conforme IN 04/2007 e Portaria GM/MS 888/2021.",
+      `Módulo dedicado ao controle de potabilidade da água, monitoramento de cloro residual, pH, coliformes e higienização de reservatórios conforme ${getBaseLegal("bpf_geral").citacao} e Portaria GM/MS 888/2021.`,
     features: [
       { title: "Dashboard de Indicadores", text: "Visão rápida dos parâmetros atuais: cloro residual, pH, turbidez e coliformes, com indicação visual de conformidade." },
       { title: "Pontos de Coleta", text: "Mapeamento dos pontos de coleta de água (entrada, produção, bebedouro, lavagem) com monitoramento diário de cloro e pH." },
@@ -223,7 +224,7 @@ const sections: ManualSection[] = [
     icon: ShieldCheck,
     badge: "POP 05",
     description:
-      "Procedimentos para prevenção da contaminação cruzada no fluxo produtivo, armazenamento e identificação de matérias-primas, conforme IN 04/2007 e IN 15/2009.",
+      `Procedimentos para prevenção da contaminação cruzada no fluxo produtivo, armazenamento e identificação de matérias-primas, conforme ${getBaseLegal("bpf_geral").citacao} e IN 15/2009.`,
     features: [
       { title: "Checklist Semanal", text: "10 itens de verificação: sequência de produção, flushing, separação de ingredientes, identificação de MPs, armazenamento segregado." },
       { title: "Monitoramento de Limpeza", text: "Swabs, testes de água de enxágue, inspeção visual pós-limpeza e controle de produtos químicos." },
@@ -268,7 +269,7 @@ const sections: ManualSection[] = [
     icon: Wrench,
     badge: "POP 06",
     description:
-      "Plano de manutenção preventiva/corretiva de equipamentos e calibração de instrumentos de medição, conforme IN 04/2007 e IN 15/2009.",
+      `Plano de manutenção preventiva/corretiva de equipamentos e calibração de instrumentos de medição, conforme ${getBaseLegal("bpf_geral").citacao} e IN 15/2009.`,
     features: [
       { title: "Cadastro de Equipamentos", text: "Registre equipamentos com código, descrição, localização e tipo de manutenção (preventiva, corretiva, preditiva)." },
       { title: "Programação de Manutenções", text: "Agende manutenções com datas programadas, responsáveis e controle de execução." },
@@ -285,7 +286,7 @@ const sections: ManualSection[] = [
     icon: Bug,
     badge: "POP 07",
     description:
-      "Controle integrado de pragas e procedimentos de expurgo de grãos armazenados, conforme IN 04/2007.",
+      `Controle integrado de pragas e procedimentos de expurgo de grãos armazenados, conforme ${getBaseLegal("bpf_geral").citacao}.`,
     features: [
       { title: "Monitoramento Semanal", text: "Inspeção de armadilhas, vedações, telas anti-inseto e indícios de pragas (roedores, insetos, pássaros)." },
       { title: "Aplicações e Laudos", text: "Registro de desinsetização, desratização, laudos da empresa terceirizada e mapa de iscas." },
@@ -300,7 +301,7 @@ const sections: ManualSection[] = [
     icon: Recycle,
     badge: "POP 08",
     description:
-      "Gestão de resíduos sólidos, efluentes e destino de produtos avariados/vencidos, conforme Decreto 12.031/2024 e IN 15/2009.",
+      `Gestão de resíduos sólidos, efluentes e destino de produtos avariados/vencidos, conforme ${getBaseLegal("decreto_base").citacao} e IN 15/2009.`,
     features: [
       { title: "Classificação de Resíduos", text: "Classifique resíduos como Classe I (perigosos) ou Classe II (não perigosos) e controle o destino final." },
       { title: "Descarte de Produtos", text: "Registre produtos descartados com lote, motivo (vencido, contaminado, avariado) e quantidade." },
@@ -334,7 +335,7 @@ const sections: ManualSection[] = [
     icon: ClipboardCheck,
     badge: "POP 10",
     description:
-      "Checklist de auditoria interna baseado no Decreto 12.031/2024 (MAPA). Avalie cada item e gere relatórios de conformidade.",
+      `Checklist de auditoria interna baseado no ${getBaseLegal("autocontrole").citacao} (MAPA). Avalie cada item e gere relatórios de conformidade.`,
     features: [
       { title: "Checklist por Área", text: "Itens organizados por áreas: Higiene, Instalações, Equipamentos, Controle de Qualidade, etc." },
       { title: "Avaliação Individual", text: "Marque cada item como conforme ou não conforme, com campo para observações." },
@@ -390,7 +391,7 @@ const sections: ManualSection[] = [
     icon: ShieldCheck,
     badge: "POP 10",
     description:
-      "Tutorial completo sobre como categorizar o risco do estabelecimento conforme o Decreto 12.031/2024 e IN 17/2017 do MAPA.",
+      `Tutorial completo sobre como categorizar o risco do estabelecimento conforme o ${getBaseLegal("decreto_base").citacao} e ${getBaseLegal("rotulagem").citacao} do MAPA.`,
     features: [
       { title: "Critérios de Avaliação", text: "O risco é determinado por: tipo de produto fabricado (medicamentoso = alto), espécies atendidas, volume de produção, histórico de conformidade e uso de substâncias controladas." },
       { title: "Método de Pontuação", text: "Responder questionário com SIM (100% do peso), PARCIAL (50%), NÃO (0%) ou N/A (excluído). Calcular: % Conformidade = (Σ Pontos / Σ Máximo) × 100." },
@@ -400,7 +401,7 @@ const sections: ManualSection[] = [
       { title: "Questionário Digital", text: "Acesse o módulo Matriz de Risco > aba 'Questionário de Risco' para realizar a avaliação automatizada." },
     ],
     tips: [
-      "O Decreto 12.031/2024 alterou a classificação de estabelecimentos — atualize sua avaliação.",
+      `O ${getBaseLegal("autocontrole").citacao} alterou a classificação de estabelecimentos — atualize sua avaliação.`,
       "Utilize o resultado da categorização para definir a frequência de auditorias internas no Planejamento Anual.",
     ],
   },
@@ -647,7 +648,7 @@ export default function Manual() {
 
   return (
     <>
-      <PageHeader icon={BookOpen} title="Manual Feed_BPF" description="Manual de utilização do sistema Feed_BPF — guia das funcionalidades organizado pela sequência dos 10 POPs obrigatórios (IN 04/2007). Não confundir com o Manual BPF da empresa (gerado em 'Geração Manual BPF')." />
+      <PageHeader icon={BookOpen} title="Manual Feed_BPF" description={`Manual de utilização do sistema Feed_BPF — guia das funcionalidades organizado pela sequência dos 10 POPs obrigatórios (${getBaseLegal("bpf_geral").citacao}). Não confundir com o Manual BPF da empresa (gerado em 'Geração Manual BPF').`} />
 
       <div className="flex gap-2 mb-6">
         <button onClick={expandAll} className="text-sm text-primary hover:underline font-medium">

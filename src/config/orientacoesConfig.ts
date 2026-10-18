@@ -1,3 +1,4 @@
+import { getBaseLegal } from "@/config/baseLegal";
 // Configuração centralizada das orientações de preenchimento e simulações
 // para todos os módulos do sistema BPF_Consult.
 // Cada módulo possui: passos de tutorial + dados fictícios para simulação sandbox.
@@ -40,7 +41,7 @@ export const ORIENTACOES: ModuloOrientacao[] = [
     titulo: "Qualificação de Fornecedores",
     rota: "/fornecedores",
     descricao: "Cadastro e qualificação de fornecedores de matérias-primas e embalagens conforme PL POP 1.1.",
-    base_legal: ["IN 04/2007 (MAPA)", "Decreto 12.031/2024", "IN 15/2009"],
+    base_legal: [`${getBaseLegal("bpf_geral").citacao} (MAPA)`, `${getBaseLegal("decreto_base").citacao}`, "IN 15/2009"],
     passos: [
       {
         titulo: "1. Cadastrar fornecedor",
@@ -50,7 +51,7 @@ export const ORIENTACOES: ModuloOrientacao[] = [
       {
         titulo: "2. Verificar SIPEAGRO",
         descricao: "Use o botão 'Consultar SIPEAGRO' para validar o registro no MAPA.",
-        base_legal: "IN 04/2007 Art. 12",
+        base_legal: `${getBaseLegal("bpf_geral").citacao} Art. 12`,
       },
       {
         titulo: "3. Aplicar questionário",
@@ -60,7 +61,7 @@ export const ORIENTACOES: ModuloOrientacao[] = [
       {
         titulo: "4. Anexar documentos",
         descricao: "Anexe Alvará, Registro MAPA, Ficha Técnica e Certificado de Análise.",
-        base_legal: "IN 04/2007 Art. 18",
+        base_legal: `${getBaseLegal("bpf_geral").citacao} Art. 18`,
       },
       {
         titulo: "5. Definir próxima avaliação",
@@ -103,7 +104,7 @@ export const ORIENTACOES: ModuloOrientacao[] = [
     rota: "/recebimento",
     descricao:
       "Lançamento único do recebimento de MP — inclui lote, fornecedor, laudo e umidade (PL POP 1.2 / 1.3 / 1.5).",
-    base_legal: ["IN 04/2007", "IN 15/2009"],
+    base_legal: [`${getBaseLegal("bpf_geral").citacao}`, "IN 15/2009"],
     passos: [
       {
         titulo: "1. Selecionar fornecedor",
@@ -122,7 +123,7 @@ export const ORIENTACOES: ModuloOrientacao[] = [
       {
         titulo: "5. Anexar laudo",
         descricao: "Upload do Certificado de Análise do fornecedor e checagem de Registro MAPA.",
-        base_legal: "IN 04/2007 Art. 18",
+        base_legal: `${getBaseLegal("bpf_geral").citacao} Art. 18`,
       },
       { titulo: "6. Decisão", descricao: "Aprovar / Reprovar / Aprovar com Restrição (gera RNC automático)." },
     ],
@@ -158,7 +159,7 @@ export const ORIENTACOES: ModuloOrientacao[] = [
     titulo: "Análises Laboratoriais",
     rota: "/analises",
     descricao: "Registro de laudos laboratoriais de MP e produto acabado.",
-    base_legal: ["IN 04/2007", "Decreto 12.031/2024"],
+    base_legal: [`${getBaseLegal("bpf_geral").citacao}`, `${getBaseLegal("decreto_base").citacao}`],
     passos: [
       { titulo: "1. Identificar amostra", descricao: "Informe produto, lote, data da coleta e laboratório." },
       {
@@ -170,7 +171,7 @@ export const ORIENTACOES: ModuloOrientacao[] = [
       {
         titulo: "5. Tratar não conformidade",
         descricao: "Resultados fora do limite geram RNC automático.",
-        base_legal: "Decreto 12.031/2024",
+        base_legal: `${getBaseLegal("decreto_base").citacao}`,
       },
     ],
     campos_simulacao: [
@@ -199,7 +200,7 @@ export const ORIENTACOES: ModuloOrientacao[] = [
     rota: "/substancias",
     descricao:
       "Controle de substâncias proibidas na alimentação animal (nitrofuranos, cloranfenicol e outras da lista oficial do MAPA).",
-    base_legal: ["IN 9/2003", "IN 26/2009", "IN 45/2016", "IN 1/2020"],
+    base_legal: [`${getBaseLegal("substancias_proibidas").citacao}`, `${getBaseLegal("substancias_proibidas").citacao}`, `${getBaseLegal("substancias_proibidas").citacao}`, `${getBaseLegal("substancias_proibidas").citacao}`],
     passos: [
       { titulo: "1. Cadastrar análise", descricao: "Selecione MP, lote e substância a ser monitorada." },
       { titulo: "2. Limite máximo", descricao: "Sistema preenche automaticamente o limite legal." },
@@ -234,7 +235,7 @@ export const ORIENTACOES: ModuloOrientacao[] = [
     titulo: "Higiene e Sanitização",
     rota: "/higiene",
     descricao: "Cronograma de limpeza diária, semanal, mensal e checklists das 7 áreas críticas.",
-    base_legal: ["IN 04/2007", "IN 15/2009"],
+    base_legal: [`${getBaseLegal("bpf_geral").citacao}`, "IN 15/2009"],
     passos: [
       { titulo: "1. Definir cronograma", descricao: "Configure áreas, frequência e produto químico utilizado." },
       { titulo: "2. Registrar execução", descricao: "Marque execução com responsável e horário." },
@@ -321,7 +322,7 @@ export const ORIENTACOES: ModuloOrientacao[] = [
     titulo: "Saúde e Higiene Pessoal",
     rota: "/saude-pessoal",
     descricao: "Controle de ASO, exames periódicos, treinamento de higiene e EPIs.",
-    base_legal: ["IN 04/2007", "NR 7 / NR 6"],
+    base_legal: [`${getBaseLegal("bpf_geral").citacao}`, "NR 7 / NR 6"],
     passos: [
       { titulo: "1. Cadastrar colaborador", descricao: "Nome, função, setor e data de admissão." },
       {
@@ -349,7 +350,7 @@ export const ORIENTACOES: ModuloOrientacao[] = [
     titulo: "Treinamentos",
     rota: "/treinamentos",
     descricao: "Registro de capacitações da equipe (BPF, segurança, POPs).",
-    base_legal: ["IN 04/2007 Art. 8º"],
+    base_legal: [`${getBaseLegal("bpf_geral").citacao} Art. 8º`],
     passos: [
       { titulo: "1. Definir treinamento", descricao: "Tema, instrutor, carga horária e data." },
       { titulo: "2. Lista de presença", descricao: "Registre participantes e funções." },
@@ -372,7 +373,7 @@ export const ORIENTACOES: ModuloOrientacao[] = [
     titulo: "Controle de Visitantes",
     rota: "/visitantes",
     descricao: "Registro único de visitantes com declaração de biosseguridade.",
-    base_legal: ["IN 04/2007", "Programa de Biosseguridade"],
+    base_legal: [`${getBaseLegal("bpf_geral").citacao}`, "Programa de Biosseguridade"],
     passos: [
       { titulo: "1. Identificar visitante", descricao: "Nome, documento, empresa e motivo." },
       {
@@ -406,7 +407,7 @@ export const ORIENTACOES: ModuloOrientacao[] = [
     titulo: "Potabilidade da Água",
     rota: "/potabilidade-agua",
     descricao: "Monitoramento de cloro residual, pH, turbidez e coliformes.",
-    base_legal: ["Portaria GM/MS 888/2021", "IN 04/2007"],
+    base_legal: ["Portaria GM/MS 888/2021", `${getBaseLegal("bpf_geral").citacao}`],
     passos: [
       { titulo: "1. Coletar amostra", descricao: "Pontos: reservatório, ponto de uso (mistura), ponto distal." },
       { titulo: "2. Análise de campo", descricao: "Cloro residual (0,2-2,0 mg/L), pH (6,0-9,5), turbidez (≤ 5 NTU)." },
@@ -447,7 +448,7 @@ export const ORIENTACOES: ModuloOrientacao[] = [
     titulo: "PCP / Sequenciamento de Produção",
     rota: "/pcp",
     descricao: "Ordens de produção, fórmula versionada, batidas, flushing e Ficha Digital.",
-    base_legal: ["IN 04/2007", "IN 15/2009 — Carry-over"],
+    base_legal: [`${getBaseLegal("bpf_geral").citacao}`, "IN 15/2009 — Carry-over"],
     passos: [
       {
         titulo: "1. Criar ordem de produção",
@@ -483,14 +484,14 @@ export const ORIENTACOES: ModuloOrientacao[] = [
     titulo: "Registro de Produção",
     rota: "/producao",
     descricao: "Lançamento de produção diária com contraprova e flushing.",
-    base_legal: ["IN 04/2007", "IN 15/2009"],
+    base_legal: [`${getBaseLegal("bpf_geral").citacao}`, "IN 15/2009"],
     passos: [
       { titulo: "1. Identificar lote produzido", descricao: "Produto, lote, quantidade e operador." },
       { titulo: "2. Tempo de mistura", descricao: "Registre tempo (mín. validado por homogeneidade)." },
       {
         titulo: "3. Reter contraprova",
         descricao: "300g por lote, validade do produto + 30 dias.",
-        base_legal: "IN 04/2007 Art. 25",
+        base_legal: `${getBaseLegal("bpf_geral").citacao} Art. 25`,
       },
       { titulo: "4. Flushing (se aplicável)", descricao: "Registre material e volume usados." },
     ],
@@ -512,17 +513,17 @@ export const ORIENTACOES: ModuloOrientacao[] = [
     titulo: "Produtos / Rótulos / RTPI",
     rota: "/produtos",
     descricao: "Cadastro de produtos com Ficha Técnica, Rótulo e RTPI (18 campos).",
-    base_legal: ["IN 22/2009", "IN 30/2009 — Rotulagem"],
+    base_legal: [`${getBaseLegal("rotulagem").citacao}`, `${getBaseLegal("rotulagem").citacao} — Rotulagem`],
     passos: [
       { titulo: "1. Cadastro básico", descricao: "Nome, marca, classificação, espécie alvo, registro MAPA." },
       {
         titulo: "2. Níveis de garantia",
         descricao: "Lance níveis com unidades (auto-conversão g↔mg, exceções UFC/FTU/UI).",
-        base_legal: "IN 30/2009",
+        base_legal: `${getBaseLegal("rotulagem").citacao}`,
       },
       {
         titulo: "3. Editor de Rótulo",
-        descricao: "Layout conforme IN 22/2009. Sistema avisa para inserir selo MAPA na sacaria, não no rótulo.",
+        descricao: `Layout conforme ${getBaseLegal("rotulagem").citacao}. Sistema avisa para inserir selo MAPA na sacaria, não no rótulo.`,
       },
       { titulo: "4. RTPI (18 campos)", descricao: "Para produtos com aditivos restritos (ionóforos, ureia)." },
       { titulo: "5. Exportar", descricao: "PDF com carimbo, ZPL para Zebra ou Excel para layout." },
@@ -549,7 +550,7 @@ export const ORIENTACOES: ModuloOrientacao[] = [
     titulo: "Fórmulas Versionadas",
     rota: "/formulas",
     descricao: "Cadastro de fórmulas com versionamento, ingredientes e percentuais.",
-    base_legal: ["IN 04/2007 Art. 26"],
+    base_legal: [`${getBaseLegal("bpf_geral").citacao} Art. 26`],
     passos: [
       { titulo: "1. Vincular ao produto", descricao: "Selecione produto e crie nova versão (v1.0, v2.0)." },
       { titulo: "2. Adicionar ingredientes", descricao: "MP, percentual, ordem de inclusão e observações." },
@@ -580,7 +581,7 @@ export const ORIENTACOES: ModuloOrientacao[] = [
     titulo: "Armazenamento e Transporte",
     rota: "/armazenamento-transporte",
     descricao: "Checklists de armazéns, veículos e prevenção de EEB.",
-    base_legal: ["IN 04/2007", "IN 08/2004 — Prevenção EEB"],
+    base_legal: [`${getBaseLegal("bpf_geral").citacao}`, "IN 08/2004 — Prevenção EEB"],
     passos: [
       { titulo: "1. Inspeção do armazém", descricao: "Temperatura, umidade, pragas, paletização e PEPS." },
       {
@@ -618,7 +619,7 @@ export const ORIENTACOES: ModuloOrientacao[] = [
     titulo: "Manutenção e Calibração",
     rota: "/manutencao",
     descricao: "Manutenção preventiva, corretiva e calibração de instrumentos.",
-    base_legal: ["IN 04/2007", "IN 15/2009"],
+    base_legal: [`${getBaseLegal("bpf_geral").citacao}`, "IN 15/2009"],
     passos: [
       { titulo: "1. Cadastrar equipamento", descricao: "Código, descrição, localização e criticidade." },
       { titulo: "2. Plano de manutenção preventiva", descricao: "Defina frequência (semanal/mensal/anual)." },
@@ -655,7 +656,7 @@ export const ORIENTACOES: ModuloOrientacao[] = [
     titulo: "Controle Integrado de Pragas",
     rota: "/pragas",
     descricao: "MIP — monitoramento, aplicação, mapa de iscas e expurgo.",
-    base_legal: ["IN 04/2007", "RDC ANVISA 622/2022"],
+    base_legal: [`${getBaseLegal("bpf_geral").citacao}`, "RDC ANVISA 622/2022"],
     passos: [
       { titulo: "1. Cadastrar mapa de iscas", descricao: "Numere e mapeie pontos no croqui." },
       { titulo: "2. Monitoramento semanal", descricao: "Registre consumo, tipo de praga e ações." },
@@ -692,7 +693,7 @@ export const ORIENTACOES: ModuloOrientacao[] = [
     titulo: "Resíduos e Efluentes",
     rota: "/residuos",
     descricao: "PGRS — gestão de resíduos sólidos e efluentes (CONAMA 430/2011).",
-    base_legal: ["CONAMA 430/2011", "Decreto 12.031/2024"],
+    base_legal: ["CONAMA 430/2011", `${getBaseLegal("decreto_base").citacao}`],
     passos: [
       { titulo: "1. Classificar resíduo", descricao: "ABNT NBR 10004 — Classe I (perigoso), II-A, II-B." },
       { titulo: "2. Segregar e armazenar", descricao: "Bombonas/contêineres identificados, área coberta." },
@@ -730,7 +731,7 @@ export const ORIENTACOES: ModuloOrientacao[] = [
     titulo: "Expedição & Faturamento",
     rota: "/expedicao",
     descricao: "Registro digital de saída de produto acabado por NF — base da rastreabilidade e do recall.",
-    base_legal: ["IN 04/2007 Art. 30", "Decreto 12.031/2024", "PL POP 9.2"],
+    base_legal: [`${getBaseLegal("bpf_geral").citacao} Art. 30`, `${getBaseLegal("decreto_base").citacao}`, "PL POP 9.2"],
     passos: [
       {
         titulo: "1. Importar XML da NF-e",
@@ -776,7 +777,7 @@ export const ORIENTACOES: ModuloOrientacao[] = [
     titulo: "Rastreabilidade",
     rota: "/rastreabilidade",
     descricao: "Árvore visual de rastreio MP → Lote → Cliente.",
-    base_legal: ["IN 04/2007 Art. 30", "IN 34/2008 — Espécies"],
+    base_legal: [`${getBaseLegal("bpf_geral").citacao} Art. 30`, "IN 34/2008 — Espécies"],
     passos: [
       { titulo: "1. Buscar lote", descricao: "Informe lote do produto acabado." },
       {
@@ -808,7 +809,7 @@ export const ORIENTACOES: ModuloOrientacao[] = [
     titulo: "Simulação de Recall",
     rota: "/simulacao-recall",
     descricao: "Exercício anual obrigatório de recall (10 etapas, com cronômetro).",
-    base_legal: ["Decreto 12.031/2024 Art. 38", "IN 04/2007"],
+    base_legal: [`${getBaseLegal("decreto_base").citacao} Art. 38`, `${getBaseLegal("bpf_geral").citacao}`],
     passos: [
       { titulo: "1. Iniciar simulação", descricao: "Defina lote-alvo (real ou fictício)." },
       { titulo: "2. Cronômetro inicia", descricao: "Sistema mede tempo de cada etapa para avaliar eficiência." },
@@ -836,7 +837,7 @@ export const ORIENTACOES: ModuloOrientacao[] = [
     titulo: "Não Conformidades",
     rota: "/nao-conformidades",
     descricao: "Registro e tratamento de RNCs com plano de ação.",
-    base_legal: ["IN 04/2007 Art. 32", "Decreto 12.031/2024"],
+    base_legal: [`${getBaseLegal("bpf_geral").citacao} Art. 32`, `${getBaseLegal("decreto_base").citacao}`],
     passos: [
       { titulo: "1. Identificar NC", descricao: "Setor, descrição, evidência fotográfica." },
       { titulo: "2. Análise de causa", descricao: "Use 5 Porquês ou Ishikawa." },
@@ -882,8 +883,8 @@ export const ORIENTACOES: ModuloOrientacao[] = [
     codigo: "POP-10",
     titulo: "Auditoria BPF",
     rota: "/auditoria",
-    descricao: "Checklist baseado em Decreto 12.031/2024 e IN 04/2007.",
-    base_legal: ["Decreto 12.031/2024", "IN 04/2007"],
+    descricao: `Checklist baseado em ${getBaseLegal("autocontrole").citacao} e ${getBaseLegal("bpf_geral").citacao}.`,
+    base_legal: [`${getBaseLegal("autocontrole").citacao}`, `${getBaseLegal("bpf_geral").citacao}`],
     passos: [
       { titulo: "1. Selecionar checklist", descricao: "Auditoria interna ou pré-fiscalização MAPA." },
       { titulo: "2. Avaliar item por item", descricao: "Conforme/Não Conforme/Não Aplicável + observação." },
@@ -912,7 +913,7 @@ export const ORIENTACOES: ModuloOrientacao[] = [
     titulo: "Matriz de Risco / APPCC",
     rota: "/matriz-risco",
     descricao: "HACCP — ~35 perigos em 13 etapas, Probabilidade × Severidade.",
-    base_legal: ["Codex Alimentarius — HACCP", "IN 04/2007"],
+    base_legal: ["Codex Alimentarius — HACCP", `${getBaseLegal("bpf_geral").citacao}`],
     passos: [
       { titulo: "1. Identificar etapa do processo", descricao: "Recepção, mistura, ensaque, expedição..." },
       {
@@ -969,7 +970,7 @@ export const ORIENTACOES: ModuloOrientacao[] = [
     titulo: "Indicadores e KPIs",
     rota: "/indicadores",
     descricao: "Painel de indicadores de qualidade, produção, NCs e conformidade.",
-    base_legal: ["IN 04/2007", "Decreto 12.031/2024"],
+    base_legal: [`${getBaseLegal("bpf_geral").citacao}`, `${getBaseLegal("decreto_base").citacao}`],
     passos: [
       {
         titulo: "1. Visualizar painel",
@@ -1003,7 +1004,7 @@ export const ORIENTACOES: ModuloOrientacao[] = [
     codigo: "AUX",
     titulo: "Legislação Aplicável",
     rota: "/legislacao",
-    descricao: "Biblioteca de normas (IN 04/2007, Decreto 12.031/2024 etc.) com IA assistente.",
+    descricao: `Biblioteca de normas (${getBaseLegal("bpf_geral").citacao}, ${getBaseLegal("decreto_base").citacao} etc.) com IA assistente.`,
     base_legal: ["MAPA — todas as INs aplicáveis"],
     passos: [
       { titulo: "1. Buscar norma", descricao: "Use a busca por código ('IN 04') ou tema ('rotulagem', 'pragas')." },
@@ -1016,7 +1017,7 @@ export const ORIENTACOES: ModuloOrientacao[] = [
       { titulo: "4. Receber alertas", descricao: "Sistema avisa quando uma IN é alterada/revogada." },
     ],
     campos_simulacao: [
-      { nome: "busca", label: "Buscar norma ou tema", tipo: "text", exemplo: "IN 04/2007" },
+      { nome: "busca", label: "Buscar norma ou tema", tipo: "text", exemplo: `${getBaseLegal("bpf_geral").citacao}` },
       {
         nome: "pergunta_ia",
         label: "Pergunta para IA",
@@ -1032,7 +1033,7 @@ export const ORIENTACOES: ModuloOrientacao[] = [
     titulo: "Análise de Tendências (IA)",
     rota: "/analise-tendencias",
     descricao: "IA detecta padrões em NCs, recebimentos reprovados, falhas de equipamento.",
-    base_legal: ["Decreto 12.031/2024 — Análise crítica"],
+    base_legal: [`${getBaseLegal("decreto_base").citacao} — Análise crítica`],
     passos: [
       { titulo: "1. Selecionar fonte", descricao: "NCs, Recebimento, Manutenção, Análises Lab." },
       { titulo: "2. Definir período", descricao: "Últimos 30/90/365 dias." },
@@ -1066,7 +1067,7 @@ export const ORIENTACOES: ModuloOrientacao[] = [
     titulo: "Checklist Pré-Auditoria",
     rota: "/checklist-pre-auditoria",
     descricao: "Auto-avaliação antes da fiscalização MAPA — 14 áreas regulatórias.",
-    base_legal: ["Decreto 12.031/2024", "IN 04/2007"],
+    base_legal: [`${getBaseLegal("autocontrole").citacao}`, `${getBaseLegal("bpf_geral").citacao}`],
     passos: [
       { titulo: "1. Selecionar área", descricao: "Documentação, instalações, pessoal, recebimento, produção etc." },
       { titulo: "2. Avaliar item", descricao: "OK / Pendente / Não Aplicável." },
@@ -1092,7 +1093,7 @@ export const ORIENTACOES: ModuloOrientacao[] = [
     titulo: "Sala do Auditor",
     rota: "/sala-auditor",
     descricao: "Acesso somente-leitura para o fiscal MAPA visualizar todos os registros sem editar.",
-    base_legal: ["Decreto 12.031/2024 Art. 36"],
+    base_legal: [`${getBaseLegal("autocontrole").citacao} Art. 36`],
     passos: [
       { titulo: "1. Gerar acesso temporário", descricao: "Crie credencial com validade (ex: dia da auditoria)." },
       { titulo: "2. Compartilhar com auditor", descricao: "Link único, sem senha permanente." },
@@ -1116,7 +1117,7 @@ export const ORIENTACOES: ModuloOrientacao[] = [
     titulo: "Planejamento Anual",
     rota: "/planejamento-anual",
     descricao: "Cronograma anual de calibrações, treinamentos, análises e auditorias.",
-    base_legal: ["IN 04/2007", "Decreto 12.031/2024"],
+    base_legal: [`${getBaseLegal("bpf_geral").citacao}`, `${getBaseLegal("autocontrole").citacao}`],
     passos: [
       { titulo: "1. Cadastrar atividade", descricao: "Categoria, frequência, mês de início, responsável." },
       { titulo: "2. Visualizar calendário", descricao: "Modo Calendário ou Timeline." },
@@ -1150,7 +1151,7 @@ export const ORIENTACOES: ModuloOrientacao[] = [
     titulo: "Documentos Registrados",
     rota: "/documentos",
     descricao: "Controle de versão e validade de POPs, ITs e formulários.",
-    base_legal: ["IN 04/2007 Art. 7º"],
+    base_legal: [`${getBaseLegal("bpf_geral").citacao} Art. 7º`],
     passos: [
       {
         titulo: "1. Cadastrar documento",
@@ -1197,7 +1198,7 @@ export const ORIENTACOES: ModuloOrientacao[] = [
     titulo: "Planilhas Digitais de POPs",
     rota: "/planilhas-pop",
     descricao: "Execução digital dos POPs com até 3 assinaturas (executor, supervisor, RT).",
-    base_legal: ["IN 04/2007", "Decreto 12.031/2024"],
+    base_legal: [`${getBaseLegal("bpf_geral").citacao}`, `${getBaseLegal("decreto_base").citacao}`],
     passos: [
       {
         titulo: "1. Garantir documento vinculado",
@@ -1239,7 +1240,7 @@ export const ORIENTACOES: ModuloOrientacao[] = [
     titulo: "Relatórios Gerais",
     rota: "/relatorios",
     descricao: "Geração de relatórios PDF de qualquer módulo (com carimbo anti-fraude).",
-    base_legal: ["IN 04/2007", "Decreto 12.031/2024"],
+    base_legal: [`${getBaseLegal("bpf_geral").citacao}`, `${getBaseLegal("autocontrole").citacao}`],
     passos: [
       { titulo: "1. Selecionar módulo", descricao: "Recebimento, Produção, NCs, Análises etc." },
       { titulo: "2. Definir período", descricao: "Filtros de data, lote, fornecedor, status." },
@@ -1270,7 +1271,7 @@ export const ORIENTACOES: ModuloOrientacao[] = [
     titulo: "Consulta SIPEAGRO",
     rota: "/consulta-sipeagro",
     descricao: "Validação de registros MAPA de fornecedores e produtos.",
-    base_legal: ["IN 04/2007 Art. 12"],
+    base_legal: [`${getBaseLegal("bpf_geral").citacao} Art. 12`],
     passos: [
       { titulo: "1. Informar CNPJ ou nº de registro", descricao: "Sistema consulta SIPEAGRO online." },
       { titulo: "2. Validar status", descricao: "Ativo / Suspenso / Cancelado." },
@@ -1301,7 +1302,7 @@ export const ORIENTACOES: ModuloOrientacao[] = [
     rota: "/execucao-pops",
     descricao:
       "Diário de bordo digital de cada execução de POP/IT no chão de fábrica. Comprova ao MAPA que os procedimentos não ficam só no papel — há evidência de execução periódica com responsável, data e checklist.",
-    base_legal: ["IN 04/2007 Art. 4º", "Decreto 12.031/2024", "IN 15/2009"],
+    base_legal: [`${getBaseLegal("bpf_geral").citacao} Art. 4º`, `${getBaseLegal("autocontrole").citacao}`, "IN 15/2009"],
     passos: [
       {
         titulo: "1. Ver alertas de atraso",

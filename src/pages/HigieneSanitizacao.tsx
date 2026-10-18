@@ -1,3 +1,4 @@
+import { getBaseLegal } from "@/config/baseLegal";
 import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useEmpresa } from "@/hooks/useEmpresa";
@@ -251,7 +252,7 @@ export default function HigieneSanitizacao() {
 
     const lines = [
       `PLANILHA MENSAL DE HIGIENE E SANITIZAÇÃO — ${mesNome.toUpperCase()}`,
-      "POPs 02, 03 e 04 — IN 04/2007 | IN 15/2009",
+      `POPs 02, 03 e 04 — ${getBaseLegal("bpf_geral").citacao} | IN 15/2009`,
       "",
       "=== REGISTROS DE LIMPEZA ===",
       "Data;Executor;Hora Início;Hora Fim;Conforme;Observações",
@@ -317,7 +318,7 @@ export default function HigieneSanitizacao() {
       const conforme = cloroOk && phOk && turbOk && aguaForm.laudo_valido && aguaForm.reservatorio_limpo;
 
       const obs = [
-        `[CONTROLE DE ÁGUA — POP-04 / IN 04/2007]`,
+        `[CONTROLE DE ÁGUA — POP-04 / ${getBaseLegal("bpf_geral").citacao}]`,
         `Ponto: ${aguaForm.ponto}`,
         `Cloro residual: ${aguaForm.cloro_residual} mg/L ${cloroOk ? "✅" : "❌ FORA (0,2-2,0)"}`,
         `pH: ${aguaForm.ph} ${phOk ? "✅" : "❌ FORA (6,0-9,5)"}`,
@@ -365,7 +366,7 @@ export default function HigieneSanitizacao() {
     const ncs = CHECKLIST_LIBERACAO_LINHA.flatMap(g => g.itens.filter(item => !libLinhaChecklist[`${g.area}__${item}`]).map(item => `${g.area}: ${item}`));
 
     const obs = [
-      `[LIBERAÇÃO DE LINHA — POP-02 / IN 04/2007 | IN 15/2009]`,
+      `[LIBERAÇÃO DE LINHA — POP-02 / ${getBaseLegal("bpf_geral").citacao} | IN 15/2009]`,
       `Data: ${libLinhaData} | Linha: ${libLinhaLinha || "—"}`,
       `Produto anterior: ${libLinhaProdAnterior || "—"}`,
       `Produto seguinte: ${libLinhaProdSeguinte || "—"}`,
@@ -446,7 +447,7 @@ export default function HigieneSanitizacao() {
     const ncs = CHECKLIST_SUPERFICIES.flatMap(g => g.itens.filter(item => !supChecklist[`${g.area}__${item}`]).map(item => `${g.area}: ${item}`));
 
     const obs = [
-      `[MONITORAMENTO DE SUPERFÍCIES — POP-02/03 / IN 04/2007]`,
+      `[MONITORAMENTO DE SUPERFÍCIES — POP-02/03 / ${getBaseLegal("bpf_geral").citacao}]`,
       `Data: ${supData} | Setor: ${supSetor || "—"}`,
       `Produto químico: ${supProdQuimico || "—"} | Concentração: ${supConcentracao || "—"}`,
       `Itens conformes: ${marcados}/${totalItens}`,
@@ -495,7 +496,7 @@ export default function HigieneSanitizacao() {
       <PageHeader 
         icon={Droplets}
         title="POP 02 - Higiene e Sanitização" 
-        description="Procedimentos de limpeza de instalações, equipamentos e utensílios conforme IN 04/2007 e IN 15/2009"
+        description={`Procedimentos de limpeza de instalações, equipamentos e utensílios conforme ${getBaseLegal("bpf_geral").citacao} e IN 15/2009`}
         orientacaoModuloId="higiene" 
       />
       
@@ -528,10 +529,10 @@ export default function HigieneSanitizacao() {
               <div className="flex items-start gap-3">
                 <ShieldCheck className="w-6 h-6 text-primary mt-0.5" />
                 <div>
-                  <h4 className="font-display font-semibold text-sm">Checklist Pré-Operacional — POP 02/03 (IN 04/2007)</h4>
+                  <h4 className="font-display font-semibold text-sm">Checklist Pré-Operacional — POP 02/03 ({getBaseLegal("bpf_geral").citacao})</h4>
                   <p className="text-xs text-muted-foreground mt-1">
                     Verificação obrigatória antes do início de cada turno/produção. Todos os itens devem ser inspecionados
-                    e registrados conforme Art. 2º da IN 04/2007 e requisitos de BPF da IN 15/2009.
+                    e registrados conforme Art. 2º da {getBaseLegal("bpf_geral").citacao} e requisitos de BPF da IN 15/2009.
                   </p>
                 </div>
               </div>
@@ -695,7 +696,7 @@ export default function HigieneSanitizacao() {
               <div className="flex items-start gap-3">
                 <Layers className="w-6 h-6 text-orange-600 mt-0.5" />
                 <div>
-                  <h4 className="font-display font-semibold text-sm">Checklist de Liberação de Linha — POP-02 (IN 04/2007 | IN 15/2009)</h4>
+                  <h4 className="font-display font-semibold text-sm">Checklist de Liberação de Linha — POP-02 ({getBaseLegal("bpf_geral").citacao} | IN 15/2009)</h4>
                   <p className="text-xs text-muted-foreground mt-1">
                     Verificação obrigatória antes da troca de produto/lote na linha de produção.
                     Garante ausência de contaminação cruzada, conformidade com limites de carry-over
@@ -813,11 +814,11 @@ export default function HigieneSanitizacao() {
               <div className="flex items-start gap-3">
                 <FlaskConical className="w-6 h-6 text-emerald-600 mt-0.5" />
                 <div>
-                  <h4 className="font-display font-semibold text-sm">Monitoramento de Limpeza de Superfícies — POP-02/03 (IN 04/2007)</h4>
+                  <h4 className="font-display font-semibold text-sm">Monitoramento de Limpeza de Superfícies — POP-02/03 ({getBaseLegal("bpf_geral").citacao})</h4>
                   <p className="text-xs text-muted-foreground mt-1">
                     Verificação da eficácia da limpeza em superfícies de contato direto e indireto.
                     Inclui inspeção visual, swab de superfície, teste de água de enxágue e bioluminescência ATP
-                    conforme requisitos de BPF da IN 04/2007 e IN 15/2009.
+                    conforme requisitos de BPF da {getBaseLegal("bpf_geral").citacao} e IN 15/2009.
                   </p>
                 </div>
               </div>
@@ -947,7 +948,7 @@ export default function HigieneSanitizacao() {
                   <h4 className="font-display font-semibold text-sm">Limpeza de Silos & Transportadores — POP-02 (IN 15/2009)</h4>
                   <p className="text-xs text-muted-foreground mt-1">
                     Cronograma e checklist dedicado à higienização de silos e linhagens de transporte para prevenir o arraste
-                    de medicamentos e aditivos entre lotes. Obrigatório conforme IN 15/2009, Art. 38 do Decreto 12.031/2024.
+                    de medicamentos e aditivos entre lotes. Obrigatório conforme IN 15/2009, Art. 38 do {getBaseLegal("decreto_base").citacao}.
                   </p>
                 </div>
               </div>
@@ -1170,7 +1171,7 @@ export default function HigieneSanitizacao() {
                         <Droplets className="w-4 h-4 text-yellow-600" />
                         <h4 className="text-sm font-semibold text-yellow-700 dark:text-yellow-400">POP-02: Silos/Equipamentos sem Cronograma de Higienização</h4>
                       </div>
-                      <p className="text-xs text-muted-foreground mb-2">IN 04/2007 Art. 2º exige cronograma de higienização para todos os silos e equipamentos de produção.</p>
+                      <p className="text-xs text-muted-foreground mb-2">{getBaseLegal("bpf_geral").citacao} Art. 2º exige cronograma de higienização para todos os silos e equipamentos de produção.</p>
                       <div className="flex flex-wrap gap-2">
                         {semCronograma.map(s => <Badge key={s} variant="outline" className="border-yellow-500 text-yellow-700">{s}</Badge>)}
                       </div>
@@ -1354,7 +1355,7 @@ export default function HigieneSanitizacao() {
                   <h4 className="font-semibold text-sm">Planilha Mensal de Higiene e Sanitização</h4>
                   <p className="text-xs text-muted-foreground mt-1">
                     Consolidação mensal dos registros de limpeza (POP-02/03) e controle de água (POP-04)
-                    para atender IN 04/2007 e IN 15/2009. Disponível para fiscalização (Art. 18, Decreto 12.031/2024).
+                    para atender {getBaseLegal("bpf_geral").citacao} e IN 15/2009. Disponível para fiscalização (Art. 18, {getBaseLegal("decreto_base").citacao}).
                   </p>
                 </div>
               </div>
