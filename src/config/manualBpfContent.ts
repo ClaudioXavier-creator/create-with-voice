@@ -1,4 +1,4 @@
-import { getBaseLegal } from "@/config/baseLegal";
+import { getBaseLegal, ORIENTACOES_PAC } from "@/config/baseLegal";
 import { citar798 } from "@/config/carryOver798";
 import { DOCUMENTOS_ATIVACAO_CHECKLIST } from "@/config/documentosAtivacaoChecklist";
 import manualBpfDocAsset from "@/assets/modelos/manual_bpf.docx.asset.json";
@@ -223,6 +223,9 @@ export const MANUAL_BPF_SECTIONS: ManualBpfSection[] = [
     titulo: "Programa de Autocontrole — PAC (POP 10)",
     conteudo: [
       "O Programa de Autocontrole (PAC) é o instrumento central de gestão da qualidade da empresa, integrando todos os 9 POPs obrigatórios e o Manual de BPF em um ciclo contínuo de verificação, auditoria e melhoria.",
+      ORIENTACOES_PAC.origem,
+      ORIENTACOES_PAC.requisitos,
+      ORIENTACOES_PAC.perigos,
       "─── ESTRUTURA DO PAC ───",
       "O PAC é composto por três pilares:",
       "1. CHECKLIST MENSAL DE AUTOCONTROLE (PL POP 10.1): Verificação mensal de conformidade de cada POP. Avalia se os registros estão completos, assinados e dentro do prazo de retenção.",
@@ -392,7 +395,7 @@ export const MANUAL_BPF_SECTIONS: ManualBpfSection[] = [
       "• Após ocorrência de NC crítica ou recall",
       "• Quando solicitado pelo SIF/DIPOA/MAPA em fiscalização",
       "─── REFERÊNCIAS NORMATIVAS ───",
-      `• ${getBaseLegal("autocontrole").citacao} — Inspeção e fiscalização de produtos para alimentação animal (${getBaseLegal("decreto_base").observacao})`,
+      `• ${getBaseLegal("autocontrole").citacao} — Programas de autocontrole e classificação de perigos`,
       `• ${getBaseLegal("bpf_geral").citacao} — Regulamento Técnico de Boas Práticas de Fabricação`,
       `• ${getBaseLegal("bpf_geral").citacao} — Regulamento Técnico sobre condições higiênico-sanitárias`,
       "• Instrução Normativa nº 15/2009 — Substâncias proibidas e indesejáveis na alimentação animal",
@@ -479,7 +482,7 @@ export const MANUAL_BPF_SECTIONS: ManualBpfSection[] = [
     conteudo: [
       "Este Manual e os POPs associados foram elaborados em conformidade com a seguinte legislação vigente:",
       "─── LEGISLAÇÃO FEDERAL ───",
-      `• ${getBaseLegal("autocontrole").citacao} — Inspeção e fiscalização de produtos destinados à alimentação animal`,
+      `• ${getBaseLegal("autocontrole").citacao} — Programas de autocontrole e classificação de perigos`,
       `• ${getBaseLegal("bpf_geral").citacao} — Condições higiênico-sanitárias e BPF`,
       "• Instrução Normativa nº 15/2009 — Substâncias proibidas, indesejáveis e contaminantes",
       `• ${getBaseLegal("bpf_geral").citacao} — Regulamento Técnico de BPF`,
@@ -492,7 +495,7 @@ export const MANUAL_BPF_SECTIONS: ManualBpfSection[] = [
       "• INMETRO — Calibração de instrumentos de medição",
       "─── SISTEMA FEED BPF ───",
       "Todos os módulos do sistema estão alinhados com as exigências normativas acima, cobrindo:",
-      "• 10 POPs obrigatórios com planilhas digitais (PL POP 1.1 a 10.3)",
+      "• 9 POPs de BPF e o PAC organizado como POP 10, com planilhas digitais (PL POP 1.1 a 10.3)",
       `• Checklists de liberação de linha e carry-over (${getBaseLegal("alimentos_medicados").citacao})`,
       `• Rastreabilidade bidirecional e recall simulado (${getBaseLegal("rastreabilidade").citacao}; ${getBaseLegal("recolhimento_recall").citacao})`,
       `• Categorização de risco automatizada (${getBaseLegal("autocontrole").citacao})`,

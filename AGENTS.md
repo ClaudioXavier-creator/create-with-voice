@@ -5,5 +5,5 @@
 
 - Fixed POP module checklists, catalogs and lookup lists live in `src/components/<module>/constants.ts`, and screens import them instead of keeping local copies — one source prevents drift; preserve separate module-specific variants when content differs.
 - Every new legal citation must come from `src/config/baseLegal.ts` through its typed registry and citation helpers; preserve synchronous subject resolution for exports and the existing hook's company/global document lookup so citations remain centralized and network-independent.
-- Screens show supported legal citations only through BaseLegalBadge; display-only neutralization must never change stored values, document templates, exports, or the legislation library.
+- Screens show supported legal citations through BaseLegalBadge; explicitly requested PAC explanatory text shares centralized guidance with the generated manual. Display-only changes must never change stored values or operational logic.
 - Medicated production orders are gated both in the PCP screen and by a database trigger on ordens_producao; keep both in sync so the rule holds even outside the UI.

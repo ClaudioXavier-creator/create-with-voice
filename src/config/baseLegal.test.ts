@@ -7,7 +7,8 @@ describe("Referências autorizadas por assunto", () => {
   });
   it("usa art. 40 e inclui o decreto complementar para autocontrole", () => {
     expect(getBaseLegal("autocontrole").artigo).toBe("art. 40");
-    expect(getBaseLegal("autocontrole").citacao).toBe("Decreto 12.031/2024, art. 40; Decreto 12.126/2024");
+    expect(BASE_LEGAL.autocontrole.slugs).toContain("decreto-12126-2024");
+    expect(BASE_LEGAL.autocontrole.slugs).toContain("lei-14515-2022");
   });
   it("mantém o prazo mensal autorizado e sua fonte", () => {
     const base = getBaseLegal("relatorio_producao_mensal");
