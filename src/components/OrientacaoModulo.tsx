@@ -25,8 +25,12 @@ export function OrientacaoModulo({ modulo, showRouteLink = true }: Props) {
   const assuntos: Partial<Record<string, AssuntoBaseLegal>> = {
     fornecedores: "registro_estabelecimento", produtos: "rotulagem",
     rastreabilidade: "rastreabilidade", pragas: "controle_pragas",
-    "simulacao-recall": "recolhimento_recall", "relatorio-producao": "relatorio_producao_mensal",
+    "simulacao-recall": "recolhimento_recall", expedicao: "recolhimento_recall",
+    "relatorio-producao": "relatorio_producao_mensal",
     autocontrole: "autocontrole", auditoria: "autocontrole",
+    "nao-conformidades": "autocontrole", "matriz-risco": "autocontrole",
+    "checklist-pre-auditoria": "autocontrole", "sala-auditor": "autocontrole",
+    substancias: "substancias_proibidas", "consulta-sipeagro": "registro_estabelecimento",
   };
   const assunto = assuntos[modulo.id] ?? "bpf_geral";
   const initialState = modulo.campos_simulacao.reduce((acc, c) => {
