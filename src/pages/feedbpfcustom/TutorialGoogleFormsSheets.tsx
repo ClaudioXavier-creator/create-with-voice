@@ -55,9 +55,9 @@ export default function TutorialGoogleFormsSheets() {
         </h1>
         <p className="text-muted-foreground mt-1">
           Guia passo a passo para criar formulários e planilhas no Google e integrá-los ao
-          Feed_BPF Custom. Toda resposta vira um <strong>Registro Digital</strong> com
-          hash SHA-256 (Decreto 12.031/2024).
-        </p>
+          Feed_BPF Custom. Toda resposta vira um <strong>Registro Digital</strong>  com
+ hash SHA-256.
+ </p>
       </div>
 
       <Alert className="border-emerald-500/40 bg-emerald-500/5">
@@ -211,7 +211,7 @@ export default function TutorialGoogleFormsSheets() {
               <li>Função: <code className="px-1 bg-muted rounded">onFormSubmit</code></li>
               <li>Fonte do evento: <strong>Do formulário</strong></li>
               <li>Tipo de evento: <strong>No envio do formulário</strong></li>
-              <li>Salvar e <strong>autorizar</strong> com sua conta Google (aparecerá aviso
+              <li>Salvar <strong>autorizar</strong> com sua conta Google (aparecerá aviso
                 “App não verificado” → “Avançado” → “Acessar mesmo assim”).</li>
             </ol>
             <Illustration src={imgTrigger} alt="Painel de Acionadores do Apps Script com função onFormSubmit configurada para disparar no envio do formulário" />

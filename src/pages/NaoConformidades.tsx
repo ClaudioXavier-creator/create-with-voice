@@ -231,8 +231,8 @@ export default function NaoConformidades() {
 
   return (
     <>
-      <PageHeader icon={AlertTriangle} title="POP 09 - Não Conformidades" description="Registro, plano de ação corretiva e gestão de prazos — IN 04/2007"
-        orientacaoModuloId="nao-conformidades" />
+      <PageHeader icon={AlertTriangle} title="POP 09 - Não Conformidades" description="Registro, plano de ação corretiva e gestão de prazos"
+        orientacaoModuloId="nao-conformidades"  assuntoBaseLegal="bpf_geral" />
 
       {/* Alertas de prazo vencido */}
       {vencidas.length > 0 && (

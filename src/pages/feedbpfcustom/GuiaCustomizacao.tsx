@@ -101,7 +101,7 @@ const SECOES: Secao[] = [
   {
     n: "4",
     titulo: "Analisar conformidade com os 10 POPs",
-    objetivo: "Descobrir quais documentos obrigatórios (IN MAPA 04/2007 + Decreto 12.031/2024) faltam no acervo.",
+    objetivo: "Descobrir quais documentos obrigatórios faltam no acervo.",
     prereq: [
       "Passos 1 a 3 concluídos.",
       "Acervo com pelo menos 10 documentos importados (para a IA ter contexto suficiente).",
@@ -189,7 +189,7 @@ const SECOES: Secao[] = [
       { acao: "Clique em 'Novo registro' e escolha o modelo que acabou de criar.", detalhe: "O formulário aparece com todos os campos configurados." },
       { acao: "Preencha título, data, responsável e todos os campos do formulário.", detalhe: "Simule o preenchimento como se fosse o operador de fábrica. Anote se algum campo é confuso ou está fora de ordem." },
       { acao: "Clique em 'Salvar rascunho'.", detalhe: "O registro fica editável — útil enquanto você ainda está testando." },
-      { acao: "Se estiver satisfeito, clique em 'Salvar como vigente'.", detalhe: "O sistema gera um hash SHA-256 dos dados. O registro é TRAVADO — não pode mais ser editado. Serve como prova de integridade em auditoria (Decreto 12.031/2024)." },
+      { acao: "Se estiver satisfeito, clique em 'Salvar como vigente'.", detalhe: "O sistema gera um hash SHA-256 dos dados. O registro é TRAVADO — não pode mais ser editado. Serve como prova de integridade em auditoria." },
     ],
     resultado: "Registro na lista com selo verde 'Vigente', data, responsável e hash truncado clicável.",
     dicas: [
@@ -274,8 +274,8 @@ export default function GuiaCustomizacao() {
           </p>
           <div className="flex flex-wrap gap-2 pt-1">
             <Badge className="bg-emerald-600 hover:bg-emerald-700">9 seções</Badge>
-            <Badge variant="outline">Base: IN MAPA 04/2007</Badge>
-            <Badge variant="outline">Decreto 12.031/2024</Badge>
+            <Badge variant="outline">Base: </Badge>
+            
             <Badge variant="outline">Imprimível como PDF</Badge>
           </div>
         </CardContent>
@@ -410,7 +410,7 @@ export default function GuiaCustomizacao() {
       <Card className="bg-gradient-to-br from-emerald-600 to-teal-600 text-white border-none print:bg-white print:text-black print:border print:border-black">
         <CardContent className="p-6 text-center space-y-2">
           <p className="text-sm font-bold">Guia de Customização Feed_BPF · versão 1.0</p>
-          <p className="text-xs opacity-90">BPF_Consult · Baseado na IN MAPA 04/2007 e Decreto 12.031/2024</p>
+          <p className="text-xs opacity-90">BPF_Consult ·</p>
           <p className="text-xs opacity-75">Última atualização automática ao publicar a plataforma</p>
         </CardContent>
       </Card>

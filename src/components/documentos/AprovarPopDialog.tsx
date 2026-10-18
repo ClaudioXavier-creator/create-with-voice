@@ -109,7 +109,7 @@ export function AprovarPopDialog({ open, onOpenChange, documentoId, documentoNom
 
           <div>
             <Label>{novoStatus === "obsoleto" ? "Motivo da obsolescência" : "Motivo / Justificativa"}</Label>
-            <Textarea value={motivo} onChange={e => setMotivo(e.target.value)} rows={2} placeholder="Ex: Atualização para conformidade com IN 04/2007" />
+            <Textarea value={motivo} onChange={e => setMotivo(e.target.value)} rows={2} placeholder="Ex: Atualização para conformidade com" />
           </div>
 
           <Button onClick={handleAprovar} disabled={saving || !pin || !nomeRT} className="w-full">

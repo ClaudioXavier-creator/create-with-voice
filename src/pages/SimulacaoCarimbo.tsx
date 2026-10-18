@@ -53,9 +53,9 @@ export default function SimulacaoCarimbo() {
     <div className="space-y-6">
       <PageHeader
         title="Simulação — Selo de Integridade"
-        description="Registro com identificação do responsável, data e hora; selo de integridade (dados fictícios). Referência: Decreto 12.031/2024 (art. 40, §3º)."
+        description="Registro com identificação do responsável, data e hora; selo de integridade (dados fictícios).."
         icon={ShieldCheck}
-      />
+       assuntoBaseLegal="autocontrole" />
 
       <Card>
         <CardHeader>

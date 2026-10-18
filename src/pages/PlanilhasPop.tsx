@@ -283,7 +283,7 @@ export default function PlanilhasPop() {
               </div>
               <CardTitle className="text-2xl mt-2">{selectedPop.nome}</CardTitle>
               <CardDescription className="text-base space-y-2">
-                <p>Gestão integrada de documentos e registros conforme IN 04/2007.</p>
+                <p>Gestão integrada de documentos e registros.</p>
                 {selectedPop.descricao && (
                   <div className="mt-3 p-4 bg-primary/10 rounded-lg border border-primary/20 text-foreground text-sm leading-relaxed italic relative">
                     <div className="flex items-start gap-2">
@@ -350,7 +350,7 @@ export default function PlanilhasPop() {
                       </Button>
                       <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg flex gap-3 text-amber-800 text-xs">
                         <Info className="w-4 h-4 shrink-0" />
-                        <p>A função de geração de documentos descritivos via IA está em fase de homologação para garantir total conformidade com a IN 04/2007.</p>
+                        <p>A função de geração de documentos descritivos via IA está em fase de homologação para garantir total conformidade.</p>
                       </div>
                     </CardContent>
                   </Card>

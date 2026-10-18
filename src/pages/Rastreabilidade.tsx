@@ -1,3 +1,5 @@
+import { textoTela } from "@/lib/textoTela";
+import { BaseLegalBadge } from "@/components/BaseLegalBadge";
 import { getBaseLegal } from "@/config/baseLegal";
 import { useState, useEffect, useRef, useMemo } from "react";
 import { AmostrasRetencaoSection } from "@/components/mapa-evolucao/MapaEvolucaoSections";
@@ -877,7 +879,7 @@ export default function Rastreabilidade() {
           data_geracao: dataGeracao,
           status: "ativo",
         });
-      toast.info(`Relatório salvo no módulo Relatórios (${getBaseLegal("rastreabilidade").citacao})`);
+      toast.info("Relatório salvo no módulo Relatórios");
     }
   };
 
@@ -1237,9 +1239,9 @@ export default function Rastreabilidade() {
       <PageHeader
         icon={History}
         title="POP 09 - Rastreabilidade e Recolhimento"
-        description={`Rastreabilidade de produtos, controle de RNC e programa de recolhimento — ${getBaseLegal("bpf_geral").citacao}`}
+        description="Rastreabilidade de produtos, controle de RNC e programa de recolhimento"
         orientacaoModuloId="rastreabilidade"
-      />
+       assuntoBaseLegal="rastreabilidade" />
       <div className="flex justify-end mb-3">
         <AnexarPlanilhaPop popCodigo="POP-09" popNome="Rastreabilidade e Recall" />
       </div>
@@ -1298,8 +1300,7 @@ export default function Rastreabilidade() {
       <Card className="mb-6 border-orange-500/20">
         <CardHeader className="pb-2">
           <CardTitle className="font-display text-sm flex items-center gap-2">
-            <ShieldAlert className="w-5 h-5 text-orange-600" /> Segregação por Espécie — IN 34/2008 / IN 15/2009
-          </CardTitle>
+            <ShieldAlert className="w-5 h-5 text-orange-600" /> Segregação por Espécie </CardTitle>
           <p className="text-xs text-muted-foreground">
             Controle de restrições de subprodutos de origem animal por espécie destino, prevenção de EEB e contaminação
             cruzada.
@@ -1412,7 +1413,7 @@ export default function Rastreabilidade() {
                     </p>
                     {crossContamAlerts.map((a, i) => (
                       <p key={i} className="text-xs text-destructive/80">
-                        {a}
+                        {textoTela(a)}
                       </p>
                     ))}
                   </div>
@@ -1442,7 +1443,7 @@ export default function Rastreabilidade() {
                         </div>
                         {data.alertas.map((alerta, i) => (
                           <p key={i} className="text-xs text-destructive font-medium mt-1">
-                            {alerta}
+                            {textoTela(alerta)}
                           </p>
                         ))}
                       </div>
@@ -1452,15 +1453,15 @@ export default function Rastreabilidade() {
                 <div className="p-3 rounded-lg border bg-muted/30 text-xs space-y-1">
                   <p className="font-semibold">📋 Referências — Segregação por Espécie</p>
                   <p className="text-muted-foreground">
-                    • <strong>IN 34/2008:</strong> Proíbe proteína e gordura de mamíferos na alimentação de ruminantes
+                    • <strong>:</strong> Proíbe proteína e gordura de mamíferos na alimentação de ruminantes
                     (prevenção EEB/BSE).
                   </p>
                   <p className="text-muted-foreground">
-                    • <strong>IN 15/2009, Art. 16:</strong> Fábricas com múltiplas espécies devem segregar linhas ou
+                    • <strong>,:</strong> Fábricas com múltiplas espécies devem segregar linhas ou
                     documentar flushing entre lotes.
                   </p>
                   <p className="text-muted-foreground">
-                    • <strong>{getBaseLegal("rastreabilidade").citacao}:</strong> Fiscalização prioriza estabelecimentos com múltiplas
+                    • <strong>:</strong> Fiscalização prioriza estabelecimentos com múltiplas
                     espécies e uso de subprodutos animais.
                   </p>
                 </div>
@@ -1581,8 +1582,7 @@ export default function Rastreabilidade() {
             <ShieldAlert className="w-5 h-5" /> Segregação Digital — Quarentena e Lotes Retidos
           </CardTitle>
           <p className="text-xs text-muted-foreground">
-            Controle de lotes em quarentena, retidos ou aguardando análise conforme IN 15/2009 e {getBaseLegal("rastreabilidade").citacao}.
-          </p>
+ Controle de lotes em quarentena, retidos ou aguardando análise </p>
         </CardHeader>
         <CardContent>
           {(() => {
@@ -1695,7 +1695,7 @@ export default function Rastreabilidade() {
               selecione o status "Quarentena", "Retido" ou "Aguardando Análise".
             </p>
             <p>
-              <strong>IN 15/2009, Art. 12:</strong> Produtos não conformes devem ser segregados e identificados até
+              <strong>,:</strong> Produtos não conformes devem ser segregados e identificados até
               decisão final (reprocesso, descarte ou recall).
             </p>
           </div>
@@ -2230,8 +2230,8 @@ export default function Rastreabilidade() {
         <CardHeader className="flex flex-row items-center justify-between">
           <div>
             <CardTitle className="font-display text-sm flex items-center gap-2">
-              <Package className="w-5 h-5 text-primary" /> Balanço de Massa — Conciliação de Estoque ({getBaseLegal("autocontrole").citacao}; {getBaseLegal("rastreabilidade").citacao})
-            </CardTitle>
+              <Package className="w-5 h-5 text-primary" /> Balanço de Massa — Conciliação de Estoque (; )
+             <BaseLegalBadge assunto="rastreabilidade" /></CardTitle>
             <p className="text-xs text-muted-foreground mt-1">
               Conciliação Entrada (MP) vs Saída (Venda/Entrega) por lote de PA
             </p>
@@ -2353,8 +2353,8 @@ export default function Rastreabilidade() {
       <Card className="mb-6 border-primary/20">
         <CardHeader>
           <CardTitle className="font-display text-sm flex items-center gap-2">
-            📄 Correlação Lote PA ↔ Certificado de Análise MP — {getBaseLegal("rastreabilidade").citacao}
-          </CardTitle>
+            📄 Correlação Lote PA ↔ Certificado de Análise MP — 
+           <BaseLegalBadge assunto="rastreabilidade" /></CardTitle>
           <p className="text-xs text-muted-foreground mt-1">
             Vinculação imediata entre o lote do Produto Acabado e o certificado de análise da Matéria-Prima recebida,
             para auditorias baseadas em risco.
@@ -2478,8 +2478,8 @@ export default function Rastreabilidade() {
       <Card className="mb-6 border-accent/20">
         <CardHeader>
           <CardTitle className="font-display text-sm flex items-center gap-2">
-            <FlaskConical className="w-5 h-5 text-accent" /> Análises Laboratoriais Vinculadas ao Lote — {getBaseLegal("autocontrole").citacao}
-          </CardTitle>
+            <FlaskConical className="w-5 h-5 text-accent" /> Análises Laboratoriais Vinculadas ao Lote — 
+           <BaseLegalBadge assunto="autocontrole" /></CardTitle>
           <p className="text-xs text-muted-foreground mt-1">
             Conformidade do controle de qualidade: análises de PA vinculadas por lote.
           </p>
@@ -2746,8 +2746,8 @@ export default function Rastreabilidade() {
                   {/* EEB Prevention */}
                   <div className="p-3 rounded-lg border border-orange-400 bg-orange-50 dark:bg-orange-900/20">
                     <p className="text-xs font-semibold text-orange-700 dark:text-orange-400 mb-2">
-                      🛡️ Prevenção EEB — IN 15/2009
-                    </p>
+                      
+ 🛡️ Prevenção EEB</p>
                     <div className="flex items-center gap-2 mb-2">
                       <input
                         type="checkbox"
@@ -2776,7 +2776,7 @@ export default function Rastreabilidade() {
                           </Select>
                         </div>
                         <div>
-                          <Label>Nº SIF/DIPOA do Ingrediente (rastreabilidade — {getBaseLegal("rastreabilidade").citacao}) *</Label>
+                          <Label>Nº SIF/DIPOA do Ingrediente (rastreabilidade ) *</Label>
                           <Input
                             value={sifDipoa}
                             onChange={(e) => setSifDipoa(e.target.value)}
@@ -2784,7 +2784,7 @@ export default function Rastreabilidade() {
                           />
                           <p className="text-[10px] text-muted-foreground mt-1">
                             Identifica o estabelecimento de origem do ingrediente de origem animal, para rastreabilidade
-                            — {getBaseLegal("rastreabilidade").citacao}.
+                            .
                           </p>
                         </div>
                         {especieDestino === "bovinos" && (
@@ -2800,7 +2800,7 @@ export default function Rastreabilidade() {
                   {/* Processo Produtivo */}
                   <div className="p-3 rounded-lg border border-blue-400 bg-blue-50 dark:bg-blue-900/20">
                     <p className="text-xs font-semibold text-blue-700 dark:text-blue-400 mb-2">
-                      ⚙️ Validação do Processo — {getBaseLegal("bpf_geral").citacao}
+                      ⚙️ Validação do Processo — 
                     </p>
                     <div className="grid grid-cols-2 gap-3">
                       <div>
@@ -2868,7 +2868,7 @@ export default function Rastreabilidade() {
                       </div>
                     )}
                     <p className="text-[10px] text-muted-foreground mt-2">
-                      Reter por no mínimo validade do produto + 30 dias ({getBaseLegal("amostra_arquivo").citacao}; {getBaseLegal("amostra_arquivo").observacao}).
+                      Reter por no mínimo validade do produto + 30 dias (; ).
                     </p>
                   </div>
 
@@ -3142,7 +3142,7 @@ export default function Rastreabilidade() {
             {recallStatus === "concluido" && (
               <div className="p-3 rounded-lg border-2 border-green-600/30 bg-green-50 dark:bg-green-900/10 space-y-3">
                 <p className="text-xs font-semibold text-green-800 flex items-center gap-1">
-                  ✅ Encerramento do Recall — Registro obrigatório do destino (POP-09 / {getBaseLegal("recolhimento_recall").citacao})
+                  ✅ Encerramento do Recall — Registro obrigatório do destino (POP-09)
                 </p>
                 <div>
                   <Label className="text-xs">Destino do produto reprovado/devolvido *</Label>
@@ -3200,8 +3200,8 @@ export default function Rastreabilidade() {
                 </div>
                 <p className="text-[10px] text-muted-foreground">
                   O encerramento do recall exige registro do destino final dos produtos, quantidade recolhida e
-                  responsável, conforme o {getBaseLegal("decreto_base").citacao} (arts. 39 e 40) e fiscalização do MAPA.
-                </p>
+                  responsável, para acompanhamento e fiscalização.
+ </p>
               </div>
             )}
 
@@ -3407,9 +3407,8 @@ export default function Rastreabilidade() {
           </DialogHeader>
           <div className="space-y-4">
             <p className="text-xs text-muted-foreground">
-              Documento formal por lote PA: composição, fornecedores, contraprova, destinos e assinatura RT. Atende
-              {getBaseLegal("rastreabilidade").norma} (Art. 18) e clientes/auditores que solicitam comprovante.
-            </p>
+              Documento formal por lote PA: composição, fornecedores, contraprova, destinos e assinatura RT, para clientes e auditores que solicitam comprovante.
+ </p>
             <div>
               <Label>Lote PA</Label>
               <Select value={certLote} onValueChange={setCertLote}>

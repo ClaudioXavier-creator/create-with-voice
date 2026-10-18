@@ -94,9 +94,9 @@ export default function SaudePessoal() {
     <div className="space-y-6">
       <PageHeader
         title="POP 03 - Higiene e Saúde Pessoal"
-        description="Procedimentos de higiene pessoal, saúde dos colaboradores e uso de EPIs — IN 04/2007"
+        description="Procedimentos de higiene pessoal, saúde dos colaboradores e uso de EPIs"
         orientacaoModuloId="saude-pessoal"
-      />
+       assuntoBaseLegal="bpf_geral" />
       <div className="flex justify-end mb-3"><AnexarPlanilhaPop popCodigo="POP-03" popNome="Saúde e Higiene Pessoal" /></div>
 
       {/* KPIs */}

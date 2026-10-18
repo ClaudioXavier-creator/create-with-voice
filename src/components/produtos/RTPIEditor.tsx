@@ -272,7 +272,7 @@ ${carimboHTML(gerarCarimboSync({
         <CardContent className="pt-6 space-y-3">
           <h3 className="font-semibold text-foreground text-sm">6-9) Composição</h3>
           <div><Label className="text-xs">6) Composição Qualitativa</Label><Textarea value={rtpi.composicao_qualitativa} onChange={e => updateField("composicao_qualitativa", e.target.value)} rows={3} /></div>
-          <div><Label className="text-xs">7) Enriquecimento (IN 30/2009)</Label><Textarea value={rtpi.enriquecimento} onChange={e => updateField("enriquecimento", e.target.value)} rows={2} placeholder="Campo exclusivo para produtos abrangidos pela IN 30/2009" /></div>
+          <div><Label className="text-xs">7) Enriquecimento </Label><Textarea value={rtpi.enriquecimento} onChange={e => updateField("enriquecimento", e.target.value)} rows={2} placeholder="Campo exclusivo para produtos abrangidos pelo enriquecimento" /></div>
           <div><Label className="text-xs">8) Composição Básica</Label><Textarea value={rtpi.composicao_basica} onChange={e => updateField("composicao_basica", e.target.value)} rows={3} /></div>
           <div><Label className="text-xs">9) Eventuais Substitutivos</Label><Textarea value={rtpi.eventuais_substitutivos} onChange={e => updateField("eventuais_substitutivos", e.target.value)} rows={2} /></div>
         </CardContent>

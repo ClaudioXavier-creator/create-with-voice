@@ -1,3 +1,5 @@
+import { textoTela } from "@/lib/textoTela";
+import { BaseLegalBadge } from "@/components/BaseLegalBadge";
 import { getBaseLegal } from "@/config/baseLegal";
 import { useState, useEffect } from "react";
 import {
@@ -590,7 +592,7 @@ ${(() => {
           ? EXPORT_MODULES.find((m) => m.key === selectedModules[0])?.label.replace(/\s/g, "_") || "modulo"
           : "MAPA_completo";
       downloadCsv(`relatorio_${label}_${dataLabel}.csv`, fullCsv);
-      toast.success(`Relatório Art. 18 exportado com ${selectedModules.length} módulo(s)!`);
+      toast.success(`Relatório exportado com ${selectedModules.length} módulo(s)!`);
       setExportOpen(false);
     } catch {
       toast.error("Erro ao exportar relatório");
@@ -692,8 +694,7 @@ ${(() => {
                   </DialogTitle>
                 </DialogHeader>
                 <p className="text-sm text-muted-foreground">
-                  Gera o Relatório Anual de Atividades conforme o autocontrole e os registros auditáveis exigidos pelo{" "}
-                  <strong>{getBaseLegal("autocontrole").citacao} (arts. 39 e 40)</strong>, consolidando todos os registros do ano
+                  Gera o Relatório Anual de Atividades do autocontrole, consolidando todos os registros do ano
                   selecionado.
                 </p>
                 <div className="space-y-4 mt-2">
@@ -767,11 +768,11 @@ ${(() => {
               </DialogTrigger>
               <DialogContent className="max-w-md">
                 <DialogHeader>
-                  <DialogTitle>Exportar Relatório — Art. 18 {getBaseLegal("decreto_base").citacao}</DialogTitle>
+                  <DialogTitle>Exportar Relatório <BaseLegalBadge assunto="decreto_base" /></DialogTitle>
                 </DialogHeader>
                 <p className="text-sm text-muted-foreground">
-                  Selecione os módulos para gerar relatório organizado conforme exigência do MAPA (Art. 18).
-                </p>
+ Selecione os módulos para gerar relatório organizado xigência do MAPA.
+ </p>
                 <p className="text-[10px] text-muted-foreground">
                   O relatório inclui cabeçalho institucional, data/hora de geração e rodapé com referência normativa
                   para apresentação a fiscais do SIF.
@@ -890,8 +891,8 @@ ${(() => {
                         </SelectTrigger>
                         <SelectContent>
                           {MODULOS.map((m) => (
-                            <SelectItem key={m} value={m}>
-                              {m}
+                            <SelectItem key={textoTela(m)} value={textoTela(m)}>
+                              {textoTela(m)}
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -1015,7 +1016,7 @@ ${(() => {
                                 {r.tipo === "digital" ? "Digital" : "Digitalizado"}
                               </Badge>
                             </TableCell>
-                            <TableCell className="text-sm">{r.modulo}</TableCell>
+                            <TableCell className="text-sm">{textoTela(r.modulo)}</TableCell>
                             <TableCell>
                               {r.arquivo_nome ? (
                                 <Button variant="ghost" size="sm" className="gap-1 text-xs" asChild>

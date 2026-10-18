@@ -1,4 +1,3 @@
-import { getBaseLegal } from "@/config/baseLegal";
 import { STATUS_CONFIG, ESTADOS_BR } from "@/components/fornecedores/constants";
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
@@ -366,9 +365,9 @@ export default function Fornecedores() {
       <PageHeader
         icon={Users}
         title="POP 01 - Qualificação de Fornecedores"
-        description={`Cadastro e avaliação de fornecedores conforme ${getBaseLegal("bpf_geral").citacao}`}
+        description="Cadastro e avaliação de fornecedores"
         orientacaoModuloId="fornecedores"
-      />
+       assuntoBaseLegal="registro_estabelecimento" />
 
       {/* Validação SIPEAGRO — links oficiais MAPA */}
       <Card className="border-primary/40 bg-primary/5 mb-6">
@@ -377,7 +376,7 @@ export default function Fornecedores() {
             <p className="font-semibold text-sm">🏛️ Validar fornecedor no MAPA/SIPEAGRO</p>
             <p className="text-xs text-muted-foreground mt-1">
               Lista oficial atualizada semanalmente. Consulte por CNPJ, Razão Social ou nº de registro antes de aprovar
-              fornecedores de insumos para alimentação animal (registro de estabelecimentos — {getBaseLegal("registro_estabelecimento").citacao}).
+              fornecedores de insumos para alimentação animal (registro de estabelecimentos ).
             </p>
           </div>
           <div className="flex flex-col sm:flex-row gap-2 shrink-0">
@@ -588,7 +587,7 @@ export default function Fornecedores() {
 
                     {/* SIPEAGRO */}
                     <div className="p-3 rounded-lg border bg-muted/20 space-y-3">
-                      <p className="text-sm font-semibold flex items-center gap-2">🏛️ Registro SIPEAGRO — {getBaseLegal("registro_estabelecimento").citacao}</p>
+                      <p className="text-sm font-semibold flex items-center gap-2">🏛️ Registro SIPEAGRO — </p>
                       <p className="text-[10px] text-muted-foreground">
                         Estabelecimentos fornecedores de insumos para alimentação animal devem possuir registro no
                         SIPEAGRO/MAPA.

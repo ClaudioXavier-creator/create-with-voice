@@ -130,8 +130,8 @@ export default function ConfigCustom() {
           </CardHeader>
           <CardContent className="space-y-4">
             <p className="text-xs text-muted-foreground">
-              Garanta a segurança da sua documentação realizando backups periódicos. Conforme o Decreto 12.031/2024, os registros devem ser mantidos por 2 anos.
-            </p>
+ Garanta a segurança da sua documentação realizando backups periódicos., os registros devem ser mantidos por 2 anos.
+ </p>
             <div className="grid grid-cols-1 gap-2">
               <Button 
                 onClick={handleExportData} 

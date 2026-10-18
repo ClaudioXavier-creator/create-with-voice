@@ -64,8 +64,8 @@ export default function ValidacaoLimpezaLinha() {
 
   return (
     <div className="space-y-6">
-      <PageHeader title="Validação de Limpeza de Linha" description="Controle de contaminação cruzada — IN 04/2007 e IN 15/2009"
-        orientacaoModuloId="validacao-limpeza" />
+      <PageHeader title="Validação de Limpeza de Linha" description="Controle de contaminação cruzada"
+        orientacaoModuloId="validacao-limpeza"  assuntoBaseLegal="bpf_geral" />
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card><CardContent className="pt-6 text-center"><p className="text-3xl font-bold text-primary">{validacoes.length}</p><p className="text-sm text-muted-foreground">Total</p></CardContent></Card>
@@ -115,20 +115,20 @@ export default function ValidacaoLimpezaLinha() {
               <div><Label>Método de Análise</Label><Input value={form.metodo_analise} onChange={e => setForm(p => ({ ...p, metodo_analise: e.target.value }))} placeholder="Ex: HPLC, ELISA, CV% < 10%" /></div>
               {(form.tipo_validacao === "tempo_mistura" || form.tipo_validacao === "homogeneidade") && (
                 <div className="p-3 rounded-lg border border-blue-400 bg-blue-50 dark:bg-blue-900/20">
-                  <p className="text-xs font-semibold text-blue-700 dark:text-blue-400 mb-2">📐 Validação de Mistura — IN 04/2007</p>
+                  <p className="text-xs font-semibold text-blue-700 dark:text-blue-400 mb-2">📐 Validação de Mistura</p>
                   <p className="text-xs text-muted-foreground">Registre o CV% (Coeficiente de Variação) do teste de homogeneidade. O limite aceitável é CV ≤ 10% para misturadores. Informe o tempo de mistura validado no campo "Observações".</p>
                 </div>
               )}
               {form.tipo_validacao === "carryover" && (
                 <div className="p-3 rounded-lg border border-orange-400 bg-orange-50 dark:bg-orange-900/20 space-y-2">
-                  <p className="text-xs font-semibold text-orange-700 dark:text-orange-400 mb-1">🔬 Teste de Carry-Over (Arraste) — POP-05 / IN 15/2009</p>
+                  <p className="text-xs font-semibold text-orange-700 dark:text-orange-400 mb-1">🔬 Teste de Carry-Over (Arraste) — POP-05 / </p>
                   <p className="text-xs text-muted-foreground">
                     Meça o % de arraste do princípio ativo (ex: monensina, salinomicina) do lote anterior para o seguinte.
                     O limite aceitável varia conforme a substância ativa e espécie destino.
                   </p>
                   <div className="grid grid-cols-2 gap-2 mt-2">
                     <div className="text-[10px] p-2 rounded bg-background border space-y-1">
-                      <p className="font-semibold">Limites de referência (IN 15/2009):</p>
+                      <p className="font-semibold">Limites de referência:</p>
                       <p>• Ionóforos para bovinos: &lt; 1% arraste</p>
                       <p>• Medicamentos veterinários: &lt; 3% arraste</p>
                       <p>• Proibidos p/ espécie seguinte: 0% (flushing obrigatório)</p>
