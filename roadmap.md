@@ -2,7 +2,7 @@
 
 ## Correção de dispositivos e contraprova
 - [x] Corrigir somente citações de rastreabilidade e orientação de contraprova; manter campos editáveis, valores, cálculos e registros.
-- [ ] Confirmar build e testes, conferir tela autenticada e listar antes/depois; não publicar.
+- [x] Build OK e 33 testes passando; orientação e campos editáveis conferidos com sessão real em Produção e Rastreabilidade, sem salvar. Alterações apenas textuais; não publicado.
 
 ## Substituição de fundamentos desatualizados
 - [x] Substituir apenas citações restantes nos arquivos solicitados, preservando notas históricas e regras operacionais.
