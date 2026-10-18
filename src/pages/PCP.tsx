@@ -1561,7 +1561,7 @@ export default function PCP() {
                     Obrigatório confirmar a limpeza da linha antes de iniciar nova batida para prevenir contaminação
                     cruzada.
                   </p>
-                  <div className="grid grid-cols-3 gap-2 mb-2">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 mb-2">
                     <div>
                       <Label className="text-xs">Tipo de Limpeza</Label>
                       <Select value={limpezaTipo} onValueChange={setLimpezaTipo}>
@@ -1657,10 +1657,12 @@ export default function PCP() {
                 placeholder="Anotações da batida..."
               />
             </div>
+            <div className="sticky bottom-0 z-10 -mx-6 -mb-6 mt-2 border-t bg-background px-6 py-3">
             <Button onClick={handleAddBatida} className="w-full" disabled={saving || !limpezaConfirmada}>
               {saving && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
               {!limpezaConfirmada ? "⚠️ Confirme a limpeza para prosseguir" : "Registrar Batida"}
             </Button>
+            </div>
           </div>
         </DialogContent>
       </Dialog>

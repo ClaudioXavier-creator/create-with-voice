@@ -345,7 +345,7 @@ export default function Recebimento() {
       )}
 
       <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) setEditId(null); }}>
-        <DialogContent>
+        <DialogContent className="max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>{editId ? "Editar Recebimento" : "Receber MP"}</DialogTitle>
           </DialogHeader>
@@ -422,7 +422,7 @@ export default function Recebimento() {
               </div>
             </div>
 
-            <div className="grid grid-cols-3 gap-4 border p-3 rounded-lg bg-muted/40">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 border p-3 rounded-lg bg-muted/40">
               <div className="space-y-2">
                 <Label>Odor</Label>
                 <Select value={form.odor} onValueChange={v => set("odor", v)}>
@@ -482,10 +482,12 @@ export default function Recebimento() {
               <Textarea value={form.observacoes} onChange={e => set("observacoes", e.target.value)} />
             </div>
 
+            <div className="sticky bottom-0 z-10 -mx-6 -mb-6 mt-2 border-t bg-background px-6 py-3">
             <Button onClick={handleSalvar} disabled={saving} className="w-full">
               {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {editId ? "Salvar Alterações" : "Registrar Recebimento"}
             </Button>
+            </div>
           </div>
         </DialogContent>
       </Dialog>
@@ -600,7 +602,7 @@ export default function Recebimento() {
       </Table>
 
       <Dialog open={liberarDialogOpen} onOpenChange={setLiberarDialogOpen}>
-        <DialogContent>
+        <DialogContent className="max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Liberação da Matéria-Prima</DialogTitle>
           </DialogHeader>
@@ -624,7 +626,7 @@ export default function Recebimento() {
               />
             </div>
 
-            <div className="flex justify-end gap-2">
+            <div className="flex justify-end gap-2 sticky bottom-0 z-10 -mx-6 -mb-6 mt-2 border-t bg-background px-6 py-3">
               <Button variant="outline" onClick={() => setLiberarDialogOpen(false)}>Cancelar</Button>
               <Button onClick={handleLiberarLote} disabled={saving}>
                 {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <ShieldAlert className="mr-2 h-4 w-4" />}
