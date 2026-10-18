@@ -535,7 +535,7 @@ export default function Expedicao() {
       />
 
       {/* Dashboard mês */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
         <Card>
           <CardContent className="pt-4">
             <div className="flex items-center justify-between"><span className="text-xs text-muted-foreground capitalize">{dashboard.mesLabel}</span><TrendingUp className="h-4 w-4 text-primary" /></div>
@@ -716,7 +716,7 @@ export default function Expedicao() {
                 </Tabs>
 
                 <div className="space-y-4 mt-4">
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
                     <div><Label>NF nº *</Label><Input value={form.numero_nf} onChange={e => setForm({ ...form, numero_nf: e.target.value })} /></div>
                     <div><Label>Série</Label><Input value={form.serie_nf} onChange={e => setForm({ ...form, serie_nf: e.target.value })} /></div>
                     <div><Label>Data Emissão</Label><Input type="date" value={form.data_emissao} onChange={e => setForm({ ...form, data_emissao: e.target.value })} /></div>
@@ -726,7 +726,7 @@ export default function Expedicao() {
 
                   <div className="border rounded-md p-3 space-y-3">
                     <h4 className="font-semibold text-sm">Cliente / Destinatário</h4>
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                       <div className="md:col-span-2"><Label>Razão Social *</Label><Input value={form.cliente_nome} onChange={e => setForm({ ...form, cliente_nome: e.target.value })} /></div>
                       <div><Label>CNPJ/CPF</Label><Input value={form.cliente_cnpj} onChange={e => setForm({ ...form, cliente_cnpj: e.target.value })} /></div>
                       <div className="md:col-span-2"><Label>Endereço</Label><Input value={form.cliente_endereco} onChange={e => setForm({ ...form, cliente_endereco: e.target.value })} /></div>
@@ -743,7 +743,7 @@ export default function Expedicao() {
 
                   <div className="border rounded-md p-3 space-y-3">
                     <h4 className="font-semibold text-sm">Transporte</h4>
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                       <div className="md:col-span-2"><Label>Transportadora</Label><Input value={form.transportadora_nome} onChange={e => setForm({ ...form, transportadora_nome: e.target.value })} /></div>
                       <div><Label>CNPJ Transp.</Label><Input value={form.transportadora_cnpj} onChange={e => setForm({ ...form, transportadora_cnpj: e.target.value })} /></div>
                       <div><Label>Motorista</Label><Input value={form.motorista_nome} onChange={e => setForm({ ...form, motorista_nome: e.target.value })} /></div>
@@ -794,7 +794,7 @@ export default function Expedicao() {
                     })}
                   </div>
 
-                  <div className="grid grid-cols-3 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <div><Label>Peso Bruto (kg)</Label><Input type="number" value={form.peso_bruto_kg} onChange={e => setForm({ ...form, peso_bruto_kg: e.target.value })} /></div>
                     <div><Label>Peso Líquido (kg)</Label><Input type="number" value={form.peso_liquido_kg} onChange={e => setForm({ ...form, peso_liquido_kg: e.target.value })} /></div>
                     <div><Label>Valor Total (R$)</Label><Input type="number" value={form.valor_total} onChange={e => setForm({ ...form, valor_total: e.target.value })} /></div>
@@ -802,7 +802,7 @@ export default function Expedicao() {
                   <div><Label>Observações</Label><Textarea value={form.observacoes} onChange={e => setForm({ ...form, observacoes: e.target.value })} /></div>
                 </div>
 
-                <DialogFooter>
+                <DialogFooter className="sticky bottom-0 z-10 -mx-6 -mb-6 mt-2 border-t bg-background px-6 py-3 gap-2">
                   <Button variant="outline" onClick={() => { setOpen(false); resetForm(); }}>Cancelar</Button>
                   <Button onClick={handleSave} disabled={saving}>
                     {saving && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}{editId ? "Atualizar" : "Salvar"} Expedição
@@ -911,7 +911,7 @@ export default function Expedicao() {
       </Dialog>
 
       <Dialog open={detalheOpen} onOpenChange={setDetalheOpen}>
-        <DialogContent className="max-w-3xl">
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>NF {detalheExp?.numero_nf} — {detalheExp?.cliente_nome}</DialogTitle>
           </DialogHeader>
