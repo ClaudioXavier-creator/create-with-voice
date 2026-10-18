@@ -2,7 +2,7 @@
 
 ## Substituição de fundamentos desatualizados
 - [x] Substituir apenas citações restantes nos arquivos solicitados, preservando notas históricas e regras operacionais.
-- [ ] Conferir build e testes, listar antes/depois e arquivos; sem banco ou publicação.
+- [x] Build OK e 33 testes passando; botão PNEEB conferido com sessão real em Rastreabilidade. Mudanças: Rastreabilidade.tsx, orientacoesConfig.ts e roadmap.md; sem banco ou publicação.
 
 ## Catálogo central de normas
 - [x] Completar NORMAS com 23 normas e citar, preservando os 14 assuntos existentes; telas, banco e funções inalterados.
