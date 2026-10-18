@@ -209,7 +209,7 @@ export default function ControleResiduos() {
               Novo Registro
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+          <DialogContent className="max-h-[90vh] overflow-y-auto max-w-lg max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Registrar Resíduo / Efluente</DialogTitle>
             </DialogHeader>
