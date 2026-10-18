@@ -13,6 +13,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Plus, Trash2, Save, AlertTriangle, ClipboardCheck, Sparkles, Loader2 } from "lucide-react";
 import PageHeader from "@/components/PageHeader";
 import QuestionarioRisco from "@/components/risco/QuestionarioRisco";
+import { ORIENTACOES_PAC } from "@/config/baseLegal";
 
 
 
@@ -261,7 +262,7 @@ export default function MatrizRisco() {
   return (
     <div className="space-y-6">
       <PageHeader title="Matriz de Sensibilidade e Risco" description="Sequenciamento de produção e análise de perigos APPCC" icon={AlertTriangle}
-        orientacaoModuloId="matriz-risco" />
+        orientacaoModuloId="matriz-risco" assuntoBaseLegal="autocontrole" />
 
       <Tabs value={tab} onValueChange={setTab}>
         <TabsList>
@@ -355,6 +356,10 @@ export default function MatrizRisco() {
         </TabsContent>
 
         <TabsContent value="risco">
+          <div className="mb-4 space-y-2 text-sm text-muted-foreground">
+            <p>{ORIENTACOES_PAC.requisitos}</p>
+            <p>{ORIENTACOES_PAC.perigos}</p>
+          </div>
           <Card>
             <CardHeader className="space-y-3">
               <div className="flex flex-row items-center justify-between flex-wrap gap-2">

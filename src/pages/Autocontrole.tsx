@@ -15,6 +15,7 @@ import { useEmpresa } from "@/hooks/useEmpresa";
 import { toast } from "sonner";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
+import { ORIENTACOES_PAC } from "@/config/baseLegal";
 
 const ELEMENTOS = [
   "Água de Abastecimento",
@@ -122,6 +123,11 @@ export default function Autocontrole() {
         description="Verificação geral dos POPs, auditoria interna e melhoria contínua do sistema"
         assuntoBaseLegal="autocontrole"
       />
+      <div className="mb-6 space-y-2 text-sm text-muted-foreground">
+        <p>{ORIENTACOES_PAC.origem}</p>
+        <p>{ORIENTACOES_PAC.requisitos}</p>
+        <p>{ORIENTACOES_PAC.perigos}</p>
+      </div>
       <Card>
         <CardHeader className="flex flex-row justify-between">
           <CardTitle>Registros de PAC</CardTitle>

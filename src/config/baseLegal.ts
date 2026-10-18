@@ -56,6 +56,13 @@ export function citar(codigo: CodigoNorma, dispositivo?: string): string {
 /** Orientação de retenção; não calcula nem altera o prazo definido pela empresa. */
 export const ORIENTACAO_CONTRAPROVA = `Preservar a contraprova até o fim da validade do produto (${citar("Decreto 12.031/2024", "art. 70, §5º")}). Prazo adicional conforme o POP da empresa.`;
 
+/** Fundamentos do PAC; apenas orientação documental, sem definir cálculos ou controles. */
+export const ORIENTACOES_PAC = {
+  origem: `A ${citar("IN 4/2007")} lista 9 POPs de BPF. O PAC decorre da ${citar("Lei 14.515/2022")} e do ${citar("Decreto 12.126/2024")} e é organizado neste sistema como POP 10.`,
+  requisitos: `O PAC contempla registros auditáveis, recolhimento, autocorreção e boas práticas (${citar("Decreto 12.126/2024", "art. 4º")}).`,
+  perigos: `Os perigos são classificados em baixo, médio e alto (${citar("Decreto 12.126/2024", "art. 8º")}), no âmbito do PAC previsto na ${citar("Lei 14.515/2022")}.`,
+} as const;
+
 export interface BaseLegal {
   readonly norma: string;
   readonly artigo: string;
@@ -72,7 +79,7 @@ const bpf = "IN 04/2007";
 
 export const BASE_LEGAL = {
   bpf_geral: { norma: bpf, artigo: "", citacao: bpf, observacao: "Regulamento Técnico de BPF.", slugs: ["in-04-2007"] },
-  autocontrole: { norma: decreto, artigo: "art. 40", citacao: `${decreto}, art. 40; Decreto 12.126/2024`, observacao: "Programas de autocontrole e registros auditáveis; selo de integridade: art. 40, §3º.", slugs: ["decreto-12031-2024", "decreto-12126-2024"] },
+  autocontrole: { norma: decreto, artigo: "art. 40", citacao: `${citar("Decreto 12.031/2024", "art. 40")}; ${citar("Lei 14.515/2022")}; ${citar("Decreto 12.126/2024", "arts. 4º e 8º")}`, observacao: "Art. 4º do decreto de autocontrole: registros auditáveis, recolhimento, autocorreção e boas práticas. Art. 8º: perigos classificados em baixo, médio e alto. Selo de integridade: art. 40, §3º do decreto de alimentação animal.", slugs: ["decreto-12031-2024", "decreto-12126-2024", "lei-14515-2022"] },
   relatorio_producao_mensal: { norma: decreto, artigo: "art. 39, III", citacao: `${decreto}, art. 39, III`, observacao: "Envio até o 10º dia do mês seguinte (Ofício-Circular 51/2023/CGI/DIPOA/SDA/MAPA).", slugs: ["decreto-12031-2024", "oficio-circular-51-2023"] },
   rastreabilidade: { norma: decreto, artigo: "arts. 41 e 44", citacao: `${decreto}, arts. 41 e 44`, observacao: "", slugs: ["decreto-12031-2024"] },
   registro_estabelecimento: { norma: "IN 17/2020", artigo: "", citacao: "IN 17/2020", observacao: "Registro e cadastro de estabelecimentos e produtos no sistema eletrônico do MAPA.", slugs: ["in-17-2020"] },
