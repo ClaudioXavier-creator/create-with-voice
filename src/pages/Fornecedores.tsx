@@ -1083,7 +1083,7 @@ export default function Fornecedores() {
 
       {/* Avaliação Dialog */}
       <Dialog open={avaliarOpen} onOpenChange={setAvaliarOpen}>
-        <DialogContent>
+        <DialogContent className="max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Star className="w-5 h-5 text-accent" /> Avaliar Fornecedor
