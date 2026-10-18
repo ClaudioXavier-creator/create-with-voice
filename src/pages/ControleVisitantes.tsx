@@ -1,4 +1,3 @@
-import { getBaseLegal } from "@/config/baseLegal";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { corrigirViaNC } from "@/utils/correcaoNC";
@@ -92,9 +91,9 @@ export default function ControleVisitantes() {
     <div className="space-y-6">
       <PageHeader
         title="POP 03 - Controle de Visitantes"
-        description={`Registro de entrada de visitantes conforme IN 56/2007 (Biosseguridade) e ${getBaseLegal("bpf_geral").citacao}`}
+        description="Registro de entrada e biosseguridade de visitantes"
         orientacaoModuloId="visitantes"
-      />
+       assuntoBaseLegal="bpf_geral" />
 
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
         <Card><CardContent className="pt-4 text-center">

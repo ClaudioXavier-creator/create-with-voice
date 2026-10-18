@@ -215,9 +215,9 @@ export default function PotabilidadeAgua() {
     <div className="space-y-6">
       <PageHeader
         title="POP 04 - Potabilidade da Água"
-        description="Controle de potabilidade da água e higienização de reservatórios — IN 04/2007"
+        description="Controle de potabilidade da água e higienização de reservatórios"
         orientacaoModuloId="potabilidade-agua"
-      />
+       assuntoBaseLegal="bpf_geral" />
       <div className="flex justify-end mb-3"><AnexarPlanilhaPop popCodigo="POP-04" popNome="Potabilidade da Água" /></div>
 
       {/* KPIs */}
@@ -452,7 +452,7 @@ export default function PotabilidadeAgua() {
         {/* ── ABA PARÂMETROS LEGAIS ── */}
         <TabsContent value="parametros">
           <Card>
-            <CardHeader><CardTitle className="text-base flex items-center gap-2"><FileText className="w-5 h-5" /> Parâmetros de Referência — Portaria GM/MS 888/2021</CardTitle></CardHeader>
+            <CardHeader><CardTitle className="text-base flex items-center gap-2"><FileText className="w-5 h-5" /> Parâmetros de Referência </CardTitle></CardHeader>
             <CardContent>
               <Table>
                 <TableHeader>
@@ -460,7 +460,7 @@ export default function PotabilidadeAgua() {
                     <TableHead>Parâmetro</TableHead>
                     <TableHead>Unidade</TableHead>
                     <TableHead>Limite / VMP</TableHead>
-                    <TableHead>Referência Normativa</TableHead>
+                    <TableHead>Referência</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -469,13 +469,13 @@ export default function PotabilidadeAgua() {
                       <TableCell className="font-medium">{p.param}</TableCell>
                       <TableCell>{p.unidade}</TableCell>
                       <TableCell className="font-mono">{p.limite}</TableCell>
-                      <TableCell className="text-xs text-muted-foreground">{p.ref}</TableCell>
+                      <TableCell className="text-xs text-muted-foreground">Parâmetros de controle</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
               </Table>
               <div className="mt-4 p-3 bg-muted rounded-lg text-sm space-y-1">
-                <p className="font-medium">📋 Frequências recomendadas (IN 04/2007):</p>
+                <p className="font-medium">📋 Frequências recomendadas:</p>
                 <ul className="list-disc pl-5 text-muted-foreground space-y-0.5">
                   <li><strong>Cloro Residual e pH</strong>: diário (pontos de uso)</li>
                   <li><strong>Análise microbiológica</strong>: mensal (todos os pontos)</li>

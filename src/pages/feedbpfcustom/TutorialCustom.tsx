@@ -112,7 +112,7 @@ const FAQ = [
   },
   {
     q: "O hash SHA-256 vale para auditoria?",
-    a: "Sim. É uma impressão digital matemática do conteúdo — qualquer alteração muda o hash, o que serve como prova de integridade em auditorias MAPA (Decreto 12.031/2024).",
+    a: "Sim. É uma impressão digital matemática do conteúdo — qualquer alteração muda o hash, o que serve como prova de integridade em auditorias MAPA.",
   },
   {
     q: "Posso voltar para o Feed_BPF tradicional depois?",
@@ -126,8 +126,8 @@ export default function TutorialCustom() {
       <PageHeader
         icon={GraduationCap}
         title="Guia do Feed_BPF Custom"
-        description="Como organizar seu acervo e digitalizar planilhas — conforme IN 04/2007"
-      />
+        description="Como organizar seu acervo e digitalizar planilhas"
+       assuntoBaseLegal="bpf_geral" />
 
       {/* Vídeo/gif placeholder + resumo */}
       <Card className="border-2 border-emerald-500/30 bg-emerald-500/5">
@@ -139,8 +139,8 @@ export default function TutorialCustom() {
             <div className="space-y-2">
               <h2 className="text-xl font-bold">Em 5 minutos você entende tudo</h2>
               <p className="text-sm text-muted-foreground leading-relaxed">
-                O Feed_BPF Custom é um <strong>gestor da sua documentação</strong>. Ele organiza o que você já tem e permite criar planilhas digitais respeitando a numeração oficial dos 10 POPs (IN 04/2007).
-              </p>
+                O Feed_BPF Custom é um <strong>gestor da sua documentação</strong>. Ele organiza o que você já tem e permite criar planilhas digitais respeitando a numeração oficial dos 10 POPs.
+ </p>
               <div className="flex flex-wrap gap-2 pt-2">
                 <Badge className="bg-emerald-600 hover:bg-emerald-700"><Sparkles className="w-3 h-3 mr-1" /> Sem migração forçada</Badge>
                 <Badge variant="outline">Sem perda de dados</Badge>
@@ -262,7 +262,7 @@ export default function TutorialCustom() {
             <h2 className="text-xl font-bold flex items-center gap-2">
               <ClipboardList className="w-5 h-5 text-emerald-600" /> Documentos obrigatórios por POP
             </h2>
-            <p className="text-sm text-muted-foreground">Baseado na IN MAPA 04/2007 + Decreto 12.031/2024 — <strong>{contarObrigatoriosEssenciais()} documentos essenciais</strong> no total</p>
+            <p className="text-sm text-muted-foreground">Baseado na +<strong>{contarObrigatoriosEssenciais()} documentos essenciais</strong> no total</p>
           </div>
           <Button asChild size="sm" className="bg-emerald-600 hover:bg-emerald-700">
             <Link to="/feedbpf-custom/analise-ia">

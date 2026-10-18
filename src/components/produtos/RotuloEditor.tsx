@@ -554,8 +554,8 @@ function TabelaConsumo({ niveisObj, onNiveisChange }: { niveisObj: Record<string
         <Table>{tableHeader}<TableBody>{VR_VITAMINAS.map(r => renderRow(r, editable))}</TableBody></Table>
       </div>
       <p className="text-[9px] text-muted-foreground italic">
-        ¹ Valor diário de referência para manutenção de um animal de 450 kg de peso corporal (NRC / IN 12/2004 – MAPA).
-      </p>
+ ¹ Valor diário de referência para manutenção de um animal de 450 kg de peso corporal (referência nutricional).
+ </p>
     </div>
   );
 }
@@ -1329,7 +1329,7 @@ export default function RotuloEditor({ produtoId, produtoNome }: Props) {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <div><Label className="text-xs">Nome Comercial</Label><Input value={rotulo.nome_comercial} onChange={(e) => updateField("nome_comercial", e.target.value)} /></div>
                 <div>
-                  <Label className="text-xs">Tipo de Rótulo (IN 22)</Label>
+                  <Label className="text-xs">Tipo de Rótulo </Label>
                   <Select value={rotulo.tipo_rotulo} onValueChange={(v) => updateField("tipo_rotulo", v)}>
                     <SelectTrigger><SelectValue /></SelectTrigger>
                     <SelectContent>
@@ -1405,7 +1405,7 @@ export default function RotuloEditor({ produtoId, produtoNome }: Props) {
               <div>
                 <Label className="text-xs">Níveis de Garantia por kg do Produto</Label>
                 <Textarea value={rotulo.niveis_garantia_texto} onChange={(e) => updateField("niveis_garantia_texto", e.target.value)} rows={5} placeholder="Gerado automaticamente ao sincronizar do produto" />
-                <p className="text-[10px] text-muted-foreground mt-1">Formato IN 22: Nutriente (Mín./Máx.) valor unidade. Editável manualmente.</p>
+                <p className="text-[10px] text-muted-foreground mt-1">Formato: Nutriente (Mín./Máx.) valor unidade. Editável manualmente.</p>
               </div>
             </CardContent>
           </Card>
@@ -1445,8 +1445,8 @@ export default function RotuloEditor({ produtoId, produtoNome }: Props) {
                 <Label className="text-xs">Exibir tabela de consumo por 100g de suplemento no rótulo</Label>
               </div>
               <p className="text-[10px] text-muted-foreground">
-                Ativado automaticamente para Sal Mineral e Suplementos de Bovinos (IN 12/2004 – MAPA). Mostra macro e microminerais com VR para 450 kg.
-              </p>
+ Ativado automaticamente para Sal Mineral e Suplementos de Bovinos (referência nutricional). Mostra macro e microminerais com VR para 450 kg.
+ </p>
             </CardContent>
           </Card>
 

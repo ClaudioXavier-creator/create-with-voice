@@ -1,3 +1,4 @@
+import { textoTela } from "@/lib/textoTela";
 import { useState, useEffect } from "react";
 import { Lock, Unlock, Download, FileText, BookOpen, ClipboardList, Table2, Shield, Wrench, FlaskConical, Bug, Droplets, Activity, Users, Truck, Printer, Eye, Search, Filter, Star, FileSignature } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -561,7 +562,7 @@ export default function Modelos() {
                 </div>
               </CardHeader>
               <CardContent>
-                <p className="text-xs text-muted-foreground mb-3 h-8 line-clamp-2">{modelo.descricao}</p>
+                <p className="text-xs text-muted-foreground mb-3 h-8 line-clamp-2">{textoTela(modelo.descricao)}</p>
                 <div className="flex flex-col gap-2">
                   <div className="flex gap-2">
                     <Button size="sm" variant="outline" className="flex-1" onClick={() => handlePreview(modelo)}>

@@ -1,3 +1,4 @@
+import { BaseLegalBadge } from "@/components/BaseLegalBadge";
 import { TIPOS_RESIDUO, TRATAMENTO_EFLUENTE, CLASSIFICACOES, MOTIVOS_DESCARTE } from "@/components/residuos/constants";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -107,8 +108,8 @@ export default function ControleResiduos() {
 
   return (
     <div className="space-y-6">
-      <PageHeader title="POP 08 - Controle de Resíduos e Efluentes" description="Procedimentos de coleta, segregação e destinação de resíduos sólidos e efluentes — IN 04/2007 e Decreto 12.031/2024"
-        orientacaoModuloId="residuos" />
+      <PageHeader title="POP 08 - Controle de Resíduos e Efluentes" description="Procedimentos de coleta, segregação e destinação de resíduos sólidos e efluentes"
+        orientacaoModuloId="residuos"  assuntoBaseLegal="autocontrole" />
       <div className="flex justify-end mb-3"><AnexarPlanilhaPop popCodigo="POP-08" popNome="Controle de Resíduos e Efluentes" /></div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -135,15 +136,15 @@ export default function ControleResiduos() {
           <div className="flex items-start gap-3">
             <ShieldAlert className="w-6 h-6 text-primary mt-0.5" />
             <div>
-              <h4 className="font-display font-semibold text-sm">POP 08 — Controle de Resíduos e Efluentes (IN 04/2007)</h4>
+              <h4 className="font-display font-semibold text-sm">POP 08 — Controle de Resíduos e Efluentes <BaseLegalBadge assunto="bpf_geral" /></h4>
               <p className="text-xs text-muted-foreground mt-1">
                 Abrange: separação e identificação de resíduos por classe (ABNT), rastreamento de produtos descartados,
                 controle de efluentes (pH, DBO, DQO), manifestos de transporte e licenças ambientais.
               </p>
               <div className="flex flex-wrap gap-2 mt-2">
-                <Badge variant="outline" className="text-[10px]">IN 04/2007 Art. 2º §5</Badge>
-                <Badge variant="outline" className="text-[10px]">IN 15/2009 Cap. IV</Badge>
-                <Badge variant="outline" className="text-[10px]">Decreto 12.031/2024</Badge>
+                
+                
+                
               </div>
             </div>
           </div>
@@ -172,7 +173,7 @@ export default function ControleResiduos() {
               </div>
               {["Produto vencido", "Produto rejeitado/reprovado", "Sobra de produção"].includes(form.tipo_residuo) && (
                 <div className="p-3 rounded-lg border border-yellow-400 bg-yellow-50 dark:bg-yellow-900/20 space-y-3">
-                  <p className="text-xs font-semibold text-yellow-700 dark:text-yellow-400">⚠️ Controle de Produto Descartado (POP 08 — IN 04/2007)</p>
+                  <p className="text-xs font-semibold text-yellow-700 dark:text-yellow-400">⚠️ Controle de Produto Descartado (POP 08 )</p>
                   <div>
                     <Label>Motivo do Descarte</Label>
                     <Select value={form.motivo_descarte} onValueChange={v => setForm(p => ({ ...p, motivo_descarte: v }))}>
@@ -188,7 +189,7 @@ export default function ControleResiduos() {
               )}
               {isEfluente && (
                 <div className="p-3 rounded-lg border border-blue-400 bg-blue-50 dark:bg-blue-900/20 space-y-3">
-                  <p className="text-xs font-semibold text-blue-700 dark:text-blue-400">💧 Controle de Efluentes — IN 15/2009</p>
+                  <p className="text-xs font-semibold text-blue-700 dark:text-blue-400">💧 Controle de Efluentes </p>
                   <div>
                     <Label>Tipo de Tratamento</Label>
                     <Select value={form.observacoes.includes("[TRATAMENTO:") ? "" : ""} onValueChange={v => setForm(p => ({ ...p, observacoes: `[TRATAMENTO: ${TRATAMENTO_EFLUENTE.find(t => t.value === v)?.label || v}] ${p.observacoes.replace(/\[TRATAMENTO:.*?\]\s?/, "")}` }))}>
@@ -283,16 +284,16 @@ export default function ControleResiduos() {
               <div className="flex items-start gap-3">
                 <PackageX className="w-6 h-6 text-yellow-600 mt-0.5" />
                 <div>
-                  <h4 className="font-display font-semibold text-sm">Controle de Descarte de Produtos — POP 08 (IN 04/2007)</h4>
+                  <h4 className="font-display font-semibold text-sm">Controle de Descarte de Produtos — POP 08 <BaseLegalBadge assunto="bpf_geral" /></h4>
                   <p className="text-xs text-muted-foreground mt-1">
                     Registro obrigatório de produtos vencidos, avariados, rejeitados ou reprovados em análise.
                     Cada descarte deve conter: identificação do produto, lote, motivo, destino e responsável.
                     O registro é automaticamente vinculado à execução do POP-08 (Descarte).
                   </p>
                   <div className="flex flex-wrap gap-2 mt-2">
-                    <Badge variant="outline" className="text-[10px]">IN 04/2007 POP-08</Badge>
-                    <Badge variant="outline" className="text-[10px]">IN 15/2009 Cap. IV</Badge>
-                    <Badge variant="outline" className="text-[10px]">Decreto 12.031/2024</Badge>
+                    <Badge variant="outline" className="text-[10px]"> POP-08</Badge>
+                    
+                    
                   </div>
                 </div>
               </div>
@@ -321,7 +322,7 @@ export default function ControleResiduos() {
                     <CardContent className="pt-4">
                       <div className="flex items-center gap-2">
                         <AlertTriangle className="w-5 h-5 text-destructive" />
-                        <p className="text-sm font-semibold text-destructive">{semMotivo.length} descarte(s) sem motivo registrado — preencha para conformidade com IN 04/2007.</p>
+                        <p className="text-sm font-semibold text-destructive">{semMotivo.length} descarte(s) sem motivo registrado — preencha para conformidade.</p>
                       </div>
                     </CardContent>
                   </Card>
@@ -379,15 +380,15 @@ export default function ControleResiduos() {
               <div className="flex items-start gap-3">
                 <Droplets className="w-6 h-6 text-blue-600 mt-0.5" />
                 <div>
-                  <h4 className="font-semibold text-sm">Controle de Efluentes — POP 08 (IN 04/2007 / IN 15/2009 / Decreto 12.031/2024)</h4>
+                  <h4 className="font-semibold text-sm">Controle de Efluentes — POP 08 ( / )<BaseLegalBadge assunto="autocontrole" /></h4>
                   <p className="text-xs text-muted-foreground mt-1">
                     Registros de efluentes líquidos, industriais e água de lavagem com tipo de tratamento.
                     Parâmetros obrigatórios: pH, DBO, DQO, Sólidos Suspensos.
                   </p>
                   <div className="flex flex-wrap gap-2 mt-2">
                     <Badge variant="outline" className="text-[10px]">Resolução CONAMA 430/2011</Badge>
-                    <Badge variant="outline" className="text-[10px]">IN 04/2007 — POP 08</Badge>
-                    <Badge variant="outline" className="text-[10px]">Decreto 12.031/2024</Badge>
+                    <Badge variant="outline" className="text-[10px]"> — POP 08</Badge>
+                    
                   </div>
                 </div>
               </div>
@@ -461,14 +462,15 @@ export default function ControleResiduos() {
                 <div>
                   <h4 className="font-display font-semibold text-sm">PGRS — Plano de Gerenciamento de Resíduos Sólidos</h4>
                   <p className="text-xs text-muted-foreground mt-1">
-                    Conforme POP 08 (IN 04/2007) e critérios ambientais do MAPA, o estabelecimento deve manter um PGRS
-                    atualizado, contemplando: classificação dos resíduos, segregação na origem, acondicionamento, transporte e
-                    destinação final licenciada.
-                  </p>
+                    
+ Conforme POP 08 e critérios ambientais do MAPA, o estabelecimento deve manter um PGRS
+ atualizado, contemplando: classificação dos resíduos, segregação na origem, acondicionamento, transporte e
+ destinação final licenciada.
+ </p>
                   <div className="flex flex-wrap gap-2 mt-2">
                     <Badge variant="outline" className="text-[10px]">ABNT NBR 10.004</Badge>
                     <Badge variant="outline" className="text-[10px]">Resolução CONAMA 313/2002</Badge>
-                    <Badge variant="outline" className="text-[10px]">IN 04/2007 — POP 08</Badge>
+                    <Badge variant="outline" className="text-[10px]"> — POP 08</Badge>
                   </div>
                 </div>
               </div>

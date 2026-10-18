@@ -1,3 +1,4 @@
+import { BaseLegalBadge } from "@/components/BaseLegalBadge";
 import { EQUIPAMENTOS_CRITICOS, TIPOS, STATUS_LIST } from "@/components/manutencao/constants";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -216,8 +217,8 @@ export default function ManutencaoPreventiva() {
 
   return (
     <div className="space-y-6">
-      <PageHeader title="POP 06 - Manutenção e Calibração" description="Plano de manutenção preventiva e calibração de instrumentos — IN 04/2007 e IN 15/2009"
-        orientacaoModuloId="manutencao" />
+      <PageHeader title="POP 06 - Manutenção e Calibração" description="Plano de manutenção preventiva e calibração de instrumentos"
+        orientacaoModuloId="manutencao"  assuntoBaseLegal="bpf_geral" />
       <div className="flex justify-end mb-3"><AnexarPlanilhaPop popCodigo="POP-06" popNome="Manutenção e Calibração" /></div>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -233,7 +234,7 @@ export default function ManutencaoPreventiva() {
           <CardContent className="pt-4">
             <div className="flex items-center gap-2 mb-3">
               <AlertTriangle className="w-5 h-5 text-yellow-600" />
-              <h3 className="font-semibold text-sm text-yellow-700 dark:text-yellow-400">Verificação Intermediária Pendente — IN 04/2007</h3>
+              <h3 className="font-semibold text-sm text-yellow-700 dark:text-yellow-400">Verificação Intermediária Pendente <BaseLegalBadge assunto="bpf_geral" /></h3>
             </div>
             <p className="text-xs text-muted-foreground mb-3">Balanças e instrumentos de medição requerem verificação intermediária entre calibrações anuais para manter a conformidade.</p>
             <div className="space-y-2">
@@ -390,7 +391,7 @@ export default function ManutencaoPreventiva() {
           <div className="flex justify-between items-center gap-4 flex-wrap">
             <div>
               <h3 className="text-lg font-semibold">Inventário de Máquinas e Equipamentos</h3>
-              <p className="text-sm text-muted-foreground">Cadastro detalhado conforme IN 15/2009 e IN 04/2007</p>
+              <p className="text-sm text-muted-foreground">Cadastro detalhado</p>
             </div>
             <Dialog open={openEquip} onOpenChange={setOpenEquip}>
               <DialogTrigger asChild>
@@ -418,7 +419,7 @@ export default function ManutencaoPreventiva() {
                     <div className="space-y-2"><Label>Setor / Localização</Label><Input value={equipForm.setor} onChange={e => setEquipForm(p => ({ ...p, setor: e.target.value }))} placeholder="Ex: Moagem" /></div>
                   </div>
                   <div className="space-y-2">
-                    <Label>Requisitos de Manutenção (IN 15/2009) *</Label>
+                    <Label>Requisitos de Manutenção *</Label>
                     <Textarea 
                       value={equipForm.requisitos_manutencao} 
                       onChange={e => setEquipForm(p => ({ ...p, requisitos_manutencao: e.target.value }))} 
@@ -515,7 +516,7 @@ export default function ManutencaoPreventiva() {
 
         <TabsContent value="calibracoes" className="space-y-4">
           <div className="flex justify-between items-center gap-4 flex-wrap">
-            <p className="text-xs text-muted-foreground">Balanças, termômetros, higrômetros e demais instrumentos — IN 04/2007</p>
+            <p className="text-xs text-muted-foreground">Balanças, termômetros, higrômetros e demais instrumentos </p>
             <Dialog open={openCalib} onOpenChange={setOpenCalib}>
               <DialogTrigger asChild><Button><Plus className="w-4 h-4 mr-2" />Nova Calibração</Button></DialogTrigger>
               <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
@@ -556,11 +557,11 @@ export default function ManutencaoPreventiva() {
                   </div>
                   <div><Label>Nº Certificado</Label><Input value={calibForm.certificado_numero} onChange={e => setCalibForm(p => ({ ...p, certificado_numero: e.target.value }))} placeholder="Ex: CERT-2026-0045" /></div>
                   <div className="p-3 rounded-lg border border-yellow-400 bg-yellow-50 dark:bg-yellow-900/20 space-y-2">
-                    <p className="text-xs font-semibold text-yellow-700 dark:text-yellow-400">Verificação Intermediária — IN 04/2007</p>
+                    <p className="text-xs font-semibold text-yellow-700 dark:text-yellow-400">Verificação Intermediária </p>
                     <div><Label className="text-xs">Próxima Verificação Intermediária</Label><Input type="date" value={calibForm.proxima_verificacao_intermediaria} onChange={e => setCalibForm(p => ({ ...p, proxima_verificacao_intermediaria: e.target.value }))} /></div>
                     <div className="flex items-center gap-2">
                       <input type="checkbox" checked={calibForm.verificacao_conforme} onChange={e => setCalibForm(p => ({ ...p, verificacao_conforme: e.target.checked }))} className="h-4 w-4" />
-                      <Label className="text-sm">Verificação conforme</Label>
+                      <Label className="text-sm">Verificação </Label>
                     </div>
                     <div><Label className="text-xs">Resultado da Verificação</Label><Input value={calibForm.resultado_verificacao} onChange={e => setCalibForm(p => ({ ...p, resultado_verificacao: e.target.value }))} placeholder="Ex: Erro ≤ 0,1% — Conforme" /></div>
                   </div>
@@ -623,16 +624,16 @@ export default function ManutencaoPreventiva() {
               <div className="flex items-start gap-3">
                 <Calendar className="w-6 h-6 text-primary mt-0.5" />
                 <div>
-                  <h4 className="font-display font-semibold text-sm">Plano de Manutenção Preventiva — IN 15/2009</h4>
+                  <h4 className="font-display font-semibold text-sm">Plano de Manutenção Preventiva </h4>
                   <p className="text-xs text-muted-foreground mt-1">
-                    A IN 15/2009 exige plano formal de manutenção preventiva das máquinas e equipamentos utilizados na produção
-                    de alimentação animal, com frequências definidas, para prevenir contaminação cruzada por desgaste de peças,
-                    acúmulo de resíduos e falhas operacionais.
-                  </p>
+ Mantenha o plano formal de manutenção preventiva das máquinas e equipamentos utilizados na produção
+ de alimentação animal, com frequências definidas, para prevenir contaminação cruzada por desgaste de peças,
+ acúmulo de resíduos e falhas operacionais.
+ </p>
                   <div className="flex flex-wrap gap-2 mt-2">
-                    <Badge variant="outline" className="text-[10px]">IN 15/2009 Art. 4º §2</Badge>
-                    <Badge variant="outline" className="text-[10px]">IN 04/2007 — POP 06</Badge>
-                    <Badge variant="outline" className="text-[10px]">Decreto 12.031/2024</Badge>
+                    
+                    <Badge variant="outline" className="text-[10px]"> — POP 06</Badge>
+                    
                   </div>
                 </div>
               </div>
@@ -711,14 +712,14 @@ export default function ManutencaoPreventiva() {
           {/* Resumo de conformidade IN 15/2009 */}
           <Card>
             <CardContent className="pt-4">
-              <h4 className="font-semibold text-sm mb-3">Conformidade do Plano Preventivo — IN 15/2009</h4>
+              <h4 className="font-semibold text-sm mb-3">Conformidade do Plano Preventivo </h4>
               <div className="space-y-2">
                 {[
                   { item: "Todos os equipamentos críticos possuem manutenção preventiva registrada", ok: EQUIPAMENTOS_CRITICOS.every(eq => manutencoes.some((m: any) => m.equipamento?.toLowerCase().includes(eq.nome.toLowerCase()) || m.codigo_equipamento?.startsWith(eq.codigo))) },
                   { item: "Nenhuma manutenção preventiva atrasada", ok: !manutencoes.some((m: any) => m.status === "programada" && m.data_programada && m.data_programada < today) },
                   { item: "Troca de peças programada para equipamentos com desgaste", ok: trocasPecas.length > 0 || manutencoes.length === 0 },
                   { item: "Calibrações de balanças/instrumentos em dia", ok: calibracoesVencidas.length === 0 },
-                  { item: "Verificações intermediárias realizadas conforme IN 04/2007", ok: calibracoesComAlerta.length === 0 },
+                  { item: "Verificações intermediárias realizadas", ok: calibracoesComAlerta.length === 0 },
                   { item: "Cronograma de próximos 90 dias definido", ok: manutencoes.some((m: any) => m.proxima_manutencao && m.proxima_manutencao >= today) || manutencoes.length === 0 },
                 ].map((c, i) => (
                   <div key={i} className="flex items-center gap-2 p-2 rounded border bg-background">
@@ -738,7 +739,7 @@ export default function ManutencaoPreventiva() {
             <CardContent className="pt-4">
               <div className="flex items-center gap-2 mb-2">
                 <Cog className="w-4 h-4 text-primary" />
-                <h3 className="font-semibold text-sm">Cronograma de Trocas de Peças — POP 05 / IN 04/2007</h3>
+                <h3 className="font-semibold text-sm">Cronograma de Trocas de Peças — POP 05 / <BaseLegalBadge assunto="bpf_geral" /></h3>
               </div>
               <p className="text-xs text-muted-foreground">
                 Controle de substituição programada de peças em equipamentos críticos (moinhos, misturadores, peletizadoras).
@@ -899,9 +900,9 @@ export default function ManutencaoPreventiva() {
           <Card className="border-accent/20 bg-accent/5">
             <CardContent className="pt-4">
               <p className="text-xs text-muted-foreground">
-                Cronograma de manutenção preventiva dos próximos 90 dias — POP 06 (IN 04/2007).
-                Equipamentos sem próxima manutenção programada são destacados como pendentes.
-              </p>
+ Cronograma de manutenção preventiva dos próximos 90 dias — POP 06.
+ Equipamentos sem próxima manutenção programada são destacados como pendentes.
+ </p>
             </CardContent>
           </Card>
 

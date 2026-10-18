@@ -31,7 +31,7 @@ const authConfigs = {
   "auditsbpf": {
     logo: logoAuditsBpf,
     title: "Audits_BPF",
-    subtitle: "Auditoria interna (Decreto 12.031/2024)",
+    subtitle: "Auditoria interna",
   },
   nutricrm: {
     logo: logoNutricrm,

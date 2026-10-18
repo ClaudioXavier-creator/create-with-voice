@@ -1,3 +1,4 @@
+import { BaseLegalBadge } from "@/components/BaseLegalBadge";
 import { getBaseLegal } from "@/config/baseLegal";
 import { useState, useEffect, useMemo } from "react";
 import { BarChart3, Download, Loader2, Calendar, Building2 } from "lucide-react";
@@ -314,8 +315,8 @@ export default function RelatorioProducao() {
       <PageHeader
         icon={BarChart3}
         title="Relatório Mensal de Produção — SIPEAGRO"
-        description={`Lançamento mensal conforme relatório de produção mensal do MAPA (${getBaseLegal("relatorio_producao_mensal").citacao}; ${getBaseLegal("relatorio_producao_mensal").observacao}) — Produção, Importação, Exportação e Fracionamento`}
-      />
+        description={`Lançamento mensal conforme relatório de produção mensal do MAPA — Produção, Importação, Exportação e Fracionamento`}
+       assuntoBaseLegal="relatorio_producao_mensal" />
 
       {/* SIPEAGRO Header Info */}
       <Card className="mb-4 border-primary/20 bg-primary/5">
@@ -336,8 +337,7 @@ export default function RelatorioProducao() {
                   <strong>{empresaRegistroSipeagro || "N/I"}</strong>
                 </div>
                 <div>
-                  <span className="text-muted-foreground">Base Legal:</span>{" "}
-                  <strong>{getBaseLegal("relatorio_producao_mensal").citacao}</strong>
+                  <BaseLegalBadge assunto="relatorio_producao_mensal" />
                 </div>
               </div>
             </div>

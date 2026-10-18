@@ -1,4 +1,3 @@
-import { getBaseLegal } from "@/config/baseLegal";
 import { useState, useEffect } from "react";
 import {
   Factory,
@@ -309,7 +308,7 @@ export default function Producao() {
   const handleAdd = async () => {
     if (!produto || !user) return;
     if (tempoMistura && !tempoMisturaValido()) {
-      toast.error(`⚠️ Tempo de mistura mínimo: ${TEMPO_MISTURA_MINIMO} min para garantir homogeneidade (${getBaseLegal("bpf_geral").citacao}).`);
+      toast.error(`⚠️ Tempo de mistura mínimo: ${TEMPO_MISTURA_MINIMO} min para garantir homogeneidade.`);
       return;
     }
     setSaving(true);
@@ -409,9 +408,9 @@ export default function Producao() {
       <PageHeader
         icon={Factory}
         title="POP 05 - Controle de Produção"
-        description={`Registro de fabricação, tempo de mistura e sobras — ${getBaseLegal("bpf_geral").citacao} e IN 15/2009`}
+        description="Registro de fabricação, tempo de mistura e sobras"
         orientacaoModuloId="producao"
-      />
+       assuntoBaseLegal="bpf_geral" />
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         <Card>
@@ -535,8 +534,7 @@ export default function Producao() {
                   <div className="p-3 rounded-lg border border-orange-400 bg-orange-50 dark:bg-orange-900/10 space-y-3">
                     <div className="flex items-center justify-between">
                       <p className="text-sm font-semibold flex items-center gap-2 text-orange-700 dark:text-orange-400">
-                        🧹 Limpeza / Flush entre Lotes — IN 15/2009
-                      </p>
+ 🧹 Limpeza / Flush entre Lotes </p>
                       <Switch checked={realizouFlush} onCheckedChange={setRealizouFlush} />
                     </div>
                     <p className="text-[10px] text-muted-foreground">
@@ -592,9 +590,9 @@ export default function Producao() {
                         {prodAnteriorMedicado && (
                           <div className="p-2 rounded border border-destructive/30 bg-destructive/10">
                             <p className="text-xs text-destructive font-semibold">
-                              ⚠️ Atenção: Flushing obrigatório — arraste máximo permitido: &lt; 1% ionóforos, &lt; 3%
-                              medicados (IN 15/2009).
-                            </p>
+ ⚠️ Atenção: Flushing obrigatório — arraste máximo permitido: &lt; 1% ionóforos, &lt; 3%
+ medicados.
+ </p>
                           </div>
                         )}
                         <div>
@@ -612,8 +610,8 @@ export default function Producao() {
                   <div className="p-3 rounded-lg border bg-muted/20 space-y-3">
                     <div className="flex items-center justify-between">
                       <p className="text-sm font-semibold flex items-center gap-2">
-                        <Trash2 className="w-4 h-4" /> Sobras / Vassoura de Produção (IN 15/2009)
-                      </p>
+                        <Trash2 className="w-4 h-4" /> Sobras / Vassoura de Produção 
+ </p>
                       <Switch checked={houveSobra} onCheckedChange={setHouveSobra} />
                     </div>
                     {houveSobra && (
@@ -657,7 +655,7 @@ export default function Producao() {
                   {/* Retenção de Amostra de Contraprova — autocontrole (baseLegal: amostra_arquivo) */}
                   <div className="p-3 rounded-lg border border-blue-300 bg-blue-50 dark:bg-blue-900/10 space-y-3">
                     <p className="text-sm font-semibold flex items-center gap-2">
-                      🧪 Retenção de Amostra (Contraprova) — {getBaseLegal("amostra_arquivo").citacao}
+                      🧪 Retenção de Amostra (Contraprova) — 
                     </p>
                     <p className="text-[10px] text-muted-foreground">
                       Reter amostra testemunha de cada lote produzido pelo prazo de validade do produto + 30 dias para
@@ -808,12 +806,11 @@ export default function Producao() {
             </p>
             <p>
               <strong>⏱️ Homogeneidade:</strong> Tempo mínimo de mistura de {TEMPO_MISTURA_MINIMO} min conforme
-              validação da {getBaseLegal("bpf_geral").citacao}. Registros abaixo deste valor são sinalizados.
+              validação da . Registros abaixo deste valor são sinalizados.
             </p>
             <p>
-              <strong>🧹 Sobras:</strong> Registre todas as sobras/vassouras e seu destino (reprocesso ou descarte)
-              conforme IN 15/2009.
-            </p>
+              <strong>🧹 Sobras:</strong> Registre todas as sobras/vassouras e seu destino (reprocesso ou descarte).
+ </p>
           </div>
         </CardContent>
       </Card>

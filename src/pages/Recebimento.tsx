@@ -327,7 +327,7 @@ export default function Recebimento() {
 
   return (
     <>
-      <PageHeader icon={Package} title="POP 01 - Recebimento de Matérias-Primas" description="Controle de qualidade e FIFO — IN 04/2007" />
+      <PageHeader icon={Package} title="POP 01 - Recebimento de Matérias-Primas" description="Controle de qualidade e FIFO"  assuntoBaseLegal="bpf_geral" />
       <div className="flex justify-end mb-3"><AnexarPlanilhaPop popCodigo="POP-01" popNome="Recebimento de Matérias-Primas" /></div>
       <div className="flex justify-between items-center mb-4">
         <Input placeholder="Buscar..." value={busca} onChange={e => setBusca(e.target.value)} className="max-w-xs" />
@@ -609,7 +609,7 @@ export default function Recebimento() {
               <AlertTriangle className="h-5 w-5 shrink-0 text-yellow-500" />
               <p className="text-sm text-muted-foreground">
                 A liberação equivale à assinatura digital do registro: após confirmar, o lançamento fica
-                <strong> imutável</strong> (sem edição ou exclusão), conforme exigência do MAPA. Correções posteriores
+                <strong> imutável</strong> (sem edição ou exclusão), xigência do MAPA. Correções posteriores
                 só por Não Conformidade. A justificativa é opcional, mas recomendada quando houver quebra de FIFO.
               </p>
             </div>

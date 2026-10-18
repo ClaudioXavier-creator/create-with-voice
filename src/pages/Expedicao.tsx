@@ -682,7 +682,7 @@ export default function Expedicao() {
                           onChange={(e) => { const f = e.target.files?.[0]; if (f) handleXmlUpload(f); }}
                           className="mt-2" />
                         <p className="text-xs text-muted-foreground mt-2">
-                          Extrai: NF, cliente, transportadora, motorista, placa, produtos e <strong>lotes (rastro/nLote)</strong>.
+                          Extrai: NF, cliente, transportadora, motorista, placa, produtos <strong>lotes (rastro/nLote)</strong>.
                         </p>
                         {origem === "xml" && <Badge variant="secondary" className="mt-3">XML carregado — revise e salve</Badge>}
                       </CardContent>

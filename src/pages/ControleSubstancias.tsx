@@ -75,7 +75,7 @@ export default function ControleSubstancias() {
 
   return (
     <div className="space-y-6">
-      <PageHeader title="Substâncias Proibidas e Indesejáveis" description="Controle conforme Anexos da IN 15/2009 — MAPA | Programa Ractopamina Free"
+      <PageHeader title="Substâncias Proibidas e Indesejáveis" description="Controle conforme Anexos da — MAPA | Programa Ractopamina Free"
         orientacaoModuloId="substancias" />
 
       {/* ── CERTIFICAÇÃO RACTOPAMINA FREE ── */}
@@ -118,8 +118,8 @@ export default function ControleSubstancias() {
                 );
               })()}
               <p className="text-[10px] text-muted-foreground mt-2">
-                📋 Ref.: IN 55/2020 (MAPA) — Plano Nacional de Controle de Resíduos e Contaminantes (PNCRC). 
-                Limite: <strong>ND (Não Detectado)</strong> | Método: HPLC ou LC-MS/MS.
+ 📋 (MAPA) — Plano Nacional de Controle de Resíduos e Contaminantes (PNCRC). 
+ Limite: <strong>ND (Não Detectado)</strong> | Método: HPLC ou LC-MS/MS.
               </p>
             </div>
           </div>

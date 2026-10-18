@@ -220,8 +220,8 @@ export default function Treinamentos() {
 
   return (
     <div className="space-y-6">
-      <PageHeader icon={GraduationCap} title="POP 03 — Higiene e Saúde Pessoal" description="Capacitação, ASOs, Saúde e triagem diária de higiene pessoal conforme IN 04/2007"
-        orientacaoModuloId="treinamentos" />
+      <PageHeader icon={GraduationCap} title="POP 03 — Higiene e Saúde Pessoal" description="Capacitação, ASOs, Saúde e triagem diária de higiene pessoal"
+        orientacaoModuloId="treinamentos"  assuntoBaseLegal="bpf_geral" />
 
       {/* Summary */}
       <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
@@ -373,7 +373,7 @@ export default function Treinamentos() {
               <div className="flex items-start gap-3">
                 <ShieldCheck className="w-6 h-6 text-primary mt-0.5" />
                 <div>
-                  <h4 className="font-display font-semibold text-sm">Avaliação de Eficácia Pós-Treinamento — IN 15/2009</h4>
+                  <h4 className="font-display font-semibold text-sm">Avaliação de Eficácia Pós-Treinamento </h4>
                   <p className="text-xs text-muted-foreground mt-1">
                     Após cada treinamento, avalie se o conhecimento foi assimilado (30–90 dias). Treinamentos sem avaliação são sinalizados.
                   </p>
@@ -499,8 +499,8 @@ export default function Treinamentos() {
                 <div>
                   <h4 className="font-display font-semibold text-sm">Saúde Ocupacional — POP-03 / PCMSO</h4>
                   <p className="text-xs text-muted-foreground mt-1">
-                    Controle de ASOs conforme NR-7 (PCMSO) e exigências da IN 04/2007. Todos os colaboradores
-                    que manipulam produtos devem possuir ASO válido. <strong>ASOs com validade de 1 ano são alertados automaticamente.</strong>
+ Controle de ASOs (PCMSO) e exigências. Todos os colaboradores
+ que manipulam produtos devem possuir ASO válido. <strong>ASOs com validade de 1 ano são alertados automaticamente.</strong>
                   </p>
                 </div>
               </div>
@@ -629,9 +629,9 @@ export default function Treinamentos() {
                 <div>
                   <h4 className="font-display font-semibold text-sm">Triagem Diária de Higiene e Saúde — POP 03</h4>
                   <p className="text-xs text-muted-foreground mt-1">
-                    Verificação obrigatória antes do início da jornada conforme IN 04/2007.
-                    Colaboradores com sintomas ou itens não conformes devem ser afastados da área de produção.
-                  </p>
+ Verificação obrigatória antes do início da jornada.
+ Colaboradores com sintomas ou itens não conformes devem ser afastados da área de produção.
+ </p>
                 </div>
               </div>
             </CardContent>
@@ -682,8 +682,8 @@ export default function Treinamentos() {
                 <div>
                   <h4 className="font-display font-semibold text-sm">Modelos de Documentos — Educação Sanitária BPF</h4>
                   <p className="text-xs text-muted-foreground mt-1">
-                    Templates prontos para impressão conforme IN 04/2007 e IN 15/2009. Clique para baixar o modelo em Excel.
-                  </p>
+ Templates prontos para impressão. Clique para baixar o modelo em Excel.
+ </p>
                 </div>
               </div>
             </CardContent>

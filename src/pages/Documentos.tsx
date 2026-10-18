@@ -1,3 +1,4 @@
+import { BaseLegalBadge } from "@/components/BaseLegalBadge";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { FileText, Plus, Loader2, Wrench, Gauge, AlertCircle, ExternalLink, Upload, FolderOpen, Trash2, History, GitBranch, Send, CheckCircle2, Archive } from "lucide-react";
@@ -430,7 +431,7 @@ export default function Documentos() {
         <TabsContent value="pops">
           <Card>
             <CardHeader>
-              <CardTitle className="font-display">10 POPs Obrigatórios — IN nº 04/2007 / Decreto 12.031/2024</CardTitle>
+              <CardTitle className="font-display">10 POPs Obrigatórios — IN nº 04/2007 / <BaseLegalBadge assunto="autocontrole" /></CardTitle>
               <p className="text-xs text-muted-foreground mt-1">Procedimentos operacionais padrão exigidos pelo MAPA para fábricas de alimentação animal</p>
             </CardHeader>
             <CardContent className="p-2 sm:p-6 overflow-x-auto">
@@ -965,7 +966,7 @@ export default function Documentos() {
               <div><Label>Nova Versão</Label><Input value={versaoNova} onChange={e => setVersaoNova(e.target.value)} /></div>
             </div>
             <div><Label>Responsável pela Revisão</Label><Input value={versaoResponsavel} onChange={e => setVersaoResponsavel(e.target.value)} /></div>
-            <div><Label>Motivo da Revisão</Label><Input value={versaoMotivo} onChange={e => setVersaoMotivo(e.target.value)} placeholder="Ex: Atualização conforme IN 15/2009" /></div>
+            <div><Label>Motivo da Revisão</Label><Input value={versaoMotivo} onChange={e => setVersaoMotivo(e.target.value)} placeholder="Ex: Atualização" /></div>
             <div><Label>Descrição das Alterações</Label><Textarea value={versaoAlteracoes} onChange={e => setVersaoAlteracoes(e.target.value)} placeholder="Descreva o que mudou nesta revisão..." /></div>
             <Button onClick={handleRevisarPop} className="w-full" disabled={saving}>{saving && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}Registrar Revisão</Button>
           </div>

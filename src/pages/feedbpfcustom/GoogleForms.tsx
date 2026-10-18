@@ -138,7 +138,7 @@ export default function GoogleForms() {
             <CardContent className="text-sm space-y-2">
               <p>• Os títulos das perguntas do Form viram as chaves dos dados salvos — use nomes idênticos aos campos do seu Modelo para melhor rastreabilidade.</p>
               <p>• Inclua uma pergunta chamada <strong>Responsável</strong> no Form para preencher automaticamente esse campo no registro.</p>
-              <p>• Cada envio gera um hash SHA-256 imutável (Decreto 12.031/2024).</p>
+              <p>• Cada envio gera um hash SHA-256 imutável.</p>
               <p>• Você pode conectar vários Forms ao mesmo modelo — todos usam o mesmo token.</p>
               <a href="https://script.google.com" target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-emerald-600 hover:underline">
                 Abrir Google Apps Script <ExternalLink className="h-3 w-3" />

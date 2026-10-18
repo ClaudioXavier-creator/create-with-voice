@@ -166,8 +166,8 @@ export default function Pragas() {
 
   return (
     <div className="space-y-6">
-      <PageHeader icon={Bug} title="POP 07 - Controle de Pragas" description="Monitoramento integrado de pragas e registros de expurgo — IN 04/2007"
-        orientacaoModuloId="pragas" />
+      <PageHeader icon={Bug} title="POP 07 - Controle de Pragas" description="Monitoramento integrado de pragas e registros de expurgo"
+        orientacaoModuloId="pragas"  assuntoBaseLegal="controle_pragas" />
       <div className="flex justify-end mb-3"><AnexarPlanilhaPop popCodigo="POP-07" popNome="Controle Integrado de Pragas" /></div>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -272,7 +272,7 @@ export default function Pragas() {
                 </DialogTrigger>
                 <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
                   <DialogHeader><DialogTitle>Registro de Operação de Expurgo</DialogTitle></DialogHeader>
-                  <p className="text-xs text-muted-foreground mb-2">Conforme IN 04/2007 — POP 07. Registrar todas as operações de expurgo/fumigação realizadas.</p>
+                  <p className="text-xs text-muted-foreground mb-2">— POP 07. Registrar todas as operações de expurgo/fumigação realizadas.</p>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div><Label>Data Início</Label><Input type="date" value={expurgoForm.data_inicio} onChange={e => setExpurgoForm(f => ({ ...f, data_inicio: e.target.value }))} /></div>
                     <div><Label>Data Fim</Label><Input type="date" value={expurgoForm.data_fim} onChange={e => setExpurgoForm(f => ({ ...f, data_fim: e.target.value }))} /></div>

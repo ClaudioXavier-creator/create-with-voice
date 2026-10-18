@@ -85,7 +85,7 @@ export default function FichaTecnica({ produtoId }: Props) {
           </Button>
         </CardHeader>
         <CardContent>
-          <p className="text-sm text-muted-foreground">Esta é a visualização oficial do produto para controle de qualidade e registros do Decreto 12.031/2024.</p>
+          <p className="text-sm text-muted-foreground">Esta é a visualização oficial do produto para controle de qualidade e registros.</p>
         </CardContent>
       </Card>
 
@@ -190,8 +190,8 @@ export default function FichaTecnica({ produtoId }: Props) {
             })) }} />
             <p className="text-[9px] text-muted-foreground italic text-center max-w-md">
               Documento gerado eletronicamente pelo Sistema BPF Digital em {new Date().toLocaleString("pt-BR")}. 
-              Conformidade garantida conforme Decreto 12.031/2024.
-            </p>
+ Conformidade garantida.
+ </p>
           </div>
         </div>
       </div>

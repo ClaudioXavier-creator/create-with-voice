@@ -195,7 +195,7 @@ export default function Auditoria() {
       toast.error("Erro ao concluir auditoria: " + error.message);
       return;
     }
-    toast.success("Auditoria concluída e travada (Decreto 12.031/2024).");
+    toast.success("Auditoria concluída e travada.");
     setAtiva({ ...ativa, status: "concluido" });
     fetchAuditorias();
   };
@@ -226,17 +226,18 @@ export default function Auditoria() {
 
   return (
     <>
-      <PageHeader icon={ClipboardCheck} title="Auditoria BPF" description="Checklist conforme Decreto 12.031/2024 — MAPA — Categorização de Risco"
-        orientacaoModuloId="auditoria" />
+      <PageHeader icon={ClipboardCheck} title="Auditoria BPF" description="Checklist de auditoria e categorização de risco"
+        orientacaoModuloId="auditoria"  assuntoBaseLegal="autocontrole" />
 
       <div className="mb-4 flex flex-wrap gap-2">
         <Badge variant="outline" className="text-xs border-primary/40 text-primary">
           <FileText className="w-3 h-3 mr-1" />
-          Decreto nº 12.031/2024 — {totais.total} itens de verificação
+           {totais.total} itens de verificação
         </Badge>
         <Badge variant="outline" className="text-xs border-destructive/40 text-destructive">
-          Inclui categorização de risco (Art. 79-86)
-        </Badge>
+          
+ Inclui categorização de risco 
+ </Badge>
       </div>
 
       {/* Barra de ações */}
@@ -283,9 +284,9 @@ export default function Auditoria() {
               <AlertDialogHeader>
                 <AlertDialogTitle>Concluir auditoria?</AlertDialogTitle>
                 <AlertDialogDescription>
-                  Após concluir, as respostas ficam travadas e não poderão ser editadas ou excluídas
-                  (Decreto 12.031/2024). Correções posteriores devem ser feitas via Não Conformidade.
-                </AlertDialogDescription>
+                  
+ Após concluir, as respostas ficam travadas e não poderão ser editadas ou excluídas. Correções posteriores devem ser feitas via Não Conformidade.
+ </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
                 <AlertDialogCancel>Voltar</AlertDialogCancel>
@@ -421,7 +422,8 @@ export default function Auditoria() {
                               </span>
                             </TooltipTrigger>
                             <TooltipContent>
-                              <p>POP vinculado: {item.popVinculado} — Ver em Execução ITs/POPs</p>
+                              <p>POP vinculado: {item.popVinculado}
+ </p>
                             </TooltipContent>
                           </Tooltip>
                         )}

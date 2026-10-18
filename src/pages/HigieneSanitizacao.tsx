@@ -1,3 +1,4 @@
+import { BaseLegalBadge } from "@/components/BaseLegalBadge";
 import { getBaseLegal } from "@/config/baseLegal";
 import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
@@ -496,9 +497,9 @@ export default function HigieneSanitizacao() {
       <PageHeader 
         icon={Droplets}
         title="POP 02 - Higiene e Sanitização" 
-        description={`Procedimentos de limpeza de instalações, equipamentos e utensílios conforme ${getBaseLegal("bpf_geral").citacao} e IN 15/2009`}
+        description="Procedimentos de limpeza de instalações, equipamentos e utensílios"
         orientacaoModuloId="higiene" 
-      />
+       assuntoBaseLegal="bpf_geral" />
       
       <div className="flex flex-wrap justify-between items-center gap-3 mb-3">
         <Button variant="outline" size="sm" onClick={() => navigate("/documentos-bpf?tab=retencao")} className="gap-2">
@@ -529,11 +530,10 @@ export default function HigieneSanitizacao() {
               <div className="flex items-start gap-3">
                 <ShieldCheck className="w-6 h-6 text-primary mt-0.5" />
                 <div>
-                  <h4 className="font-display font-semibold text-sm">Checklist Pré-Operacional — POP 02/03 ({getBaseLegal("bpf_geral").citacao})</h4>
+                  <h4 className="font-display font-semibold text-sm">Checklist Pré-Operacional — POP 02/03 () <BaseLegalBadge assunto="bpf_geral" /></h4>
                   <p className="text-xs text-muted-foreground mt-1">
-                    Verificação obrigatória antes do início de cada turno/produção. Todos os itens devem ser inspecionados
-                    e registrados conforme Art. 2º da {getBaseLegal("bpf_geral").citacao} e requisitos de BPF da IN 15/2009.
-                  </p>
+ Verificação obrigatória antes do início de cada turno/produção. Todos os itens devem ser inspecionados
+ e registrados </p>
                 </div>
               </div>
             </CardContent>
@@ -696,12 +696,12 @@ export default function HigieneSanitizacao() {
               <div className="flex items-start gap-3">
                 <Layers className="w-6 h-6 text-orange-600 mt-0.5" />
                 <div>
-                  <h4 className="font-display font-semibold text-sm">Checklist de Liberação de Linha — POP-02 ({getBaseLegal("bpf_geral").citacao} | IN 15/2009)</h4>
+                  <h4 className="font-display font-semibold text-sm">Checklist de Liberação de Linha — POP-02 (  | ) <BaseLegalBadge assunto="bpf_geral" /></h4>
                   <p className="text-xs text-muted-foreground mt-1">
                     Verificação obrigatória antes da troca de produto/lote na linha de produção.
                     Garante ausência de contaminação cruzada, conformidade com limites de carry-over
-                    (Ionóforos {"<"} 1%, Medicados {"<"} 3%) e rastreabilidade do flushing conforme IN 15/2009.
-                  </p>
+                    (Ionóforos {"<"} 1%, Medicados {"<"} 3%) e rastreabilidade do flushing.
+ </p>
                 </div>
               </div>
             </CardContent>
@@ -814,12 +814,12 @@ export default function HigieneSanitizacao() {
               <div className="flex items-start gap-3">
                 <FlaskConical className="w-6 h-6 text-emerald-600 mt-0.5" />
                 <div>
-                  <h4 className="font-display font-semibold text-sm">Monitoramento de Limpeza de Superfícies — POP-02/03 ({getBaseLegal("bpf_geral").citacao})</h4>
+                  <h4 className="font-display font-semibold text-sm">Monitoramento de Limpeza de Superfícies — POP-02/03 () <BaseLegalBadge assunto="bpf_geral" /></h4>
                   <p className="text-xs text-muted-foreground mt-1">
                     Verificação da eficácia da limpeza em superfícies de contato direto e indireto.
                     Inclui inspeção visual, swab de superfície, teste de água de enxágue e bioluminescência ATP
-                    conforme requisitos de BPF da {getBaseLegal("bpf_geral").citacao} e IN 15/2009.
-                  </p>
+                    conforme os procedimentos de BPF.
+ </p>
                 </div>
               </div>
             </CardContent>
@@ -945,11 +945,10 @@ export default function HigieneSanitizacao() {
               <div className="flex items-start gap-3">
                 <Container className="w-6 h-6 text-amber-600 mt-0.5" />
                 <div>
-                  <h4 className="font-display font-semibold text-sm">Limpeza de Silos & Transportadores — POP-02 (IN 15/2009)</h4>
+                  <h4 className="font-display font-semibold text-sm">Limpeza de Silos & Transportadores — POP-02 </h4>
                   <p className="text-xs text-muted-foreground mt-1">
-                    Cronograma e checklist dedicado à higienização de silos e linhagens de transporte para prevenir o arraste
-                    de medicamentos e aditivos entre lotes. Obrigatório conforme IN 15/2009, Art. 38 do {getBaseLegal("decreto_base").citacao}.
-                  </p>
+ Cronograma e checklist dedicado à higienização de silos e linhagens de transporte para prevenir o arraste
+ de medicamentos e aditivos entre lotes. Obrigatório </p>
                 </div>
               </div>
             </CardContent>
@@ -1171,7 +1170,7 @@ export default function HigieneSanitizacao() {
                         <Droplets className="w-4 h-4 text-yellow-600" />
                         <h4 className="text-sm font-semibold text-yellow-700 dark:text-yellow-400">POP-02: Silos/Equipamentos sem Cronograma de Higienização</h4>
                       </div>
-                      <p className="text-xs text-muted-foreground mb-2">{getBaseLegal("bpf_geral").citacao} Art. 2º exige cronograma de higienização para todos os silos e equipamentos de produção.</p>
+                      <p className="text-xs text-muted-foreground mb-2">Mantenha o cronograma de higienização de todos os silos e equipamentos de produção.</p>
                       <div className="flex flex-wrap gap-2">
                         {semCronograma.map(s => <Badge key={s} variant="outline" className="border-yellow-500 text-yellow-700">{s}</Badge>)}
                       </div>
@@ -1228,7 +1227,7 @@ export default function HigieneSanitizacao() {
                   </div>
                   {/* POP-02: Tipo de limpeza — IN 15/2009 */}
                   <div>
-                    <Label>Tipo de Limpeza (IN 15/2009) *</Label>
+                    <Label>Tipo de Limpeza *</Label>
                     <Select value={(regForm as any).tipo_limpeza || "umida"} onValueChange={v => setRegForm(p => ({ ...p, tipo_limpeza: v } as any))}>
                       <SelectTrigger><SelectValue /></SelectTrigger>
                       <SelectContent>
@@ -1355,7 +1354,7 @@ export default function HigieneSanitizacao() {
                   <h4 className="font-semibold text-sm">Planilha Mensal de Higiene e Sanitização</h4>
                   <p className="text-xs text-muted-foreground mt-1">
                     Consolidação mensal dos registros de limpeza (POP-02/03) e controle de água (POP-04)
-                    para atender {getBaseLegal("bpf_geral").citacao} e IN 15/2009. Disponível para fiscalização (Art. 18, {getBaseLegal("decreto_base").citacao}).
+                    para acompanhamento e fiscalização.
                   </p>
                 </div>
               </div>

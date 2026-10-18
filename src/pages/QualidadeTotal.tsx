@@ -1,4 +1,4 @@
-import { getBaseLegal } from "@/config/baseLegal";
+import { BaseLegalBadge } from "@/components/BaseLegalBadge";
 import { useState, useEffect } from "react";
 import {
   ClipboardList,
@@ -311,8 +311,8 @@ export default function QualidadeTotal() {
       <PageHeader
         icon={ClipboardList}
         title="Qualidade Total – Relatório Técnico"
-        description={`Reclamações, contraprovas, análise técnica e recolhimento de produtos. Ref.: POP-008 / ${getBaseLegal("bpf_geral").citacao}`}
-      />
+        description="Reclamações, contraprovas, análise técnica e recolhimento de produtos"
+       assuntoBaseLegal="bpf_geral" />
 
       <Tabs value={mainTab} onValueChange={setMainTab}>
         <TabsList>
@@ -322,7 +322,7 @@ export default function QualidadeTotal() {
           </TabsTrigger>
           <TabsTrigger value="contraprova">
             <ShieldCheck className="w-4 h-4 mr-1" />
-            Contraprova ({getBaseLegal("amostra_arquivo").citacao})
+            Contraprova ()
           </TabsTrigger>
         </TabsList>
 
@@ -875,11 +875,11 @@ export default function QualidadeTotal() {
                 <ShieldCheck className="w-6 h-6 text-primary mt-0.5" />
                 <div>
                   <h4 className="font-display font-semibold text-sm">
-                    Amostras de Contraprova (Retenção) — {getBaseLegal("amostra_arquivo").citacao}
-                  </h4>
+                    Amostras de Contraprova (Retenção) — 
+                   <BaseLegalBadge assunto="amostra_arquivo" /></h4>
                   <p className="text-xs text-muted-foreground mt-1">
                     Controle de amostras de retenção com validade de 6 meses. Registros do Recebimento de MP e Produção
-                    com contraprova retida. Essencial para defesa em fiscalizações (autocontrole — {getBaseLegal("amostra_arquivo").citacao}).
+                    com contraprova retida. Essencial para defesa em fiscalizações no autocontrole.
                   </p>
                 </div>
               </div>
@@ -1067,7 +1067,7 @@ export default function QualidadeTotal() {
                   <p className="text-xs text-muted-foreground mt-1">
                     As amostras de contraprova (testemunha) devem ser retidas pelo prazo mínimo de 6 meses ou pelo prazo
                     de validade do produto, o que for maior. As amostras vencidas devem ser descartadas conforme POP-08
-                    (Controle de Resíduos). {getBaseLegal("bpf_geral").citacao}, {getBaseLegal("decreto_base").citacao}.
+                    (Controle de Resíduos). , .
                   </p>
                 </div>
               </div>

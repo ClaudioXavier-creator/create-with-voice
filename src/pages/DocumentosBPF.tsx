@@ -1,3 +1,5 @@
+import { textoTela } from "@/lib/textoTela";
+import { BaseLegalBadge } from "@/components/BaseLegalBadge";
 import { useState, useEffect, useMemo } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 
@@ -228,16 +230,16 @@ export default function DocumentosBPF() {
               <div className="flex items-start gap-3">
                 <Archive className="w-6 h-6 text-primary mt-0.5" />
                 <div>
-                  <h4 className="font-display font-semibold text-sm">Política de Retenção de Registros — Decreto 12.031/2024</h4>
+                  <h4 className="font-display font-semibold text-sm">Política de Retenção de Registros <BaseLegalBadge assunto="autocontrole" /></h4>
                   <p className="text-xs text-muted-foreground mt-1">
                     Todos os registros de BPF devem ser mantidos por no mínimo <strong>2 (dois) anos</strong> e estar
                     disponíveis para fiscalização a qualquer momento. O sistema retém automaticamente todos os dados
                     e impede exclusão de registros dentro do prazo de guarda obrigatório.
                   </p>
                   <div className="flex flex-wrap gap-2 mt-2">
-                    <Badge variant="outline" className="text-[10px]">Art. 18 — Decreto 12.031/2024</Badge>
-                    <Badge variant="outline" className="text-[10px]">IN 04/2007 — Requisitos de Documentação</Badge>
-                    <Badge variant="outline" className="text-[10px]">IN 15/2009 — Controle de Registros</Badge>
+                    
+                    
+                    <Badge variant="outline" className="text-[10px]"> — Controle de Registros</Badge>
                   </div>
                 </div>
               </div>
@@ -339,7 +341,7 @@ export default function DocumentosBPF() {
                   <Select value={tipo} onValueChange={setTipo}>
                     <SelectTrigger><SelectValue /></SelectTrigger>
                     <SelectContent>
-                      {TIPOS_DOC.map(t => <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>)}
+                      {TIPOS_DOC.map(t => <SelectItem key={t.value} value={t.value}>{textoTela(t.label)}</SelectItem>)}
                     </SelectContent>
                   </Select>
                 </div>
@@ -434,7 +436,7 @@ export default function DocumentosBPF() {
                       <TableCell className="font-mono text-xs">{d.pop_codigo || "—"}</TableCell>
                       <TableCell>
                         <p className="text-sm font-medium">{d.titulo}</p>
-                        {d.descricao && <p className="text-xs text-muted-foreground">{d.descricao}</p>}
+                        {d.descricao && <p className="text-xs text-muted-foreground">{textoTela(d.descricao)}</p>}
                       </TableCell>
                       <TableCell className="text-xs text-muted-foreground truncate max-w-[140px]">{d.arquivo_nome}</TableCell>
                       <TableCell>

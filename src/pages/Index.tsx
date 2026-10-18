@@ -148,7 +148,7 @@ export default function Index() {
       if (docsVencidos > 0 || alertas.some(a => a.tipo === "documento")) {
         acoesPrioritarias.push({ 
           titulo: "Conformidade MAPA (Revisão Anual)", 
-          detalhe: "POPs e ITs exigem revisão anual obrigatória conforme IN 04/2007.", 
+          detalhe: "POPs e ITs exigem revisão anual obrigatória.", 
           criticidade: docsVencidos > 0 ? "critico" : "atencao", 
           link: "/planilhas-pop" 
         });

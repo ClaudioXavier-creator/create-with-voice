@@ -277,9 +277,9 @@ export default function ArmazenamentoTransporte() {
       <PageHeader
         icon={Warehouse}
         title="POP 01 e POP 02 - Armazenamento e Transporte"
-        description="Armazenamento (POP 01) e Transporte (POP 02 - Higiene de Veículos) — IN 04/2007"
+        description="Armazenamento (POP 01) e Transporte (POP 02 - Higiene de Veículos)"
         orientacaoModuloId="armazenamento-transporte"
-      />
+       assuntoBaseLegal="bpf_geral" />
 
       <Tabs defaultValue="veiculo" className="space-y-4">
         <TabsList className="flex-wrap">
@@ -296,7 +296,7 @@ export default function ArmazenamentoTransporte() {
               <div className="flex items-start gap-3">
                 <Truck className="w-6 h-6 text-primary mt-0.5" />
                 <div>
-                  <h4 className="font-semibold text-sm">POP-02 / PL POP 2.4 — Inspeção e Higiene de Veículos de Transporte (IN 15/2009)</h4>
+                  <h4 className="font-semibold text-sm">POP-02 / PL POP 2.4 — Inspeção e Higiene de Veículos de Transporte </h4>
                   <p className="text-xs text-muted-foreground mt-1">
                     Todo veículo de transporte de matéria-prima ou produto acabado deve ser inspecionado
                     quanto a limpeza, integridade e ausência de contaminantes antes da carga/descarga.
@@ -381,9 +381,9 @@ export default function ArmazenamentoTransporte() {
                 <div>
                   <h4 className="font-semibold text-sm">POP-01 — Controle de Temperatura e Umidade dos Depósitos</h4>
                   <p className="text-xs text-muted-foreground mt-1">
-                    Registro diário ou por turno de temperatura e umidade relativa nos depósitos de
-                    matéria-prima e produto acabado (condições de armazenamento — IN 04/2007).
-                  </p>
+ Registro diário ou por turno de temperatura e umidade relativa nos depósitos de
+ matéria-prima e produto acabado (condições de armazenamento ).
+ </p>
                   <div className="flex gap-2 mt-2">
                     <Badge variant="outline" className="text-[10px]">Temp ideal: 15–25°C</Badge>
                     <Badge variant="outline" className="text-[10px]">Umidade ideal: 40–65%</Badge>

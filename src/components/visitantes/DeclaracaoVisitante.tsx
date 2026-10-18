@@ -150,9 +150,9 @@ ${carimboHTML(gerarCarimboSync({
             Declaração e Termo de Responsabilidade do Visitante
           </CardTitle>
           <p className="text-xs text-muted-foreground">
-            Formulário completo de biosseguridade conforme IN 15/2009 e Decreto 12.031/2024.
-            Preencha, marque todas as declarações e imprima para assinatura física.
-          </p>
+ Formulário completo de biosseguridade.
+ Preencha, marque todas as declarações e imprima para assinatura física.
+ </p>
         </CardHeader>
         <CardContent className="space-y-6">
           {/* Dados do visitante */}

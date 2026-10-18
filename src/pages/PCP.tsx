@@ -423,7 +423,7 @@ export default function PCP() {
   const handleAddBatida = async () => {
     if (!batidaOrdemId || !user) return;
     if (!limpezaConfirmada) {
-      toast.error("⚠️ É obrigatório confirmar a limpeza entre lotes antes de registrar a batida (IN 15/2009).");
+      toast.error("⚠️ É obrigatório confirmar a limpeza entre lotes antes de registrar a batida.");
       return;
     }
     setSaving(true);
@@ -659,9 +659,9 @@ export default function PCP() {
               Sequenciamento de Produção — Prevenção de Contaminação Cruzada
             </CardTitle>
             <p className="text-xs text-muted-foreground mt-1">
-              IN 15/2009 — Sequência baseada na Matriz de Sensibilidade. Flushing/lavagem obrigatórios entre produtos
-              com restrição.
-            </p>
+ — Sequência baseada na Matriz de Sensibilidade. Flushing/lavagem obrigatórios entre produtos
+ com restrição.
+ </p>
             <div className="flex flex-wrap gap-2 mt-2">
               <Badge variant="outline" className="text-[10px] border-yellow-500 text-yellow-700">
                 Vassouragem: sem restrição
@@ -725,7 +725,7 @@ export default function PCP() {
               <div className="space-y-2">
                 <p className="text-[10px] text-muted-foreground mb-2">
                   💡 Defina a sequência para minimizar limpezas entre lotes. Produtos medicados devem ser produzidos por
-                  último no dia ({getBaseLegal("bpf_geral").citacao}).
+                  último no dia ().
                 </p>
                 {sequencia.map(({ ordem, anterior, requerFlushing, tipoLimpeza }, i) => (
                   <div
@@ -784,7 +784,7 @@ export default function PCP() {
 
                 {/* Procedimentos de Flushing — IN 15/2009 */}
                 <div className="mt-4 p-3 rounded-lg border bg-muted/30">
-                  <p className="text-xs font-semibold mb-2">📋 Procedimentos de Flushing — IN 15/2009</p>
+                  <p className="text-xs font-semibold mb-2">📋 Procedimentos de Flushing </p>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
                     <div className="p-2 rounded border bg-background">
                       <p className="font-semibold text-muted-foreground mb-1">Vassouragem</p>
@@ -1233,8 +1233,7 @@ export default function PCP() {
                             <div className="space-y-3">
                               <div className="p-3 rounded-lg border border-blue-500/20 bg-blue-50 dark:bg-blue-900/10">
                                 <p className="text-xs font-semibold text-blue-700 flex items-center gap-1">
-                                  <Droplets className="w-4 h-4" /> Ordem de Limpeza (Flush) — IN 15/2009
-                                </p>
+                                  <Droplets className="w-4 h-4" /> Ordem de Limpeza (Flush) </p>
                                 <p className="text-[10px] text-muted-foreground mt-1">
                                   Registro obrigatório de limpeza entre batidas de fórmulas diferentes para prevenir
                                   contaminação cruzada.
@@ -1305,7 +1304,8 @@ export default function PCP() {
                                   <TestTube className="w-5 h-5 text-orange-600 mt-0.5" />
                                   <div>
                                     <p className="text-xs font-semibold">
-                                      Teste de Carry-over — IN 15/2009 | {getBaseLegal("decreto_base").citacao}
+                                      
+ Teste de Carry-over —
                                     </p>
                                     <p className="text-[10px] text-muted-foreground mt-1">
                                       Limite de arraste: Ionóforos {"<"} 1% da dose terapêutica • Medicados {"<"} 3% da
@@ -1499,16 +1499,15 @@ export default function PCP() {
                 >
                   <p className="text-xs font-semibold mb-2 flex items-center gap-1">
                     <AlertTriangle className={`w-4 h-4 ${alertaEEB ? "text-destructive" : "text-yellow-600"}`} />
-                    Verificação de Limpeza entre Lotes — IN 15/2009 / {getBaseLegal("decreto_base").citacao}
-                  </p>
+ Verificação de Limpeza entre Lotes — / </p>
                   {alertaEEB && (
                     <div className="p-2 rounded bg-destructive/10 border border-destructive/30 mb-3">
                       <p className="text-xs text-destructive font-bold">
                         ⚠️ ALERTA EEB: Esta ordem contém ingredientes de origem animal com destino a ruminantes!
                       </p>
                       <p className="text-[10px] text-destructive/80">
-                        Obrigatório flushing ou lavagem completa da linha. Vassouragem NÃO é suficiente (IN 15/2009).
-                      </p>
+ Obrigatório flushing ou lavagem completa da linha. Vassouragem NÃO é suficiente.
+ </p>
                     </div>
                   )}
                   {contemRestricao && !produtoRuminante && (
@@ -1643,13 +1642,13 @@ export default function PCP() {
       <Dialog open={carryoverOpen} onOpenChange={setCarryoverOpen}>
         <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Registrar Teste de Carry-over — IN 15/2009</DialogTitle>
+            <DialogTitle>Registrar Teste de Carry-over </DialogTitle>
           </DialogHeader>
           <div className="space-y-3">
             <div className="p-3 rounded-lg border border-orange-500/20 bg-orange-50 dark:bg-orange-900/10">
               <p className="text-xs font-semibold flex items-center gap-1">
-                <Shield className="w-4 h-4 text-orange-600" /> Limites de Arraste (IN 15/2009)
-              </p>
+                <Shield className="w-4 h-4 text-orange-600" />  Limites de Arraste 
+ </p>
               <div className="grid grid-cols-3 gap-2 mt-2 text-[10px]">
                 <div className="text-center">
                   <span className="font-bold text-orange-700">Ionóforos</span>
@@ -1752,7 +1751,7 @@ export default function PCP() {
               />
               <div>
                 <Label className="text-sm font-semibold">Resultado Conforme</Label>
-                <p className="text-[10px] text-muted-foreground">Resíduo dentro dos limites aceitáveis da IN 15/2009</p>
+                <p className="text-[10px] text-muted-foreground">Resíduo dentro dos limites aceitáveis</p>
               </div>
               {coConforme ? (
                 <CheckCircle2 className="w-5 h-5 text-green-600 ml-auto" />
@@ -1780,8 +1779,7 @@ export default function PCP() {
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <Droplets className="w-5 h-5 text-blue-600" /> Validação de Limpeza de Linha — IN 15/2009
-            </DialogTitle>
+              <Droplets className="w-5 h-5 text-blue-600" /> Validação de Limpeza de Linha </DialogTitle>
           </DialogHeader>
           <div className="space-y-3 pr-2">
             {/* Informações Básicas */}
@@ -1875,8 +1873,7 @@ export default function PCP() {
             {/* ── CHECKLIST DE VALIDAÇÃO — IN 15/2009 ── */}
             <div className="p-3 rounded-lg border-2 border-blue-500/30 bg-blue-50 dark:bg-blue-900/10 space-y-2">
               <p className="text-xs font-bold text-blue-700 dark:text-blue-400 flex items-center gap-1">
-                <CheckCircle2 className="w-4 h-4" /> Checklist de Validação de Limpeza — IN 15/2009
-              </p>
+                <CheckCircle2 className="w-4 h-4" /> Checklist de Validação de Limpeza </p>
               <p className="text-[10px] text-muted-foreground">
                 Todos os itens devem ser verificados antes da liberação da linha.
               </p>
