@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { ORIENTACAO_CONTRAPROVA } from "@/config/baseLegal";
 import {
   Factory,
   Plus,
@@ -658,8 +659,7 @@ export default function Producao() {
                       🧪 Retenção de Amostra (Contraprova)
                     </p>
                     <p className="text-[10px] text-muted-foreground">
-                      Reter amostra testemunha de cada lote produzido pelo prazo de validade do produto + 30 dias para
-                      defesa em fiscalizações.
+                      {ORIENTACAO_CONTRAPROVA}
                     </p>
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                       <div>

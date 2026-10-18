@@ -1,6 +1,6 @@
 import { textoTela } from "@/lib/textoTela";
 import { BaseLegalBadge } from "@/components/BaseLegalBadge";
-import { getBaseLegal } from "@/config/baseLegal";
+import { citar, getBaseLegal } from "@/config/baseLegal";
 import { useState, useEffect } from "react";
 import {
   FileDown,
@@ -534,10 +534,10 @@ ${(() => {
       const dataHora = now.toLocaleString("pt-BR");
       const dataLabel = now.toISOString().slice(0, 10);
 
-      // Header Art. 18 — baseLegal: decreto_base
+      // Cabeçalho — registros de rastreabilidade
       let fullCsv = "";
       fullCsv += `RELATÓRIO DE REGISTROS — SISTEMA BPF\n`;
-      fullCsv += `Art. 18 do ${getBaseLegal("decreto_base").citacao} — Disponibilização de registros ao SIF/MAPA\n`;
+      fullCsv += `${citar("Decreto 12.031/2024", "arts. 41 e 57, §2º")} — Disponibilização de registros ao SIF/MAPA\n`;
       fullCsv += `Data/Hora de Geração: ${dataHora}\n`;
       fullCsv += `Módulos incluídos: ${modulesToExport.map((m) => m.label).join(", ")}\n`;
       fullCsv += `Total de módulos: ${modulesToExport.length}\n`;
@@ -583,7 +583,7 @@ ${(() => {
       fullCsv += `\n========================================\n`;
       fullCsv += `FIM DO RELATÓRIO\n`;
       fullCsv += `Gerado em: ${dataHora}\n`;
-      fullCsv += `${getBaseLegal("decreto_base").citacao} — Art. 18: Os registros devem estar disponíveis ao SIF em formato organizado.\n`;
+      fullCsv += `${citar("Decreto 12.031/2024", "arts. 41 e 57, §2º")}: Os registros devem estar disponíveis ao SIF em formato organizado.\n`;
       fullCsv += `Este documento é parte integrante do programa de autocontrole (PAC/BPF).\n`;
       fullCsv += `========================================\n`;
 
@@ -834,7 +834,7 @@ ${(() => {
                           const cols = Object.keys(labels);
                           gerarRelatorioPDF({
                             title: `Relatório — ${mod.label}`,
-                            subtitle: `Art. 18 do ${getBaseLegal("decreto_base").citacao}`,
+                            subtitle: citar("Decreto 12.031/2024", "arts. 41 e 57, §2º"),
                             columns: cols.map((c) => ({ header: labels[c], accessor: c })),
                             data: (data || []) as Record<string, unknown>[],
                           });
