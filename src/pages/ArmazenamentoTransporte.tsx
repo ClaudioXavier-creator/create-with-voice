@@ -382,7 +382,7 @@ export default function ArmazenamentoTransporte() {
                   <h4 className="font-semibold text-sm">POP-01 — Controle de Temperatura e Umidade dos Depósitos</h4>
                   <p className="text-xs text-muted-foreground mt-1">
  Registro diário ou por turno de temperatura e umidade relativa nos depósitos de
- matéria-prima e produto acabado (condições de armazenamento ).
+ matéria-prima e produto acabado (condições de armazenamento).
  </p>
                   <div className="flex gap-2 mt-2">
                     <Badge variant="outline" className="text-[10px]">Temp ideal: 15–25°C</Badge>

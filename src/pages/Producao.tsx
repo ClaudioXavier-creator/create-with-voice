@@ -805,8 +805,7 @@ export default function Producao() {
               o módulo <strong>PCP / Ordens de Produção</strong>.
             </p>
             <p>
-              <strong>⏱️ Homogeneidade:</strong> Tempo mínimo de mistura de {TEMPO_MISTURA_MINIMO} min conforme
-              validação da . Registros abaixo deste valor são sinalizados.
+              <strong>⏱️ Homogeneidade:</strong> Tempo mínimo de mistura de {TEMPO_MISTURA_MINIMO} min. Registros abaixo deste valor são sinalizados.
             </p>
             <p>
               <strong>🧹 Sobras:</strong> Registre todas as sobras/vassouras e seu destino (reprocesso ou descarte).

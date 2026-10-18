@@ -322,7 +322,7 @@ export default function QualidadeTotal() {
           </TabsTrigger>
           <TabsTrigger value="contraprova">
             <ShieldCheck className="w-4 h-4 mr-1" />
-            Contraprova ()
+            Contraprova
           </TabsTrigger>
         </TabsList>
 
@@ -875,8 +875,7 @@ export default function QualidadeTotal() {
                 <ShieldCheck className="w-6 h-6 text-primary mt-0.5" />
                 <div>
                   <h4 className="font-display font-semibold text-sm">
-                    Amostras de Contraprova (Retenção) — 
-                   <BaseLegalBadge assunto="amostra_arquivo" /></h4>
+                    Amostras de Contraprova (Retenção) <BaseLegalBadge assunto="amostra_arquivo" /></h4>
                   <p className="text-xs text-muted-foreground mt-1">
                     Controle de amostras de retenção com validade de 6 meses. Registros do Recebimento de MP e Produção
                     com contraprova retida. Essencial para defesa em fiscalizações no autocontrole.
@@ -1067,7 +1066,7 @@ export default function QualidadeTotal() {
                   <p className="text-xs text-muted-foreground mt-1">
                     As amostras de contraprova (testemunha) devem ser retidas pelo prazo mínimo de 6 meses ou pelo prazo
                     de validade do produto, o que for maior. As amostras vencidas devem ser descartadas conforme POP-08
-                    (Controle de Resíduos). , .
+                    (Controle de Resíduos).
                   </p>
                 </div>
               </div>

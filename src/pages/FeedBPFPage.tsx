@@ -51,7 +51,7 @@ export default function FeedBPFPage() {
     <div className="min-h-screen bg-background flex flex-col">
       <Seo
         title="Feed_BPF — Gestão de Boas Práticas de Fabricação de Ração"
-        description="Digitalize os 10 POPs obrigatórios da, rastreabilidade e recall."
+        description="Digitalize os 10 POPs e os registros de rastreabilidade e recall."
         jsonLd={{"@context": "https://schema.org", "@type": "Product", "name": "Feed_BPF", "description": "Sistema de gestão de Boas Práticas de Fabricação para fábricas de ração.", "brand": {"@type": "Brand", "name": "BPF_Consult"}}}
       />
       <header className="relative overflow-hidden">

@@ -165,7 +165,7 @@ export default function LandingPageBPF() {
             <Card className="p-8 border-t-4 border-t-[#173404] shadow-lg rounded-2xl text-center">
               <ShieldCheck className="h-12 w-12 text-[#173404] mx-auto mb-6" />
               <h3 className="font-bold text-xl mb-4">Conformidade Garantida</h3>
-              <p className="text-slate-600">Desenvolvido com base e nas normas MAPA vigentes. Você opera com segurança.</p>
+              <p className="text-slate-600">Desenvolvido para apoiar os procedimentos de BPF e a organização dos registros da sua fábrica.</p>
             </Card>
           </div>
         </div>
