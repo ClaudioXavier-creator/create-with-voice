@@ -5,6 +5,7 @@
   "auth": {
     "type": "oauth",
     "issuer": "https://uyrcxfypdzasdminxizq.supabase.co/auth/v1",
+    "require_oauth_client_claim": true,
     "accepted_audiences": [
       "authenticated"
     ]

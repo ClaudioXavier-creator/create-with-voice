@@ -1,8 +1,9 @@
 # Integrações de agentes
 
-- [ ] Adicionar MCP protegido com leituras por empresa e consentimento OAuth, sem ampliar permissões.
-- [ ] Adicionar ferramentas de leitura na tela de empresas; validar testes, catálogo e tela de consentimento.
-- [ ] Solicitar republicação após validar o catálogo; não publicar automaticamente.
+- [x] Adicionar MCP protegido com leituras por empresa e consentimento OAuth, sem ampliar permissões.
+- [x] Adicionar leitura na tela de empresas; catálogo gerado, 14 testes passaram, build OK; retorno login/cadastro e solicitação inválida conferidos com conta real.
+- [x] Solicitar republicação após validar o catálogo; não publicar automaticamente.
+- [ ] Verificar conexão externa, aprovação e cancelamento reais após republicação (depende da publicação autorizada pelo usuário e de solicitação válida de um agente).
 
 # Fase 1C — Limpeza dos resíduos nas telas
 
