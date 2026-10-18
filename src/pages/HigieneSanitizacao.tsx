@@ -431,7 +431,7 @@ export default function HigieneSanitizacao() {
     }
   };
 
-  /** Registros de higiene não são excluídos (Decreto 12.031/2024) — correção via NC. */
+  /** Registros de higiene não são excluídos (baseLegal: decreto_base) — correção via NC. */
   const handleCorrigirRegistro = (tabela: string, id: string, descricao: string) => {
     corrigirViaNC(navigate, { tabela, registroId: id, descricao });
   };
