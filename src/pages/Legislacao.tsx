@@ -1,4 +1,4 @@
-import { getBaseLegal } from "@/config/baseLegal";
+import { ASSUNTOS_BASE_LEGAL, getBaseLegal } from "@/config/baseLegal";
 import { useState, useEffect, useRef } from "react";
 import {
   Scale,
@@ -81,6 +81,7 @@ interface NormaDB {
   arquivo_nome: string | null;
   arquivo_url: string | null;
   tags: string[] | null;
+  slug: string | null;
   created_at: string;
 }
 
@@ -154,7 +155,20 @@ export default function Legislacao() {
     arquivo_nome: "",
     arquivo_url: "",
     tags: "" as string,
+    slug: "" as string,
   });
+
+  // Somente administradores da empresa podem vincular uma norma a um assunto (slug).
+  const [isAdminEmpresa, setIsAdminEmpresa] = useState(false);
+  useEffect(() => {
+    if (!user || !empresaAtiva) {
+      setIsAdminEmpresa(false);
+      return;
+    }
+    supabase
+      .rpc("get_papel_empresa", { _empresa_id: empresaAtiva.id, _user_id: user.id })
+      .then(({ data }) => setIsAdminEmpresa(data === "admin"));
+  }, [user, empresaAtiva]);
 
   // ──── Alertas logic ────
 
