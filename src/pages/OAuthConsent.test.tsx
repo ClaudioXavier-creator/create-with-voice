@@ -2,8 +2,8 @@ import { cleanup, fireEvent, render, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-const provider = vi.hoisted(() => ({ details: vi.fn(), approve: vi.fn(), deny: vi.fn() }));
-vi.mock("@/hooks/useAuth", () => ({ useAuth: () => ({ user: { email: "test@example.invalid" }, loading: false, signOut: vi.fn() }) }));
+const provider = vi.hoisted(() => ({ details: vi.fn(), approve: vi.fn(), deny: vi.fn(), user: { email: "test@example.invalid" } }));
+vi.mock("@/hooks/useAuth", () => ({ useAuth: () => ({ user: provider.user, loading: false, signOut: vi.fn() }) }));
 vi.mock("@/lib/oauth-client", () => ({ oauthClient: {
   getAuthorizationDetails: provider.details,
   approveAuthorization: provider.approve,
