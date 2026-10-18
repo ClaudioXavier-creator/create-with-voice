@@ -1647,25 +1647,14 @@ export default function PCP() {
           <div className="space-y-3">
             <div className="p-3 rounded-lg border border-orange-500/20 bg-orange-50 dark:bg-orange-900/10">
               <p className="text-xs font-semibold flex items-center gap-1">
-                <Shield className="w-4 h-4 text-orange-600" />  Limites de Arraste 
- </p>
-              <div className="grid grid-cols-3 gap-2 mt-2 text-[10px]">
-                <div className="text-center">
-                  <span className="font-bold text-orange-700">Ionóforos</span>
-                  <br />
-                  {"<"} 1% dose terapêutica
-                </div>
-                <div className="text-center">
-                  <span className="font-bold text-destructive">Medicados</span>
-                  <br />
-                  {"<"} 3% dose terapêutica
-                </div>
-                <div className="text-center">
-                  <span className="font-bold text-yellow-700">Micotoxinas</span>
-                  <br />
-                  Aflatoxina ≤ 20 ppb
-                </div>
-              </div>
+                <Shield className="w-4 h-4 text-orange-600" /> Validação de limpeza ({citar798("art. 29")})
+              </p>
+              <ul className="mt-2 space-y-0.5 text-[10px] text-muted-foreground">
+                {REGRAS_CARRY_OVER.slice(0, 3).map((r) => (
+                  <li key={r.titulo}>• {r.texto}</li>
+                ))}
+              </ul>
+            </div>
             </div>
 
             <div className="grid grid-cols-2 gap-3">
@@ -1710,7 +1699,7 @@ export default function PCP() {
                 />
               </div>
             </div>
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               <div>
                 <Label>Substância Monitorada</Label>
                 <Input
@@ -1720,14 +1709,31 @@ export default function PCP() {
                 />
               </div>
               <div>
-                <Label>Limite Aceitável</Label>
-                <Input value={coLimite} onChange={(e) => setCoLimite(e.target.value)} placeholder="Ex: 1.0" />
+                <Label>Repetição *</Label>
+                <Select value={coRepeticao} onValueChange={setCoRepeticao}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="1">1 de 3</SelectItem>
+                    <SelectItem value="2">2 de 3</SelectItem>
+                    <SelectItem value="3">3 de 3</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
               <div>
-                <Label>Resultado</Label>
-                <Input value={coResultado} onChange={(e) => setCoResultado(e.target.value)} placeholder="Ex: 0.3" />
+                <Label>Limite (% do princípio ativo)</Label>
+                <Input value={coLimite} onChange={(e) => setCoLimite(e.target.value)} placeholder="2,5" />
+              </div>
+              <div>
+                <Label>Resultado (%)</Label>
+                <Input value={coResultado} onChange={(e) => setCoResultado(e.target.value)} placeholder="Ex: 0,8" />
               </div>
             </div>
+            <p className="text-[10px] text-muted-foreground">
+              Resultado em % da concentração do princípio ativo do produto anterior. Amostra no último ponto
+              compartilhado da linha ({citar798("art. 28, IV")}).
+            </p>
             <div>
               <Label>Unidade</Label>
               <Select value={coUnidade} onValueChange={setCoUnidade}>
