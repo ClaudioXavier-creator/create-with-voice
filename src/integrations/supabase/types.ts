@@ -6331,6 +6331,7 @@ export type Database = {
           ordem_producao_id: string | null
           produto_anterior: string
           produto_seguinte: string
+          repeticao: number | null
           residuo_detectado: string | null
           responsavel: string | null
           resultado: string | null
@@ -6352,6 +6353,7 @@ export type Database = {
           ordem_producao_id?: string | null
           produto_anterior: string
           produto_seguinte: string
+          repeticao?: number | null
           residuo_detectado?: string | null
           responsavel?: string | null
           resultado?: string | null
@@ -6373,6 +6375,7 @@ export type Database = {
           ordem_producao_id?: string | null
           produto_anterior?: string
           produto_seguinte?: string
+          repeticao?: number | null
           residuo_detectado?: string | null
           responsavel?: string | null
           resultado?: string | null
