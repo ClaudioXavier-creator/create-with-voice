@@ -1,3 +1,8 @@
+# Fase 1C — Limpeza dos resíduos nas telas
+
+- [x] Corrigir somente frases incompletas, parênteses e pontuação nas telas; preservar normas removidas, limites, códigos internos, documentos, Manual, dados e layout.
+- [ ] Confirmar build, conferir textos nas telas e listar todas as correções antes/depois; não publicar.
+
 # Fase 1B — Citações nas telas
 
 - [x] Criar botão único de base legal e neutralizar citações na apresentação, preservando documentos e dados.

@@ -655,7 +655,7 @@ export default function Producao() {
                   {/* Retenção de Amostra de Contraprova — autocontrole (baseLegal: amostra_arquivo) */}
                   <div className="p-3 rounded-lg border border-blue-300 bg-blue-50 dark:bg-blue-900/10 space-y-3">
                     <p className="text-sm font-semibold flex items-center gap-2">
-                      🧪 Retenção de Amostra (Contraprova) — 
+                      🧪 Retenção de Amostra (Contraprova)
                     </p>
                     <p className="text-[10px] text-muted-foreground">
                       Reter amostra testemunha de cada lote produzido pelo prazo de validade do produto + 30 dias para

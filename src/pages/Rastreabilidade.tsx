@@ -2797,7 +2797,7 @@ export default function Rastreabilidade() {
                   {/* Processo Produtivo */}
                   <div className="p-3 rounded-lg border border-blue-400 bg-blue-50 dark:bg-blue-900/20">
                     <p className="text-xs font-semibold text-blue-700 dark:text-blue-400 mb-2">
-                      ⚙️ Validação do Processo — 
+                      ⚙️ Validação do Processo
                     </p>
                     <div className="grid grid-cols-2 gap-3">
                       <div>
