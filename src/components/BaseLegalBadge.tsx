@@ -1,4 +1,4 @@
-import { Scale, ArrowRight } from "lucide-react";
+import { Scale, ArrowRight, FileText } from "lucide-react";
 import { Link } from "react-router-dom";
 import type { AssuntoBaseLegal } from "@/config/baseLegal";
 import { useBaseLegal } from "@/hooks/useBaseLegal";
@@ -29,6 +29,17 @@ export function BaseLegalBadge({ assunto, className }: BaseLegalBadgeProps) {
           <p className="text-muted-foreground">{base.citacao}</p>
         )}
         {base.observacao && <p className="text-muted-foreground">{base.observacao}</p>}
+        {base.documento?.arquivoUrl && (
+          <a
+            href={base.documento.arquivoUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-1 text-primary underline-offset-4 hover:underline"
+          >
+            <FileText aria-hidden="true" className="h-3.5 w-3.5 shrink-0" />
+            Abrir documento{base.documento.codigo ? ` (${base.documento.codigo})` : ""}
+          </a>
+        )}
         <Button asChild variant="link" size="sm" className="h-auto p-0">
           <Link to="/legislacao">Consultar legislação <ArrowRight aria-hidden="true" /></Link>
         </Button>

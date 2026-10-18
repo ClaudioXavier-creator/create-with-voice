@@ -24,6 +24,8 @@ import {
   Save,
   ShieldAlert,
   Ban,
+  Archive,
+  RotateCcw,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -82,6 +84,9 @@ interface NormaDB {
   arquivo_url: string | null;
   tags: string[] | null;
   slug: string | null;
+  situacao: "ativa" | "arquivada" | string;
+  arquivada_em: string | null;
+  motivo_arquivamento: string | null;
   created_at: string;
 }
 
@@ -157,6 +162,12 @@ export default function Legislacao() {
     tags: "" as string,
     slug: "" as string,
   });
+
+  // Filtro ativas/arquivadas e diálogo de arquivar/restaurar.
+  const [verArquivadas, setVerArquivadas] = useState(false);
+  const [situacaoAlvo, setSituacaoAlvo] = useState<NormaDB | null>(null);
+  const [motivoSituacao, setMotivoSituacao] = useState("");
+  const [salvandoSituacao, setSalvandoSituacao] = useState(false);
 
   // Somente administradores da empresa podem vincular uma norma a um assunto (slug).
   const [isAdminEmpresa, setIsAdminEmpresa] = useState(false);
@@ -369,6 +380,39 @@ export default function Legislacao() {
     setSavingNorma(false);
   };
 
+  /** Arquiva (removendo o slug) ou restaura uma norma. Motivo obrigatório; só admin. */
+  const handleAlterarSituacao = async () => {
+    if (!situacaoAlvo || !isAdminEmpresa) return;
+    const motivo = motivoSituacao.trim();
+    if (!motivo) {
+      toast.error("Informe o motivo.");
+      return;
+    }
+    setSalvandoSituacao(true);
+    const arquivar = situacaoAlvo.situacao !== "arquivada";
+    const payload = arquivar
+      ? {
+          situacao: "arquivada",
+          slug: null,
+          arquivada_em: new Date().toISOString().slice(0, 10),
+          motivo_arquivamento: motivo,
+        }
+      : {
+          situacao: "ativa",
+          arquivada_em: null,
+          motivo_arquivamento: `Restaurada: ${motivo}`,
+        };
+    const { error } = await supabase.from("normas_legislacao").update(payload).eq("id", situacaoAlvo.id);
+    setSalvandoSituacao(false);
+    if (error) {
+      toast.error("Erro: " + error.message);
+      return;
+    }
+    toast.success(arquivar ? "Norma arquivada." : "Norma restaurada.");
+    setSituacaoAlvo(null);
+    fetchNormas();
+  };
+
   const handleDeleteNorma = async (id: string) => {
     const { error } = await supabase.from("normas_legislacao").delete().eq("id", id);
     if (error) toast.error("Erro ao excluir: " + error.message);
@@ -444,6 +488,7 @@ export default function Legislacao() {
   };
 
   const filteredNormas = normas.filter((n) => {
+    if ((n.situacao === "arquivada") !== verArquivadas) return false;
     if (!normaSearch) return true;
     const q = normaSearch.toLowerCase();
     return (
@@ -645,6 +690,15 @@ export default function Legislacao() {
               </div>
             </CardHeader>
             <CardContent>
+              <div className="flex gap-2 mb-3" role="group" aria-label="Situação das normas">
+                <Button size="sm" variant={verArquivadas ? "outline" : "default"} onClick={() => setVerArquivadas(false)}>
+                  Ativas ({normas.filter((n) => n.situacao !== "arquivada").length})
+                </Button>
+                <Button size="sm" variant={verArquivadas ? "default" : "outline"} onClick={() => setVerArquivadas(true)}>
+                  <Archive className="w-4 h-4 mr-1" />
+                  Arquivadas (consulta) ({normas.filter((n) => n.situacao === "arquivada").length})
+                </Button>
+              </div>
               {/* Search bar */}
               <div className="relative mb-4">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -687,10 +741,23 @@ export default function Legislacao() {
                         <TableCell className="font-mono text-xs font-medium">{norma.codigo || "—"}</TableCell>
                         <TableCell className="max-w-xs">
                           <p className="font-medium text-sm truncate">{norma.titulo}</p>
-                          {norma.slug && (
-                            <Badge variant="outline" className="text-[10px] mt-1">
-                              Assunto: {norma.slug}
-                            </Badge>
+                          {norma.situacao === "arquivada" ? (
+                            <div className="mt-1 space-y-0.5">
+                              <Badge variant="secondary" className="text-[10px]">
+                                Arquivada{norma.arquivada_em ? ` em ${norma.arquivada_em}` : ""}
+                              </Badge>
+                              {norma.motivo_arquivamento && (
+                                <p className="text-[11px] text-muted-foreground whitespace-normal">
+                                  Motivo: {norma.motivo_arquivamento}
+                                </p>
+                              )}
+                            </div>
+                          ) : (
+                            norma.slug && (
+                              <Badge variant="outline" className="text-[10px] mt-1">
+                                Assunto: {norma.slug}
+                              </Badge>
+                            )
                           )}
                           {norma.tags && norma.tags.length > 0 && (
                             <div className="flex gap-1 mt-1 flex-wrap">
@@ -740,6 +807,24 @@ export default function Legislacao() {
                                 }}
                               >
                                 <Eye className="w-4 h-4" />
+                              </Button>
+                            )}
+                            {isAdminEmpresa && (
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                aria-label={norma.situacao === "arquivada" ? "Restaurar norma" : "Arquivar norma"}
+                                title={norma.situacao === "arquivada" ? "Restaurar" : "Arquivar"}
+                                onClick={() => {
+                                  setMotivoSituacao("");
+                                  setSituacaoAlvo(norma);
+                                }}
+                              >
+                                {norma.situacao === "arquivada" ? (
+                                  <RotateCcw className="w-4 h-4" />
+                                ) : (
+                                  <Archive className="w-4 h-4" />
+                                )}
                               </Button>
                             )}
                             <Button
@@ -1540,6 +1625,34 @@ export default function Legislacao() {
       </Dialog>
 
       {/* ──── Add Norma Dialog ──── */}
+      {/* Arquivar / restaurar norma (somente admin, motivo obrigatório) */}
+      <Dialog open={!!situacaoAlvo} onOpenChange={(o) => !o && setSituacaoAlvo(null)}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>
+              {situacaoAlvo?.situacao === "arquivada" ? "Restaurar norma" : "Arquivar norma"}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3">
+            <p className="text-sm font-medium">{situacaoAlvo?.titulo}</p>
+            {situacaoAlvo?.situacao !== "arquivada" && (
+              <p className="text-xs text-muted-foreground">
+                A norma arquivada fica só para consulta, perde o assunto vinculado e não aparece no botão "Base legal".
+              </p>
+            )}
+            <Label className="text-xs">Motivo (obrigatório)</Label>
+            <Textarea value={motivoSituacao} onChange={(e) => setMotivoSituacao(e.target.value)} rows={3} />
+            <div className="flex justify-end gap-2">
+              <Button variant="outline" onClick={() => setSituacaoAlvo(null)}>Cancelar</Button>
+              <Button onClick={handleAlterarSituacao} disabled={!motivoSituacao.trim() || salvandoSituacao}>
+                {salvandoSituacao && <Loader2 className="w-4 h-4 mr-1 animate-spin" />}
+                Confirmar
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       <Dialog open={normaDialogOpen} onOpenChange={setNormaDialogOpen}>
         <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader>
