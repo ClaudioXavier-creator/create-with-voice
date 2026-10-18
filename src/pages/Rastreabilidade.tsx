@@ -867,18 +867,16 @@ export default function Rastreabilidade() {
     toast.success("Balanço de massa quantitativo exportado!");
     if (user) {
       const dataGeracao = new Date().toISOString().split("T")[0];
-      await supabase
-        .from("relatorios")
-        .insert({
-          user_id: user.id,
-          empresa_id: empresaAtiva?.id || null,
-          titulo: `Balanço de Massa Quantitativo — ${dataGeracao}`,
-          tipo: "digital",
-          modulo: "rastreabilidade",
-          descricao: `Balanço quantitativo com ${lotes.size} lotes. Entrada: ${fmtKg(totEntrada)} kg | Produzido: ${fmtKg(totProduzido)} kg | Expedido: ${fmtKg(totSaida)} kg. ${getBaseLegal("rastreabilidade").norma} Art. 18.`,
-          data_geracao: dataGeracao,
-          status: "ativo",
-        });
+      await supabase.from("relatorios").insert({
+        user_id: user.id,
+        empresa_id: empresaAtiva?.id || null,
+        titulo: `Balanço de Massa Quantitativo — ${dataGeracao}`,
+        tipo: "digital",
+        modulo: "rastreabilidade",
+        descricao: `Balanço quantitativo com ${lotes.size} lotes. Entrada: ${fmtKg(totEntrada)} kg | Produzido: ${fmtKg(totProduzido)} kg | Expedido: ${fmtKg(totSaida)} kg. ${getBaseLegal("rastreabilidade").norma} Art. 18.`,
+        data_geracao: dataGeracao,
+        status: "ativo",
+      });
       toast.info("Relatório salvo no módulo Relatórios");
     }
   };
@@ -1241,7 +1239,8 @@ export default function Rastreabilidade() {
         title="POP 09 - Rastreabilidade e Recolhimento"
         description="Rastreabilidade de produtos, controle de RNC e programa de recolhimento"
         orientacaoModuloId="rastreabilidade"
-       assuntoBaseLegal="rastreabilidade" />
+        assuntoBaseLegal="rastreabilidade"
+      />
       <div className="flex justify-end mb-3">
         <AnexarPlanilhaPop popCodigo="POP-09" popNome="Rastreabilidade e Recall" />
       </div>
@@ -1300,7 +1299,8 @@ export default function Rastreabilidade() {
       <Card className="mb-6 border-orange-500/20">
         <CardHeader className="pb-2">
           <CardTitle className="font-display text-sm flex items-center gap-2">
-            <ShieldAlert className="w-5 h-5 text-orange-600" /> Segregação por Espécie </CardTitle>
+            <ShieldAlert className="w-5 h-5 text-orange-600" /> Segregação por Espécie{" "}
+          </CardTitle>
           <p className="text-xs text-muted-foreground">
             Controle de restrições de subprodutos de origem animal por espécie destino, prevenção de EEB e contaminação
             cruzada.
@@ -1382,7 +1382,7 @@ export default function Rastreabilidade() {
 
             return (
               <div className="space-y-3">
-                <div className="grid grid-cols-3 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                   <div className="text-center p-2 rounded-lg bg-muted/30 border">
                     <p className="text-lg font-bold font-display">{porEspecie.size}</p>
                     <p className="text-[10px] text-muted-foreground">Espécies atendidas</p>
@@ -1453,16 +1453,16 @@ export default function Rastreabilidade() {
                 <div className="p-3 rounded-lg border bg-muted/30 text-xs space-y-1">
                   <p className="font-semibold">📋 Referências — Segregação por Espécie</p>
                   <p className="text-muted-foreground">
-                    • <strong>:</strong> Proíbe proteína e gordura de mamíferos na alimentação de ruminantes
-                    (prevenção EEB/BSE).
+                    • <strong>:</strong> Proíbe proteína e gordura de mamíferos na alimentação de ruminantes (prevenção
+                    EEB/BSE).
                   </p>
                   <p className="text-muted-foreground">
-                    • <strong>,:</strong> Fábricas com múltiplas espécies devem segregar linhas ou
-                    documentar flushing entre lotes.
+                    • <strong>,:</strong> Fábricas com múltiplas espécies devem segregar linhas ou documentar flushing
+                    entre lotes.
                   </p>
                   <p className="text-muted-foreground">
-                    • <strong>:</strong> Fiscalização prioriza estabelecimentos com múltiplas
-                    espécies e uso de subprodutos animais.
+                    • <strong>:</strong> Fiscalização prioriza estabelecimentos com múltiplas espécies e uso de
+                    subprodutos animais.
                   </p>
                 </div>
               </div>
@@ -1582,7 +1582,8 @@ export default function Rastreabilidade() {
             <ShieldAlert className="w-5 h-5" /> Segregação Digital — Quarentena e Lotes Retidos
           </CardTitle>
           <p className="text-xs text-muted-foreground">
- Controle de lotes em quarentena, retidos ou aguardando análise </p>
+            Controle de lotes em quarentena, retidos ou aguardando análise{" "}
+          </p>
         </CardHeader>
         <CardContent>
           {(() => {
@@ -1607,7 +1608,7 @@ export default function Rastreabilidade() {
 
             return (
               <div className="space-y-2">
-                <div className="grid grid-cols-3 gap-3 mb-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 mb-3">
                   <div className="text-center p-2 rounded-lg bg-yellow-100 dark:bg-yellow-900/20 border border-yellow-300">
                     <p className="text-xl font-bold text-yellow-700">
                       {lotesQuarentena.filter((r) => r.recall_status === "quarentena").length}
@@ -1695,8 +1696,8 @@ export default function Rastreabilidade() {
               selecione o status "Quarentena", "Retido" ou "Aguardando Análise".
             </p>
             <p>
-              <strong>Segregação:</strong> Produtos não conformes devem ser segregados e identificados até
-              decisão final (reprocesso, descarte ou recall).
+              <strong>Segregação:</strong> Produtos não conformes devem ser segregados e identificados até decisão final
+              (reprocesso, descarte ou recall).
             </p>
           </div>
         </CardContent>
@@ -2231,7 +2232,8 @@ export default function Rastreabilidade() {
           <div>
             <CardTitle className="font-display text-sm flex items-center gap-2">
               <Package className="w-5 h-5 text-primary" /> Balanço de Massa — Conciliação de Estoque
-             <BaseLegalBadge assunto="rastreabilidade" /></CardTitle>
+              <BaseLegalBadge assunto="rastreabilidade" />
+            </CardTitle>
             <p className="text-xs text-muted-foreground mt-1">
               Conciliação Entrada (MP) vs Saída (Venda/Entrega) por lote de PA
             </p>
@@ -2265,7 +2267,7 @@ export default function Rastreabilidade() {
             ).length;
             return (
               <>
-                <div className="grid grid-cols-3 gap-3 mb-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 mb-4">
                   <div className="text-center p-2 rounded-lg bg-muted/30 border">
                     <p className="text-lg font-bold font-display">{lotes.size}</p>
                     <p className="text-[10px] text-muted-foreground">Total de lotes</p>
@@ -2353,7 +2355,8 @@ export default function Rastreabilidade() {
       <Card className="mb-6 border-primary/20">
         <CardHeader>
           <CardTitle className="font-display text-sm flex items-center gap-2">
-            📄 Correlação Lote PA ↔ Certificado de Análise MP <BaseLegalBadge assunto="rastreabilidade" /></CardTitle>
+            📄 Correlação Lote PA ↔ Certificado de Análise MP <BaseLegalBadge assunto="rastreabilidade" />
+          </CardTitle>
           <p className="text-xs text-muted-foreground mt-1">
             Vinculação imediata entre o lote do Produto Acabado e o certificado de análise da Matéria-Prima recebida,
             para auditorias baseadas em risco.
@@ -2404,7 +2407,7 @@ export default function Rastreabilidade() {
 
             return (
               <>
-                <div className="grid grid-cols-3 gap-3 mb-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 mb-4">
                   <div className="text-center p-2 rounded-lg bg-primary/5 border border-primary/20">
                     <p className="text-lg font-bold font-display text-primary">{comCert.length}</p>
                     <p className="text-[10px] text-muted-foreground">Com Certificado</p>
@@ -2477,7 +2480,9 @@ export default function Rastreabilidade() {
       <Card className="mb-6 border-accent/20">
         <CardHeader>
           <CardTitle className="font-display text-sm flex items-center gap-2">
-            <FlaskConical className="w-5 h-5 text-accent" /> Análises Laboratoriais Vinculadas ao Lote <BaseLegalBadge assunto="autocontrole" /></CardTitle>
+            <FlaskConical className="w-5 h-5 text-accent" /> Análises Laboratoriais Vinculadas ao Lote{" "}
+            <BaseLegalBadge assunto="autocontrole" />
+          </CardTitle>
           <p className="text-xs text-muted-foreground mt-1">
             Conformidade do controle de qualidade: análises de PA vinculadas por lote.
           </p>
@@ -2507,7 +2512,7 @@ export default function Rastreabilidade() {
             const pendentes = analisesVinculadas.filter((a) => a.conforme === null).length;
             return (
               <>
-                <div className="grid grid-cols-3 gap-3 mb-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 mb-4">
                   <div className="text-center p-2 rounded-lg bg-primary/5 border border-primary/20">
                     <p className="text-lg font-bold font-display text-primary">{conformes}</p>
                     <p className="text-[10px] text-muted-foreground">Conformes</p>
@@ -2743,9 +2748,7 @@ export default function Rastreabilidade() {
 
                   {/* EEB Prevention */}
                   <div className="p-3 rounded-lg border border-orange-400 bg-orange-50 dark:bg-orange-900/20">
-                    <p className="text-xs font-semibold text-orange-700 dark:text-orange-400 mb-2">
-                      
- 🛡️ Prevenção EEB</p>
+                    <p className="text-xs font-semibold text-orange-700 dark:text-orange-400 mb-2">🛡️ Prevenção EEB</p>
                     <div className="flex items-center gap-2 mb-2">
                       <input
                         type="checkbox"
@@ -2781,7 +2784,8 @@ export default function Rastreabilidade() {
                             placeholder="Ex: SIF 0001 / DIPOA 12345"
                           />
                           <p className="text-[10px] text-muted-foreground mt-1">
-                            Identifica o estabelecimento de origem do ingrediente de origem animal, para rastreabilidade.
+                            Identifica o estabelecimento de origem do ingrediente de origem animal, para
+                            rastreabilidade.
                           </p>
                         </div>
                         {especieDestino === "bovinos" && (
@@ -2891,7 +2895,7 @@ export default function Rastreabilidade() {
                           />
                         </div>
                       </div>
-                      <div className="grid grid-cols-3 gap-3">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                         <div>
                           <Label>Data da Venda</Label>
                           <Input type="date" value={dataVenda} onChange={(e) => setDataVenda(e.target.value)} />
@@ -3198,7 +3202,7 @@ export default function Rastreabilidade() {
                 <p className="text-[10px] text-muted-foreground">
                   O encerramento do recall exige registro do destino final dos produtos, quantidade recolhida e
                   responsável, para acompanhamento e fiscalização.
- </p>
+                </p>
               </div>
             )}
 
@@ -3279,7 +3283,7 @@ export default function Rastreabilidade() {
                 />
               </div>
             </div>
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
               <div>
                 <Label>Data da Venda</Label>
                 <Input type="date" value={vendaData} onChange={(e) => setVendaData(e.target.value)} />
@@ -3404,8 +3408,9 @@ export default function Rastreabilidade() {
           </DialogHeader>
           <div className="space-y-4">
             <p className="text-xs text-muted-foreground">
-              Documento formal por lote PA: composição, fornecedores, contraprova, destinos e assinatura RT, para clientes e auditores que solicitam comprovante.
- </p>
+              Documento formal por lote PA: composição, fornecedores, contraprova, destinos e assinatura RT, para
+              clientes e auditores que solicitam comprovante.
+            </p>
             <div>
               <Label>Lote PA</Label>
               <Select value={certLote} onValueChange={setCertLote}>
@@ -3539,8 +3544,8 @@ export default function Rastreabilidade() {
           </div>
 
           <div className="mt-8 text-[8px] text-gray-400 italic text-center">
-            Este mapa de rastreabilidade foi gerado automaticamente e atende ao Art. 18 do {getBaseLegal("rastreabilidade").norma} e ao POP
-            05.
+            Este mapa de rastreabilidade foi gerado automaticamente e atende ao Art. 18 do{" "}
+            {getBaseLegal("rastreabilidade").norma} e ao POP 05.
           </div>
         </div>
       </div>
