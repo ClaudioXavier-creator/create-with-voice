@@ -1,8 +1,16 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  ClipboardCheck, CheckCircle2, XCircle, Link2, FileText,
-  Plus, Loader2, Lock, History, AlertTriangle,
+  ClipboardCheck,
+  CheckCircle2,
+  XCircle,
+  Link2,
+  FileText,
+  Plus,
+  Loader2,
+  Lock,
+  History,
+  AlertTriangle,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -13,7 +21,17 @@ import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import PageHeader from "@/components/PageHeader";
 import { CHECKLIST_PADRAO } from "@/store/feedbpf-store";
 import { supabase } from "@/integrations/supabase/client";
@@ -64,10 +82,7 @@ export default function Auditoria() {
 
   const fetchAuditorias = async () => {
     if (!user) return;
-    let q = supabase
-      .from("auditorias_bpf")
-      .select("*")
-      .order("data_auditoria", { ascending: false });
+    let q = supabase.from("auditorias_bpf").select("*").order("data_auditoria", { ascending: false });
     if (empresaAtiva) q = q.eq("empresa_id", empresaAtiva.id);
     const { data, error } = await q;
     if (error) toast.error("Erro ao carregar auditorias: " + error.message);
@@ -92,7 +107,9 @@ export default function Auditoria() {
     setRespostas(map);
   };
 
-  useEffect(() => { fetchAuditorias(); }, [user, empresaAtiva]);
+  useEffect(() => {
+    fetchAuditorias();
+  }, [user, empresaAtiva]);
 
   useEffect(() => {
     if (ativa) fetchRespostas(ativa.id);
@@ -121,15 +138,14 @@ export default function Auditoria() {
     }
     toast.success("Auditoria criada. Responda o checklist abaixo.");
     setNovaOpen(false);
-    setNovoAuditor(""); setNovoEscopo(""); setNovasObs("");
+    setNovoAuditor("");
+    setNovoEscopo("");
+    setNovasObs("");
     await fetchAuditorias();
     setAtiva(data as AuditoriaRow);
   };
 
-  const salvarResposta = async (
-    itemId: string,
-    patch: { conforme?: boolean | null; observacao?: string }
-  ) => {
+  const salvarResposta = async (itemId: string, patch: { conforme?: boolean | null; observacao?: string }) => {
     if (!user || !ativa || concluida) return;
     const base = CHECKLIST_PADRAO.find((c) => c.id === itemId);
     if (!base) return;
@@ -150,10 +166,7 @@ export default function Auditoria() {
     setSalvando(itemId);
 
     if (atual?.id) {
-      const { error } = await supabase
-        .from("checklist_items")
-        .update({ conforme, observacao })
-        .eq("id", atual.id);
+      const { error } = await supabase.from("checklist_items").update({ conforme, observacao }).eq("id", atual.id);
       if (error) toast.error("Erro ao salvar resposta: " + error.message);
     } else {
       const { data, error } = await supabase
@@ -187,10 +200,7 @@ export default function Auditoria() {
 
   const concluirAuditoria = async () => {
     if (!ativa) return;
-    const { error } = await supabase
-      .from("auditorias_bpf")
-      .update({ status: "concluido" })
-      .eq("id", ativa.id);
+    const { error } = await supabase.from("auditorias_bpf").update({ status: "concluido" }).eq("id", ativa.id);
     if (error) {
       toast.error("Erro ao concluir auditoria: " + error.message);
       return;
@@ -226,28 +236,36 @@ export default function Auditoria() {
 
   return (
     <>
-      <PageHeader icon={ClipboardCheck} title="Auditoria BPF" description="Checklist de auditoria e categorização de risco"
-        orientacaoModuloId="auditoria"  assuntoBaseLegal="autocontrole" />
+      <PageHeader
+        icon={ClipboardCheck}
+        title="Auditoria BPF"
+        description="Checklist de auditoria e categorização de risco"
+        orientacaoModuloId="auditoria"
+        assuntoBaseLegal="autocontrole"
+      />
 
       <div className="mb-4 flex flex-wrap gap-2">
         <Badge variant="outline" className="text-xs border-primary/40 text-primary">
           <FileText className="w-3 h-3 mr-1" />
-           {totais.total} itens de verificação
+          {totais.total} itens de verificação
         </Badge>
         <Badge variant="outline" className="text-xs border-destructive/40 text-destructive">
-          
- Inclui categorização de risco 
- </Badge>
+          Inclui categorização de risco
+        </Badge>
       </div>
 
       {/* Barra de ações */}
       <div className="mb-6 flex flex-wrap items-center gap-3">
         <Dialog open={novaOpen} onOpenChange={setNovaOpen}>
           <DialogTrigger asChild>
-            <Button className="gap-2"><Plus className="w-4 h-4" /> Nova auditoria</Button>
+            <Button className="gap-2">
+              <Plus className="w-4 h-4" /> Nova auditoria
+            </Button>
           </DialogTrigger>
-          <DialogContent>
-            <DialogHeader><DialogTitle className="font-display">Nova Auditoria BPF</DialogTitle></DialogHeader>
+          <DialogContent className="max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="font-display">Nova Auditoria BPF</DialogTitle>
+            </DialogHeader>
             <div className="space-y-3">
               <div className="space-y-1">
                 <Label>Data da auditoria *</Label>
@@ -255,15 +273,27 @@ export default function Auditoria() {
               </div>
               <div className="space-y-1">
                 <Label>Auditor responsável *</Label>
-                <Input value={novoAuditor} onChange={(e) => setNovoAuditor(e.target.value)} placeholder="Nome completo do auditor" />
+                <Input
+                  value={novoAuditor}
+                  onChange={(e) => setNovoAuditor(e.target.value)}
+                  placeholder="Nome completo do auditor"
+                />
               </div>
               <div className="space-y-1">
                 <Label>Escopo</Label>
-                <Input value={novoEscopo} onChange={(e) => setNovoEscopo(e.target.value)} placeholder="Ex.: Auditoria interna anual — planta completa" />
+                <Input
+                  value={novoEscopo}
+                  onChange={(e) => setNovoEscopo(e.target.value)}
+                  placeholder="Ex.: Auditoria interna anual — planta completa"
+                />
               </div>
               <div className="space-y-1">
                 <Label>Observações</Label>
-                <Textarea value={novasObs} onChange={(e) => setNovasObs(e.target.value)} placeholder="Observações gerais (opcional)" />
+                <Textarea
+                  value={novasObs}
+                  onChange={(e) => setNovasObs(e.target.value)}
+                  placeholder="Observações gerais (opcional)"
+                />
               </div>
               <Button onClick={criarAuditoria} disabled={criando || !novoAuditor.trim()} className="w-full">
                 {criando && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
@@ -284,9 +314,9 @@ export default function Auditoria() {
               <AlertDialogHeader>
                 <AlertDialogTitle>Concluir auditoria?</AlertDialogTitle>
                 <AlertDialogDescription>
-                  
- Após concluir, as respostas ficam travadas e não poderão ser editadas ou excluídas. Correções posteriores devem ser feitas via Não Conformidade.
- </AlertDialogDescription>
+                  Após concluir, as respostas ficam travadas e não poderão ser editadas ou excluídas. Correções
+                  posteriores devem ser feitas via Não Conformidade.
+                </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
                 <AlertDialogCancel>Voltar</AlertDialogCancel>
@@ -312,9 +342,13 @@ export default function Auditoria() {
         </CardHeader>
         <CardContent>
           {loading ? (
-            <div className="flex justify-center py-4"><Loader2 className="w-5 h-5 animate-spin text-muted-foreground" /></div>
+            <div className="flex justify-center py-4">
+              <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
+            </div>
           ) : auditorias.length === 0 ? (
-            <p className="text-sm text-muted-foreground">Nenhuma auditoria registrada. Clique em "Nova auditoria" para começar.</p>
+            <p className="text-sm text-muted-foreground">
+              Nenhuma auditoria registrada. Clique em "Nova auditoria" para começar.
+            </p>
           ) : (
             <div className="space-y-2">
               {auditorias.map((a) => (
@@ -323,11 +357,16 @@ export default function Auditoria() {
                   onClick={() => setAtiva(a)}
                   className={cn(
                     "w-full flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4 p-3 rounded-lg border text-left transition-colors",
-                    ativa?.id === a.id ? "border-primary bg-primary/5" : "border-border hover:bg-muted/50"
+                    ativa?.id === a.id ? "border-primary bg-primary/5" : "border-border hover:bg-muted/50",
                   )}
                 >
-                  <span className="text-sm font-medium">{new Date(a.data_auditoria + "T00:00:00").toLocaleDateString("pt-BR")}</span>
-                  <span className="text-sm text-muted-foreground flex-1">{a.auditor}{a.escopo ? ` — ${a.escopo}` : ""}</span>
+                  <span className="text-sm font-medium">
+                    {new Date(a.data_auditoria + "T00:00:00").toLocaleDateString("pt-BR")}
+                  </span>
+                  <span className="text-sm text-muted-foreground flex-1">
+                    {a.auditor}
+                    {a.escopo ? ` — ${a.escopo}` : ""}
+                  </span>
                   <Badge variant={a.status === "concluido" ? "default" : "outline"} className="text-xs w-fit">
                     {a.status === "concluido" ? "Concluída" : "Em andamento"}
                   </Badge>
@@ -348,22 +387,30 @@ export default function Auditoria() {
         <>
           {/* Resumo */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-            <Card><CardContent className="pt-4 text-center">
-              <p className="text-2xl font-bold font-display text-primary">{totais.pct}%</p>
-              <p className="text-xs text-muted-foreground">Conformidade</p>
-            </CardContent></Card>
-            <Card><CardContent className="pt-4 text-center">
-              <p className="text-2xl font-bold font-display text-green-600">{totais.conformes}</p>
-              <p className="text-xs text-muted-foreground">Conformes</p>
-            </CardContent></Card>
-            <Card><CardContent className="pt-4 text-center">
-              <p className="text-2xl font-bold font-display text-destructive">{totais.naoConformes}</p>
-              <p className="text-xs text-muted-foreground">Não conformes</p>
-            </CardContent></Card>
-            <Card><CardContent className="pt-4 text-center">
-              <p className="text-2xl font-bold font-display text-muted-foreground">{totais.pendentes}</p>
-              <p className="text-xs text-muted-foreground">Pendentes</p>
-            </CardContent></Card>
+            <Card>
+              <CardContent className="pt-4 text-center">
+                <p className="text-2xl font-bold font-display text-primary">{totais.pct}%</p>
+                <p className="text-xs text-muted-foreground">Conformidade</p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent className="pt-4 text-center">
+                <p className="text-2xl font-bold font-display text-green-600">{totais.conformes}</p>
+                <p className="text-xs text-muted-foreground">Conformes</p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent className="pt-4 text-center">
+                <p className="text-2xl font-bold font-display text-destructive">{totais.naoConformes}</p>
+                <p className="text-xs text-muted-foreground">Não conformes</p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent className="pt-4 text-center">
+                <p className="text-2xl font-bold font-display text-muted-foreground">{totais.pendentes}</p>
+                <p className="text-xs text-muted-foreground">Pendentes</p>
+              </CardContent>
+            </Card>
           </div>
 
           <Progress value={totais.pct} className="h-3 mb-6" />
@@ -378,7 +425,10 @@ export default function Auditoria() {
               </CardHeader>
               <CardContent className="space-y-2">
                 {itensNC.map((item) => (
-                  <div key={item.id} className="flex flex-col sm:flex-row sm:items-center gap-2 p-3 rounded-lg border border-destructive/20 bg-destructive/5">
+                  <div
+                    key={item.id}
+                    className="flex flex-col sm:flex-row sm:items-center gap-2 p-3 rounded-lg border border-destructive/20 bg-destructive/5"
+                  >
                     <p className="text-sm flex-1">{item.item}</p>
                     <Button size="sm" variant="outline" className="gap-1 w-fit" onClick={() => abrirNC(item.id)}>
                       <Plus className="w-3 h-3" /> Abrir Não Conformidade
@@ -403,11 +453,17 @@ export default function Auditoria() {
                   const resp = respostas[item.id];
                   const conforme = resp?.conforme ?? null;
                   return (
-                    <div key={item.id} className={cn(
-                      "flex flex-col sm:flex-row sm:items-center gap-2 p-3 rounded-lg border",
-                      conforme === false ? "border-destructive/30 bg-destructive/5" :
-                      conforme === true ? "border-primary/30 bg-primary/5" : "border-border"
-                    )}>
+                    <div
+                      key={item.id}
+                      className={cn(
+                        "flex flex-col sm:flex-row sm:items-center gap-2 p-3 rounded-lg border",
+                        conforme === false
+                          ? "border-destructive/30 bg-destructive/5"
+                          : conforme === true
+                            ? "border-primary/30 bg-primary/5"
+                            : "border-border",
+                      )}
+                    >
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium flex items-center gap-2">
                           {item.item}
@@ -422,28 +478,43 @@ export default function Auditoria() {
                               </span>
                             </TooltipTrigger>
                             <TooltipContent>
-                              <p>POP vinculado: {item.popVinculado}
- </p>
+                              <p>POP vinculado: {item.popVinculado}</p>
                             </TooltipContent>
                           </Tooltip>
                         )}
                       </div>
                       <div className="flex items-center gap-2 flex-shrink-0">
-                        <Button size="sm" variant={conforme === true ? "default" : "outline"} disabled={concluida}
-                          onClick={() => toggleItem(item.id, true)} className="gap-1">
+                        <Button
+                          size="sm"
+                          variant={conforme === true ? "default" : "outline"}
+                          disabled={concluida}
+                          onClick={() => toggleItem(item.id, true)}
+                          className="gap-1"
+                        >
                           <CheckCircle2 className="w-4 h-4" /> C
                         </Button>
-                        <Button size="sm" variant={conforme === false ? "destructive" : "outline"} disabled={concluida}
-                          onClick={() => toggleItem(item.id, false)} className="gap-1">
+                        <Button
+                          size="sm"
+                          variant={conforme === false ? "destructive" : "outline"}
+                          disabled={concluida}
+                          onClick={() => toggleItem(item.id, false)}
+                          className="gap-1"
+                        >
                           <XCircle className="w-4 h-4" /> NC
                         </Button>
-                        <Input placeholder="Observação" value={resp?.observacao ?? ""} disabled={concluida}
-                          onChange={(e) => setRespostas((prev) => ({
-                            ...prev,
-                            [item.id]: { id: resp?.id ?? "", item: item.item, conforme, observacao: e.target.value },
-                          }))}
+                        <Input
+                          placeholder="Observação"
+                          value={resp?.observacao ?? ""}
+                          disabled={concluida}
+                          onChange={(e) =>
+                            setRespostas((prev) => ({
+                              ...prev,
+                              [item.id]: { id: resp?.id ?? "", item: item.item, conforme, observacao: e.target.value },
+                            }))
+                          }
                           onBlur={(e) => salvarResposta(item.id, { observacao: e.target.value })}
-                          className="w-32 md:w-40 text-xs" />
+                          className="w-32 md:w-40 text-xs"
+                        />
                       </div>
                     </div>
                   );
