@@ -1695,7 +1695,7 @@ export default function Rastreabilidade() {
               selecione o status "Quarentena", "Retido" ou "Aguardando Análise".
             </p>
             <p>
-              <strong>,:</strong> Produtos não conformes devem ser segregados e identificados até
+              <strong>Segregação:</strong> Produtos não conformes devem ser segregados e identificados até
               decisão final (reprocesso, descarte ou recall).
             </p>
           </div>
@@ -2230,7 +2230,7 @@ export default function Rastreabilidade() {
         <CardHeader className="flex flex-row items-center justify-between">
           <div>
             <CardTitle className="font-display text-sm flex items-center gap-2">
-              <Package className="w-5 h-5 text-primary" /> Balanço de Massa — Conciliação de Estoque (; )
+              <Package className="w-5 h-5 text-primary" /> Balanço de Massa — Conciliação de Estoque
              <BaseLegalBadge assunto="rastreabilidade" /></CardTitle>
             <p className="text-xs text-muted-foreground mt-1">
               Conciliação Entrada (MP) vs Saída (Venda/Entrega) por lote de PA
@@ -2353,8 +2353,7 @@ export default function Rastreabilidade() {
       <Card className="mb-6 border-primary/20">
         <CardHeader>
           <CardTitle className="font-display text-sm flex items-center gap-2">
-            📄 Correlação Lote PA ↔ Certificado de Análise MP — 
-           <BaseLegalBadge assunto="rastreabilidade" /></CardTitle>
+            📄 Correlação Lote PA ↔ Certificado de Análise MP <BaseLegalBadge assunto="rastreabilidade" /></CardTitle>
           <p className="text-xs text-muted-foreground mt-1">
             Vinculação imediata entre o lote do Produto Acabado e o certificado de análise da Matéria-Prima recebida,
             para auditorias baseadas em risco.
@@ -2478,8 +2477,7 @@ export default function Rastreabilidade() {
       <Card className="mb-6 border-accent/20">
         <CardHeader>
           <CardTitle className="font-display text-sm flex items-center gap-2">
-            <FlaskConical className="w-5 h-5 text-accent" /> Análises Laboratoriais Vinculadas ao Lote — 
-           <BaseLegalBadge assunto="autocontrole" /></CardTitle>
+            <FlaskConical className="w-5 h-5 text-accent" /> Análises Laboratoriais Vinculadas ao Lote <BaseLegalBadge assunto="autocontrole" /></CardTitle>
           <p className="text-xs text-muted-foreground mt-1">
             Conformidade do controle de qualidade: análises de PA vinculadas por lote.
           </p>
@@ -2776,15 +2774,14 @@ export default function Rastreabilidade() {
                           </Select>
                         </div>
                         <div>
-                          <Label>Nº SIF/DIPOA do Ingrediente (rastreabilidade ) *</Label>
+                          <Label>Nº SIF/DIPOA do Ingrediente (rastreabilidade) *</Label>
                           <Input
                             value={sifDipoa}
                             onChange={(e) => setSifDipoa(e.target.value)}
                             placeholder="Ex: SIF 0001 / DIPOA 12345"
                           />
                           <p className="text-[10px] text-muted-foreground mt-1">
-                            Identifica o estabelecimento de origem do ingrediente de origem animal, para rastreabilidade
-                            .
+                            Identifica o estabelecimento de origem do ingrediente de origem animal, para rastreabilidade.
                           </p>
                         </div>
                         {especieDestino === "bovinos" && (
@@ -2800,7 +2797,7 @@ export default function Rastreabilidade() {
                   {/* Processo Produtivo */}
                   <div className="p-3 rounded-lg border border-blue-400 bg-blue-50 dark:bg-blue-900/20">
                     <p className="text-xs font-semibold text-blue-700 dark:text-blue-400 mb-2">
-                      ⚙️ Validação do Processo — 
+                      ⚙️ Validação do Processo
                     </p>
                     <div className="grid grid-cols-2 gap-3">
                       <div>
@@ -2868,7 +2865,7 @@ export default function Rastreabilidade() {
                       </div>
                     )}
                     <p className="text-[10px] text-muted-foreground mt-2">
-                      Reter por no mínimo validade do produto + 30 dias (; ).
+                      Reter, no mínimo, até a validade do produto + 30 dias.
                     </p>
                   </div>
 

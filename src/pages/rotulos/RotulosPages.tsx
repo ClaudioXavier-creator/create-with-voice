@@ -36,7 +36,7 @@ export const RotulosDashboardPage = () => (
         <Sparkles className="h-12 w-12 text-teal-200 mb-4" />
         <h3 className="text-xl font-bold mb-2 text-foreground">Gerador de Rótulos</h3>
         <p className="text-muted-foreground max-w-md mb-4">
- Cadastre seus produtos e gere rótulos comerciais conforme MAPA ( e ) com exportação para Zebra (ZPL), Word e Excel.
+ Cadastre seus produtos e gere rótulos comerciais para exportação em Zebra (ZPL), Word e Excel.
  </p>
         <Button asChild>
           <Link to="/rotulos/editor">Acessar Cadastro de Produtos</Link>

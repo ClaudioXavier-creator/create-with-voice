@@ -173,7 +173,7 @@ export default function ControleResiduos() {
               </div>
               {["Produto vencido", "Produto rejeitado/reprovado", "Sobra de produção"].includes(form.tipo_residuo) && (
                 <div className="p-3 rounded-lg border border-yellow-400 bg-yellow-50 dark:bg-yellow-900/20 space-y-3">
-                  <p className="text-xs font-semibold text-yellow-700 dark:text-yellow-400">⚠️ Controle de Produto Descartado (POP 08 )</p>
+                  <p className="text-xs font-semibold text-yellow-700 dark:text-yellow-400">⚠️ Controle de Produto Descartado (POP 08)</p>
                   <div>
                     <Label>Motivo do Descarte</Label>
                     <Select value={form.motivo_descarte} onValueChange={v => setForm(p => ({ ...p, motivo_descarte: v }))}>
@@ -380,7 +380,7 @@ export default function ControleResiduos() {
               <div className="flex items-start gap-3">
                 <Droplets className="w-6 h-6 text-blue-600 mt-0.5" />
                 <div>
-                  <h4 className="font-semibold text-sm">Controle de Efluentes — POP 08 ( / )<BaseLegalBadge assunto="autocontrole" /></h4>
+                  <h4 className="font-semibold text-sm">Controle de Efluentes — POP 08<BaseLegalBadge assunto="autocontrole" /></h4>
                   <p className="text-xs text-muted-foreground mt-1">
                     Registros de efluentes líquidos, industriais e água de lavagem com tipo de tratamento.
                     Parâmetros obrigatórios: pH, DBO, DQO, Sólidos Suspensos.

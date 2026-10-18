@@ -55,7 +55,7 @@ export default function Orientacoes() {
             <div className="flex-1 space-y-2">
               <h3 className="font-semibold text-lg">Como usar esta central</h3>
               <ol className="text-sm text-muted-foreground space-y-1 list-decimal list-inside">
-                <li>Escolha o módulo que deseja aprender (organizados por POP da )</li>
+                <li>Escolha o módulo que deseja aprender, organizado por POP.</li>
                 <li>Leia o <strong>Tutorial</strong> com passo-a-passo e base legal</li>
                 <li>Use a <strong>Simulação</strong> sandbox para testar sem afetar dados reais</li>
                 <li>Quando estiver confiante, clique em "Ir ao módulo" para usar de verdade</li>

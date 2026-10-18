@@ -530,7 +530,7 @@ export default function HigieneSanitizacao() {
               <div className="flex items-start gap-3">
                 <ShieldCheck className="w-6 h-6 text-primary mt-0.5" />
                 <div>
-                  <h4 className="font-display font-semibold text-sm">Checklist Pré-Operacional — POP 02/03 () <BaseLegalBadge assunto="bpf_geral" /></h4>
+                  <h4 className="font-display font-semibold text-sm">Checklist Pré-Operacional — POP 02/03 <BaseLegalBadge assunto="bpf_geral" /></h4>
                   <p className="text-xs text-muted-foreground mt-1">
  Verificação obrigatória antes do início de cada turno/produção. Todos os itens devem ser inspecionados
  e registrados </p>
@@ -696,7 +696,7 @@ export default function HigieneSanitizacao() {
               <div className="flex items-start gap-3">
                 <Layers className="w-6 h-6 text-orange-600 mt-0.5" />
                 <div>
-                  <h4 className="font-display font-semibold text-sm">Checklist de Liberação de Linha — POP-02 (  | ) <BaseLegalBadge assunto="bpf_geral" /></h4>
+                  <h4 className="font-display font-semibold text-sm">Checklist de Liberação de Linha — POP-02 <BaseLegalBadge assunto="bpf_geral" /></h4>
                   <p className="text-xs text-muted-foreground mt-1">
                     Verificação obrigatória antes da troca de produto/lote na linha de produção.
                     Garante ausência de contaminação cruzada, conformidade com limites de carry-over
@@ -814,7 +814,7 @@ export default function HigieneSanitizacao() {
               <div className="flex items-start gap-3">
                 <FlaskConical className="w-6 h-6 text-emerald-600 mt-0.5" />
                 <div>
-                  <h4 className="font-display font-semibold text-sm">Monitoramento de Limpeza de Superfícies — POP-02/03 () <BaseLegalBadge assunto="bpf_geral" /></h4>
+                  <h4 className="font-display font-semibold text-sm">Monitoramento de Limpeza de Superfícies — POP-02/03 <BaseLegalBadge assunto="bpf_geral" /></h4>
                   <p className="text-xs text-muted-foreground mt-1">
                     Verificação da eficácia da limpeza em superfícies de contato direto e indireto.
                     Inclui inspeção visual, swab de superfície, teste de água de enxágue e bioluminescência ATP

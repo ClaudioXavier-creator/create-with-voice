@@ -376,7 +376,7 @@ export default function Fornecedores() {
             <p className="font-semibold text-sm">🏛️ Validar fornecedor no MAPA/SIPEAGRO</p>
             <p className="text-xs text-muted-foreground mt-1">
               Lista oficial atualizada semanalmente. Consulte por CNPJ, Razão Social ou nº de registro antes de aprovar
-              fornecedores de insumos para alimentação animal (registro de estabelecimentos ).
+              fornecedores de insumos para alimentação animal (registro de estabelecimentos).
             </p>
           </div>
           <div className="flex flex-col sm:flex-row gap-2 shrink-0">

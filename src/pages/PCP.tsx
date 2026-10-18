@@ -659,7 +659,7 @@ export default function PCP() {
               Sequenciamento de Produção — Prevenção de Contaminação Cruzada
             </CardTitle>
             <p className="text-xs text-muted-foreground mt-1">
- — Sequência baseada na Matriz de Sensibilidade. Flushing/lavagem obrigatórios entre produtos
+ Sequência baseada na Matriz de Sensibilidade. Flushing/lavagem obrigatórios entre produtos
  com restrição.
  </p>
             <div className="flex flex-wrap gap-2 mt-2">
@@ -725,7 +725,7 @@ export default function PCP() {
               <div className="space-y-2">
                 <p className="text-[10px] text-muted-foreground mb-2">
                   💡 Defina a sequência para minimizar limpezas entre lotes. Produtos medicados devem ser produzidos por
-                  último no dia ().
+                  último no dia.
                 </p>
                 {sequencia.map(({ ordem, anterior, requerFlushing, tipoLimpeza }, i) => (
                   <div

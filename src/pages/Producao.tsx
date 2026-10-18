@@ -655,7 +655,7 @@ export default function Producao() {
                   {/* Retenção de Amostra de Contraprova — autocontrole (baseLegal: amostra_arquivo) */}
                   <div className="p-3 rounded-lg border border-blue-300 bg-blue-50 dark:bg-blue-900/10 space-y-3">
                     <p className="text-sm font-semibold flex items-center gap-2">
-                      🧪 Retenção de Amostra (Contraprova) — 
+                      🧪 Retenção de Amostra (Contraprova)
                     </p>
                     <p className="text-[10px] text-muted-foreground">
                       Reter amostra testemunha de cada lote produzido pelo prazo de validade do produto + 30 dias para
@@ -805,8 +805,7 @@ export default function Producao() {
               o módulo <strong>PCP / Ordens de Produção</strong>.
             </p>
             <p>
-              <strong>⏱️ Homogeneidade:</strong> Tempo mínimo de mistura de {TEMPO_MISTURA_MINIMO} min conforme
-              validação da . Registros abaixo deste valor são sinalizados.
+              <strong>⏱️ Homogeneidade:</strong> Tempo mínimo de mistura de {TEMPO_MISTURA_MINIMO} min. Registros abaixo deste valor são sinalizados.
             </p>
             <p>
               <strong>🧹 Sobras:</strong> Registre todas as sobras/vassouras e seu destino (reprocesso ou descarte).

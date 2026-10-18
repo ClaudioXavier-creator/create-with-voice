@@ -61,7 +61,7 @@ const DEMOS: Record<string, DemoConfig> = {
       { title: "Simulação de Recall", description: "Exercício anual obrigatório com cronômetro e 10 etapas pré-configuradas — da identificação do problema até a destinação final, com auto-registro como NC.", render: FeedRecall },
       { title: "Auditoria BPF — 80 itens", description: "Checklist oficial com Conforme/NC por item, observações, score automático de conformidade e categorização de risco.", render: FeedAuditoria },
       { title: "Recebimento de Matérias-Primas (POP-01)", description: "Inspeção sensorial, certificado de análise, lote, fornecedor, registro MAPA e exportação CSV — tudo.", render: FeedRecebimento },
-      { title: "Controle de Produção", description: "Registro de fabricação, tempo mínimo de mistura (3 min — ), controle de sobras/vassouras e integração com PCP/ordens.", render: FeedProducao },
+      { title: "Controle de Produção", description: "Registro de fabricação, tempo mínimo de mistura (3 min), controle de sobras/vassouras e integração com PCP/ordens.", render: FeedProducao },
       { title: "Matriz de Sensibilidade e Risco (APPCC)", description: "Questionário de 27 perguntas em 7 categorias gera automaticamente a matriz de risco e a análise de perigos APPCC para sua fábrica.", render: FeedMatrizRisco },
       { title: "Planejamento Anual de Atividades", description: "Cronograma inteligente de análises, treinamentos e atividades obrigatórias com alertas de vencimento, % de conformidade e visões em Cards/Timeline.", render: FeedPlanejamento },
       { title: "Manual Feed_BPF Interativo", description: "Guia completo de utilização organizado pela sequência dos 10 POPs — cada módulo do sistema explicado com vínculo direto à norma MAPA.", render: FeedManual },
