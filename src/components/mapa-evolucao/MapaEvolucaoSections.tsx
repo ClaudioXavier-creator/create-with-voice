@@ -515,10 +515,10 @@ export function DadosRegulatoriosEmpresaSection() {
       validade_registro_sipeagro: fd.get("validade_registro_sipeagro") || null,
       atividades_sipeagro: atividades.length ? atividades : null,
       fabrica_medicamentos: fabricaMed,
-      data_autorizacao_medicamentos: fd.get("data_autorizacao_medicamentos") || null,
+      data_autorizacao_medicamentos: fd.has("data_autorizacao_medicamentos") ? (fd.get("data_autorizacao_medicamentos") || null) : (empresa?.data_autorizacao_medicamentos ?? null),
       arquivo_autorizacao_medicamentos: arquivoAut,
-      autorizacao_medicamentos: fd.get("autorizacao_medicamentos"),
-      validade_autorizacao_medicamentos: fd.get("validade_autorizacao_medicamentos") || null,
+      autorizacao_medicamentos: fd.has("autorizacao_medicamentos") ? fd.get("autorizacao_medicamentos") : (empresa?.autorizacao_medicamentos ?? null),
+      validade_autorizacao_medicamentos: fd.has("validade_autorizacao_medicamentos") ? (fd.get("validade_autorizacao_medicamentos") || null) : (empresa?.validade_autorizacao_medicamentos ?? null),
     }).eq("id", empresaAtiva.id);
     setSaving(false);
     if (error) toast.error("Erro: " + error.message);

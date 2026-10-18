@@ -137,6 +137,7 @@ export default function FormulasManager({ produtoIdFixo, produtoNomeFixo }: Prop
       toast.success(`Fórmula criada: ${codigo}`);
       setOpen(false);
       setObs("");
+      setMedicada(false);
       if (!produtoIdFixo) { setProdutoId(""); setProdutoNome(""); }
       setVersao("01");
       fetchData();
@@ -159,6 +160,7 @@ export default function FormulasManager({ produtoIdFixo, produtoNomeFixo }: Prop
       data_versao: novaData,
       status: "ativa",
       observacoes: `Duplicada de: ${f.codigo}`,
+      medicada: (f as any).medicada ?? false,
     } as any).select().single();
     if (error || !nova) { toast.error("Erro ao duplicar"); return; }
 
@@ -387,6 +389,7 @@ export default function FormulasManager({ produtoIdFixo, produtoNomeFixo }: Prop
             <div>
               <Label>Observações</Label>
               <Textarea value={obs} onChange={e => setObs(e.target.value)} rows={2} />
+              <label className="flex items-center gap-2 mt-2 text-sm"><input type="checkbox" className="h-4 w-4" checked={medicada} onChange={e => setMedicada(e.target.checked)} /> Fórmula medicada (contém medicamento)</label>
             </div>
             <Button onClick={handleCreate} className="w-full" disabled={saving || !produtoNome}>
               {saving && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
