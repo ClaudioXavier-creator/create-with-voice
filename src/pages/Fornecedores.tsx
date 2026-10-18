@@ -367,7 +367,8 @@ export default function Fornecedores() {
         title="POP 01 - Qualificação de Fornecedores"
         description="Cadastro e avaliação de fornecedores"
         orientacaoModuloId="fornecedores"
-       assuntoBaseLegal="registro_estabelecimento" />
+        assuntoBaseLegal="registro_estabelecimento"
+      />
 
       {/* Validação SIPEAGRO — links oficiais MAPA */}
       <Card className="border-primary/40 bg-primary/5 mb-6">
@@ -687,7 +688,7 @@ export default function Fornecedores() {
                   <TabsContent value="resultado" className="space-y-4 mt-4">
                     <h3 className="text-sm font-semibold border-b pb-1">4 — Resultado da Qualificação</h3>
 
-                    <div className="grid grid-cols-3 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                       <button
                         type="button"
                         onClick={() => setResultadoQualificacao("aprovado")}
