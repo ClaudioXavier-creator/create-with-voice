@@ -53,6 +53,9 @@ export function citar(codigo: CodigoNorma, dispositivo?: string): string {
   return complemento ? `${norma.codigo}, ${complemento}` : norma.codigo;
 }
 
+/** Orientação de retenção; não calcula nem altera o prazo definido pela empresa. */
+export const ORIENTACAO_CONTRAPROVA = `Preservar a contraprova até o fim da validade do produto (${citar("Decreto 12.031/2024", "art. 70, §5º")}). Prazo adicional conforme o POP da empresa.`;
+
 export interface BaseLegal {
   readonly norma: string;
   readonly artigo: string;

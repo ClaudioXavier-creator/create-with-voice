@@ -1,6 +1,6 @@
 import { textoTela } from "@/lib/textoTela";
 import { BaseLegalBadge } from "@/components/BaseLegalBadge";
-import { getBaseLegal } from "@/config/baseLegal";
+import { citar, getBaseLegal, ORIENTACAO_CONTRAPROVA } from "@/config/baseLegal";
 import { useState, useEffect, useRef, useMemo } from "react";
 import { AmostrasRetencaoSection } from "@/components/mapa-evolucao/MapaEvolucaoSections";
 import {
@@ -873,7 +873,7 @@ export default function Rastreabilidade() {
         titulo: `Balanço de Massa Quantitativo — ${dataGeracao}`,
         tipo: "digital",
         modulo: "rastreabilidade",
-        descricao: `Balanço quantitativo com ${lotes.size} lotes. Entrada: ${fmtKg(totEntrada)} kg | Produzido: ${fmtKg(totProduzido)} kg | Expedido: ${fmtKg(totSaida)} kg. ${getBaseLegal("rastreabilidade").norma} Art. 18.`,
+        descricao: `Balanço quantitativo com ${lotes.size} lotes. Entrada: ${fmtKg(totEntrada)} kg | Produzido: ${fmtKg(totProduzido)} kg | Expedido: ${fmtKg(totSaida)} kg. ${citar("Decreto 12.031/2024", "arts. 41 e 57, §2º")}.`,
         data_geracao: dataGeracao,
         status: "ativo",
       });
@@ -1030,7 +1030,7 @@ export default function Rastreabilidade() {
             <h1 class="text-2xl font-bold text-emerald-800 uppercase tracking-tight">Certificado de Rastreabilidade</h1>
             <h2 class="text-lg font-semibold text-gray-600 mt-1">${empresaNome}</h2>
             <div class="inline-block px-4 py-1 bg-emerald-800 text-white text-[10px] font-bold rounded mt-2 uppercase">
-              ${getBaseLegal("rastreabilidade").norma} — Art. 18 | ${getBaseLegal("bpf_geral").citacao}
+              ${citar("Decreto 12.031/2024", "arts. 41 e 57, §2º")} | ${getBaseLegal("bpf_geral").citacao}
             </div>
           </div>
 
@@ -1133,7 +1133,7 @@ export default function Rastreabilidade() {
 
           <div class="mt-10 pt-4 border-t border-gray-200 text-center text-[9px] text-gray-500 italic space-y-1">
             <p>Documento emitido em ${dataEmissao} pelo sistema BPF Digital.</p>
-            <p>Conformidade: ${getBaseLegal("rastreabilidade").norma} (Art. 18) • ${getBaseLegal("bpf_geral").citacao} (MAPA) • Rastreabilidade bidirecional comprovada eletronicamente.</p>
+            <p>Conformidade: ${citar("Decreto 12.031/2024", "arts. 41 e 57, §2º")} • ${getBaseLegal("bpf_geral").citacao} (MAPA) • Rastreabilidade bidirecional comprovada eletronicamente.</p>
           </div>
         </div>
       </div>
@@ -1175,7 +1175,7 @@ export default function Rastreabilidade() {
         titulo: `Certificado de Rastreabilidade — Lote ${certLote}`,
         tipo: "digital",
         modulo: "rastreabilidade",
-        descricao: `Certificado formal do lote ${certLote} (${produto}). ${getBaseLegal("rastreabilidade").norma} Art. 18.`,
+        descricao: `Certificado formal do lote ${certLote} (${produto}). ${citar("Decreto 12.031/2024", "arts. 41 e 57, §2º")}.`,
         data_geracao: new Date().toISOString().split("T")[0],
         status: "ativo",
       });
@@ -2870,7 +2870,7 @@ export default function Rastreabilidade() {
                       </div>
                     )}
                     <p className="text-[10px] text-muted-foreground mt-2">
-                      Reter, no mínimo, até a validade do produto + 30 dias.
+                      {ORIENTACAO_CONTRAPROVA}
                     </p>
                   </div>
 
@@ -3545,8 +3545,8 @@ export default function Rastreabilidade() {
           </div>
 
           <div className="mt-8 text-[8px] text-gray-400 italic text-center">
-            Este mapa de rastreabilidade foi gerado automaticamente e atende ao Art. 18 do{" "}
-            {getBaseLegal("rastreabilidade").norma} e ao POP 05.
+            Este mapa de rastreabilidade foi gerado automaticamente e atende ao{" "}
+            {citar("Decreto 12.031/2024", "arts. 41 e 57, §2º")} e ao POP 05.
           </div>
         </div>
       </div>

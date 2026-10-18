@@ -1,4 +1,4 @@
-import { getBaseLegal } from "@/config/baseLegal";
+import { citar, getBaseLegal, ORIENTACAO_CONTRAPROVA } from "@/config/baseLegal";
 // Configuração centralizada das orientações de preenchimento e simulações
 // para todos os módulos do sistema BPF_Consult.
 // Cada módulo possui: passos de tutorial + dados fictícios para simulação sandbox.
@@ -490,8 +490,8 @@ export const ORIENTACOES: ModuloOrientacao[] = [
       { titulo: "2. Tempo de mistura", descricao: "Registre tempo (mín. validado por homogeneidade)." },
       {
         titulo: "3. Reter contraprova",
-        descricao: "300g por lote, validade do produto + 30 dias.",
-        base_legal: `${getBaseLegal("bpf_geral").citacao} Art. 25`,
+        descricao: `300g por lote. ${ORIENTACAO_CONTRAPROVA}`,
+        base_legal: citar("Decreto 12.031/2024", "art. 70, §5º"),
       },
       { titulo: "4. Flushing (se aplicável)", descricao: "Registre material e volume usados." },
     ],

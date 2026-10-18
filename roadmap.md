@@ -1,5 +1,9 @@
 # Fase 2 — Fonte única de legislação ligada ao banco
 
+## Correção de dispositivos e contraprova
+- [x] Corrigir somente citações de rastreabilidade e orientação de contraprova; manter campos editáveis, valores, cálculos e registros.
+- [x] Build OK e 33 testes passando; orientação e campos editáveis conferidos com sessão real em Produção e Rastreabilidade, sem salvar. Alterações apenas textuais; não publicado.
+
 ## Substituição de fundamentos desatualizados
 - [x] Substituir apenas citações restantes nos arquivos solicitados, preservando notas históricas e regras operacionais.
 - [x] Build OK e 33 testes passando; botão PNEEB conferido com sessão real em Rastreabilidade. Mudanças: Rastreabilidade.tsx, orientacoesConfig.ts e roadmap.md; sem banco ou publicação.
