@@ -3238,7 +3238,7 @@ export default function Rastreabilidade() {
 
       {/* Venda Dialog */}
       <Dialog open={vendaOpen} onOpenChange={setVendaOpen}>
-        <DialogContent>
+        <DialogContent className="max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Truck className="w-5 h-5" /> Registrar Venda / Destino do PA
