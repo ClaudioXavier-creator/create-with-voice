@@ -63,9 +63,10 @@ export const CHECKLIST_LIBERACAO_LINHA = [
   ]},
   { area: "Medicamentos / Carry-over", itens: [
     "Produto anterior continha medicamento? (verificar)",
-    "Flushing realizado conforme IN 15/2009",
+    "Flushing ou limpeza validada realizada conforme plano de sequenciamento",
     "Destino do material de flushing registrado",
-    "Carry-over dentro do limite aceitável (< 1% ionóforos / < 3% medicados)",
+    "Carry-over até 2,5% da concentração do princípio ativo no produto seguinte",
+    "Amostra coletada no último ponto compartilhado da linha",
   ]},
 ];
 
@@ -92,13 +93,14 @@ export const CHECKLIST_SILOS_TRANSPORT = [
     "Pontos de conexão entre equipamentos verificados",
     "Registro de flushing do transportador (se aplicável)",
   ]},
-  { area: "Prevenção de Arraste — IN 15/2009", itens: [
+  { area: "Prevenção de Arraste", itens: [
     "Verificação de resíduo de medicamento no silo/transportador",
     "Flushing com inerte realizado após produto medicado",
     "Volume de flushing ≥ 50% da capacidade do equipamento",
     "Destino do material de flushing registrado (resíduo/reprocesso)",
     "Tempo de espera respeitado antes do próximo produto (se aplicável)",
-    "Carry-over dentro do limite aceitável (< 1% ionóforos, < 3% medicados)",
+    "Carry-over até 2,5% da concentração do princípio ativo (3 repetições da sequência-piloto)",
+    "Produto não-alvo verificado no mínimo a cada 12 meses",
   ]},
   { area: "Documentação e Rastreabilidade", itens: [
     "Cronograma de limpeza de silos atualizado",
@@ -238,7 +240,7 @@ export const TIPOS_VALIDACAO = [
   { value: "swab", label: "Swab / Teste de Superfície" },
   { value: "laboratorial", label: "Análise Laboratorial" },
   { value: "rinse", label: "Água de Enxágue" },
-  { value: "homogeneidade", label: "Teste de Homogeneidade (CV%)" },
+  { value: "homogeneidade", label: "Teste de Homogeneidade (CV até 10%)" },
   { value: "carryover", label: "Teste de Carry-Over / Arraste" },
   { value: "tempo_mistura", label: "Validação Tempo de Mistura" },
   { value: "flushing", label: "Flushing / Limpeza de Linha" },

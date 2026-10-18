@@ -1,4 +1,5 @@
 import { getBaseLegal } from "@/config/baseLegal";
+import { citar798, REGRAS_CARRY_OVER, LIMITE_CARRY_OVER_PERCENT, REPETICOES_EXIGIDAS, avaliarValidacaoCarryOver, lerRepeticao, resultadoDentroDoLimite } from "@/config/carryOver798";
 import { statusConfig, prioridadeConfig } from "@/components/pcp/constants";
 import { useState, useEffect } from "react";
 import { TemposMisturaSection } from "@/components/mapa-evolucao/MapaEvolucaoSections";
@@ -156,9 +157,10 @@ export default function PCP() {
   const [coProdAnterior, setCoProdAnterior] = useState("");
   const [coProdSeguinte, setCoProdSeguinte] = useState("");
   const [coSubstancia, setCoSubstancia] = useState("");
-  const [coLimite, setCoLimite] = useState("");
+  const [coLimite, setCoLimite] = useState(String(LIMITE_CARRY_OVER_PERCENT).replace(".", ","));
+  const [coRepeticao, setCoRepeticao] = useState("1");
   const [coResultado, setCoResultado] = useState("");
-  const [coUnidade, setCoUnidade] = useState("ppm");
+  const coUnidade = "%";
   const [coConforme, setCoConforme] = useState(true);
   const [coObs, setCoObs] = useState("");
   const [carryoverRecords, setCarryoverRecords] = useState<any[]>([]);
@@ -532,7 +534,8 @@ export default function PCP() {
     setSaving(true);
     const ordem = ordens.find((o) => o.id === coOrdemId);
     const obs = [
-      `[TESTE DE CARRY-OVER — IN 15/2009 / ${getBaseLegal("decreto_base").citacao}]`,
+      `[TESTE DE CARRY-OVER — ${citar798("art. 29")}]`,
+      `Repetição: ${coRepeticao} de ${REPETICOES_EXIGIDAS} (${citar798("art. 29, §1º")})`,
       `Data: ${coData} | Responsável: ${coResponsavel}`,
       `Método: ${coMetodo === "visual" ? "Inspeção Visual" : coMetodo === "swab" ? "Swab de Superfície" : coMetodo === "flushing_analise" ? "Análise do Flushing" : "Análise Laboratorial"}`,
       `Produto anterior: ${coProdAnterior || "—"}`,
@@ -568,9 +571,9 @@ export default function PCP() {
       setCoProdAnterior("");
       setCoProdSeguinte("");
       setCoSubstancia("");
-      setCoLimite("");
+      setCoLimite(String(LIMITE_CARRY_OVER_PERCENT).replace(".", ","));
+      setCoRepeticao("1");
       setCoResultado("");
-      setCoUnidade("ppm");
       setCoConforme(true);
       setCoObs("");
       fetchData();
@@ -782,7 +785,7 @@ export default function PCP() {
                   </p>
                 )}
 
-                {/* Procedimentos de Flushing — IN 15/2009 */}
+                {/* Procedimentos de Flushing */}
                 <div className="mt-4 p-3 rounded-lg border bg-muted/30">
                   <p className="text-xs font-semibold mb-2">📋 Procedimentos de Flushing </p>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
@@ -1236,7 +1239,8 @@ export default function PCP() {
                                   <Droplets className="w-4 h-4" /> Ordem de Limpeza (Flush) </p>
                                 <p className="text-[10px] text-muted-foreground mt-1">
                                   Registro obrigatório de limpeza entre batidas de fórmulas diferentes para prevenir
-                                  contaminação cruzada.
+                                  contaminação cruzada. Use plano de sequenciamento validado ou limpeza validada, a partir
+                                  da matriz de sensibilidade ({citar798("art. 25, II")}).
                                 </p>
                               </div>
                               {(() => {
@@ -1302,49 +1306,16 @@ export default function PCP() {
                               <div className="p-3 rounded-lg border border-orange-500/20 bg-orange-50 dark:bg-orange-900/10">
                                 <div className="flex items-start gap-2">
                                   <TestTube className="w-5 h-5 text-orange-600 mt-0.5" />
-                                  <div>
-                                    <p className="text-xs font-semibold">
-                                      
- Teste de Carry-over —
-                                    </p>
-                                    <p className="text-[10px] text-muted-foreground mt-1">
-                                      Limite de arraste: Ionóforos {"<"} 1% da dose terapêutica • Medicados {"<"} 3% da
-                                      dose terapêutica • Micotoxinas {"<"} limite da legislação vigente. Teste
-                                      obrigatório após flushing.
-                                    </p>
+                                  <div className="space-y-1">
+                                    <p className="text-xs font-semibold">Teste de carry-over e validação de limpeza</p>
+                                    <ul className="text-[10px] text-muted-foreground space-y-0.5">
+                                      {REGRAS_CARRY_OVER.map((r) => (
+                                        <li key={r.titulo}>
+                                          • <span className="font-semibold">{r.titulo}:</span> {r.texto} ({r.citacao})
+                                        </li>
+                                      ))}
+                                    </ul>
                                   </div>
-                                </div>
-                              </div>
-
-                              {/* Limites de referência IN 15/2009 */}
-                              <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-                                <div className="p-2 rounded border bg-background text-center">
-                                  <p className="text-xs font-bold text-orange-700">Ionóforos</p>
-                                  <p className="text-lg font-bold text-orange-600">{"<"} 1%</p>
-                                  <p className="text-[10px] text-muted-foreground">da dose terapêutica</p>
-                                  <p className="text-[9px] text-muted-foreground mt-1">
-                                    Monensina, Salinomicina, Lasalocida
-                                  </p>
-                                </div>
-                                <div className="p-2 rounded border bg-background text-center">
-                                  <p className="text-xs font-bold text-destructive">Medicados</p>
-                                  <p className="text-lg font-bold text-destructive">{"<"} 3%</p>
-                                  <p className="text-[10px] text-muted-foreground">da dose terapêutica</p>
-                                  <p className="text-[9px] text-muted-foreground mt-1">
-                                    Antibióticos, Coccidiostáticos, Promotores
-                                  </p>
-                                </div>
-                                <div className="p-2 rounded border bg-background text-center">
-                                  <p className="text-xs font-bold text-yellow-700">Micotoxinas</p>
-                                  <p className="text-lg font-bold text-yellow-600">Limite legal</p>
-                                  <p className="text-[10px] text-muted-foreground">Aflatoxina: ≤ 20 ppb</p>
-                                  <p className="text-[9px] text-muted-foreground mt-1">DON, Fumonisina, Zearalenona</p>
-                                </div>
-                                <div className="p-2 rounded border-2 border-green-600/40 bg-green-50 dark:bg-green-900/10 text-center">
-                                  <p className="text-xs font-bold text-green-700">Ractopamina</p>
-                                  <p className="text-lg font-bold text-green-700">ND</p>
-                                  <p className="text-[10px] text-muted-foreground">Não Detectado</p>
-                                  <p className="text-[9px] text-green-600 mt-1">Programa Ractopamina Free</p>
                                 </div>
                               </div>
 
@@ -1353,11 +1324,28 @@ export default function PCP() {
                                 const testsOrdem = carryoverRecords.filter(
                                   (r: any) => r.checklist_auditoria_ref === o.id,
                                 );
+                                const statusValidacao = avaliarValidacaoCarryOver(
+                                  testsOrdem
+                                    .map((r: any) => ({ repeticao: lerRepeticao(r.observacoes), conforme: r.status === "concluido" }))
+                                    .filter((r): r is { repeticao: number; conforme: boolean } => r.repeticao !== null),
+                                );
                                 return testsOrdem.length > 0 ? (
+                                  <>
+                                  <div className="flex items-center gap-2 text-xs">
+                                    <span className="font-semibold">Validação ({citar798("art. 29, §1º")}):</span>
+                                    {statusValidacao === "aprovada" ? (
+                                      <Badge className="bg-primary/20 text-primary">Aprovada — 3 repetições conformes</Badge>
+                                    ) : statusValidacao === "reprovada" ? (
+                                      <Badge variant="destructive">Reprovada</Badge>
+                                    ) : (
+                                      <Badge variant="outline">Em andamento — exige 3 repetições conformes</Badge>
+                                    )}
+                                  </div>
                                   <Table>
                                     <TableHeader>
                                       <TableRow>
                                         <TableHead>Data</TableHead>
+                                        <TableHead>Rep.</TableHead>
                                         <TableHead>Responsável</TableHead>
                                         <TableHead>Método</TableHead>
                                         <TableHead>Status</TableHead>
@@ -1368,6 +1356,7 @@ export default function PCP() {
                                       {testsOrdem.map((r: any) => (
                                         <TableRow key={r.id}>
                                           <TableCell className="whitespace-nowrap">{r.data_execucao}</TableCell>
+                                          <TableCell>{lerRepeticao(r.observacoes) ?? "—"}</TableCell>
                                           <TableCell>{r.executor}</TableCell>
                                           <TableCell className="text-xs">
                                             {r.observacoes?.includes("Visual")
@@ -1392,6 +1381,7 @@ export default function PCP() {
                                       ))}
                                     </TableBody>
                                   </Table>
+                                  </>
                                 ) : (
                                   <p className="text-xs text-muted-foreground text-center py-3">
                                     Nenhum teste de carry-over registrado para esta ordem
@@ -1647,25 +1637,13 @@ export default function PCP() {
           <div className="space-y-3">
             <div className="p-3 rounded-lg border border-orange-500/20 bg-orange-50 dark:bg-orange-900/10">
               <p className="text-xs font-semibold flex items-center gap-1">
-                <Shield className="w-4 h-4 text-orange-600" />  Limites de Arraste 
- </p>
-              <div className="grid grid-cols-3 gap-2 mt-2 text-[10px]">
-                <div className="text-center">
-                  <span className="font-bold text-orange-700">Ionóforos</span>
-                  <br />
-                  {"<"} 1% dose terapêutica
-                </div>
-                <div className="text-center">
-                  <span className="font-bold text-destructive">Medicados</span>
-                  <br />
-                  {"<"} 3% dose terapêutica
-                </div>
-                <div className="text-center">
-                  <span className="font-bold text-yellow-700">Micotoxinas</span>
-                  <br />
-                  Aflatoxina ≤ 20 ppb
-                </div>
-              </div>
+                <Shield className="w-4 h-4 text-orange-600" /> Validação de limpeza ({citar798("art. 29")})
+              </p>
+              <ul className="mt-2 space-y-0.5 text-[10px] text-muted-foreground">
+                {REGRAS_CARRY_OVER.slice(0, 3).map((r) => (
+                  <li key={r.titulo}>• {r.texto}</li>
+                ))}
+              </ul>
             </div>
 
             <div className="grid grid-cols-2 gap-3">
@@ -1710,7 +1688,7 @@ export default function PCP() {
                 />
               </div>
             </div>
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               <div>
                 <Label>Substância Monitorada</Label>
                 <Input
@@ -1720,28 +1698,40 @@ export default function PCP() {
                 />
               </div>
               <div>
-                <Label>Limite Aceitável</Label>
-                <Input value={coLimite} onChange={(e) => setCoLimite(e.target.value)} placeholder="Ex: 1.0" />
+                <Label>Repetição *</Label>
+                <Select value={coRepeticao} onValueChange={setCoRepeticao}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="1">1 de 3</SelectItem>
+                    <SelectItem value="2">2 de 3</SelectItem>
+                    <SelectItem value="3">3 de 3</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
               <div>
-                <Label>Resultado</Label>
-                <Input value={coResultado} onChange={(e) => setCoResultado(e.target.value)} placeholder="Ex: 0.3" />
+                <Label>Limite (% do princípio ativo)</Label>
+                <Input value={coLimite} onChange={(e) => setCoLimite(e.target.value)} placeholder="2,5" />
+              </div>
+              <div>
+                <Label>Resultado (%)</Label>
+                <Input
+                  value={coResultado}
+                  onChange={(e) => {
+                    const v = e.target.value;
+                    setCoResultado(v);
+                    const num = (x: string) => Number(x.replace(",", "."));
+                    if (v.trim()) setCoConforme(resultadoDentroDoLimite(num(v), num(coLimite) || LIMITE_CARRY_OVER_PERCENT));
+                  }}
+                  placeholder="Ex: 0,8"
+                />
               </div>
             </div>
-            <div>
-              <Label>Unidade</Label>
-              <Select value={coUnidade} onValueChange={setCoUnidade}>
-                <SelectTrigger className="w-32">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="ppm">ppm</SelectItem>
-                  <SelectItem value="ppb">ppb</SelectItem>
-                  <SelectItem value="mg/kg">mg/kg</SelectItem>
-                  <SelectItem value="%">%</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+            <p className="text-[10px] text-muted-foreground">
+              Resultado em % da concentração do princípio ativo do produto anterior. Amostra no último ponto
+              compartilhado da linha ({citar798("art. 28, IV")}).
+            </p>
             <div className="flex items-center gap-3 p-3 rounded-lg border bg-muted/30">
               <input
                 type="checkbox"
@@ -1751,7 +1741,7 @@ export default function PCP() {
               />
               <div>
                 <Label className="text-sm font-semibold">Resultado Conforme</Label>
-                <p className="text-[10px] text-muted-foreground">Resíduo dentro dos limites aceitáveis</p>
+                <p className="text-[10px] text-muted-foreground">Resultado até o limite informado (padrão 2,5%)</p>
               </div>
               {coConforme ? (
                 <CheckCircle2 className="w-5 h-5 text-green-600 ml-auto" />
@@ -1870,7 +1860,7 @@ export default function PCP() {
               </div>
             </div>
 
-            {/* ── CHECKLIST DE VALIDAÇÃO — IN 15/2009 ── */}
+            {/* ── CHECKLIST DE VALIDAÇÃO ── */}
             <div className="p-3 rounded-lg border-2 border-blue-500/30 bg-blue-50 dark:bg-blue-900/10 space-y-2">
               <p className="text-xs font-bold text-blue-700 dark:text-blue-400 flex items-center gap-1">
                 <CheckCircle2 className="w-4 h-4" /> Checklist de Validação de Limpeza </p>
@@ -2001,7 +1991,7 @@ export default function PCP() {
                   .filter(([, v]) => v)
                   .map(([k]) => k);
                 const obs = [
-                  `[VALIDAÇÃO DE LIMPEZA DE LINHA — IN 15/2009]`,
+                  `[VALIDAÇÃO DE LIMPEZA DE LINHA — ${citar798("art. 29")}]`,
                   `Data: ${flushData} | Início: ${flushHoraInicio || "—"} | Fim: ${flushHoraFim || "—"}`,
                   `Responsável: ${flushResp}`,
                   `Tipo: ${flushTipo === "vassouragem" ? "Vassouragem" : flushTipo === "flushing" ? "Flushing" : flushTipo === "lavagem" ? "Lavagem completa" : "Sanitização"}`,

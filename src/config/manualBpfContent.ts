@@ -1,4 +1,5 @@
 import { getBaseLegal } from "@/config/baseLegal";
+import { citar798 } from "@/config/carryOver798";
 import { DOCUMENTOS_ATIVACAO_CHECKLIST } from "@/config/documentosAtivacaoChecklist";
 import manualBpfDocAsset from "@/assets/modelos/manual_bpf.docx.asset.json";
 
@@ -255,15 +256,17 @@ export const MANUAL_BPF_SECTIONS: ManualBpfSection[] = [
       "• Dietilestilbestrol (DES) e outros hormônios sintéticos proibidos",
       "• Avoparcina, olaquindox e carbadox",
       "─── SUBSTÂNCIAS COM LIMITES ───",
-      "• Ionóforos (monensina, salinomicina, lasalocida): carry-over máximo < 1% para produtos sem medicamento",
-      "• Medicamentos veterinários: carry-over máximo < 3% para espécies não-alvo",
+      `• Carry-over: o produto fabricado logo depois pode ter até 2,5% da concentração do princípio ativo, comprovado em 3 repetições da sequência-piloto (${citar798("art. 29")} e §1º)`,
+      `• Amostra coletada no último ponto compartilhado da linha (${citar798("art. 28, IV")})`,
+      `• Homogeneidade: CV até 10% no método de concentração (${citar798("art. 26")})`,
+      `• Produto não-alvo verificado no mínimo a cada 12 meses (${citar798("art. 25, V, b")}); registros guardados por 2 anos`,
       "• Micotoxinas — Aflatoxina: limite máximo ≤ 20 ppb (µg/kg) para rações",
       "• Metais pesados: conforme limites da legislação vigente",
       "─── CONTROLES IMPLEMENTADOS ───",
       "O sistema monitora continuamente:",
       "• Certificados de análise de cada lote de matéria-prima recebida",
       "• Testes de carry-over após limpeza de linha (flushing, HPLC, swab)",
-      "• Sequenciamento de produção baseado na Matriz de Sensibilidade",
+      `• Plano de sequenciamento validado ou limpeza validada, a partir da Matriz de Sensibilidade (${citar798("art. 25, II")})`,
       "• Rastreabilidade de ingredientes de origem animal (alertas EEB automáticos)",
       "• Laudos laboratoriais de micotoxinas e resíduos químicos",
     ],
@@ -490,7 +493,7 @@ export const MANUAL_BPF_SECTIONS: ManualBpfSection[] = [
       "─── SISTEMA FEED BPF ───",
       "Todos os módulos do sistema estão alinhados com as exigências normativas acima, cobrindo:",
       "• 10 POPs obrigatórios com planilhas digitais (PL POP 1.1 a 10.3)",
-      "• Checklists de liberação de linha e carry-over (IN 15/2009)",
+      `• Checklists de liberação de linha e carry-over (${getBaseLegal("alimentos_medicados").citacao})`,
       `• Rastreabilidade bidirecional e recall simulado (${getBaseLegal("rastreabilidade").citacao}; ${getBaseLegal("recolhimento_recall").citacao})`,
       `• Categorização de risco automatizada (${getBaseLegal("autocontrole").citacao})`,
       `• Sala do Auditor com 68 itens de fiscalização (${getBaseLegal("autocontrole").citacao})`,
