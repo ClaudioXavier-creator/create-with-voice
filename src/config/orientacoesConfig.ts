@@ -1007,7 +1007,7 @@ export const ORIENTACOES: ModuloOrientacao[] = [
     descricao: `Biblioteca de normas (${getBaseLegal("bpf_geral").citacao}, ${getBaseLegal("decreto_base").citacao} etc.) com IA assistente.`,
     base_legal: ["MAPA — todas as INs aplicáveis"],
     passos: [
-      { titulo: "1. Buscar norma", descricao: "Use a busca por código ('IN 04') ou tema ('rotulagem', 'pragas')." },
+      { titulo: "1. Buscar norma", descricao: `Use a busca por código ('${getBaseLegal("bpf_geral").norma}') ou tema ('rotulagem', 'pragas').` },
       {
         titulo: "2. Consultar IA",
         descricao: "Pergunte em linguagem natural sobre qualquer norma.",
@@ -1093,7 +1093,7 @@ export const ORIENTACOES: ModuloOrientacao[] = [
     titulo: "Sala do Auditor",
     rota: "/sala-auditor",
     descricao: "Acesso somente-leitura para o fiscal MAPA visualizar todos os registros sem editar.",
-    base_legal: [`${getBaseLegal("autocontrole").citacao} Art. 36`],
+    base_legal: [`${getBaseLegal("autocontrole").norma} Art. 36`],
     passos: [
       { titulo: "1. Gerar acesso temporário", descricao: "Crie credencial com validade (ex: dia da auditoria)." },
       { titulo: "2. Compartilhar com auditor", descricao: "Link único, sem senha permanente." },

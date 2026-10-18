@@ -2230,8 +2230,7 @@ export default function Rastreabilidade() {
         <CardHeader className="flex flex-row items-center justify-between">
           <div>
             <CardTitle className="font-display text-sm flex items-center gap-2">
-              <Package className="w-5 h-5 text-primary" /> Balanço de Massa — Conciliação de Estoque (Decreto
-              12.031/2024, arts. 40 e 41)
+              <Package className="w-5 h-5 text-primary" /> Balanço de Massa — Conciliação de Estoque ({getBaseLegal("autocontrole").citacao}; {getBaseLegal("rastreabilidade").citacao})
             </CardTitle>
             <p className="text-xs text-muted-foreground mt-1">
               Conciliação Entrada (MP) vs Saída (Venda/Entrega) por lote de PA
@@ -2350,7 +2349,7 @@ export default function Rastreabilidade() {
         </CardContent>
       </Card>
 
-      {/* Correlação Lote PA ↔ Certificado de Análise da MP — Decreto 12.031/2024 */}
+      {/* Correlação Lote PA ↔ Certificado de Análise da MP — baseLegal: decreto_base */}
       <Card className="mb-6 border-primary/20">
         <CardHeader>
           <CardTitle className="font-display text-sm flex items-center gap-2">
@@ -2479,8 +2478,7 @@ export default function Rastreabilidade() {
       <Card className="mb-6 border-accent/20">
         <CardHeader>
           <CardTitle className="font-display text-sm flex items-center gap-2">
-            <FlaskConical className="w-5 h-5 text-accent" /> Análises Laboratoriais Vinculadas ao Lote — Decreto
-            12.031/2024, art. 40
+            <FlaskConical className="w-5 h-5 text-accent" /> Análises Laboratoriais Vinculadas ao Lote — {getBaseLegal("autocontrole").citacao}
           </CardTitle>
           <p className="text-xs text-muted-foreground mt-1">
             Conformidade do controle de qualidade: análises de PA vinculadas por lote.

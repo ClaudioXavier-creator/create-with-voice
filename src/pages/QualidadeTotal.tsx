@@ -867,7 +867,7 @@ export default function QualidadeTotal() {
           </Dialog>
         </TabsContent>
 
-        {/* ── CONTRAPROVA — IN 04/2007 ── */}
+        {/* ── CONTRAPROVA — baseLegal: bpf_geral ── */}
         <TabsContent value="contraprova" className="space-y-6">
           <Card className="border-primary/20 bg-primary/5">
             <CardContent className="pt-4">

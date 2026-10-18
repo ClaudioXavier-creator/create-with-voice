@@ -581,7 +581,7 @@ ${(() => {
       fullCsv += `\n========================================\n`;
       fullCsv += `FIM DO RELATÓRIO\n`;
       fullCsv += `Gerado em: ${dataHora}\n`;
-      fullCsv += `${getBaseLegal("autocontrole").citacao} — Art. 18: Os registros devem estar disponíveis ao SIF em formato organizado.\n`;
+      fullCsv += `${getBaseLegal("decreto_base").citacao} — Art. 18: Os registros devem estar disponíveis ao SIF em formato organizado.\n`;
       fullCsv += `Este documento é parte integrante do programa de autocontrole (PAC/BPF).\n`;
       fullCsv += `========================================\n`;
 

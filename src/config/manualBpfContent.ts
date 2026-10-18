@@ -331,7 +331,7 @@ export const MANUAL_BPF_SECTIONS: ManualBpfSection[] = [
     numero: "6",
     titulo: "Categorização de Risco do Estabelecimento",
     conteudo: [
-      `FUNDAMENTO LEGAL: A categorização de risco dos estabelecimentos fabricantes de produtos destinados à alimentação animal é regulamentada pelo ${getBaseLegal("decreto_base").citacao}, ${getBaseLegal("decreto_base").observacao} e pela ${getBaseLegal("bpf_geral").citacao} do MAPA, que estabelece o Regulamento Técnico de Boas Práticas de Fabricação.`,
+      `FUNDAMENTO LEGAL: A categorização de risco dos estabelecimentos fabricantes de produtos destinados à alimentação animal é regulamentada pelo ${getBaseLegal("decreto_base").citacao}, cujo antecessor foi revogado, e pela ${getBaseLegal("bpf_geral").citacao} do MAPA, que estabelece o Regulamento Técnico de Boas Práticas de Fabricação.`,
       "OBJETIVO: Classificar o estabelecimento em uma categoria de risco (Baixo, Médio, Alto ou Crítico) com base na avaliação de múltiplos fatores que influenciam a segurança do produto final, orientando a frequência de fiscalização e o nível de controles exigidos pelo MAPA.",
       "─── CRITÉRIOS DE CATEGORIZAÇÃO ───",
       "A categorização de risco considera os seguintes fatores principais, conforme legislação vigente:",

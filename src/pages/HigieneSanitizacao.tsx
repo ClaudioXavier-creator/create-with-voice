@@ -689,7 +689,7 @@ export default function HigieneSanitizacao() {
         </TabsContent>
 
 
-        {/* ── LIBERAÇÃO DE LINHA (POP-02 / IN 04/2007 | IN 15/2009) ── */}
+        {/* ── LIBERAÇÃO DE LINHA (POP-02 / baseLegal: bpf_geral | IN 15/2009) ── */}
         <TabsContent value="liberacao" className="space-y-4">
           <Card className="border-orange-500/20 bg-orange-50 dark:bg-orange-900/10">
             <CardContent className="pt-4">
@@ -807,7 +807,7 @@ export default function HigieneSanitizacao() {
           )}
         </TabsContent>
 
-        {/* ── MONITORAMENTO DE SUPERFÍCIES (POP-02/03 / IN 04/2007) ── */}
+        {/* ── MONITORAMENTO DE SUPERFÍCIES (POP-02/03 / baseLegal: bpf_geral) ── */}
         <TabsContent value="superficies" className="space-y-4">
           <Card className="border-emerald-500/20 bg-emerald-50 dark:bg-emerald-900/10">
             <CardContent className="pt-4">
