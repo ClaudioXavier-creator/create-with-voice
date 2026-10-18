@@ -1695,7 +1695,7 @@ export default function Rastreabilidade() {
               selecione o status "Quarentena", "Retido" ou "Aguardando Análise".
             </p>
             <p>
-              <strong>,:</strong> Produtos não conformes devem ser segregados e identificados até
+              <strong>Segregação:</strong> Produtos não conformes devem ser segregados e identificados até
               decisão final (reprocesso, descarte ou recall).
             </p>
           </div>
