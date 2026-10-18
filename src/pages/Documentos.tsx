@@ -1,7 +1,23 @@
 import { BaseLegalBadge } from "@/components/BaseLegalBadge";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { FileText, Plus, Loader2, Wrench, Gauge, AlertCircle, ExternalLink, Upload, FolderOpen, Trash2, History, GitBranch, Send, CheckCircle2, Archive } from "lucide-react";
+import {
+  FileText,
+  Plus,
+  Loader2,
+  Wrench,
+  Gauge,
+  AlertCircle,
+  ExternalLink,
+  Upload,
+  FolderOpen,
+  Trash2,
+  History,
+  GitBranch,
+  Send,
+  CheckCircle2,
+  Archive,
+} from "lucide-react";
 import { registrarAuditLog, registrarVersaoDocumento } from "@/utils/auditLog";
 import { WorkflowBadge, type WorkflowStatus } from "@/components/documentos/WorkflowBadge";
 import { AprovarPopDialog } from "@/components/documentos/AprovarPopDialog";
@@ -53,7 +69,6 @@ const POPS_OBRIGATORIOS = POPS_CONFIG.map((p) => {
   return { codigo: p.codigo, nome: p.descricao, ...link };
 });
 
-
 const TIPOS_EQUIPAMENTO = [
   { value: "balanca", label: "Balança" },
   { value: "termometro", label: "Termômetro" },
@@ -73,27 +88,49 @@ const CATEGORIAS_ARQ = [
 ];
 
 interface DocRow {
-  id: string; codigo: string; nome: string; versao: string | null;
-  data_revisao: string | null; responsavel: string | null; status: string | null;
-  validade_revisao: string | null; proxima_revisao: string | null;
-  workflow_status?: string | null; documento_pai_id?: string | null;
-  aprovador_nome?: string | null; aprovado_em?: string | null;
+  id: string;
+  codigo: string;
+  nome: string;
+  versao: string | null;
+  data_revisao: string | null;
+  responsavel: string | null;
+  status: string | null;
+  validade_revisao: string | null;
+  proxima_revisao: string | null;
+  workflow_status?: string | null;
+  documento_pai_id?: string | null;
+  aprovador_nome?: string | null;
+  aprovado_em?: string | null;
 }
 
 interface ArquivoBpf {
-  id: string; titulo: string; categoria: string; descricao: string | null;
-  arquivo_nome: string | null; arquivo_url: string | null; created_at: string;
+  id: string;
+  titulo: string;
+  categoria: string;
+  descricao: string | null;
+  arquivo_nome: string | null;
+  arquivo_url: string | null;
+  created_at: string;
   pop_codigo?: string | null;
-  tipo_doc?: string | null; numero_doc?: number | null;
-  data_ref?: string | null; nome_padronizado?: string | null;
-  it_codigo?: string | null; frequencia?: string | null;
+  tipo_doc?: string | null;
+  numero_doc?: number | null;
+  data_ref?: string | null;
+  nome_padronizado?: string | null;
+  it_codigo?: string | null;
+  frequencia?: string | null;
 }
 
-
 interface CalibracaoRow {
-  id: string; equipamento: string; codigo: string | null; tipo: string | null;
-  localizacao: string | null; data_calibracao: string | null; proxima_calibracao: string | null;
-  responsavel: string | null; certificado_numero: string | null; status: string | null;
+  id: string;
+  equipamento: string;
+  codigo: string | null;
+  tipo: string | null;
+  localizacao: string | null;
+  data_calibracao: string | null;
+  proxima_calibracao: string | null;
+  responsavel: string | null;
+  certificado_numero: string | null;
+  status: string | null;
   observacoes: string | null;
 }
 
@@ -120,8 +157,9 @@ export default function Documentos() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
-  useEffect(() => { markPopVisited(); }, []);
-
+  useEffect(() => {
+    markPopVisited();
+  }, []);
 
   // POP form
   const [popOpen, setPopOpen] = useState(false);
@@ -165,8 +203,6 @@ export default function Documentos() {
   const [arqFrequencia, setArqFrequencia] = useState<FrequenciaDoc>("DIARIA");
   const [arqSearch, setArqSearch] = useState("");
 
-
-
   const [calOpen, setCalOpen] = useState(false);
   const [calEquipamento, setCalEquipamento] = useState("");
   const [calCodigo, setCalCodigo] = useState("");
@@ -195,21 +231,40 @@ export default function Documentos() {
     setLoading(false);
   };
 
-  useEffect(() => { fetchData(); }, [user, empresaAtiva]);
+  useEffect(() => {
+    fetchData();
+  }, [user, empresaAtiva]);
 
   const handleAddPop = async () => {
     if (!popCodigo || !popNome || !user) return;
     setSaving(true);
     const { error } = await supabase.from("documentos").insert({
-      user_id: user.id, empresa_id: empresaAtiva?.id || null,
-      codigo: popCodigo, nome: popNome, versao: popVersao, responsavel: popResponsavel,
-      validade_revisao: popValidade || null, proxima_revisao: popProximaRevisao || null,
+      user_id: user.id,
+      empresa_id: empresaAtiva?.id || null,
+      codigo: popCodigo,
+      nome: popNome,
+      versao: popVersao,
+      responsavel: popResponsavel,
+      validade_revisao: popValidade || null,
+      proxima_revisao: popProximaRevisao || null,
     } as any);
     if (error) toast.error("Erro ao salvar");
     else {
       toast.success("Documento salvo!");
-      registrarAuditLog({ userId: user.id, tabela: "documentos", acao: "criar", dadosNovos: { codigo: popCodigo, nome: popNome, versao: popVersao } });
-      setPopOpen(false); setPopCodigo(""); setPopNome(""); setPopVersao("01"); setPopResponsavel(""); setPopValidade(""); setPopProximaRevisao(""); fetchData();
+      registrarAuditLog({
+        userId: user.id,
+        tabela: "documentos",
+        acao: "criar",
+        dadosNovos: { codigo: popCodigo, nome: popNome, versao: popVersao },
+      });
+      setPopOpen(false);
+      setPopCodigo("");
+      setPopNome("");
+      setPopVersao("01");
+      setPopResponsavel("");
+      setPopValidade("");
+      setPopProximaRevisao("");
+      fetchData();
     }
     setSaving(false);
   };
@@ -218,29 +273,54 @@ export default function Documentos() {
     if (!versaoDocId || !versaoNova || !user) return;
     setSaving(true);
     // Update document version
-    const { error } = await supabase.from("documentos").update({
-      versao: versaoNova, data_revisao: new Date().toISOString().split("T")[0],
-      responsavel: versaoResponsavel || undefined,
-    } as any).eq("id", versaoDocId);
-    if (error) { toast.error("Erro ao atualizar"); setSaving(false); return; }
+    const { error } = await supabase
+      .from("documentos")
+      .update({
+        versao: versaoNova,
+        data_revisao: new Date().toISOString().split("T")[0],
+        responsavel: versaoResponsavel || undefined,
+      } as any)
+      .eq("id", versaoDocId);
+    if (error) {
+      toast.error("Erro ao atualizar");
+      setSaving(false);
+      return;
+    }
     // Register version history
     await registrarVersaoDocumento({
-      userId: user.id, empresaId: empresaAtiva?.id,
-      documentoId: versaoDocId, versaoAnterior: versaoAnterior, versaoNova: versaoNova,
-      responsavel: versaoResponsavel, motivo: versaoMotivo, alteracoes: versaoAlteracoes,
+      userId: user.id,
+      empresaId: empresaAtiva?.id,
+      documentoId: versaoDocId,
+      versaoAnterior: versaoAnterior,
+      versaoNova: versaoNova,
+      responsavel: versaoResponsavel,
+      motivo: versaoMotivo,
+      alteracoes: versaoAlteracoes,
     });
     registrarAuditLog({
-      userId: user.id, tabela: "documentos", acao: "editar", registroId: versaoDocId,
-      dadosAnteriores: { versao: versaoAnterior }, dadosNovos: { versao: versaoNova, motivo: versaoMotivo },
+      userId: user.id,
+      tabela: "documentos",
+      acao: "editar",
+      registroId: versaoDocId,
+      dadosAnteriores: { versao: versaoAnterior },
+      dadosNovos: { versao: versaoNova, motivo: versaoMotivo },
     });
     toast.success("Revisão registrada com sucesso!");
-    setVersaoOpen(false); setVersaoDocId(""); setVersaoNova(""); setVersaoMotivo(""); setVersaoAlteracoes(""); setVersaoResponsavel("");
+    setVersaoOpen(false);
+    setVersaoDocId("");
+    setVersaoNova("");
+    setVersaoMotivo("");
+    setVersaoAlteracoes("");
+    setVersaoResponsavel("");
     fetchData();
     setSaving(false);
   };
 
   const handleVerHistorico = async (docId: string, docNome: string) => {
-    const { data } = await (supabase.from("documento_versoes") as any).select("*").eq("documento_id", docId).order("created_at", { ascending: false });
+    const { data } = await (supabase.from("documento_versoes") as any)
+      .select("*")
+      .eq("documento_id", docId)
+      .order("created_at", { ascending: false });
     setVersoes(data || []);
     setVersoesDocNome(docNome);
     setVersoesOpen(true);
@@ -258,31 +338,52 @@ export default function Documentos() {
     const motivo = window.prompt(`Criar nova versão (v${novaVersao}) em rascunho?\nInforme o motivo da revisão:`);
     if (motivo === null) return;
     const { data, error } = await (supabase.rpc as any)("criar_nova_versao_pop", {
-      _documento_pai_id: doc.id, _nova_versao: novaVersao, _motivo: motivo || null,
+      _documento_pai_id: doc.id,
+      _nova_versao: novaVersao,
+      _motivo: motivo || null,
     });
-    if (error) { toast.error(error.message); return; }
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
     const result = data as { ok: boolean; error?: string };
-    if (!result.ok) { toast.error(result.error || "Falha"); return; }
+    if (!result.ok) {
+      toast.error(result.error || "Falha");
+      return;
+    }
     toast.success(`Nova versão v${novaVersao} criada como rascunho`);
     fetchData();
   };
-
 
   const handleAddCalibracao = async () => {
     if (!calEquipamento || !user) return;
     setSaving(true);
     const { error } = await supabase.from("calibracoes").insert({
-      user_id: user.id, empresa_id: empresaAtiva?.id || null,
-      equipamento: calEquipamento, codigo: calCodigo, tipo: calTipo,
-      localizacao: calLocal, data_calibracao: calData || null, proxima_calibracao: calProxima || null,
-      responsavel: calResponsavel, certificado_numero: calCertificado, observacoes: calObs,
+      user_id: user.id,
+      empresa_id: empresaAtiva?.id || null,
+      equipamento: calEquipamento,
+      codigo: calCodigo,
+      tipo: calTipo,
+      localizacao: calLocal,
+      data_calibracao: calData || null,
+      proxima_calibracao: calProxima || null,
+      responsavel: calResponsavel,
+      certificado_numero: calCertificado,
+      observacoes: calObs,
     } as any);
     if (error) toast.error("Erro ao salvar");
     else {
       toast.success("Calibração registrada!");
       setCalOpen(false);
-      setCalEquipamento(""); setCalCodigo(""); setCalTipo("balanca"); setCalLocal("");
-      setCalData(""); setCalProxima(""); setCalResponsavel(""); setCalCertificado(""); setCalObs("");
+      setCalEquipamento("");
+      setCalCodigo("");
+      setCalTipo("balanca");
+      setCalLocal("");
+      setCalData("");
+      setCalProxima("");
+      setCalResponsavel("");
+      setCalCertificado("");
+      setCalObs("");
       fetchData();
     }
     setSaving(false);
@@ -292,21 +393,40 @@ export default function Documentos() {
     if (!arqFile || !arqPopCodigo || !arqNumero || !arqDataRef || !user) return;
     setSaving(true);
     const scopeId = empresaAtiva?.id || user.id;
-    const path = storagePath(scopeId, arqPopCodigo, arqTipo, arqNumero, arqDataRef, arqFile.name, empresaAtiva?.prefixo_doc, arqItCodigo, arqFrequencia);
-    const arquivoFinal = nomeArquivoFinal(arqPopCodigo, arqTipo, arqNumero, arqDataRef, arqFile.name, empresaAtiva?.prefixo_doc);
+    const path = storagePath(
+      scopeId,
+      arqPopCodigo,
+      arqTipo,
+      arqNumero,
+      arqDataRef,
+      arqFile.name,
+      empresaAtiva?.prefixo_doc,
+      arqItCodigo,
+      arqFrequencia,
+    );
+    const arquivoFinal = nomeArquivoFinal(
+      arqPopCodigo,
+      arqTipo,
+      arqNumero,
+      arqDataRef,
+      arqFile.name,
+      empresaAtiva?.prefixo_doc,
+    );
     const titulo = nomeDisplay(arqPopCodigo, arqTipo, arqNumero, arqDataRef, empresaAtiva?.prefixo_doc);
 
     let arquivo_url = "";
     const { error: upErr } = await supabase.storage.from("documentos-bpf").upload(path, arqFile, { upsert: false });
     if (upErr) {
       toast.error("Erro no upload: " + upErr.message);
-      setSaving(false); return;
+      setSaving(false);
+      return;
     }
     const { data: urlData } = supabase.storage.from("documentos-bpf").getPublicUrl(path);
     arquivo_url = urlData?.publicUrl || path;
 
     const { error } = await supabase.from("arquivos_bpf").insert({
-      user_id: user.id, empresa_id: empresaAtiva?.id || null,
+      user_id: user.id,
+      empresa_id: empresaAtiva?.id || null,
       titulo,
       categoria: arqTipo.toLowerCase(),
       descricao: arqDescricao || null,
@@ -324,9 +444,14 @@ export default function Documentos() {
     else {
       toast.success(`Arquivo salvo: ${titulo}`);
       setArqOpen(false);
-      setArqPopCodigo(""); setArqTipo("PL"); setArqNumero("001");
+      setArqPopCodigo("");
+      setArqTipo("PL");
+      setArqNumero("001");
       setArqDataRef(new Date().toISOString().split("T")[0]);
-      setArqDescricao(""); setArqFile(null); setArqItCodigo(""); setArqFrequencia("DIARIA");
+      setArqDescricao("");
+      setArqFile(null);
+      setArqItCodigo("");
+      setArqFrequencia("DIARIA");
       fetchData();
     }
     setSaving(false);
@@ -344,7 +469,12 @@ export default function Documentos() {
       toast.info("Todos os arquivos já estão padronizados.");
       return;
     }
-    if (!window.confirm(`Padronizar ${pendentes.length} arquivo(s) legado(s)? Números serão gerados sequencialmente por POP+Tipo.`)) return;
+    if (
+      !window.confirm(
+        `Padronizar ${pendentes.length} arquivo(s) legado(s)? Números serão gerados sequencialmente por POP+Tipo.`,
+      )
+    )
+      return;
     setPadronizando(true);
     try {
       // Descobre próximos números por (pop, tipo) já usados
@@ -358,23 +488,30 @@ export default function Documentos() {
       let ok = 0;
       for (const a of pendentes) {
         const tipoInferido: TipoDoc =
-          a.categoria === "it" ? "IT" :
-          a.categoria === "manual" ? "MN" :
-          a.categoria === "planilha" ? "PL" :
-          a.categoria === "certificado" ? "RG" : "FR";
+          a.categoria === "it"
+            ? "IT"
+            : a.categoria === "manual"
+              ? "MN"
+              : a.categoria === "planilha"
+                ? "PL"
+                : a.categoria === "certificado"
+                  ? "RG"
+                  : "FR";
         const k = `${a.pop_codigo}|${tipoInferido}`;
         const proximo = (contadores.get(k) || 0) + 1;
         contadores.set(k, proximo);
         const dataRef = a.created_at?.split("T")[0] || new Date().toISOString().split("T")[0];
         const base = nomePadronizado(a.pop_codigo!, tipoInferido, proximo, dataRef);
         const titulo = nomeDisplay(a.pop_codigo!, tipoInferido, proximo, dataRef);
-        const { error } = await (supabase.from("arquivos_bpf") as any).update({
-          tipo_doc: tipoInferido,
-          numero_doc: proximo,
-          data_ref: dataRef,
-          nome_padronizado: base,
-          titulo,
-        }).eq("id", a.id);
+        const { error } = await (supabase.from("arquivos_bpf") as any)
+          .update({
+            tipo_doc: tipoInferido,
+            numero_doc: proximo,
+            data_ref: dataRef,
+            nome_padronizado: base,
+            titulo,
+          })
+          .eq("id", a.id);
         if (!error) ok++;
       }
       toast.success(`${ok}/${pendentes.length} arquivos padronizados.`);
@@ -384,35 +521,46 @@ export default function Documentos() {
     }
   };
 
-
   const handleDeleteArquivo = async (id: string) => {
     const { error } = await supabase.from("arquivos_bpf").delete().eq("id", id);
     if (error) toast.error("Erro ao excluir");
-    else { toast.success("Arquivo excluído"); fetchData(); }
+    else {
+      toast.success("Arquivo excluído");
+      fetchData();
+    }
   };
 
-  const filteredArquivos = arquivos.filter(a => {
+  const filteredArquivos = arquivos.filter((a) => {
     if (arqFilterCat !== "todos" && a.categoria !== arqFilterCat) return false;
     if (arqFilterPop !== "todos" && (a.pop_codigo || "") !== arqFilterPop) return false;
     if (arqSearch.trim()) {
       const q = arqSearch.trim().toLowerCase();
       // Incluir busca por IT no filtro
-      const hay = `${a.titulo || ""} ${a.descricao || ""} ${a.arquivo_nome || ""} ${a.pop_codigo || ""} ${a.it_codigo || ""}`.toLowerCase();
+      const hay =
+        `${a.titulo || ""} ${a.descricao || ""} ${a.arquivo_nome || ""} ${a.pop_codigo || ""} ${a.it_codigo || ""}`.toLowerCase();
       if (!hay.includes(q)) return false;
     }
     return true;
   });
 
-  const tipoLabel = (tipo: string) => TIPOS_EQUIPAMENTO.find(t => t.value === tipo)?.label || tipo;
+  const tipoLabel = (tipo: string) => TIPOS_EQUIPAMENTO.find((t) => t.value === tipo)?.label || tipo;
 
   const today = new Date().toISOString().split("T")[0];
-  const calibVencidas = calibracoes.filter(c => c.proxima_calibracao && c.proxima_calibracao < today && c.status !== "fora_de_uso");
-  const calibOk = calibracoes.filter(c => c.status === "calibrado" && (!c.proxima_calibracao || c.proxima_calibracao >= today));
+  const calibVencidas = calibracoes.filter(
+    (c) => c.proxima_calibracao && c.proxima_calibracao < today && c.status !== "fora_de_uso",
+  );
+  const calibOk = calibracoes.filter(
+    (c) => c.status === "calibrado" && (!c.proxima_calibracao || c.proxima_calibracao >= today),
+  );
 
   return (
     <>
-      <PageHeader icon={FileText} title="Documentos, POPs e Calibração" description="POPs obrigatórios, Manual BPF, ITs, arquivos e gestão de calibração"
-        orientacaoModuloId="documentos" />
+      <PageHeader
+        icon={FileText}
+        title="Documentos, POPs e Calibração"
+        description="POPs obrigatórios, Manual BPF, ITs, arquivos e gestão de calibração"
+        orientacaoModuloId="documentos"
+      />
 
       <Tabs defaultValue="pops" className="space-y-4">
         <TabsList className="mb-4 w-full justify-start overflow-x-auto h-auto p-1 flex">
@@ -423,7 +571,11 @@ export default function Documentos() {
           </TabsTrigger>
           <TabsTrigger value="calibracao" className="flex items-center gap-1">
             <Gauge className="w-4 h-4" /> Calibração ({calibracoes.length})
-            {calibVencidas.length > 0 && <Badge variant="destructive" className="ml-1 text-[10px] px-1">{calibVencidas.length}</Badge>}
+            {calibVencidas.length > 0 && (
+              <Badge variant="destructive" className="ml-1 text-[10px] px-1">
+                {calibVencidas.length}
+              </Badge>
+            )}
           </TabsTrigger>
         </TabsList>
 
@@ -431,48 +583,69 @@ export default function Documentos() {
         <TabsContent value="pops">
           <Card>
             <CardHeader>
-              <CardTitle className="font-display">10 POPs Obrigatórios — IN nº 04/2007 / <BaseLegalBadge assunto="autocontrole" /></CardTitle>
-              <p className="text-xs text-muted-foreground mt-1">Procedimentos operacionais padrão exigidos pelo MAPA para fábricas de alimentação animal</p>
+              <CardTitle className="font-display">
+                10 POPs Obrigatórios — IN nº 04/2007 / <BaseLegalBadge assunto="autocontrole" />
+              </CardTitle>
+              <p className="text-xs text-muted-foreground mt-1">
+                Procedimentos operacionais padrão exigidos pelo MAPA para fábricas de alimentação animal
+              </p>
             </CardHeader>
             <CardContent className="p-2 sm:p-6 overflow-x-auto">
               <div className="overflow-x-auto">
                 <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="w-24">Código</TableHead>
-                    <TableHead>Procedimento</TableHead>
-                    <TableHead className="w-28">Status</TableHead>
-                    <TableHead className="w-40">Módulo Vinculado</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {POPS_OBRIGATORIOS.map((p) => {
-                    const registrado = docs.find(d => d.codigo === p.codigo);
-                    return (
-                      <TableRow key={p.codigo}>
-                        <TableCell className="font-mono text-sm font-medium">{p.codigo}</TableCell>
-                        <TableCell>
-                          <p className="text-sm">{p.nome}</p>
-                          {registrado && <span className="text-xs text-muted-foreground">v{registrado.versao} • {registrado.responsavel}</span>}
-                        </TableCell>
-                        <TableCell>
-                          {registrado ? (
-                            <Badge className={statusBadge[registrado.status || "ativo"]}>
-                              {registrado.status === "em_revisao" ? "Em revisão" : registrado.status === "obsoleto" ? "Obsoleto" : "Ativo"}
-                            </Badge>
-                          ) : <Badge variant="outline" className="text-destructive border-destructive">Pendente</Badge>}
-                        </TableCell>
-                        <TableCell>
-                          {p.modulo && (
-                            <Button variant="ghost" size="sm" className="text-xs gap-1 h-7" onClick={() => navigate(p.modulo)}>
-                              <ExternalLink className="w-3 h-3" /> {p.moduloLabel}
-                            </Button>
-                          )}
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
-                </TableBody>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="w-24">Código</TableHead>
+                      <TableHead>Procedimento</TableHead>
+                      <TableHead className="w-28">Status</TableHead>
+                      <TableHead className="w-40">Módulo Vinculado</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {POPS_OBRIGATORIOS.map((p) => {
+                      const registrado = docs.find((d) => d.codigo === p.codigo);
+                      return (
+                        <TableRow key={p.codigo}>
+                          <TableCell className="font-mono text-sm font-medium">{p.codigo}</TableCell>
+                          <TableCell>
+                            <p className="text-sm">{p.nome}</p>
+                            {registrado && (
+                              <span className="text-xs text-muted-foreground">
+                                v{registrado.versao} • {registrado.responsavel}
+                              </span>
+                            )}
+                          </TableCell>
+                          <TableCell>
+                            {registrado ? (
+                              <Badge className={statusBadge[registrado.status || "ativo"]}>
+                                {registrado.status === "em_revisao"
+                                  ? "Em revisão"
+                                  : registrado.status === "obsoleto"
+                                    ? "Obsoleto"
+                                    : "Ativo"}
+                              </Badge>
+                            ) : (
+                              <Badge variant="outline" className="text-destructive border-destructive">
+                                Pendente
+                              </Badge>
+                            )}
+                          </TableCell>
+                          <TableCell>
+                            {p.modulo && (
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="text-xs gap-1 h-7"
+                                onClick={() => navigate(p.modulo)}
+                              >
+                                <ExternalLink className="w-3 h-3" /> {p.moduloLabel}
+                              </Button>
+                            )}
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
                 </Table>
               </div>
             </CardContent>
@@ -485,161 +658,275 @@ export default function Documentos() {
             <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle className="font-display">Documentos Registrados</CardTitle>
               <Dialog open={popOpen} onOpenChange={setPopOpen}>
-                <DialogTrigger asChild><Button size="sm" className="h-8 text-xs sm:h-9 sm:text-sm"><Plus className="w-4 h-4 mr-1" /> <span className="hidden sm:inline">Novo Documento</span><span className="sm:hidden">Novo</span></Button></DialogTrigger>
+                <DialogTrigger asChild>
+                  <Button size="sm" className="h-8 text-xs sm:h-9 sm:text-sm">
+                    <Plus className="w-4 h-4 mr-1" /> <span className="hidden sm:inline">Novo Documento</span>
+                    <span className="sm:hidden">Novo</span>
+                  </Button>
+                </DialogTrigger>
                 <DialogContent className="w-[95vw] sm:max-w-lg max-h-[90vh] overflow-y-auto">
-                  <DialogHeader><DialogTitle>Registrar Documento</DialogTitle></DialogHeader>
+                  <DialogHeader>
+                    <DialogTitle>Registrar Documento</DialogTitle>
+                  </DialogHeader>
                   <div className="space-y-4">
                     <div>
                       <Label>Código</Label>
-                      <Select value={popCodigo} onValueChange={(v) => { setPopCodigo(v); const found = POPS_OBRIGATORIOS.find(p => p.codigo === v); if (found) setPopNome(found.nome); }}>
-                        <SelectTrigger><SelectValue placeholder="Selecione ou digite" /></SelectTrigger>
+                      <Select
+                        value={popCodigo}
+                        onValueChange={(v) => {
+                          setPopCodigo(v);
+                          const found = POPS_OBRIGATORIOS.find((p) => p.codigo === v);
+                          if (found) setPopNome(found.nome);
+                        }}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecione ou digite" />
+                        </SelectTrigger>
                         <SelectContent>
-                          {POPS_OBRIGATORIOS.map(p => <SelectItem key={p.codigo} value={p.codigo}>{p.codigo} — {p.nome.slice(0, 40)}...</SelectItem>)}
+                          {POPS_OBRIGATORIOS.map((p) => (
+                            <SelectItem key={p.codigo} value={p.codigo}>
+                              {p.codigo} — {p.nome.slice(0, 40)}...
+                            </SelectItem>
+                          ))}
                           <SelectItem value="IT-001">IT-001 — Instrução de Trabalho</SelectItem>
                           <SelectItem value="MANUAL-BPF">MANUAL-BPF</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
-                    <div><Label>Nome / Título</Label><Input value={popNome} onChange={e => setPopNome(e.target.value)} /></div>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div><Label>Versão</Label><Input value={popVersao} onChange={e => setPopVersao(e.target.value)} /></div>
-                      <div><Label>Responsável</Label><Input value={popResponsavel} onChange={e => setPopResponsavel(e.target.value)} /></div>
+                    <div>
+                      <Label>Nome / Título</Label>
+                      <Input value={popNome} onChange={(e) => setPopNome(e.target.value)} />
                     </div>
                     <div className="grid grid-cols-2 gap-4">
-                      <div><Label>Validade da Revisão</Label><Input type="date" value={popValidade} onChange={e => setPopValidade(e.target.value)} /></div>
-                      <div><Label>Próxima Revisão</Label><Input type="date" value={popProximaRevisao} onChange={e => setPopProximaRevisao(e.target.value)} /></div>
+                      <div>
+                        <Label>Versão</Label>
+                        <Input value={popVersao} onChange={(e) => setPopVersao(e.target.value)} />
+                      </div>
+                      <div>
+                        <Label>Responsável</Label>
+                        <Input value={popResponsavel} onChange={(e) => setPopResponsavel(e.target.value)} />
+                      </div>
                     </div>
-                    <Button onClick={handleAddPop} className="w-full" disabled={saving}>{saving && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}Salvar</Button>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <Label>Validade da Revisão</Label>
+                        <Input type="date" value={popValidade} onChange={(e) => setPopValidade(e.target.value)} />
+                      </div>
+                      <div>
+                        <Label>Próxima Revisão</Label>
+                        <Input
+                          type="date"
+                          value={popProximaRevisao}
+                          onChange={(e) => setPopProximaRevisao(e.target.value)}
+                        />
+                      </div>
+                    </div>
+                    <Button onClick={handleAddPop} className="w-full" disabled={saving}>
+                      {saving && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}Salvar
+                    </Button>
                   </div>
                 </DialogContent>
               </Dialog>
             </CardHeader>
             <CardContent className="p-2 sm:p-6 overflow-hidden">
-              {loading ? <div className="flex justify-center py-8"><Loader2 className="w-6 h-6 animate-spin text-muted-foreground" /></div>
-              : docs.length === 0 ? <p className="text-center text-muted-foreground py-8">Nenhum documento registrado</p>
-              : (
+              {loading ? (
+                <div className="flex justify-center py-8">
+                  <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+                </div>
+              ) : docs.length === 0 ? (
+                <p className="text-center text-muted-foreground py-8">Nenhum documento registrado</p>
+              ) : (
                 <>
-                <div className="hidden md:block overflow-x-auto">
-                  <Table>
-                  <TableHeader><TableRow>
-                    <TableHead>Código</TableHead><TableHead>Nome</TableHead><TableHead>Versão</TableHead>
-                    <TableHead>Workflow</TableHead>
-                    <TableHead>Aprovação</TableHead>
-                    <TableHead>Validade</TableHead><TableHead>Próx. Revisão</TableHead><TableHead>Responsável</TableHead><TableHead className="w-56">Ações</TableHead>
-                  </TableRow></TableHeader>
-                  <TableBody>
-                    {docs.map(d => {
+                  <div className="hidden md:block overflow-x-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Código</TableHead>
+                          <TableHead>Nome</TableHead>
+                          <TableHead>Versão</TableHead>
+                          <TableHead>Workflow</TableHead>
+                          <TableHead>Aprovação</TableHead>
+                          <TableHead>Validade</TableHead>
+                          <TableHead>Próx. Revisão</TableHead>
+                          <TableHead>Responsável</TableHead>
+                          <TableHead className="w-56">Ações</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {docs.map((d) => {
+                          const today = new Date().toISOString().split("T")[0];
+                          const vencido = d.validade_revisao && d.validade_revisao < today;
+                          const proximoVencer =
+                            d.proxima_revisao &&
+                            d.proxima_revisao <= new Date(Date.now() + 30 * 86400000).toISOString().split("T")[0];
+                          const wf = (d.workflow_status || "vigente") as WorkflowStatus;
+                          return (
+                            <TableRow key={d.id} className={wf === "obsoleto" ? "opacity-60" : ""}>
+                              <TableCell className="font-mono text-sm">{d.codigo}</TableCell>
+                              <TableCell>
+                                {d.nome}
+                                {d.documento_pai_id && (
+                                  <span className="ml-1 text-[10px] text-muted-foreground">(revisão)</span>
+                                )}
+                              </TableCell>
+                              <TableCell>v{d.versao}</TableCell>
+                              <TableCell>
+                                <WorkflowBadge status={wf} />
+                              </TableCell>
+                              <TableCell className="text-xs">
+                                {d.aprovador_nome ? (
+                                  <div>
+                                    <div className="font-medium">{d.aprovador_nome}</div>
+                                    <div className="text-muted-foreground">
+                                      {d.aprovado_em ? new Date(d.aprovado_em).toLocaleDateString("pt-BR") : ""}
+                                    </div>
+                                  </div>
+                                ) : (
+                                  <span className="text-muted-foreground">—</span>
+                                )}
+                              </TableCell>
+                              <TableCell className={vencido ? "text-destructive font-medium" : ""}>
+                                {d.validade_revisao || "—"}
+                              </TableCell>
+                              <TableCell className={proximoVencer ? "text-yellow-600 font-medium" : ""}>
+                                {d.proxima_revisao || "—"}
+                              </TableCell>
+                              <TableCell>{d.responsavel}</TableCell>
+                              <TableCell>
+                                <div className="flex flex-wrap gap-1">
+                                  {wf === "rascunho" && (
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
+                                      className="h-7 text-xs gap-1"
+                                      onClick={() => abrirAprovacao(d, "em_revisao")}
+                                    >
+                                      <Send className="w-3 h-3" /> Enviar revisão
+                                    </Button>
+                                  )}
+                                  {wf === "em_revisao" && (
+                                    <Button
+                                      size="sm"
+                                      className="h-7 text-xs gap-1"
+                                      onClick={() => abrirAprovacao(d, "vigente")}
+                                    >
+                                      <CheckCircle2 className="w-3 h-3" /> Aprovar
+                                    </Button>
+                                  )}
+                                  {wf === "vigente" && (
+                                    <>
+                                      <Button
+                                        variant="outline"
+                                        size="sm"
+                                        className="h-7 text-xs gap-1"
+                                        onClick={() => handleNovaVersao(d)}
+                                      >
+                                        <GitBranch className="w-3 h-3" /> Nova versão
+                                      </Button>
+                                      <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        className="h-7 text-xs"
+                                        onClick={() => abrirAprovacao(d, "obsoleto")}
+                                      >
+                                        <Archive className="w-3 h-3" />
+                                      </Button>
+                                    </>
+                                  )}
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="h-7 text-xs gap-1"
+                                    onClick={() => handleVerHistorico(d.id, `${d.codigo} — ${d.nome}`)}
+                                  >
+                                    <History className="w-3 h-3" />
+                                  </Button>
+                                </div>
+                              </TableCell>
+                            </TableRow>
+                          );
+                        })}
+                      </TableBody>
+                    </Table>
+                  </div>
+                  {/* Mobile View */}
+                  <div className="md:hidden space-y-3">
+                    {docs.map((d) => {
                       const today = new Date().toISOString().split("T")[0];
                       const vencido = d.validade_revisao && d.validade_revisao < today;
-                      const proximoVencer = d.proxima_revisao && d.proxima_revisao <= new Date(Date.now() + 30 * 86400000).toISOString().split("T")[0];
+                      const proximoVencer =
+                        d.proxima_revisao &&
+                        d.proxima_revisao <= new Date(Date.now() + 30 * 86400000).toISOString().split("T")[0];
                       const wf = (d.workflow_status || "vigente") as WorkflowStatus;
+
                       return (
-                      <TableRow key={d.id} className={wf === "obsoleto" ? "opacity-60" : ""}>
-                        <TableCell className="font-mono text-sm">{d.codigo}</TableCell>
-                        <TableCell>
-                          {d.nome}
-                          {d.documento_pai_id && <span className="ml-1 text-[10px] text-muted-foreground">(revisão)</span>}
-                        </TableCell>
-                        <TableCell>v{d.versao}</TableCell>
-                        <TableCell><WorkflowBadge status={wf} /></TableCell>
-                        <TableCell className="text-xs">
-                          {d.aprovador_nome ? (
-                            <div>
-                              <div className="font-medium">{d.aprovador_nome}</div>
-                              <div className="text-muted-foreground">{d.aprovado_em ? new Date(d.aprovado_em).toLocaleDateString("pt-BR") : ""}</div>
+                        <Card key={d.id} className={`border shadow-sm ${wf === "obsoleto" ? "opacity-60" : ""}`}>
+                          <CardContent className="p-4 space-y-3">
+                            <div className="flex justify-between items-start">
+                              <div className="space-y-1">
+                                <p className="text-xs font-mono text-muted-foreground">{d.codigo}</p>
+                                <p className="text-sm font-bold truncate max-w-[200px]">{d.nome}</p>
+                              </div>
+                              <WorkflowBadge status={wf} />
                             </div>
-                          ) : <span className="text-muted-foreground">—</span>}
-                        </TableCell>
-                        <TableCell className={vencido ? "text-destructive font-medium" : ""}>{d.validade_revisao || "—"}</TableCell>
-                        <TableCell className={proximoVencer ? "text-yellow-600 font-medium" : ""}>{d.proxima_revisao || "—"}</TableCell>
-                        <TableCell>{d.responsavel}</TableCell>
-                        <TableCell>
-                          <div className="flex flex-wrap gap-1">
-                            {wf === "rascunho" && (
-                              <Button variant="outline" size="sm" className="h-7 text-xs gap-1" onClick={() => abrirAprovacao(d, "em_revisao")}>
-                                <Send className="w-3 h-3" /> Enviar revisão
-                              </Button>
-                            )}
-                            {wf === "em_revisao" && (
-                              <Button size="sm" className="h-7 text-xs gap-1" onClick={() => abrirAprovacao(d, "vigente")}>
-                                <CheckCircle2 className="w-3 h-3" /> Aprovar
-                              </Button>
-                            )}
-                            {wf === "vigente" && (
-                              <>
-                                <Button variant="outline" size="sm" className="h-7 text-xs gap-1" onClick={() => handleNovaVersao(d)}>
-                                  <GitBranch className="w-3 h-3" /> Nova versão
+
+                            <div className="grid grid-cols-2 gap-2 text-[10px] pt-2 border-t">
+                              <div>
+                                <p className="font-bold uppercase text-muted-foreground">Versão</p>
+                                <p>v{d.versao}</p>
+                              </div>
+                              <div>
+                                <p className="font-bold uppercase text-muted-foreground">Validade</p>
+                                <p className={vencido ? "text-destructive font-bold" : ""}>
+                                  {d.validade_revisao || "—"}
+                                </p>
+                              </div>
+                            </div>
+
+                            <div className="flex flex-wrap gap-2 pt-1">
+                              {wf === "rascunho" && (
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  className="h-8 text-xs flex-1"
+                                  onClick={() => abrirAprovacao(d, "em_revisao")}
+                                >
+                                  Enviar
                                 </Button>
-                                <Button variant="ghost" size="sm" className="h-7 text-xs" onClick={() => abrirAprovacao(d, "obsoleto")}>
-                                  <Archive className="w-3 h-3" />
+                              )}
+                              {wf === "em_revisao" && (
+                                <Button
+                                  size="sm"
+                                  className="h-8 text-xs flex-1"
+                                  onClick={() => abrirAprovacao(d, "vigente")}
+                                >
+                                  Aprovar
                                 </Button>
-                              </>
-                            )}
-                            <Button variant="ghost" size="sm" className="h-7 text-xs gap-1" onClick={() => handleVerHistorico(d.id, `${d.codigo} — ${d.nome}`)}>
-                              <History className="w-3 h-3" />
-                            </Button>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    )})}
-                  </TableBody>
-                </Table>
-              </div>
-                {/* Mobile View */}
-                <div className="md:hidden space-y-3">
-                  {docs.map(d => {
-                    const today = new Date().toISOString().split("T")[0];
-                    const vencido = d.validade_revisao && d.validade_revisao < today;
-                    const proximoVencer = d.proxima_revisao && d.proxima_revisao <= new Date(Date.now() + 30 * 86400000).toISOString().split("T")[0];
-                    const wf = (d.workflow_status || "vigente") as WorkflowStatus;
-                    
-                    return (
-                      <Card key={d.id} className={`border shadow-sm ${wf === "obsoleto" ? "opacity-60" : ""}`}>
-                        <CardContent className="p-4 space-y-3">
-                          <div className="flex justify-between items-start">
-                            <div className="space-y-1">
-                              <p className="text-xs font-mono text-muted-foreground">{d.codigo}</p>
-                              <p className="text-sm font-bold truncate max-w-[200px]">{d.nome}</p>
-                            </div>
-                            <WorkflowBadge status={wf} />
-                          </div>
-                          
-                          <div className="grid grid-cols-2 gap-2 text-[10px] pt-2 border-t">
-                            <div>
-                              <p className="font-bold uppercase text-muted-foreground">Versão</p>
-                              <p>v{d.versao}</p>
-                            </div>
-                            <div>
-                              <p className="font-bold uppercase text-muted-foreground">Validade</p>
-                              <p className={vencido ? "text-destructive font-bold" : ""}>{d.validade_revisao || "—"}</p>
-                            </div>
-                          </div>
-                          
-                          <div className="flex flex-wrap gap-2 pt-1">
-                            {wf === "rascunho" && (
-                              <Button variant="outline" size="sm" className="h-8 text-xs flex-1" onClick={() => abrirAprovacao(d, "em_revisao")}>
-                                Enviar
+                              )}
+                              {wf === "vigente" && (
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  className="h-8 text-xs flex-1"
+                                  onClick={() => handleNovaVersao(d)}
+                                >
+                                  Revisar
+                                </Button>
+                              )}
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-8 text-xs px-2"
+                                onClick={() => handleVerHistorico(d.id, `${d.codigo} — ${d.nome}`)}
+                              >
+                                <History className="w-4 h-4" />
                               </Button>
-                            )}
-                            {wf === "em_revisao" && (
-                              <Button size="sm" className="h-8 text-xs flex-1" onClick={() => abrirAprovacao(d, "vigente")}>
-                                Aprovar
-                              </Button>
-                            )}
-                            {wf === "vigente" && (
-                              <Button variant="outline" size="sm" className="h-8 text-xs flex-1" onClick={() => handleNovaVersao(d)}>
-                                Revisar
-                              </Button>
-                            )}
-                            <Button variant="ghost" size="sm" className="h-8 text-xs px-2" onClick={() => handleVerHistorico(d.id, `${d.codigo} — ${d.nome}`)}>
-                              <History className="w-4 h-4" />
-                            </Button>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    );
-                  })}
-                </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      );
+                    })}
+                  </div>
                 </>
               )}
             </CardContent>
@@ -658,8 +945,11 @@ export default function Documentos() {
                   </h3>
                 </div>
                 <div className="space-y-1">
-                  {calibVencidas.map(c => (
-                    <div key={c.id} className="text-xs flex items-center gap-2 p-1.5 rounded bg-background border border-destructive/20">
+                  {calibVencidas.map((c) => (
+                    <div
+                      key={c.id}
+                      className="text-xs flex items-center gap-2 p-1.5 rounded bg-background border border-destructive/20"
+                    >
                       <Gauge className="w-3.5 h-3.5 text-destructive" />
                       <span className="font-medium">{c.equipamento}</span>
                       <span className="text-muted-foreground">({c.codigo})</span>
@@ -672,50 +962,107 @@ export default function Documentos() {
           )}
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
-            <Card><CardContent className="pt-4 text-center">
-              <p className="text-2xl font-bold font-display">{calibracoes.length}</p>
-              <p className="text-xs text-muted-foreground">Equipamentos</p>
-            </CardContent></Card>
-            <Card><CardContent className="pt-4 text-center">
-              <p className="text-2xl font-bold font-display text-primary">{calibOk.length}</p>
-              <p className="text-xs text-muted-foreground">Calibrados OK</p>
-            </CardContent></Card>
-            <Card><CardContent className="pt-4 text-center">
-              <p className="text-2xl font-bold font-display text-destructive">{calibVencidas.length}</p>
-              <p className="text-xs text-muted-foreground">Vencidos</p>
-            </CardContent></Card>
+            <Card>
+              <CardContent className="pt-4 text-center">
+                <p className="text-2xl font-bold font-display">{calibracoes.length}</p>
+                <p className="text-xs text-muted-foreground">Equipamentos</p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent className="pt-4 text-center">
+                <p className="text-2xl font-bold font-display text-primary">{calibOk.length}</p>
+                <p className="text-xs text-muted-foreground">Calibrados OK</p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent className="pt-4 text-center">
+                <p className="text-2xl font-bold font-display text-destructive">{calibVencidas.length}</p>
+                <p className="text-xs text-muted-foreground">Vencidos</p>
+              </CardContent>
+            </Card>
           </div>
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle className="font-display">Gestão de Calibração</CardTitle>
               <Dialog open={calOpen} onOpenChange={setCalOpen}>
-                <DialogTrigger asChild><Button size="sm"><Plus className="w-4 h-4 mr-1" /> Novo Equipamento</Button></DialogTrigger>
+                <DialogTrigger asChild>
+                  <Button size="sm">
+                    <Plus className="w-4 h-4 mr-1" /> Novo Equipamento
+                  </Button>
+                </DialogTrigger>
                 <DialogContent className="w-[95vw] sm:max-w-lg max-h-[90vh] overflow-y-auto">
-                  <DialogHeader><DialogTitle>Registrar Calibração</DialogTitle></DialogHeader>
+                  <DialogHeader>
+                    <DialogTitle>Registrar Calibração</DialogTitle>
+                  </DialogHeader>
                   <div className="space-y-4">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      <div><Label>Equipamento *</Label><Input value={calEquipamento} onChange={e => setCalEquipamento(e.target.value)} placeholder="Ex: Balança Toledo 500kg" /></div>
-                      <div><Label>Código / Patrimônio</Label><Input value={calCodigo} onChange={e => setCalCodigo(e.target.value)} placeholder="Ex: BAL-001" /></div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div>
+                        <Label>Equipamento *</Label>
+                        <Input
+                          value={calEquipamento}
+                          onChange={(e) => setCalEquipamento(e.target.value)}
+                          placeholder="Ex: Balança Toledo 500kg"
+                        />
+                      </div>
+                      <div>
+                        <Label>Código / Patrimônio</Label>
+                        <Input
+                          value={calCodigo}
+                          onChange={(e) => setCalCodigo(e.target.value)}
+                          placeholder="Ex: BAL-001"
+                        />
+                      </div>
                     </div>
                     <div className="grid grid-cols-2 gap-3">
-                      <div><Label>Tipo</Label>
+                      <div>
+                        <Label>Tipo</Label>
                         <Select value={calTipo} onValueChange={setCalTipo}>
-                          <SelectTrigger><SelectValue /></SelectTrigger>
-                          <SelectContent>{TIPOS_EQUIPAMENTO.map(t => <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>)}</SelectContent>
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {TIPOS_EQUIPAMENTO.map((t) => (
+                              <SelectItem key={t.value} value={t.value}>
+                                {t.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
                         </Select>
                       </div>
-                      <div><Label>Localização</Label><Input value={calLocal} onChange={e => setCalLocal(e.target.value)} placeholder="Ex: Setor Mistura" /></div>
+                      <div>
+                        <Label>Localização</Label>
+                        <Input
+                          value={calLocal}
+                          onChange={(e) => setCalLocal(e.target.value)}
+                          placeholder="Ex: Setor Mistura"
+                        />
+                      </div>
                     </div>
                     <div className="grid grid-cols-2 gap-3">
-                      <div><Label>Data da Calibração</Label><Input type="date" value={calData} onChange={e => setCalData(e.target.value)} /></div>
-                      <div><Label>Próxima Calibração</Label><Input type="date" value={calProxima} onChange={e => setCalProxima(e.target.value)} /></div>
+                      <div>
+                        <Label>Data da Calibração</Label>
+                        <Input type="date" value={calData} onChange={(e) => setCalData(e.target.value)} />
+                      </div>
+                      <div>
+                        <Label>Próxima Calibração</Label>
+                        <Input type="date" value={calProxima} onChange={(e) => setCalProxima(e.target.value)} />
+                      </div>
                     </div>
                     <div className="grid grid-cols-2 gap-3">
-                      <div><Label>Responsável / Empresa</Label><Input value={calResponsavel} onChange={e => setCalResponsavel(e.target.value)} /></div>
-                      <div><Label>Nº Certificado</Label><Input value={calCertificado} onChange={e => setCalCertificado(e.target.value)} /></div>
+                      <div>
+                        <Label>Responsável / Empresa</Label>
+                        <Input value={calResponsavel} onChange={(e) => setCalResponsavel(e.target.value)} />
+                      </div>
+                      <div>
+                        <Label>Nº Certificado</Label>
+                        <Input value={calCertificado} onChange={(e) => setCalCertificado(e.target.value)} />
+                      </div>
                     </div>
-                    <div><Label>Observações</Label><Textarea value={calObs} onChange={e => setCalObs(e.target.value)} /></div>
+                    <div>
+                      <Label>Observações</Label>
+                      <Textarea value={calObs} onChange={(e) => setCalObs(e.target.value)} />
+                    </div>
                     <Button onClick={handleAddCalibracao} className="w-full" disabled={saving || !calEquipamento}>
                       {saving && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}Salvar
                     </Button>
@@ -724,34 +1071,58 @@ export default function Documentos() {
               </Dialog>
             </CardHeader>
             <CardContent className="p-2 sm:p-6 overflow-hidden">
-              {loading ? <div className="flex justify-center py-8"><Loader2 className="w-6 h-6 animate-spin text-muted-foreground" /></div>
-              : calibracoes.length === 0 ? <p className="text-center text-muted-foreground py-8">Nenhum equipamento cadastrado</p>
-              : (
+              {loading ? (
+                <div className="flex justify-center py-8">
+                  <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+                </div>
+              ) : calibracoes.length === 0 ? (
+                <p className="text-center text-muted-foreground py-8">Nenhum equipamento cadastrado</p>
+              ) : (
                 <div className="overflow-x-auto">
                   <Table>
-                  <TableHeader><TableRow>
-                    <TableHead>Equipamento</TableHead><TableHead>Código</TableHead><TableHead>Tipo</TableHead>
-                    <TableHead>Local</TableHead><TableHead>Calibração</TableHead><TableHead>Próxima</TableHead>
-                    <TableHead>Certificado</TableHead><TableHead>Status</TableHead>
-                  </TableRow></TableHeader>
-                  <TableBody>
-                    {calibracoes.map(c => {
-                      const vencido = c.proxima_calibracao && c.proxima_calibracao < today;
-                      const displayStatus = vencido && c.status !== "fora_de_uso" ? "vencido" : (c.status || "calibrado");
-                      return (
-                        <TableRow key={c.id} className={vencido ? "bg-destructive/5" : ""}>
-                          <TableCell className="font-medium text-sm">{c.equipamento}</TableCell>
-                          <TableCell className="font-mono text-xs">{c.codigo || "—"}</TableCell>
-                          <TableCell className="text-sm">{tipoLabel(c.tipo || "outro")}</TableCell>
-                          <TableCell className="text-sm">{c.localizacao || "—"}</TableCell>
-                          <TableCell className="text-sm">{c.data_calibracao || "—"}</TableCell>
-                          <TableCell className={`text-sm ${vencido ? "text-destructive font-semibold" : ""}`}>{c.proxima_calibracao || "—"}</TableCell>
-                          <TableCell className="font-mono text-xs">{c.certificado_numero || "—"}</TableCell>
-                          <TableCell><Badge className={calibStatusBadge[displayStatus]}>{displayStatus === "calibrado" ? "Calibrado" : displayStatus === "vencido" ? "Vencido" : displayStatus === "em_calibracao" ? "Em calibração" : "Fora de uso"}</Badge></TableCell>
-                        </TableRow>
-                      );
-                    })}
-                  </TableBody>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Equipamento</TableHead>
+                        <TableHead>Código</TableHead>
+                        <TableHead>Tipo</TableHead>
+                        <TableHead>Local</TableHead>
+                        <TableHead>Calibração</TableHead>
+                        <TableHead>Próxima</TableHead>
+                        <TableHead>Certificado</TableHead>
+                        <TableHead>Status</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {calibracoes.map((c) => {
+                        const vencido = c.proxima_calibracao && c.proxima_calibracao < today;
+                        const displayStatus =
+                          vencido && c.status !== "fora_de_uso" ? "vencido" : c.status || "calibrado";
+                        return (
+                          <TableRow key={c.id} className={vencido ? "bg-destructive/5" : ""}>
+                            <TableCell className="font-medium text-sm">{c.equipamento}</TableCell>
+                            <TableCell className="font-mono text-xs">{c.codigo || "—"}</TableCell>
+                            <TableCell className="text-sm">{tipoLabel(c.tipo || "outro")}</TableCell>
+                            <TableCell className="text-sm">{c.localizacao || "—"}</TableCell>
+                            <TableCell className="text-sm">{c.data_calibracao || "—"}</TableCell>
+                            <TableCell className={`text-sm ${vencido ? "text-destructive font-semibold" : ""}`}>
+                              {c.proxima_calibracao || "—"}
+                            </TableCell>
+                            <TableCell className="font-mono text-xs">{c.certificado_numero || "—"}</TableCell>
+                            <TableCell>
+                              <Badge className={calibStatusBadge[displayStatus]}>
+                                {displayStatus === "calibrado"
+                                  ? "Calibrado"
+                                  : displayStatus === "vencido"
+                                    ? "Vencido"
+                                    : displayStatus === "em_calibracao"
+                                      ? "Em calibração"
+                                      : "Fora de uso"}
+                              </Badge>
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })}
+                    </TableBody>
                   </Table>
                 </div>
               )}
@@ -765,27 +1136,41 @@ export default function Documentos() {
             <CardHeader className="flex flex-row items-center justify-between flex-wrap gap-2">
               <div>
                 <CardTitle className="font-display">Arquivo BPF — POPs, ITs e Documentos</CardTitle>
-                <p className="text-xs text-muted-foreground mt-1">Upload e organização de documentos físicos escaneados, ITs associadas aos POPs e demais arquivos</p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Upload e organização de documentos físicos escaneados, ITs associadas aos POPs e demais arquivos
+                </p>
               </div>
               <div className="flex items-center gap-2 flex-wrap">
                 <Input
                   value={arqSearch}
-                  onChange={e => setArqSearch(e.target.value)}
+                  onChange={(e) => setArqSearch(e.target.value)}
                   placeholder="Buscar título, descrição ou POP…"
                   className="w-56 h-8 text-xs"
                 />
                 <Select value={arqFilterPop} onValueChange={setArqFilterPop}>
-                  <SelectTrigger className="w-40 h-8 text-xs"><SelectValue placeholder="POP" /></SelectTrigger>
+                  <SelectTrigger className="w-40 h-8 text-xs">
+                    <SelectValue placeholder="POP" />
+                  </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="todos">Todos os POPs</SelectItem>
-                    {POPS_OBRIGATORIOS.map(p => <SelectItem key={p.codigo} value={p.codigo}>{p.codigo}</SelectItem>)}
+                    {POPS_OBRIGATORIOS.map((p) => (
+                      <SelectItem key={p.codigo} value={p.codigo}>
+                        {p.codigo}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
                 <Select value={arqFilterCat} onValueChange={setArqFilterCat}>
-                  <SelectTrigger className="w-44 h-8 text-xs"><SelectValue /></SelectTrigger>
+                  <SelectTrigger className="w-44 h-8 text-xs">
+                    <SelectValue />
+                  </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="todos">Todas categorias</SelectItem>
-                    {CATEGORIAS_ARQ.map(c => <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>)}
+                    {CATEGORIAS_ARQ.map((c) => (
+                      <SelectItem key={c.value} value={c.value}>
+                        {c.label}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
                 <Button size="sm" variant="outline" onClick={handlePadronizarNomes} disabled={padronizando}>
@@ -793,28 +1178,48 @@ export default function Documentos() {
                   Padronizar nomes
                 </Button>
                 <Dialog open={arqOpen} onOpenChange={setArqOpen}>
-                  <DialogTrigger asChild><Button size="sm"><Upload className="w-4 h-4 mr-1" /> Enviar Arquivo</Button></DialogTrigger>
+                  <DialogTrigger asChild>
+                    <Button size="sm">
+                      <Upload className="w-4 h-4 mr-1" /> Enviar Arquivo
+                    </Button>
+                  </DialogTrigger>
                   <DialogContent className="w-[95vw] sm:max-w-lg max-h-[90vh] overflow-y-auto">
-                    <DialogHeader><DialogTitle>Enviar Arquivo BPF</DialogTitle></DialogHeader>
+                    <DialogHeader>
+                      <DialogTitle>Enviar Arquivo BPF</DialogTitle>
+                    </DialogHeader>
                     <div className="space-y-4">
                       <div>
                         <Label>POP vinculado *</Label>
                         <Select value={arqPopCodigo} onValueChange={setArqPopCodigo}>
-                          <SelectTrigger><SelectValue placeholder="Selecione o POP a que este arquivo pertence" /></SelectTrigger>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Selecione o POP a que este arquivo pertence" />
+                          </SelectTrigger>
                           <SelectContent>
-                            {POPS_OBRIGATORIOS.map(p => (
-                              <SelectItem key={p.codigo} value={p.codigo}>{p.codigo} — {p.nome.slice(0, 50)}</SelectItem>
+                            {POPS_OBRIGATORIOS.map((p) => (
+                              <SelectItem key={p.codigo} value={p.codigo}>
+                                {p.codigo} — {p.nome.slice(0, 50)}
+                              </SelectItem>
                             ))}
                           </SelectContent>
                         </Select>
-                        <p className="text-[10px] text-muted-foreground mt-1">Obrigatório para o arquivo ficar pesquisável por POP.</p>
+                        <p className="text-[10px] text-muted-foreground mt-1">
+                          Obrigatório para o arquivo ficar pesquisável por POP.
+                        </p>
                       </div>
                       <div className="grid grid-cols-2 gap-3">
                         <div>
                           <Label>Tipo *</Label>
                           <Select value={arqTipo} onValueChange={(v) => setArqTipo(v as TipoDoc)}>
-                            <SelectTrigger><SelectValue /></SelectTrigger>
-                            <SelectContent>{TIPOS_DOC.map(t => <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>)}</SelectContent>
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {TIPOS_DOC.map((t) => (
+                                <SelectItem key={t.value} value={t.value}>
+                                  {t.label}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
                           </Select>
                         </div>
                         <div>
@@ -826,43 +1231,63 @@ export default function Documentos() {
                             placeholder="001"
                             inputMode="numeric"
                           />
-                    </div>
-                  </div>
+                        </div>
+                      </div>
 
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <Label>IT Específica (opcional)</Label>
-                      <Select value={arqItCodigo} onValueChange={setArqItCodigo}>
-                        <SelectTrigger><SelectValue placeholder="Selecione a IT" /></SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="none">Nenhuma IT (Geral)</SelectItem>
-                          {arqPopCodigo && INSTRUCOES_TRABALHO.filter(it => it.popCodigo === arqPopCodigo).map((it) => (
-                            <SelectItem key={it.id} value={it.id}>{it.id} - {it.titulo.slice(0, 30)}...</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div>
-                      <Label>Frequência *</Label>
-                      <Select value={arqFrequencia} onValueChange={(v) => setArqFrequencia(v as FrequenciaDoc)}>
-                        <SelectTrigger><SelectValue /></SelectTrigger>
-                        <SelectContent>
-                          {FREQUENCIAS_DOC.map((f) => (
-                            <SelectItem key={f.value} value={f.value}>{f.label}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <Label>IT Específica (opcional)</Label>
+                          <Select value={arqItCodigo} onValueChange={setArqItCodigo}>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Selecione a IT" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="none">Nenhuma IT (Geral)</SelectItem>
+                              {arqPopCodigo &&
+                                INSTRUCOES_TRABALHO.filter((it) => it.popCodigo === arqPopCodigo).map((it) => (
+                                  <SelectItem key={it.id} value={it.id}>
+                                    {it.id} - {it.titulo.slice(0, 30)}...
+                                  </SelectItem>
+                                ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div>
+                          <Label>Frequência *</Label>
+                          <Select value={arqFrequencia} onValueChange={(v) => setArqFrequencia(v as FrequenciaDoc)}>
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {FREQUENCIAS_DOC.map((f) => (
+                                <SelectItem key={f.value} value={f.value}>
+                                  {f.label}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
 
-                  <div>
+                      <div>
                         <Label>Data de referência *</Label>
                         <Input type="date" value={arqDataRef} onChange={(e) => setArqDataRef(e.target.value)} />
                       </div>
-                      <div><Label>Descrição</Label><Textarea value={arqDescricao} onChange={e => setArqDescricao(e.target.value)} placeholder="Detalhes: nº do lote, operador, etc." /></div>
+                      <div>
+                        <Label>Descrição</Label>
+                        <Textarea
+                          value={arqDescricao}
+                          onChange={(e) => setArqDescricao(e.target.value)}
+                          placeholder="Detalhes: nº do lote, operador, etc."
+                        />
+                      </div>
                       <div>
                         <Label>Arquivo * (PDF, imagem, DOC)</Label>
-                        <Input type="file" accept=".pdf,.png,.jpg,.jpeg,.doc,.docx,.xls,.xlsx" onChange={e => setArqFile(e.target.files?.[0] || null)} />
+                        <Input
+                          type="file"
+                          accept=".pdf,.png,.jpg,.jpeg,.doc,.docx,.xls,.xlsx"
+                          onChange={(e) => setArqFile(e.target.files?.[0] || null)}
+                        />
                       </div>
                       {arqPopCodigo && (
                         <div className="rounded-md border bg-muted/40 p-3 text-xs space-y-1">
@@ -880,7 +1305,11 @@ export default function Documentos() {
                           )}
                         </div>
                       )}
-                      <Button onClick={handleAddArquivo} className="w-full" disabled={saving || !arqFile || !arqPopCodigo || !arqNumero || !arqDataRef}>
+                      <Button
+                        onClick={handleAddArquivo}
+                        className="w-full"
+                        disabled={saving || !arqFile || !arqPopCodigo || !arqNumero || !arqDataRef}
+                      >
                         {saving && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}Enviar
                       </Button>
                     </div>
@@ -889,67 +1318,93 @@ export default function Documentos() {
               </div>
             </CardHeader>
             <CardContent className="p-2 sm:p-6 overflow-hidden">
-              {loading ? <div className="flex justify-center py-8"><Loader2 className="w-6 h-6 animate-spin text-muted-foreground" /></div>
-              : filteredArquivos.length === 0 ? <p className="text-center text-muted-foreground py-8">Nenhum arquivo nesta categoria</p>
-              : (
+              {loading ? (
+                <div className="flex justify-center py-8">
+                  <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+                </div>
+              ) : filteredArquivos.length === 0 ? (
+                <p className="text-center text-muted-foreground py-8">Nenhum arquivo nesta categoria</p>
+              ) : (
                 <div className="overflow-x-auto">
                   <Table>
-                    <TableHeader><TableRow>
-                      <TableHead>Local / POP</TableHead>
-                      <TableHead>Título</TableHead>
-                      <TableHead>Categoria</TableHead>
-                      <TableHead>Arquivo</TableHead>
-                      <TableHead>Frequência</TableHead>
-                      <TableHead>Data</TableHead>
-                      <TableHead className="w-16"></TableHead>
-                    </TableRow></TableHeader>
-                  <TableBody>
-                    {filteredArquivos.map(a => (
-                      <TableRow key={a.id}>
-                        <TableCell>
-                          <div className="flex flex-col gap-1">
-                            {a.pop_codigo
-                              ? <Badge className="text-[10px] font-mono w-fit">{a.pop_codigo}</Badge>
-                              : <Badge variant="outline" className="text-[10px] text-muted-foreground w-fit">sem POP</Badge>}
-                            {a.it_codigo && (
-                              <Badge variant="secondary" className="text-[9px] font-mono w-fit">{a.it_codigo}</Badge>
-                            )}
-                          </div>
-                        </TableCell>
-                        <TableCell className="font-medium text-sm">{a.titulo}</TableCell>
-                        <TableCell>
-                          <Badge variant="outline" className="text-xs">
-                            {CATEGORIAS_ARQ.find(c => c.value === a.categoria)?.label || a.categoria}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          {a.arquivo_url ? (
-                            <a href={a.arquivo_url} target="_blank" rel="noopener noreferrer" className="text-xs text-primary hover:underline flex items-center gap-1">
-                              <ExternalLink className="w-3 h-3" /> {a.arquivo_nome || "Abrir"}
-                            </a>
-                          ) : <span className="text-xs text-muted-foreground">{a.arquivo_nome || "—"}</span>}
-                        </TableCell>
-                        <TableCell>
-                          {a.frequencia ? (
-                            <Badge variant="outline" className="text-[10px] uppercase">
-                              {FREQUENCIAS_DOC.find(f => f.value === a.frequencia)?.label || a.frequencia}
-                            </Badge>
-                          ) : <span className="text-muted-foreground">—</span>}
-                        </TableCell>
-                        <TableCell className="text-xs">{a.data_ref || a.created_at?.split("T")[0]}</TableCell>
-                        <TableCell>
-                          <div className="flex items-center gap-1">
-                            <VincularPopButton arquivoId={a.id} currentPop={a.pop_codigo} onSaved={fetchData} />
-                            <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={() => handleDeleteArquivo(a.id)}>
-                              <Trash2 className="w-3.5 h-3.5" />
-                            </Button>
-                          </div>
-                        </TableCell>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Local / POP</TableHead>
+                        <TableHead>Título</TableHead>
+                        <TableHead>Categoria</TableHead>
+                        <TableHead>Arquivo</TableHead>
+                        <TableHead>Frequência</TableHead>
+                        <TableHead>Data</TableHead>
+                        <TableHead className="w-16"></TableHead>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                      </Table>
-                    </div>
+                    </TableHeader>
+                    <TableBody>
+                      {filteredArquivos.map((a) => (
+                        <TableRow key={a.id}>
+                          <TableCell>
+                            <div className="flex flex-col gap-1">
+                              {a.pop_codigo ? (
+                                <Badge className="text-[10px] font-mono w-fit">{a.pop_codigo}</Badge>
+                              ) : (
+                                <Badge variant="outline" className="text-[10px] text-muted-foreground w-fit">
+                                  sem POP
+                                </Badge>
+                              )}
+                              {a.it_codigo && (
+                                <Badge variant="secondary" className="text-[9px] font-mono w-fit">
+                                  {a.it_codigo}
+                                </Badge>
+                              )}
+                            </div>
+                          </TableCell>
+                          <TableCell className="font-medium text-sm">{a.titulo}</TableCell>
+                          <TableCell>
+                            <Badge variant="outline" className="text-xs">
+                              {CATEGORIAS_ARQ.find((c) => c.value === a.categoria)?.label || a.categoria}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>
+                            {a.arquivo_url ? (
+                              <a
+                                href={a.arquivo_url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-xs text-primary hover:underline flex items-center gap-1"
+                              >
+                                <ExternalLink className="w-3 h-3" /> {a.arquivo_nome || "Abrir"}
+                              </a>
+                            ) : (
+                              <span className="text-xs text-muted-foreground">{a.arquivo_nome || "—"}</span>
+                            )}
+                          </TableCell>
+                          <TableCell>
+                            {a.frequencia ? (
+                              <Badge variant="outline" className="text-[10px] uppercase">
+                                {FREQUENCIAS_DOC.find((f) => f.value === a.frequencia)?.label || a.frequencia}
+                              </Badge>
+                            ) : (
+                              <span className="text-muted-foreground">—</span>
+                            )}
+                          </TableCell>
+                          <TableCell className="text-xs">{a.data_ref || a.created_at?.split("T")[0]}</TableCell>
+                          <TableCell>
+                            <div className="flex items-center gap-1">
+                              <VincularPopButton arquivoId={a.id} currentPop={a.pop_codigo} onSaved={fetchData} />
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-7 w-7 text-destructive"
+                                onClick={() => handleDeleteArquivo(a.id)}
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
               )}
             </CardContent>
           </Card>
@@ -958,17 +1413,44 @@ export default function Documentos() {
 
       {/* Dialog: Revisar POP */}
       <Dialog open={versaoOpen} onOpenChange={setVersaoOpen}>
-        <DialogContent>
-          <DialogHeader><DialogTitle>Revisar Documento — {versaoDocCodigo}</DialogTitle></DialogHeader>
+        <DialogContent className="max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Revisar Documento — {versaoDocCodigo}</DialogTitle>
+          </DialogHeader>
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
-              <div><Label>Versão Anterior</Label><Input value={versaoAnterior} disabled /></div>
-              <div><Label>Nova Versão</Label><Input value={versaoNova} onChange={e => setVersaoNova(e.target.value)} /></div>
+              <div>
+                <Label>Versão Anterior</Label>
+                <Input value={versaoAnterior} disabled />
+              </div>
+              <div>
+                <Label>Nova Versão</Label>
+                <Input value={versaoNova} onChange={(e) => setVersaoNova(e.target.value)} />
+              </div>
             </div>
-            <div><Label>Responsável pela Revisão</Label><Input value={versaoResponsavel} onChange={e => setVersaoResponsavel(e.target.value)} /></div>
-            <div><Label>Motivo da Revisão</Label><Input value={versaoMotivo} onChange={e => setVersaoMotivo(e.target.value)} placeholder="Ex: Atualização" /></div>
-            <div><Label>Descrição das Alterações</Label><Textarea value={versaoAlteracoes} onChange={e => setVersaoAlteracoes(e.target.value)} placeholder="Descreva o que mudou nesta revisão..." /></div>
-            <Button onClick={handleRevisarPop} className="w-full" disabled={saving}>{saving && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}Registrar Revisão</Button>
+            <div>
+              <Label>Responsável pela Revisão</Label>
+              <Input value={versaoResponsavel} onChange={(e) => setVersaoResponsavel(e.target.value)} />
+            </div>
+            <div>
+              <Label>Motivo da Revisão</Label>
+              <Input
+                value={versaoMotivo}
+                onChange={(e) => setVersaoMotivo(e.target.value)}
+                placeholder="Ex: Atualização"
+              />
+            </div>
+            <div>
+              <Label>Descrição das Alterações</Label>
+              <Textarea
+                value={versaoAlteracoes}
+                onChange={(e) => setVersaoAlteracoes(e.target.value)}
+                placeholder="Descreva o que mudou nesta revisão..."
+              />
+            </div>
+            <Button onClick={handleRevisarPop} className="w-full" disabled={saving}>
+              {saving && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}Registrar Revisão
+            </Button>
           </div>
         </DialogContent>
       </Dialog>
@@ -976,7 +1458,9 @@ export default function Documentos() {
       {/* Dialog: Histórico de Versões */}
       <Dialog open={versoesOpen} onOpenChange={setVersoesOpen}>
         <DialogContent className="max-w-lg">
-          <DialogHeader><DialogTitle>Histórico de Revisões — {versoesDocNome}</DialogTitle></DialogHeader>
+          <DialogHeader>
+            <DialogTitle>Histórico de Revisões — {versoesDocNome}</DialogTitle>
+          </DialogHeader>
           {versoes.length === 0 ? (
             <p className="text-center text-muted-foreground py-4">Nenhuma revisão registrada</p>
           ) : (
@@ -984,11 +1468,21 @@ export default function Documentos() {
               {versoes.map((v: any) => (
                 <div key={v.id} className="border rounded-lg p-3 space-y-1">
                   <div className="flex items-center justify-between">
-                    <Badge variant="outline" className="font-mono">v{v.versao_anterior} → v{v.versao_nova}</Badge>
+                    <Badge variant="outline" className="font-mono">
+                      v{v.versao_anterior} → v{v.versao_nova}
+                    </Badge>
                     <span className="text-xs text-muted-foreground">{v.created_at?.split("T")[0]}</span>
                   </div>
-                  {v.responsavel && <p className="text-sm"><span className="font-medium">Responsável:</span> {v.responsavel}</p>}
-                  {v.motivo && <p className="text-sm"><span className="font-medium">Motivo:</span> {v.motivo}</p>}
+                  {v.responsavel && (
+                    <p className="text-sm">
+                      <span className="font-medium">Responsável:</span> {v.responsavel}
+                    </p>
+                  )}
+                  {v.motivo && (
+                    <p className="text-sm">
+                      <span className="font-medium">Motivo:</span> {v.motivo}
+                    </p>
+                  )}
                   {v.alteracoes && <p className="text-xs text-muted-foreground">{v.alteracoes}</p>}
                 </div>
               ))}
