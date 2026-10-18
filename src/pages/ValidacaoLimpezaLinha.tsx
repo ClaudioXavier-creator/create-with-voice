@@ -1,4 +1,5 @@
 import { TIPOS_VALIDACAO } from "@/components/higiene/constants";
+import { citar798, REGRAS_CARRY_OVER } from "@/config/carryOver798";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { corrigirViaNC } from "@/utils/correcaoNC";
@@ -92,7 +93,7 @@ export default function ValidacaoLimpezaLinha() {
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <Label>Tipo Validação</Label>
-                  <Select value={form.tipo_validacao} onValueChange={v => setForm(p => ({ ...p, tipo_validacao: v }))}>
+                  <Select value={form.tipo_validacao} onValueChange={v => setForm(p => ({ ...p, tipo_validacao: v, limite_aceitavel: v === "carryover" && !p.limite_aceitavel ? "≤ 2,5% do princípio ativo" : p.limite_aceitavel }))}>
                     <SelectTrigger><SelectValue /></SelectTrigger>
                     <SelectContent>{TIPOS_VALIDACAO.map(t => <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>)}</SelectContent>
                   </Select>
@@ -116,30 +117,15 @@ export default function ValidacaoLimpezaLinha() {
               {(form.tipo_validacao === "tempo_mistura" || form.tipo_validacao === "homogeneidade") && (
                 <div className="p-3 rounded-lg border border-blue-400 bg-blue-50 dark:bg-blue-900/20">
                   <p className="text-xs font-semibold text-blue-700 dark:text-blue-400 mb-2">📐 Validação de Mistura</p>
-                  <p className="text-xs text-muted-foreground">Registre o CV% (Coeficiente de Variação) do teste de homogeneidade. O limite aceitável é CV ≤ 10% para misturadores. Informe o tempo de mistura validado no campo "Observações".</p>
+                  <p className="text-xs text-muted-foreground">Registre o CV% (Coeficiente de Variação) do teste de homogeneidade. O limite aceitável é CV até 10% no método de concentração ({citar798("art. 26")}). Informe o tempo de mistura validado no campo "Observações".</p>
                 </div>
               )}
               {form.tipo_validacao === "carryover" && (
                 <div className="p-3 rounded-lg border border-orange-400 bg-orange-50 dark:bg-orange-900/20 space-y-2">
-                  <p className="text-xs font-semibold text-orange-700 dark:text-orange-400 mb-1">🔬 Teste de Carry-Over (Arraste) — POP-05 / </p>
-                  <p className="text-xs text-muted-foreground">
-                    Meça o % de arraste do princípio ativo (ex: monensina, salinomicina) do lote anterior para o seguinte.
-                    O limite aceitável varia conforme a substância ativa e espécie destino.
-                  </p>
-                  <div className="grid grid-cols-2 gap-2 mt-2">
-                    <div className="text-[10px] p-2 rounded bg-background border space-y-1">
-                      <p className="font-semibold">Limites de referência:</p>
-                      <p>• Ionóforos para bovinos: &lt; 1% arraste</p>
-                      <p>• Medicamentos veterinários: &lt; 3% arraste</p>
-                      <p>• Proibidos p/ espécie seguinte: 0% (flushing obrigatório)</p>
-                    </div>
-                    <div className="text-[10px] p-2 rounded bg-background border space-y-1">
-                      <p className="font-semibold">Metodologia recomendada:</p>
-                      <p>• Coleta após 1ª batida do lote seguinte</p>
-                      <p>• Análise por HPLC, ELISA ou teste rápido</p>
-                      <p>• Resultado no campo "Resíduo Detectado"</p>
-                    </div>
-                  </div>
+                  <p className="text-xs font-semibold text-orange-700 dark:text-orange-400 mb-1">🔬 Teste de Carry-Over (Arraste) — {citar798("art. 29")}</p>
+                  <ul className="text-[10px] text-muted-foreground space-y-0.5">
+                    {REGRAS_CARRY_OVER.slice(0, 3).map(r => <li key={r.titulo}>• {r.texto} ({r.citacao})</li>)}
+                  </ul>
                 </div>
               )}
               <div className="grid grid-cols-2 gap-3">
