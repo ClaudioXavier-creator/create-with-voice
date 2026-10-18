@@ -10,7 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
 import { useEmpresa } from "@/hooks/useEmpresa";
 import { useAuth } from "@/hooks/useAuth";
-import { gerarCarimboSync, carimboHTML } from "@/utils/carimboDocumento";
+import { inserirCarimbo, CARIMBO_PLACEHOLDER } from "@/utils/carimboDocumento";
 import { toast } from "sonner";
 
 
@@ -29,7 +29,7 @@ export default function DeclaracaoVisitante() {
   const allDeclaracoes = DECLARACOES_BIOSSEGURIDADE.every(d => checks[d.id]);
   const formValido = form.nome && form.documento && regrasAceitas && allDeclaracoes;
 
-  const handlePrint = () => {
+  const handlePrint = async () => {
     if (!formValido) {
       toast.error("Preencha todos os campos e marque todas as declarações antes de imprimir.");
       return;
@@ -124,18 +124,19 @@ ${DECLARACOES_BIOSSEGURIDADE.map(d => `
 <div class="footer">
   ${nomeEmpresa}${cnpj ? " — CNPJ: " + cnpj : ""} | Documento gerado em ${dataHora} | Válido somente com assinatura do visitante e acompanhante
 </div>
-${carimboHTML(gerarCarimboSync({
-  documentoTipo: "Declaração de Visitante (Biosseguridade)",
-  documentoId: form.nome,
-  empresa: nomeEmpresa,
-  usuario: user?.email,
-}))}
+${CARIMBO_PLACEHOLDER}
 
 </body></html>`;
 
     const w = window.open("", "_blank");
+    const { html: htmlFinal } = await inserirCarimbo(html, {
+      documentoTipo: "Declaração de Visitante (Biosseguridade)",
+      documentoId: form.nome,
+      empresa: nomeEmpresa,
+      usuario: user?.email,
+    });
     if (w) {
-      w.document.write(html);
+      w.document.write(htmlFinal);
       w.document.close();
       w.onload = () => setTimeout(() => w.print(), 300);
     }

@@ -16,7 +16,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
-import { gerarCarimboSync, carimboHTMLCompacto } from "@/utils/carimboDocumento";
+import { gerarCarimbo, carimboHTMLCompacto } from "@/utils/carimboDocumento";
 
 interface Props {
   produtoId: string;
@@ -1196,14 +1196,16 @@ export default function RotuloEditor({ produtoId, produtoNome }: Props) {
     downloadZPL();
   }
 
-  function handlePrint() {
-    const carimbo = gerarCarimboSync({
-      documentoTipo: "Rótulo Comercial",
-      documentoId: rotulo.nome_comercial,
-    });
-    const html = buildPrintHTML(rotulo, niveisObj);
+  async function handlePrint() {
     const printWindow = window.open("", "_blank");
     if (!printWindow) return;
+    const html = buildPrintHTML(rotulo, niveisObj);
+    // Selo sobre o conteúdo exibido do rótulo (HTML de impressão) + metadados.
+    const carimbo = await gerarCarimbo({
+      documentoTipo: "Rótulo Comercial",
+      documentoId: rotulo.nome_comercial,
+      conteudo: html,
+    });
     printWindow.document.write(`
       <html><head><title>Rótulo – ${rotulo.nome_comercial}</title>
       <style>

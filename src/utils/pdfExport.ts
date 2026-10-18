@@ -6,7 +6,7 @@
  * e selo de integridade (baseLegal: autocontrole, §3º).
  */
 
-import { gerarCarimboSync, carimboHTML } from "./carimboDocumento";
+import { inserirCarimbo, CARIMBO_PLACEHOLDER } from "./carimboDocumento";
 
 interface PdfColumn {
   header: string;
@@ -34,7 +34,7 @@ function getCellValue(row: Record<string, unknown>, col: PdfColumn): string {
   return String(val);
 }
 
-export function gerarRelatorioPDF(options: PdfReportOptions) {
+export async function gerarRelatorioPDF(options: PdfReportOptions): Promise<void> {
   const {
     title, subtitle, empresa, responsavel, periodo,
     columns, data, footer, orientation = "portrait"
@@ -101,14 +101,16 @@ export function gerarRelatorioPDF(options: PdfReportOptions) {
   <span>${footer || 'Documento gerado automaticamente pelo sistema BPF_Consult'}</span>
   <span>Página 1 de 1</span>
 </div>
-${carimboHTML(gerarCarimboSync({
-  documentoTipo: title,
-  documentoId: subtitle,
-  empresa: empresa,
-  usuario: responsavel,
-}))}
+${CARIMBO_PLACEHOLDER}
 </body>
 </html>`;
+
+  const { html: htmlFinal } = await inserirCarimbo(html, {
+    documentoTipo: title,
+    documentoId: subtitle,
+    empresa,
+    usuario: responsavel,
+  });
 
   const iframe = document.createElement("iframe");
   iframe.style.position = "fixed";
@@ -123,7 +125,7 @@ ${carimboHTML(gerarCarimboSync({
   if (!doc) return;
 
   doc.open();
-  doc.write(html);
+  doc.write(htmlFinal);
   doc.close();
 
   iframe.onload = () => {

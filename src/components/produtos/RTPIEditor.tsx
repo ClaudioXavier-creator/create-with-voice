@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
-import { gerarCarimboSync, carimboHTML } from "@/utils/carimboDocumento";
+import { inserirCarimbo, CARIMBO_PLACEHOLDER } from "@/utils/carimboDocumento";
 
 interface Props {
   produtoId: string;
@@ -193,24 +193,30 @@ export default function RTPIEditor({ produtoId }: Props) {
   <p><strong>${e(rtpi.rt_nome)}</strong></p>
   <p>CRMV: ${e(rtpi.rt_crmv)}</p>
 </div>
-${carimboHTML(gerarCarimboSync({
-  documentoTipo: "RTPI — Relatório Técnico Produto Isento",
-  documentoId: rtpi.nome_produto,
-  empresa: rtpi.razao_social,
-}))}
-<script>window.print();window.close();</script>
+${CARIMBO_PLACEHOLDER}
 </body></html>`;
   }
 
-  function handlePrint() {
+  /** Documento final com selo SHA-256 calculado sobre o conteúdo exibido. */
+  async function buildDocumentoComSelo(): Promise<string> {
+    const { html } = await inserirCarimbo(buildPrintHTML(), {
+      documentoTipo: "RTPI — Relatório Técnico Produto Isento",
+      documentoId: rtpi.nome_produto,
+      empresa: rtpi.razao_social,
+    });
+    return html;
+  }
+
+  async function handlePrint() {
     const w = window.open("", "_blank");
     if (!w) return;
-    w.document.write(buildPrintHTML());
+    const html = await buildDocumentoComSelo();
+    w.document.write(html.replace("</body></html>", "<script>window.print();window.close();</script></body></html>"));
     w.document.close();
   }
 
-  function handleDownloadDoc() {
-    const html = buildPrintHTML().replace(/<script>.*<\/script>/g, "");
+  async function handleDownloadDoc() {
+    const html = await buildDocumentoComSelo();
     const blob = new Blob([html], { type: "application/msword" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
