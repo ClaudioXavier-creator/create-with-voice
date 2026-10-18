@@ -12,7 +12,7 @@ export interface BaseLegalBadgeProps {
 }
 
 export function BaseLegalBadge({ assunto, className }: BaseLegalBadgeProps) {
-  const base = getBaseLegal(assunto);
+  const base = useBaseLegal(assunto);
 
   return (
     <Popover>
