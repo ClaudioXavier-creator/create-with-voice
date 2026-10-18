@@ -1,5 +1,5 @@
 import { TIPOS_VALIDACAO } from "@/components/higiene/constants";
-import { citar798, REGRAS_CARRY_OVER } from "@/config/carryOver798";
+import { citar798, REGRAS_CARRY_OVER, avaliarValidacaoCarryOver, REPETICOES_EXIGIDAS } from "@/config/carryOver798";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { corrigirViaNC } from "@/utils/correcaoNC";
@@ -33,7 +33,7 @@ export default function ValidacaoLimpezaLinha() {
     contem_medicamento: false, tipo_validacao: "visual", resultado: "aprovado",
     residuo_detectado: "", limite_aceitavel: "", metodo_analise: "",
     responsavel: "", data_validacao: new Date().toISOString().split("T")[0],
-    hora_validacao: "", observacoes: ""
+    hora_validacao: "", observacoes: "", repeticao: "1"
   });
 
   const { data: validacoes = [] } = useQuery({
@@ -47,7 +47,13 @@ export default function ValidacaoLimpezaLinha() {
 
   const add = useMutation({
     mutationFn: async () => {
-      const { error } = await supabase.from("validacao_limpeza_linha").insert({ ...form, user_id: user!.id, empresa_id: empresaAtiva?.id || null });
+      const { repeticao, ...resto } = form;
+      const { error } = await supabase.from("validacao_limpeza_linha").insert({
+        ...resto,
+        repeticao: resto.tipo_validacao === "carryover" ? Number(repeticao) : null,
+        user_id: user!.id,
+        empresa_id: empresaAtiva?.id || null,
+      });
       if (error) throw error;
     },
     onSuccess: () => {
@@ -59,6 +65,17 @@ export default function ValidacaoLimpezaLinha() {
   });
 
   const navigate = useNavigate();
+
+  /** Situação da validação por sequência (linha + produto anterior → seguinte), só testes de carry-over. */
+  const chaveSeq = (v: any) => `${v.linha_producao}|${v.produto_anterior}|${v.produto_seguinte}`;
+  const statusPorSequencia = new Map<string, ReturnType<typeof avaliarValidacaoCarryOver>>();
+  const grupos = new Map<string, { repeticao: number; conforme: boolean }[]>();
+  validacoes.forEach((v: any) => {
+    if (v.tipo_validacao !== "carryover" || !v.repeticao) return;
+    const k = chaveSeq(v);
+    grupos.set(k, [...(grupos.get(k) ?? []), { repeticao: v.repeticao, conforme: v.resultado === "aprovado" }]);
+  });
+  grupos.forEach((reps, k) => statusPorSequencia.set(k, avaliarValidacaoCarryOver(reps)));
 
   const reprovados = validacoes.filter((v: any) => v.resultado === "reprovado").length;
   const comMed = validacoes.filter((v: any) => v.contem_medicamento).length;
@@ -126,6 +143,15 @@ export default function ValidacaoLimpezaLinha() {
                   <ul className="text-[10px] text-muted-foreground space-y-0.5">
                     {REGRAS_CARRY_OVER.slice(0, 3).map(r => <li key={r.titulo}>• {r.texto} ({r.citacao})</li>)}
                   </ul>
+                  <div>
+                    <Label>Repetição da sequência-piloto *</Label>
+                    <Select value={form.repeticao} onValueChange={v => setForm(p => ({ ...p, repeticao: v }))}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        {[1, 2, 3].map(n => <SelectItem key={n} value={String(n)}>{n} de {REPETICOES_EXIGIDAS}</SelectItem>)}
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
               )}
               <div className="grid grid-cols-2 gap-3">
@@ -153,7 +179,9 @@ export default function ValidacaoLimpezaLinha() {
                 <TableHead>Prod. Seguinte</TableHead>
                 <TableHead>Med.</TableHead>
                 <TableHead>Tipo</TableHead>
+                <TableHead>Rep.</TableHead>
                 <TableHead>Resultado</TableHead>
+                <TableHead>Validação</TableHead>
                 <TableHead></TableHead>
               </TableRow>
             </TableHeader>
@@ -166,7 +194,15 @@ export default function ValidacaoLimpezaLinha() {
                   <TableCell>{v.produto_seguinte}</TableCell>
                   <TableCell>{v.contem_medicamento ? <AlertTriangle className="w-4 h-4 text-yellow-600" /> : "—"}</TableCell>
                   <TableCell>{TIPOS_VALIDACAO.find(t => t.value === v.tipo_validacao)?.label}</TableCell>
+                  <TableCell>{v.repeticao ?? "—"}</TableCell>
                   <TableCell>{v.resultado === "aprovado" ? <Badge className="bg-green-600">Aprovado</Badge> : <Badge variant="destructive">Reprovado</Badge>}</TableCell>
+                  <TableCell>{(() => {
+                    const st = v.tipo_validacao === "carryover" && v.repeticao ? statusPorSequencia.get(chaveSeq(v)) : undefined;
+                    if (!st) return "—";
+                    if (st === "aprovada") return <Badge className="bg-primary/20 text-primary" title={citar798("art. 29, §1º")}>Aprovada (3/3)</Badge>;
+                    if (st === "reprovada") return <Badge variant="destructive">Reprovada</Badge>;
+                    return <Badge variant="outline" title="Exige 3 repetições conformes">Em andamento</Badge>;
+                  })()}</TableCell>
                   <TableCell><Button variant="ghost" size="sm" className="gap-1 text-xs" title="Registros não são excluídos — correção via Não Conformidade" onClick={() => corrigirViaNC(navigate, { tabela: "validacao_limpeza_linha", registroId: v.id, descricao: `Linha: ${v.linha_producao} — ${v.produto_anterior} → ${v.produto_seguinte} — resultado: ${v.resultado}` })}><FileWarning className="w-4 h-4 text-primary" /> Corrigir via NC</Button></TableCell>
                 </TableRow>
               ))}
