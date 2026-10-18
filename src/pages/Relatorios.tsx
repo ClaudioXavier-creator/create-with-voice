@@ -43,7 +43,7 @@ const MODULOS = [
   "Controle de Pragas",
   "Treinamentos",
   "Execução ITs/POPs",
-  `Checklist ${getBaseLegal("autocontrole").citacao}`,
+  `Checklist ${getBaseLegal("decreto_base").norma.split("/")[0]}`,
 ];
 
 const EXPORT_MODULES = [
