@@ -1,5 +1,6 @@
+import { getBaseLegal } from "@/config/baseLegal";
 /**
- * Selo de integridade para documentos — Decreto 12.031/2024 (art. 40, §3º)
+ * Selo de integridade para documentos — baseLegal: autocontrole, §3º do artigo de registros.
  *
  * Padroniza data/hora de emissão, usuário responsável, identificação do documento
  * e hash curto de integridade em TODOS os documentos (impressos e digitais) gerados
@@ -143,7 +144,7 @@ export function carimboHTML(info: CarimboInfo): string {
     </div>
   </div>
   <div style="margin-top:4px;font-size:8px;color:#888;">
-    Registro com identificação do responsável, data e hora; selo de integridade — Decreto 12.031/2024 (art. 40, §3º).
+    Registro com identificação do responsável, data e hora; selo de integridade — ${getBaseLegal("autocontrole").norma} (${getBaseLegal("autocontrole").artigo}, §3º).
   </div>
 </div>`;
 }
@@ -167,7 +168,7 @@ export function carimboTexto(info: CarimboInfo): string {
     `Emitido em: ${info.dataHoraBR}`,
     info.usuario ? `Por: ${info.usuario}` : "",
     info.selo,
-    "Registro com identificação do responsável, data e hora; selo de integridade — Decreto 12.031/2024 (art. 40, §3º).",
+    `Registro com identificação do responsável, data e hora; selo de integridade — ${getBaseLegal("autocontrole").norma} (${getBaseLegal("autocontrole").artigo}, §3º).`,
     "─────────────────────────────────────────────",
   ].filter(Boolean).join("\n");
 }

@@ -1,5 +1,6 @@
+import { getBaseLegal } from "@/config/baseLegal";
 /**
- * Selo de integridade de relatórios — Decreto 12.031/2024 (art. 40, §3º)
+ * Selo de integridade de relatórios — baseLegal: autocontrole, §3º do artigo de registros.
  * Gera hash SHA-256 para verificação de integridade dos documentos exportados.
  */
 
@@ -19,7 +20,7 @@ export function gerarBlocoIntegridade(hash: string, nomeArquivo: string, usuario
     gerado_por: usuario,
     data_geracao: agora.toISOString(),
     timestamp_unix: Math.floor(agora.getTime() / 1000),
-    referencia_legal: "Decreto 12.031/2024 (art. 40, §3º)",
+    referencia_legal: `${getBaseLegal("autocontrole").norma} (${getBaseLegal("autocontrole").artigo}, §3º)`,
     selo: `INTEGRIDADE: ${hash.substring(0, 16).toUpperCase()}`,
   };
 }
@@ -37,7 +38,7 @@ export function adicionarRodapeIntegridade(
   const rodape = [
     "",
     "═══════════════════════════════════════════════════════",
-    "SELO DE INTEGRIDADE — Decreto 12.031/2024 (art. 40, §3º)",
+    `SELO DE INTEGRIDADE — ${getBaseLegal("autocontrole").norma} (${getBaseLegal("autocontrole").artigo}, §3º)`,
     `Hash SHA-256: ${bloco.hash_sha256}`,
     `Arquivo: ${bloco.arquivo}`,
     `Gerado por: ${bloco.gerado_por}`,

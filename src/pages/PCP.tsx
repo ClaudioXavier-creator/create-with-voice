@@ -1,3 +1,4 @@
+import { getBaseLegal } from "@/config/baseLegal";
 import { statusConfig, prioridadeConfig } from "@/components/pcp/constants";
 import { useState, useEffect } from "react";
 import { TemposMisturaSection } from "@/components/mapa-evolucao/MapaEvolucaoSections";
@@ -531,7 +532,7 @@ export default function PCP() {
     setSaving(true);
     const ordem = ordens.find((o) => o.id === coOrdemId);
     const obs = [
-      `[TESTE DE CARRY-OVER — IN 15/2009 / Decreto 12.031/2024]`,
+      `[TESTE DE CARRY-OVER — IN 15/2009 / ${getBaseLegal("decreto_base").citacao}]`,
       `Data: ${coData} | Responsável: ${coResponsavel}`,
       `Método: ${coMetodo === "visual" ? "Inspeção Visual" : coMetodo === "swab" ? "Swab de Superfície" : coMetodo === "flushing_analise" ? "Análise do Flushing" : "Análise Laboratorial"}`,
       `Produto anterior: ${coProdAnterior || "—"}`,
@@ -724,7 +725,7 @@ export default function PCP() {
               <div className="space-y-2">
                 <p className="text-[10px] text-muted-foreground mb-2">
                   💡 Defina a sequência para minimizar limpezas entre lotes. Produtos medicados devem ser produzidos por
-                  último no dia (IN 04/2007).
+                  último no dia ({getBaseLegal("bpf_geral").citacao}).
                 </p>
                 {sequencia.map(({ ordem, anterior, requerFlushing, tipoLimpeza }, i) => (
                   <div
@@ -1304,7 +1305,7 @@ export default function PCP() {
                                   <TestTube className="w-5 h-5 text-orange-600 mt-0.5" />
                                   <div>
                                     <p className="text-xs font-semibold">
-                                      Teste de Carry-over — IN 15/2009 | Decreto 12.031/2024
+                                      Teste de Carry-over — IN 15/2009 | {getBaseLegal("decreto_base").citacao}
                                     </p>
                                     <p className="text-[10px] text-muted-foreground mt-1">
                                       Limite de arraste: Ionóforos {"<"} 1% da dose terapêutica • Medicados {"<"} 3% da
@@ -1498,7 +1499,7 @@ export default function PCP() {
                 >
                   <p className="text-xs font-semibold mb-2 flex items-center gap-1">
                     <AlertTriangle className={`w-4 h-4 ${alertaEEB ? "text-destructive" : "text-yellow-600"}`} />
-                    Verificação de Limpeza entre Lotes — IN 15/2009 / Decreto 12.031/2024
+                    Verificação de Limpeza entre Lotes — IN 15/2009 / {getBaseLegal("decreto_base").citacao}
                   </p>
                   {alertaEEB && (
                     <div className="p-2 rounded bg-destructive/10 border border-destructive/30 mb-3">

@@ -1,3 +1,4 @@
+import { getBaseLegal } from "@/config/baseLegal";
 import { useState, useEffect, useRef, useMemo } from "react";
 import { AmostrasRetencaoSection } from "@/components/mapa-evolucao/MapaEvolucaoSections";
 import {
@@ -748,7 +749,7 @@ export default function Rastreabilidade() {
     const lines: string[] = [
       "BALANÇO DE MASSA QUANTITATIVO — RASTREABILIDADE",
       `Data de Geração: ${new Date().toLocaleDateString("pt-BR")}`,
-      `Decreto 12.031/2024 — Fiscalização baseada em risco`,
+      `${getBaseLegal("rastreabilidade").citacao} — Fiscalização baseada em risco`,
       "",
       "LOTE PA;PRODUTO;MATÉRIA-PRIMA;LOTE MP;FORNECEDOR;KG MP;CLIENTE DESTINO;QTD VENDIDA;KG EXPEDIDO;NF;DATA VENDA",
     ];
@@ -872,11 +873,11 @@ export default function Rastreabilidade() {
           titulo: `Balanço de Massa Quantitativo — ${dataGeracao}`,
           tipo: "digital",
           modulo: "rastreabilidade",
-          descricao: `Balanço quantitativo com ${lotes.size} lotes. Entrada: ${fmtKg(totEntrada)} kg | Produzido: ${fmtKg(totProduzido)} kg | Expedido: ${fmtKg(totSaida)} kg. Decreto 12.031/2024 Art. 18.`,
+          descricao: `Balanço quantitativo com ${lotes.size} lotes. Entrada: ${fmtKg(totEntrada)} kg | Produzido: ${fmtKg(totProduzido)} kg | Expedido: ${fmtKg(totSaida)} kg. ${getBaseLegal("rastreabilidade").norma} Art. 18.`,
           data_geracao: dataGeracao,
           status: "ativo",
         });
-      toast.info("Relatório salvo no módulo Relatórios (Decreto 12.031/2024)");
+      toast.info(`Relatório salvo no módulo Relatórios (${getBaseLegal("rastreabilidade").citacao})`);
     }
   };
 
@@ -1029,7 +1030,7 @@ export default function Rastreabilidade() {
             <h1 class="text-2xl font-bold text-emerald-800 uppercase tracking-tight">Certificado de Rastreabilidade</h1>
             <h2 class="text-lg font-semibold text-gray-600 mt-1">${empresaNome}</h2>
             <div class="inline-block px-4 py-1 bg-emerald-800 text-white text-[10px] font-bold rounded mt-2 uppercase">
-              Decreto 12.031/2024 — Art. 18 | IN 04/2007
+              ${getBaseLegal("rastreabilidade").norma} — Art. 18 | ${getBaseLegal("bpf_geral").citacao}
             </div>
           </div>
 
@@ -1132,7 +1133,7 @@ export default function Rastreabilidade() {
 
           <div class="mt-10 pt-4 border-t border-gray-200 text-center text-[9px] text-gray-500 italic space-y-1">
             <p>Documento emitido em ${dataEmissao} pelo sistema BPF Digital.</p>
-            <p>Conformidade: Decreto 12.031/2024 (Art. 18) • IN 04/2007 (MAPA) • Rastreabilidade bidirecional comprovada eletronicamente.</p>
+            <p>Conformidade: ${getBaseLegal("rastreabilidade").norma} (Art. 18) • ${getBaseLegal("bpf_geral").citacao} (MAPA) • Rastreabilidade bidirecional comprovada eletronicamente.</p>
           </div>
         </div>
       </div>
@@ -1174,7 +1175,7 @@ export default function Rastreabilidade() {
         titulo: `Certificado de Rastreabilidade — Lote ${certLote}`,
         tipo: "digital",
         modulo: "rastreabilidade",
-        descricao: `Certificado formal do lote ${certLote} (${produto}). Decreto 12.031/2024 Art. 18.`,
+        descricao: `Certificado formal do lote ${certLote} (${produto}). ${getBaseLegal("rastreabilidade").norma} Art. 18.`,
         data_geracao: new Date().toISOString().split("T")[0],
         status: "ativo",
       });
@@ -1236,7 +1237,7 @@ export default function Rastreabilidade() {
       <PageHeader
         icon={History}
         title="POP 09 - Rastreabilidade e Recolhimento"
-        description="Rastreabilidade de produtos, controle de RNC e programa de recolhimento — IN 04/2007"
+        description={`Rastreabilidade de produtos, controle de RNC e programa de recolhimento — ${getBaseLegal("bpf_geral").citacao}`}
         orientacaoModuloId="rastreabilidade"
       />
       <div className="flex justify-end mb-3">
@@ -1459,7 +1460,7 @@ export default function Rastreabilidade() {
                     documentar flushing entre lotes.
                   </p>
                   <p className="text-muted-foreground">
-                    • <strong>Decreto 12.031/2024:</strong> Fiscalização prioriza estabelecimentos com múltiplas
+                    • <strong>{getBaseLegal("rastreabilidade").citacao}:</strong> Fiscalização prioriza estabelecimentos com múltiplas
                     espécies e uso de subprodutos animais.
                   </p>
                 </div>
@@ -1580,7 +1581,7 @@ export default function Rastreabilidade() {
             <ShieldAlert className="w-5 h-5" /> Segregação Digital — Quarentena e Lotes Retidos
           </CardTitle>
           <p className="text-xs text-muted-foreground">
-            Controle de lotes em quarentena, retidos ou aguardando análise conforme IN 15/2009 e Decreto 12.031/2024.
+            Controle de lotes em quarentena, retidos ou aguardando análise conforme IN 15/2009 e {getBaseLegal("rastreabilidade").citacao}.
           </p>
         </CardHeader>
         <CardContent>
@@ -2229,8 +2230,7 @@ export default function Rastreabilidade() {
         <CardHeader className="flex flex-row items-center justify-between">
           <div>
             <CardTitle className="font-display text-sm flex items-center gap-2">
-              <Package className="w-5 h-5 text-primary" /> Balanço de Massa — Conciliação de Estoque (Decreto
-              12.031/2024, arts. 40 e 41)
+              <Package className="w-5 h-5 text-primary" /> Balanço de Massa — Conciliação de Estoque ({getBaseLegal("autocontrole").citacao}; {getBaseLegal("rastreabilidade").citacao})
             </CardTitle>
             <p className="text-xs text-muted-foreground mt-1">
               Conciliação Entrada (MP) vs Saída (Venda/Entrega) por lote de PA
@@ -2349,11 +2349,11 @@ export default function Rastreabilidade() {
         </CardContent>
       </Card>
 
-      {/* Correlação Lote PA ↔ Certificado de Análise da MP — Decreto 12.031/2024 */}
+      {/* Correlação Lote PA ↔ Certificado de Análise da MP — baseLegal: decreto_base */}
       <Card className="mb-6 border-primary/20">
         <CardHeader>
           <CardTitle className="font-display text-sm flex items-center gap-2">
-            📄 Correlação Lote PA ↔ Certificado de Análise MP — Decreto 12.031/2024
+            📄 Correlação Lote PA ↔ Certificado de Análise MP — {getBaseLegal("rastreabilidade").citacao}
           </CardTitle>
           <p className="text-xs text-muted-foreground mt-1">
             Vinculação imediata entre o lote do Produto Acabado e o certificado de análise da Matéria-Prima recebida,
@@ -2478,8 +2478,7 @@ export default function Rastreabilidade() {
       <Card className="mb-6 border-accent/20">
         <CardHeader>
           <CardTitle className="font-display text-sm flex items-center gap-2">
-            <FlaskConical className="w-5 h-5 text-accent" /> Análises Laboratoriais Vinculadas ao Lote — Decreto
-            12.031/2024, art. 40
+            <FlaskConical className="w-5 h-5 text-accent" /> Análises Laboratoriais Vinculadas ao Lote — {getBaseLegal("autocontrole").citacao}
           </CardTitle>
           <p className="text-xs text-muted-foreground mt-1">
             Conformidade do controle de qualidade: análises de PA vinculadas por lote.
@@ -2777,7 +2776,7 @@ export default function Rastreabilidade() {
                           </Select>
                         </div>
                         <div>
-                          <Label>Nº SIF/DIPOA do Ingrediente (rastreabilidade — Decreto 12.031/2024, art. 41) *</Label>
+                          <Label>Nº SIF/DIPOA do Ingrediente (rastreabilidade — {getBaseLegal("rastreabilidade").citacao}) *</Label>
                           <Input
                             value={sifDipoa}
                             onChange={(e) => setSifDipoa(e.target.value)}
@@ -2785,7 +2784,7 @@ export default function Rastreabilidade() {
                           />
                           <p className="text-[10px] text-muted-foreground mt-1">
                             Identifica o estabelecimento de origem do ingrediente de origem animal, para rastreabilidade
-                            — Decreto 12.031/2024, arts. 41 e 44.
+                            — {getBaseLegal("rastreabilidade").citacao}.
                           </p>
                         </div>
                         {especieDestino === "bovinos" && (
@@ -2801,7 +2800,7 @@ export default function Rastreabilidade() {
                   {/* Processo Produtivo */}
                   <div className="p-3 rounded-lg border border-blue-400 bg-blue-50 dark:bg-blue-900/20">
                     <p className="text-xs font-semibold text-blue-700 dark:text-blue-400 mb-2">
-                      ⚙️ Validação do Processo — IN 04/2007
+                      ⚙️ Validação do Processo — {getBaseLegal("bpf_geral").citacao}
                     </p>
                     <div className="grid grid-cols-2 gap-3">
                       <div>
@@ -2869,7 +2868,7 @@ export default function Rastreabilidade() {
                       </div>
                     )}
                     <p className="text-[10px] text-muted-foreground mt-2">
-                      Reter por no mínimo validade do produto + 30 dias (IN 04/2007).
+                      Reter por no mínimo validade do produto + 30 dias ({getBaseLegal("amostra_arquivo").citacao}; {getBaseLegal("amostra_arquivo").observacao}).
                     </p>
                   </div>
 
@@ -3143,7 +3142,7 @@ export default function Rastreabilidade() {
             {recallStatus === "concluido" && (
               <div className="p-3 rounded-lg border-2 border-green-600/30 bg-green-50 dark:bg-green-900/10 space-y-3">
                 <p className="text-xs font-semibold text-green-800 flex items-center gap-1">
-                  ✅ Encerramento do Recall — Registro obrigatório do destino (POP-09 / Decreto 12.031/2024)
+                  ✅ Encerramento do Recall — Registro obrigatório do destino (POP-09 / {getBaseLegal("recolhimento_recall").citacao})
                 </p>
                 <div>
                   <Label className="text-xs">Destino do produto reprovado/devolvido *</Label>
@@ -3201,7 +3200,7 @@ export default function Rastreabilidade() {
                 </div>
                 <p className="text-[10px] text-muted-foreground">
                   O encerramento do recall exige registro do destino final dos produtos, quantidade recolhida e
-                  responsável, conforme o Decreto 12.031/2024 (arts. 39 e 40) e fiscalização do MAPA.
+                  responsável, conforme o {getBaseLegal("decreto_base").citacao} (arts. 39 e 40) e fiscalização do MAPA.
                 </p>
               </div>
             )}
@@ -3409,7 +3408,7 @@ export default function Rastreabilidade() {
           <div className="space-y-4">
             <p className="text-xs text-muted-foreground">
               Documento formal por lote PA: composição, fornecedores, contraprova, destinos e assinatura RT. Atende
-              Decreto 12.031/2024 (Art. 18) e clientes/auditores que solicitam comprovante.
+              {getBaseLegal("rastreabilidade").norma} (Art. 18) e clientes/auditores que solicitam comprovante.
             </p>
             <div>
               <Label>Lote PA</Label>
@@ -3544,7 +3543,7 @@ export default function Rastreabilidade() {
           </div>
 
           <div className="mt-8 text-[8px] text-gray-400 italic text-center">
-            Este mapa de rastreabilidade foi gerado automaticamente e atende ao Art. 18 do Decreto 12.031/2024 e ao POP
+            Este mapa de rastreabilidade foi gerado automaticamente e atende ao Art. 18 do {getBaseLegal("rastreabilidade").norma} e ao POP
             05.
           </div>
         </div>

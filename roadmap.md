@@ -1,3 +1,11 @@
+# Fase 1 — Fonte única de legislação
+
+- [x] Criar base legal tipada e hook com reserva síncrona (14 assuntos).
+- [x] Substituir citações dos assuntos autorizados nos arquivos indicados, preservando outras normas e lógica (ControleSubstancias sem mudança: apenas normas fora da lista).
+- [x] Rodar testes existentes, verificar build e listar arquivos e citações fora do escopo (22 testes unitários passaram; 3 testes antigos de rótulos falharam; suíte E2E bloqueada por Chromium incompatível; verificação com sessão real passou em rotulagem, relatório mensal e fornecedores).
+
+Sem banco, Edge Functions ou publicação.
+
 # Revisão dos textos de identificação e integridade
 
 - [x] Corrigir as alegações nos nove arquivos solicitados, sem mudar campos, registros ou hashes (34 substituições).

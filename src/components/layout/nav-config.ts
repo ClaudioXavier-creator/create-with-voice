@@ -73,7 +73,7 @@ export const NAV_ENTRIES: NavEntry[] = [
   { path: "/dashboard", label: "Dashboard Principal", icon: LayoutDashboard },
   { path: "/cadastro", label: "Dados da Empresa", icon: Building2 },
 
-  // --- POPs (SEQUÊNCIA OFICIAL IN 04/2007 — 09 POPs + PAC) ---
+  // --- POPs (SEQUÊNCIA OFICIAL baseLegal: bpf_geral — 09 POPs + PAC) ---
   {
     label: "POP 01 - Qualificação de Fornecedores",
     icon: Users,

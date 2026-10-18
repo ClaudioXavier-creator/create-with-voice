@@ -1,3 +1,4 @@
+import { getBaseLegal } from "@/config/baseLegal";
 import { useState, useEffect } from "react";
 import {
   Factory,
@@ -52,7 +53,7 @@ interface ProdRow {
   contraprova_quantidade?: string;
 }
 
-const TEMPO_MISTURA_MINIMO = 3; // minutos — padrão IN 04/2007
+const TEMPO_MISTURA_MINIMO = 3; // minutos — padrão baseLegal: bpf_geral
 
 export default function Producao() {
   const { user } = useAuth();
@@ -232,7 +233,7 @@ export default function Producao() {
     setOpen(true);
   };
 
-  // Registros de produção não são excluídos (Decreto 12.031/2024) — correção via NC
+  // Registros de produção não são excluídos (baseLegal: decreto_base) — correção via NC
 
   const fetchProdutos = async () => {
     try {
@@ -308,7 +309,7 @@ export default function Producao() {
   const handleAdd = async () => {
     if (!produto || !user) return;
     if (tempoMistura && !tempoMisturaValido()) {
-      toast.error(`⚠️ Tempo de mistura mínimo: ${TEMPO_MISTURA_MINIMO} min para garantir homogeneidade (IN 04/2007).`);
+      toast.error(`⚠️ Tempo de mistura mínimo: ${TEMPO_MISTURA_MINIMO} min para garantir homogeneidade (${getBaseLegal("bpf_geral").citacao}).`);
       return;
     }
     setSaving(true);
@@ -408,7 +409,7 @@ export default function Producao() {
       <PageHeader
         icon={Factory}
         title="POP 05 - Controle de Produção"
-        description="Registro de fabricação, tempo de mistura e sobras — IN 04/2007 e IN 15/2009"
+        description={`Registro de fabricação, tempo de mistura e sobras — ${getBaseLegal("bpf_geral").citacao} e IN 15/2009`}
         orientacaoModuloId="producao"
       />
 
@@ -653,10 +654,10 @@ export default function Producao() {
                     )}
                   </div>
 
-                  {/* Retenção de Amostra de Contraprova — autocontrole (Decreto 12.031/2024, art. 40) */}
+                  {/* Retenção de Amostra de Contraprova — autocontrole (baseLegal: amostra_arquivo) */}
                   <div className="p-3 rounded-lg border border-blue-300 bg-blue-50 dark:bg-blue-900/10 space-y-3">
                     <p className="text-sm font-semibold flex items-center gap-2">
-                      🧪 Retenção de Amostra (Contraprova) — autocontrole (Decreto 12.031/2024, art. 40)
+                      🧪 Retenção de Amostra (Contraprova) — {getBaseLegal("amostra_arquivo").citacao}
                     </p>
                     <p className="text-[10px] text-muted-foreground">
                       Reter amostra testemunha de cada lote produzido pelo prazo de validade do produto + 30 dias para
@@ -807,7 +808,7 @@ export default function Producao() {
             </p>
             <p>
               <strong>⏱️ Homogeneidade:</strong> Tempo mínimo de mistura de {TEMPO_MISTURA_MINIMO} min conforme
-              validação da IN 04/2007. Registros abaixo deste valor são sinalizados.
+              validação da {getBaseLegal("bpf_geral").citacao}. Registros abaixo deste valor são sinalizados.
             </p>
             <p>
               <strong>🧹 Sobras:</strong> Registre todas as sobras/vassouras e seu destino (reprocesso ou descarte)

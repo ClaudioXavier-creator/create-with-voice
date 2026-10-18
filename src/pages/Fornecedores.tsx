@@ -1,3 +1,4 @@
+import { getBaseLegal } from "@/config/baseLegal";
 import { STATUS_CONFIG, ESTADOS_BR } from "@/components/fornecedores/constants";
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
@@ -365,7 +366,7 @@ export default function Fornecedores() {
       <PageHeader
         icon={Users}
         title="POP 01 - Qualificação de Fornecedores"
-        description="Cadastro e avaliação de fornecedores conforme IN 04/2007"
+        description={`Cadastro e avaliação de fornecedores conforme ${getBaseLegal("bpf_geral").citacao}`}
         orientacaoModuloId="fornecedores"
       />
 
@@ -376,7 +377,7 @@ export default function Fornecedores() {
             <p className="font-semibold text-sm">🏛️ Validar fornecedor no MAPA/SIPEAGRO</p>
             <p className="text-xs text-muted-foreground mt-1">
               Lista oficial atualizada semanalmente. Consulte por CNPJ, Razão Social ou nº de registro antes de aprovar
-              fornecedores de insumos para alimentação animal (registro de estabelecimentos — IN 17/2020).
+              fornecedores de insumos para alimentação animal (registro de estabelecimentos — {getBaseLegal("registro_estabelecimento").citacao}).
             </p>
           </div>
           <div className="flex flex-col sm:flex-row gap-2 shrink-0">
@@ -587,7 +588,7 @@ export default function Fornecedores() {
 
                     {/* SIPEAGRO */}
                     <div className="p-3 rounded-lg border bg-muted/20 space-y-3">
-                      <p className="text-sm font-semibold flex items-center gap-2">🏛️ Registro SIPEAGRO — IN 17/2020</p>
+                      <p className="text-sm font-semibold flex items-center gap-2">🏛️ Registro SIPEAGRO — {getBaseLegal("registro_estabelecimento").citacao}</p>
                       <p className="text-[10px] text-muted-foreground">
                         Estabelecimentos fornecedores de insumos para alimentação animal devem possuir registro no
                         SIPEAGRO/MAPA.

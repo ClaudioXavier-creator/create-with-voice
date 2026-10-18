@@ -1,9 +1,10 @@
+import { getBaseLegal } from "@/config/baseLegal";
 /**
  * Documentos obrigatórios por POP conforme:
- * - IN MAPA 04/2007 (POPs de BPF para fábricas de alimentos para animais)
- * - Decreto 12.031/2024 (autocontrole e rastreabilidade)
+ * - baseLegal: bpf_geral (POPs de BPF para fábricas de alimentos para animais)
+ * - baseLegal: autocontrole (autocontrole e rastreabilidade)
  * - IN 15/2009 (validação de limpeza)
- * - IN 17/2017 (substâncias controladas)
+ * - baseLegal: substancias_proibidas (substâncias controladas)
  *
  * Estrutura usada tanto no tutorial (checklist visual) quanto pela IA
  * de análise do acervo (contexto do prompt).
@@ -126,10 +127,10 @@ export const DOCS_OBRIGATORIOS_POP: PopObrigatorios[] = [
     documentos: [
       { nome: "Manual BPF assinado e datado", descricao: "Documento-mestre com todos os POPs referenciados.", criticidade: "essencial" },
       { nome: "Matriz de risco (APPCC/HACCP)", descricao: "PCCs identificados, limites críticos, monitoramento.", criticidade: "essencial" },
-      { nome: "Relatório de autocontrole (Decreto 12.031)", descricao: "9 seções, geração anual.", criticidade: "essencial" },
+      { nome: `Relatório de autocontrole (${getBaseLegal("autocontrole").citacao})`, descricao: "9 seções, geração anual.", criticidade: "essencial" },
       { nome: "Plano de recall documentado", descricao: "Simulação anual registrada.", criticidade: "importante" },
       { nome: "Registro de treinamento da equipe em BPF", descricao: "Anual, com avaliação.", criticidade: "essencial" },
-      { nome: "Auditoria interna anual", descricao: "Checklist Decreto 12.031/2024 + plano de ação.", criticidade: "essencial" },
+      { nome: "Auditoria interna anual", descricao: `Checklist ${getBaseLegal("autocontrole").citacao} + plano de ação.`, criticidade: "essencial" },
     ],
   },
 ];

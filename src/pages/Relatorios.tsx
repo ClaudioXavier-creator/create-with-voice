@@ -1,3 +1,4 @@
+import { getBaseLegal } from "@/config/baseLegal";
 import { useState, useEffect } from "react";
 import {
   FileDown,
@@ -42,7 +43,7 @@ const MODULOS = [
   "Controle de Pragas",
   "Treinamentos",
   "Execução ITs/POPs",
-  "Checklist Decreto 12.031",
+  `Checklist ${getBaseLegal("decreto_base").norma.split("/")[0]}`,
 ];
 
 const EXPORT_MODULES = [
@@ -395,7 +396,7 @@ export default function Relatorios() {
 @page{size:A4;margin:18mm 15mm}*{margin:0;padding:0;box-sizing:border-box}body{font-family:Arial,sans-serif;font-size:10pt;color:#1a1a1a;line-height:1.5}.pb{page-break-before:always}.hdr{text-align:center;border-bottom:3px solid #1a5f2a;padding-bottom:12px;margin-bottom:18px}.hdr h1{font-size:15pt;color:#1a5f2a;letter-spacing:1px}.hdr h2{font-size:11pt;color:#333;font-weight:normal}.hdr .sub{font-size:8pt;color:#666;margin-top:3px}.sec{margin-bottom:14px}.st{font-size:11pt;font-weight:bold;color:#1a5f2a;border-bottom:2px solid #1a5f2a;padding-bottom:3px;margin-bottom:8px}.sn{display:inline-block;background:#1a5f2a;color:#fff;width:20px;height:20px;text-align:center;border-radius:50%;font-size:9pt;line-height:20px;margin-right:6px}table{width:100%;border-collapse:collapse;margin:6px 0;font-size:9pt}th{background:#1a5f2a;color:#fff;padding:5px 7px;text-align:left;font-size:8pt;text-transform:uppercase}td{padding:4px 7px;border-bottom:1px solid #ddd}tr:nth-child(even){background:#f5f9f6}.kg{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:8px 0}.k{background:#f5f9f6;border:1px solid #c8e0cc;border-radius:6px;padding:8px;text-align:center}.kv{font-size:18pt;font-weight:bold;color:#1a5f2a}.kl{font-size:7pt;color:#666;text-transform:uppercase}.ig{display:grid;grid-template-columns:1fr 1fr;gap:3px 16px;margin:6px 0}.ii{font-size:9pt}.ii b{color:#333}.bo{background:#d4edda;color:#155724;padding:2px 6px;border-radius:10px;font-size:8pt;font-weight:bold}.bw{background:#fff3cd;color:#856404;padding:2px 6px;border-radius:10px;font-size:8pt;font-weight:bold}.conc{border:2px solid #1a5f2a;border-radius:8px;padding:14px;margin-top:16px;background:#f5f9f6}.sig{margin-top:24px;text-align:center}.sl{border-top:1px solid #333;width:280px;margin:32px auto 3px}.ft{margin-top:14px;text-align:center;font-size:7pt;color:#999;border-top:1px solid #ddd;padding-top:6px}.ab{background:#fff3cd;border:1px solid #ffc107;border-radius:6px;padding:8px;margin:6px 0}.nd{color:#999;font-style:italic;font-size:9pt;padding:6px 0}
 </style></head><body>
 
-<div class="hdr"><h1>RELAT&Oacute;RIO ANUAL DE AUTOCONTROLE</h1><h2>${esc(emp.nome)} &mdash; Ano ${anualAno}</h2><div class="sub">Programa de Autocontrole (PAC/BPF) &mdash; IN 04/2007 | Decreto 12.031/2024</div><div class="sub">Gerado em ${dataGeracao} pelo Sistema FeedBPF</div></div>
+<div class="hdr"><h1>RELAT&Oacute;RIO ANUAL DE AUTOCONTROLE</h1><h2>${esc(emp.nome)} &mdash; Ano ${anualAno}</h2><div class="sub">Programa de Autocontrole (PAC/BPF) &mdash; ${getBaseLegal("bpf_geral").citacao} | ${getBaseLegal("autocontrole").citacao}</div><div class="sub">Gerado em ${dataGeracao} pelo Sistema FeedBPF</div></div>
 
 <div class="sec"><div class="st"><span class="sn">1</span>Identifica&ccedil;&atilde;o da Empresa</div>
 <div class="ig"><div class="ii"><b>Raz&atilde;o Social:</b> ${esc(emp.nome) || "&mdash;"}</div><div class="ii"><b>CNPJ:</b> ${esc(emp.cnpj) || "&mdash;"}</div><div class="ii"><b>Endere&ccedil;o:</b> ${esc(emp.endereco) || "&mdash;"}</div><div class="ii"><b>Registro MAPA:</b> ${emp.crmv ? "SIF vinculado" : "&mdash;"}</div><div class="ii"><b>RT:</b> ${esc(anualRtNome || emp.responsavel_tecnico) || "&mdash;"}</div><div class="ii"><b>CRMV:</b> ${esc(anualRtCrmv || emp.crmv) || "&mdash;"}</div><div class="ii"><b>Produ&ccedil;&atilde;o:</b> ${esc((emp.tipo_producao || []).join(", ")) || "&mdash;"}</div><div class="ii"><b>Capacidade:</b> ${esc(emp.capacidade) || "&mdash;"}</div></div></div>
@@ -456,12 +457,12 @@ ${recallAtivos.length > 0 ? `<div class="ab">&#9888; ${recallAtivos.length} reca
 <p style="font-size:9pt;margin-top:6px;"><b>Reclama&ccedil;&otilde;es:</b> ${reclam.length}${reclam.length > 0 ? ` (${reclam.filter((r: any) => r.status === "fechada" || r.status === "concluida").length} conclu&iacute;da(s))` : ""}</p></div>
 
 <div class="conc"><div class="st"><span class="sn">9</span>Conclus&atilde;o T&eacute;cnica</div>
-<p style="font-size:10pt;line-height:1.7;text-align:justify;">O presente relat&oacute;rio consolida as atividades de autocontrole da <b>${esc(emp.nome)}</b> durante <b>${anualAno}</b>, conforme BPF (IN 04/2007, Decreto 12.031/2024).</p>
+<p style="font-size:10pt;line-height:1.7;text-align:justify;">O presente relat&oacute;rio consolida as atividades de autocontrole da <b>${esc(emp.nome)}</b> durante <b>${anualAno}</b>, conforme BPF (${getBaseLegal("bpf_geral").citacao}, ${getBaseLegal("autocontrole").citacao}).</p>
 <p style="font-size:10pt;line-height:1.7;text-align:justify;margin-top:6px;">Foram produzidos <b>${prod.length} lotes</b>, realizadas <b>${analises.length} an&aacute;lises</b>, <b>${treins.length} treinamentos</b> para <b>${funcionariosTreinados} colaborador(es)</b> e tratadas <b>${ncs.length} NC(s)</b>${ncFechadas > 0 ? ` (${ncFechadas} encerrada(s))` : ""}.${recallAtivos.length === 0 ? " N&atilde;o houve recall." : " Houve " + recallAtivos.length + " recall(s)."}</p>
-<p style="font-size:10pt;line-height:1.7;text-align:justify;margin-top:6px;">Os registros atendem IN 04/2007, IN 15/2009, IN 22/2009 e Decreto 12.031/2024.</p>
+<p style="font-size:10pt;line-height:1.7;text-align:justify;margin-top:6px;">Os registros atendem ${getBaseLegal("bpf_geral").citacao}, IN 15/2009, ${getBaseLegal("rotulagem").citacao} e ${getBaseLegal("decreto_base").citacao}.</p>
 <div class="sig"><div class="sl"></div><p style="font-size:10pt;font-weight:bold;">${esc(anualRtNome || emp.responsavel_tecnico || "Respons&aacute;vel T&eacute;cnico")}</p><p style="font-size:9pt;">CRMV: ${esc(anualRtCrmv || emp.crmv) || "&mdash;"}</p><p style="font-size:8pt;color:#666;margin-top:3px;">[Registro com identificação do responsável, data e hora &mdash; ${now.toISOString()}]</p></div></div>
 
-<div class="ft"><p>Relat&oacute;rio Anual de Autocontrole &mdash; ${esc(emp.nome)} &mdash; ${anualAno}</p><p>BPF_Consult &mdash; ${dataGeracao}</p><p>IN 04/2007 | IN 15/2009 | Decreto 12.031/2024</p></div>
+<div class="ft"><p>Relat&oacute;rio Anual de Autocontrole &mdash; ${esc(emp.nome)} &mdash; ${anualAno}</p><p>BPF_Consult &mdash; ${dataGeracao}</p><p>${getBaseLegal("bpf_geral").citacao} | IN 15/2009 | ${getBaseLegal("autocontrole").citacao}</p></div>
 ${(() => {
   const ts = new Date();
   const dt = ts.toLocaleString("pt-BR", {
@@ -481,7 +482,7 @@ ${(() => {
       <div><strong>Relat&oacute;rio Anual de Autocontrole</strong> &mdash; ${anualAno}<br/>Empresa: ${esc(emp.nome)}</div>
       <div style="text-align:right;">Emitido em: <strong>${dt}</strong><br/><span style="font-family:monospace;color:#1a1a2e;">INTEGRIDADE: ${hash}</span></div>
     </div>
-    <div style="margin-top:4px;font-size:8px;color:#888;">Registro com identificação do responsável, data e hora; selo de integridade &mdash; Decreto 12.031/2024 (art. 40, §3º).</div>
+    <div style="margin-top:4px;font-size:8px;color:#888;">Registro com identificação do responsável, data e hora; selo de integridade &mdash; ${getBaseLegal("autocontrole").norma} (${getBaseLegal("autocontrole").artigo}, §3º).</div>
   </div>`;
 })()}
 </body></html>`;
@@ -531,10 +532,10 @@ ${(() => {
       const dataHora = now.toLocaleString("pt-BR");
       const dataLabel = now.toISOString().slice(0, 10);
 
-      // Header Art. 18 — Decreto 12.031/2024
+      // Header Art. 18 — baseLegal: decreto_base
       let fullCsv = "";
       fullCsv += `RELATÓRIO DE REGISTROS — SISTEMA BPF\n`;
-      fullCsv += `Art. 18 do Decreto 12.031/2024 — Disponibilização de registros ao SIF/MAPA\n`;
+      fullCsv += `Art. 18 do ${getBaseLegal("decreto_base").citacao} — Disponibilização de registros ao SIF/MAPA\n`;
       fullCsv += `Data/Hora de Geração: ${dataHora}\n`;
       fullCsv += `Módulos incluídos: ${modulesToExport.map((m) => m.label).join(", ")}\n`;
       fullCsv += `Total de módulos: ${modulesToExport.length}\n`;
@@ -580,7 +581,7 @@ ${(() => {
       fullCsv += `\n========================================\n`;
       fullCsv += `FIM DO RELATÓRIO\n`;
       fullCsv += `Gerado em: ${dataHora}\n`;
-      fullCsv += `Decreto 12.031/2024 — Art. 18: Os registros devem estar disponíveis ao SIF em formato organizado.\n`;
+      fullCsv += `${getBaseLegal("decreto_base").citacao} — Art. 18: Os registros devem estar disponíveis ao SIF em formato organizado.\n`;
       fullCsv += `Este documento é parte integrante do programa de autocontrole (PAC/BPF).\n`;
       fullCsv += `========================================\n`;
 
@@ -692,7 +693,7 @@ ${(() => {
                 </DialogHeader>
                 <p className="text-sm text-muted-foreground">
                   Gera o Relatório Anual de Atividades conforme o autocontrole e os registros auditáveis exigidos pelo{" "}
-                  <strong>Decreto 12.031/2024 (arts. 39 e 40)</strong>, consolidando todos os registros do ano
+                  <strong>{getBaseLegal("autocontrole").citacao} (arts. 39 e 40)</strong>, consolidando todos os registros do ano
                   selecionado.
                 </p>
                 <div className="space-y-4 mt-2">
@@ -766,7 +767,7 @@ ${(() => {
               </DialogTrigger>
               <DialogContent className="max-w-md">
                 <DialogHeader>
-                  <DialogTitle>Exportar Relatório — Art. 18 Decreto 12.031/2024</DialogTitle>
+                  <DialogTitle>Exportar Relatório — Art. 18 {getBaseLegal("decreto_base").citacao}</DialogTitle>
                 </DialogHeader>
                 <p className="text-sm text-muted-foreground">
                   Selecione os módulos para gerar relatório organizado conforme exigência do MAPA (Art. 18).
@@ -832,7 +833,7 @@ ${(() => {
                           const cols = Object.keys(labels);
                           gerarRelatorioPDF({
                             title: `Relatório — ${mod.label}`,
-                            subtitle: "Art. 18 do Decreto 12.031/2024",
+                            subtitle: `Art. 18 do ${getBaseLegal("decreto_base").citacao}`,
                             columns: cols.map((c) => ({ header: labels[c], accessor: c })),
                             data: (data || []) as Record<string, unknown>[],
                           });

@@ -1,3 +1,4 @@
+import { getBaseLegal } from "@/config/baseLegal";
 import { useState, useEffect, useMemo } from "react";
 import { BarChart3, Download, Loader2, Calendar, Building2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -221,7 +222,7 @@ export default function RelatorioProducao() {
     csv += `Estabelecimento: ${empresaNome}\n`;
     csv += `CNPJ: ${empresaCnpj}\n`;
     csv += `Registro SIPEAGRO/MAPA: ${empresaRegistroSipeagro || "N/I"}\n`;
-    csv += `Conforme Decreto 12.031/2024 — Art. 39, III\n\n`;
+    csv += `Conforme ${getBaseLegal("relatorio_producao_mensal").citacao}\n\n`;
 
     for (const tab of Object.keys(TAB_LABELS) as AtividadeTab[]) {
       const total = getTotal(tab);
@@ -234,7 +235,7 @@ export default function RelatorioProducao() {
       csv += `Total,${total > 0 ? total.toFixed(2).replace(".", ",") : "0,00"}\n`;
     }
 
-    csv += `\n--- Relatório gerado conforme modelo de relatório de produção do MAPA (Decreto 12.031/2024, art. 39, III) ---\n`;
+    csv += `\n--- Relatório gerado conforme modelo de relatório de produção do MAPA (${getBaseLegal("relatorio_producao_mensal").citacao}) ---\n`;
     csv += `Data de geração: ${new Date().toLocaleString("pt-BR")}\n`;
 
     const BOM = "\uFEFF";
@@ -313,7 +314,7 @@ export default function RelatorioProducao() {
       <PageHeader
         icon={BarChart3}
         title="Relatório Mensal de Produção — SIPEAGRO"
-        description="Lançamento mensal conforme relatório de produção mensal do MAPA (Decreto 12.031/2024, art. 39, III; envio até o 10º dia do mês seguinte) — Produção, Importação, Exportação e Fracionamento"
+        description={`Lançamento mensal conforme relatório de produção mensal do MAPA (${getBaseLegal("relatorio_producao_mensal").citacao}; ${getBaseLegal("relatorio_producao_mensal").observacao}) — Produção, Importação, Exportação e Fracionamento`}
       />
 
       {/* SIPEAGRO Header Info */}
@@ -336,7 +337,7 @@ export default function RelatorioProducao() {
                 </div>
                 <div>
                   <span className="text-muted-foreground">Base Legal:</span>{" "}
-                  <strong>Decreto 12.031/2024 — Art. 39, III</strong>
+                  <strong>{getBaseLegal("relatorio_producao_mensal").citacao}</strong>
                 </div>
               </div>
             </div>

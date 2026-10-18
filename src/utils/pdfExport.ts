@@ -3,7 +3,7 @@
  * Uses a hidden iframe to render styled HTML, then triggers print-to-PDF.
  *
  * Todos os relatórios incluem registro com identificação do responsável, data e hora
- * e selo de integridade (Decreto 12.031/2024, art. 40, §3º).
+ * e selo de integridade (baseLegal: autocontrole, §3º).
  */
 
 import { gerarCarimboSync, carimboHTML } from "./carimboDocumento";
