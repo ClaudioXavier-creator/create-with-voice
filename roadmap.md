@@ -1,3 +1,9 @@
+# Integrações de agentes
+
+- [ ] Adicionar MCP protegido com leituras por empresa e consentimento OAuth, sem ampliar permissões.
+- [ ] Adicionar ferramentas de leitura na tela de empresas; validar testes, catálogo e tela de consentimento.
+- [ ] Solicitar republicação após validar o catálogo; não publicar automaticamente.
+
 # Fase 1C — Limpeza dos resíduos nas telas
 
 - [x] Corrigir somente frases incompletas, parênteses e pontuação nas telas; preservar normas removidas, limites, códigos internos, documentos, Manual, dados e layout.
