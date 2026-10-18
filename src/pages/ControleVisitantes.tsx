@@ -40,10 +40,7 @@ export default function ControleVisitantes() {
   const { data: visitantes = [] } = useQuery({
     queryKey: ["controle-visitantes", empresaAtiva?.id],
     queryFn: async () => {
-      const q = supabase
-        .from("controle_visitantes")
-        .select("*")
-        .order("data_visita", { ascending: false });
+      const q = supabase.from("controle_visitantes").select("*").order("data_visita", { ascending: false });
       if (empresaAtiva?.id) q.eq("empresa_id", empresaAtiva.id);
       const { data, error } = await q;
       if (error) throw error;
@@ -93,47 +90,95 @@ export default function ControleVisitantes() {
         title="POP 03 - Controle de Visitantes"
         description="Registro de entrada e biosseguridade de visitantes"
         orientacaoModuloId="visitantes"
-       assuntoBaseLegal="bpf_geral" />
+        assuntoBaseLegal="bpf_geral"
+      />
 
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-        <Card><CardContent className="pt-4 text-center">
-          <Users className="mx-auto h-6 w-6 text-primary mb-1" />
-          <p className="text-2xl font-bold">{visitantes.length}</p>
-          <p className="text-xs text-muted-foreground">Total de Visitas</p>
-        </CardContent></Card>
-        <Card><CardContent className="pt-4 text-center">
-          <ShieldCheck className="mx-auto h-6 w-6 text-green-500 mb-1" />
-          <p className="text-2xl font-bold text-green-600">{visitantes.filter(v => v.orientacao_biosseguridade).length}</p>
-          <p className="text-xs text-muted-foreground">Com Orientação Bio</p>
-        </CardContent></Card>
-        <Card><CardContent className="pt-4 text-center">
-          <ClipboardCheck className="mx-auto h-6 w-6 text-blue-500 mb-1" />
-          <p className="text-2xl font-bold">{visitantes.filter(v => v.epi_fornecido).length}</p>
-          <p className="text-xs text-muted-foreground">EPI Fornecido</p>
-        </CardContent></Card>
+        <Card>
+          <CardContent className="pt-4 text-center">
+            <Users className="mx-auto h-6 w-6 text-primary mb-1" />
+            <p className="text-2xl font-bold">{visitantes.length}</p>
+            <p className="text-xs text-muted-foreground">Total de Visitas</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="pt-4 text-center">
+            <ShieldCheck className="mx-auto h-6 w-6 text-green-500 mb-1" />
+            <p className="text-2xl font-bold text-green-600">
+              {visitantes.filter((v) => v.orientacao_biosseguridade).length}
+            </p>
+            <p className="text-xs text-muted-foreground">Com Orientação Bio</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="pt-4 text-center">
+            <ClipboardCheck className="mx-auto h-6 w-6 text-blue-500 mb-1" />
+            <p className="text-2xl font-bold">{visitantes.filter((v) => v.epi_fornecido).length}</p>
+            <p className="text-xs text-muted-foreground">EPI Fornecido</p>
+          </CardContent>
+        </Card>
       </div>
 
       <div className="flex justify-end">
         <Dialog open={openDialog} onOpenChange={setOpenDialog}>
           <DialogTrigger asChild>
-            <Button><Plus className="w-4 h-4 mr-1" /> Registrar Visitante</Button>
+            <Button>
+              <Plus className="w-4 h-4 mr-1" /> Registrar Visitante
+            </Button>
           </DialogTrigger>
           <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
-            <DialogHeader><DialogTitle>Registro de Visitante</DialogTitle></DialogHeader>
+            <DialogHeader>
+              <DialogTitle>Registro de Visitante</DialogTitle>
+            </DialogHeader>
             <div className="grid gap-3">
-              <div><Label>Nome do Visitante</Label><Input value={nome} onChange={e => setNome(e.target.value)} /></div>
+              <div>
+                <Label>Nome do Visitante</Label>
+                <Input value={nome} onChange={(e) => setNome(e.target.value)} />
+              </div>
               <div className="grid grid-cols-2 gap-3">
-                <div><Label>Empresa</Label><Input value={empresa} onChange={e => setEmpresa(e.target.value)} /></div>
-                <div><Label>Documento (RG/CPF)</Label><Input value={documento} onChange={e => setDocumento(e.target.value)} /></div>
+                <div>
+                  <Label>Empresa</Label>
+                  <Input value={empresa} onChange={(e) => setEmpresa(e.target.value)} />
+                </div>
+                <div>
+                  <Label>Documento (RG/CPF)</Label>
+                  <Input value={documento} onChange={(e) => setDocumento(e.target.value)} />
+                </div>
               </div>
-              <div className="grid grid-cols-3 gap-3">
-                <div><Label>Data</Label><Input type="date" value={dataVisita} onChange={e => setDataVisita(e.target.value)} /></div>
-                <div><Label>Entrada</Label><Input type="time" value={horaEntrada} onChange={e => setHoraEntrada(e.target.value)} /></div>
-                <div><Label>Saída</Label><Input type="time" value={horaSaida} onChange={e => setHoraSaida(e.target.value)} /></div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                <div>
+                  <Label>Data</Label>
+                  <Input type="date" value={dataVisita} onChange={(e) => setDataVisita(e.target.value)} />
+                </div>
+                <div>
+                  <Label>Entrada</Label>
+                  <Input type="time" value={horaEntrada} onChange={(e) => setHoraEntrada(e.target.value)} />
+                </div>
+                <div>
+                  <Label>Saída</Label>
+                  <Input type="time" value={horaSaida} onChange={(e) => setHoraSaida(e.target.value)} />
+                </div>
               </div>
-              <div><Label>Motivo da Visita</Label><Input value={motivo} onChange={e => setMotivo(e.target.value)} placeholder="Ex: Auditoria, Manutenção, Entrega" /></div>
-              <div><Label>Áreas Visitadas</Label><Input value={areasVisitadas} onChange={e => setAreasVisitadas(e.target.value)} placeholder="Ex: Produção, Laboratório" /></div>
-              <div><Label>Acompanhante (Funcionário)</Label><Input value={acompanhante} onChange={e => setAcompanhante(e.target.value)} /></div>
+              <div>
+                <Label>Motivo da Visita</Label>
+                <Input
+                  value={motivo}
+                  onChange={(e) => setMotivo(e.target.value)}
+                  placeholder="Ex: Auditoria, Manutenção, Entrega"
+                />
+              </div>
+              <div>
+                <Label>Áreas Visitadas</Label>
+                <Input
+                  value={areasVisitadas}
+                  onChange={(e) => setAreasVisitadas(e.target.value)}
+                  placeholder="Ex: Produção, Laboratório"
+                />
+              </div>
+              <div>
+                <Label>Acompanhante (Funcionário)</Label>
+                <Input value={acompanhante} onChange={(e) => setAcompanhante(e.target.value)} />
+              </div>
               <div className="flex items-center gap-6">
                 <label className="flex items-center gap-2 text-sm">
                   <Switch checked={epiFornecido} onCheckedChange={setEpiFornecido} />
@@ -144,15 +189,22 @@ export default function ControleVisitantes() {
                   Orientação de Biosseguridade
                 </label>
               </div>
-              <div><Label>Observações</Label><Textarea value={obs} onChange={e => setObs(e.target.value)} rows={2} /></div>
-              <Button onClick={() => addVisitante.mutate()} disabled={!nome}>Salvar</Button>
+              <div>
+                <Label>Observações</Label>
+                <Textarea value={obs} onChange={(e) => setObs(e.target.value)} rows={2} />
+              </div>
+              <Button onClick={() => addVisitante.mutate()} disabled={!nome}>
+                Salvar
+              </Button>
             </div>
           </DialogContent>
         </Dialog>
       </div>
 
       <Card>
-        <CardHeader><CardTitle className="text-base">Registro de Visitantes</CardTitle></CardHeader>
+        <CardHeader>
+          <CardTitle className="text-base">Registro de Visitantes</CardTitle>
+        </CardHeader>
         <CardContent>
           <div className="overflow-x-auto">
             <Table>
@@ -170,19 +222,59 @@ export default function ControleVisitantes() {
               </TableHeader>
               <TableBody>
                 {visitantes.length === 0 && (
-                  <TableRow><TableCell colSpan={8} className="text-center text-muted-foreground py-8">Nenhum visitante registrado</TableCell></TableRow>
+                  <TableRow>
+                    <TableCell colSpan={8} className="text-center text-muted-foreground py-8">
+                      Nenhum visitante registrado
+                    </TableCell>
+                  </TableRow>
                 )}
-                {visitantes.map(v => (
+                {visitantes.map((v) => (
                   <TableRow key={v.id}>
                     <TableCell className="whitespace-nowrap">{v.data_visita}</TableCell>
                     <TableCell className="font-medium">{v.nome_visitante}</TableCell>
                     <TableCell className="text-xs">{v.empresa || "—"}</TableCell>
-                    <TableCell className="text-xs">{v.hora_entrada || "—"} — {v.hora_saida || "—"}</TableCell>
+                    <TableCell className="text-xs">
+                      {v.hora_entrada || "—"} — {v.hora_saida || "—"}
+                    </TableCell>
                     <TableCell className="text-xs max-w-[120px] truncate">{v.motivo || "—"}</TableCell>
-                    <TableCell>{v.epi_fornecido ? <Badge variant="default" className="text-xs">Sim</Badge> : <Badge variant="secondary" className="text-xs">Não</Badge>}</TableCell>
-                    <TableCell>{v.orientacao_biosseguridade ? <Badge variant="default" className="text-xs">Sim</Badge> : <Badge variant="secondary" className="text-xs">Não</Badge>}</TableCell>
                     <TableCell>
-                      <Button variant="ghost" size="sm" className="gap-1 text-xs" title="Registros não são excluídos — correção via Não Conformidade" onClick={() => corrigirViaNC(navigate, { tabela: "controle_visitantes", registroId: v.id, descricao: `Visitante: ${v.nome_visitante}${v.empresa ? ` (${v.empresa})` : ""} — visita em ${v.data_visita}` })}><FileWarning className="w-4 h-4 text-primary" /> Corrigir via NC</Button>
+                      {v.epi_fornecido ? (
+                        <Badge variant="default" className="text-xs">
+                          Sim
+                        </Badge>
+                      ) : (
+                        <Badge variant="secondary" className="text-xs">
+                          Não
+                        </Badge>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      {v.orientacao_biosseguridade ? (
+                        <Badge variant="default" className="text-xs">
+                          Sim
+                        </Badge>
+                      ) : (
+                        <Badge variant="secondary" className="text-xs">
+                          Não
+                        </Badge>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="gap-1 text-xs"
+                        title="Registros não são excluídos — correção via Não Conformidade"
+                        onClick={() =>
+                          corrigirViaNC(navigate, {
+                            tabela: "controle_visitantes",
+                            registroId: v.id,
+                            descricao: `Visitante: ${v.nome_visitante}${v.empresa ? ` (${v.empresa})` : ""} — visita em ${v.data_visita}`,
+                          })
+                        }
+                      >
+                        <FileWarning className="w-4 h-4 text-primary" /> Corrigir via NC
+                      </Button>
                     </TableCell>
                   </TableRow>
                 ))}
