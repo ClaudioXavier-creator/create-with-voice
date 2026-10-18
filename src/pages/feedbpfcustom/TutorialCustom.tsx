@@ -1,3 +1,4 @@
+import { textoTela } from "@/lib/textoTela";
 import { Link } from "react-router-dom";
 import {
   GraduationCap,
@@ -262,7 +263,7 @@ export default function TutorialCustom() {
             <h2 className="text-xl font-bold flex items-center gap-2">
               <ClipboardList className="w-5 h-5 text-emerald-600" /> Documentos obrigatórios por POP
             </h2>
-            <p className="text-sm text-muted-foreground">Baseado na +<strong>{contarObrigatoriosEssenciais()} documentos essenciais</strong> no total</p>
+            <p className="text-sm text-muted-foreground"><strong>{contarObrigatoriosEssenciais()} documentos essenciais</strong> no total</p>
           </div>
           <Button asChild size="sm" className="bg-emerald-600 hover:bg-emerald-700">
             <Link to="/feedbpf-custom/analise-ia">
@@ -303,7 +304,7 @@ export default function TutorialCustom() {
                           {icon}
                           <div className="flex-1 min-w-0">
                             <p className="font-medium">{doc.nome}</p>
-                            <p className="text-xs text-muted-foreground">{doc.descricao}</p>
+                            <p className="text-xs text-muted-foreground">{textoTela(doc.descricao)}</p>
                           </div>
                           <Badge variant="outline" className={`text-[10px] uppercase shrink-0 ${cor}`}>{doc.criticidade}</Badge>
                         </li>

@@ -1,3 +1,4 @@
+import { BaseLegalBadge } from "@/components/BaseLegalBadge";
 import { useState, useEffect, useRef } from "react";
 import { Loader2, Printer, Download, Save, RefreshCw, Settings, Eye, Send, FileText, FileDown } from "lucide-react";
 import { exportRotuloDocx } from "@/utils/rotuloDocxExport";
@@ -1325,7 +1326,7 @@ export default function RotuloEditor({ produtoId, produtoNome }: Props) {
           {/* Identificação */}
           <Card>
             <CardContent className="pt-6 space-y-4">
-              <h3 className="font-semibold text-foreground text-sm">Identificação do Produto</h3>
+              <h3 className="font-semibold text-foreground text-sm">Identificação do Produto <BaseLegalBadge assunto="rotulagem" /></h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <div><Label className="text-xs">Nome Comercial</Label><Input value={rotulo.nome_comercial} onChange={(e) => updateField("nome_comercial", e.target.value)} /></div>
                 <div>
