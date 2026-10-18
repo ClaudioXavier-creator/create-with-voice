@@ -354,6 +354,7 @@ export default function Legislacao() {
             .map((t) => t.trim())
             .filter(Boolean)
         : [],
+      slug: isAdminEmpresa && normaForm.slug ? normaForm.slug : null,
     };
 
     const { error } = await supabase.from("normas_legislacao").insert(payload as any);
@@ -388,6 +389,7 @@ export default function Legislacao() {
       arquivo_nome: "",
       arquivo_url: "",
       tags: "",
+      slug: "",
     });
   };
 
@@ -685,6 +687,11 @@ export default function Legislacao() {
                         <TableCell className="font-mono text-xs font-medium">{norma.codigo || "—"}</TableCell>
                         <TableCell className="max-w-xs">
                           <p className="font-medium text-sm truncate">{norma.titulo}</p>
+                          {norma.slug && (
+                            <Badge variant="outline" className="text-[10px] mt-1">
+                              Assunto: {norma.slug}
+                            </Badge>
+                          )}
                           {norma.tags && norma.tags.length > 0 && (
                             <div className="flex gap-1 mt-1 flex-wrap">
                               {norma.tags.map((tag, i) => (
@@ -1618,6 +1625,31 @@ export default function Legislacao() {
                 onChange={(e) => setNormaForm((prev) => ({ ...prev, tags: e.target.value }))}
               />
             </div>
+
+            {isAdminEmpresa && (
+              <div>
+                <Label className="text-xs">Assunto (slug) — opcional</Label>
+                <Select
+                  value={normaForm.slug || "nenhum"}
+                  onValueChange={(v) => setNormaForm((prev) => ({ ...prev, slug: v === "nenhum" ? "" : v }))}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="nenhum">Nenhum</SelectItem>
+                    {ASSUNTOS_BASE_LEGAL.map((a) => (
+                      <SelectItem key={a} value={a}>
+                        {a}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <p className="text-[11px] text-muted-foreground mt-1">
+                  Vincula esta norma a um assunto da base legal; o botão "Base legal" das telas passa a mostrar esta norma.
+                </p>
+              </div>
+            )}
 
             {/* File upload */}
             <div>
