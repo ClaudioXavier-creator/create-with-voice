@@ -322,7 +322,7 @@ export default function QualidadeTotal() {
           </TabsTrigger>
           <TabsTrigger value="contraprova">
             <ShieldCheck className="w-4 h-4 mr-1" />
-            Contraprova ({getBaseLegal("bpf_geral").citacao})
+            Contraprova ({getBaseLegal("amostra_arquivo").citacao})
           </TabsTrigger>
         </TabsList>
 
@@ -875,11 +875,11 @@ export default function QualidadeTotal() {
                 <ShieldCheck className="w-6 h-6 text-primary mt-0.5" />
                 <div>
                   <h4 className="font-display font-semibold text-sm">
-                    Amostras de Contraprova (Retenção) — {getBaseLegal("bpf_geral").citacao}
+                    Amostras de Contraprova (Retenção) — {getBaseLegal("amostra_arquivo").citacao}
                   </h4>
                   <p className="text-xs text-muted-foreground mt-1">
                     Controle de amostras de retenção com validade de 6 meses. Registros do Recebimento de MP e Produção
-                    com contraprova retida. Essencial para defesa em fiscalizações (autocontrole — {getBaseLegal("autocontrole").citacao}.
+                    com contraprova retida. Essencial para defesa em fiscalizações (autocontrole — {getBaseLegal("amostra_arquivo").citacao}).
                   </p>
                 </div>
               </div>

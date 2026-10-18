@@ -873,7 +873,7 @@ export default function Rastreabilidade() {
           titulo: `Balanço de Massa Quantitativo — ${dataGeracao}`,
           tipo: "digital",
           modulo: "rastreabilidade",
-          descricao: `Balanço quantitativo com ${lotes.size} lotes. Entrada: ${fmtKg(totEntrada)} kg | Produzido: ${fmtKg(totProduzido)} kg | Expedido: ${fmtKg(totSaida)} kg. ${getBaseLegal("rastreabilidade").citacao} Art. 18.`,
+          descricao: `Balanço quantitativo com ${lotes.size} lotes. Entrada: ${fmtKg(totEntrada)} kg | Produzido: ${fmtKg(totProduzido)} kg | Expedido: ${fmtKg(totSaida)} kg. ${getBaseLegal("rastreabilidade").norma} Art. 18.`,
           data_geracao: dataGeracao,
           status: "ativo",
         });
@@ -1030,7 +1030,7 @@ export default function Rastreabilidade() {
             <h1 class="text-2xl font-bold text-emerald-800 uppercase tracking-tight">Certificado de Rastreabilidade</h1>
             <h2 class="text-lg font-semibold text-gray-600 mt-1">${empresaNome}</h2>
             <div class="inline-block px-4 py-1 bg-emerald-800 text-white text-[10px] font-bold rounded mt-2 uppercase">
-              ${getBaseLegal("rastreabilidade").citacao} — Art. 18 | ${getBaseLegal("bpf_geral").citacao}
+              ${getBaseLegal("rastreabilidade").norma} — Art. 18 | ${getBaseLegal("bpf_geral").citacao}
             </div>
           </div>
 
@@ -1133,7 +1133,7 @@ export default function Rastreabilidade() {
 
           <div class="mt-10 pt-4 border-t border-gray-200 text-center text-[9px] text-gray-500 italic space-y-1">
             <p>Documento emitido em ${dataEmissao} pelo sistema BPF Digital.</p>
-            <p>Conformidade: ${getBaseLegal("rastreabilidade").citacao} (Art. 18) • ${getBaseLegal("bpf_geral").citacao} (MAPA) • Rastreabilidade bidirecional comprovada eletronicamente.</p>
+            <p>Conformidade: ${getBaseLegal("rastreabilidade").norma} (Art. 18) • ${getBaseLegal("bpf_geral").citacao} (MAPA) • Rastreabilidade bidirecional comprovada eletronicamente.</p>
           </div>
         </div>
       </div>
@@ -1175,7 +1175,7 @@ export default function Rastreabilidade() {
         titulo: `Certificado de Rastreabilidade — Lote ${certLote}`,
         tipo: "digital",
         modulo: "rastreabilidade",
-        descricao: `Certificado formal do lote ${certLote} (${produto}). ${getBaseLegal("rastreabilidade").citacao} Art. 18.`,
+        descricao: `Certificado formal do lote ${certLote} (${produto}). ${getBaseLegal("rastreabilidade").norma} Art. 18.`,
         data_geracao: new Date().toISOString().split("T")[0],
         status: "ativo",
       });
@@ -2778,7 +2778,7 @@ export default function Rastreabilidade() {
                           </Select>
                         </div>
                         <div>
-                          <Label>Nº SIF/DIPOA do Ingrediente (rastreabilidade — {getBaseLegal("rastreabilidade").citacao}, art. 41) *</Label>
+                          <Label>Nº SIF/DIPOA do Ingrediente (rastreabilidade — {getBaseLegal("rastreabilidade").citacao}) *</Label>
                           <Input
                             value={sifDipoa}
                             onChange={(e) => setSifDipoa(e.target.value)}
@@ -2870,7 +2870,7 @@ export default function Rastreabilidade() {
                       </div>
                     )}
                     <p className="text-[10px] text-muted-foreground mt-2">
-                      Reter por no mínimo validade do produto + 30 dias ({getBaseLegal("bpf_geral").citacao}).
+                      Reter por no mínimo validade do produto + 30 dias ({getBaseLegal("amostra_arquivo").citacao}; {getBaseLegal("amostra_arquivo").observacao}).
                     </p>
                   </div>
 
@@ -3144,7 +3144,7 @@ export default function Rastreabilidade() {
             {recallStatus === "concluido" && (
               <div className="p-3 rounded-lg border-2 border-green-600/30 bg-green-50 dark:bg-green-900/10 space-y-3">
                 <p className="text-xs font-semibold text-green-800 flex items-center gap-1">
-                  ✅ Encerramento do Recall — Registro obrigatório do destino (POP-09 / {getBaseLegal("decreto_base").citacao})
+                  ✅ Encerramento do Recall — Registro obrigatório do destino (POP-09 / {getBaseLegal("recolhimento_recall").citacao})
                 </p>
                 <div>
                   <Label className="text-xs">Destino do produto reprovado/devolvido *</Label>
@@ -3410,7 +3410,7 @@ export default function Rastreabilidade() {
           <div className="space-y-4">
             <p className="text-xs text-muted-foreground">
               Documento formal por lote PA: composição, fornecedores, contraprova, destinos e assinatura RT. Atende
-              {getBaseLegal("rastreabilidade").citacao} (Art. 18) e clientes/auditores que solicitam comprovante.
+              {getBaseLegal("rastreabilidade").norma} (Art. 18) e clientes/auditores que solicitam comprovante.
             </p>
             <div>
               <Label>Lote PA</Label>
@@ -3545,7 +3545,7 @@ export default function Rastreabilidade() {
           </div>
 
           <div className="mt-8 text-[8px] text-gray-400 italic text-center">
-            Este mapa de rastreabilidade foi gerado automaticamente e atende ao Art. 18 do {getBaseLegal("rastreabilidade").citacao} e ao POP
+            Este mapa de rastreabilidade foi gerado automaticamente e atende ao Art. 18 do {getBaseLegal("rastreabilidade").norma} e ao POP
             05.
           </div>
         </div>

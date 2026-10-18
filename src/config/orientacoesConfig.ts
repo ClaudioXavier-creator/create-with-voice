@@ -200,7 +200,7 @@ export const ORIENTACOES: ModuloOrientacao[] = [
     rota: "/substancias",
     descricao:
       "Controle de substâncias proibidas na alimentação animal (nitrofuranos, cloranfenicol e outras da lista oficial do MAPA).",
-    base_legal: [`${getBaseLegal("substancias_proibidas").citacao}`, `${getBaseLegal("substancias_proibidas").citacao}`, `${getBaseLegal("substancias_proibidas").citacao}`, `${getBaseLegal("substancias_proibidas").citacao}`],
+    base_legal: [getBaseLegal("substancias_proibidas").citacao],
     passos: [
       { titulo: "1. Cadastrar análise", descricao: "Selecione MP, lote e substância a ser monitorada." },
       { titulo: "2. Limite máximo", descricao: "Sistema preenche automaticamente o limite legal." },
@@ -513,7 +513,7 @@ export const ORIENTACOES: ModuloOrientacao[] = [
     titulo: "Produtos / Rótulos / RTPI",
     rota: "/produtos",
     descricao: "Cadastro de produtos com Ficha Técnica, Rótulo e RTPI (18 campos).",
-    base_legal: [`${getBaseLegal("rotulagem").citacao}`, `${getBaseLegal("rotulagem").citacao} — Rotulagem`],
+    base_legal: [getBaseLegal("rotulagem").citacao],
     passos: [
       { titulo: "1. Cadastro básico", descricao: "Nome, marca, classificação, espécie alvo, registro MAPA." },
       {
@@ -656,7 +656,7 @@ export const ORIENTACOES: ModuloOrientacao[] = [
     titulo: "Controle Integrado de Pragas",
     rota: "/pragas",
     descricao: "MIP — monitoramento, aplicação, mapa de iscas e expurgo.",
-    base_legal: [`${getBaseLegal("bpf_geral").citacao}`, "RDC ANVISA 622/2022"],
+    base_legal: [`${getBaseLegal("bpf_geral").citacao}`, getBaseLegal("controle_pragas").citacao],
     passos: [
       { titulo: "1. Cadastrar mapa de iscas", descricao: "Numere e mapeie pontos no croqui." },
       { titulo: "2. Monitoramento semanal", descricao: "Registre consumo, tipo de praga e ações." },

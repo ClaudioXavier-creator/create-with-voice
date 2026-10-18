@@ -585,7 +585,7 @@ export default function Legislacao() {
           </TabsTrigger>
           <TabsTrigger value="rotulagem">
             <FileText className="w-4 h-4 mr-1" />
-            {getBaseLegal("rotulagem").citacao}
+            {getBaseLegal("rotulagem").norma}
           </TabsTrigger>
           <TabsTrigger value="substancias">
             <ShieldAlert className="w-4 h-4 mr-1" />
@@ -1056,7 +1056,7 @@ export default function Legislacao() {
           </Card>
         </TabsContent>
 
-        {/* ──── Tab: IN 17/2017 — Rotulagem e Níveis de Garantia ──── */}
+        {/* ──── Tab: baseLegal: rotulagem — Rotulagem e Níveis de Garantia ──── */}
         <TabsContent value="rotulagem" className="space-y-4">
           <Card className="border-primary/20 bg-primary/5">
             <CardContent className="pt-4">
@@ -1068,7 +1068,7 @@ export default function Legislacao() {
                   </h4>
                   <p className="text-xs text-muted-foreground mt-1">
                     A {getBaseLegal("rotulagem").citacao} do MAPA estabelece as diretrizes de rotulagem para produtos
-                    destinados à alimentação animal, complementando a {getBaseLegal("rotulagem").citacao} e IN 12/2004 com requisitos específicos
+                    destinados à alimentação animal. Referência adicional: IN 12/2004, com requisitos específicos
                     para fabricantes.
                   </p>
                 </div>
@@ -1200,7 +1200,7 @@ export default function Legislacao() {
                     </h4>
                     <p className="text-xs text-muted-foreground mt-1">
                       Referência normativa: {getBaseLegal("decreto_base").citacao}, {getBaseLegal("alimentos_medicados").citacao}, {getBaseLegal("pneeb").citacao}, IN
-                      13/2004, {getBaseLegal("substancias_proibidas").citacao}, {getBaseLegal("substancias_proibidas").citacao}, {getBaseLegal("substancias_proibidas").citacao}. Lista atualizada conforme publicações do MAPA/SDA.
+                      13/2004, {getBaseLegal("substancias_proibidas").citacao}. Lista atualizada conforme publicações do MAPA/SDA.
                     </p>
                   </div>
                 </div>

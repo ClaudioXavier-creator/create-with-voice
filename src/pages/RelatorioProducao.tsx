@@ -235,7 +235,7 @@ export default function RelatorioProducao() {
       csv += `Total,${total > 0 ? total.toFixed(2).replace(".", ",") : "0,00"}\n`;
     }
 
-    csv += `\n--- Relatório gerado conforme modelo de relatório de produção do MAPA (${getBaseLegal("relatorio_producao_mensal").citacao} ---\n`;
+    csv += `\n--- Relatório gerado conforme modelo de relatório de produção do MAPA (${getBaseLegal("relatorio_producao_mensal").citacao}) ---\n`;
     csv += `Data de geração: ${new Date().toLocaleString("pt-BR")}\n`;
 
     const BOM = "\uFEFF";
@@ -314,7 +314,7 @@ export default function RelatorioProducao() {
       <PageHeader
         icon={BarChart3}
         title="Relatório Mensal de Produção — SIPEAGRO"
-        description={`Lançamento mensal conforme relatório de produção mensal do MAPA (${getBaseLegal("relatorio_producao_mensal").citacao}; envio até o 10º dia do mês seguinte) — Produção, Importação, Exportação e Fracionamento`}
+        description={`Lançamento mensal conforme relatório de produção mensal do MAPA (${getBaseLegal("relatorio_producao_mensal").citacao}; ${getBaseLegal("relatorio_producao_mensal").observacao}) — Produção, Importação, Exportação e Fracionamento`}
       />
 
       {/* SIPEAGRO Header Info */}
