@@ -785,7 +785,7 @@ export default function PCP() {
                   </p>
                 )}
 
-                {/* Procedimentos de Flushing — IN 15/2009 */}
+                {/* Procedimentos de Flushing */}
                 <div className="mt-4 p-3 rounded-lg border bg-muted/30">
                   <p className="text-xs font-semibold mb-2">📋 Procedimentos de Flushing </p>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
@@ -1239,7 +1239,8 @@ export default function PCP() {
                                   <Droplets className="w-4 h-4" /> Ordem de Limpeza (Flush) </p>
                                 <p className="text-[10px] text-muted-foreground mt-1">
                                   Registro obrigatório de limpeza entre batidas de fórmulas diferentes para prevenir
-                                  contaminação cruzada.
+                                  contaminação cruzada. Use plano de sequenciamento validado ou limpeza validada, a partir
+                                  da matriz de sensibilidade ({citar798("art. 25, II")}).
                                 </p>
                               </div>
                               {(() => {
@@ -1715,7 +1716,16 @@ export default function PCP() {
               </div>
               <div>
                 <Label>Resultado (%)</Label>
-                <Input value={coResultado} onChange={(e) => setCoResultado(e.target.value)} placeholder="Ex: 0,8" />
+                <Input
+                  value={coResultado}
+                  onChange={(e) => {
+                    const v = e.target.value;
+                    setCoResultado(v);
+                    const num = (x: string) => Number(x.replace(",", "."));
+                    if (v.trim()) setCoConforme(resultadoDentroDoLimite(num(v), num(coLimite) || LIMITE_CARRY_OVER_PERCENT));
+                  }}
+                  placeholder="Ex: 0,8"
+                />
               </div>
             </div>
             <p className="text-[10px] text-muted-foreground">
@@ -1850,7 +1860,7 @@ export default function PCP() {
               </div>
             </div>
 
-            {/* ── CHECKLIST DE VALIDAÇÃO — IN 15/2009 ── */}
+            {/* ── CHECKLIST DE VALIDAÇÃO ── */}
             <div className="p-3 rounded-lg border-2 border-blue-500/30 bg-blue-50 dark:bg-blue-900/10 space-y-2">
               <p className="text-xs font-bold text-blue-700 dark:text-blue-400 flex items-center gap-1">
                 <CheckCircle2 className="w-4 h-4" /> Checklist de Validação de Limpeza </p>
@@ -1981,7 +1991,7 @@ export default function PCP() {
                   .filter(([, v]) => v)
                   .map(([k]) => k);
                 const obs = [
-                  `[VALIDAÇÃO DE LIMPEZA DE LINHA — IN 15/2009]`,
+                  `[VALIDAÇÃO DE LIMPEZA DE LINHA — ${citar798("art. 29")}]`,
                   `Data: ${flushData} | Início: ${flushHoraInicio || "—"} | Fim: ${flushHoraFim || "—"}`,
                   `Responsável: ${flushResp}`,
                   `Tipo: ${flushTipo === "vassouragem" ? "Vassouragem" : flushTipo === "flushing" ? "Flushing" : flushTipo === "lavagem" ? "Lavagem completa" : "Sanitização"}`,
