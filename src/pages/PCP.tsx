@@ -1,4 +1,7 @@
 import { getBaseLegal } from "@/config/baseLegal";
+import { VinculoMedicadoOrdem } from "@/components/medicados/VinculoMedicadoOrdem";
+import { ReceitasMedicadosSection, ProgramasSanitariosSection } from "@/components/medicados/MedicadosSections";
+import { podeLiberarOrdemMedicada } from "@/components/medicados/regras";
 import { citar798, REGRAS_CARRY_OVER, LIMITE_CARRY_OVER_PERCENT, REPETICOES_EXIGIDAS, avaliarValidacaoCarryOver, lerRepeticao, resultadoDentroDoLimite } from "@/config/carryOver798";
 import { statusConfig, prioridadeConfig } from "@/components/pcp/constants";
 import { useState, useEffect } from "react";
@@ -62,6 +65,9 @@ interface OrdemProd {
   motivo_retrabalho: string | null;
   quantidade_sobra: string | null;
   destino_sobra: string | null;
+  medicada?: boolean;
+  receita_medicado_id?: string | null;
+  programa_sanitario_id?: string | null;
 }
 
 interface FormulaItem {
@@ -105,6 +111,12 @@ export default function PCP() {
   const [numOrdem, setNumOrdem] = useState("");
   const [produto, setProduto] = useState("");
   const [formulaId, setFormulaId] = useState<string>("");
+  const [fabricaMedicamentos, setFabricaMedicamentos] = useState(false);
+  useEffect(() => {
+    if (!empresaAtiva?.id) { setFabricaMedicamentos(false); return; }
+    supabase.from("empresas").select("fabrica_medicamentos").eq("id", empresaAtiva.id).maybeSingle()
+      .then(({ data }) => setFabricaMedicamentos(!!data?.fabrica_medicamentos));
+  }, [empresaAtiva?.id]);
   const [formulaNome, setFormulaNome] = useState("");
   const [lotePA, setLotePA] = useState("");
   const [qtdProgramada, setQtdProgramada] = useState("");
@@ -333,6 +345,7 @@ export default function PCP() {
         tempo_mistura_padrao_minutos: parseInt(tempoMisturaPadrao) || 3,
         tipo_embalagem: tipoEmbalagem,
         local_armazenamento: localArmazenamento,
+        medicada: !!formulasDisponiveis.find((f: any) => f.id === formulaId)?.medicada,
         status: "programada",
       } as any)
       .select()
@@ -466,6 +479,21 @@ export default function PCP() {
 
   const handleUpdateStatus = async (id: string, newStatus: string) => {
     if (!user) return;
+    const ordemAlvo = ordens.find((o) => o.id === id);
+    if (newStatus === "em_producao" && ordemAlvo?.medicada) {
+      const [rec, prog] = await Promise.all([
+        ordemAlvo.receita_medicado_id
+          ? supabase.from("receitas_medicados").select("status, data_emissao, validade").eq("id", ordemAlvo.receita_medicado_id).maybeSingle()
+          : Promise.resolve({ data: null }),
+        ordemAlvo.programa_sanitario_id
+          ? supabase.from("programas_sanitarios").select("status, data_ultima_revisao").eq("id", ordemAlvo.programa_sanitario_id).maybeSingle()
+          : Promise.resolve({ data: null }),
+      ]);
+      if (!podeLiberarOrdemMedicada(true, rec.data as any, prog.data as any)) {
+        toast.error("Ordem com fórmula medicada: vincule uma receita válida ou um programa sanitário vigente antes de liberar.");
+        return;
+      }
+    }
     const { error } = await supabase
       .from("ordens_producao")
       .update({ status: newStatus } as any)
@@ -1124,6 +1152,15 @@ export default function PCP() {
                                   <FichaProducaoDigital ordemId={o.id} />
                                 </DialogContent>
                               </Dialog>
+                              {o.medicada && (o.status || "programada") === "programada" && (
+                                <VinculoMedicadoOrdem
+                                  ordemId={o.id}
+                                  empresaId={empresaAtiva?.id ?? null}
+                                  receitaId={o.receita_medicado_id ?? null}
+                                  programaId={o.programa_sanitario_id ?? null}
+                                  onChange={fetchData}
+                                />
+                              )}
                               <Select
                                 value={o.status || "programada"}
                                 onValueChange={(v) => handleUpdateStatus(o.id, v)}
@@ -2056,6 +2093,12 @@ export default function PCP() {
       <div className="mt-6">
         <TemposMisturaSection />
       </div>
+      {fabricaMedicamentos && (
+        <div className="mt-6 grid grid-cols-1 gap-6">
+          <ReceitasMedicadosSection />
+          <ProgramasSanitariosSection />
+        </div>
+      )}
     </>
   );
 }
