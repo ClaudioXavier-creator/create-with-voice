@@ -1,4 +1,58 @@
-/** Reserva local da base legal. Na Fase 2, os slugs identificam normas na tabela. */
+/** Catálogo local e reserva por assunto; os slugs identificam documentos na biblioteca. */
+export type SituacaoNorma = "vigente" | "revogada" | "parcial";
+
+export interface NormaLegal {
+  readonly codigo: string;
+  readonly titulo: string;
+  readonly orgao: string;
+  readonly situacao: SituacaoNorma;
+  readonly substituida_por?: string;
+  readonly link_oficial: string;
+  readonly observacao?: string;
+}
+
+const MAPA_ALIMENTACAO = "https://www.gov.br/agricultura/pt-br/assuntos/insumos-agropecuarios/insumos-pecuarios/alimentacao-animal/";
+const MAPA_LEGISLACAO = `${MAPA_ALIMENTACAO}arquivos-alimentacao-animal/legislacao/`;
+
+/** Normas históricas permanecem identificadas; não substituem os assuntos vigentes abaixo. */
+export const NORMAS = {
+  "Lei 6.198/1974": { codigo: "Lei 6.198/1974", titulo: "Inspeção e fiscalização de produtos para alimentação animal", orgao: "Presidência da República", situacao: "vigente", link_oficial: `${MAPA_LEGISLACAO}Lei6.198alteradapela145152022.pdf` },
+  "Lei 14.515/2022": { codigo: "Lei 14.515/2022", titulo: "Autocontrole e defesa agropecuária", orgao: "Presidência da República", situacao: "vigente", link_oficial: "https://www.planalto.gov.br/ccivil_03/_ato2019-2022/2022/lei/L14515.htm" },
+  "Decreto 12.031/2024": { codigo: "Decreto 12.031/2024", titulo: "Fiscalização de produtos para alimentação animal", orgao: "Presidência da República", situacao: "parcial", substituida_por: "Decreto 12.502/2025", observacao: "Arts. 116 e 118 revogados pelo Decreto 12.502/2025; demais disposições preservadas.", link_oficial: "https://www.planalto.gov.br/ccivil_03/_ato2023-2026/2024/decreto/d12031.htm" },
+  "Decreto 12.126/2024": { codigo: "Decreto 12.126/2024", titulo: "Programas de autocontrole e fiscalização baseada em risco", orgao: "Presidência da República", situacao: "vigente", link_oficial: "https://www.planalto.gov.br/ccivil_03/_ato2023-2026/2024/decreto/d12126.htm" },
+  "Decreto 12.502/2025": { codigo: "Decreto 12.502/2025", titulo: "Processo administrativo de fiscalização agropecuária", orgao: "Presidência da República", situacao: "vigente", link_oficial: `${MAPA_ALIMENTACAO}DECRETON12.502DE11DEJUNHODE2025DECRETON12.502DE11DEJUNHODE2025DOUImprensaNacional.pdf` },
+  "IN 4/2007": { codigo: "IN 4/2007", titulo: "Boas práticas de fabricação de alimentação animal", orgao: "MAPA", situacao: "parcial", substituida_por: "IN 27/2020", observacao: "Itens 10.1 a 10.3 e Anexo II revogados pela IN 27/2020.", link_oficial: `${MAPA_LEGISLACAO}instrucao-normativa-no-4-de-23-de-fevereiro-de-2007.pdf` },
+  "IN 27/2020": { codigo: "IN 27/2020", titulo: "Procedimentos de fiscalização da alimentação animal", orgao: "MAPA", situacao: "vigente", link_oficial: `${MAPA_LEGISLACAO}INM000000272020.pdf` },
+  "IN 15/2009": { codigo: "IN 15/2009", titulo: "Registro de estabelecimentos e produtos de alimentação animal", orgao: "MAPA", situacao: "vigente", link_oficial: `${MAPA_ALIMENTACAO}arquivos-alimentacao-animal/copy_of_INM000000151.pdf` },
+  "IN 17/2020": { codigo: "IN 17/2020", titulo: "Registro e cadastro eletrônico de estabelecimentos e produtos", orgao: "MAPA", situacao: "vigente", link_oficial: `${MAPA_LEGISLACAO}copy2_of_INM00000017.pdf` },
+  "IN 22/2009": { codigo: "IN 22/2009", titulo: "Embalagem, rotulagem e propaganda de alimentação animal", orgao: "MAPA", situacao: "vigente", link_oficial: `${MAPA_ALIMENTACAO}copy2_of_InstruoNormativan222009consolidada2.pdf` },
+  "IN 138/2022": { codigo: "IN 138/2022", titulo: "Risco estimado e frequência de fiscalização", orgao: "SDA/MAPA", situacao: "vigente", link_oficial: `${MAPA_ALIMENTACAO}arquivos-alimentacao-animal/INSTRUONORMATIVASDAN138DE8DEFEVEREIRODE2022caraterizaoderisco.pdf` },
+  "IN 1/2020": { codigo: "IN 1/2020", titulo: "Proibição de tilosina, lincomicina e tiamulina como melhoradores de desempenho", orgao: "MAPA", situacao: "vigente", link_oficial: `${MAPA_LEGISLACAO}INM000000012020.pdf` },
+  "IN 45/2016": { codigo: "IN 45/2016", titulo: "Proibição de colistina como melhorador de desempenho", orgao: "MAPA", situacao: "vigente", link_oficial: `${MAPA_LEGISLACAO}instrucao-normativa-no-45-de-22-de-novembro-de-2016.pdf` },
+  "IN 14/2012": { codigo: "IN 14/2012", titulo: "Proibição de espiramicina e eritromicina como melhoradores de desempenho", orgao: "MAPA", situacao: "vigente", link_oficial: `${MAPA_LEGISLACAO}instrucao-normativa-no-14-de-17-de-maio-de-2012.pdf` },
+  "Portaria SDA 798/2023": { codigo: "Portaria SDA 798/2023", titulo: "Fabricação e uso de alimentos medicados", orgao: "SDA/MAPA", situacao: "vigente", link_oficial: `${MAPA_ALIMENTACAO}POR00000798alteradapelaPortaria1231de2025.pdf` },
+  "Portaria SDA 1.180/2024": { codigo: "Portaria SDA 1.180/2024", titulo: "PNEEB — prevenção e vigilância da encefalopatia espongiforme bovina", orgao: "SDA/MAPA", situacao: "vigente", link_oficial: `${MAPA_ALIMENTACAO}POR00001180.pdf` },
+  "Portaria GM/MS 888/2021": { codigo: "Portaria GM/MS 888/2021", titulo: "Controle da qualidade e padrão de potabilidade da água", orgao: "Ministério da Saúde", situacao: "vigente", link_oficial: "https://bvsms.saude.gov.br/bvs/saudelegis/gm/2021/prt0888_07_05_2021.html" },
+  "RDC ANVISA 622/2022": { codigo: "RDC ANVISA 622/2022", titulo: "Empresas de controle de vetores e pragas urbanas", orgao: "ANVISA", situacao: "vigente", link_oficial: "https://www.gov.br/anvisa/pt-br/assuntos/regulamentacao/legislacao", observacao: "Link para o portal oficial de legislação da ANVISA." },
+  "CONAMA 430/2011": { codigo: "CONAMA 430/2011", titulo: "Condições e padrões de lançamento de efluentes", orgao: "CONAMA/MMA", situacao: "vigente", link_oficial: "https://conama.mma.gov.br/?option=com_sisconama&task=arquivo.download&id=627" },
+  "Decreto 6.296/2007": { codigo: "Decreto 6.296/2007", titulo: "Regulamento anterior da alimentação animal", orgao: "Presidência da República", situacao: "revogada", substituida_por: "Decreto 12.031/2024", link_oficial: "https://www.planalto.gov.br/ccivil_03/_ato2007-2010/2007/decreto/d6296.htm" },
+  "IN 65/2006": { codigo: "IN 65/2006", titulo: "Regulamento anterior de alimentos medicados", orgao: "MAPA", situacao: "revogada", substituida_por: "Portaria SDA 798/2023", link_oficial: `${MAPA_ALIMENTACAO}legislacao-alimentacao-animal`, observacao: "Link para o índice oficial do MAPA; substituta disponível no catálogo." },
+  "RDC ANVISA 52/2009": { codigo: "RDC ANVISA 52/2009", titulo: "Regulamento anterior de controle de vetores e pragas urbanas", orgao: "ANVISA", situacao: "revogada", substituida_por: "RDC ANVISA 622/2022", link_oficial: "https://www.gov.br/anvisa/pt-br/assuntos/regulamentacao/legislacao", observacao: "Link para o portal oficial de legislação da ANVISA." },
+  "Portaria SDA 651/2022": { codigo: "Portaria SDA 651/2022", titulo: "Norma anterior de prevenção e vigilância da EEB", orgao: "SDA/MAPA", situacao: "revogada", substituida_por: "Portaria SDA 1.180/2024", link_oficial: `${MAPA_ALIMENTACAO}legislacao-alimentacao-animal`, observacao: "Link para o índice oficial do MAPA; substituta disponível no catálogo." },
+} as const satisfies Record<string, NormaLegal>;
+
+export type CodigoNorma = keyof typeof NORMAS;
+
+/** Apenas formata a norma solicitada: não inventa dispositivos nem troca normas históricas. */
+export function citar(codigo: CodigoNorma, dispositivo?: string): string {
+  if (!Object.prototype.hasOwnProperty.call(NORMAS, codigo)) {
+    throw new Error(`Norma não cadastrada na base legal: ${codigo}`);
+  }
+  const norma = NORMAS[codigo];
+  const complemento = dispositivo?.trim();
+  return complemento ? `${norma.codigo}, ${complemento}` : norma.codigo;
+}
+
 export interface BaseLegal {
   readonly norma: string;
   readonly artigo: string;
