@@ -1,7 +1,21 @@
 import { STATUS_CONFIG, ESTADOS_BR } from "@/components/fornecedores/constants";
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Users, Plus, Loader2, Star, AlertCircle, CheckCircle2, Clock, FileText, Download, Printer, ExternalLink, Search, Edit } from "lucide-react";
+import {
+  Users,
+  Plus,
+  Loader2,
+  Star,
+  AlertCircle,
+  CheckCircle2,
+  Clock,
+  FileText,
+  Download,
+  Printer,
+  ExternalLink,
+  Search,
+  Edit,
+} from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
@@ -72,10 +86,6 @@ interface RecebimentoRow {
   aprovado: boolean | null;
 }
 
-
-
-
-
 export default function Fornecedores() {
   const { user } = useAuth();
   const { empresaAtiva } = useEmpresa();
@@ -132,7 +142,11 @@ export default function Fornecedores() {
   const fetchData = async () => {
     if (!user) return;
     let fornQ = supabase.from("fornecedores").select("*, auditorias:fornecedor_auditorias(*)").order("nome");
-    let recQ = supabase.from("recebimento_mp").select("id, data, fornecedor, materia_prima, lote, aprovado").order("data", { ascending: false }).limit(100);
+    let recQ = supabase
+      .from("recebimento_mp")
+      .select("id, data, fornecedor, materia_prima, lote, aprovado")
+      .order("data", { ascending: false })
+      .limit(100);
     if (empresaAtiva) {
       fornQ = fornQ.eq("empresa_id", empresaAtiva.id);
       recQ = recQ.eq("empresa_id", empresaAtiva.id);
@@ -143,28 +157,62 @@ export default function Fornecedores() {
     setLoading(false);
   };
 
-  useEffect(() => { fetchData(); }, [user, empresaAtiva]);
+  useEffect(() => {
+    fetchData();
+  }, [user, empresaAtiva]);
 
   const resetForm = () => {
-    setNome(""); setCnpj(""); setEndereco(""); setBairro(""); setCep(""); setCidade(""); setEstado("");
-    setInscricaoEstadual(""); setRegistroMapa(""); setContatoQualidade(""); setContatoQualidadeTelEmail("");
-    setContatoComercial(""); setContatoComercialTelEmail(""); setProdutosFornecidos(""); setTipoProduto("");
-    setDocCertRegistroMapa(false); setDocAlvara(false); setDocCertRegistroProduto(false);
-    setDocFichaTecnica(false); setDocCertAnalise(false); setResultadoQualificacao("pendente");
-    setObservacoes(""); setRegistroSipeagro(""); setSipeagroVerificado(false);
-    setDataAvaliacao(new Date().toISOString().split("T")[0]); setFormTab("dados");
+    setNome("");
+    setCnpj("");
+    setEndereco("");
+    setBairro("");
+    setCep("");
+    setCidade("");
+    setEstado("");
+    setInscricaoEstadual("");
+    setRegistroMapa("");
+    setContatoQualidade("");
+    setContatoQualidadeTelEmail("");
+    setContatoComercial("");
+    setContatoComercialTelEmail("");
+    setProdutosFornecidos("");
+    setTipoProduto("");
+    setDocCertRegistroMapa(false);
+    setDocAlvara(false);
+    setDocCertRegistroProduto(false);
+    setDocFichaTecnica(false);
+    setDocCertAnalise(false);
+    setResultadoQualificacao("pendente");
+    setObservacoes("");
+    setRegistroSipeagro("");
+    setSipeagroVerificado(false);
+    setDataAvaliacao(new Date().toISOString().split("T")[0]);
+    setFormTab("dados");
   };
 
   const handleAdd = async () => {
     if (!nome || !user) return;
     setSaving(true);
     const payload = {
-      user_id: user.id, empresa_id: empresaAtiva?.id || null, nome, cnpj, endereco, contato: contatoQualidade, email: contatoQualidadeTelEmail,
-      tipo_produto: tipoProduto, observacoes,
-      bairro, cep, cidade, estado, inscricao_estadual: inscricaoEstadual,
-      registro_mapa: registroMapa, contato_qualidade: contatoQualidade,
+      user_id: user.id,
+      empresa_id: empresaAtiva?.id || null,
+      nome,
+      cnpj,
+      endereco,
+      contato: contatoQualidade,
+      email: contatoQualidadeTelEmail,
+      tipo_produto: tipoProduto,
+      observacoes,
+      bairro,
+      cep,
+      cidade,
+      estado,
+      inscricao_estadual: inscricaoEstadual,
+      registro_mapa: registroMapa,
+      contato_qualidade: contatoQualidade,
       contato_qualidade_tel_email: contatoQualidadeTelEmail,
-      contato_comercial: contatoComercial, contato_comercial_tel_email: contatoComercialTelEmail,
+      contato_comercial: contatoComercial,
+      contato_comercial_tel_email: contatoComercialTelEmail,
       produtos_fornecidos: produtosFornecidos,
       doc_certificado_registro_mapa: docCertRegistroMapa,
       doc_alvara_funcionamento: docAlvara,
@@ -180,24 +228,47 @@ export default function Fornecedores() {
 
     let error;
     if (selectedId) {
-        ({ error } = await supabase.from("fornecedores").update(payload).eq("id", selectedId));
+      ({ error } = await supabase.from("fornecedores").update(payload).eq("id", selectedId));
     } else {
-        ({ error } = await supabase.from("fornecedores").insert(payload));
+      ({ error } = await supabase.from("fornecedores").insert(payload));
     }
 
     if (error) toast.error("Erro ao salvar");
-    else { toast.success(selectedId ? "Fornecedor atualizado!" : "Fornecedor cadastrado!"); setOpen(false); resetForm(); fetchData(); }
+    else {
+      toast.success(selectedId ? "Fornecedor atualizado!" : "Fornecedor cadastrado!");
+      setOpen(false);
+      resetForm();
+      fetchData();
+    }
     setSaving(false);
   };
 
   const handleEdit = (f: FornecedorRow) => {
     setSelectedId(f.id);
-    setNome(f.nome || ""); setCnpj(f.cnpj || ""); setEndereco(f.endereco || ""); setBairro(f.bairro || ""); setCep(f.cep || ""); setCidade(f.cidade || ""); setEstado(f.estado || "");
-    setInscricaoEstadual(f.inscricao_estadual || ""); setRegistroMapa(f.registro_mapa || ""); setContatoQualidade(f.contato_qualidade || ""); setContatoQualidadeTelEmail(f.contato_qualidade_tel_email || "");
-    setContatoComercial(f.contato_comercial || ""); setContatoComercialTelEmail(f.contato_comercial_tel_email || ""); setProdutosFornecidos(f.produtos_fornecidos || ""); setTipoProduto(f.tipo_produto || "");
-    setDocCertRegistroMapa(!!f.doc_certificado_registro_mapa); setDocAlvara(!!f.doc_alvara_funcionamento); setDocCertRegistroProduto(!!f.doc_certificado_registro_produto);
-    setDocFichaTecnica(!!f.doc_ficha_tecnica); setDocCertAnalise(!!f.doc_certificado_analise); setResultadoQualificacao(f.resultado_qualificacao || "pendente");
-    setObservacoes(f.observacoes || ""); setRegistroSipeagro(f.registro_sipeagro || ""); setSipeagroVerificado(!!f.sipeagro_verificado);
+    setNome(f.nome || "");
+    setCnpj(f.cnpj || "");
+    setEndereco(f.endereco || "");
+    setBairro(f.bairro || "");
+    setCep(f.cep || "");
+    setCidade(f.cidade || "");
+    setEstado(f.estado || "");
+    setInscricaoEstadual(f.inscricao_estadual || "");
+    setRegistroMapa(f.registro_mapa || "");
+    setContatoQualidade(f.contato_qualidade || "");
+    setContatoQualidadeTelEmail(f.contato_qualidade_tel_email || "");
+    setContatoComercial(f.contato_comercial || "");
+    setContatoComercialTelEmail(f.contato_comercial_tel_email || "");
+    setProdutosFornecidos(f.produtos_fornecidos || "");
+    setTipoProduto(f.tipo_produto || "");
+    setDocCertRegistroMapa(!!f.doc_certificado_registro_mapa);
+    setDocAlvara(!!f.doc_alvara_funcionamento);
+    setDocCertRegistroProduto(!!f.doc_certificado_registro_produto);
+    setDocFichaTecnica(!!f.doc_ficha_tecnica);
+    setDocCertAnalise(!!f.doc_certificado_analise);
+    setResultadoQualificacao(f.resultado_qualificacao || "pendente");
+    setObservacoes(f.observacoes || "");
+    setRegistroSipeagro(f.registro_sipeagro || "");
+    setSipeagroVerificado(!!f.sipeagro_verificado);
     setOpen(true);
   };
 
@@ -205,12 +276,25 @@ export default function Fornecedores() {
     if (!nome || !user) return;
     setSaving(true);
     const { error } = await supabase.from("fornecedores").insert({
-      user_id: user.id, empresa_id: empresaAtiva?.id || null, nome, cnpj, endereco, contato: contatoQualidade, email: contatoQualidadeTelEmail,
-      tipo_produto: tipoProduto, observacoes,
-      bairro, cep, cidade, estado, inscricao_estadual: inscricaoEstadual,
-      registro_mapa: registroMapa, contato_qualidade: contatoQualidade,
+      user_id: user.id,
+      empresa_id: empresaAtiva?.id || null,
+      nome,
+      cnpj,
+      endereco,
+      contato: contatoQualidade,
+      email: contatoQualidadeTelEmail,
+      tipo_produto: tipoProduto,
+      observacoes,
+      bairro,
+      cep,
+      cidade,
+      estado,
+      inscricao_estadual: inscricaoEstadual,
+      registro_mapa: registroMapa,
+      contato_qualidade: contatoQualidade,
       contato_qualidade_tel_email: contatoQualidadeTelEmail,
-      contato_comercial: contatoComercial, contato_comercial_tel_email: contatoComercialTelEmail,
+      contato_comercial: contatoComercial,
+      contato_comercial_tel_email: contatoComercialTelEmail,
       produtos_fornecidos: produtosFornecidos,
       doc_certificado_registro_mapa: docCertRegistroMapa,
       doc_alvara_funcionamento: docAlvara,
@@ -224,7 +308,12 @@ export default function Fornecedores() {
       sipeagro_data_verificacao: sipeagroVerificado ? new Date().toISOString().split("T")[0] : null,
     } as any);
     if (error) toast.error("Erro ao salvar");
-    else { toast.success("Fornecedor cadastrado!"); setOpen(false); resetForm(); fetchData(); }
+    else {
+      toast.success("Fornecedor cadastrado!");
+      setOpen(false);
+      resetForm();
+      fetchData();
+    }
     setSaving(false);
   };
 
@@ -234,35 +323,51 @@ export default function Fornecedores() {
     const today = new Date().toISOString().split("T")[0];
     const proxima = new Date();
     proxima.setMonth(proxima.getMonth() + 6);
-    const { error } = await supabase.from("fornecedores").update({
-      nota_avaliacao: nota,
-      status_qualificacao: statusQual,
-      ultima_avaliacao: today,
-      proxima_avaliacao: proxima.toISOString().split("T")[0],
-      observacoes: obsAval,
-    } as any).eq("id", selectedId);
+    const { error } = await supabase
+      .from("fornecedores")
+      .update({
+        nota_avaliacao: nota,
+        status_qualificacao: statusQual,
+        ultima_avaliacao: today,
+        proxima_avaliacao: proxima.toISOString().split("T")[0],
+        observacoes: obsAval,
+      } as any)
+      .eq("id", selectedId);
     if (error) toast.error("Erro ao avaliar");
-    else { toast.success("Avaliação registrada!"); setAvaliarOpen(false); setSelectedId(null); fetchData(); }
+    else {
+      toast.success("Avaliação registrada!");
+      setAvaliarOpen(false);
+      setSelectedId(null);
+      fetchData();
+    }
     setSaving(false);
   };
 
   const getRecebimentosFornecedor = (nomeForn: string) =>
-    recebimentos.filter(r => r.fornecedor.toLowerCase() === nomeForn.toLowerCase());
+    recebimentos.filter((r) => r.fornecedor.toLowerCase() === nomeForn.toLowerCase());
 
   const getTaxaAprovacao = (nomeForn: string) => {
     const recs = getRecebimentosFornecedor(nomeForn);
     if (recs.length === 0) return null;
-    return Math.round((recs.filter(r => r.aprovado).length / recs.length) * 100);
+    return Math.round((recs.filter((r) => r.aprovado).length / recs.length) * 100);
   };
 
-  const aprovados = fornecedores.filter(f => f.status_qualificacao === "aprovado" || f.status_qualificacao === "aprovado_com_restricoes");
-  const pendentes = fornecedores.filter(f => f.status_qualificacao === "pendente" || f.status_qualificacao === "em_avaliacao");
-  const reprovados = fornecedores.filter(f => f.status_qualificacao === "reprovado");
+  const aprovados = fornecedores.filter(
+    (f) => f.status_qualificacao === "aprovado" || f.status_qualificacao === "aprovado_com_restricoes",
+  );
+  const pendentes = fornecedores.filter(
+    (f) => f.status_qualificacao === "pendente" || f.status_qualificacao === "em_avaliacao",
+  );
+  const reprovados = fornecedores.filter((f) => f.status_qualificacao === "reprovado");
 
   return (
     <>
-      <PageHeader icon={Users} title="POP 01 - Qualificação de Fornecedores" description="Cadastro e avaliação de fornecedores conforme IN 04/2007"
-        orientacaoModuloId="fornecedores" />
+      <PageHeader
+        icon={Users}
+        title="POP 01 - Qualificação de Fornecedores"
+        description="Cadastro e avaliação de fornecedores conforme IN 04/2007"
+        orientacaoModuloId="fornecedores"
+      />
 
       {/* Validação SIPEAGRO — links oficiais MAPA */}
       <Card className="border-primary/40 bg-primary/5 mb-6">
@@ -270,33 +375,52 @@ export default function Fornecedores() {
           <div className="flex-1">
             <p className="font-semibold text-sm">🏛️ Validar fornecedor no MAPA/SIPEAGRO</p>
             <p className="text-xs text-muted-foreground mt-1">
-              Lista oficial atualizada semanalmente. Consulte por CNPJ, Razão Social ou nº de registro antes de aprovar fornecedores de insumos para alimentação animal (IN 17/2017).
+              Lista oficial atualizada semanalmente. Consulte por CNPJ, Razão Social ou nº de registro antes de aprovar
+              fornecedores de insumos para alimentação animal (registro de estabelecimentos — IN 17/2020).
             </p>
           </div>
           <div className="flex flex-col sm:flex-row gap-2 shrink-0">
-            <Button asChild size="sm" className="gap-2 w-full"><Link to="/consulta-sipeagro"><ExternalLink className="w-4 h-4" />Base interna MAPA</Link></Button>
-            <Button asChild size="sm" variant="outline" className="gap-2 w-full"><Link to="/consulta-sipeagro"><Search className="w-4 h-4" />Consultar no sistema</Link></Button>
+            <Button asChild size="sm" className="gap-2 w-full">
+              <Link to="/consulta-sipeagro">
+                <ExternalLink className="w-4 h-4" />
+                Base interna MAPA
+              </Link>
+            </Button>
+            <Button asChild size="sm" variant="outline" className="gap-2 w-full">
+              <Link to="/consulta-sipeagro">
+                <Search className="w-4 h-4" />
+                Consultar no sistema
+              </Link>
+            </Button>
           </div>
         </CardContent>
       </Card>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-        <Card><CardContent className="pt-4 text-center">
-          <p className="text-2xl font-bold font-display">{fornecedores.length}</p>
-          <p className="text-xs text-muted-foreground">Fornecedores</p>
-        </CardContent></Card>
-        <Card><CardContent className="pt-4 text-center">
-          <p className="text-2xl font-bold font-display text-primary">{aprovados.length}</p>
-          <p className="text-xs text-muted-foreground">Aprovados</p>
-        </CardContent></Card>
-        <Card><CardContent className="pt-4 text-center">
-          <p className="text-2xl font-bold font-display text-accent">{pendentes.length}</p>
-          <p className="text-xs text-muted-foreground">Pendentes</p>
-        </CardContent></Card>
-        <Card><CardContent className="pt-4 text-center">
-          <p className="text-2xl font-bold font-display text-destructive">{reprovados.length}</p>
-          <p className="text-xs text-muted-foreground">Reprovados</p>
-        </CardContent></Card>
+        <Card>
+          <CardContent className="pt-4 text-center">
+            <p className="text-2xl font-bold font-display">{fornecedores.length}</p>
+            <p className="text-xs text-muted-foreground">Fornecedores</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="pt-4 text-center">
+            <p className="text-2xl font-bold font-display text-primary">{aprovados.length}</p>
+            <p className="text-xs text-muted-foreground">Aprovados</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="pt-4 text-center">
+            <p className="text-2xl font-bold font-display text-accent">{pendentes.length}</p>
+            <p className="text-xs text-muted-foreground">Pendentes</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="pt-4 text-center">
+            <p className="text-2xl font-bold font-display text-destructive">{reprovados.length}</p>
+            <p className="text-xs text-muted-foreground">Reprovados</p>
+          </CardContent>
+        </Card>
       </div>
 
       <Card>
@@ -309,331 +433,454 @@ export default function Fornecedores() {
             <Button size="sm" variant="outline" onClick={() => printQuestionario()}>
               <Printer className="w-3.5 h-3.5 mr-1" /> Modelo PDF
             </Button>
-            <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) resetForm(); }}>
+            <Dialog
+              open={open}
+              onOpenChange={(v) => {
+                setOpen(v);
+                if (!v) resetForm();
+              }}
+            >
               <DialogTrigger asChild>
-                <Button size="sm"><Plus className="w-4 h-4 mr-1" /> Novo Fornecedor</Button>
+                <Button size="sm">
+                  <Plus className="w-4 h-4 mr-1" /> Novo Fornecedor
+                </Button>
               </DialogTrigger>
-            <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
-              <DialogHeader>
-                <DialogTitle className="flex items-center gap-2">
-                  <FileText className="w-5 h-5" />
-                  Questionário de Qualificação — PL POP 1.1
-                </DialogTitle>
-              </DialogHeader>
+              <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
+                <DialogHeader>
+                  <DialogTitle className="flex items-center gap-2">
+                    <FileText className="w-5 h-5" />
+                    Questionário de Qualificação — PL POP 1.1
+                  </DialogTitle>
+                </DialogHeader>
 
-              <Tabs value={formTab} onValueChange={setFormTab}>
-                <TabsList className="grid grid-cols-5 w-full">
-                  <TabsTrigger value="dados" className="text-xs">1. Dados</TabsTrigger>
-                  <TabsTrigger value="produtos" className="text-xs">2. Produtos</TabsTrigger>
-                  <TabsTrigger value="documentos" className="text-xs">3. Documentos</TabsTrigger>
-                  <TabsTrigger value="resultado" className="text-xs">4. Resultado</TabsTrigger>
-                  <TabsTrigger value="auditorias" className="text-xs">5. Auditorias</TabsTrigger>
-                </TabsList>
+                <Tabs value={formTab} onValueChange={setFormTab}>
+                  <TabsList className="grid grid-cols-5 w-full">
+                    <TabsTrigger value="dados" className="text-xs">
+                      1. Dados
+                    </TabsTrigger>
+                    <TabsTrigger value="produtos" className="text-xs">
+                      2. Produtos
+                    </TabsTrigger>
+                    <TabsTrigger value="documentos" className="text-xs">
+                      3. Documentos
+                    </TabsTrigger>
+                    <TabsTrigger value="resultado" className="text-xs">
+                      4. Resultado
+                    </TabsTrigger>
+                    <TabsTrigger value="auditorias" className="text-xs">
+                      5. Auditorias
+                    </TabsTrigger>
+                  </TabsList>
 
-                {/* ABA 1 — DADOS DO FORNECEDOR */}
-                <TabsContent value="dados" className="space-y-4 mt-4">
-                  <h3 className="text-sm font-semibold border-b pb-1">1 — Dados do Fornecedor</h3>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div className="col-span-2 sm:col-span-1">
-                      <Label>Nome / Razão Social *</Label>
-                      <Input value={nome} onChange={e => setNome(e.target.value)} placeholder="Ex: AgroCorp Ltda" />
-                    </div>
-                    <div>
-                      <Label>Data</Label>
-                      <Input type="date" value={dataAvaliacao} onChange={e => setDataAvaliacao(e.target.value)} />
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-2 gap-3">
-                    <div className="col-span-2">
-                      <Label>Endereço</Label>
-                      <Input value={endereco} onChange={e => setEndereco(e.target.value)} placeholder="Rua, número" />
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div>
-                      <Label>Nº Registro MAPA</Label>
-                      <Input value={registroMapa} onChange={e => setRegistroMapa(e.target.value)} placeholder="Ex: BR-00000" />
-                    </div>
-                    <div>
-                      <Label>Bairro</Label>
-                      <Input value={bairro} onChange={e => setBairro(e.target.value)} />
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    <div>
-                      <Label>CEP</Label>
-                      <Input value={cep} onChange={e => setCep(e.target.value)} placeholder="00000-000" />
-                    </div>
-                    <div>
-                      <Label>Cidade</Label>
-                      <Input value={cidade} onChange={e => setCidade(e.target.value)} />
-                    </div>
-                    <div>
-                      <Label>Estado</Label>
-                      <Select value={estado} onValueChange={setEstado}>
-                        <SelectTrigger><SelectValue placeholder="UF" /></SelectTrigger>
-                        <SelectContent>
-                          {ESTADOS_BR.map(uf => <SelectItem key={uf} value={uf}>{uf}</SelectItem>)}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div>
-                      <Label>CNPJ</Label>
-                      <Input value={cnpj} onChange={e => setCnpj(e.target.value)} placeholder="00.000.000/0000-00" />
-                    </div>
-                    <div>
-                      <Label>Inscrição Estadual</Label>
-                      <Input value={inscricaoEstadual} onChange={e => setInscricaoEstadual(e.target.value)} />
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div>
-                      <Label>Contato Qualidade</Label>
-                      <Input value={contatoQualidade} onChange={e => setContatoQualidade(e.target.value)} placeholder="Nome do contato" />
-                    </div>
-                    <div>
-                      <Label>Telefone / E-mail (Qualidade)</Label>
-                      <Input value={contatoQualidadeTelEmail} onChange={e => setContatoQualidadeTelEmail(e.target.value)} placeholder="(00) 00000-0000 / email" />
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <Label>Contato Comercial</Label>
-                      <Input value={contatoComercial} onChange={e => setContatoComercial(e.target.value)} placeholder="Nome do contato" />
-                    </div>
-                    <div>
-                      <Label>Telefone / E-mail (Comercial)</Label>
-                      <Input value={contatoComercialTelEmail} onChange={e => setContatoComercialTelEmail(e.target.value)} placeholder="(00) 00000-0000 / email" />
-                    </div>
-                  </div>
-
-                  {/* SIPEAGRO */}
-                  <div className="p-3 rounded-lg border bg-muted/20 space-y-3">
-                    <p className="text-sm font-semibold flex items-center gap-2">🏛️ Registro SIPEAGRO — IN 17/2017</p>
-                    <p className="text-[10px] text-muted-foreground">Estabelecimentos fornecedores de insumos para alimentação animal devem possuir registro no SIPEAGRO/MAPA.</p>
-                    <div><Label>Nº Registro SIPEAGRO</Label><Input value={registroSipeagro} onChange={e => setRegistroSipeagro(e.target.value)} placeholder="Ex: BR-0000000000" /></div>
-                    <div className="flex items-center gap-2">
-                      <Checkbox checked={sipeagroVerificado} onCheckedChange={(v) => setSipeagroVerificado(!!v)} />
-                      <Label className="text-sm">Registro verificado e ativo no SIPEAGRO</Label>
-                    </div>
-                  </div>
-
-                  <div className="flex justify-end">
-                    <Button type="button" onClick={() => setFormTab("produtos")}>Próximo →</Button>
-                  </div>
-                </TabsContent>
-
-                {/* ABA 2 — PRODUTOS FORNECIDOS */}
-                <TabsContent value="produtos" className="space-y-4 mt-4">
-                  <h3 className="text-sm font-semibold border-b pb-1">2 — Produto(s) Fornecido(s)</h3>
-                  <div>
-                    <Label>Tipo de Produto</Label>
-                    <Input value={tipoProduto} onChange={e => setTipoProduto(e.target.value)} placeholder="Ex: Milho, Farelo de soja, Premix" />
-                  </div>
-                  <div>
-                    <Label>Produtos Fornecidos (lista detalhada)</Label>
-                    <Textarea
-                      value={produtosFornecidos}
-                      onChange={e => setProdutosFornecidos(e.target.value)}
-                      placeholder="Liste os produtos fornecidos, um por linha"
-                      rows={6}
-                    />
-                  </div>
-                  <div className="flex justify-between">
-                    <Button type="button" variant="outline" onClick={() => setFormTab("dados")}>← Anterior</Button>
-                    <Button type="button" onClick={() => setFormTab("documentos")}>Próximo →</Button>
-                  </div>
-                </TabsContent>
-
-                {/* ABA 3 — DOCUMENTOS EXIGIDOS */}
-                <TabsContent value="documentos" className="space-y-4 mt-4">
-                  <h3 className="text-sm font-semibold border-b pb-1">3 — Documento(s) Exigido(s) para Qualificação</h3>
-                  <p className="text-xs text-muted-foreground">Marque os documentos apresentados pelo fornecedor:</p>
-
-                  <div className="space-y-3 p-4 border rounded-lg bg-muted/10">
-                    {[
-                      { label: "Certificado de Registro do Estabelecimento no MAPA", checked: docCertRegistroMapa, onChange: setDocCertRegistroMapa },
-                      { label: "Alvará de Funcionamento da Prefeitura", checked: docAlvara, onChange: setDocAlvara },
-                      { label: "Certificado de Registro do Produto no MAPA", checked: docCertRegistroProduto, onChange: setDocCertRegistroProduto },
-                      { label: "Ficha Técnica", checked: docFichaTecnica, onChange: setDocFichaTecnica },
-                      { label: "Certificado de Análise", checked: docCertAnalise, onChange: setDocCertAnalise },
-                    ].map((doc) => (
-                      <div key={doc.label} className="flex items-center gap-3 p-2 rounded hover:bg-muted/20">
-                        <Checkbox checked={doc.checked} onCheckedChange={(v) => doc.onChange(!!v)} />
-                        <Label className="text-sm cursor-pointer">{doc.label}</Label>
+                  {/* ABA 1 — DADOS DO FORNECEDOR */}
+                  <TabsContent value="dados" className="space-y-4 mt-4">
+                    <h3 className="text-sm font-semibold border-b pb-1">1 — Dados do Fornecedor</h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div className="col-span-2 sm:col-span-1">
+                        <Label>Nome / Razão Social *</Label>
+                        <Input value={nome} onChange={(e) => setNome(e.target.value)} placeholder="Ex: AgroCorp Ltda" />
                       </div>
-                    ))}
-                  </div>
+                      <div>
+                        <Label>Data</Label>
+                        <Input type="date" value={dataAvaliacao} onChange={(e) => setDataAvaliacao(e.target.value)} />
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="col-span-2">
+                        <Label>Endereço</Label>
+                        <Input
+                          value={endereco}
+                          onChange={(e) => setEndereco(e.target.value)}
+                          placeholder="Rua, número"
+                        />
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div>
+                        <Label>Nº Registro MAPA</Label>
+                        <Input
+                          value={registroMapa}
+                          onChange={(e) => setRegistroMapa(e.target.value)}
+                          placeholder="Ex: BR-00000"
+                        />
+                      </div>
+                      <div>
+                        <Label>Bairro</Label>
+                        <Input value={bairro} onChange={(e) => setBairro(e.target.value)} />
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                      <div>
+                        <Label>CEP</Label>
+                        <Input value={cep} onChange={(e) => setCep(e.target.value)} placeholder="00000-000" />
+                      </div>
+                      <div>
+                        <Label>Cidade</Label>
+                        <Input value={cidade} onChange={(e) => setCidade(e.target.value)} />
+                      </div>
+                      <div>
+                        <Label>Estado</Label>
+                        <Select value={estado} onValueChange={setEstado}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="UF" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {ESTADOS_BR.map((uf) => (
+                              <SelectItem key={uf} value={uf}>
+                                {uf}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div>
+                        <Label>CNPJ</Label>
+                        <Input
+                          value={cnpj}
+                          onChange={(e) => setCnpj(e.target.value)}
+                          placeholder="00.000.000/0000-00"
+                        />
+                      </div>
+                      <div>
+                        <Label>Inscrição Estadual</Label>
+                        <Input value={inscricaoEstadual} onChange={(e) => setInscricaoEstadual(e.target.value)} />
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div>
+                        <Label>Contato Qualidade</Label>
+                        <Input
+                          value={contatoQualidade}
+                          onChange={(e) => setContatoQualidade(e.target.value)}
+                          placeholder="Nome do contato"
+                        />
+                      </div>
+                      <div>
+                        <Label>Telefone / E-mail (Qualidade)</Label>
+                        <Input
+                          value={contatoQualidadeTelEmail}
+                          onChange={(e) => setContatoQualidadeTelEmail(e.target.value)}
+                          placeholder="(00) 00000-0000 / email"
+                        />
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <Label>Contato Comercial</Label>
+                        <Input
+                          value={contatoComercial}
+                          onChange={(e) => setContatoComercial(e.target.value)}
+                          placeholder="Nome do contato"
+                        />
+                      </div>
+                      <div>
+                        <Label>Telefone / E-mail (Comercial)</Label>
+                        <Input
+                          value={contatoComercialTelEmail}
+                          onChange={(e) => setContatoComercialTelEmail(e.target.value)}
+                          placeholder="(00) 00000-0000 / email"
+                        />
+                      </div>
+                    </div>
 
-                  <div className="flex justify-between">
-                    <Button type="button" variant="outline" onClick={() => setFormTab("produtos")}>← Anterior</Button>
-                    <Button type="button" onClick={() => setFormTab("resultado")}>Próximo →</Button>
-                  </div>
-                </TabsContent>
+                    {/* SIPEAGRO */}
+                    <div className="p-3 rounded-lg border bg-muted/20 space-y-3">
+                      <p className="text-sm font-semibold flex items-center gap-2">🏛️ Registro SIPEAGRO — IN 17/2020</p>
+                      <p className="text-[10px] text-muted-foreground">
+                        Estabelecimentos fornecedores de insumos para alimentação animal devem possuir registro no
+                        SIPEAGRO/MAPA.
+                      </p>
+                      <div>
+                        <Label>Nº Registro SIPEAGRO</Label>
+                        <Input
+                          value={registroSipeagro}
+                          onChange={(e) => setRegistroSipeagro(e.target.value)}
+                          placeholder="Ex: BR-0000000000"
+                        />
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Checkbox checked={sipeagroVerificado} onCheckedChange={(v) => setSipeagroVerificado(!!v)} />
+                        <Label className="text-sm">Registro verificado e ativo no SIPEAGRO</Label>
+                      </div>
+                    </div>
 
-                {/* ABA 4 — RESULTADO */}
-                <TabsContent value="resultado" className="space-y-4 mt-4">
-                  <h3 className="text-sm font-semibold border-b pb-1">4 — Resultado da Qualificação</h3>
+                    <div className="flex justify-end">
+                      <Button type="button" onClick={() => setFormTab("produtos")}>
+                        Próximo →
+                      </Button>
+                    </div>
+                  </TabsContent>
 
-                  <div className="grid grid-cols-3 gap-3">
-                    <button
-                      type="button"
-                      onClick={() => setResultadoQualificacao("aprovado")}
-                      className={`p-5 rounded-lg border-2 text-center transition-all ${
-                        resultadoQualificacao === "aprovado"
-                          ? "border-primary bg-primary/10 text-primary"
-                          : "border-muted hover:border-primary/50"
-                      }`}
-                    >
-                      <CheckCircle2 className="w-7 h-7 mx-auto mb-2" />
-                      <p className="font-semibold text-sm">Aprovado</p>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setResultadoQualificacao("aprovado_com_restricoes")}
-                      className={`p-5 rounded-lg border-2 text-center transition-all ${
-                        resultadoQualificacao === "aprovado_com_restricoes"
-                          ? "border-yellow-600 bg-yellow-600/10 text-yellow-700"
-                          : "border-muted hover:border-yellow-500/50"
-                      }`}
-                    >
-                      <CheckCircle2 className="w-7 h-7 mx-auto mb-2" />
-                      <p className="font-semibold text-sm">Aprovado c/ Restrições</p>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setResultadoQualificacao("reprovado")}
-                      className={`p-5 rounded-lg border-2 text-center transition-all ${
-                        resultadoQualificacao === "reprovado"
-                          ? "border-destructive bg-destructive/10 text-destructive"
-                          : "border-muted hover:border-destructive/50"
-                      }`}
-                    >
-                      <AlertCircle className="w-7 h-7 mx-auto mb-2" />
-                      <p className="font-semibold text-sm">Reprovado</p>
-                    </button>
-                  </div>
+                  {/* ABA 2 — PRODUTOS FORNECIDOS */}
+                  <TabsContent value="produtos" className="space-y-4 mt-4">
+                    <h3 className="text-sm font-semibold border-b pb-1">2 — Produto(s) Fornecido(s)</h3>
+                    <div>
+                      <Label>Tipo de Produto</Label>
+                      <Input
+                        value={tipoProduto}
+                        onChange={(e) => setTipoProduto(e.target.value)}
+                        placeholder="Ex: Milho, Farelo de soja, Premix"
+                      />
+                    </div>
+                    <div>
+                      <Label>Produtos Fornecidos (lista detalhada)</Label>
+                      <Textarea
+                        value={produtosFornecidos}
+                        onChange={(e) => setProdutosFornecidos(e.target.value)}
+                        placeholder="Liste os produtos fornecidos, um por linha"
+                        rows={6}
+                      />
+                    </div>
+                    <div className="flex justify-between">
+                      <Button type="button" variant="outline" onClick={() => setFormTab("dados")}>
+                        ← Anterior
+                      </Button>
+                      <Button type="button" onClick={() => setFormTab("documentos")}>
+                        Próximo →
+                      </Button>
+                    </div>
+                  </TabsContent>
 
-                  <div>
-                    <Label>Observações</Label>
-                    <Textarea value={observacoes} onChange={e => setObservacoes(e.target.value)} placeholder="Certificações, laudos, justificativas..." rows={3} />
-                  </div>
+                  {/* ABA 3 — DOCUMENTOS EXIGIDOS */}
+                  <TabsContent value="documentos" className="space-y-4 mt-4">
+                    <h3 className="text-sm font-semibold border-b pb-1">
+                      3 — Documento(s) Exigido(s) para Qualificação
+                    </h3>
+                    <p className="text-xs text-muted-foreground">Marque os documentos apresentados pelo fornecedor:</p>
 
-                  <div className="flex justify-between">
-                    <Button type="button" variant="outline" onClick={() => setFormTab("documentos")}>← Anterior</Button>
-                    <Button onClick={handleAdd} disabled={saving || !nome}>
-                      {saving && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}Salvar Fornecedor
-                    </Button>
-                  </div>
-                </TabsContent>
-
-                {/* ABA 5 — AUDITORIAS */}
-                <TabsContent value="auditorias" className="space-y-4 mt-4">
-                  <h3 className="text-sm font-semibold border-b pb-1">5 — Histórico de Auditorias</h3>
-                  <div className="space-y-4">
-                    {!selectedId ? (
-                      <p className="text-xs text-muted-foreground">Cadastre o fornecedor primeiro para gerenciar auditorias.</p>
-                    ) : (
-                      <>
-                        <div className="flex justify-between items-center">
-                          <p className="text-xs font-semibold">Últimas auditorias realizadas</p>
+                    <div className="space-y-3 p-4 border rounded-lg bg-muted/10">
+                      {[
+                        {
+                          label: "Certificado de Registro do Estabelecimento no MAPA",
+                          checked: docCertRegistroMapa,
+                          onChange: setDocCertRegistroMapa,
+                        },
+                        { label: "Alvará de Funcionamento da Prefeitura", checked: docAlvara, onChange: setDocAlvara },
+                        {
+                          label: "Certificado de Registro do Produto no MAPA",
+                          checked: docCertRegistroProduto,
+                          onChange: setDocCertRegistroProduto,
+                        },
+                        { label: "Ficha Técnica", checked: docFichaTecnica, onChange: setDocFichaTecnica },
+                        { label: "Certificado de Análise", checked: docCertAnalise, onChange: setDocCertAnalise },
+                      ].map((doc) => (
+                        <div key={doc.label} className="flex items-center gap-3 p-2 rounded hover:bg-muted/20">
+                          <Checkbox checked={doc.checked} onCheckedChange={(v) => doc.onChange(!!v)} />
+                          <Label className="text-sm cursor-pointer">{doc.label}</Label>
                         </div>
-                        <div className="border rounded-lg overflow-hidden">
-                          <Table>
-                            <TableHeader>
-                              <TableRow className="bg-muted/30">
-                                <TableHead className="text-[10px]">Data</TableHead>
-                                <TableHead className="text-[10px]">Tipo</TableHead>
-                                <TableHead className="text-[10px]">Nota</TableHead>
-                                <TableHead className="text-[10px]">Auditor</TableHead>
-                              </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                              {fornecedores.find(f => f.id === selectedId)?.auditorias?.map((a: any) => (
-                                <TableRow key={a.id}>
-                                  <TableCell className="text-xs">{a.data_auditoria}</TableCell>
-                                  <TableCell className="text-xs">{a.tipo_auditoria}</TableCell>
-                                  <TableCell className="text-xs font-bold">{a.pontuacao_obtida}</TableCell>
-                                  <TableCell className="text-xs">{a.auditor}</TableCell>
+                      ))}
+                    </div>
+
+                    <div className="flex justify-between">
+                      <Button type="button" variant="outline" onClick={() => setFormTab("produtos")}>
+                        ← Anterior
+                      </Button>
+                      <Button type="button" onClick={() => setFormTab("resultado")}>
+                        Próximo →
+                      </Button>
+                    </div>
+                  </TabsContent>
+
+                  {/* ABA 4 — RESULTADO */}
+                  <TabsContent value="resultado" className="space-y-4 mt-4">
+                    <h3 className="text-sm font-semibold border-b pb-1">4 — Resultado da Qualificação</h3>
+
+                    <div className="grid grid-cols-3 gap-3">
+                      <button
+                        type="button"
+                        onClick={() => setResultadoQualificacao("aprovado")}
+                        className={`p-5 rounded-lg border-2 text-center transition-all ${
+                          resultadoQualificacao === "aprovado"
+                            ? "border-primary bg-primary/10 text-primary"
+                            : "border-muted hover:border-primary/50"
+                        }`}
+                      >
+                        <CheckCircle2 className="w-7 h-7 mx-auto mb-2" />
+                        <p className="font-semibold text-sm">Aprovado</p>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setResultadoQualificacao("aprovado_com_restricoes")}
+                        className={`p-5 rounded-lg border-2 text-center transition-all ${
+                          resultadoQualificacao === "aprovado_com_restricoes"
+                            ? "border-yellow-600 bg-yellow-600/10 text-yellow-700"
+                            : "border-muted hover:border-yellow-500/50"
+                        }`}
+                      >
+                        <CheckCircle2 className="w-7 h-7 mx-auto mb-2" />
+                        <p className="font-semibold text-sm">Aprovado c/ Restrições</p>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setResultadoQualificacao("reprovado")}
+                        className={`p-5 rounded-lg border-2 text-center transition-all ${
+                          resultadoQualificacao === "reprovado"
+                            ? "border-destructive bg-destructive/10 text-destructive"
+                            : "border-muted hover:border-destructive/50"
+                        }`}
+                      >
+                        <AlertCircle className="w-7 h-7 mx-auto mb-2" />
+                        <p className="font-semibold text-sm">Reprovado</p>
+                      </button>
+                    </div>
+
+                    <div>
+                      <Label>Observações</Label>
+                      <Textarea
+                        value={observacoes}
+                        onChange={(e) => setObservacoes(e.target.value)}
+                        placeholder="Certificações, laudos, justificativas..."
+                        rows={3}
+                      />
+                    </div>
+
+                    <div className="flex justify-between">
+                      <Button type="button" variant="outline" onClick={() => setFormTab("documentos")}>
+                        ← Anterior
+                      </Button>
+                      <Button onClick={handleAdd} disabled={saving || !nome}>
+                        {saving && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}Salvar Fornecedor
+                      </Button>
+                    </div>
+                  </TabsContent>
+
+                  {/* ABA 5 — AUDITORIAS */}
+                  <TabsContent value="auditorias" className="space-y-4 mt-4">
+                    <h3 className="text-sm font-semibold border-b pb-1">5 — Histórico de Auditorias</h3>
+                    <div className="space-y-4">
+                      {!selectedId ? (
+                        <p className="text-xs text-muted-foreground">
+                          Cadastre o fornecedor primeiro para gerenciar auditorias.
+                        </p>
+                      ) : (
+                        <>
+                          <div className="flex justify-between items-center">
+                            <p className="text-xs font-semibold">Últimas auditorias realizadas</p>
+                          </div>
+                          <div className="border rounded-lg overflow-hidden">
+                            <Table>
+                              <TableHeader>
+                                <TableRow className="bg-muted/30">
+                                  <TableHead className="text-[10px]">Data</TableHead>
+                                  <TableHead className="text-[10px]">Tipo</TableHead>
+                                  <TableHead className="text-[10px]">Nota</TableHead>
+                                  <TableHead className="text-[10px]">Auditor</TableHead>
                                 </TableRow>
-                              ))}
-                              {(!fornecedores.find(f => f.id === selectedId)?.auditorias || fornecedores.find(f => f.id === selectedId)?.auditorias?.length === 0) && (
-                                <TableRow>
-                                  <TableCell colSpan={4} className="text-center py-4 text-xs text-muted-foreground">
-                                    Nenhuma auditoria registrada.
-                                  </TableCell>
-                                </TableRow>
-                              )}
-                            </TableBody>
-                          </Table>
-                        </div>
-                      </>
-                    )}
-                  </div>
-                  <div className="flex justify-start">
-                    <Button type="button" variant="outline" onClick={() => setFormTab("resultado")}>← Anterior</Button>
-                  </div>
-                </TabsContent>
-              </Tabs>
-            </DialogContent>
-          </Dialog>
+                              </TableHeader>
+                              <TableBody>
+                                {fornecedores
+                                  .find((f) => f.id === selectedId)
+                                  ?.auditorias?.map((a: any) => (
+                                    <TableRow key={a.id}>
+                                      <TableCell className="text-xs">{a.data_auditoria}</TableCell>
+                                      <TableCell className="text-xs">{a.tipo_auditoria}</TableCell>
+                                      <TableCell className="text-xs font-bold">{a.pontuacao_obtida}</TableCell>
+                                      <TableCell className="text-xs">{a.auditor}</TableCell>
+                                    </TableRow>
+                                  ))}
+                                {(!fornecedores.find((f) => f.id === selectedId)?.auditorias ||
+                                  fornecedores.find((f) => f.id === selectedId)?.auditorias?.length === 0) && (
+                                  <TableRow>
+                                    <TableCell colSpan={4} className="text-center py-4 text-xs text-muted-foreground">
+                                      Nenhuma auditoria registrada.
+                                    </TableCell>
+                                  </TableRow>
+                                )}
+                              </TableBody>
+                            </Table>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                    <div className="flex justify-start">
+                      <Button type="button" variant="outline" onClick={() => setFormTab("resultado")}>
+                        ← Anterior
+                      </Button>
+                    </div>
+                  </TabsContent>
+                </Tabs>
+              </DialogContent>
+            </Dialog>
           </div>
         </CardHeader>
         <CardContent className="overflow-x-auto">
           {loading ? (
-            <div className="flex justify-center py-8"><Loader2 className="w-6 h-6 animate-spin text-muted-foreground" /></div>
+            <div className="flex justify-center py-8">
+              <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+            </div>
           ) : fornecedores.length === 0 ? (
             <p className="text-center text-muted-foreground py-8">Nenhum fornecedor cadastrado</p>
           ) : (
             <Table>
               <TableHeader>
-               <TableRow>
-                   <TableHead>Fornecedor</TableHead>
-                   <TableHead>Produto</TableHead>
-                   <TableHead>SIPEAGRO</TableHead>
-                   <TableHead>Documentos</TableHead>
-                   <TableHead>Status</TableHead>
-                   <TableHead>Nota</TableHead>
-                   <TableHead>Taxa Aprovação MP</TableHead>
-                   <TableHead></TableHead>
-                 </TableRow>
+                <TableRow>
+                  <TableHead>Fornecedor</TableHead>
+                  <TableHead>Produto</TableHead>
+                  <TableHead>SIPEAGRO</TableHead>
+                  <TableHead>Documentos</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Nota</TableHead>
+                  <TableHead>Taxa Aprovação MP</TableHead>
+                  <TableHead></TableHead>
+                </TableRow>
               </TableHeader>
               <TableBody>
-                {fornecedores.map(f => {
+                {fornecedores.map((f) => {
                   const taxa = getTaxaAprovacao(f.nome);
                   const st = STATUS_CONFIG[f.status_qualificacao || "pendente"] || STATUS_CONFIG.pendente;
                   const recs = getRecebimentosFornecedor(f.nome);
-                  const docsCount = [f.doc_certificado_registro_mapa, f.doc_alvara_funcionamento, f.doc_certificado_registro_produto, f.doc_ficha_tecnica, f.doc_certificado_analise].filter(Boolean).length;
+                  const docsCount = [
+                    f.doc_certificado_registro_mapa,
+                    f.doc_alvara_funcionamento,
+                    f.doc_certificado_registro_produto,
+                    f.doc_ficha_tecnica,
+                    f.doc_certificado_analise,
+                  ].filter(Boolean).length;
                   return (
                     <TableRow key={f.id}>
                       <TableCell>
                         <p className="font-medium text-sm">{f.nome}</p>
                         {f.cnpj && <span className="text-xs text-muted-foreground">{f.cnpj}</span>}
-                        {f.cidade && f.estado && <span className="text-xs text-muted-foreground block">{f.cidade}/{f.estado}</span>}
+                        {f.cidade && f.estado && (
+                          <span className="text-xs text-muted-foreground block">
+                            {f.cidade}/{f.estado}
+                          </span>
+                        )}
                       </TableCell>
                       <TableCell className="text-sm">{f.tipo_produto || "—"}</TableCell>
                       <TableCell>
                         {f.registro_sipeagro ? (
                           <div className="flex items-center gap-1">
                             <span className="text-xs font-mono">{f.registro_sipeagro}</span>
-                            {f.sipeagro_verificado ? <CheckCircle2 className="w-3 h-3 text-primary" /> : <Clock className="w-3 h-3 text-muted-foreground" />}
+                            {f.sipeagro_verificado ? (
+                              <CheckCircle2 className="w-3 h-3 text-primary" />
+                            ) : (
+                              <Clock className="w-3 h-3 text-muted-foreground" />
+                            )}
                           </div>
                         ) : (
                           <span className="text-xs text-destructive">Sem registro</span>
                         )}
                       </TableCell>
                       <TableCell>
-                        <span className={`text-xs font-mono ${docsCount === 5 ? "text-primary" : docsCount >= 3 ? "text-accent" : "text-destructive"}`}>
+                        <span
+                          className={`text-xs font-mono ${docsCount === 5 ? "text-primary" : docsCount >= 3 ? "text-accent" : "text-destructive"}`}
+                        >
                           {docsCount}/5
                         </span>
                       </TableCell>
-                      <TableCell><Badge className={st.color}>{st.label}</Badge></TableCell>
+                      <TableCell>
+                        <Badge className={st.color}>{st.label}</Badge>
+                      </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-1">
-                          {[1, 2, 3, 4, 5].map(i => (
-                            <Star key={i} className={`w-3.5 h-3.5 ${i <= (f.nota_avaliacao || 0) ? "fill-accent text-accent" : "text-muted-foreground/30"}`} />
+                          {[1, 2, 3, 4, 5].map((i) => (
+                            <Star
+                              key={i}
+                              className={`w-3.5 h-3.5 ${i <= (f.nota_avaliacao || 0) ? "fill-accent text-accent" : "text-muted-foreground/30"}`}
+                            />
                           ))}
                         </div>
                       </TableCell>
@@ -641,32 +888,55 @@ export default function Fornecedores() {
                         {taxa !== null ? (
                           <div className="flex items-center gap-2">
                             <Progress value={taxa} className="w-16 h-2" />
-                            <span className={`text-xs font-mono ${taxa >= 80 ? "text-primary" : taxa >= 50 ? "text-accent" : "text-destructive"}`}>{taxa}%</span>
+                            <span
+                              className={`text-xs font-mono ${taxa >= 80 ? "text-primary" : taxa >= 50 ? "text-accent" : "text-destructive"}`}
+                            >
+                              {taxa}%
+                            </span>
                             <span className="text-xs text-muted-foreground">({recs.length})</span>
                           </div>
-                        ) : <span className="text-xs text-muted-foreground">Sem recebimentos</span>}
+                        ) : (
+                          <span className="text-xs text-muted-foreground">Sem recebimentos</span>
+                        )}
                       </TableCell>
                       <TableCell>
                         <div className="flex gap-1">
                           <Button variant="outline" size="sm" className="text-xs" onClick={() => handleEdit(f)}>
                             <Edit className="w-3 h-3 mr-1" /> Editar
                           </Button>
-                          <Button variant="outline" size="sm" className="text-xs" onClick={() => {
-                            setSelectedId(f.id);
-                            setNota(f.nota_avaliacao || 0);
-                            setStatusQual(f.status_qualificacao || "pendente");
-                            setObsAval(f.observacoes || "");
-                            setAvaliarOpen(true);
-                          }}>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="text-xs"
+                            onClick={() => {
+                              setSelectedId(f.id);
+                              setNota(f.nota_avaliacao || 0);
+                              setStatusQual(f.status_qualificacao || "pendente");
+                              setObsAval(f.observacoes || "");
+                              setAvaliarOpen(true);
+                            }}
+                          >
                             <Star className="w-3 h-3 mr-1" /> Avaliar
                           </Button>
-                          <Button variant="ghost" size="sm" className="text-xs" title="Exportar questionário" onClick={() => {
-                            exportQuestionarioPreenchidoXlsx(f as any);
-                            toast.success("Questionário exportado!");
-                          }}>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="text-xs"
+                            title="Exportar questionário"
+                            onClick={() => {
+                              exportQuestionarioPreenchidoXlsx(f as any);
+                              toast.success("Questionário exportado!");
+                            }}
+                          >
                             <Download className="w-3 h-3" />
                           </Button>
-                          <Button variant="ghost" size="sm" className="text-xs" title="Imprimir questionário" onClick={() => printQuestionario(f as any)}>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="text-xs"
+                            title="Imprimir questionário"
+                            onClick={() => printQuestionario(f as any)}
+                          >
                             <Printer className="w-3 h-3" />
                           </Button>
                         </div>
@@ -689,16 +959,20 @@ export default function Fornecedores() {
           <CardContent>
             <Tabs defaultValue={fornecedores[0]?.nome}>
               <TabsList className="flex-wrap h-auto gap-1">
-                {fornecedores.slice(0, 8).map(f => (
-                  <TabsTrigger key={f.nome} value={f.nome} className="text-xs">{f.nome}</TabsTrigger>
+                {fornecedores.slice(0, 8).map((f) => (
+                  <TabsTrigger key={f.nome} value={f.nome} className="text-xs">
+                    {f.nome}
+                  </TabsTrigger>
                 ))}
               </TabsList>
-              {fornecedores.slice(0, 8).map(f => {
+              {fornecedores.slice(0, 8).map((f) => {
                 const recs = getRecebimentosFornecedor(f.nome);
                 return (
                   <TabsContent key={f.nome} value={f.nome}>
                     {recs.length === 0 ? (
-                      <p className="text-center text-muted-foreground py-4 text-sm">Nenhum recebimento registrado para este fornecedor</p>
+                      <p className="text-center text-muted-foreground py-4 text-sm">
+                        Nenhum recebimento registrado para este fornecedor
+                      </p>
                     ) : (
                       <Table>
                         <TableHeader>
@@ -710,7 +984,7 @@ export default function Fornecedores() {
                           </TableRow>
                         </TableHeader>
                         <TableBody>
-                          {recs.map(r => (
+                          {recs.map((r) => (
                             <TableRow key={r.id}>
                               <TableCell className="text-sm">{r.data}</TableCell>
                               <TableCell className="text-sm">{r.materia_prima}</TableCell>
@@ -719,7 +993,9 @@ export default function Fornecedores() {
                                 {r.aprovado ? (
                                   <Badge className="bg-primary text-primary-foreground text-xs">Aprovado</Badge>
                                 ) : (
-                                  <Badge variant="destructive" className="text-xs">Reprovado</Badge>
+                                  <Badge variant="destructive" className="text-xs">
+                                    Reprovado
+                                  </Badge>
                                 )}
                               </TableCell>
                             </TableRow>
@@ -746,7 +1022,14 @@ export default function Fornecedores() {
             <p className="text-xs text-muted-foreground">Conforme PL POP 1.1 — Lista de Fornecedores Aprovados</p>
           </div>
           <div className="flex gap-2">
-            <Button size="sm" variant="outline" onClick={() => { exportListaAprovadosXlsx(fornecedores as any); toast.success("Lista exportada!"); }}>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => {
+                exportListaAprovadosXlsx(fornecedores as any);
+                toast.success("Lista exportada!");
+              }}
+            >
               <Download className="w-3.5 h-3.5 mr-1" /> Excel
             </Button>
             <Button size="sm" variant="outline" onClick={() => printListaAprovados(fornecedores as any)}>
@@ -779,10 +1062,14 @@ export default function Fornecedores() {
                     </TableCell>
                     <TableCell className="text-sm">{f.produtos_fornecidos || f.tipo_produto || "—"}</TableCell>
                     <TableCell className="text-center">
-                      {f.status_qualificacao === "aprovado" && <CheckCircle2 className="w-5 h-5 text-primary mx-auto" />}
+                      {f.status_qualificacao === "aprovado" && (
+                        <CheckCircle2 className="w-5 h-5 text-primary mx-auto" />
+                      )}
                     </TableCell>
                     <TableCell className="text-center">
-                      {f.status_qualificacao === "aprovado_com_restricoes" && <CheckCircle2 className="w-5 h-5 text-yellow-600 mx-auto" />}
+                      {f.status_qualificacao === "aprovado_com_restricoes" && (
+                        <CheckCircle2 className="w-5 h-5 text-yellow-600 mx-auto" />
+                      )}
                     </TableCell>
                     <TableCell className="text-center">{/* Vazio */}</TableCell>
                   </TableRow>
@@ -796,14 +1083,20 @@ export default function Fornecedores() {
       {/* Avaliação Dialog */}
       <Dialog open={avaliarOpen} onOpenChange={setAvaliarOpen}>
         <DialogContent>
-          <DialogHeader><DialogTitle className="flex items-center gap-2"><Star className="w-5 h-5 text-accent" /> Avaliar Fornecedor</DialogTitle></DialogHeader>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Star className="w-5 h-5 text-accent" /> Avaliar Fornecedor
+            </DialogTitle>
+          </DialogHeader>
           <div className="space-y-4">
             <div>
               <Label>Nota (1 a 5)</Label>
               <div className="flex gap-2 mt-1">
-                {[1, 2, 3, 4, 5].map(i => (
+                {[1, 2, 3, 4, 5].map((i) => (
                   <button key={i} onClick={() => setNota(i)} className="focus:outline-none">
-                    <Star className={`w-7 h-7 transition-colors ${i <= nota ? "fill-accent text-accent" : "text-muted-foreground/30 hover:text-accent/50"}`} />
+                    <Star
+                      className={`w-7 h-7 transition-colors ${i <= nota ? "fill-accent text-accent" : "text-muted-foreground/30 hover:text-accent/50"}`}
+                    />
                   </button>
                 ))}
               </div>
@@ -811,7 +1104,9 @@ export default function Fornecedores() {
             <div>
               <Label>Status de Qualificação</Label>
               <Select value={statusQual} onValueChange={setStatusQual}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="aprovado">Aprovado</SelectItem>
                   <SelectItem value="aprovado_com_restricoes">Aprovado c/ Restrições</SelectItem>
@@ -823,7 +1118,11 @@ export default function Fornecedores() {
             </div>
             <div>
               <Label>Observações da Avaliação</Label>
-              <Textarea value={obsAval} onChange={e => setObsAval(e.target.value)} placeholder="Critérios avaliados, laudos verificados..." />
+              <Textarea
+                value={obsAval}
+                onChange={(e) => setObsAval(e.target.value)}
+                placeholder="Critérios avaliados, laudos verificados..."
+              />
             </div>
             <Button onClick={handleAvaliar} className="w-full" disabled={saving}>
               {saving && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}Salvar Avaliação
