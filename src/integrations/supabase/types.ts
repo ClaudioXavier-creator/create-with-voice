@@ -2340,13 +2340,16 @@ export type Database = {
       }
       empresas: {
         Row: {
+          arquivo_autorizacao_medicamentos: string | null
           atividades_sipeagro: string[] | null
           autorizacao_medicamentos: string | null
           capacidade: string | null
           cnpj: string | null
           created_at: string
           crmv: string | null
+          data_autorizacao_medicamentos: string | null
           endereco: string | null
+          fabrica_medicamentos: boolean
           id: string
           nome: string
           numero_sipeagro: string | null
@@ -2360,13 +2363,16 @@ export type Database = {
           validade_registro_sipeagro: string | null
         }
         Insert: {
+          arquivo_autorizacao_medicamentos?: string | null
           atividades_sipeagro?: string[] | null
           autorizacao_medicamentos?: string | null
           capacidade?: string | null
           cnpj?: string | null
           created_at?: string
           crmv?: string | null
+          data_autorizacao_medicamentos?: string | null
           endereco?: string | null
+          fabrica_medicamentos?: boolean
           id?: string
           nome: string
           numero_sipeagro?: string | null
@@ -2380,13 +2386,16 @@ export type Database = {
           validade_registro_sipeagro?: string | null
         }
         Update: {
+          arquivo_autorizacao_medicamentos?: string | null
           atividades_sipeagro?: string[] | null
           autorizacao_medicamentos?: string | null
           capacidade?: string | null
           cnpj?: string | null
           created_at?: string
           crmv?: string | null
+          data_autorizacao_medicamentos?: string | null
           endereco?: string | null
+          fabrica_medicamentos?: boolean
           id?: string
           nome?: string
           numero_sipeagro?: string | null
@@ -2950,6 +2959,7 @@ export type Database = {
           data_versao: string
           empresa_id: string | null
           id: string
+          medicada: boolean
           observacoes: string | null
           produto_id: string | null
           produto_nome: string
@@ -2964,6 +2974,7 @@ export type Database = {
           data_versao?: string
           empresa_id?: string | null
           id?: string
+          medicada?: boolean
           observacoes?: string | null
           produto_id?: string | null
           produto_nome: string
@@ -2978,6 +2989,7 @@ export type Database = {
           data_versao?: string
           empresa_id?: string | null
           id?: string
+          medicada?: boolean
           observacoes?: string | null
           produto_id?: string | null
           produto_nome?: string
@@ -4507,6 +4519,7 @@ export type Database = {
           local_armazenamento: string | null
           lote_produto: string | null
           material_flushing: string | null
+          medicada: boolean
           motivo_retrabalho: string | null
           necessita_flushing: boolean | null
           numero_batidas: number | null
@@ -4516,10 +4529,12 @@ export type Database = {
           peso_por_batida: string | null
           prioridade: string | null
           produto: string
+          programa_sanitario_id: string | null
           proximo_produto: string | null
           quantidade_programada: string | null
           quantidade_sacos: number | null
           quantidade_sobra: string | null
+          receita_medicado_id: string | null
           sequencia_producao: number | null
           status: string | null
           tempo_mistura_padrao_minutos: number | null
@@ -4543,6 +4558,7 @@ export type Database = {
           local_armazenamento?: string | null
           lote_produto?: string | null
           material_flushing?: string | null
+          medicada?: boolean
           motivo_retrabalho?: string | null
           necessita_flushing?: boolean | null
           numero_batidas?: number | null
@@ -4552,10 +4568,12 @@ export type Database = {
           peso_por_batida?: string | null
           prioridade?: string | null
           produto: string
+          programa_sanitario_id?: string | null
           proximo_produto?: string | null
           quantidade_programada?: string | null
           quantidade_sacos?: number | null
           quantidade_sobra?: string | null
+          receita_medicado_id?: string | null
           sequencia_producao?: number | null
           status?: string | null
           tempo_mistura_padrao_minutos?: number | null
@@ -4579,6 +4597,7 @@ export type Database = {
           local_armazenamento?: string | null
           lote_produto?: string | null
           material_flushing?: string | null
+          medicada?: boolean
           motivo_retrabalho?: string | null
           necessita_flushing?: boolean | null
           numero_batidas?: number | null
@@ -4588,10 +4607,12 @@ export type Database = {
           peso_por_batida?: string | null
           prioridade?: string | null
           produto?: string
+          programa_sanitario_id?: string | null
           proximo_produto?: string | null
           quantidade_programada?: string | null
           quantidade_sacos?: number | null
           quantidade_sobra?: string | null
+          receita_medicado_id?: string | null
           sequencia_producao?: number | null
           status?: string | null
           tempo_mistura_padrao_minutos?: number | null
@@ -4624,6 +4645,20 @@ export type Database = {
             columns: ["ordem_origem_id"]
             isOneToOne: false
             referencedRelation: "ordens_producao"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ordens_producao_programa_sanitario_id_fkey"
+            columns: ["programa_sanitario_id"]
+            isOneToOne: false
+            referencedRelation: "programas_sanitarios"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ordens_producao_receita_medicado_id_fkey"
+            columns: ["receita_medicado_id"]
+            isOneToOne: false
+            referencedRelation: "receitas_medicados"
             referencedColumns: ["id"]
           },
         ]
@@ -5171,6 +5206,71 @@ export type Database = {
         }
         Relationships: []
       }
+      programas_sanitarios: {
+        Row: {
+          arquivo: string | null
+          cliente: string
+          created_at: string
+          crmv: string
+          data_inicio: string
+          data_ultima_revisao: string
+          dose: string | null
+          empresa_id: string | null
+          especie: string
+          id: string
+          medico_veterinario: string
+          nome: string
+          principio_ativo: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          arquivo?: string | null
+          cliente: string
+          created_at?: string
+          crmv: string
+          data_inicio: string
+          data_ultima_revisao: string
+          dose?: string | null
+          empresa_id?: string | null
+          especie: string
+          id?: string
+          medico_veterinario: string
+          nome: string
+          principio_ativo: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          arquivo?: string | null
+          cliente?: string
+          created_at?: string
+          crmv?: string
+          data_inicio?: string
+          data_ultima_revisao?: string
+          dose?: string | null
+          empresa_id?: string | null
+          especie?: string
+          id?: string
+          medico_veterinario?: string
+          nome?: string
+          principio_ativo?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "programas_sanitarios_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       rastreabilidade: {
         Row: {
           cliente_destino: string | null
@@ -5381,6 +5481,74 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "recebimento_mp_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      receitas_medicados: {
+        Row: {
+          arquivo: string | null
+          cliente: string
+          created_at: string
+          crmv: string
+          data_emissao: string
+          dose: string
+          empresa_id: string | null
+          especie: string
+          finalidade: string
+          id: string
+          medico_veterinario: string
+          numero: string
+          principio_ativo: string
+          status: string
+          updated_at: string
+          user_id: string
+          validade: string
+        }
+        Insert: {
+          arquivo?: string | null
+          cliente: string
+          created_at?: string
+          crmv: string
+          data_emissao: string
+          dose: string
+          empresa_id?: string | null
+          especie: string
+          finalidade: string
+          id?: string
+          medico_veterinario: string
+          numero: string
+          principio_ativo: string
+          status?: string
+          updated_at?: string
+          user_id: string
+          validade: string
+        }
+        Update: {
+          arquivo?: string | null
+          cliente?: string
+          created_at?: string
+          crmv?: string
+          data_emissao?: string
+          dose?: string
+          empresa_id?: string | null
+          especie?: string
+          finalidade?: string
+          id?: string
+          medico_veterinario?: string
+          numero?: string
+          principio_ativo?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+          validade?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "receitas_medicados_empresa_id_fkey"
             columns: ["empresa_id"]
             isOneToOne: false
             referencedRelation: "empresas"

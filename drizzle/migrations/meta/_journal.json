@@ -64,6 +64,13 @@
       "when": 1792349593311,
       "tag": "0008_add_repeticao_validacao_limpeza_linha",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1792349890581,
+      "tag": "0009_medicados_receitas_programas",
+      "breakpoints": true
     }
   ]
 }
