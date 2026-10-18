@@ -43,6 +43,13 @@
       "when": 1792281863792,
       "tag": "0005_replicar_policies_papeis_46_tabelas",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1792291983066,
+      "tag": "0006_add_slug_normas_legislacao",
+      "breakpoints": true
     }
   ]
 }
