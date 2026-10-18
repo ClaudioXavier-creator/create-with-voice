@@ -10,8 +10,12 @@ const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
 const ANON = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string;
 
 interface Empresa {
-  nome?: string; cnpj?: string; endereco?: string;
-  responsavel_tecnico?: string; crmv?: string; capacidade?: string;
+  nome?: string;
+  cnpj?: string;
+  endereco?: string;
+  responsavel_tecnico?: string;
+  crmv?: string;
+  capacidade?: string;
   tipo_producao?: string[];
 }
 
@@ -41,9 +45,10 @@ export default function AuditorPortal() {
 
   const callApi = async (params: Record<string, string>) => {
     const url = new URL(`${SUPABASE_URL}/functions/v1/auditor-portal`);
-    Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, v));
+    const { token: tokenParam, ...rest } = params;
+    Object.entries(rest).forEach(([k, v]) => url.searchParams.set(k, v));
     const res = await fetch(url, {
-      headers: { apikey: ANON, Authorization: `Bearer ${ANON}` },
+      headers: { apikey: ANON, Authorization: `Bearer ${ANON}`, "x-auditor-token": tokenParam ?? "" },
     });
     return res.json();
   };
@@ -52,7 +57,11 @@ export default function AuditorPortal() {
     if (!token) return;
     (async () => {
       const r = await callApi({ action: "validate", token });
-      if (!r.ok) { setError(r.error ?? "Acesso negado"); setLoading(false); return; }
+      if (!r.ok) {
+        setError(r.error ?? "Acesso negado");
+        setLoading(false);
+        return;
+      }
       setEmpresaNome(r.empresa_nome ?? "");
       setEmpresa(r.empresa ?? null);
       setExpiraEm(r.expira_em ?? "");
@@ -110,14 +119,38 @@ export default function AuditorPortal() {
           </CardHeader>
           {empresa && (
             <CardContent className="grid md:grid-cols-3 gap-3 text-sm pt-0">
-              {empresa.cnpj && <div><span className="text-muted-foreground">CNPJ:</span> {empresa.cnpj}</div>}
-              {empresa.endereco && <div><span className="text-muted-foreground">Endereço:</span> {empresa.endereco}</div>}
-              {empresa.responsavel_tecnico && <div><span className="text-muted-foreground">RT:</span> {empresa.responsavel_tecnico}</div>}
-              {empresa.crmv && <div><span className="text-muted-foreground">CRMV:</span> {empresa.crmv}</div>}
-              {empresa.capacidade && <div><span className="text-muted-foreground">Capacidade:</span> {empresa.capacidade}</div>}
+              {empresa.cnpj && (
+                <div>
+                  <span className="text-muted-foreground">CNPJ:</span> {empresa.cnpj}
+                </div>
+              )}
+              {empresa.endereco && (
+                <div>
+                  <span className="text-muted-foreground">Endereço:</span> {empresa.endereco}
+                </div>
+              )}
+              {empresa.responsavel_tecnico && (
+                <div>
+                  <span className="text-muted-foreground">RT:</span> {empresa.responsavel_tecnico}
+                </div>
+              )}
+              {empresa.crmv && (
+                <div>
+                  <span className="text-muted-foreground">CRMV:</span> {empresa.crmv}
+                </div>
+              )}
+              {empresa.capacidade && (
+                <div>
+                  <span className="text-muted-foreground">Capacidade:</span> {empresa.capacidade}
+                </div>
+              )}
               {empresa.tipo_producao?.length && (
                 <div className="md:col-span-3 flex flex-wrap gap-1">
-                  {empresa.tipo_producao.map((t) => <Badge key={t} variant="secondary">{t}</Badge>)}
+                  {empresa.tipo_producao.map((t) => (
+                    <Badge key={t} variant="secondary">
+                      {t}
+                    </Badge>
+                  ))}
                 </div>
               )}
             </CardContent>
@@ -127,7 +160,9 @@ export default function AuditorPortal() {
         <Tabs defaultValue="documentos">
           <TabsList className="flex flex-wrap h-auto">
             {MODULES.map((m) => (
-              <TabsTrigger key={m.key} value={m.key} className="text-xs">{m.label}</TabsTrigger>
+              <TabsTrigger key={m.key} value={m.key} className="text-xs">
+                {m.label}
+              </TabsTrigger>
             ))}
           </TabsList>
           {MODULES.map((m) => (
@@ -146,11 +181,15 @@ export default function AuditorPortal() {
 }
 
 function ModuloTable({
-  token, modulo, callApi,
+  token,
+  modulo,
+  callApi,
 }: {
   token: string;
   modulo: string;
-  callApi: (params: Record<string, string>) => Promise<{ ok: boolean; items?: Record<string, unknown>[]; error?: string }>;
+  callApi: (
+    params: Record<string, string>,
+  ) => Promise<{ ok: boolean; items?: Record<string, unknown>[]; error?: string }>;
 }) {
   const [items, setItems] = useState<Record<string, unknown>[] | null>(null);
   const [loading, setLoading] = useState(true);
@@ -167,9 +206,16 @@ function ModuloTable({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [modulo]);
 
-  if (loading) return <div className="py-8 text-center text-sm text-muted-foreground"><Loader2 className="w-4 h-4 animate-spin inline mr-2" />Carregando...</div>;
+  if (loading)
+    return (
+      <div className="py-8 text-center text-sm text-muted-foreground">
+        <Loader2 className="w-4 h-4 animate-spin inline mr-2" />
+        Carregando...
+      </div>
+    );
   if (err) return <div className="py-8 text-center text-sm text-destructive">{err}</div>;
-  if (!items || items.length === 0) return <div className="py-8 text-center text-sm text-muted-foreground">Sem registros</div>;
+  if (!items || items.length === 0)
+    return <div className="py-8 text-center text-sm text-muted-foreground">Sem registros</div>;
 
   const cols = Object.keys(items[0]).filter((c) => c !== "id");
 
@@ -178,7 +224,11 @@ function ModuloTable({
       <Table>
         <TableHeader>
           <TableRow>
-            {cols.map((c) => <TableHead key={c} className="text-xs whitespace-nowrap">{c.replace(/_/g, " ")}</TableHead>)}
+            {cols.map((c) => (
+              <TableHead key={c} className="text-xs whitespace-nowrap">
+                {c.replace(/_/g, " ")}
+              </TableHead>
+            ))}
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -190,7 +240,11 @@ function ModuloTable({
                 if (v === null || v === undefined) display = "—";
                 else if (typeof v === "boolean") display = v ? "✅" : "❌";
                 else display = String(v);
-                return <TableCell key={c} className="text-xs whitespace-nowrap">{display}</TableCell>;
+                return (
+                  <TableCell key={c} className="text-xs whitespace-nowrap">
+                    {display}
+                  </TableCell>
+                );
               })}
             </TableRow>
           ))}
