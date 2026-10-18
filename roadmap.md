@@ -1,8 +1,8 @@
 # Fase 2 — Fonte única de legislação ligada ao banco
 
 ## Base legal do PAC
-- [ ] Complementar Autocontrole, Manual BPF e Matriz de Risco com os fundamentos do PAC e distinguir 9 POPs de BPF do POP 10, sem alterar regras.
-- [ ] Conferir telas autenticadas, testes e build; listar antes/depois e arquivos, sem publicar.
+- [x] Complementar Autocontrole, Manual BPF e Matriz de Risco com os fundamentos do PAC e distinguir 9 POPs de BPF do POP 10, sem alterar regras.
+- [x] Build OK e 31 testes passando; textos conferidos nas duas telas com sessão real e no conteúdo usado pelo manual. Sem salvar dados ou publicar; documento final exportado não conferido.
 
 ## Correção de dispositivos e contraprova
 - [x] Corrigir somente citações de rastreabilidade e orientação de contraprova; manter campos editáveis, valores, cálculos e registros.
