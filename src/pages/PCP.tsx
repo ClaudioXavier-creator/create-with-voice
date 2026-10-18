@@ -2,7 +2,15 @@ import { getBaseLegal } from "@/config/baseLegal";
 import { VinculoMedicadoOrdem } from "@/components/medicados/VinculoMedicadoOrdem";
 import { ReceitasMedicadosSection, ProgramasSanitariosSection } from "@/components/medicados/MedicadosSections";
 import { podeLiberarOrdemMedicada } from "@/components/medicados/regras";
-import { citar798, REGRAS_CARRY_OVER, LIMITE_CARRY_OVER_PERCENT, REPETICOES_EXIGIDAS, avaliarValidacaoCarryOver, lerRepeticao, resultadoDentroDoLimite } from "@/config/carryOver798";
+import {
+  citar798,
+  REGRAS_CARRY_OVER,
+  LIMITE_CARRY_OVER_PERCENT,
+  REPETICOES_EXIGIDAS,
+  avaliarValidacaoCarryOver,
+  lerRepeticao,
+  resultadoDentroDoLimite,
+} from "@/config/carryOver798";
 import { statusConfig, prioridadeConfig } from "@/components/pcp/constants";
 import { useState, useEffect } from "react";
 import { TemposMisturaSection } from "@/components/mapa-evolucao/MapaEvolucaoSections";
@@ -113,8 +121,15 @@ export default function PCP() {
   const [formulaId, setFormulaId] = useState<string>("");
   const [fabricaMedicamentos, setFabricaMedicamentos] = useState(false);
   useEffect(() => {
-    if (!empresaAtiva?.id) { setFabricaMedicamentos(false); return; }
-    supabase.from("empresas").select("fabrica_medicamentos").eq("id", empresaAtiva.id).maybeSingle()
+    if (!empresaAtiva?.id) {
+      setFabricaMedicamentos(false);
+      return;
+    }
+    supabase
+      .from("empresas")
+      .select("fabrica_medicamentos")
+      .eq("id", empresaAtiva.id)
+      .maybeSingle()
       .then(({ data }) => setFabricaMedicamentos(!!data?.fabrica_medicamentos));
   }, [empresaAtiva?.id]);
   const [formulaNome, setFormulaNome] = useState("");
@@ -483,14 +498,24 @@ export default function PCP() {
     if (newStatus === "em_producao" && ordemAlvo?.medicada) {
       const [rec, prog] = await Promise.all([
         ordemAlvo.receita_medicado_id
-          ? supabase.from("receitas_medicados").select("status, data_emissao, validade").eq("id", ordemAlvo.receita_medicado_id).maybeSingle()
+          ? supabase
+              .from("receitas_medicados")
+              .select("status, data_emissao, validade")
+              .eq("id", ordemAlvo.receita_medicado_id)
+              .maybeSingle()
           : Promise.resolve({ data: null }),
         ordemAlvo.programa_sanitario_id
-          ? supabase.from("programas_sanitarios").select("status, data_ultima_revisao").eq("id", ordemAlvo.programa_sanitario_id).maybeSingle()
+          ? supabase
+              .from("programas_sanitarios")
+              .select("status, data_ultima_revisao")
+              .eq("id", ordemAlvo.programa_sanitario_id)
+              .maybeSingle()
           : Promise.resolve({ data: null }),
       ]);
       if (!podeLiberarOrdemMedicada(true, rec.data as any, prog.data as any)) {
-        toast.error("Ordem com fórmula medicada: vincule uma receita válida ou um programa sanitário vigente antes de liberar.");
+        toast.error(
+          "Ordem com fórmula medicada: vincule uma receita válida ou um programa sanitário vigente antes de liberar.",
+        );
         return;
       }
     }
@@ -690,9 +715,8 @@ export default function PCP() {
               Sequenciamento de Produção — Prevenção de Contaminação Cruzada
             </CardTitle>
             <p className="text-xs text-muted-foreground mt-1">
- Sequência baseada na Matriz de Sensibilidade. Flushing/lavagem obrigatórios entre produtos
- com restrição.
- </p>
+              Sequência baseada na Matriz de Sensibilidade. Flushing/lavagem obrigatórios entre produtos com restrição.
+            </p>
             <div className="flex flex-wrap gap-2 mt-2">
               <Badge variant="outline" className="text-[10px] border-yellow-500 text-yellow-700">
                 Vassouragem: sem restrição
@@ -1273,11 +1297,12 @@ export default function PCP() {
                             <div className="space-y-3">
                               <div className="p-3 rounded-lg border border-blue-500/20 bg-blue-50 dark:bg-blue-900/10">
                                 <p className="text-xs font-semibold text-blue-700 flex items-center gap-1">
-                                  <Droplets className="w-4 h-4" /> Ordem de Limpeza (Flush) </p>
+                                  <Droplets className="w-4 h-4" /> Ordem de Limpeza (Flush){" "}
+                                </p>
                                 <p className="text-[10px] text-muted-foreground mt-1">
                                   Registro obrigatório de limpeza entre batidas de fórmulas diferentes para prevenir
-                                  contaminação cruzada. Use plano de sequenciamento validado ou limpeza validada, a partir
-                                  da matriz de sensibilidade ({citar798("art. 25, II")}).
+                                  contaminação cruzada. Use plano de sequenciamento validado ou limpeza validada, a
+                                  partir da matriz de sensibilidade ({citar798("art. 25, II")}).
                                 </p>
                               </div>
                               {(() => {
@@ -1363,61 +1388,66 @@ export default function PCP() {
                                 );
                                 const statusValidacao = avaliarValidacaoCarryOver(
                                   testsOrdem
-                                    .map((r: any) => ({ repeticao: lerRepeticao(r.observacoes), conforme: r.status === "concluido" }))
+                                    .map((r: any) => ({
+                                      repeticao: lerRepeticao(r.observacoes),
+                                      conforme: r.status === "concluido",
+                                    }))
                                     .filter((r): r is { repeticao: number; conforme: boolean } => r.repeticao !== null),
                                 );
                                 return testsOrdem.length > 0 ? (
                                   <>
-                                  <div className="flex items-center gap-2 text-xs">
-                                    <span className="font-semibold">Validação ({citar798("art. 29, §1º")}):</span>
-                                    {statusValidacao === "aprovada" ? (
-                                      <Badge className="bg-primary/20 text-primary">Aprovada — 3 repetições conformes</Badge>
-                                    ) : statusValidacao === "reprovada" ? (
-                                      <Badge variant="destructive">Reprovada</Badge>
-                                    ) : (
-                                      <Badge variant="outline">Em andamento — exige 3 repetições conformes</Badge>
-                                    )}
-                                  </div>
-                                  <Table>
-                                    <TableHeader>
-                                      <TableRow>
-                                        <TableHead>Data</TableHead>
-                                        <TableHead>Rep.</TableHead>
-                                        <TableHead>Responsável</TableHead>
-                                        <TableHead>Método</TableHead>
-                                        <TableHead>Status</TableHead>
-                                        <TableHead className="max-w-[200px]">Detalhes</TableHead>
-                                      </TableRow>
-                                    </TableHeader>
-                                    <TableBody>
-                                      {testsOrdem.map((r: any) => (
-                                        <TableRow key={r.id}>
-                                          <TableCell className="whitespace-nowrap">{r.data_execucao}</TableCell>
-                                          <TableCell>{lerRepeticao(r.observacoes) ?? "—"}</TableCell>
-                                          <TableCell>{r.executor}</TableCell>
-                                          <TableCell className="text-xs">
-                                            {r.observacoes?.includes("Visual")
-                                              ? "Inspeção Visual"
-                                              : r.observacoes?.includes("Swab")
-                                                ? "Swab"
-                                                : r.observacoes?.includes("Flushing")
-                                                  ? "Análise Flushing"
-                                                  : "Laboratorial"}
-                                          </TableCell>
-                                          <TableCell>
-                                            {r.status === "concluido" ? (
-                                              <Badge className="bg-primary/20 text-primary">Conforme</Badge>
-                                            ) : (
-                                              <Badge variant="destructive">NC</Badge>
-                                            )}
-                                          </TableCell>
-                                          <TableCell className="text-xs max-w-[200px] truncate">
-                                            {(r.observacoes || "").slice(0, 100)}
-                                          </TableCell>
+                                    <div className="flex items-center gap-2 text-xs">
+                                      <span className="font-semibold">Validação ({citar798("art. 29, §1º")}):</span>
+                                      {statusValidacao === "aprovada" ? (
+                                        <Badge className="bg-primary/20 text-primary">
+                                          Aprovada — 3 repetições conformes
+                                        </Badge>
+                                      ) : statusValidacao === "reprovada" ? (
+                                        <Badge variant="destructive">Reprovada</Badge>
+                                      ) : (
+                                        <Badge variant="outline">Em andamento — exige 3 repetições conformes</Badge>
+                                      )}
+                                    </div>
+                                    <Table>
+                                      <TableHeader>
+                                        <TableRow>
+                                          <TableHead>Data</TableHead>
+                                          <TableHead>Rep.</TableHead>
+                                          <TableHead>Responsável</TableHead>
+                                          <TableHead>Método</TableHead>
+                                          <TableHead>Status</TableHead>
+                                          <TableHead className="max-w-[200px]">Detalhes</TableHead>
                                         </TableRow>
-                                      ))}
-                                    </TableBody>
-                                  </Table>
+                                      </TableHeader>
+                                      <TableBody>
+                                        {testsOrdem.map((r: any) => (
+                                          <TableRow key={r.id}>
+                                            <TableCell className="whitespace-nowrap">{r.data_execucao}</TableCell>
+                                            <TableCell>{lerRepeticao(r.observacoes) ?? "—"}</TableCell>
+                                            <TableCell>{r.executor}</TableCell>
+                                            <TableCell className="text-xs">
+                                              {r.observacoes?.includes("Visual")
+                                                ? "Inspeção Visual"
+                                                : r.observacoes?.includes("Swab")
+                                                  ? "Swab"
+                                                  : r.observacoes?.includes("Flushing")
+                                                    ? "Análise Flushing"
+                                                    : "Laboratorial"}
+                                            </TableCell>
+                                            <TableCell>
+                                              {r.status === "concluido" ? (
+                                                <Badge className="bg-primary/20 text-primary">Conforme</Badge>
+                                              ) : (
+                                                <Badge variant="destructive">NC</Badge>
+                                              )}
+                                            </TableCell>
+                                            <TableCell className="text-xs max-w-[200px] truncate">
+                                              {(r.observacoes || "").slice(0, 100)}
+                                            </TableCell>
+                                          </TableRow>
+                                        ))}
+                                      </TableBody>
+                                    </Table>
                                   </>
                                 ) : (
                                   <p className="text-xs text-muted-foreground text-center py-3">
@@ -1450,7 +1480,7 @@ export default function PCP() {
 
       {/* Dialog: Adicionar Ingrediente */}
       <Dialog open={itemOpen} onOpenChange={setItemOpen}>
-        <DialogContent>
+        <DialogContent className="max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Adicionar Ingrediente à Fórmula</DialogTitle>
           </DialogHeader>
@@ -1526,15 +1556,16 @@ export default function PCP() {
                 >
                   <p className="text-xs font-semibold mb-2 flex items-center gap-1">
                     <AlertTriangle className={`w-4 h-4 ${alertaEEB ? "text-destructive" : "text-yellow-600"}`} />
- Verificação de Limpeza entre Lotes — / </p>
+                    Verificação de Limpeza entre Lotes — /{" "}
+                  </p>
                   {alertaEEB && (
                     <div className="p-2 rounded bg-destructive/10 border border-destructive/30 mb-3">
                       <p className="text-xs text-destructive font-bold">
                         ⚠️ ALERTA EEB: Esta ordem contém ingredientes de origem animal com destino a ruminantes!
                       </p>
                       <p className="text-[10px] text-destructive/80">
- Obrigatório flushing ou lavagem completa da linha. Vassouragem NÃO é suficiente.
- </p>
+                        Obrigatório flushing ou lavagem completa da linha. Vassouragem NÃO é suficiente.
+                      </p>
                     </div>
                   )}
                   {contemRestricao && !produtoRuminante && (
@@ -1658,10 +1689,10 @@ export default function PCP() {
               />
             </div>
             <div className="sticky bottom-0 z-10 -mx-6 -mb-6 mt-2 border-t bg-background px-6 py-3">
-            <Button onClick={handleAddBatida} className="w-full" disabled={saving || !limpezaConfirmada}>
-              {saving && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-              {!limpezaConfirmada ? "⚠️ Confirme a limpeza para prosseguir" : "Registrar Batida"}
-            </Button>
+              <Button onClick={handleAddBatida} className="w-full" disabled={saving || !limpezaConfirmada}>
+                {saving && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+                {!limpezaConfirmada ? "⚠️ Confirme a limpeza para prosseguir" : "Registrar Batida"}
+              </Button>
             </div>
           </div>
         </DialogContent>
@@ -1761,7 +1792,8 @@ export default function PCP() {
                     const v = e.target.value;
                     setCoResultado(v);
                     const num = (x: string) => Number(x.replace(",", "."));
-                    if (v.trim()) setCoConforme(resultadoDentroDoLimite(num(v), num(coLimite) || LIMITE_CARRY_OVER_PERCENT));
+                    if (v.trim())
+                      setCoConforme(resultadoDentroDoLimite(num(v), num(coLimite) || LIMITE_CARRY_OVER_PERCENT));
                   }}
                   placeholder="Ex: 0,8"
                 />
@@ -1808,7 +1840,8 @@ export default function PCP() {
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <Droplets className="w-5 h-5 text-blue-600" /> Validação de Limpeza de Linha </DialogTitle>
+              <Droplets className="w-5 h-5 text-blue-600" /> Validação de Limpeza de Linha{" "}
+            </DialogTitle>
           </DialogHeader>
           <div className="space-y-3 pr-2">
             {/* Informações Básicas */}
@@ -1902,7 +1935,8 @@ export default function PCP() {
             {/* ── CHECKLIST DE VALIDAÇÃO ── */}
             <div className="p-3 rounded-lg border-2 border-blue-500/30 bg-blue-50 dark:bg-blue-900/10 space-y-2">
               <p className="text-xs font-bold text-blue-700 dark:text-blue-400 flex items-center gap-1">
-                <CheckCircle2 className="w-4 h-4" /> Checklist de Validação de Limpeza </p>
+                <CheckCircle2 className="w-4 h-4" /> Checklist de Validação de Limpeza{" "}
+              </p>
               <p className="text-[10px] text-muted-foreground">
                 Todos os itens devem ser verificados antes da liberação da linha.
               </p>
