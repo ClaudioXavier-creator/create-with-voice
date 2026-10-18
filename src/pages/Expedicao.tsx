@@ -531,6 +531,7 @@ export default function Expedicao() {
         title="Expedição & Faturamento"
         description="Registro de saída de produto acabado por NF — rastreabilidade completa para recall"
         icon={Truck}
+        assuntoBaseLegal="recolhimento_recall"
       />
 
       {/* Dashboard mês */}

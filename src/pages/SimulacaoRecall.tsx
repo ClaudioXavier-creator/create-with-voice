@@ -122,7 +122,7 @@ export default function SimulacaoRecall() {
   return (
     <>
       <PageHeader icon={Timer} title="POP 09 - Simulação de Recall" description="Exercício anual de recolhimento de produtos — POP 09"
-        orientacaoModuloId="simulacao-recall"  assuntoBaseLegal="autocontrole" />
+        orientacaoModuloId="simulacao-recall"  assuntoBaseLegal="recolhimento_recall" />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Painel lateral */}
@@ -232,7 +232,7 @@ export default function SimulacaoRecall() {
           <Card className="bg-muted/30 mt-4">
             <CardContent className="py-4">
               <h4 className="font-semibold text-sm mb-2 flex items-center gap-2">
-                <AlertTriangle className="w-4 h-4 text-yellow-500" />  Orientações <BaseLegalBadge assunto="autocontrole" /></h4>
+                <AlertTriangle className="w-4 h-4 text-yellow-500" />  Orientações <BaseLegalBadge assunto="recolhimento_recall" /></h4>
               <ul className="text-xs text-muted-foreground space-y-1">
                 <li>• O exercício de recall deve ser realizado <strong>pelo menos 1 vez ao ano</strong></li>
                 <li>• O tempo ideal de resposta é de até <strong>2 horas</strong> para completar todas as etapas</li>

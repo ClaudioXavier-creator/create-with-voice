@@ -265,7 +265,7 @@ export default function MonitoramentoPCC() {
         icon={Zap} 
         title="POP 05 - Controle da Produção e Prevenção da Contaminação Cruzada" 
         description="Monitoramento de Pontos Críticos de Controle (PCC) e prevenção de contaminação cruzada" 
-       assuntoBaseLegal="bpf_geral" />
+       assuntoBaseLegal="autocontrole" />
       
       {rascunhoAtivo && (
         <div className="mb-6 flex items-center justify-between rounded-xl border border-primary/30 bg-primary/5 p-4 text-sm animate-in fade-in slide-in-from-top-4">

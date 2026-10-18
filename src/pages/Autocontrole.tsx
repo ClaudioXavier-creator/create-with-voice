@@ -108,7 +108,7 @@ export default function Autocontrole() {
 
   return (
     <>
-      <PageHeader icon={ClipboardCheck} title="POP 10 - PAC - Programa de Autocontrole" description="Verificação geral dos POPs, auditoria interna e melhoria contínua do sistema"  assuntoBaseLegal="bpf_geral" />
+      <PageHeader icon={ClipboardCheck} title="POP 10 - PAC - Programa de Autocontrole" description="Verificação geral dos POPs, auditoria interna e melhoria contínua do sistema"  assuntoBaseLegal="autocontrole" />
       <Card>
         <CardHeader className="flex flex-row justify-between">
             <CardTitle>Registros de PAC</CardTitle>
