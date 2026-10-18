@@ -1,6 +1,7 @@
 import { Scale, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
-import { getBaseLegal, type AssuntoBaseLegal } from "@/config/baseLegal";
+import type { AssuntoBaseLegal } from "@/config/baseLegal";
+import { useBaseLegal } from "@/hooks/useBaseLegal";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
