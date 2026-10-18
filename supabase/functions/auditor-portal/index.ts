@@ -131,7 +131,7 @@ Deno.serve(async (req) => {
     if (!headerToken && queryToken) {
       console.warn("[auditor-portal] DEPRECATED: token via query string; use header x-auditor-token");
     }
-    const token = headerToken ?? queryToken ?? "";
+    const token = headerToken ?? "";
 
     const validation = await validateToken(token);
     if (!validation.ok) {
