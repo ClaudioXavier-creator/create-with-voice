@@ -50,6 +50,13 @@
       "when": 1792291983066,
       "tag": "0006_add_slug_normas_legislacao",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1792339860505,
+      "tag": "0007_normas_situacao_arquivamento",
+      "breakpoints": true
     }
   ]
 }

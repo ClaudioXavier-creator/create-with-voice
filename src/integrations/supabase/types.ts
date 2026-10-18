@@ -4271,6 +4271,7 @@ export type Database = {
       }
       normas_legislacao: {
         Row: {
+          arquivada_em: string | null
           arquivo_nome: string | null
           arquivo_url: string | null
           codigo: string | null
@@ -4278,8 +4279,10 @@ export type Database = {
           data_publicacao: string | null
           empresa_id: string | null
           id: string
+          motivo_arquivamento: string | null
           orgao: string | null
           resumo: string | null
+          situacao: string
           slug: string | null
           tags: string[] | null
           tipo: string | null
@@ -4288,6 +4291,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          arquivada_em?: string | null
           arquivo_nome?: string | null
           arquivo_url?: string | null
           codigo?: string | null
@@ -4295,8 +4299,10 @@ export type Database = {
           data_publicacao?: string | null
           empresa_id?: string | null
           id?: string
+          motivo_arquivamento?: string | null
           orgao?: string | null
           resumo?: string | null
+          situacao?: string
           slug?: string | null
           tags?: string[] | null
           tipo?: string | null
@@ -4305,6 +4311,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          arquivada_em?: string | null
           arquivo_nome?: string | null
           arquivo_url?: string | null
           codigo?: string | null
@@ -4312,8 +4319,10 @@ export type Database = {
           data_publicacao?: string | null
           empresa_id?: string | null
           id?: string
+          motivo_arquivamento?: string | null
           orgao?: string | null
           resumo?: string | null
+          situacao?: string
           slug?: string | null
           tags?: string[] | null
           tipo?: string | null
