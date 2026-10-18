@@ -126,7 +126,7 @@ var mcp_default = defineMcp({
   title: "Feed_BPF_Pro",
   version: "0.1.0",
   instructions: "Consultas de leitura do Feed_BPF. Liste empresas antes de consultar simula\xE7\xF5es de recall. As consultas respeitam a conta conectada, a empresa escolhida e as permiss\xF5es existentes. N\xE3o h\xE1 ferramentas de altera\xE7\xE3o, exclus\xE3o, pagamento ou envio.",
-  auth: auth.oauth.issuer({ issuer: `https://${projectRef}.supabase.co/auth/v1`, acceptedAudiences: "authenticated" }),
+  auth: auth.oauth.issuer({ issuer: `https://${projectRef}.supabase.co/auth/v1`, acceptedAudiences: "authenticated", requireOAuthClientClaim: true }),
   tools: [list_companies_default, list_recalls_default]
 });
 
