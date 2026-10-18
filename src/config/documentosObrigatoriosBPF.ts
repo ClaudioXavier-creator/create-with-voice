@@ -4,7 +4,7 @@ import { getBaseLegal } from "@/config/baseLegal";
  * - baseLegal: bpf_geral (POPs de BPF para fábricas de alimentos para animais)
  * - baseLegal: autocontrole (autocontrole e rastreabilidade)
  * - IN 15/2009 (validação de limpeza)
- * - baseLegal: rotulagem (substâncias controladas)
+ * - baseLegal: substancias_proibidas (substâncias controladas)
  *
  * Estrutura usada tanto no tutorial (checklist visual) quanto pela IA
  * de análise do acervo (contexto do prompt).

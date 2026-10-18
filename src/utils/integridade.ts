@@ -1,6 +1,6 @@
 import { getBaseLegal } from "@/config/baseLegal";
 /**
- * Selo de integridade de relatórios — baseLegal: autocontrole (baseLegal: autocontrole, §3º)
+ * Selo de integridade de relatórios — baseLegal: autocontrole, §3º do artigo de registros.
  * Gera hash SHA-256 para verificação de integridade dos documentos exportados.
  */
 

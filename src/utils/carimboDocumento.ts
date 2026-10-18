@@ -1,6 +1,6 @@
 import { getBaseLegal } from "@/config/baseLegal";
 /**
- * Selo de integridade para documentos — baseLegal: autocontrole (baseLegal: autocontrole, §3º)
+ * Selo de integridade para documentos — baseLegal: autocontrole, §3º do artigo de registros.
  *
  * Padroniza data/hora de emissão, usuário responsável, identificação do documento
  * e hash curto de integridade em TODOS os documentos (impressos e digitais) gerados
