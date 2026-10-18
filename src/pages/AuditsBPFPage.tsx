@@ -15,7 +15,7 @@ import { Seo } from "@/components/Seo";
 const WHATSAPP_CONTATO = "https://wa.me/5562996075522";
 
 const funcionalidades = [
-  { icon: ClipboardCheck, title: "Checklist Completo", desc: "Checklist de auditoria interna baseado integralmente, com todos os itens exigidos pelo MAPA." },
+  { icon: ClipboardCheck, title: "Checklist Completo", desc: "Checklist de auditoria interna para verificação dos registros e processos da fábrica." },
   { icon: BarChart3, title: "Cálculo Automático", desc: "Cálculo automático de percentual de conformidade por área e geral, com classificação de criticidade." },
   { icon: ShieldCheck, title: "Sala do Auditor MAPA", desc: "Área exclusiva para o auditor acessar documentos, relatórios e evidências durante a auditoria." },
   { icon: FileBarChart, title: "Relatórios Completos", desc: "Relatórios detalhados de auditoria com gráficos, comparativos e exportação em PDF." },

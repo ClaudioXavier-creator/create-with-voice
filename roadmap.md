@@ -1,7 +1,7 @@
 # Fase 1B — Citações nas telas
 
-- [ ] Criar botão único de base legal e neutralizar citações na apresentação, preservando documentos e dados.
-- [ ] Conferir telas, popover, build e listar referências preservadas.
+- [x] Criar botão único de base legal e neutralizar citações na apresentação, preservando documentos e dados.
+- [x] Conferir telas, popover, build e listar referências preservadas (12 telas autenticadas; botão/link conferidos; 21 testes focados passaram; previews documentais e referências retornadas pela IA preservadas).
 
 Sem banco, Edge Functions ou publicação.
 

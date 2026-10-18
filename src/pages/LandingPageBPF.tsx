@@ -45,7 +45,7 @@ const SOFTWARE_JSON_LD = {
   operatingSystem: "Web",
   offers: { "@type": "Offer", price: "0", priceCurrency: "BRL" },
   description:
-    "Sistema completo de Boas Práticas de Fabricação (BPF) para fábricas de ração — e.",
+    "Sistema completo de Boas Práticas de Fabricação (BPF) para fábricas de ração.",
 };
 
 export default function LandingPageBPF() {
@@ -430,9 +430,9 @@ export default function LandingPageBPF() {
         <div className="max-w-6xl mx-auto">
           <div className="grid md:grid-cols-2 gap-16 items-center">
             <div>
-              <h2 className="text-3xl sm:text-4xl font-bold mb-8">A mudou as regras. Sua fábrica está pronta?<BaseLegalBadge assunto="rotulagem" /></h2>
+              <h2 className="text-3xl sm:text-4xl font-bold mb-8">Sua fábrica está pronta para a fiscalização?<BaseLegalBadge assunto="rotulagem" /></h2>
               <div className="space-y-6 text-green-100/80 leading-relaxed">
-                <p>A do Ministério da Agricultura estabelece novos requisitos para registro, rotulagem e controle de qualidade.</p>
+                <p>Organize os registros, a rotulagem e o controle de qualidade da sua fábrica.</p>
                 <p>As mudanças afetam diretamente:</p>
                 <ul className="space-y-4">
                   {[
