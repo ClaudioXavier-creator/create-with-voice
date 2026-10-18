@@ -581,7 +581,7 @@ export const ORIENTACOES: ModuloOrientacao[] = [
     titulo: "Armazenamento e Transporte",
     rota: "/armazenamento-transporte",
     descricao: "Checklists de armazéns, veículos e prevenção de EEB.",
-    base_legal: [`${getBaseLegal("bpf_geral").citacao}`, "IN 08/2004 — Prevenção EEB"],
+    base_legal: [`${getBaseLegal("bpf_geral").citacao}`, `${getBaseLegal("pneeb").citacao} — Prevenção EEB`],
     passos: [
       { titulo: "1. Inspeção do armazém", descricao: "Temperatura, umidade, pragas, paletização e PEPS." },
       {
@@ -591,7 +591,7 @@ export const ORIENTACOES: ModuloOrientacao[] = [
       {
         titulo: "3. Declaração EEB",
         descricao: "Veículo nunca transportou farinha de origem animal proibida.",
-        base_legal: "IN 08/2004",
+        base_legal: getBaseLegal("pneeb").citacao,
       },
       { titulo: "4. Registro de saída", descricao: "Lote, cliente, NF e veículo." },
     ],
@@ -777,7 +777,7 @@ export const ORIENTACOES: ModuloOrientacao[] = [
     titulo: "Rastreabilidade",
     rota: "/rastreabilidade",
     descricao: "Árvore visual de rastreio MP → Lote → Cliente.",
-    base_legal: [`${getBaseLegal("bpf_geral").citacao} Art. 30`, "IN 34/2008 — Espécies"],
+    base_legal: [`${getBaseLegal("bpf_geral").citacao} Art. 30`, `${getBaseLegal("pneeb").citacao} — Espécies`],
     passos: [
       { titulo: "1. Buscar lote", descricao: "Informe lote do produto acabado." },
       {
@@ -786,7 +786,7 @@ export const ORIENTACOES: ModuloOrientacao[] = [
       },
       {
         titulo: "3. Alertas de espécie",
-        descricao: "Sistema bloqueia uso cruzado conforme IN 34/2008 (ex: ruminantes ↔ não-ruminantes).",
+        descricao: `Sistema bloqueia uso cruzado conforme ${getBaseLegal("pneeb").citacao} (ex: ruminantes ↔ não-ruminantes).`,
       },
       { titulo: "4. Exportar para recall", descricao: "Lista de clientes/lotes pronta para acionamento." },
     ],

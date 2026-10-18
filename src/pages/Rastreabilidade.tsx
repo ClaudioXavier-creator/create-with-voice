@@ -1295,11 +1295,12 @@ export default function Rastreabilidade() {
         </CardContent>
       </Card>
 
-      {/* ══════════ SEGREGAÇÃO POR ESPÉCIE — IN 34/2008 / IN 15/2009 ══════════ */}
+      {/* ══════════ SEGREGAÇÃO POR ESPÉCIE ══════════ */}
       <Card className="mb-6 border-orange-500/20">
         <CardHeader className="pb-2">
           <CardTitle className="font-display text-sm flex items-center gap-2">
             <ShieldAlert className="w-5 h-5 text-orange-600" /> Segregação por Espécie{" "}
+            <BaseLegalBadge assunto="pneeb" />
           </CardTitle>
           <p className="text-xs text-muted-foreground">
             Controle de restrições de subprodutos de origem animal por espécie destino, prevenção de EEB e contaminação
@@ -1323,7 +1324,7 @@ export default function Rastreabilidade() {
                 entry.comOrigemAnimal++;
                 const tipo = (r as any).tipo_origem_animal || "";
                 if (esp === "bovinos" && ["farinha_carne_ossos", "farinha_sangue", "sebo_gordura"].includes(tipo)) {
-                  const alerta = `⛔ PROIBIDO: ${tipo.replace(/_/g, " ")} para bovinos (IN 34/2008 - Prevenção EEB)`;
+                  const alerta = `⛔ PROIBIDO: ${tipo.replace(/_/g, " ")} para bovinos (${getBaseLegal("pneeb").citacao} - Prevenção EEB)`;
                   if (!entry.alertas.includes(alerta)) entry.alertas.push(alerta);
                 }
                 if (esp === "bovinos" && tipo === "farinha_penas") {
@@ -1335,7 +1336,7 @@ export default function Rastreabilidade() {
                   if (!entry.alertas.includes(alerta)) entry.alertas.push(alerta);
                 }
                 if (esp === "caprinos_ovinos" && ["farinha_carne_ossos", "farinha_sangue"].includes(tipo)) {
-                  const alerta = `⛔ PROIBIDO: ${tipo.replace(/_/g, " ")} para caprinos/ovinos (ruminantes — IN 34/2008)`;
+                  const alerta = `⛔ PROIBIDO: ${tipo.replace(/_/g, " ")} para caprinos/ovinos (ruminantes — ${getBaseLegal("pneeb").citacao})`;
                   if (!entry.alertas.includes(alerta)) entry.alertas.push(alerta);
                 }
               }

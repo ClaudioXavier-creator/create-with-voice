@@ -1,5 +1,9 @@
 # Fase 2 — Fonte única de legislação ligada ao banco
 
+## Substituição de fundamentos desatualizados
+- [x] Substituir apenas citações restantes nos arquivos solicitados, preservando notas históricas e regras operacionais.
+- [x] Build OK e 33 testes passando; botão PNEEB conferido com sessão real em Rastreabilidade. Mudanças: Rastreabilidade.tsx, orientacoesConfig.ts e roadmap.md; sem banco ou publicação.
+
 ## Catálogo central de normas
 - [x] Completar NORMAS com 23 normas e citar, preservando os 14 assuntos existentes; telas, banco e funções inalterados.
 - [x] Confirmar build automático OK e 37 testes passando; arquivos: baseLegal.ts, normas.test.ts, AGENTS.md e roadmap.md. Sem publicação.
