@@ -37,7 +37,9 @@ export function VinculoMedicadoOrdem({ ordemId, empresaId, receitaId, programaId
   const ok = podeLiberarOrdemMedicada(true, receita, programa);
 
   const salvar = async (campo: "receita_medicado_id" | "programa_sanitario_id", v: string) => {
-    const { error } = await supabase.from("ordens_producao").update({ [campo]: v === NENHUM ? null : v }).eq("id", ordemId);
+    const valor = v === NENHUM ? null : v;
+    const payload = campo === "receita_medicado_id" ? { receita_medicado_id: valor } : { programa_sanitario_id: valor };
+    const { error } = await supabase.from("ordens_producao").update(payload).eq("id", ordemId);
     if (error) toast.error("Erro: " + error.message); else onChange();
   };
 
