@@ -32,13 +32,11 @@ export const BASE_LEGAL = {
 
 export type AssuntoBaseLegal = keyof typeof BASE_LEGAL;
 
+/** Lista fechada de assuntos, para selects de vínculo (ex.: tela de legislação). */
+export const ASSUNTOS_BASE_LEGAL = Object.keys(BASE_LEGAL) as AssuntoBaseLegal[];
+
 /** Sempre síncrona: PDFs/exportações nunca aguardam rede ou uma sessão React. */
 export function getBaseLegal(assunto: AssuntoBaseLegal): BaseLegal {
   const { norma, artigo, citacao, observacao } = BASE_LEGAL[assunto];
   return { norma, artigo, citacao, observacao };
-}
-
-/** Compatibilidade para futuros consumidores da tabela por slug; sem consulta nesta fase. */
-export function useBaseLegal(assunto: AssuntoBaseLegal): BaseLegal {
-  return getBaseLegal(assunto);
 }

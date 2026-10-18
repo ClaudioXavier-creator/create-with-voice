@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { BASE_LEGAL, getBaseLegal, useBaseLegal } from "./baseLegal";
+import { ASSUNTOS_BASE_LEGAL, BASE_LEGAL, getBaseLegal } from "./baseLegal";
 
 describe("Referências autorizadas por assunto", () => {
   it("usa IN 04/2007 para BPF", () => {
@@ -53,9 +53,9 @@ describe("Referências autorizadas por assunto", () => {
     expect(getBaseLegal("decreto_base").norma).toBe("Decreto 12.031/2024");
     expect(getBaseLegal("decreto_base").observacao).toBe("Revogou o Decreto 6.296/2007.");
   });
-  it("hook e exportação usam a mesma reserva e retornam apenas os quatro campos", () => {
-    expect(useBaseLegal("rotulagem")).toEqual(getBaseLegal("rotulagem"));
+  it("exportação retorna apenas os quatro campos e a lista de assuntos fecha com a base", () => {
     expect(Object.keys(getBaseLegal("rotulagem"))).toEqual(["norma", "artigo", "citacao", "observacao"]);
     expect(Object.keys(BASE_LEGAL)).toHaveLength(14);
+    expect(ASSUNTOS_BASE_LEGAL).toHaveLength(14);
   });
 });

@@ -1,3 +1,9 @@
+# Fase 2 — Fonte única de legislação ligada ao banco
+
+- [x] Migração aprovada e aplicada: coluna `slug` (NULL) em normas_legislacao + índice único parcial (empresa_id, slug); 49 registros intactos, RLS inalterado.
+- [x] Hook useBaseLegal (TanStack Query, cache 24 h) com merge banco + reserva; BaseLegalBadge passa a usar o hook; getBaseLegal segue síncrona para PDFs.
+- [x] Campo opcional "Assunto (slug)" em Legislacao.tsx, visível só para admin da empresa; build OK, 17 testes passaram. Sem publicação.
+
 # Integrações de agentes
 
 - [x] Adicionar MCP protegido com leituras por empresa e consentimento OAuth, sem ampliar permissões.

@@ -4280,6 +4280,7 @@ export type Database = {
           id: string
           orgao: string | null
           resumo: string | null
+          slug: string | null
           tags: string[] | null
           tipo: string | null
           titulo: string
@@ -4296,6 +4297,7 @@ export type Database = {
           id?: string
           orgao?: string | null
           resumo?: string | null
+          slug?: string | null
           tags?: string[] | null
           tipo?: string | null
           titulo: string
@@ -4312,6 +4314,7 @@ export type Database = {
           id?: string
           orgao?: string | null
           resumo?: string | null
+          slug?: string | null
           tags?: string[] | null
           tipo?: string | null
           titulo?: string
