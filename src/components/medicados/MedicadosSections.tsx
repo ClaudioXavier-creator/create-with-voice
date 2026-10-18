@@ -9,7 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Plus, Stethoscope, ShieldCheck, AlertTriangle } from "lucide-react";
 import FileUpload from "@/components/FileUpload";
-import BaseLegalBadge from "@/components/BaseLegalBadge";
+import { BaseLegalBadge } from "@/components/BaseLegalBadge";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useEmpresa } from "@/hooks/useEmpresa";

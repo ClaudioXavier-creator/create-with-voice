@@ -16,6 +16,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useEmpresa } from "@/hooks/useEmpresa";
 import { toast } from "sonner";
+import FileUpload from "@/components/FileUpload";
+import { BaseLegalBadge } from "@/components/BaseLegalBadge";
 
 // Helper genérico CRUD
 function useCrud<T extends { id: string; empresa_id?: string | null }>(tabela: string) {
@@ -487,11 +489,15 @@ export function DadosRegulatoriosEmpresaSection() {
   const [empresa, setEmpresa] = useState<any>(null);
   const [saving, setSaving] = useState(false);
 
+  const [fabricaMed, setFabricaMed] = useState(false);
+  const [arquivoAut, setArquivoAut] = useState<string | null>(null);
   useEffect(() => {
     if (!empresaAtiva) return;
     (async () => {
       const { data } = await supabase.from("empresas").select("*").eq("id", empresaAtiva.id).single();
       setEmpresa(data);
+      setFabricaMed(!!(data as any)?.fabrica_medicamentos);
+      setArquivoAut((data as any)?.arquivo_autorizacao_medicamentos ?? null);
     })();
   }, [empresaAtiva?.id]);
 
@@ -508,6 +514,9 @@ export function DadosRegulatoriosEmpresaSection() {
       numero_sipeagro: fd.get("numero_sipeagro"),
       validade_registro_sipeagro: fd.get("validade_registro_sipeagro") || null,
       atividades_sipeagro: atividades.length ? atividades : null,
+      fabrica_medicamentos: fabricaMed,
+      data_autorizacao_medicamentos: fd.get("data_autorizacao_medicamentos") || null,
+      arquivo_autorizacao_medicamentos: arquivoAut,
       autorizacao_medicamentos: fd.get("autorizacao_medicamentos"),
       validade_autorizacao_medicamentos: fd.get("validade_autorizacao_medicamentos") || null,
     }).eq("id", empresaAtiva.id);
@@ -528,10 +537,21 @@ export function DadosRegulatoriosEmpresaSection() {
           <div><Label>Atividades Registradas (separadas por vírgula)</Label>
             <Textarea name="atividades_sipeagro" defaultValue={(empresa?.atividades_sipeagro ?? []).join(", ")} rows={2} placeholder="Fabricação de ração, Pré-mistura..." />
           </div>
-          <div className="grid grid-cols-2 gap-3">
-            <div><Label>Autorização para Medicamentos (Nº)</Label><Input name="autorizacao_medicamentos" defaultValue={empresa?.autorizacao_medicamentos ?? ""} /></div>
-            <div><Label>Validade Autorização</Label><Input type="date" name="validade_autorizacao_medicamentos" defaultValue={empresa?.validade_autorizacao_medicamentos ?? ""} /></div>
+          <div className="flex items-center gap-2 p-3 rounded-lg border bg-muted/30">
+            <input id="fabrica_medicamentos" type="checkbox" className="h-4 w-4" checked={fabricaMed} onChange={(e) => setFabricaMed(e.target.checked)} />
+            <Label htmlFor="fabrica_medicamentos">Fabrica com medicamentos?</Label>
+            <BaseLegalBadge assunto="alimentos_medicados" className="ml-auto" />
           </div>
+          {fabricaMed && (
+            <div className="space-y-3">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <div><Label>Nº da autorização do MAPA</Label><Input name="autorizacao_medicamentos" defaultValue={empresa?.autorizacao_medicamentos ?? ""} /></div>
+                <div><Label>Data da autorização</Label><Input type="date" name="data_autorizacao_medicamentos" defaultValue={empresa?.data_autorizacao_medicamentos ?? ""} /></div>
+                <div><Label>Validade da autorização</Label><Input type="date" name="validade_autorizacao_medicamentos" defaultValue={empresa?.validade_autorizacao_medicamentos ?? ""} /></div>
+              </div>
+              <FileUpload folder="autorizacao-medicamentos" empresaId={empresaAtiva.id} label="Documento da autorização" currentUrl={arquivoAut} onUploadComplete={(url) => setArquivoAut(url)} />
+            </div>
+          )}
           <Button type="submit" disabled={saving}>{saving ? "Salvando..." : "Salvar Dados Regulatórios"}</Button>
         </form>
       </CardContent>

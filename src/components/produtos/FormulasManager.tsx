@@ -69,6 +69,7 @@ export default function FormulasManager({ produtoIdFixo, produtoNomeFixo }: Prop
   const [versao, setVersao] = useState("01");
   const [dataVersao, setDataVersao] = useState(new Date().toISOString().split("T")[0]);
   const [obs, setObs] = useState("");
+  const [medicada, setMedicada] = useState(false);
 
   // Dialog ingredientes
   const [ingOpen, setIngOpen] = useState(false);
@@ -129,6 +130,7 @@ export default function FormulasManager({ produtoIdFixo, produtoNomeFixo }: Prop
       data_versao: dataVersao,
       status: "ativa",
       observacoes: obs,
+      medicada,
     } as any);
     if (error) toast.error("Erro: " + error.message);
     else {
