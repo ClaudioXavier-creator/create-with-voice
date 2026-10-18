@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ShieldCheck, Printer, FileText } from "lucide-react";
-import { gerarCarimboSync, carimboHTML, carimboHTMLCompacto, carimboTexto } from "@/utils/carimboDocumento";
+import { gerarCarimbo, carimboHTML, carimboHTMLCompacto, carimboTexto, type CarimboInfo } from "@/utils/carimboDocumento";
 import { gerarRelatorioPDF } from "@/utils/pdfExport";
 import PageHeader from "@/components/PageHeader";
 
@@ -16,19 +16,20 @@ const DADOS_FICTICIOS = [
 ];
 
 export default function SimulacaoCarimbo() {
-  const [carimbo, setCarimbo] = useState(() => gerarCarimboSync({
-    documentoTipo: "Simulação — Relatório de Produção",
-    documentoId: "OP-2026-0118",
-    empresa: "Fazenda Modelo Ltda. (FICTÍCIO)",
-    usuario: "demo@bpfconsult.com.br",
-  }));
+  const [carimbo, setCarimbo] = useState<CarimboInfo | null>(null);
 
-  const regerar = () => setCarimbo(gerarCarimboSync({
-    documentoTipo: "Simulação — Relatório de Produção",
-    documentoId: "OP-2026-0118",
-    empresa: "Fazenda Modelo Ltda. (FICTÍCIO)",
-    usuario: "demo@bpfconsult.com.br",
-  }));
+  // Selo calculado sobre os dados fictícios exibidos + metadados.
+  const regerar = useCallback(async () => {
+    setCarimbo(await gerarCarimbo({
+      documentoTipo: "Simulação — Relatório de Produção",
+      documentoId: "OP-2026-0118",
+      empresa: "Fazenda Modelo Ltda. (FICTÍCIO)",
+      usuario: "demo@bpfconsult.com.br",
+      conteudo: JSON.stringify(DADOS_FICTICIOS),
+    }));
+  }, []);
+
+  useEffect(() => { void regerar(); }, [regerar]);
 
   const imprimirRelatorio = () => {
     gerarRelatorioPDF({
@@ -48,6 +49,10 @@ export default function SimulacaoCarimbo() {
       footer: "BPF_Consult — Demonstração de selo de integridade",
     });
   };
+
+  if (!carimbo) {
+    return <div className="py-12 text-center text-sm text-muted-foreground">Gerando selo de integridade…</div>;
+  }
 
   return (
     <div className="space-y-6">
@@ -75,6 +80,9 @@ export default function SimulacaoCarimbo() {
               <strong>Selo:</strong>{" "}
               <Badge variant="secondary" className="font-mono">{carimbo.selo}</Badge>
             </div>
+            {carimbo.hashCompleto && (
+              <div className="md:col-span-2"><strong>SHA-256 completo:</strong> <code className="text-xs break-all">{carimbo.hashCompleto}</code></div>
+            )}
           </div>
           <Button variant="outline" onClick={regerar}>Regerar selo de integridade</Button>
         </CardContent>

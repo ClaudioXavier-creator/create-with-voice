@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useEmpresa } from "@/hooks/useEmpresa";
-import { gerarCarimboSync, carimboHTML } from "@/utils/carimboDocumento";
+import { gerarCarimbo, carimboHTML, type CarimboInfo } from "@/utils/carimboDocumento";
 import { printElement } from "@/utils/printUtils";
 
 const CLASSIFICACAO_LABELS: Record<string, string> = {
@@ -30,6 +30,21 @@ export default function FichaTecnica({ produtoId }: Props) {
   const [produto, setProduto] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const { empresaAtiva, loading: loadingEmpresa } = useEmpresa();
+  const [carimbo, setCarimbo] = useState<CarimboInfo | null>(null);
+
+  // Selo SHA-256 sobre os dados exibidos da ficha (produto) + metadados; refeito quando mudam.
+  useEffect(() => {
+    if (!produto) { setCarimbo(null); return; }
+    let ativo = true;
+    gerarCarimbo({
+      documentoTipo: "Ficha Técnica",
+      documentoId: produto.id,
+      empresa: empresaAtiva?.nome || "BPF DIGITAL",
+      usuario: user?.email,
+      conteudo: JSON.stringify(produto),
+    }).then((c) => { if (ativo) setCarimbo(c); });
+    return () => { ativo = false; };
+  }, [produto, empresaAtiva?.nome, user?.email]);
 
   useEffect(() => {
     loadData();
@@ -182,12 +197,7 @@ export default function FichaTecnica({ produtoId }: Props) {
 
           {/* Footer with stamp */}
           <div className="pt-10 mt-10 border-t border-border flex flex-col items-center gap-4">
-            <div dangerouslySetInnerHTML={{ __html: carimboHTML(gerarCarimboSync({ 
-              documentoTipo: "Ficha Técnica", 
-              documentoId: produto.id, 
-              empresa: empresaAtiva?.nome || "BPF DIGITAL", 
-              usuario: user?.email 
-            })) }} />
+            {carimbo && <div dangerouslySetInnerHTML={{ __html: carimboHTML(carimbo) }} />}
             <p className="text-[9px] text-muted-foreground italic text-center max-w-md">
               Documento gerado eletronicamente pelo Sistema BPF Digital em {new Date().toLocaleString("pt-BR")}. 
  Conformidade garantida.
