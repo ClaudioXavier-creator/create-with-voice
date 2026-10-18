@@ -1,5 +1,9 @@
 # Fase 2 — Fonte única de legislação ligada ao banco
 
+## Catálogo central de normas
+- [ ] Completar NORMAS e citar sem apagar assuntos existentes nem alterar telas, banco ou funções.
+- [ ] Testar o catálogo, confirmar build e listar arquivos; não publicar.
+
 - [x] Migração aprovada e aplicada: coluna `slug` (NULL) em normas_legislacao + índice único parcial (empresa_id, slug); 49 registros intactos, RLS inalterado.
 - [x] Hook useBaseLegal (TanStack Query, cache 24 h) com merge banco + reserva; BaseLegalBadge passa a usar o hook; getBaseLegal segue síncrona para PDFs.
 - [x] Campo opcional "Assunto (slug)" em Legislacao.tsx, visível só para admin da empresa; build OK, 17 testes passaram. Sem publicação.
