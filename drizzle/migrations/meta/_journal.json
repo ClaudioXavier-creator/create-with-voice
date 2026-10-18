@@ -71,6 +71,13 @@
       "when": 1792349890581,
       "tag": "0009_medicados_receitas_programas",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1792367367192,
+      "tag": "0010_blindagem_visualizador_49_tabelas",
+      "breakpoints": true
     }
   ]
 }
