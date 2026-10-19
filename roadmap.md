@@ -1,3 +1,9 @@
+# Equipe e acesso somente leitura
+- [x] Aplicar somente o SQL aprovado em migração única, com comparação de e-mail sem distinção de caixa.
+- [ ] Conferir funções e permissões por leitura; implementar Equipe, aceite e menu restrito.
+- [ ] Implementar hook e bloqueio de ações nas operações, preservando consultas e exportações.
+- [ ] Executar testes e conferir fluxo real e build; listar alcance e arquivos, sem publicar.
+
 # Fase 2 — Fonte única de legislação ligada ao banco
 
 ## Base legal do PAC
