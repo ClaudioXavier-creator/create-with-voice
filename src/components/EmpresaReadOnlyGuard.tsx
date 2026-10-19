@@ -13,32 +13,34 @@ export default function EmpresaReadOnlyGuard({ children }: { children: React.Rea
   useEffect(() => {
     if (!isVisualizador || !operacional) return;
     const originals = new Map<HTMLElement, { disabled: boolean; aria: string | null }>();
+    const inScope = (el: Element) => Boolean(el.closest('#main-content, [role="dialog"], [role="alertdialog"], [data-radix-popper-content-wrapper]'));
     const isWrite = (el: HTMLElement) => {
-      if (el.closest('aside, header, [data-readonly-allow], [role="tablist"]')) return false;
+      if (!inScope(el) || el.closest('[data-readonly-allow], [role="tablist"]')) return false;
       if (el.matches('input[type="file"], input[type="submit"], input[type="image"]')) return true;
+      if (el.matches('[role="switch"], [role="checkbox"], input[type="checkbox"]')) return true;
       if (el.getAttribute("role") === "combobox" || el.getAttribute("aria-haspopup") === "listbox") return false;
       if (!el.matches('button, [role="menuitem"], a[data-write-action]')) return false;
       if (el.getAttribute("role") === "tab" || el.getAttribute("data-state") === "closed" && el.getAttribute("aria-label") === "Close") return false;
       return !acaoConsulta(`${el.textContent ?? ""} ${el.getAttribute("aria-label") ?? ""} ${el.title}`, Array.from(el.querySelectorAll("svg")).map((svg) => svg.getAttribute("class") ?? "").join(" "));
     };
     const scan = () => {
-      document.querySelectorAll<HTMLElement>('button, [role="menuitem"], input[type="file"], input[type="submit"], a[data-write-action]').forEach((el) => {
+      document.querySelectorAll<HTMLElement>('button, [role="menuitem"], [role="switch"], [role="checkbox"], input[type="checkbox"], input[type="file"], input[type="submit"], a[data-write-action]').forEach((el) => {
         if (!isWrite(el)) return;
         if (!originals.has(el)) originals.set(el, { disabled: "disabled" in el && Boolean(el.disabled), aria: el.getAttribute("aria-disabled") });
-        if (el instanceof HTMLButtonElement || el instanceof HTMLInputElement) el.disabled = true;
+        if ((el instanceof HTMLButtonElement || el instanceof HTMLInputElement) && !el.disabled) el.disabled = true;
         if (el.getAttribute("aria-disabled") !== "true") el.setAttribute("aria-disabled", "true");
       });
     };
     const block = (event: Event) => {
       const target = event.target;
-      const control = target instanceof Element ? target.closest<HTMLElement>('button, [role="menuitem"], input[type="file"], input[type="submit"], a[data-write-action]') : null;
-      if (event.type === "submit" || control && isWrite(control)) {
+      const control = target instanceof Element ? target.closest<HTMLElement>('button, [role="menuitem"], [role="switch"], [role="checkbox"], input[type="checkbox"], input[type="file"], input[type="submit"], a[data-write-action]') : null;
+      if (event.type === "submit" && target instanceof Element && inScope(target) || control && isWrite(control)) {
         event.preventDefault(); event.stopPropagation(); event.stopImmediatePropagation();
       }
     };
     scan();
     const observer = new MutationObserver(scan);
-    observer.observe(document.body, { subtree: true, childList: true, characterData: true });
+    observer.observe(document.body, { subtree: true, childList: true, characterData: true, attributes: true, attributeFilter: ["disabled"] });
     ["click", "submit", "change"].forEach((event) => document.addEventListener(event, block, true));
     return () => {
       observer.disconnect();
