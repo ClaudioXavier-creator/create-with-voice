@@ -19,6 +19,7 @@ export default function EmpresaReadOnlyGuard({ children }: { children: React.Rea
       if (el.matches('input[type="file"], input[type="submit"], input[type="image"]')) return true;
       if (el.matches('[role="switch"], [role="checkbox"], input[type="checkbox"]')) return true;
       if (el.getAttribute("role") === "combobox" || el.getAttribute("aria-haspopup") === "listbox") return false;
+      if (el.getAttribute("aria-haspopup") === "menu") return false;
       if (!el.matches('button, [role="menuitem"], a[data-write-action]')) return false;
       if (el.getAttribute("role") === "tab" || el.getAttribute("data-state") === "closed" && el.getAttribute("aria-label") === "Close") return false;
       return !acaoConsulta(`${el.textContent ?? ""} ${el.getAttribute("aria-label") ?? ""} ${el.title}`, Array.from(el.querySelectorAll("svg")).map((svg) => svg.getAttribute("class") ?? "").join(" "));

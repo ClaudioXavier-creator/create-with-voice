@@ -28,6 +28,6 @@ export function acaoConsulta(texto: string, icones: string) {
   const textoNormalizado = texto.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
   if (/salvar|excluir|deletar|remover|editar|criar|novo|nova|registrar|adicionar|aprovar|assinar|arquivar|importar|anexar|enviar|liberar|finalizar|concluir|iniciar|bloquear|desativar|cancelar (ordem|convite|registro|expedicao|producao)/.test(textoNormalizado)) return false;
   if (/lucide-(trash|pencil|square-pen|edit|save|plus|upload|check-check)/.test(icones)) return false;
-  return /export|baixar|download|imprimir|pdf|excel|copiar|visualizar|ver |abrir|detalhes|consultar|buscar|filtrar|pesquisar|voltar|fechar|cancelar|limpar|anterior|proxim|recarregar|atualizar lista|expandir|recolher/.test(textoNormalizado)
-    || /lucide-(eye|download|printer|copy|search|chevron|arrow|x(?:\s|$)|maximize|minimize)/.test(icones);
+  return /export|baixar|download|imprimir|pdf|excel|copiar|visualizar|ver |abrir|detalhes|consultar|buscar|filtrar|pesquisar|voltar|fechar|cancelar|limpar|anterior|proxim|recarregar|atualizar lista|expandir|recolher|base legal|orientacao|informac/.test(textoNormalizado)
+    || /lucide-(eye|download|printer|copy|search|chevron|arrow|x(?:\s|$)|maximize|minimize|info|scale|ellipsis)/.test(icones);
 }
