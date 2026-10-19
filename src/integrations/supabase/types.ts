@@ -6668,6 +6668,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      aceitar_convite_empresa: { Args: { _token: string }; Returns: Json }
+      alterar_papel_membro: {
+        Args: {
+          _membro_id: string
+          _papel: Database["public"]["Enums"]["papel_empresa"]
+        }
+        Returns: Json
+      }
       aprovar_documento_pop: {
         Args: {
           _aprovador_nome: string
@@ -6790,6 +6798,18 @@ export type Database = {
       is_membro_empresa: {
         Args: { _empresa_id: string; _user_id: string }
         Returns: boolean
+      }
+      listar_membros_empresa: {
+        Args: { _empresa_id: string }
+        Returns: {
+          ativo: boolean
+          created_at: string
+          email: string
+          id: string
+          nome: string
+          papel: Database["public"]["Enums"]["papel_empresa"]
+          user_id: string
+        }[]
       }
       pode_editar_empresa: {
         Args: { _empresa_id: string; _user_id: string }

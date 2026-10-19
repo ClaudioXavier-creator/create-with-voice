@@ -78,6 +78,13 @@
       "when": 1792367367192,
       "tag": "0010_blindagem_visualizador_49_tabelas",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1792369174628,
+      "tag": "0011_gestao_equipe_convites_papeis",
+      "breakpoints": true
     }
   ]
 }

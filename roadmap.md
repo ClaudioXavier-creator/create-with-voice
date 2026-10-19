@@ -1,3 +1,10 @@
+# Equipe e acesso somente leitura
+- [x] Aplicar somente o SQL aprovado em migração única, com comparação de e-mail sem distinção de caixa.
+- [x] Conferir funções, permissões e trigger por leitura; implementar Equipe, aceite e menu restrito.
+- [x] Implementar hook e bloqueio de ações nas operações, preservando consultas e exportações.
+- [x] Testes e build OK; Equipe, criação/cópia/cancelamento de convite real e convite inválido conferidos sem alterar membros. Bloqueio visual conferido com respostas simuladas, pois não há visualizador ativo.
+- [ ] Conferir aceite válido e operações com visualizador real: depende de uma conta convidada disponível; nenhum membro foi alterado para testes.
+
 # Fase 2 — Fonte única de legislação ligada ao banco
 
 ## Base legal do PAC

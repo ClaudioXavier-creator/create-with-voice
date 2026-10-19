@@ -72,6 +72,7 @@ export const NAV_ENTRIES: NavEntry[] = [
   // --- NAVEGAÇÃO PRINCIPAL (FLAT) ---
   { path: "/dashboard", label: "Dashboard Principal", icon: LayoutDashboard },
   { path: "/cadastro", label: "Dados da Empresa", icon: Building2 },
+  { path: "/equipe", label: "Equipe", icon: Users },
 
   // --- POPs (SEQUÊNCIA OFICIAL baseLegal: bpf_geral — 09 POPs + PAC) ---
   {
