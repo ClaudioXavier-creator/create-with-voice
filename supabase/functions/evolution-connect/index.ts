@@ -186,7 +186,11 @@ Deno.serve(async (req) => {
     if (body.action === 'status') {
       const list = await callEvolution(`${baseUrl}/instance/fetchInstances`, config.api_key);
       if (!list.ok) {
-        return json({ error: 'Falha ao consultar Evolution', details: list.data }, list.status);
+        // Responde 200 com campo "error" para a tela mostrar o aviso sem quebrar.
+        const errorMessage = isUnauthorizedError(list.status, list.data)
+          ? 'Chave da Evolution rejeitada (401). Confira se a API Key salva é a Global API Key (AUTHENTICATION_API_KEY) do seu servidor Evolution.'
+          : 'Falha ao consultar Evolution';
+        return json({ error: errorMessage, status: list.status, details: list.data });
       }
       return json({ success: true, instances: list.data });
     }
