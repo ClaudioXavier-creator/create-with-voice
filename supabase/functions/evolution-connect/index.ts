@@ -358,7 +358,7 @@ Deno.serve(async (req) => {
       }
     }
 
-    if (forceRenewQr) {
+    if (forceRenewQr && !renewSkipped) {
       const deleted = await callEvolution(`${baseUrl}/instance/delete/${encodedInstance}`, config.api_key, {
         method: 'DELETE',
       });
@@ -378,8 +378,9 @@ Deno.serve(async (req) => {
       if (!recreated.ok && recreated.status !== 403 && recreated.status !== 409) {
         return json({
           error: 'Não foi possível recriar a instância para gerar um QR Code novo.',
+          status: recreated.status,
           details: renewResults,
-        }, recreated.status);
+        });
       }
 
       if (hasQrPayload(recreated.data)) {
@@ -395,8 +396,13 @@ Deno.serve(async (req) => {
       }
     }
 
+    const allUnauthorized = results.length > 0
+      && results.every((r) => isUnauthorizedError(r.status, r.data));
+
     return json({
-      error: forceRenewQr
+      error: renewSkipped || allUnauthorized
+        ? 'A chave salva não tem permissão para apagar ou reconectar esta instância na Evolution (401). Cole no campo API Key a Global API Key do servidor (AUTHENTICATION_API_KEY), salve e tente de novo. Se preferir, use "Gerar QR Code" normal, sem renovar.'
+        : forceRenewQr
         ? 'A instância foi forçada a renovar, mas a Evolution ainda não devolveu um QR Code. Aguarde alguns segundos e tente novamente; se persistir, confira os logs da Evolution/Traefik.'
         : number
         ? 'A Evolution respondeu sem QR Code/código de pareamento. Confira se o número está correto e tente novamente. Se o celular já está pareado, desconecte em Aparelhos Conectados no WhatsApp e tente de novo.'
