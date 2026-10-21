@@ -81,6 +81,9 @@ function friendlyMetaError(status: number, data: Record<string, unknown>): strin
   if (raw.includes('131030') || raw.includes('recipient phone number not in allowed list')) {
     return 'Número fora da lista de destinatários de teste permitida pela Meta. Adicione o número na configuração do WhatsApp Business (painel da Meta) ou complete a verificação da conta.';
   }
+  if (raw.includes('"code":100') || raw.includes('invalid parameter')) {
+    return 'A Meta recusou o envio (parâmetro inválido). Causa mais comum: o destino é o próprio número da empresa conectado ao WhatsApp Business — ele não pode enviar mensagem para si mesmo. Use outro número de destino.';
+  }
   if (status === 401) {
     return 'Credencial do WhatsApp Business rejeitada (401). Verifique a conexão do conector WhatsApp no Lovable.';
   }
