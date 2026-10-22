@@ -89,6 +89,6 @@ Não alterar banco, registros, regras de negócio nem publicar.
 - [x] Decidir o meio de pagamento: Stripe do Lovable (escolhido pelo Cláudio)
 - [x] Desligar o meio atual no painel de Pagamentos (feito pelo Cláudio); conexão do Stripe fica na aba de Pagamentos (a ativação não é possível por agente nesta sessão)
 - [x] Identificar Privacidade, Termos e Reembolso com razão social, CNPJ e nome fantasia (build OK)
-- [ ] Publicar as alterações para nova revisão do provedor de pagamentos
+- [x] Publicar as alterações para nova revisão do provedor de pagamentos (22/10/2026: vitrine sem NutriCRM, meta descriptions limpas e páginas legais com CNPJ conferidas no site publicado)
 - [x] Atualizar os trechos de pagamento no site: rodapé, Privacidade, Termos, Reembolso, páginas de produto e SuperAdmin agora citam Stripe (build OK; sem menções restantes ao meio antigo)
 - [ ] Campanha Google (todos os canais): criar conta Google Ads
