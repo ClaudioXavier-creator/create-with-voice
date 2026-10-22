@@ -89,7 +89,6 @@ export default function AdminLicencas({
       { value: "auditsbpf", label: "Audits_BPF" },
       { value: "agrorc", label: "Agro RC CRM" },
       { value: "rotulos", label: "Nutri_Agro Labels" },
-      { value: "nutricrm", label: "NutriCRM" },
       { value: "agrogestao", label: "AgroGestão CRM" },
     ],
     [],

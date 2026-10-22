@@ -8,7 +8,6 @@ import logoFeedBpf from "@/assets/logo-feed-bpf.png";
 import logoAuditsBpf from "@/assets/logo-audits-bpf.png";
 import logoAgrorc from "@/assets/logo-agrorc.png";
 import logoRotulos from "@/assets/logo-nutri-agro-labels.png";
-import logoNutriCrm from "@/assets/logo-nutricrm.png";
 import logoAgroGestao from "@/assets/logo-agrogestao.png";
 import { Seo } from "@/components/Seo";
 
@@ -116,8 +115,6 @@ const produtos: ProdutoCard[] = [
     demoLink: "/demo/rotulos",
     preco: "A partir de R$ 97/mês",
   },
-  // NutriCRM temporariamente removido da vitrine pública — produto em manutenção.
-  // Rotas /nutricrm/* e edge functions seguem ativas para licenças existentes.
   {
     nome: "AgroGestão CRM",
     icon: Building2,

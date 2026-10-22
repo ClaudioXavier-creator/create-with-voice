@@ -8,7 +8,6 @@ import { Seo } from "@/components/Seo";
 
 import logoFeedBpf from "@/assets/logo-feed-bpf.png";
 import logoAuditsBpf from "@/assets/logo-audits-bpf.png";
-import logoNutriCrm from "@/assets/logo-nutricrm.png";
 import logoAgroGestao from "@/assets/logo-agrogestao.png";
 import logoAgroRc from "@/assets/logo-agrorc.png";
 import logoRotulos from "@/assets/logo-nutri-agro-labels.png";
@@ -20,7 +19,6 @@ import {
   AuditsDashboard, AuditsChecklist, AuditsSala, AuditsPlano, AuditsRelatorio, AuditsHistorico,
   AgroRcDashboard, AgroRcKanban, AgroRcClientes, AgroRcVisitas, AgroRcMetas, AgroRcAdmin,
   AgroDashboard, AgroClientes, AgroRegioes, AgroMetas, AgroVisitas, AgroRelatorios,
-  NutriDashboard, NutriClientes, NutriPipeline, NutriVisita, NutriRelatorios, NutriClienteDetail,
   RotulosDashboard, RotulosEditor, RotulosFichaTecnica, RotulosNiveisGarantia, RotulosExportacao, RotulosVersionamento,
 } from "@/components/demo/MockScreens";
 
@@ -86,25 +84,6 @@ const DEMOS: Record<string, DemoConfig> = {
       { title: "Histórico e Evolução", description: "Linha do tempo de todas as auditorias realizadas, com comparativo de scores e taxa de tratamento de NCs por período.", render: AuditsHistorico },
     ],
   },
-  nutricrm: {
-    key: "nutricrm",
-    productSlug: "nutricrm",
-    authProduct: "nutricrm",
-    redirectPath: "/nutricrm/dashboard",
-    brand: "NutriCRM",
-    tagline: "CRM especializado em nutrição animal",
-    logo: logoNutriCrm,
-    accent: "from-orange-500 to-rose-600",
-    ctaTrialLabel: "Iniciar trial NutriCRM",
-    slides: [
-      { title: "Dashboard do Representante", description: "Visão consolidada da carteira: clientes ativos, visitas técnicas no mês, propostas em aberto e taxa de conversão por espécie. Dados ilustrativos.", render: NutriDashboard },
-      { title: "Carteira de Clientes (multi-tenant)", description: "Cada representante visualiza apenas seus próprios clientes — privacidade total entre carteiras.", render: NutriClientes },
-      { title: "Pipeline Comercial em Funil", description: "Acompanhe propostas, visitas técnicas, amostragens e fechamentos em um funil dedicado ao agro.", render: NutriPipeline },
-      { title: "Visita Técnica com GPS", description: "Registro com geolocalização, avaliação do rebanho e recomendações nutricionais.", render: NutriVisita },
-      { title: "Relatórios e Indicadores", description: "KPIs de faturamento, ticket médio, conversão. Exportação em PDF e Excel.", render: NutriRelatorios },
-      { title: "Histórico Completo do Cliente", description: "Linha do tempo de visitas, vendas e recomendações técnicas por propriedade.", render: NutriClienteDetail },
-    ],
-  },
   agrogestao: {
     key: "agrogestao",
     productSlug: "agrogestao",
@@ -168,7 +147,6 @@ const DEMOS: Record<string, DemoConfig> = {
 const ALIASES: Record<string, string> = {
   "feed-bpf": "feedbpf",
   "audits-bpf": "auditsbpf",
-  "nutri-crm": "nutricrm",
   "agro-gestao": "agrogestao",
   "agro-rc": "agrorc",
 };

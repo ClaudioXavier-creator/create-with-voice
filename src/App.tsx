@@ -72,7 +72,6 @@ const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 
 const Modelos = lazy(() => import("./pages/Modelos"));
 const Instalar = lazy(() => import("./pages/Instalar"));
-const NutriCRMPage = lazy(() => import("./pages/NutriCRMPage"));
 const FeedBPFPage = lazy(() => import("./pages/FeedBPFPage"));
 const AuditsBPFPage = lazy(() => import("./pages/AuditsBPFPage"));
 const AuditsBPFPlanos = lazy(() => import("./pages/AuditsBPFPlanos"));
@@ -132,14 +131,6 @@ const AgroRcVisitas = lazy(() => import("./pages/agrorc/Visitas"));
 const AgroRcMetas = lazy(() => import("./pages/agrorc/Metas"));
 const AgroRcAdmin = lazy(() => import("./pages/agrorc/Admin"));
 
-// NutriCRM - Páginas Internas
-const NutriCrmLayout = lazy(() => import("./components/layout/NutriCrmLayout"));
-const NutriDashboard = lazy(() => import("./pages/nutricrm/NutriCrmPages").then(m => ({ default: m.NutriDashboardPage })));
-const NutriClientes = lazy(() => import("./pages/nutricrm/NutriCrmPages").then(m => ({ default: m.NutriClientesPage })));
-const NutriVisitas = lazy(() => import("./pages/nutricrm/NutriCrmPages").then(m => ({ default: m.NutriVisitasPage })));
-const NutriProjetos = lazy(() => import("./pages/nutricrm/NutriCrmPages").then(m => ({ default: m.NutriProjetosPage })));
-const NutriMetas = lazy(() => import("./pages/nutricrm/NutriCrmPages").then(m => ({ default: m.NutriMetasPage })));
-const NutriRelatorios = lazy(() => import("./pages/nutricrm/NutriCrmPages").then(m => ({ default: m.NutriRelatoriosPage })));
 
 
 // Audits_BPF - Páginas Internas
@@ -285,7 +276,6 @@ const AppRoutes = () => {
         <Route path="/reembolso" element={<RefundPolicy />} />
         
         {/* Landings de Produtos */}
-        <Route path="/nutricrm" element={<NutriCRMPage />} />
         <Route path="/bpf-consult" element={<LandingPageBPF />} />
         <Route path="/feedbpf/dashboard" element={<Navigate to="/dashboard" replace />} />
         <Route path="/feedbpf" element={<FeedBPFPage />} />
@@ -334,11 +324,8 @@ const AppRoutes = () => {
           element={<ExternalRedirect to="https://soil-to-client.lovable.app" preservePath basePath="/agro-rc" />}
         />
 
-        {/* NutriCRM - redireciona para projeto externo publicado */}
-        <Route
-          path="/nutricrm/*"
-          element={<ExternalRedirect to="https://nutricrm.onrender.com" preservePath basePath="/nutricrm" />}
-        />
+        {/* NutriCRM descontinuado - links antigos voltam para a home */}
+        <Route path="/nutricrm/*" element={<Navigate to="/" replace />} />
 
         {/* AgroGestão CRM - redireciona para projeto externo publicado */}
         <Route

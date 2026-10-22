@@ -46,7 +46,7 @@ export default function PrivacyPolicy() {
 
             <h2 className="text-lg font-bold text-[#173404] mt-8 mb-4">3. Finalidades e Base Legal do Tratamento</h2>
             <ul className="list-disc pl-6 text-slate-600 mb-4 space-y-1">
-              <li><strong>Execução de contrato:</strong> criar conta, prover acesso aos sistemas (Feed_BPF, Audits_BPF, NutriCRM, AgroGestão, AgroRC, Nutri_Agro Labels) e prestar suporte.</li>
+              <li><strong>Execução de contrato:</strong> criar conta, prover acesso aos sistemas (Feed_BPF, Audits_BPF, AgroGestão, AgroRC, Nutri_Agro Labels) e prestar suporte.</li>
               <li><strong>Cumprimento de obrigação legal:</strong> emissão fiscal, prevenção a fraudes, atendimento a autoridades regulatórias (MAPA, Receita Federal).</li>
               <li><strong>Legítimo interesse:</strong> segurança, prevenção a abusos, melhoria de produto, análises estatísticas agregadas.</li>
               <li><strong>Consentimento:</strong> envio de comunicações de marketing (opcional, revogável a qualquer momento).</li>

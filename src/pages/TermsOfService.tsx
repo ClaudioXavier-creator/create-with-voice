@@ -41,7 +41,7 @@ export default function TermsOfService() {
 
             <h2 className="text-lg font-bold text-[#173404] mt-8 mb-4">3. Descrição do Serviço</h2>
             <p className="text-slate-600 mb-4">
-              Fornecemos software como serviço (SaaS) especializado em Boas Práticas de Fabricação, auditoria, CRM e gestão para o setor de nutrição animal — incluindo Feed_BPF, Audits_BPF, NutriCRM, AgroGestão CRM, Agro RC CRM e Nutri_Agro Labels.
+              Fornecemos software como serviço (SaaS) especializado em Boas Práticas de Fabricação, auditoria, CRM e gestão para o setor de nutrição animal — incluindo Feed_BPF, Audits_BPF, AgroGestão CRM, Agro RC CRM e Nutri_Agro Labels.
             </p>
 
             <h2 className="text-lg font-bold text-[#173404] mt-8 mb-4">4. Uso Aceitável e Proibições</h2>

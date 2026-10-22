@@ -17,7 +17,6 @@ import TierGate from "@/components/TierGate";
 import OnboardingAutomatico from "@/components/OnboardingAutomatico";
 import logoFeedBpf from "@/assets/logo-feed-bpf.png";
 import logoAuditsBpf from "@/assets/logo-audits-bpf.png";
-import logoNutricrm from "@/assets/logo-nutricrm.png";
 import logoAgrogestao from "@/assets/logo-agrogestao.png";
 import logoAgrorc from "@/assets/logo-agrorc.png";
 import logoRotulos from "@/assets/logo-nutri-agro-labels.png";
@@ -39,11 +38,6 @@ const PRODUCT_CONFIGS: Record<string, { logo: string; title: string; subtitle: s
     logo: logoFeedBpf,
     title: "Feed_BPF",
     subtitle: "BPF Consult",
-  },
-  nutricrm: {
-    logo: logoNutricrm,
-    title: "NutriCRM",
-    subtitle: "CRM Especializado",
   },
   agrogestao: {
     logo: logoAgrogestao,

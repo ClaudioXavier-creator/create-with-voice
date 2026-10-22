@@ -24,7 +24,7 @@ import { cn } from "@/lib/utils";
 
 import { useAuth } from "@/hooks/useAuth";
 
-type ProductKey = "feedbpf" | "nutricrm" | "agrogestao" | "auditsbpf" | "agrorc" | "rotulos" | "feedbpfcustom";
+type ProductKey = "feedbpf" | "agrogestao" | "auditsbpf" | "agrorc" | "rotulos" | "feedbpfcustom";
 type NivelKey = "entrada" | "intermediario" | "avancado";
 
 interface PlanInfo {
@@ -106,7 +106,6 @@ const formatBRL = (v: number) =>
 
 const PRODUCT_LABELS: Record<ProductKey, string> = {
   feedbpf: "Feed_BPF",
-  nutricrm: "NutriCRM",
   agrogestao: "AgroGestão CRM",
   auditsbpf: "Audits_BPF",
   agrorc: "Agro RC CRM",
