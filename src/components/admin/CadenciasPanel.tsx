@@ -32,7 +32,7 @@ interface Cadencia {
 
 const ETAPAS = ["novo", "contato_inicial", "qualificado", "proposta", "negociacao", "ganho", "perdido"];
 const TIERS = ["todos", "quente", "morno", "frio"];
-const PRODUTOS = ["", "feed_bpf", "audits_bpf", "agrogestao", "nutricrm", "feedbpfcustom"];
+const PRODUTOS = ["", "feed_bpf", "audits_bpf", "agrogestao", "feedbpfcustom"];
 
 export default function CadenciasPanel() {
   const [cadencias, setCadencias] = useState<Cadencia[]>([]);

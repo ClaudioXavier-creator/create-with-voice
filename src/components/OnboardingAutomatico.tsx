@@ -26,11 +26,6 @@ const PASSOS_POR_PRODUTO: Record<string, Passo[]> = {
     { id: "nc", titulo: "Cadastre uma NC exemplo", descricao: "Aprenda o fluxo de correções." },
     { id: "risco", titulo: "Preencha 1 Matriz de Risco", descricao: "HACCP simplificado." },
   ],
-  nutricrm: [
-    { id: "cliente", titulo: "Cadastre 1 cliente", descricao: "Comece seu funil.", link: "/nutricrm/clientes" },
-    { id: "visita", titulo: "Registre uma visita", descricao: "Salve os dados no campo.", link: "/nutricrm/visitas" },
-    { id: "meta", titulo: "Defina uma meta mensal", descricao: "Acompanhe seu desempenho.", link: "/nutricrm/metas" },
-  ],
   agrogestao: [
     { id: "cadastro", titulo: "Cadastre sua propriedade", descricao: "Adicione dados da fazenda.", link: "/agrogestao" },
     { id: "cliente", titulo: "Cadastre 1 cliente/fornecedor", descricao: "Monte sua base comercial.", link: "/agrogestao/clientes" },

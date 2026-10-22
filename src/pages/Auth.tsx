@@ -4,7 +4,6 @@ import { Mail, Lock, User, Loader2, Building2, Briefcase, Eye, EyeOff, AlertTria
 import logoImg from "@/assets/logo.png";
 import logoFeedBpf from "@/assets/logo-feed-bpf.png";
 import logoAuditsBpf from "@/assets/logo-audits-bpf.png";
-import logoNutricrm from "@/assets/logo-nutricrm.png";
 import logoAgrogestao from "@/assets/logo-agrogestao.png";
 import logoAgrorc from "@/assets/logo-agrorc.png";
 import logoRotulos from "@/assets/logo-nutri-agro-labels.png";
@@ -33,11 +32,6 @@ const authConfigs = {
     logo: logoAuditsBpf,
     title: "Audits_BPF",
     subtitle: "Auditoria interna",
-  },
-  nutricrm: {
-    logo: logoNutricrm,
-    title: "NutriCRM",
-    subtitle: "CRM especializado para nutrição animal",
   },
   agrogestao: {
     logo: logoAgrogestao,

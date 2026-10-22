@@ -6,8 +6,7 @@ export type WhatsAppModulo =
   | "audits_bpf"
   | "portal"
   | "agrogestao"
-  | "nutricrm";
-
+;
 export interface SendWhatsAppParams {
   to: string;                  // 5561999999999 ou (61) 99999-9999 — normalizado no backend
   message: string;
@@ -19,7 +18,7 @@ export interface SendWhatsAppParams {
 
 /**
  * Envia mensagem WhatsApp via Evolution API (camada central).
- * Usada por: AgroRC, Feed_BPF, Audits_BPF, Portal de Gestão, AgroGestão CRM, NutriCRM.
+ * Usada por: AgroRC, Feed_BPF, Audits_BPF, Portal de Gestão, AgroGestão CRM.
  */
 export async function sendWhatsApp(params: SendWhatsAppParams) {
   const { data, error } = await supabase.functions.invoke("evolution-send", {

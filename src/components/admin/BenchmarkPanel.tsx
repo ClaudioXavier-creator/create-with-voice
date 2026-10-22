@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { BarChart3, Loader2 } from "lucide-react";
 
-const PRODUTOS = ["feed_bpf", "audits_bpf", "agrogestao", "nutricrm", "feedbpfcustom", "rotulos"];
+const PRODUTOS = ["feed_bpf", "audits_bpf", "agrogestao", "feedbpfcustom", "rotulos"];
 const fmtBRL = (v: number) => v.toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 });
 
 export default function BenchmarkPanel() {
@@ -57,7 +57,7 @@ export default function BenchmarkPanel() {
     <div className="space-y-4">
       <div>
         <h2 className="text-xl font-semibold flex items-center gap-2"><BarChart3 className="h-5 w-5 text-primary" /> Benchmark por Produto</h2>
-        <p className="text-sm text-muted-foreground">Compare desempenho comercial entre Feed_BPF, NutriCRM, AgroGestão, Audits_BPF, Custom, Rótulos</p>
+        <p className="text-sm text-muted-foreground">Compare desempenho comercial entre Feed_BPF, AgroGestão, Audits_BPF, Custom, Rótulos</p>
       </div>
 
       <div className="grid grid-cols-3 gap-3">
