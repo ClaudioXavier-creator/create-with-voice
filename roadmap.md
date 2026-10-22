@@ -85,3 +85,7 @@ Não alterar banco, registros, regras de negócio nem publicar.
 - [x] Verificar conta oficial (número 62 9607-5522 ativo, limite 250/dia, sem restrição).
 - [ ] Teste de entrega dentro da janela de 24h — aguarda o Cláudio mandar "oi" do celular de destino para o número da empresa.
 - [ ] Criar modelo (template) Meta para envios fora da janela de 24h — aguarda aprovação do Cláudio.
+
+- [ ] Trocar pagamentos para o Stripe do Lovable (aguarda Cláudio desligar o atual no painel de Pagamentos)
+- [ ] Criar páginas de Privacidade, Termos e Reembolso (aguarda nome jurídico da empresa)
+- [ ] Campanha Google (todos os canais): criar conta Google Ads
