@@ -4,8 +4,9 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ArrowLeft } from "lucide-react";
 
-const SELLER = "Cláudio Luiz Xavier Nunes";
-const TRADING = "BPF_Consult";
+const SELLER = "CLAUDIO LUIZ XAVIER NUNES LTDA";
+const TRADING = "BPF_CONSULT";
+const CNPJ = "68.667.977/0001-09";
 const CONTACT = "contato@bpfconsult.com.br";
 
 export default function RefundPolicy() {
@@ -25,8 +26,8 @@ export default function RefundPolicy() {
 
         <ScrollArea className="h-[70vh] p-8">
           <div className="prose prose-slate max-w-none">
-            <p className="text-slate-600 mb-2"><strong>Vendedor:</strong> {SELLER} (operando sob o nome comercial "{TRADING}").</p>
-            <p className="text-slate-600 mb-6 text-sm italic">Última atualização: 27 de maio de 2026</p>
+            <p className="text-slate-600 mb-2"><strong>Vendedor:</strong> {SELLER}, CNPJ {CNPJ}, nome fantasia {TRADING}.</p>
+            <p className="text-slate-600 mb-6 text-sm italic">Última atualização: 22 de outubro de 2026</p>
 
             <h2 className="text-lg font-bold text-[#173404] mt-8 mb-4">1. Garantia de 30 dias</h2>
             <p className="text-slate-600 mb-4">

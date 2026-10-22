@@ -21,6 +21,9 @@ export function PublicFooter() {
           <a href="mailto:contato@bpfconsult.com.br" className="hover:text-white transition-colors">Suporte</a>
         </div>
         <p className="mt-8 text-[10px] text-green-100/20 max-w-2xl mx-auto">
+          BPF_CONSULT — CLAUDIO LUIZ XAVIER NUNES LTDA — CNPJ 68.667.977/0001-09
+        </p>
+        <p className="mt-2 text-[10px] text-green-100/20 max-w-2xl mx-auto">
           Pagamentos processados com segurança via Paddle. O Paddle atua como nosso Merchant of Record e revendedor oficial.
         </p>
       </div>
