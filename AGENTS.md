@@ -10,3 +10,4 @@
 - Every new legal citation must come from `src/config/baseLegal.ts` through its typed registry and citation helpers; preserve synchronous subject resolution for exports and the existing hook's company/global document lookup so citations remain centralized and network-independent.
 - Screens show supported legal citations through BaseLegalBadge; explicitly requested PAC explanatory text shares centralized guidance with the generated manual. Display-only changes must never change stored values or operational logic.
 - Medicated production orders are gated both in the PCP screen and by a database trigger on ordens_producao; keep both in sync so the rule holds even outside the UI.
+- Feed_BPF public and license offers read prices from feedBpfPricing; keep checkout unavailable during provider migration until the new catalog is connected, to prevent charging legacy amounts.

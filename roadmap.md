@@ -92,3 +92,8 @@ Não alterar banco, registros, regras de negócio nem publicar.
 - [x] Publicar as alterações para nova revisão do provedor de pagamentos (22/10/2026: vitrine sem NutriCRM, meta descriptions limpas e páginas legais com CNPJ conferidas no site publicado)
 - [x] Atualizar os trechos de pagamento no site: rodapé, Privacidade, Termos, Reembolso, páginas de produto e SuperAdmin agora citam Stripe (build OK; sem menções restantes ao meio antigo)
 - [ ] Campanha Google (todos os canais): criar conta Google Ads
+
+# Feed_BPF — nova oferta
+- [ ] Unificar no site e na assinatura os mensais 297/497/897, semestrais com 15% e anuais de dez mensalidades; conferir testes e telas.
+- [ ] Desconectar o provedor antigo e conectar o Stripe gerenciado: depende da ação do Cláudio no painel, pois o status ainda mostra a conexão antiga ativa.
+- [ ] Cadastrar os nove preços e ligar o checkout Stripe: depende da conexão confirmada; impedir cobrança pelos preços antigos enquanto isso.
