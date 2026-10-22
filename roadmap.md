@@ -86,6 +86,8 @@ Não alterar banco, registros, regras de negócio nem publicar.
 - [ ] Teste de entrega dentro da janela de 24h — aguarda o Cláudio mandar "oi" do celular de destino para o número da empresa.
 - [ ] Criar modelo (template) Meta para envios fora da janela de 24h — aguarda aprovação do Cláudio.
 
-- [ ] Trocar pagamentos para o Stripe do Lovable (aguarda Cláudio desligar o atual no painel de Pagamentos)
-- [ ] Criar páginas de Privacidade, Termos e Reembolso (aguarda nome jurídico da empresa)
+- [ ] Trocar pagamentos para o Stripe do Lovable (aguarda Cláudio desligar o atual no painel de Pagamentos; depois o Lovable ativa o Stripe embutido, sem chave)
+- [x] Identificar Privacidade, Termos e Reembolso com razão social, CNPJ e nome fantasia (build OK)
+- [ ] Publicar as alterações para nova revisão do provedor de pagamentos
+- [ ] Atualizar os trechos de pagamento das páginas legais quando o provedor novo estiver ativo
 - [ ] Campanha Google (todos os canais): criar conta Google Ads
