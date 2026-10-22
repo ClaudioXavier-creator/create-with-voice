@@ -87,8 +87,8 @@ Não alterar banco, registros, regras de negócio nem publicar.
 - [ ] Criar modelo (template) Meta para envios fora da janela de 24h — aguarda aprovação do Cláudio.
 
 - [x] Decidir o meio de pagamento: Stripe do Lovable (escolhido pelo Cláudio)
-- [ ] Desligar o meio atual no painel de Pagamentos (ação do Cláudio) e então ativar o Stripe do Lovable
+- [x] Desligar o meio atual no painel de Pagamentos (feito pelo Cláudio); conexão do Stripe fica na aba de Pagamentos (a ativação não é possível por agente nesta sessão)
 - [x] Identificar Privacidade, Termos e Reembolso com razão social, CNPJ e nome fantasia (build OK)
 - [ ] Publicar as alterações para nova revisão do provedor de pagamentos
-- [ ] Atualizar os trechos de pagamento das páginas legais quando o provedor novo estiver ativo
+- [x] Atualizar os trechos de pagamento no site: rodapé, Privacidade, Termos, Reembolso, páginas de produto e SuperAdmin agora citam Stripe (build OK; sem menções restantes ao meio antigo)
 - [ ] Campanha Google (todos os canais): criar conta Google Ads
