@@ -78,3 +78,10 @@ Não alterar banco, registros salvos nem publicar.
 - [x] Verificar preservação do conteúdo, conferir build e listar os arquivos alterados (32 declarações idênticas; build OK; formulários de Pragas e Resíduos abertos sem erros).
 
 Não alterar banco, registros, regras de negócio nem publicar.
+---
+
+# WhatsApp: mensagens aceitas mas não entregues
+
+- [x] Verificar conta oficial (número 62 9607-5522 ativo, limite 250/dia, sem restrição).
+- [ ] Teste de entrega dentro da janela de 24h — aguarda o Cláudio mandar "oi" do celular de destino para o número da empresa.
+- [ ] Criar modelo (template) Meta para envios fora da janela de 24h — aguarda aprovação do Cláudio.
