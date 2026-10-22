@@ -26,7 +26,7 @@ const ORG_JSON_LD = {
   url: "https://www.bpfconsult.com.br",
   logo: "https://www.bpfconsult.com.br/favicon.png",
   description:
-    "Plataforma integrada de BPF, Auditoria Digital e CRM para o agronegócio: Feed_BPF, Audits_BPF, Agro RC, Nutri_Agro Labels, NutriCRM e AgroGestão CRM.",
+    "Plataforma integrada de BPF, Auditoria Digital e CRM para o agronegócio: Feed_BPF, Audits_BPF, Agro RC, Nutri_Agro Labels e AgroGestão CRM.",
   sameAs: ["https://www.bpfconsult.com.br"],
   contactPoint: {
     "@type": "ContactPoint",
@@ -253,24 +253,6 @@ export default function LandingPageBPF() {
             </Card>
 
             {/* Módulo 5 */}
-            <Card className="p-8 bg-white border-none shadow-sm rounded-2xl">
-              <BarChart3 className="h-10 w-10 text-[#173404] mb-6" />
-              <h3 className="text-xl font-bold mb-4 text-[#173404]">NutriCRM: CRM Nutrição Animal</h3>
-              <p className="text-slate-600 mb-6 text-sm">Gerencie distribuidores, revendas e clientes diretos com um CRM pensado para o setor.</p>
-              <ul className="space-y-3 mb-8">
-                {["Pipeline por representante", "Histórico de pedidos", "Alertas clientes inativos", "Réguas automatizadas"].map((f, i) => (
-                  <li key={i} className="flex items-center gap-2 text-sm text-slate-600">
-                    <CheckCircle className="h-4 w-4 text-[#97C459]" /> {f}
-                  </li>
-                ))}
-              </ul>
-              <div className="flex items-center justify-between">
-                <Button variant="link" onClick={scrollToContact} className="p-0 text-[#173404] font-bold">Evolua seu comercial →</Button>
-                <Button variant="ghost" size="sm" onClick={() => navigate("/nutricrm")} className="text-slate-400 text-xs">Ver detalhes</Button>
-              </div>
-            </Card>
-
-            {/* Módulo 6 */}
             <Card className="p-8 bg-white border-none shadow-sm rounded-2xl">
               <Compass className="h-10 w-10 text-[#173404] mb-6" />
               <h3 className="text-xl font-bold mb-4 text-[#173404]">AgroGestão: Gestão Estratégica</h3>
