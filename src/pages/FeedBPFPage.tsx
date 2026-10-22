@@ -9,6 +9,14 @@ import dashboardPreview from "@/assets/feedbpf-dashboard-preview.jpg";
 import { useAuth } from "@/hooks/useAuth";
 import { PublicFooter } from "@/components/layout/PublicFooter";
 import { Seo } from "@/components/Seo";
+import { getFeedBpfPlans, formatFeedBpfBRL } from "@/config/feedBpfPricing";
+import { TIER_LABEL, type Tier } from "@/config/tiers";
+
+const pricingTiers: { key: Tier; desc: string; destaque: boolean; badge?: string }[] = [
+  { key: "entrada", desc: "Até 5 usuários", destaque: false },
+  { key: "intermediario", desc: "Até 10 usuários", destaque: true, badge: "Mais Popular" },
+  { key: "avancado", desc: "Até 20 usuários", destaque: false },
+];
 
 const funcionalidades = [
   { icon: BookOpen, title: "Manual BPF Completo", desc: "Manual de Boas Práticas de Fabricação com todos os capítulos exigidos." },
@@ -119,37 +127,11 @@ export default function FeedBPFPage() {
           <div className="text-center mb-10">
             <Badge variant="outline" className="mb-3 text-xs tracking-widest uppercase px-4 py-1">Planos e Preços</Badge>
             <h2 className="text-3xl font-bold font-display text-foreground mb-2">Escolha seu plano Feed_BPF</h2>
-            <p className="text-muted-foreground">Semestral 15% OFF • Anual 25% OFF • 7 dias grátis</p>
+            <p className="text-muted-foreground">Semestral com 15% de desconto • Anual: 12 meses pelo valor de 10 • 7 dias grátis</p>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-5xl mx-auto">
-            {[
-              {
-                nivel: "Standard",
-                desc: "Até 10 usuários",
-                destaque: false,
-                mensal: "R$ 397",
-                semestral: "R$ 2.024,70",
-                anual: "R$ 3.573,00",
-              },
-              {
-                nivel: "Intermediária",
-                desc: "Até 20 usuários",
-                destaque: true,
-                badge: "Mais Popular",
-                mensal: "R$ 697",
-                semestral: "R$ 3.554,70",
-                anual: "R$ 6.273,00",
-              },
-              {
-                nivel: "Premium",
-                desc: "Usuários ilimitados",
-                destaque: false,
-                mensal: "R$ 1.297",
-                semestral: "R$ 6.614,70",
-                anual: "R$ 11.673,00",
-              },
-            ].map((p) => (
-              <Card key={p.nivel} className={`transition-all hover:shadow-xl ${p.destaque ? "border-primary/50 bg-primary/5 scale-105" : "border-border"} relative`}>
+            {pricingTiers.map((p) => (
+              <Card key={p.key} className={`transition-all hover:shadow-xl ${p.destaque ? "border-primary/50 bg-primary/5" : "border-border"} relative`}>
                 {p.badge && (
                   <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground text-xs shadow-lg">
                     {p.badge}
@@ -157,17 +139,18 @@ export default function FeedBPFPage() {
                 )}
                 <CardContent className="p-6 text-center space-y-4">
                   <div>
-                    <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">{p.nivel}</p>
+                    <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">{TIER_LABEL[p.key]}</p>
                     <p className="text-xs text-muted-foreground mt-1">{p.desc}</p>
                   </div>
                   <div className="space-y-2 py-3 border-y border-border">
                     <div>
-                      <span className="text-3xl font-bold text-foreground">{p.mensal}</span>
+                      <span className="text-3xl font-bold text-foreground">{formatFeedBpfBRL(getFeedBpfPlans(p.key)[0].priceTotal)}</span>
                       <span className="text-sm text-muted-foreground">/mês</span>
                     </div>
                     <div className="text-xs text-muted-foreground space-y-0.5">
-                      <p>Semestral: <span className="font-semibold text-foreground">{p.semestral}</span></p>
-                      <p>Anual: <span className="font-semibold text-foreground">{p.anual}</span></p>
+                      <p>Semestral: <span className="font-semibold text-foreground">{formatFeedBpfBRL(getFeedBpfPlans(p.key)[1].priceTotal)}</span></p>
+                      <p>Anual: <span className="font-semibold text-foreground">{formatFeedBpfBRL(getFeedBpfPlans(p.key)[2].priceTotal)}</span></p>
+                      <p>Semestral e anual pagos antecipadamente.</p>
                     </div>
                   </div>
                   <Button
