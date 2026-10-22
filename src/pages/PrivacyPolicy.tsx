@@ -55,7 +55,7 @@ export default function PrivacyPolicy() {
             <h2 className="text-lg font-bold text-[#173404] mt-8 mb-4">4. Compartilhamento de Dados</h2>
             <p className="text-slate-600 mb-3">Compartilhamos dados estritamente necessários com as seguintes categorias de destinatários:</p>
             <ul className="list-disc pl-6 text-slate-600 mb-4 space-y-1">
-              <li><strong>Paddle.com Market Limited (Merchant of Record):</strong> processa todos os pagamentos, assinaturas, impostos, faturamento e estornos em nosso nome. Os dados de pagamento são coletados e tratados diretamente pelo Paddle conforme sua <a href="https://www.paddle.com/legal/privacy" target="_blank" rel="noopener noreferrer" className="text-primary underline">política de privacidade</a>.</li>
+              <li><strong>Stripe (processador de pagamentos):</strong> processa pagamentos, assinaturas, faturamento e estornos. Os dados de pagamento (como o número do cartão) são coletados e tratados diretamente pelo Stripe, sem que os armazenemos em nossos servidores, conforme sua <a href="https://stripe.com/br/privacy" target="_blank" rel="noopener noreferrer" className="text-primary underline">política de privacidade</a>.</li>
               <li><strong>Provedores de infraestrutura:</strong> hospedagem em nuvem, banco de dados, armazenamento de arquivos e envio de e-mails transacionais.</li>
               <li><strong>Ferramentas de análise e suporte:</strong> monitoramento de erros e atendimento.</li>
               <li><strong>Consultores profissionais:</strong> contábeis, jurídicos e fiscais, sob dever de confidencialidade.</li>
@@ -94,7 +94,7 @@ export default function PrivacyPolicy() {
 
             <h2 className="text-lg font-bold text-[#173404] mt-8 mb-4">9. Transferências Internacionais</h2>
             <p className="text-slate-600 mb-4">
-              Alguns processadores (incluindo Paddle e provedores de nuvem) podem tratar dados fora do Brasil. Garantimos que tais transferências ocorram com base em salvaguardas adequadas previstas na LGPD.
+              Alguns processadores (incluindo Stripe e provedores de nuvem) podem tratar dados fora do Brasil. Garantimos que tais transferências ocorram com base em salvaguardas adequadas previstas na LGPD.
             </p>
 
             <h2 className="text-lg font-bold text-[#173404] mt-8 mb-4">10. Alterações desta Política</h2>

@@ -24,7 +24,7 @@ export function PublicFooter() {
           BPF_CONSULT — CLAUDIO LUIZ XAVIER NUNES LTDA — CNPJ 68.667.977/0001-09
         </p>
         <p className="mt-2 text-[10px] text-green-100/20 max-w-2xl mx-auto">
-          Pagamentos processados com segurança via Paddle. O Paddle atua como nosso Merchant of Record e revendedor oficial.
+          Pagamentos processados com segurança via Stripe. A venda é realizada por CLAUDIO LUIZ XAVIER NUNES LTDA (BPF_CONSULT).
         </p>
       </div>
     </footer>

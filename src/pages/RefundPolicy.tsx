@@ -36,12 +36,12 @@ export default function RefundPolicy() {
 
             <h2 className="text-lg font-bold text-[#173404] mt-8 mb-4">2. Como solicitar o reembolso</h2>
             <p className="text-slate-600 mb-4 border-l-4 border-primary pl-4 bg-primary/5 py-3">
-              Os reembolsos são processados pelo nosso provedor de pagamentos, <strong>Paddle</strong>, que atua como Merchant of Record de todas as nossas vendas. Para solicitar, acesse <a href="https://paddle.net" target="_blank" rel="noopener noreferrer" className="text-primary underline font-semibold">paddle.net</a> e localize sua compra usando o e-mail utilizado no checkout, ou entre em contato com nosso suporte em <a href={`mailto:${CONTACT}`} className="text-primary underline">{CONTACT}</a>.
+              Os reembolsos são processados pelo nosso provedor de pagamentos, <strong>Stripe</strong>. Para solicitar, entre em contato com nosso suporte em <a href={`mailto:${CONTACT}`} className="text-primary underline font-semibold">{CONTACT}</a>, informando o e-mail utilizado no checkout, ou responda ao e-mail de confirmação da sua compra.
             </p>
 
             <h2 className="text-lg font-bold text-[#173404] mt-8 mb-4">3. Cancelamento de assinatura</h2>
             <p className="text-slate-600 mb-4">
-              Você pode cancelar sua assinatura recorrente a qualquer momento através de paddle.net ou solicitando ao suporte. O cancelamento interrompe cobranças futuras; o acesso permanece ativo até o final do ciclo já pago. Reembolsos proporcionais ao período já utilizado não se aplicam fora da janela inicial de 30 dias, salvo disposição legal em contrário.
+              Você pode cancelar sua assinatura recorrente a qualquer momento solicitando ao suporte. O cancelamento interrompe cobranças futuras; o acesso permanece ativo até o final do ciclo já pago. Reembolsos proporcionais ao período já utilizado não se aplicam fora da janela inicial de 30 dias, salvo disposição legal em contrário.
             </p>
 
             <h2 className="text-lg font-bold text-[#173404] mt-8 mb-4">4. Processamento</h2>
@@ -51,7 +51,7 @@ export default function RefundPolicy() {
 
             <h2 className="text-lg font-bold text-[#173404] mt-8 mb-4">5. Mais informações</h2>
             <p className="text-slate-600 mb-4">
-              Para informações adicionais, consulte também a <a href="https://www.paddle.com/legal/refund-policy" target="_blank" rel="noopener noreferrer" className="text-primary underline">Política de Reembolso do Paddle</a>.
+              Para informações adicionais, consulte também os nossos <a href="/termos" className="text-primary underline">Termos de Uso</a>.
             </p>
           </div>
         </ScrollArea>

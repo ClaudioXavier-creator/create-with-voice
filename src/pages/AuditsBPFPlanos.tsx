@@ -14,7 +14,7 @@ type Periodo = "mensal" | "semestral" | "anual";
 const formatBRL = (valor: number) =>
   new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(valor);
 
-// Preço base mensal por nível (bate com plan.md e paddle-prices.ts)
+// Preço base mensal por nível (bate com plan.md e os preços dos planos)
 const PRECO_BASE: Record<Nivel, number> = {
   empresa: 297,
   consultor10: 297,

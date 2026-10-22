@@ -68,10 +68,10 @@ export default function TermsOfService() {
 
             <h2 className="text-lg font-bold text-[#173404] mt-8 mb-4">7. Pagamentos, Assinaturas e Merchant of Record</h2>
             <p className="text-slate-600 mb-4 border-l-4 border-primary pl-4 bg-primary/5 py-3">
-              <strong>Nosso processo de pedido é conduzido pelo nosso revendedor online Paddle.com.</strong> Paddle.com é o Merchant of Record (MoR) de todos os nossos pedidos. O Paddle fornece atendimento ao cliente para todas as questões de pagamento e processa devoluções.
+              <strong>As cobranças são processadas eletronicamente pelo Stripe, nosso provedor de pagamentos.</strong> A venda é realizada por {SELLER} ({TRADING}), que é o responsável pela relação contratual, pelo atendimento ao cliente e pelas questões de pagamento e devolução.
             </p>
             <p className="text-slate-600 mb-4">
-              Para mecânicas detalhadas de pagamento, cobrança, impostos, renovação, cancelamento e estorno, consulte os <a href="https://www.paddle.com/legal/checkout-buyer-terms" target="_blank" rel="noopener noreferrer" className="text-primary underline">Termos do Comprador do Paddle</a>. Assinaturas recorrentes são renovadas automaticamente até cancelamento. O cancelamento interrompe cobranças futuras conforme a <a href="/reembolso" className="text-primary underline">Política de Reembolso</a>.
+              Para mecânicas detalhadas de pagamento, cobrança, impostos, renovação, cancelamento e estorno, entre em contato com o nosso suporte. Assinaturas recorrentes são renovadas automaticamente até cancelamento. O cancelamento interrompe cobranças futuras conforme a <a href="/reembolso" className="text-primary underline">Política de Reembolso</a>.
             </p>
 
             <h2 className="text-lg font-bold text-[#173404] mt-8 mb-4">8. Nível de Serviço e Garantias</h2>
