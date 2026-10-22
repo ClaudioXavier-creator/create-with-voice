@@ -21,6 +21,7 @@ import { useEmpresa } from "@/hooks/useEmpresa";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { getFeedBpfPlans } from "@/config/feedBpfPricing";
 
 import { useAuth } from "@/hooks/useAuth";
 
@@ -136,8 +137,11 @@ export default function LicenseGate({ children, product: initialProduct }: Licen
   const [nivelSelecionado, setNivelSelecionado] = useState<NivelKey>("intermediario");
 
   const productLabel = PRODUCT_LABELS[product] || PRODUCT_LABELS.feedbpf;
-  const launchActive = isLaunchActive();
-  const nivelAtivo = NIVEIS.find((n) => n.key === nivelSelecionado)!;
+  const launchActive = product !== "feedbpf" && isLaunchActive();
+  const niveis = product === "feedbpf"
+    ? NIVEIS.map((nivel) => ({ ...nivel, plans: getFeedBpfPlans(nivel.key) }))
+    : NIVEIS;
+  const nivelAtivo = niveis.find((n) => n.key === nivelSelecionado) ?? niveis[0];
 
   // Conteúdo educativo (Central de Orientações, Manual, Guia de POPs) sempre liberado.
   if (isRotaLivre(location.pathname)) return <>{children}</>;
@@ -181,6 +185,10 @@ export default function LicenseGate({ children, product: initialProduct }: Licen
 
   const handleCheckout = async (planoKey: string) => {
     if (!empresaAtiva) return;
+    if (product === "feedbpf") {
+      toast.info("Assinaturas temporariamente indisponíveis durante a atualização dos pagamentos.");
+      return;
+    }
     const loadingKey = `${nivelSelecionado}-${planoKey}`;
     setCheckoutLoading(loadingKey);
     try {
@@ -224,7 +232,7 @@ export default function LicenseGate({ children, product: initialProduct }: Licen
         </div>
 
         <div id="license-plans" className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-          {NIVEIS.map((nivel) => (
+          {niveis.map((nivel) => (
             <button
               key={nivel.key}
               onClick={() => setNivelSelecionado(nivel.key)}
@@ -255,7 +263,7 @@ export default function LicenseGate({ children, product: initialProduct }: Licen
         </div>
 
         <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-          {nivelAtivo.plans.map((plan) => {
+          {nivelAtivo?.plans.map((plan) => {
             const totalEffective = launchActive ? plan.priceTotal / 2 : plan.priceTotal;
             const mesEffective = launchActive ? plan.priceFull / 2 : plan.priceFull;
             const loadingKey = `${nivelSelecionado}-${plan.key}`;
@@ -302,14 +310,14 @@ export default function LicenseGate({ children, product: initialProduct }: Licen
                     )}
                     variant={isAnual ? "default" : "outline"}
                     onClick={() => handleCheckout(plan.key)}
-                    disabled={!!checkoutLoading}
+                    disabled={!!checkoutLoading || product === "feedbpf"}
                   >
                     {checkoutLoading === loadingKey ? (
                       <Loader2 aria-hidden="true" className="w-4 h-4 animate-spin mr-2" />
                     ) : (
                       <CreditCard aria-hidden="true" className="w-4 h-4 mr-2" />
                     )}
-                    Assinar Agora
+                    {product === "feedbpf" ? "Pagamento em atualização" : "Assinar Agora"}
                   </Button>
                 </CardContent>
               </Card>
