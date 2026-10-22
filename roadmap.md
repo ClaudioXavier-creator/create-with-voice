@@ -94,6 +94,6 @@ Não alterar banco, registros, regras de negócio nem publicar.
 - [ ] Campanha Google (todos os canais): criar conta Google Ads
 
 # Feed_BPF — nova oferta
-- [ ] Unificar no site e na assinatura os mensais 297/497/897, semestrais com 15% e anuais de dez mensalidades; conferir testes e telas.
+- [x] Unificar os preços no site e na assinatura: mensal 297/497/897, semestral com 15%, anual de dez mensalidades. Três testes passaram, build OK e os nove valores conferidos na página; assinatura autenticada e checkout não conferidos. Não publicado.
 - [ ] Desconectar o provedor antigo e conectar o Stripe gerenciado: depende da ação do Cláudio no painel, pois o status ainda mostra a conexão antiga ativa.
 - [ ] Cadastrar os nove preços e ligar o checkout Stripe: depende da conexão confirmada; impedir cobrança pelos preços antigos enquanto isso.
