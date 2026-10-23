@@ -94,6 +94,7 @@ Não alterar banco, registros, regras de negócio nem publicar.
 - [ ] Campanha Google (todos os canais): criar conta Google Ads
 
 # Feed_BPF — nova oferta
+- [ ] Verificar integração oficial de NFS-e da Prefeitura de Goiânia e requisitos para a BPF_CONSULT.
 - [ ] Manter os botões de pagamento do site intactos; preparar sem ativar a contratação pública.
 - [ ] Preparar emissão de NFS-e antes de ativar pagamentos: depende da identificação do emissor fiscal e autorização de integração.
 - [ ] Cadastrar produtos ativos no Stripe sem NutriCRM; renovar em 1/6/12 meses.
