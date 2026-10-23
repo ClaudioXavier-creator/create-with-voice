@@ -73,7 +73,7 @@ Deno.serve(async (req) => {
       mode: "subscription", ui_mode: "embedded_page",
       line_items: [{ price: effectivePrice.id, quantity: 1 }], customer,
       automatic_tax: { enabled: true }, customer_update: { address: "auto" },
-      redirect_on_completion: "never",
+      redirect_on_completion: "if_required",
       return_url: "https://www.bpfconsult.com.br/feedbpf?session_id={CHECKOUT_SESSION_ID}",
       metadata, subscription_data: { metadata },
     }, { idempotencyKey: `prepare-${user.id}-${empresa_id}-${priceId}-${Math.floor(Date.now() / 300000)}` });
