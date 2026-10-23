@@ -12,3 +12,4 @@
 - Medicated production orders are gated both in the PCP screen and by a database trigger on ordens_producao; keep both in sync so the rule holds even outside the UI.
 - Feed_BPF public and license offers read prices from feedBpfPricing; keep checkout unavailable during provider migration until the new catalog is connected, to prevent charging legacy amounts.
 - Stripe preparation uses a separate sandbox-only checkout and shared gateway client/catalog; do not wire public payment controls or grant licenses from test sessions, because fiscal issuance and live activation remain pending.
+- All Stripe events enter through the `payments-webhook` edge function (signature-verified, `?env=sandbox|live`, idempotent via `stripe_webhook_events`); it mirrors subscription state in `public.subscriptions` but only live events sync `licencas` — sandbox never activates licenses.
