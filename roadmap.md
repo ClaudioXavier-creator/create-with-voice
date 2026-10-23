@@ -98,9 +98,12 @@ Não alterar banco, registros, regras de negócio nem publicar.
 - [x] Manter os botões intactos; checkout separado, não montado, e servidor bloqueando cobranças reais.
 - [ ] Preparar emissão NFS-e: depende de credenciamento, requisitos de certificado/homologação e dados fiscais confirmados pelo contador; não transmitir notas reais antes disso.
 - [x] Cadastrar 16 produtos/níveis e 48 preços Stripe em teste, sem NutriCRM, recorrentes em 1/6/12 meses; nove preços Feed_BPF conferidos.
+- [x] Receptor de eventos do Stripe (payments-webhook) implantado: assinatura verificada, eventos idempotentes, espelho em subscriptions (nova tabela com RLS) e sincronização de licenças SOMENTE em ambiente live (eventos de teste não ativam licença).
+- [x] Migração 0012 aplicada: subscriptions (usuário lê as próprias linhas) e stripe_webhook_events (service_role).
 - [ ] Implementar pagamento incorporado, ativação por empresa, cancelamento ao fim do período e upgrade proporcional/downgrade na renovação.
 - [ ] Validar pagamento e leitura da licença na tela; cobranças reais dependem de go-live.
 - [ ] Resolver tributação do checkout: Stripe recusou automatic_tax por país da conta não suportado. Aguarda definição fiscal com Cláudio/contador; não desabilitar silenciosamente.
+- [ ] Registrar eventos de webhook reais entregues pelo Stripe (endpoint registrado automaticamente na ativação) e conferir o ciclo de teste ponta a ponta.
 - [x] Unificar os preços no site e na assinatura: mensal 297/497/897, semestral com 15%, anual de dez mensalidades. Três testes passaram, build OK e os nove valores conferidos na página.
 - [x] Publicar a oferta para nova revisão do provedor de pagamentos (22/10/2026: site publicado com mensal 297/497/897, semestral 1.514,70/2.534,70/4.574,70 e anual 2.970/4.970/8.970; Privacidade com CNPJ, LTDA, BPF_CONSULT e Stripe, sem Paddle nem NutriCRM; scan novo sem crítico — 1 aviso em lead_utm e 1 info em mapa_estabelecimentos).
 - [x] Provedor antigo desconectado pelo Cláudio e Stripe de teste conectado.
