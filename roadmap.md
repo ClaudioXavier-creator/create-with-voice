@@ -94,13 +94,13 @@ Não alterar banco, registros, regras de negócio nem publicar.
 - [ ] Campanha Google (todos os canais): criar conta Google Ads
 
 # Feed_BPF — nova oferta
-- [ ] Verificar integração oficial de NFS-e da Prefeitura de Goiânia e requisitos para a BPF_CONSULT.
-- [ ] Manter os botões de pagamento do site intactos; preparar sem ativar a contratação pública.
-- [ ] Preparar emissão de NFS-e antes de ativar pagamentos: depende da identificação do emissor fiscal e autorização de integração.
-- [ ] Cadastrar produtos ativos no Stripe sem NutriCRM; renovar em 1/6/12 meses.
+- [x] Consultar manual oficial de Goiânia: ABRASF 2.04, SGISS e parâmetros publicados; não há emissor municipal próprio permanente desde 01/10/2025.
+- [x] Manter os botões intactos; checkout separado, não montado, e servidor bloqueando cobranças reais.
+- [ ] Preparar emissão NFS-e: depende de credenciamento, requisitos de certificado/homologação e dados fiscais confirmados pelo contador; não transmitir notas reais antes disso.
+- [x] Cadastrar 16 produtos/níveis e 48 preços Stripe em teste, sem NutriCRM, recorrentes em 1/6/12 meses; nove preços Feed_BPF conferidos.
 - [ ] Implementar pagamento incorporado, ativação por empresa, cancelamento ao fim do período e upgrade proporcional/downgrade na renovação.
 - [ ] Validar pagamento e leitura da licença na tela; cobranças reais dependem de go-live.
 - [x] Unificar os preços no site e na assinatura: mensal 297/497/897, semestral com 15%, anual de dez mensalidades. Três testes passaram, build OK e os nove valores conferidos na página.
 - [x] Publicar a oferta para nova revisão do provedor de pagamentos (22/10/2026: site publicado com mensal 297/497/897, semestral 1.514,70/2.534,70/4.574,70 e anual 2.970/4.970/8.970; Privacidade com CNPJ, LTDA, BPF_CONSULT e Stripe, sem Paddle nem NutriCRM; scan novo sem crítico — 1 aviso em lead_utm e 1 info em mapa_estabelecimentos).
-- [ ] Desconectar o provedor antigo e conectar o Stripe gerenciado: depende da ação do Cláudio no painel, pois o status ainda mostra a conexão antiga ativa.
-- [ ] Cadastrar os nove preços e ligar o checkout Stripe: depende da conexão confirmada; impedir cobrança pelos preços antigos enquanto isso.
+- [x] Provedor antigo desconectado pelo Cláudio e Stripe de teste conectado.
+- [ ] Ativar checkout público somente após emissão fiscal, validação de licenças e gestão de assinaturas, go-live e autorização posterior do Cláudio.

@@ -76,7 +76,7 @@ Deno.serve(async (req) => {
       redirect_on_completion: "if_required",
       return_url: "https://www.bpfconsult.com.br/feedbpf?session_id={CHECKOUT_SESSION_ID}",
       metadata, subscription_data: { metadata },
-    }, { idempotencyKey: `prepare-${user.id}-${empresa_id}-${priceId}-${Math.floor(Date.now() / 300000)}` });
+    }, { idempotencyKey: `prepare-if-required-${user.id}-${empresa_id}-${priceId}-${effectivePrice.id}-${Math.floor(Date.now() / 300000)}` });
     if (!checkout.client_secret) throw new Error("Stripe não retornou formulário de pagamento");
     return respond({ clientSecret: checkout.client_secret, sessionId: checkout.id, preparationOnly: true });
   } catch (error) {
