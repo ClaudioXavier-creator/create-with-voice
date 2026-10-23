@@ -21,6 +21,7 @@ Parâmetros de produção publicados no manual:
 Não transmitir notas reais nem inventar inscrição municipal, CNAE, item de serviço, alíquota ou regime.
 Antes de integrar: verificar WSDL/XSD atuais, ambiente de homologação, credenciamento, certificado e assinatura exigidos; validar inscrição municipal, regime fiscal, CNAE/item LC 116, tributação municipal, retenções e sequência RPS com o contador.
 Recibo/fatura Stripe não é NFS-e. Cálculo de impostos do Stripe não substitui obrigações municipais ou DAS.
+Teste autenticado retornou erro do próprio Stripe: Stripe Tax não é suportado para o país desta conta (Brasil). Portanto, formulário e compra de teste permanecem bloqueados pela configuração fiscal; não remover automatic_tax nem prometer cálculo de tributos sem decisão explícita sobre responsabilidade fiscal.
 Certificado, senha e credenciais devem entrar somente por formulário seguro, nunca por chat, frontend ou repositório.
 
 ## Ativação pendente
