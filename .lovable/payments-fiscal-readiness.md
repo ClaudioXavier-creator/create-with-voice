@@ -25,7 +25,7 @@ Teste autenticado retornou erro do próprio Stripe: Stripe Tax não é suportado
 Certificado, senha e credenciais devem entrar somente por formulário seguro, nunca por chat, frontend ou repositório.
 
 ## Ativação pendente
-1. Concluir habilitação fiscal e emitir/consultar NFS-e de homologação.
+1. Concluir habilitação fiscal e emitir/consultar NFS-e de homologação. Situação em 23/10/2026: inscrição municipal de Goiânia em processo de abertura (informado pelo Cláudio); emissão bloqueada até a inscrição ficar ativa, seguida de credenciamento, certificado/homologação e confirmação de CNAE, item LC 116 e tributação pelo contador.
 2. Eventos Stripe já armazenados com idempotência (tabela stripe_webhook_events) e separados por teste/live; apenas eventos de LICENÇA em live sincronizam `licencas` — eventos de teste nunca ativam licença.
 3. Conectar gestão de cancelamento e troca de plano na interface (regras já aplicadas no webhook: cancelamento mantém período pago, downgrade na renovação), mantendo acesso até período pago e aplicando upgrade somente após confirmação.
 4. Verificar limites 5/10/20 e autorização por empresa.
