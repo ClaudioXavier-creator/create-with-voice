@@ -96,7 +96,7 @@ Não alterar banco, registros, regras de negócio nem publicar.
 # Feed_BPF — nova oferta
 - [x] Consultar manual oficial de Goiânia: ABRASF 2.04, SGISS e parâmetros publicados; não há emissor municipal próprio permanente desde 01/10/2025.
 - [x] Manter os botões intactos; checkout separado, não montado, e servidor bloqueando cobranças reais.
-- [ ] Preparar emissão NFS-e: depende de credenciamento, requisitos de certificado/homologação e dados fiscais confirmados pelo contador; não transmitir notas reais antes disso.
+- [ ] Preparar emissão NFS-e: inscrição municipal de Goiânia em processo de abertura (informado pelo Cláudio em 23/10/2026); faltam credenciamento, requisitos de certificado/homologação e dados fiscais (CNAE, item LC 116, tributação) confirmados pelo contador; não transmitir notas reais antes disso.
 - [x] Cadastrar 16 produtos/níveis e 48 preços Stripe em teste, sem NutriCRM, recorrentes em 1/6/12 meses; nove preços Feed_BPF conferidos.
 - [x] Receptor de eventos do Stripe (payments-webhook) implantado: assinatura verificada, eventos idempotentes, espelho em subscriptions (nova tabela com RLS) e sincronização de licenças SOMENTE em ambiente live (eventos de teste não ativam licença).
 - [x] Migração 0012 aplicada: subscriptions (usuário lê as próprias linhas) e stripe_webhook_events (service_role).
