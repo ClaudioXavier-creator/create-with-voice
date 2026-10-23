@@ -85,6 +85,13 @@
       "when": 1792369174628,
       "tag": "0011_gestao_equipe_convites_papeis",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1792757650856,
+      "tag": "0012_stripe_subscriptions_webhook_events",
+      "breakpoints": true
     }
   ]
 }

@@ -13,3 +13,5 @@ project_id = "ovdqvjklmqmockrszbqv"
     verify_jwt = false
   [functions.prepare-stripe-checkout]
     verify_jwt = false
+  [functions.payments-webhook]
+    verify_jwt = false
