@@ -11,3 +11,4 @@
 - Screens show supported legal citations through BaseLegalBadge; explicitly requested PAC explanatory text shares centralized guidance with the generated manual. Display-only changes must never change stored values or operational logic.
 - Medicated production orders are gated both in the PCP screen and by a database trigger on ordens_producao; keep both in sync so the rule holds even outside the UI.
 - Feed_BPF public and license offers read prices from feedBpfPricing; keep checkout unavailable during provider migration until the new catalog is connected, to prevent charging legacy amounts.
+- Stripe preparation uses a separate sandbox-only checkout and shared gateway client/catalog; do not wire public payment controls or grant licenses from test sessions, because fiscal issuance and live activation remain pending.
