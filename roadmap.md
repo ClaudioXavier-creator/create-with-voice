@@ -94,6 +94,8 @@ Não alterar banco, registros, regras de negócio nem publicar.
 - [ ] Campanha Google (todos os canais): criar conta Google Ads
 
 # Feed_BPF — nova oferta
+- [ ] Manter os botões de pagamento do site intactos; preparar sem ativar a contratação pública.
+- [ ] Preparar emissão de NFS-e antes de ativar pagamentos: depende da identificação do emissor fiscal e autorização de integração.
 - [ ] Cadastrar produtos ativos no Stripe sem NutriCRM; renovar em 1/6/12 meses.
 - [ ] Implementar pagamento incorporado, ativação por empresa, cancelamento ao fim do período e upgrade proporcional/downgrade na renovação.
 - [ ] Validar pagamento e leitura da licença na tela; cobranças reais dependem de go-live.
